@@ -40,4 +40,9 @@ jobs:
     # Build the book
     - name: Build the book
       run: |
+        jupyter-book build docs/
+
+    # Build the book
+    - name: Publish the book
+      run: |
         ghp-import -n -p -f docs/_build/html
