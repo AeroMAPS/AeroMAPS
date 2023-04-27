@@ -5,7 +5,7 @@ AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospecti
 It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, sociological, economical and other considerations.
 It aims to assess the sustainability of simulated air transport transition scenarios on multiple criteria.
 
-More details can be found in the `official documentation <https://test-cast-doc.readthedocs.io/en/latest/>`_.
+More details can be found in the `documentation <https://test-cast-doc.readthedocs.io/en/latest/>`_.
 
 
 Quick start
@@ -16,8 +16,10 @@ a graphical user interface has been developed for facilitating the first uses.
 It is available at the following address: https://cast.isae-supaero.fr
 
 
-Quick installation
+Installation
 --------
+
+The Python Package Index can be used for installing AeroMAPS, other solutions being detailed in the documentation.
 
 **Prerequisite**: AeroMAPS needs at least **Python 3.7.0**.
 
