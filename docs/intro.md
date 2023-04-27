@@ -1,11 +1,15 @@
-# Welcome to your Jupyter Book
+# Welcome to the AeroMAPS documentation
 
-This is a small sample book to give you a feel for how book content is
-structured.
-It shows off a few of the major file types, as well as some sample content.
-It does not go in-depth into any particular topic - check out [the Jupyter Book documentation](https://jupyterbook.org) for more information.
+AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport.
+It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, environmental, 
+sociological, economic and other considerations.
+It aims to assess the sustainability of simulated air transport transition scenarios on multiple criteria.
 
-Check out the content pages bundled with this sample book to see more.
+The objective of this documentation is to provide the main elements concerning AeroMAPS.
+In particular, check out the installation section for understanding how to use AeroMAPS, 
+the documentation section for understanding the general principles of AeroMAPS, 
+and the examples section for discovering some applications.
+
 
 ```{tableofcontents}
 ```

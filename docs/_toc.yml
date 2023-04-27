@@ -4,6 +4,12 @@
 format: jb-book
 root: intro
 chapters:
+- file: installation
+- file: documentation
+- file: examples
+- file: citations
+- file: license
+- file: about
 - file: markdown
 - file: notebooks
 - file: markdown-notebooks

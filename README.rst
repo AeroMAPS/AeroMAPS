@@ -2,10 +2,11 @@ AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transpor
 ====
 
 AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport.
-It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, sociological, economical and other considerations.
+It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, environmental,
+sociological, economic and other considerations.
 It aims to assess the sustainability of simulated air transport transition scenarios on multiple criteria.
 
-More details can be found in the `documentation <https://test-cast-doc.readthedocs.io/en/latest/>`_.
+More details can be found in the `documentation <https://aeromaps.github.io/AeroMAPS/>`_.
 
 
 Quick start
@@ -16,22 +17,13 @@ a graphical user interface has been developed for facilitating the first uses.
 It is available at the following address: https://cast.isae-supaero.fr
 
 
-Installation
+Quick installation
 --------
 
-The Python Package Index can be used for installing AeroMAPS, other solutions being detailed in the documentation.
+The use of the Python Package Index (PyPI) is the simplest method for installing AeroMAPS.
+More details and other solutions are provided in the documentation.
 
 **Prerequisite**: AeroMAPS needs at least **Python 3.7.0**.
-
-It is recommended (but not required) to install AeroMAPS in a virtual
-environment ([conda](https://docs.conda.io/en/latest/),
-[venv](https://docs.python.org/3.7/library/venv.html), ...)
-
-Once Python is installed, AeroMAPS can be installed using pip.
-
-> **Note**: If your network uses a proxy, you may have to do [some
-> settings](https://pip.pypa.io/en/stable/user_guide/#using-a-proxy-server)
-> for pip to work correctly
 
 You can install the latest version with this command:
 
