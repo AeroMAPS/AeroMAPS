@@ -1,5 +1,7 @@
 # Welcome to the AeroMAPS documentation
 
+:class: remove-from-content-only
+
 AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport.
 It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, environmental, 
 sociological, economic and other considerations.
