@@ -4,17 +4,17 @@
 format: jb-book
 root: intro
 chapters:
-- file: installation
-- file: documentation
+- file: books/installation
+- file: books/documentation
   sections:
-    - file: documentation_architecture
-    - file: documentation_airtransport
-    - file: documentation_impacts
-    - file: markdown
-- file: examples
+    - file: books/documentation_architecture
+    - file: books/documentation_airtransport
+    - file: books/documentation_impacts
+    - file: books/markdown
+- file: books/examples
   sections:
-    - file: notebooks
-    - file: markdown-notebooks
-- file: citations
-- file: license
-- file: about
+    - file: books/notebooks
+    - file: books/markdown-notebooks
+- file: books/citations
+- file: books/license
+- file: books/about

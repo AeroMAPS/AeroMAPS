@@ -23,7 +23,7 @@ https://doi.org/10.1016/j.jenvman.2021.113079
 
 To refer to specific methods or models of AeroMAPS, you can cite the following references:
 
-- Publication dedicated to initial methods and models: Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
+- **Publication dedicated to initial methods and models:** Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
 Simulation and evaluation of sustainable climate trajectories for aviation.
 Journal of Environmental Management, 295, 113079.
 https://doi.org/10.1016/j.jenvman.2021.113079
@@ -41,7 +41,7 @@ https://doi.org/10.1016/j.jenvman.2021.113079
 }
 ```
 
-- Publication dedicated to the description of main methods and models (in French): Planès, T. (2022).
+- **Publication dedicated to the description of main methods and models (in French):** Planès, T. (2022).
 Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios 
 prospectifs durables pour le transport aérien.
 Ph.D. Thesis. Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace.
@@ -57,7 +57,7 @@ https://www.theses.fr/2022ESAE0059
 }
 ```
 
-- Publication dedicated to aircraft fleet models: Delbecq, S., Planès, T., Delavenne, M., Pommier-Budinger, V., and Joksimovic, A. (2022).
+- **Publication dedicated to aircraft fleet models:** Delbecq, S., Planès, T., Delavenne, M., Pommier-Budinger, V., and Joksimovic, A. (2022).
 Aircraft fleet models using a bottom-up approach for simulating aviation technological prospective scenarios.
 In 33rd Congress of the International Council of the Aeronautical Sciences, Stockholm, Sweden.
 
@@ -70,7 +70,7 @@ In 33rd Congress of the International Council of the Aeronautical Sciences, Stoc
 }
 ```
 
-- Publication dedicated to economic models: Salgas, A., Planès, T., Delbecq, S., and Lafforgue, G. (2023).
+- **Publication dedicated to economic models:** Salgas, A., Planès, T., Delbecq, S., and Lafforgue, G. (2023).
 Cost estimation of the use of low-carbon fuels in prospective scenarios for air transport.
 In AIAA SCITECH 2023 Forum, National Harbor, United States.
 https://doi.org/10.2514/6.2023-2328
@@ -84,23 +84,3 @@ https://doi.org/10.2514/6.2023-2328
     year={2023},
     doi={10.2514/6.2023-2328}
 ```
-
-- Publication dedicated to general methods and models: Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
-Simulation and evaluation of sustainable climate trajectories for aviation.
-*Journal of Environmental Management, 295*, 113079.
-https://doi.org/10.1016/j.jenvman.2021.113079
-
-```
-@article{planes2021simulation,
-    title={Simulation and evaluation of sustainable climate trajectories for aviation},
-    author={Plan{\`e}s, Thomas and Delbecq, Scott and Pommier-Budinger, Val{\'e}rie and B{\'e}nard, Emmanuel},
-    journal={Journal of Environmental Management},
-    volume={295},
-    pages={113079},
-    year={2021},
-    publisher={Elsevier},
-    doi={10.1016/j.jenvman.2021.113079}
-}
-```
-    
-}
