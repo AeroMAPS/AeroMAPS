@@ -1,5 +1,7 @@
 # Citations
 
+## Main reference
+
 Please cite this article when using AeroMAPS in your research works:
 
 Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
@@ -20,6 +22,7 @@ https://doi.org/10.1016/j.jenvman.2021.113079
 }
 ```
 
+## Other references
 
 To refer to specific methods or models of AeroMAPS, you can cite the following references:
 

@@ -342,7 +342,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -358,6 +360,15 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-reference">Main reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-references">Other references</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -369,6 +380,8 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="citations">
 <h1>Citations<a class="headerlink" href="#citations" title="Permalink to this heading">#</a></h1>
+<section id="main-reference">
+<h2>Main reference<a class="headerlink" href="#main-reference" title="Permalink to this heading">#</a></h2>
 <p>Please cite this article when using AeroMAPS in your research works:</p>
 <p>Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
 Simulation and evaluation of sustainable climate trajectories for aviation.
@@ -386,6 +399,9 @@ Journal of Environmental Management, 295, 113079.
 }
 </pre></div>
 </div>
+</section>
+<section id="other-references">
+<h2>Other references<a class="headerlink" href="#other-references" title="Permalink to this heading">#</a></h2>
 <p>To refer to specific methods or models of AeroMAPS, you can cite the following references:</p>
 <ul class="simple">
 <li><p><strong>Publication dedicated to initial methods and models:</strong> Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
@@ -450,6 +466,7 @@ In AIAA SCITECH 2023 Forum, National Harbor, United States.
 </pre></div>
 </div>
 </section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -509,6 +526,21 @@ In AIAA SCITECH 2023 Forum, National Harbor, United States.
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-reference">Main reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-references">Other references</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
