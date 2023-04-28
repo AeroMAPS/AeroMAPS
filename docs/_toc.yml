@@ -6,10 +6,15 @@ root: intro
 chapters:
 - file: installation
 - file: documentation
+  sections:
+    - file: documentation_architecture
+    - file: documentation_airtransport
+    - file: documentation_impacts
+    - file: markdown
 - file: examples
+  sections:
+    - file: notebooks
+    - file: markdown-notebooks
 - file: citations
 - file: license
 - file: about
-- file: markdown
-- file: notebooks
-- file: markdown-notebooks
