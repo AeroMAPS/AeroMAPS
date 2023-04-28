@@ -6,7 +6,7 @@ It is intended to become a sectoral Integrated Assessment Model (IAM) taking int
 sociological, economic and other considerations.
 It aims to assess the sustainability of simulated air transport transition scenarios on multiple criteria.
 
-AeroMAPS is licensed under the [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html) license.
+AeroMAPS is licensed under the `LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.en.html>`_ license.
 
 A `documentation <https://aeromaps.github.io/AeroMAPS/>`_ is available for more details on AeroMAPS.
 
