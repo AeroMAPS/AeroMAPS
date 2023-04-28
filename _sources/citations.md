@@ -7,7 +7,6 @@ Simulation and evaluation of sustainable climate trajectories for aviation.
 Journal of Environmental Management, 295, 113079.
 https://doi.org/10.1016/j.jenvman.2021.113079
 
-If you find this book useful, please cite it via:
 ```
 @article{planes2021simulation,
     title={Simulation and evaluation of sustainable climate trajectories for aviation},
@@ -21,7 +20,6 @@ If you find this book useful, please cite it via:
 }
 ```
 
-    
 
 To refer to specific methods or models of AeroMAPS, you can cite the following references:
 

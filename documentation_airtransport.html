@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>About AeroMAPS &#8212; My sample book</title>
+    <title>Air transport modeling &#8212; My sample book</title>
   
   
   
@@ -61,11 +61,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'about';</script>
-    <link rel="author" title="About these documents" href="#" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'documentation_airtransport';</script>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Citations" href="citations.html" />
+    <link rel="next" title="Impact modeling" href="documentation_impacts.html" />
+    <link rel="prev" title="Architecture" href="documentation_architecture.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -158,9 +159,9 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="documentation.html">Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Air transport modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown Files</a></li>
 </ul>
@@ -171,7 +172,7 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="citations.html">Citations</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">About AeroMAPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About AeroMAPS</a></li>
 </ul>
 
     </div>
@@ -243,7 +244,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fabout.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fdocumentation_airtransport.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -273,7 +274,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/about.md" target="_blank"
+      <li><a href="_sources/documentation_airtransport.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -342,9 +343,7 @@ document.write(`
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
+
 </div></div>
       
     </div>
@@ -355,22 +354,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>About AeroMAPS</h1>
+    <h1>Air transport modeling</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contact">Contact</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authors">Authors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributors">Contributors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acknowledgments">Acknowledgments</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -380,37 +368,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="about-aeromaps">
-<h1>About AeroMAPS<a class="headerlink" href="#about-aeromaps" title="Permalink to this heading">#</a></h1>
-<p>AeroMAPS, formerly CAST, is an open-source framework developed in Python by ISAE-SUPAERO (Toulouse, France).
-It is also fed by multiple multidisciplinary works from the Institute for Sustainable Aviation (ISA).
-Providing a free framework that researchers, organizations, authorities and companies can interact with for
-defining sustainable aviation prospective scenarios was the initial main motivation.</p>
-<section id="contact">
-<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="mailto:aeromaps&#37;&#52;&#48;isae-supaero&#46;fr">aeromaps<span>&#64;</span>isae-supaero<span>&#46;</span>fr</a></p>
-</section>
-<section id="authors">
-<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Thomas Planès, Associate Professor at ISAE-SUPAERO</p></li>
-<li><p>Scott Delbecq, Associate Professor at ISAE-SUPAERO</p></li>
-<li><p>Antoine Salgas, PhD Student at ISAE-SUPAERO and Toulouse Business School</p></li>
-</ul>
-</section>
-<section id="contributors">
-<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Laurent Joly, Professor at ISAE-SUPAERO, Director of Institute for Sustainable Aviation</p></li>
-<li><p>Florian Simatos, Professor at ISAE-SUPAERO</p></li>
-<li><p>Valérie Pommier-Budinger, Professor at ISAE-SUPAERO</p></li>
-</ul>
-</section>
-<section id="acknowledgments">
-<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this heading">#</a></h2>
-<p>The authors and contributors would like to thank the following people who participated in the development of AeroMAPS versions:
-Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.</p>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="air-transport-modeling">
+<h1>Air transport modeling<a class="headerlink" href="#air-transport-modeling" title="Permalink to this heading">#</a></h1>
 </section>
 
     <script type="text/x-thebe-config">
@@ -445,13 +404,22 @@ Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="citations.html"
+       href="documentation_architecture.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Citations</p>
+        <p class="prev-next-title">Architecture</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="documentation_impacts.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Impact modeling</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div></div>
   
@@ -462,23 +430,6 @@ Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contact">Contact</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authors">Authors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributors">Contributors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acknowledgments">Acknowledgments</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
