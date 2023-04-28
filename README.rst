@@ -22,7 +22,7 @@ It is available at the following address: https://cast.isae-supaero.fr
 Quick installation
 --------
 
-The use of the Python Package Index (PyPI) is the simplest method for installing AeroMAPS.
+The use of the Python Package Index (`PyPI <https://pypi.org/>`_) is the simplest method for installing AeroMAPS.
 More details and other solutions are provided in the documentation.
 
 **Prerequisite**: AeroMAPS needs at least **Python 3.7.0**.

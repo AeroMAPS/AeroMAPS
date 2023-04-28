@@ -9,7 +9,7 @@ It is available at the following address: https://cast.isae-supaero.fr
 
 ## Installation from the Python Package Index (PyPI)
 
-The Python Package Index can be used for installing AeroMAPS.
+The Python Package Index ([PyPI](https://pypi.org/)) can be used for installing AeroMAPS.
 
 **Prerequisite**: AeroMAPS needs at least **Python 3.7.0**.
 
@@ -31,3 +31,7 @@ pip install --upgrade aeromaps
 
 
 ## Installation from GitHub
+
+Another solution is to install AeroMAPS from GitHub.
+
+> **Note**: This solution has to be used if you want to perform developing for AeroMAPS.
