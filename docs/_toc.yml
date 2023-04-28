@@ -16,5 +16,4 @@ chapters:
     - file: books/notebooks
     - file: books/markdown-notebooks
 - file: books/citations
-- file: books/license
 - file: books/about
