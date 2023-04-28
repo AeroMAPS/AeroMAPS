@@ -25,11 +25,9 @@ More details and other solutions are provided in the documentation.
 
 **Prerequisite**: AeroMAPS needs at least **Python 3.7.0**.
 
-You can install the latest version with this command:
+You can install the latest version with this command::
 
-``` {.bash}
-$ pip install --upgrade aeromaps
-```
+    pip install --upgrade aeromaps
 
 
 Citation
