@@ -23,9 +23,9 @@ https://doi.org/10.1016/j.jenvman.2021.113079
 
 To refer to specific methods or models of AeroMAPS, you can cite the following references:
 
-- First publication: Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
+- Publication dedicated to initial methods and models: Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
 Simulation and evaluation of sustainable climate trajectories for aviation.
-*Journal of Environmental Management, 295*, 113079.
+Journal of Environmental Management, 295, 113079.
 https://doi.org/10.1016/j.jenvman.2021.113079
 
 ```
@@ -38,6 +38,22 @@ https://doi.org/10.1016/j.jenvman.2021.113079
     year={2021},
     publisher={Elsevier},
     doi={10.1016/j.jenvman.2021.113079}
+}
+```
+
+- Publication dedicated to the description of main methods and models (in French): Planès, T. (2022).
+Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios 
+prospectifs durables pour le transport aérien.
+Ph.D. Thesis. Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace.
+https://www.theses.fr/2022ESAE0059
+
+```
+@phdthesis{planes2022dimensionnement,
+  title={Du dimensionnement de syst{\`e}mes et d'architectures en conception avion {\`a} la simulation de sc{\'e}narios prospectifs durables pour le transport a{\'e}rien},
+  author={Plan{\`e}s, Thomas},
+  year={2022},
+  school={{Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace}},
+  url={https://www.theses.fr/2022ESAE0059}
 }
 ```
 
@@ -67,6 +83,24 @@ https://doi.org/10.2514/6.2023-2328
     pages={2328},
     year={2023},
     doi={10.2514/6.2023-2328}
+```
+
+- Publication dedicated to general methods and models: Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
+Simulation and evaluation of sustainable climate trajectories for aviation.
+*Journal of Environmental Management, 295*, 113079.
+https://doi.org/10.1016/j.jenvman.2021.113079
+
+```
+@article{planes2021simulation,
+    title={Simulation and evaluation of sustainable climate trajectories for aviation},
+    author={Plan{\`e}s, Thomas and Delbecq, Scott and Pommier-Budinger, Val{\'e}rie and B{\'e}nard, Emmanuel},
+    journal={Journal of Environmental Management},
+    volume={295},
+    pages={113079},
+    year={2021},
+    publisher={Elsevier},
+    doi={10.1016/j.jenvman.2021.113079}
+}
 ```
     
 }

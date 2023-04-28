@@ -25,8 +25,8 @@ Once Python is installed, AeroMAPS can be installed using pip.
 
 You can install the latest version with this command:
 
-``` {.bash}
-$ pip install --upgrade aeromaps
+```
+pip install --upgrade aeromaps
 ```
 
 
