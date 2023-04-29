@@ -34,4 +34,4 @@ pip install --upgrade aeromaps
 
 Another solution is to install AeroMAPS from GitHub.
 
-> **Note**: This solution has to be used if you want to perform developing for AeroMAPS.
+> **Note**: This solution has to be used if you want to perform developing of AeroMAPS.
