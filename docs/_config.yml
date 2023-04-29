@@ -2,7 +2,8 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: AeroMAPS documentation
-author: The AeroMAPS development team
+author: AeroMAPS Research Team
+copyright: "2023"
 logo: logo_aeromaps.png
 
 # Force re-execution of notebooks on each build.
@@ -28,6 +29,6 @@ repository:
 # Add GitHub buttons to your book
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
 html:
-  use_issues_button: true
+  use_issues_button: false
   use_repository_button: true
   home_page_in_navbar: false
