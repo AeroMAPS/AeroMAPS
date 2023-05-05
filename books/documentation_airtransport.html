@@ -61,6 +61,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'books/documentation_airtransport';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -303,7 +305,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -319,6 +323,30 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#efficiency-improvements">Efficiency improvements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-flight-and-ground-operations">Improvements in flight and ground operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-load-factor">Aircraft load factor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decarbonation-of-energy">Decarbonation of energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strategies-against-condensation-trails">Strategies against condensation trails</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-of-additional-options-for-aviation">Modelling of additional options for aviation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#carbon-offsetting">Carbon offsetting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#total-replacement-of-the-fleet">Total replacement of the fleet</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cancellation-of-substitutable-flights">Cancellation of substitutable flights</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#improvement-of-the-other-phases-of-the-life-cycle">Improvement of the other phases of the life cycle</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#societal-aspects-on-the-distribution-of-flights">Societal aspects on the distribution of flights</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#covid-19">Covid-19</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -330,6 +358,113 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="air-transport-modeling">
 <h1>Air transport modeling<a class="headerlink" href="#air-transport-modeling" title="Permalink to this heading">#</a></h1>
+<section id="air-traffic">
+<h2>Air traffic<a class="headerlink" href="#air-traffic" title="Permalink to this heading">#</a></h2>
+<p>The development of air traffic is modelled via the evolution of the number of passenger kilometer, also known as
+Revenue Passenger Kilometres (RPK). A fixed rate of change is chosen as a parameter. A positive rate implies traffic
+growth, while a negative rate implies a decline in traffic. This rate is expressed as a percentage (%).</p>
+<p>Thus, by noting <span class="math notranslate nohighlight">\(k\)</span> a given year and <span class="math notranslate nohighlight">\(\tau\)</span> the rate of evolution of air traffic, RPK is expressed as follows :
+<span class="math notranslate nohighlight">\(RPK_{k+1} = RPK_k (1+\tau)\)</span></p>
+<p>For more precision, it is possible to define growth rates by decade via the Expert mode. This corresponds to the
+concept of compound annual growth rate (<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">CAGR</a>).</p>
+</section>
+<section id="efficiency-improvements">
+<h2>Efficiency improvements<a class="headerlink" href="#efficiency-improvements" title="Permalink to this heading">#</a></h2>
+<p>Efficiency improvements are modelled via a gain in aircraft energy consumption per RPK. A fixed rate of change is
+chosen as a parameter. A positive rate implies a reduction in aircraft consumption per RPK. The negative case
+corresponding to a reduction in aircraft performance is not considered. This rate is expressed as a percentage (%).
+Fleet renewal is considered as regular and is therefore included in this rate. However, an additional specific option
+concerning renewal is detailed in another section. Possible over-consumption linked to a change of architecture for an
+alternative fuel is not taken into account at this stage.</p>
+<p>Thus, noting <span class="math notranslate nohighlight">\(E_{RPK}\)</span> the energy consumed per RPK, <span class="math notranslate nohighlight">\(k\)</span> a given year and <span class="math notranslate nohighlight">\(\tau\)</span> the rate of technological improvement,
+efficiency is expressed as follows : <span class="math notranslate nohighlight">\(E_{RPK{k+1}} = E_{RPK} (1-\tau)\)</span></p>
+</section>
+<section id="improvements-in-flight-and-ground-operations">
+<h2>Improvements in flight and ground operations<a class="headerlink" href="#improvements-in-flight-and-ground-operations" title="Permalink to this heading">#</a></h2>
+<p>Improvements in flight and ground operations concern several elements such as air routes, optimisation of flight paths
+according to atmospheric conditions or the use of energy on the ground. Here, they are modelled by a sigmoid function.
+A <a href="https://en.wikipedia.org/wiki/Sigmoid_function" target="_blank">sigmoid function</a> allows to represent an
+asymptotic convergence, more or less fast towards a plateau. It is well adapted to the modelling of operations since
+these are led to take up less and less space (decarbonised energy of airports, reduced flight operations…) with a
+negligible effect compared to the flight and production phases of aircraft. The model includes the following three
+parameters:</p>
+<ul>
+<li>Maximum projected level of improvement noted $Op_{final}$</li>
+<li>Speed of application noted $\alpha$</li>
+<li>Timing of implementation noted $t$</li>
+</ul>
+<p>Thus, by noting <span class="math notranslate nohighlight">\(Op\)</span> a coefficient representing the evolution of operations and <span class="math notranslate nohighlight">\(k\)</span> the year under consideration,
+we obtain : <span class="math notranslate nohighlight">\(Op_k = \frac{Op_{final}}{1+e^{-\alpha(k-t)}}\)</span></p>
+</section>
+<section id="aircraft-load-factor">
+<h2>Aircraft load factor<a class="headerlink" href="#aircraft-load-factor" title="Permalink to this heading">#</a></h2>
+<p>Aircraft load factor is the ratio of seats occupied to seats available, it can be expressed as a percentage (%).
+The evolution of this rate is modelled by a sigmoid function. This function is well suited to load factor that are
+limited to 100% or even a little less for logistical and structural reasons in air transport. The model includes
+the following three parameters:</p>
+<ul>
+<li>Maximum projected aircraft load factor noted $LF_{final}$</li>
+<li>Speed of application noted notée $\alpha$</li>
+<li>Timing of implementation noted $t$</li>
+</ul>
+<p>Thus, by noting <span class="math notranslate nohighlight">\(LF\)</span> the aircraft load factor and <span class="math notranslate nohighlight">\(k\)</span> the year under consideration, we obtain :
+<span class="math notranslate nohighlight">\(LF_k = \frac{LF_{final}}{1+e^{-\alpha(k-t)}}\)</span></p>
+</section>
+<section id="decarbonation-of-energy">
+<h2>Decarbonation of energy<a class="headerlink" href="#decarbonation-of-energy" title="Permalink to this heading">#</a></h2>
+<p>The decarbonation rate of energy is defined here as a percentage (%) in relation to kerosene. A 0% energy corresponds
+to an energy that emits as much <span class="math notranslate nohighlight">\(CO_2\)</span> per unit of energy as kerosene, a 50% energy to an energy that emits half as
+much <span class="math notranslate nohighlight">\(CO_2\)</span> per unit of energy as kerosene and a 100% energy to a totally carbon neutral energy (only theoretical
+case). The evolution of this rate is also modelled by a sigmoid function which is well adapted to this rate of
+decarbonation limited to 100% and even less since all energies are today carbonated because of the production phases.
+The model therefore includes the following three parameters:</p>
+<ul>
+<li>Maximum projected decarbonation level noted $\tau_{d_{final}}$</li>
+<li>Speed of application noted $\alpha$</li>
+<li>Timing of implementation noted $t$</li>
+</ul>
+<p>Thus, by noting <span class="math notranslate nohighlight">\(\tau_d\)</span> the decarbonation rate of the energy used and <span class="math notranslate nohighlight">\(k\)</span> the year considered, we obtain :
+<span class="math notranslate nohighlight">\(\tau_{d_k} = \frac{\tau_{d_{final}}}{1+e^{-\alpha(k-t)}}\)</span></p>
+</section>
+<section id="strategies-against-condensation-trails">
+<h2>Strategies against condensation trails<a class="headerlink" href="#strategies-against-condensation-trails" title="Permalink to this heading">#</a></h2>
+<p>Additional lever of action does not directly address aviation <span class="math notranslate nohighlight">\(CO_2\)</span> emissions, but addresses strategies to fight
+contrails. This lever of action is modelled assuming a reduction in contrails from 0% (no strategy) to 100%
+(strategy that removes all contrails; currently a theoretical case). Some strategies may result in a slight
+over-consumption of fuel, which is reflected in a coefficient to the energy consumption per RPK. For example,
+a strategy can be represented by a 50% reduction in contrails (half as many as appearing) at the cost of an overall
+increase in consumption of 0.1% (averaged for the entire fleet and flights). This modelling is also carried out using
+<a href="https://en.wikipedia.org/wiki/Sigmoid_function" target="_blank">sigmoid functions</a> as for other levers of
+action.</p>
+<section id="modelling-of-additional-options-for-aviation">
+<h3>Modelling of additional options for aviation<a class="headerlink" href="#modelling-of-additional-options-for-aviation" title="Permalink to this heading">#</a></h3>
+<p>In addition to the different levers of action, additional options are implemented in order to test various more specific effects. A description of these is given below.</p>
+<section id="carbon-offsetting">
+<h4>Carbon offsetting<a class="headerlink" href="#carbon-offsetting" title="Permalink to this heading">#</a></h4>
+<p>Carbon offsetting is one of the solutions being considered by the aviation sector, particularly in the context of <u><a href="https://www.icao.int/environmental-protection/CORSIA/Pages/default.aspx" target="_blank">CORSIA</a></u>. It is a question of offsetting part of the <span class="math notranslate nohighlight">\(CO_2\)</span> emissions by actions that allow to store <span class="math notranslate nohighlight">\(CO_2\)</span> (tree plantations…) or to install low-carbon infrastructures. One option allows offsetting emissions above the 2019 level, in the same way as CORSIA. This option shows the interest of offsetting emissions in the short term, the time it takes to implement breakthrough architectures. It is important to note that carbon offsetting does not prevent <span class="math notranslate nohighlight">\(CO_2\)</span> emissions and that a framework must be put in place to ensure that emissions are properly offset. Further details on carbon offsetting are available on this document detailing the project <u><a href="http://www.carbone4.com/wp-content/uploads/2020/04/Carbone-4-NZI-Guidelines-april-2020-2.pdf" target="_blank"><em>Net Zero Initiative</em> of Carbone 4</a></u>.</p>
+</section>
+<section id="total-replacement-of-the-fleet">
+<h4>Total replacement of the fleet<a class="headerlink" href="#total-replacement-of-the-fleet" title="Permalink to this heading">#</a></h4>
+<p>This option makes it possible to take into account a total replacement of the aircraft fleet every 10 years. This leads to sharp falls in consumption per RPK every 10 years (linked to the rate of technological improvement, which is reduced to the equivalent rate over 10 years) and stagnation for 10 years thereafter. Without this option, renewal is ensured on a regular basis via the annual rate of technological improvement. A complete and rapid renewal of the fleet enables the cumulative <span class="math notranslate nohighlight">\(CO_2\)</span> emissions to be lowered. The effect of rapidly bringing these aircraft to end of life has not been considered at the life cycle level, but the production and end-of-life phases are negligible in terms of <span class="math notranslate nohighlight">\(CO_2\)</span> emissions, for example via the results of Johanning et al. in 2013 in <u><a href="https://www.fzt.haw-hamburg.de/pers/Scholz/Airport2030/Airport2030_PUB_DLRK_13-09-10.pdf" target="_blank"><em>A first step towards the integration of life cycle assessment into conceptual aircraft design</em></a></u> or of Melo et al. in 2020 in <u><a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank"><em>Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools</em></a></u>. This option is unrealistic in terms of aircraft production rates, but makes it possible to measure the impact of fleet renewal.</p>
+</section>
+<section id="cancellation-of-substitutable-flights">
+<h4>Cancellation of substitutable flights<a class="headerlink" href="#cancellation-of-substitutable-flights" title="Permalink to this heading">#</a></h4>
+<p>Today, the plane is in competition with the train on certain routes. This option makes it possible to substitute a share of air traffic with rail traffic at a global level. The carbon impact of trains replacing aircraft has not been taken into account in the balance sheet. The reduction is set here at 10% of global flights in 2030.</p>
+</section>
+<section id="improvement-of-the-other-phases-of-the-life-cycle">
+<h4>Improvement of the other phases of the life cycle<a class="headerlink" href="#improvement-of-the-other-phases-of-the-life-cycle" title="Permalink to this heading">#</a></h4>
+<p>In addition to direct emissions (fuel combustion) and indirect emissions from fuel production, the other phases of the life cycle are also responsible for around 2% of the <span class="math notranslate nohighlight">\(CO_2\)</span> emissions (using the work of Melo et al. in 2020 in <u><a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank"><em>Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools</em></a></u>). One option makes it possible to halve the <span class="math notranslate nohighlight">\(CO_2\)</span> emissions due to the extraction of raw materials, the production of aircraft, the end of life of aircraft and aeronautical infrastructures (production plants, airports). The technical means to decarbonise these life cycle phases are, for example, better aircraft recycling, the use of decarbonised energy in airports or better supply chain management for aircraft production. Nevertheless, the effects of these efforts remain small compared to direct emissions and fuel production.</p>
+</section>
+<section id="societal-aspects-on-the-distribution-of-flights">
+<h4>Societal aspects on the distribution of flights<a class="headerlink" href="#societal-aspects-on-the-distribution-of-flights" title="Permalink to this heading">#</a></h4>
+<p>The results of this part are based on the work of S. Gössling and A. Humpe in 2020 in <u><a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank"><em>The global scale, distribution and growth of aviation: Implications for climate change</em></a></u>. The authors show that only 11% of the world’s population flies, and only between 2 and 4% go abroad. Moreover, ‘frequent flyers’, about 1% of the world’s population who fly an average of 56,000 km per year (about 3 long-range trips), are responsible for about 50% of aviation <span class="math notranslate nohighlight">\(CO_2\)</span> emissions, taking into account their number of flights but also the more frequent use of upper classes. Therefore, if on average these ‘frequent flyers’ flew half as often, aviation emissions would be reduced by 25%.</p>
+</section>
+<section id="covid-19">
+<h4>Covid-19<a class="headerlink" href="#covid-19" title="Permalink to this heading">#</a></h4>
+<p>The global Covid-19 outbreak has significantly disrupted global air traffic in 2020. The consequences of the latter are likely to disrupt global traffic for several years. To take account of this epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level by 2024 according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>. This option also takes into account the one-off change in the aircraft load factor in 2020, which has dropped to 58.5% according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>, against 82.4% in 2019. Thus, due to this deterioration in the aircraft load factor, a paradoxical situation is present on the tool. Indeed, the deterioration in the aircraft load factor, considered as a potential improvement in efficiency, leads here to an increase in emissions compared to those expected without modification of the efficiency levers of action.</p>
+</section>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -390,6 +525,36 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#efficiency-improvements">Efficiency improvements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-flight-and-ground-operations">Improvements in flight and ground operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-load-factor">Aircraft load factor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decarbonation-of-energy">Decarbonation of energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strategies-against-condensation-trails">Strategies against condensation trails</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-of-additional-options-for-aviation">Modelling of additional options for aviation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#carbon-offsetting">Carbon offsetting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#total-replacement-of-the-fleet">Total replacement of the fleet</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cancellation-of-substitutable-flights">Cancellation of substitutable flights</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#improvement-of-the-other-phases-of-the-life-cycle">Improvement of the other phases of the life cycle</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#societal-aspects-on-the-distribution-of-flights">Societal aspects on the distribution of flights</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#covid-19">Covid-19</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
