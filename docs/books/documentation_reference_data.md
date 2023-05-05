@@ -8,20 +8,20 @@ the graphical user interface in the tab <b>Data</b>.
 The various air traffic data are derived from the ICAO (International Civil Aviation Organisation), such as annual 
 passenger numbers, Revenue Passenger Kilometrer (RPK) or aircraft load factor. 
     
-The data on world kerosene consumption by the aviation sector are from the International Energy Agency 
-(<u><a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">IEA</a></u>). 
+The data on world kerosene consumption by the aviation sector are from the 
+<a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
 However, not all kerosene is consumed by commercial aviation alone. According to S. Gössling and A. Humpe 
-in <u><a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a></u>, 
+in <a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a>, 
 military aviation consumes 8% of kerosene and general and private aviation 4%. 
     
 Then, the coefficients for the different pollutants (also called EI for Emission Index) were taken from the work of 
-Lee et al. in 2020 in <u><a href="https://www.sciencedirect.com/science/article/pii/S1352231020305689" target="_blank">*The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018*</a></u>. 
+Lee et al. in 2020 in <a href="https://www.sciencedirect.com/science/article/pii/S1352231020305689" target="_blank">*The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018*</a>. 
 They make it possible to obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...) depending on fuel consumption 
 (or emissions of CO<sub>2</sub>). 
     
 Finally, the coefficient corresponding to other life cycle emissions (excluding combustion and fuel production), 
 of the order of 2%, was obtained by taking an intermediate value from the studies of Melo et al. in 2020 in 
-<u><a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank">*Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools*</a></u>.
+<a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank">*Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools*</a>.
     
 Using these data and including indirect CO<sub>2</sub> emissions, commercial aviation was responsible for 2.6% of 
 global CO<sub>2</sub> emissions in 2019. Also including non-CO<sub>2</sub> effects, aviation (including private and 
@@ -46,8 +46,8 @@ distance for contrails) with a factor obtained from the data of Lee et al. The f
 ## Others
 
 The coefficients to obtain the CO<sub>2</sub> emissions associated with the production and combustion of kerosene 
-have been extracted from the <u><a href="https://www.bilans-ges.ademe.fr/docutheque/docs/%5BBase%20Carbone%5D%20Documentation%20g%C3%A9n%C3%A9rale%20v11.5.pdf" target="_blank">carbon base</a></u> 
+have been extracted from the <a href="https://www.bilans-ges.ademe.fr/docutheque/docs/%5BBase%20Carbone%5D%20Documentation%20g%C3%A9n%C3%A9rale%20v11.5.pdf" target="_blank">carbon base</a>
 from Agence française de la transition écologique called ADEME. The annual global CO<sub>2</sub> emissions, including 
-fossil fuel combustion and deforestation activities, come from <u><a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a></u> 
-while annual global GHG emissions, including land-use change, are from <u><a href="https://www.globalcarbonproject.org/" target="_blank">*Emissions Gap Report 2020* from ONU</a></u>.
+fossil fuel combustion and deforestation activities, come from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a>
+while annual global GHG emissions, including land-use change, are from <a href="https://www.globalcarbonproject.org/" target="_blank">*Emissions Gap Report 2020* from ONU</a>.
 
