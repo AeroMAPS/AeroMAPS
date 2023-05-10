@@ -10,8 +10,7 @@ passenger numbers, Revenue Passenger Kilometrer (RPK) or aircraft load factor.
     
 The data on world kerosene consumption by the aviation sector are from the 
 <a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
-However, not all kerosene is consumed by commercial aviation alone. According to S. Gössling and A. Humpe 
-in <a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a>, 
+However, not all kerosene is consumed by commercial aviation alone. According to {cite}`gossling2020global`, 
 military aviation consumes 8% of kerosene and general and private aviation 4%. 
     
 Then, the coefficients for the different pollutants (also called EI for Emission Index) were taken from 
@@ -19,18 +18,17 @@ Then, the coefficients for the different pollutants (also called EI for Emission
 depending on fuel consumption (or emissions of CO<sub>2</sub>). 
     
 Finally, the coefficient corresponding to other life cycle emissions (excluding combustion and fuel production), 
-of the order of 2%, was obtained by taking an intermediate value from the studies of Melo et al. in 2020 in 
-<a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank">*Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools*</a>.
-    
+of the order of 2%, was obtained by taking an intermediate value from {cite}`pinheiro2020sustainability`.
+
 Using these data and including indirect CO<sub>2</sub> emissions, commercial aviation was responsible for 2.6% of 
 global CO<sub>2</sub> emissions in 2019. Also including non-CO<sub>2</sub> effects, aviation (including private and 
 military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is 
 responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).
     
+
 ## Effective radiative forcing
 
-Data on effective radiative forcing of aviation are obtained using the work of Lee et al. in 
-<a href="https://www.sciencedirect.com/science/article/pii/S1352231020305689" target="_blank">*The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018*</a>. 
+Data on effective radiative forcing of aviation are obtained using {cite}`lee2021contribution`.
 This paper quantifies the effects of aviation on the climate using the notion of effective radiative forcing. Thus, 
 the climate impact of each contributor can be approximated by multiplying the amount of emissions (or the total 
 distance for contrails) with a factor obtained from the data of Lee et al. The factors considered are as follows:
