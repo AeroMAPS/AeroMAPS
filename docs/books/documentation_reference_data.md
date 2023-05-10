@@ -14,10 +14,9 @@ However, not all kerosene is consumed by commercial aviation alone. According to
 in <a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a>, 
 military aviation consumes 8% of kerosene and general and private aviation 4%. 
     
-Then, the coefficients for the different pollutants (also called EI for Emission Index) were taken from the work of 
-Lee et al. in 2020 in <a href="https://www.sciencedirect.com/science/article/pii/S1352231020305689" target="_blank">*The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018*</a>. 
-They make it possible to obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...) depending on fuel consumption 
-(or emissions of CO<sub>2</sub>). 
+Then, the coefficients for the different pollutants (also called EI for Emission Index) were taken from 
+{cite}`lee2021contribution`. They make it possible to obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...) 
+depending on fuel consumption (or emissions of CO<sub>2</sub>). 
     
 Finally, the coefficient corresponding to other life cycle emissions (excluding combustion and fuel production), 
 of the order of 2%, was obtained by taking an intermediate value from the studies of Melo et al. in 2020 in 
