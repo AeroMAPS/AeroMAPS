@@ -62,11 +62,61 @@ models for estimating the following parameters are presented:
 
 The modeling of the air traffic is based on the study of worldwide historical data. The models presented in this 
 section can be applied to the fleet as a whole or to the different markets. Before detailing these models, the 
-categorization and modeling of the aviation market used in AeroMAPS is presented.
+categorization and calibration of the aviation market used in AeroMAPS is presented.
 
 
-### Categorization and modeling of the aviation market
+### Categorization and calibration of the aviation market
 
+In order to be able to model scenarios in detail, the aviation market is divided into several representative 
+categories, corresponding to aircraft fleet. Indeed, some market shares are likely to evolve differently. Moreover, 
+some aircraft architectures (hydrogen aircraft, electric aircraft) could only be available for short distance missions 
+in the medium term. 
+
+Aircraft categories can be defined according to the distance flown (short, medium and long-haul) or the type of 
+aircraft (regional, single-aisle, wide-body, or other). In this work, the following categories are considered:
+- Short-haul: passenger aircraft that fly less than 1,500 km ;
+- Medium-haul: passenger aircraft that fly between 1,500 km and 4,000 km ;
+- Long-haul: passenger aircraft that fly more than 4,000 km;
+- Freight: cargo aircraft (dedicated freighter aircraft) or passenger aircraft including freight (belly cargo).
+
+These different categories are heterogeneous because they include different types of aircraft. For simplicity, 
+representative aircraft types are considered in the following. It is assumed that the short-haul category is composed 
+of regional aircraft (with turbojets or turboprops) and narrow-body aircraft. It is also assumed that the medium-haul 
+category is composed of narrow-body aircraft while the long-haul category is composed of wide-body aircraft. Finally, 
+for freight, no representative aircraft are considered. It is assumed that the aircraft in this category are a 
+calibrated weighting of the other representative aircraft.
+
+The aircraft fleet is then modeled, which will be useful for modeling the evolution of the aircraft fleet. In order to 
+calibrate the average characteristics of the different fleet categories in 2019, a specific procedure is adopted to 
+obtain a representative fleet. It is important to note that this approach is a model and that the aircraft fleet is 
+actually more complex. In the following, the method is illustrated for the passenger aircraft categories.
+
+First, the energy consumption per ASK is estimated for each category. The value per ASK is used to eliminate the 
+influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are 
+derived from the analysis of an ICCT report {cite}`icctco2`. They are then converted to energy consumption per ASK 
+using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
+given in the following table.
+
+TABLE
+
+Then, for each category, two representative planes are considered: one for the old generation, another for the 
+most recent. The characteristics of these aircraft are constructed from a weighting of different aircraft on the 
+market. This is done using data on the number of aircraft in service, their performance and their missions 
+{cite}`icao18`. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
+Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
+Airbus A320neo. The results of energy consumption by ASK are then given in the following table.
+
+TABLE
+
+Finally, for each category, the representative distribution of old and recent aircraft is determined using the 
+following equation. The results for the medium-haul category are, for example, given in the previous table. The values 
+obtained are compared with the actual fleet to check the consistency of the selected representative aircraft.
+
+$E_{mean} = x~E_{old} + (1-x)~E_{recent}$
+
+where $E_{mean}$ is the average energy consumption per ASK for the fleet in the category, $E_{old}$ is the average 
+energy consumption per ASK for the older representative aircraft, $E_{recent}$ is the average energy consumption 
+per ASK for the newer representative aircraft, and $x$ is the representative share of older aircraft in the fleet.
 
 
 ### Air traffic evolution modeling
