@@ -1,9 +1,15 @@
 # Air transport modeling
 
-Before detailing their modeling in AeroMAPS, the different levers of action to reduce environmental impacts from air
-transport are identified and linked. For this, an approach based on an adaptation of the Kaya identity for 
-CO<sub>2</sub> emissions is used and allows obtaining the three main elements of the air transport system described 
-in the AeroMAPS architecture.
+The modeling of the air transport system presented in the AeroMAPS architecture includes the modeling of action levers 
+to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, the different levers 
+of action are identified.
+
+
+## Identification of main levers of action
+
+The different levers of action to reduce environmental impacts from air transport are identified and linked using an 
+approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emissions. It allows obtaining the three main 
+elements of the air transport system described in the AeroMAPS architecture.
 
 The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
 economic (GDP per capita $GDP/POP$) and technological factors (energy intensity $E/GDP$ which can be assimilated to 
@@ -41,7 +47,7 @@ Despite significant improvements in fuel efficiency via technology and load fact
 sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
 to the almost exclusive use of fossil kerosene.
 
-![](/figs/air_traffic.pdf)
+![](/figs/kaya_aviation.pdf)
 *Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.*
 
 This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
