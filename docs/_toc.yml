@@ -11,7 +11,7 @@ chapters:
     - file: books/documentation_airtransport
     - file: books/documentation_impacts
     - file: books/documentation_reference_data
-    - file: books/markdown
+    - file: books/bibliography
 - file: books/examples
   sections:
     - file: books/notebooks
