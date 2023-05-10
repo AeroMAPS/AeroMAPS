@@ -11,23 +11,23 @@ The latter was obtained using an exponential function with a fixed growth rate. 
 equation with $RPK_{1991}$ the value of RPK in 1991, $x$ the year and $\tau$ a 
 smoothed growth rate. To determine $\tau$, an optimization is performed using the SLSQP method to minimize the 
 Root Mean Square (RMS) error between the historical data and the model. This makes it possible to smooth out the 
-values due to various political crises (September 11, 2001 attacks in the United States, 2008 financial crisis). 
+values due to various political crises (September 11 attacks in the United States in 2001, 2008 financial crisis). 
 The growth rate obtained is 5.5% over the period 1991--2019, with an RMS error of 0.032. By restricting the study 
 to the last ten years, the growth rate obtained is then 6.5%, which shows an acceleration of air traffic growth 
 in recent years.
 
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
-![Fig.1 Modeling the historical evolution of air traffic.](/figs/architecture.png)
+![Fig.1 Modeling the historical evolution of air traffic.](/figs/air_traffic.pdf)
 
 This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
 from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can 
 be applied by decade using 
 <a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound annual growth rates (CAGR)</a>.
 
-$ RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}$
+$RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}$
 
-Nevertheless, the difficulty lies in estimating the future growth rate. Indeed, the latter could be impacted for 
+Nevertheless, the difficulty lies in estimating the future growth rate $\tau$. Indeed, the latter could be impacted for 
 different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a 
 decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which 
 means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such 
@@ -40,10 +40,6 @@ the Covid-19 epidemic  has led to a decline in these projections. ATAG now proje
 passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects 3.6% for 
 the period 2019-2041 {cite}`airbus`. Despite the Covid-19 health crisis, all the scenarios presented thus forecast 
 a growth in air traffic in the coming decades.
-
-The development of air traffic is modelled via the evolution of the number of passenger kilometer, also known as 
-Revenue Passenger Kilometres (RPK). A fixed rate of change is chosen as a parameter. A positive rate implies traffic 
-growth, while a negative rate implies a decline in traffic. This rate is expressed as a percentage (%). 
 
 
 
