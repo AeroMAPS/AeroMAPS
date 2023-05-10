@@ -329,7 +329,11 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#identification-of-the-main-levers-of-action">Identification of the main levers of action</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#categorization-and-modeling-of-the-aviation-market">Categorization and modeling of the aviation market</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic-evolution-modeling">Air traffic evolution modeling</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#efficiency-improvements">Efficiency improvements</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-flight-and-ground-operations">Improvements in flight and ground operations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-load-factor">Aircraft load factor</a></li>
@@ -377,7 +381,7 @@ can be complex <span id="id4">[<a class="reference internal" href="bibliography.
 <p><span class="math notranslate nohighlight">\(CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}\)</span></p>
 <p>This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via
 the following equation. The different parameters are justified by other works related to transportation and aviation
-<span id="id5">[<a class="reference internal" href="bibliography.html#id8" title="Valeria Andreoni and S Galmarini. European CO2 emission trends: A decomposition analysis for water and aviation transport sectors. Energy, 45(1):595–602, 2012. doi:10.1016/j.energy.2012.07.039.">AG12</a>, <a class="reference internal" href="bibliography.html#id10" title="Xiao Liu, Dequn Zhou, Peng Zhou, and Qunwei Wang. What drives CO2 emissions from China’s civil aviation? An exploration using a new generalized PDA method. Transportation Research Part A: Policy and Practice, 99:30–45, 2017. doi:10.1016/j.tra.2017.03.002.">LZZW17</a>, <a class="reference internal" href="bibliography.html#id11" title="Maria Sharmina, Oreane Y Edelenbosch, Charlie Wilson, Rachel Freeman, DEHJ Gernaat, Paul Gilbert, Alice Larkin, EW Littleton, Michael Traut, Detlef P van Vuuren, and others. Decarbonising the critical sectors of aviation, shipping, road freight and industry to limit warming to 1.5-2°C. Climate Policy, 21(4):455–474, 2021. doi:10.1080/14693062.2020.1831430.">SEW+21</a>]</span>. The first factor <span class="math notranslate nohighlight">\(RPK\)</span>
+<span id="id5">[<a class="reference internal" href="bibliography.html#id8" title="Valeria Andreoni and S Galmarini. European CO2 emission trends: A decomposition analysis for water and aviation transport sectors. Energy, 45(1):595–602, 2012. doi:10.1016/j.energy.2012.07.039.">AG12</a>, <a class="reference internal" href="bibliography.html#id9">Big20</a>, <a class="reference internal" href="bibliography.html#id10" title="Xiao Liu, Dequn Zhou, Peng Zhou, and Qunwei Wang. What drives CO2 emissions from China’s civil aviation? An exploration using a new generalized PDA method. Transportation Research Part A: Policy and Practice, 99:30–45, 2017. doi:10.1016/j.tra.2017.03.002.">LZZW17</a>, <a class="reference internal" href="bibliography.html#id11" title="Maria Sharmina, Oreane Y Edelenbosch, Charlie Wilson, Rachel Freeman, DEHJ Gernaat, Paul Gilbert, Alice Larkin, EW Littleton, Michael Traut, Detlef P van Vuuren, and others. Decarbonising the critical sectors of aviation, shipping, road freight and industry to limit warming to 1.5-2°C. Climate Policy, 21(4):455–474, 2021. doi:10.1080/14693062.2020.1831430.">SEW+21</a>]</span>. The first factor <span class="math notranslate nohighlight">\(RPK\)</span>
 corresponds to air traffic. The second factor <span class="math notranslate nohighlight">\(E/RPK\)</span> represents the ratio between the energy <span class="math notranslate nohighlight">\(E\)</span> consumed by the
 sector and the air traffic. It corresponds to the average energy consumption of aircraft per passenger and
 per kilometer. The last factor <span class="math notranslate nohighlight">\(CO_2/E\)</span> is the ratio between the sector’s CO<sub>2</sub> emissions and the energy
@@ -402,17 +406,23 @@ to the almost exclusive use of fossil kerosene.</p>
 In the following, in addition to a section devoted to strategies against non-CO<sub>2</sub> effects, deterministic
 models for estimating the following parameters are presented:</p>
 <ul class="simple">
-<li><p>Sobriety of use: evolution of air traffic ;</p></li>
-<li><p>Energy efficiency: improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);</p></li>
-<li><p>Energy decarbonization: incorporation of alternative fuels to replace fossil fuel.</p></li>
+<li><p>evolution of air traffic ;</p></li>
+<li><p>improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);</p></li>
+<li><p>energy decarbonization through incorporation of alternative fuels to replace fossil fuel.</p></li>
 </ul>
 </section>
 <section id="air-traffic">
 <h2>Air traffic<a class="headerlink" href="#air-traffic" title="Permalink to this heading">#</a></h2>
-<p>The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of this lever is based on the
-study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or to
-aircraft categories.</p>
-<p>Fig.2 represents historical values since 1991 as well as a trend model that was performed.
+<p>The modeling of the air traffic is based on the study of worldwide historical data. The models presented in this
+section can be applied to the fleet as a whole or to the different markets. Before detailing these models, the
+categorization and modeling of the aviation market used in AeroMAPS is presented.</p>
+<section id="categorization-and-modeling-of-the-aviation-market">
+<h3>Categorization and modeling of the aviation market<a class="headerlink" href="#categorization-and-modeling-of-the-aviation-market" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="air-traffic-evolution-modeling">
+<h3>Air traffic evolution modeling<a class="headerlink" href="#air-traffic-evolution-modeling" title="Permalink to this heading">#</a></h3>
+<p>The parameter that corresponds to the evolution of air traffic is the RPK.
+Fig.2 represents historical values since 1991 as well as a trend model that was performed.
 The latter was obtained using an exponential function with a fixed growth rate. The model is given in
 equation with <span class="math notranslate nohighlight">\(RPK_{1991}\)</span> the value of RPK in 1991, <span class="math notranslate nohighlight">\(x\)</span> the year and <span class="math notranslate nohighlight">\(\tau\)</span> a
 smoothed growth rate. To determine <span class="math notranslate nohighlight">\(\tau\)</span>, an optimization is performed using the SLSQP method to minimize the
@@ -441,6 +451,7 @@ the Covid-19 epidemic  has led to a decline in these projections. ATAG now proje
 passenger traffic between 2019 and 2050 in its median scenario <span id="id7">[<a class="reference internal" href="bibliography.html#id13" title="ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">ATAGAirTAGroup21</a>]</span>, while Airbus projects 3.6% for
 the period 2019-2041 <span id="id8">[<a class="reference internal" href="bibliography.html#id14" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
 a growth in air traffic in the coming decades.</p>
+</section>
 </section>
 <section id="efficiency-improvements">
 <h2>Efficiency improvements<a class="headerlink" href="#efficiency-improvements" title="Permalink to this heading">#</a></h2>
@@ -609,7 +620,11 @@ action.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#identification-of-the-main-levers-of-action">Identification of the main levers of action</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#categorization-and-modeling-of-the-aviation-market">Categorization and modeling of the aviation market</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic-evolution-modeling">Air traffic evolution modeling</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#efficiency-improvements">Efficiency improvements</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-flight-and-ground-operations">Improvements in flight and ground operations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-load-factor">Aircraft load factor</a></li>

@@ -23,7 +23,7 @@ $CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}$
 
 This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via 
 the following equation. The different parameters are justified by other works related to transportation and aviation 
-{cite}`andreoni2012european, bigo2020transportation, liu2017drives, sharmina2021decarbonising`. The first factor $RPK$ 
+{cite}`andreoni2012european, bigo2020transports, liu2017drives, sharmina2021decarbonising`. The first factor $RPK$ 
 corresponds to air traffic. The second factor $E/RPK$ represents the ratio between the energy $E$ consumed by the 
 sector and the air traffic. It corresponds to the average energy consumption of aircraft per passenger and 
 per kilometer. The last factor $CO_2/E$ is the ratio between the sector's CO<sub>2</sub> emissions and the energy 
@@ -53,17 +53,25 @@ to the almost exclusive use of fossil kerosene.
 This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
 In the following, in addition to a section devoted to strategies against non-CO<sub>2</sub> effects, deterministic 
 models for estimating the following parameters are presented:
-- Sobriety of use: evolution of air traffic ;
-- Energy efficiency: improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);
-- Energy decarbonization: incorporation of alternative fuels to replace fossil fuel.
+- evolution of air traffic ;
+- improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);
+- energy decarbonization through incorporation of alternative fuels to replace fossil fuel.
 
 
 ## Air traffic
 
-The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of this lever is based on the 
-study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or to 
-aircraft categories.
+The modeling of the air traffic is based on the study of worldwide historical data. The models presented in this 
+section can be applied to the fleet as a whole or to the different markets. Before detailing these models, the 
+categorization and modeling of the aviation market used in AeroMAPS is presented.
 
+
+### Categorization and modeling of the aviation market
+
+
+
+### Air traffic evolution modeling
+
+The parameter that corresponds to the evolution of air traffic is the RPK.
 Fig.2 represents historical values since 1991 as well as a trend model that was performed. 
 The latter was obtained using an exponential function with a fixed growth rate. The model is given in 
 equation with $RPK_{1991}$ the value of RPK in 1991, $x$ the year and $\tau$ a 
