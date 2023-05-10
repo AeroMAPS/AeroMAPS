@@ -360,13 +360,40 @@ document.write(`
 <h1>Air transport modeling<a class="headerlink" href="#air-transport-modeling" title="Permalink to this heading">#</a></h1>
 <section id="air-traffic">
 <h2>Air traffic<a class="headerlink" href="#air-traffic" title="Permalink to this heading">#</a></h2>
+<p>The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of this lever is based on the
+study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or to
+aircraft categories.</p>
+<p>Fig.1 represents historical values since 1991 as well as a trend model that was performed.
+The latter was obtained using an exponential function with a fixed growth rate. The model is given in
+equation with <span class="math notranslate nohighlight">\(RPK_{1991}\)</span> the value of RPK in 1991, <span class="math notranslate nohighlight">\(x\)</span> the year and <span class="math notranslate nohighlight">\(\tau\)</span> a
+smoothed growth rate. To determine <span class="math notranslate nohighlight">\(\tau\)</span>, an optimization is performed using the SLSQP method to minimize the
+Root Mean Square (RMS) error between the historical data and the model. This makes it possible to smooth out the
+values due to various political crises (September 11, 2001 attacks in the United States, 2008 financial crisis).
+The growth rate obtained is 5.5% over the period 1991–2019, with an RMS error of 0.032. By restricting the study
+to the last ten years, the growth rate obtained is then 6.5%, which shows an acceleration of air traffic growth
+in recent years.</p>
+<p><span class="math notranslate nohighlight">\(RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}\)</span></p>
+<p><img alt="Fig.1 Modeling the historical evolution of air traffic." src="../_images/architecture.png" /></p>
+<p>This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed
+from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can
+be applied by decade using
+<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound annual growth rates (CAGR)</a>.</p>
+<p><span class="math notranslate nohighlight">\( RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}\)</span></p>
+<p>Nevertheless, the difficulty lies in estimating the future growth rate. Indeed, the latter could be impacted for
+different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a
+decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which
+means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such
+as the Covid-19 epidemic.</p>
+<p>Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing
+respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017
+<span id="id1">[]</span>. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However,
+the Covid-19 epidemic  has led to a decline in these projections. ATAG now projects 3.1% annual growth in air
+passenger traffic between 2019 and 2050 in its median scenario <span id="id2">[<a class="reference internal" href="markdown.html#id4" title="ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">ATAGAirTAGroup21</a>]</span>, while Airbus projects 3.6% for
+the period 2019-2041 <span id="id3">[<a class="reference internal" href="markdown.html#id5" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
+a growth in air traffic in the coming decades.</p>
 <p>The development of air traffic is modelled via the evolution of the number of passenger kilometer, also known as
 Revenue Passenger Kilometres (RPK). A fixed rate of change is chosen as a parameter. A positive rate implies traffic
 growth, while a negative rate implies a decline in traffic. This rate is expressed as a percentage (%).</p>
-<p>Thus, by noting <span class="math notranslate nohighlight">\(k\)</span> a given year and <span class="math notranslate nohighlight">\(\tau\)</span> the rate of evolution of air traffic, RPK is expressed as follows :
-<span class="math notranslate nohighlight">\(RPK_{k+1} = RPK_k (1+\tau)\)</span></p>
-<p>For more precision, it is possible to define growth rates by decade via the Expert mode. This corresponds to the
-concept of compound annual growth rate (<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">CAGR</a>).</p>
 </section>
 <section id="efficiency-improvements">
 <h2>Efficiency improvements<a class="headerlink" href="#efficiency-improvements" title="Permalink to this heading">#</a></h2>
@@ -462,6 +489,21 @@ action.</p>
 <section id="covid-19">
 <h4>Covid-19<a class="headerlink" href="#covid-19" title="Permalink to this heading">#</a></h4>
 <p>The global Covid-19 outbreak has significantly disrupted global air traffic in 2020. The consequences of the latter are likely to disrupt global traffic for several years. To take account of this epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level by 2024 according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>. This option also takes into account the one-off change in the aircraft load factor in 2020, which has dropped to 58.5% according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>, against 82.4% in 2019. Thus, due to this deterioration in the aircraft load factor, a paradoxical situation is present on the tool. Indeed, the deterioration in the aircraft load factor, considered as a potential improvement in efficiency, leads here to an increase in emissions compared to those expected without modification of the efficiency levers of action.</p>
+<div class="docutils container" id="id4">
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HdHPK14<span class="fn-bracket">]</span></span>
+<p>Christopher Ramsay Holdgraf, Wendy de Heer, Brian N. Pasley, and Robert T. Knight. Evidence for Predictive Coding in Human Auditory Cortex. In <em>International Conference on Cognitive Neuroscience</em>. Brisbane, Australia, Australia, 2014. Frontiers in Neuroscience.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Airbus22</a><span class="fn-bracket">]</span></span>
+<p>Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast. URL: <a class="reference external" href="https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast">https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast</a>.</p>
+</div>
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">ATAGAirTAGroup21</a><span class="fn-bracket">]</span></span>
+<p>ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/. URL: <a class="reference external" href="https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/">https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/</a>.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>
