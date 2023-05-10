@@ -1,11 +1,11 @@
 # Air transport modeling
 
 The modeling of the air transport system presented in the AeroMAPS architecture includes the modeling of action levers 
-to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, the different levers 
+to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, different levers 
 of action are identified.
 
 
-## Identification of main levers of action
+## Identification of the main levers of action
 
 The different levers of action to reduce environmental impacts from air transport are identified and linked using an 
 approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emissions. It allows obtaining the three main 
