@@ -13,7 +13,7 @@ elements of the air transport system described in the AeroMAPS architecture.
 
 The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
 economic (GDP per capita $GDP/POP$) and technological factors (energy intensity $E/GDP$ which can be assimilated to 
-an output and the CO content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that it indicates 
+an output and the CO<sub>2</sub> content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that it indicates 
 different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different studies, often based on specific 
 decomposition methods, justify the choice of relevant parameters for decomposing emissions 
 {cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
@@ -53,16 +53,17 @@ to the almost exclusive use of fossil kerosene.
 This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
 In the following, in addition to a section devoted to strategies against non-CO<sub>2</sub> effects, deterministic 
 models for estimating the following parameters are presented:
-- evolution of air traffic ;
-- improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);
+- usage evolution through the evolution of air traffic ;
+- energy efficiency through improvements in energy intensity with various levers (fleet renewal for more efficient aircraft, operations, load factor) ;
 - energy decarbonization through incorporation of alternative fuels to replace fossil fuel.
 
 
-## Air traffic
+## Air traffic: usage evolution
 
-The modeling of the air traffic is based on the study of worldwide historical data. The models presented in this 
-section can be applied to the fleet as a whole or to the different markets. Before detailing these models, the 
-categorization and calibration of the aviation market used in AeroMAPS is presented.
+The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of the air traffic is based on 
+the study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or 
+to the different markets. Before detailing these models, the categorization and calibration of the aviation market 
+used in AeroMAPS is presented.
 
 
 ### Categorization and calibration of the aviation market
@@ -121,7 +122,7 @@ per ASK for the newer representative aircraft, and $x$ is the representative sha
 
 ### Air traffic evolution modeling
 
-The parameter that corresponds to the evolution of air traffic is the RPK.
+For choosing the model for the air traffic evolution, historical data is used.
 Fig.2 represents historical values since 1991 as well as a trend model that was performed. 
 The latter was obtained using an exponential function with a fixed growth rate. The model is given in 
 equation with $RPK_{1991}$ the value of RPK in 1991, $x$ the year and $\tau$ a 
@@ -160,58 +161,72 @@ a growth in air traffic in the coming decades.
 
 
 
-## Efficiency improvements
+## Aircraft fleet and operations: energy efficiency improvements
 
-Efficiency improvements are modelled via a gain in aircraft energy consumption per RPK. A fixed rate of change is 
-chosen as a parameter. A positive rate implies a reduction in aircraft consumption per RPK. The negative case 
-corresponding to a reduction in aircraft performance is not considered. This rate is expressed as a percentage (%). 
-Fleet renewal is considered as regular and is therefore included in this rate. However, an additional specific option 
-concerning renewal is detailed in another section. Possible over-consumption linked to a change of architecture for an 
-alternative fuel is not taken into account at this stage.
+The parameter that corresponds to energy efficiency is the energy intensity per passenger per kilometer $E/RPK$. In 
+this work, this parameter is influenced by three distinct levers: fleet renewal with more efficient aircraft, 
+operations and load factor.
 
-Thus, noting $E_{RPK}$ the energy consumed per RPK, $k$ a given year and $\tau$ the rate of technological improvement, 
-efficiency is expressed as follows : $E_{RPK{k+1}} = E_{RPK} (1-\tau)$
+### Improvements of aircraft efficiency
 
-
-
-## Improvements in flight and ground operations
-
-Improvements in flight and ground operations concern several elements such as air routes, optimisation of flight paths 
-according to atmospheric conditions or the use of energy on the ground. Here, they are modelled by a sigmoid function. 
-A <a href="https://en.wikipedia.org/wiki/Sigmoid_function" target="_blank">sigmoid function</a> allows to represent an 
-asymptotic convergence, more or less fast towards a plateau. It is well adapted to the modelling of operations since 
-these are led to take up less and less space (decarbonised energy of airports, reduced flight operations...) with a 
-negligible effect compared to the flight and production phases of aircraft. The model includes the following three 
-parameters:
-<ul>
-<li>Maximum projected level of improvement noted $Op_{final}$</li>
-<li>Speed of application noted $\alpha$</li>
-<li>Timing of implementation noted $t$</li>
-</ul>
-
-Thus, by noting $Op$ a coefficient representing the evolution of operations and $k$ the year under consideration, 
-we obtain : $Op_k = \frac{Op_{final}}{1+e^{-\alpha(k-t)}}$
+Here, efficiency improvements through the use of more efficient aircraft are studied. The parameter modeled is thus 
+the energy consumption per seat and per kilometer~$E/ASK$. Two approaches are presented in the following. On the one 
+hand, a so-called top-down approach is used to simply model the efficiency improvement via annual 
+technological gains. On the other hand, an approach called bottom-up is used to model more finely the 
+evolution of the fleet's energy efficiency by relying on gains per architecture and fleet renewal models. This more 
+complex approach makes it possible to directly link aircraft design and prospective technological scenarios.
 
 
-## Aircraft load factor
+#### Top-down approach
 
-Aircraft load factor is the ratio of seats occupied to seats available, it can be expressed as a percentage (%). 
-The evolution of this rate is modelled by a sigmoid function. This function is well suited to load factor that are 
-limited to 100% or even a little less for logistical and structural reasons in air transport. The model includes 
-the following three parameters:
-<ul>
-<li>Maximum projected aircraft load factor noted $LF_{final}$</li>
-<li>Speed of application noted notée $\alpha$</li>
-<li>Timing of implementation noted $t$</li>
-</ul>
-
-Thus, by noting $LF$ the aircraft load factor and $k$ the year under consideration, we obtain : 
-$LF_k = \frac{LF_{final}}{1+e^{-\alpha(k-t)}}$
+#### Bottom-up approach
 
 
-## Decarbonation of energy
 
-The decarbonation rate of energy is defined here as a percentage (%) in relation to kerosene. A 0% energy corresponds 
+### Improvements in aircraft operations
+
+The improvement of operations concerns the ground phases (taxiing, holding, etc.) and in flight (trajectory 
+optimization, air traffic management, formation flights, etc.). The potential gains in fuel consumption estimated 
+by the industry range from a few percent to about ten percent.
+
+Regarding their modeling, it is complex to use historical data since they are often confused with data on energy 
+consumption per seat and per kilometer. Therefore, an approach based on estimates of future gains is considered using 
+logistic functions as for fleet renewal models. This time, the parameter $A$ represents 
+the achievable consumption gain. The parameter $k$ corresponds to the implementation speed of the operational measure, 
+while the parameter $x_0$ allows to set the timing of the implementation. To model the improvement of the operations 
+more finely, it is possible to superimpose different sigmoid functions, for example when the implementation times or 
+the commissioning dates differ.
+
+
+### Improvements in aircraft load factor
+
+To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the 
+energy consumption per ASK is used. The results are summarized in Fig.X. 
+
+![](/figs/loadfactor_recap.pdf)
+*Fig.X Modeling the trend projection of aircraft load factors.*
+
+Historical data are modeled from the function given in the following equation for year $x$. The 
+coefficients, given to three significant figures, were determined to minimize the RMS error between the historical 
+data since 1991 and the model. A small value of 6.6.10<sup>-5</sup> is obtained. The model is then used to 
+obtain a trend projection of the fill rate. It is interesting to note that the model converges towards a load factor 
+of 89%, an ambitious value already reached by some airlines.
+
+$f(x) = 52.3 + \frac{36.7}{1+e^{-0.0776~(x-2000)}}$
+
+The projection is modeled using a second-order polynomial function because of its simplicity. The trend load factor 
+$LF$ for year $x$ is then modeled using the following equation with parameters $a=-5.3.10^{-3}$ and $b=0.36$ 
+(given with two significant figures). The RMS error obtained is then 5.3.10<sup>-7</sup>. 
+
+$LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4$
+
+Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the 
+parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
+
+
+## Aircraft energy: decarbonization of energy
+
+The decarbonization rate of energy is defined here as a percentage (%) in relation to kerosene. A 0% energy corresponds 
 to an energy that emits as much $CO_2$ per unit of energy as kerosene, a 50% energy to an energy that emits half as 
 much $CO_2$ per unit of energy as kerosene and a 100% energy to a totally carbon neutral energy (only theoretical 
 case). The evolution of this rate is also modelled by a sigmoid function which is well adapted to this rate of 
@@ -227,7 +242,7 @@ Thus, by noting $\tau_d$ the decarbonation rate of the energy used and $k$ the y
 $\tau_{d_k} = \frac{\tau_{d_{final}}}{1+e^{-\alpha(k-t)}}$
 
 
-## Strategies against condensation trails
+## Other levers of action: reduction of non-CO<sub>2</sub> effects
 
 Additional lever of action does not directly address aviation $CO_2$ emissions, but addresses strategies to fight 
 contrails. This lever of action is modelled assuming a reduction in contrails from 0% (no strategy) to 100% 
