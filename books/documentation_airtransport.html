@@ -418,6 +418,48 @@ section can be applied to the fleet as a whole or to the different markets. Befo
 categorization and calibration of the aviation market used in AeroMAPS is presented.</p>
 <section id="categorization-and-calibration-of-the-aviation-market">
 <h3>Categorization and calibration of the aviation market<a class="headerlink" href="#categorization-and-calibration-of-the-aviation-market" title="Permalink to this heading">#</a></h3>
+<p>In order to be able to model scenarios in detail, the aviation market is divided into several representative
+categories, corresponding to aircraft fleet. Indeed, some market shares are likely to evolve differently. Moreover,
+some aircraft architectures (hydrogen aircraft, electric aircraft) could only be available for short distance missions
+in the medium term.</p>
+<p>Aircraft categories can be defined according to the distance flown (short, medium and long-haul) or the type of
+aircraft (regional, single-aisle, wide-body, or other). In this work, the following categories are considered:</p>
+<ul class="simple">
+<li><p>short-haul: passenger aircraft that fly less than 1,500 km ;</p></li>
+<li><p>medium-haul: passenger aircraft that fly between 1,500 km and 4,000 km ;</p></li>
+<li><p>long-haul: passenger aircraft that fly more than 4,000 km ;</p></li>
+<li><p>freight: cargo aircraft (dedicated freighter aircraft) or passenger aircraft including freight (belly cargo).</p></li>
+</ul>
+<p>These different categories are heterogeneous because they include different types of aircraft. For simplicity,
+representative aircraft types are considered in the following. It is assumed that the short-haul category is composed
+of regional aircraft (with turbojets or turboprops) and narrow-body aircraft. It is also assumed that the medium-haul
+category is composed of narrow-body aircraft while the long-haul category is composed of wide-body aircraft. Finally,
+for freight, no representative aircraft are considered. It is assumed that the aircraft in this category are a
+calibrated weighting of the other representative aircraft.</p>
+<p>The aircraft fleet is then modeled, which will be useful for modeling the evolution of the aircraft fleet. In order to
+calibrate the average characteristics of the different fleet categories in 2019, a specific procedure is adopted to
+obtain a representative fleet. It is important to note that this approach is a model and that the aircraft fleet is
+actually more complex. In the following, the method is illustrated for the passenger aircraft categories.</p>
+<p>First, the energy consumption per ASK is estimated for each category. The value per ASK is used to eliminate the
+influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are
+derived from the analysis of <span id="id6">[<a class="reference internal" href="bibliography.html#id12" title="Brandon Graver, Dan Rutherford, and Sola Zheng. CO2 emissions from commercial aviation: 2013, 2018, and 2019. Technical Report, International Council on Clean Transportation, 2020. URL: https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/.">GRZ20</a>]</span>. They are then converted to energy consumption per ASK
+using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are
+given in the following table.</p>
+<p>TABLE</p>
+<p>Then, for each category, two representative planes are considered: one for the old generation, another for the
+most recent. The characteristics of these aircraft are constructed from a weighting of different aircraft on the
+market. This is done using data on the number of aircraft in service, their performance and their missions
+<span id="id7">[<a class="reference internal" href="bibliography.html#id13" title="International Civil Aviation Organization. ICAO Carbon Emissions Calculator Methodology. 2018.">InternationalCAOrganization18</a>]</span>. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and
+Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the
+Airbus A320neo. The results of energy consumption by ASK are then given in the following table.</p>
+<p>TABLE</p>
+<p>Finally, for each category, the representative distribution of old and recent aircraft is determined using the
+following equation. The results for the medium-haul category are, for example, given in the previous table. The values
+obtained are compared with the actual fleet to check the consistency of the selected representative aircraft.</p>
+<p><span class="math notranslate nohighlight">\(E_{mean} = x~E_{old} + (1-x)~E_{recent}\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(E_{mean}\)</span> is the average energy consumption per ASK for the fleet in the category, <span class="math notranslate nohighlight">\(E_{old}\)</span> is the average
+energy consumption per ASK for the older representative aircraft, <span class="math notranslate nohighlight">\(E_{recent}\)</span> is the average energy consumption
+per ASK for the newer representative aircraft, and <span class="math notranslate nohighlight">\(x\)</span> is the representative share of older aircraft in the fleet.</p>
 </section>
 <section id="air-traffic-evolution-modeling">
 <h3>Air traffic evolution modeling<a class="headerlink" href="#air-traffic-evolution-modeling" title="Permalink to this heading">#</a></h3>
@@ -446,10 +488,10 @@ means a decrease in air traffic) due to crises and/or economic, political, envir
 as the Covid-19 epidemic.</p>
 <p>Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017
-<span id="id6">[<a class="reference internal" href="bibliography.html#id14" title="Frank Fichert, Peter Forsyth, and Hans-Martin Niemeier. Aviation and Climate Change: Economic Perspectives on Greenhouse Gas Reduction Policies. Routledge, 2020. doi:10.4324/9781315572406.">FFN20</a>]</span>. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However,
+<span id="id8">[<a class="reference internal" href="bibliography.html#id14" title="Frank Fichert, Peter Forsyth, and Hans-Martin Niemeier. Aviation and Climate Change: Economic Perspectives on Greenhouse Gas Reduction Policies. Routledge, 2020. doi:10.4324/9781315572406.">FFN20</a>]</span>. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However,
 the Covid-19 epidemic  has led to a decline in these projections. ATAG now projects 3.1% annual growth in air
-passenger traffic between 2019 and 2050 in its median scenario <span id="id7">[<a class="reference internal" href="bibliography.html#id15" title="ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">ATAGAirTAGroup21</a>]</span>, while Airbus projects 3.6% for
-the period 2019-2041 <span id="id8">[<a class="reference internal" href="bibliography.html#id16" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
+passenger traffic between 2019 and 2050 in its median scenario <span id="id9">[<a class="reference internal" href="bibliography.html#id15" title="Air Transport Action Group. Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">AirTAGroup21</a>]</span>, while Airbus projects 3.6% for
+the period 2019-2041 <span id="id10">[<a class="reference internal" href="bibliography.html#id16" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
 a growth in air traffic in the coming decades.</p>
 </section>
 </section>
