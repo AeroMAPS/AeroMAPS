@@ -368,32 +368,29 @@ The latter was obtained using an exponential function with a fixed growth rate. 
 equation with <span class="math notranslate nohighlight">\(RPK_{1991}\)</span> the value of RPK in 1991, <span class="math notranslate nohighlight">\(x\)</span> the year and <span class="math notranslate nohighlight">\(\tau\)</span> a
 smoothed growth rate. To determine <span class="math notranslate nohighlight">\(\tau\)</span>, an optimization is performed using the SLSQP method to minimize the
 Root Mean Square (RMS) error between the historical data and the model. This makes it possible to smooth out the
-values due to various political crises (September 11, 2001 attacks in the United States, 2008 financial crisis).
+values due to various political crises (September 11 attacks in the United States in 2001, 2008 financial crisis).
 The growth rate obtained is 5.5% over the period 1991–2019, with an RMS error of 0.032. By restricting the study
 to the last ten years, the growth rate obtained is then 6.5%, which shows an acceleration of air traffic growth
 in recent years.</p>
 <p><span class="math notranslate nohighlight">\(RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}\)</span></p>
-<p><img alt="Fig.1 Modeling the historical evolution of air traffic." src="../_images/architecture.png" /></p>
+<p><img alt="Fig.1 Modeling the historical evolution of air traffic." src="../_images/air_traffic.pdf" /></p>
 <p>This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed
 from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can
 be applied by decade using
 <a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound annual growth rates (CAGR)</a>.</p>
-<p><span class="math notranslate nohighlight">\( RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}\)</span></p>
-<p>Nevertheless, the difficulty lies in estimating the future growth rate. Indeed, the latter could be impacted for
+<p><span class="math notranslate nohighlight">\(RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}\)</span></p>
+<p>Nevertheless, the difficulty lies in estimating the future growth rate <span class="math notranslate nohighlight">\(\tau\)</span>. Indeed, the latter could be impacted for
 different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a
 decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which
 means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such
 as the Covid-19 epidemic.</p>
 <p>Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017
-<span id="id1">[<a class="reference internal" href="markdown.html#id3" title="Frank Fichert, Peter Forsyth, and Hans-Martin Niemeier. Aviation and Climate Change: Economic Perspectives on Greenhouse Gas Reduction Policies. Routledge, 2020.">FFN20</a>]</span>. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However,
+<span id="id1">[<a class="reference internal" href="bibliography.html#id2" title="Frank Fichert, Peter Forsyth, and Hans-Martin Niemeier. Aviation and Climate Change: Economic Perspectives on Greenhouse Gas Reduction Policies. Routledge, 2020.">FFN20</a>]</span>. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However,
 the Covid-19 epidemic  has led to a decline in these projections. ATAG now projects 3.1% annual growth in air
-passenger traffic between 2019 and 2050 in its median scenario <span id="id2">[<a class="reference internal" href="markdown.html#id4" title="ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">ATAGAirTAGroup21</a>]</span>, while Airbus projects 3.6% for
-the period 2019-2041 <span id="id3">[<a class="reference internal" href="markdown.html#id5" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
+passenger traffic between 2019 and 2050 in its median scenario <span id="id2">[<a class="reference internal" href="bibliography.html#id3" title="ATAG (Air Transport Action Group). Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">ATAGAirTAGroup21</a>]</span>, while Airbus projects 3.6% for
+the period 2019-2041 <span id="id3">[<a class="reference internal" href="bibliography.html#id4" title="Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast.">Airbus22</a>]</span>. Despite the Covid-19 health crisis, all the scenarios presented thus forecast
 a growth in air traffic in the coming decades.</p>
-<p>The development of air traffic is modelled via the evolution of the number of passenger kilometer, also known as
-Revenue Passenger Kilometres (RPK). A fixed rate of change is chosen as a parameter. A positive rate implies traffic
-growth, while a negative rate implies a decline in traffic. This rate is expressed as a percentage (%).</p>
 </section>
 <section id="efficiency-improvements">
 <h2>Efficiency improvements<a class="headerlink" href="#efficiency-improvements" title="Permalink to this heading">#</a></h2>
