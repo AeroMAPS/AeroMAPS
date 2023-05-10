@@ -35,7 +35,7 @@ as the Covid-19 epidemic.
 
 Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017 
-{cite}`fichert2020aviation}`. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However, 
+{cite}`fichert2020aviation`. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However, 
 the Covid-19 epidemic  has led to a decline in these projections. ATAG now projects 3.1% annual growth in air 
 passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects 3.6% for 
 the period 2019-2041 {cite}`airbus`. Despite the Covid-19 health crisis, all the scenarios presented thus forecast 
@@ -155,7 +155,3 @@ The results of this part are based on the work of S. Gössling and A. Humpe in 2
 ##### Covid-19
 
 The global Covid-19 outbreak has significantly disrupted global air traffic in 2020. The consequences of the latter are likely to disrupt global traffic for several years. To take account of this epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level by 2024 according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>. This option also takes into account the one-off change in the aircraft load factor in 2020, which has dropped to 58.5% according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>, against 82.4% in 2019. Thus, due to this deterioration in the aircraft load factor, a paradoxical situation is present on the tool. Indeed, the deterioration in the aircraft load factor, considered as a potential improvement in efficiency, leads here to an increase in emissions compared to those expected without modification of the efficiency levers of action.
-
-
-```{bibliography}
-```
