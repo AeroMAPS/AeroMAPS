@@ -18,12 +18,13 @@ in recent years.
 
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
-![Fig.1 Modeling the historical evolution of air traffic.](/figs/air_traffic.pdf)
+![](/figs/air_traffic.pdf)
+*Fig.1 Modeling the historical evolution of air traffic.*
 
 This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
 from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can 
 be applied by decade using 
-<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound annual growth rates (CAGR)</a>.
+<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound Annual Growth Rates (CAGR)</a>.
 
 $RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}$
 
