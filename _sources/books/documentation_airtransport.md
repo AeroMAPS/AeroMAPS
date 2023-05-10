@@ -1,12 +1,64 @@
 # Air transport modeling
 
+Before detailing their modeling in AeroMAPS, the different levers of action to reduce environmental impacts from air
+transport are identified and linked. For this, an approach based on an adaptation of the Kaya identity for 
+CO<sub>2</sub> emissions is used and allows obtaining the three main elements of the air transport system described 
+in the AeroMAPS architecture.
+
+The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
+economic (GDP per capita $GDP/POP$) and technological factors (energy intensity $E/GDP$ which can be assimilated to 
+an output and the CO content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that it indicates 
+different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different studies, often based on specific 
+decomposition methods, justify the choice of relevant parameters for decomposing emissions 
+{cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
+can be complex {cite}`schandl2016decoupling`.
+
+$CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}$
+
+This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via 
+the following equation. The different parameters are justified by other works related to transportation and aviation 
+{cite}`andreoni2012european, bigo2020transportation, liu2017drives, sharmina2021decarbonising`. The first factor $RPK$ 
+corresponds to air traffic. The second factor $E/RPK$ represents the ratio between the energy $E$ consumed by the 
+sector and the air traffic. It corresponds to the average energy consumption of aircraft per passenger and 
+per kilometer. The last factor $CO_2/E$ is the ratio between the sector's CO<sub>2</sub> emissions and the energy 
+it consumes. It represents the CO<sub>2</sub> content of the energy used by the aircraft. These parameters thus 
+represent different levers of action to decarbonize the aviation sector. 
+
+$CO_2 = RPK \times \frac{E}{RPK} \times \frac{CO_2}{E}$
+
+This equation can be modified or expanded. For example, additional coefficients can be added to include indirect 
+CO<sub>2</sub> emissions or non-CO<sub>2</sub> climate effects. Similarly, the energy efficiency factor can be 
+decomposed to separate technological and operational levers (load factor, improved flight or ground operations). 
+Finally, as with the original Kaya identity, economic parameters can be incorporated.
+
+It is important to note that these different factors are not totally independent. For example, a change in energy 
+carrier may lead to an increase in energy consumption per passenger and per kilometer. Similarly, the level of air 
+traffic can affect the load factor. Only the main interactions are considered in the following.
+
+Before modeling the evolution of these different parameters, it is interesting to plot their historical evolution. 
+Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the filling rate $RPK/ASK$. 
+Despite significant improvements in fuel efficiency via technology and load factor, CO<sub>2</sub> emissions from the 
+sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
+to the almost exclusive use of fossil kerosene.
+
+![](/figs/air_traffic.pdf)
+*Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.*
+
+This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
+In the following, in addition to a section devoted to strategies against non-CO<sub>2</sub> effects, deterministic 
+models for estimating the following parameters are presented:
+- Sobriety of use: evolution of air traffic ;
+- Energy efficiency: improvement in energy intensity through various levers (fleet renewal for more efficient aircraft, operations, load factor);
+- Energy decarbonization: incorporation of alternative fuels to replace fossil fuel.
+
+
 ## Air traffic
 
 The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of this lever is based on the 
 study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or to 
 aircraft categories.
 
-Fig.1 represents historical values since 1991 as well as a trend model that was performed. 
+Fig.2 represents historical values since 1991 as well as a trend model that was performed. 
 The latter was obtained using an exponential function with a fixed growth rate. The model is given in 
 equation with $RPK_{1991}$ the value of RPK in 1991, $x$ the year and $\tau$ a 
 smoothed growth rate. To determine $\tau$, an optimization is performed using the SLSQP method to minimize the 
@@ -19,7 +71,7 @@ in recent years.
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
 ![](/figs/air_traffic.pdf)
-*Fig.1 Modeling the historical evolution of air traffic.*
+*Fig.2 Modeling the historical evolution of air traffic.*
 
 This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
 from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can 

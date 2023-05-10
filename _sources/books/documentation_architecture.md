@@ -1,6 +1,6 @@
 # Architecture
 
-The simplified current architecture of AeroMAPS is given in Fig. 1.
+The simplified current architecture of AeroMAPS is given in Fig.1.
 
 ![](/figs/architecture.png)
 *Fig.1 Simplified architecture of AeroMAPS.*
