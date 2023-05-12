@@ -156,7 +156,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Air transport modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="documentation_reference_data.html">Reference data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_reference_data.html">Reference data and settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
 </li>
@@ -344,7 +344,11 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-load-factor">Improvements in aircraft load factor</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-of-fuels-and-their-integration-into-the-fleet">Modeling of fuels and their integration into the fleet</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling">Simplified modeling</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-levers-of-action-reduction-of-non-co-sub-2-sub-effects">Other levers of action: reduction of non-CO<sub>2</sub> effects</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-of-additional-options-for-aviation">Modelling of additional options for aviation</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#carbon-offsetting">Carbon offsetting</a></li>
@@ -558,19 +562,81 @@ parameters <span class="math notranslate nohighlight">\(a\)</span> and <span cla
 </section>
 <section id="aircraft-energy-decarbonization-of-energy">
 <h2>Aircraft energy: decarbonization of energy<a class="headerlink" href="#aircraft-energy-decarbonization-of-energy" title="Permalink to this heading">#</a></h2>
-<p>The decarbonization rate of energy is defined here as a percentage (%) in relation to kerosene. A 0% energy corresponds
-to an energy that emits as much <span class="math notranslate nohighlight">\(CO_2\)</span> per unit of energy as kerosene, a 50% energy to an energy that emits half as
-much <span class="math notranslate nohighlight">\(CO_2\)</span> per unit of energy as kerosene and a 100% energy to a totally carbon neutral energy (only theoretical
-case). The evolution of this rate is also modelled by a sigmoid function which is well adapted to this rate of
-decarbonation limited to 100% and even less since all energies are today carbonated because of the production phases.
-The model therefore includes the following three parameters:</p>
-<ul>
-<li>Maximum projected decarbonation level noted $\tau_{d_{final}}$</li>
-<li>Speed of application noted $\alpha$</li>
-<li>Timing of implementation noted $t$</li>
-</ul>
-<p>Thus, by noting <span class="math notranslate nohighlight">\(\tau_d\)</span> the decarbonation rate of the energy used and <span class="math notranslate nohighlight">\(k\)</span> the year considered, we obtain :
-<span class="math notranslate nohighlight">\(\tau_{d_k} = \frac{\tau_{d_{final}}}{1+e^{-\alpha(k-t)}}\)</span></p>
+<p>The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the <span class="math notranslate nohighlight">\(CO_2/E\)</span> energy.
+Its evolution is based on the introduction of alternative fuels in the fleet to replace fossil kerosene. The objective
+is therefore to estimate the emission factor of alternative fuels over their entire life cycle. The latter is
+expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will be directly assimilated to CO<sub>2</sub> for
+simplification purposes. In the following, two approaches are proposed. The first one is based on a detailed modeling
+of the fuels and their integration in the fleet. The second is a simplified approach based on a representative
+alternative fuel.</p>
+<section id="modeling-of-fuels-and-their-integration-into-the-fleet">
+<h3>Modeling of fuels and their integration into the fleet<a class="headerlink" href="#modeling-of-fuels-and-their-integration-into-the-fleet" title="Permalink to this heading">#</a></h3>
+<p>First, the objective is to estimate the main characteristics of alternative fuels. These are obtained by statistical
+analysis of data from the scientific literature. Many alternative energy carriers are considered to decarbonize
+aviation fuel. In this work, three main alternatives are studied: biofuels, hydrogen and electrofuels. Biofuels and
+electrofuels are drop-in fuels, while hydrogen requires specific aircraft architectures. The selectivity of fuels
+during their production is not directly considered.</p>
+<p>Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is
+complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and
+the production route. It is then possible to define a single representative biofuel by weighting. The resources
+considered in this work are waste (household waste or used cooking oil), forest residues, agricultural residues,
+dedicated energy crops (lignocellulose, sugar and starch-based materials or vegetable oils) and algae. Regarding the
+production routes, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet)
+processes are considered. Not all routes and resources are directly compatible and the industrial production maturity
+of the different biofuels differs.</p>
+<p>The characteristics of these representative biofuels are statistically estimated to obtain the first quartile Q1,
+the median and the third quartile Q3. The data used are from
+<span id="id11">[<a class="reference internal" href="bibliography.html#id20" title="A. Elgowainy, J. Han, M. Wang, N. Carter, R. Stratton, J. Hileman, A. Malwitz, and S. Balasubramanian. Life-Cycle Analysis of Alternative Aviation Fuels in GREET. Technical Report, United States, Department of Energy Office of Scientific and Technical Information, 2012. URL: https://doi.org/10.2172/1255237.">EHW+12</a>, <a class="reference internal" href="bibliography.html#id21" title="Matteo Prussi, Uisung Lee, Michael Wang, Robert Malina, Hugo Valin, Farzad Taheripour, César Velarde, Mark D Staples, Laura Lonza, and James I Hileman. CORSIA: The first internationally adopted approach to calculate life-cycle GHG emissions for aviation fuels. Renewable and Sustainable Energy Reviews, 150:111398, 2021. doi:10.1016/j.rser.2021.111398.">PLW+21</a>, <a class="reference internal" href="bibliography.html#id22" title="Mark D Staples, Robert Malina, Hakan Olcay, Matthew N Pearlson, James I Hileman, Adam Boies, and Steven RH Barrett. Lifecycle greenhouse gas footprint and minimum selling price of renewable diesel and jet fuel from fermentation and advanced fermentation production technologies. Energy &amp; Environmental Science, 7(5):1545–1554, 2014. doi:10.1039/C3EE43655A.">SMO+14</a>, <a class="reference internal" href="bibliography.html#id23" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>, <a class="reference internal" href="bibliography.html#id24" title="Russell Stratton, Hsin Min Wong, James Hileman, and others. Life cycle greenhouse gas emissions from alternative jet fuels. Technical Report, Partnership for AiR Transportation Noise and Emissions Reduction, 2010. URL: https://rosap.ntl.bts.gov/view/dot/66442/dot_66442_DS1.pdf.">SWH+10</a>, <a class="reference internal" href="bibliography.html#id25" title="Xin Zhao, Farzad Taheripour, Robert Malina, Mark D Staples, and Wallace E Tyner. Estimating induced land use change emissions for sustainable aviation biofuel pathways. Science of the Total Environment, 779:146238, 2021. doi:10.1016/j.scitotenv.2021.146238.">ZTM+21</a>]</span>
+for emission factors, as well as from
+<span id="id12">[<a class="reference internal" href="bibliography.html#id26" title="Sierk De Jong, Ric Hoefnagels, André Faaij, Raphael Slade, Rebecca Mawhood, and Martin Junginger. The feasibility of short-term production strategies for renewable jet fuels – A comprehensive techno-economic comparison. Biofuels, Bioproducts and Biorefining, 9(6):778–800, 2015. doi:10.1002/bbb.1613.">DJHF+15</a>, <a class="reference internal" href="bibliography.html#id27" title="Jeongwoo Han, Amgad Elgowainy, Hao Cai, and Michael Q Wang. Life-cycle analysis of bio-based aviation fuels. Bioresource technology, 150:447–456, 2013. doi:10.1016/j.biortech.2013.07.153.">HECW13</a>, <a class="reference internal" href="bibliography.html#id28" title="Thomas G Kreutz, Eric D Larson, Guangjian Liu, and Robert H Williams. Fischer-Tropsch fuels from coal and biomass. In 25th annual international Pittsburgh coal conference, volume 29. International Pittsburgh Coal Conference Pittsburgh, Pennsylvania, 2008.">KLLW08</a>, <a class="reference internal" href="bibliography.html#id29" title="Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.">OMalleyPS21</a>, <a class="reference internal" href="bibliography.html#id30" title="Matthew Pearlson, Christoph Wollersheim, and James Hileman. A techno-economic review of hydroprocessed renewable esters and fatty acids for jet fuel production. Biofuels, Bioproducts and Biorefining, 7(1):89–96, 2013. doi:10.1002/bbb.1378.">PWH13</a>, <a class="reference internal" href="bibliography.html#id31" title="Marshall Wise, Matteo Muratori, and Page Kyle. Biojet fuels and emissions mitigation in aviation: An integrated assessment modeling analysis. Transportation Research Part D: Transport and Environment, 52:244–253, 2017. doi:10.1016/j.trd.2017.03.006.">WMK17</a>]</span>
+for other data. Emission factors and energy efficiencies are given in the following tables. In addition, the HEFA
+process to convert oil to fuel requires the addition of hydrogen. A median value of
+9 MJ<sub>H</sub>2<sub></sub>/MJ</sub>fuel</sub> is used.</p>
+<p>TABLE</p>
+<p>TABLE</p>
+<p>Hydrogen can be produced in several ways. In this work, five main routes are considered. The estimated characteristics
+are derived from a statistical analysis of data from the references
+<span id="id13">[<a class="reference internal" href="bibliography.html#id33" title="Ibrahim Dincer and Canan Acar. Review and evaluation of hydrogen production methods for better sustainability. International Scientific Journal for Alternative Energy and Ecology (ISJAEE), 2495:14–36, 2016. doi:10.1016/j.ijhydene.2014.12.035.">DA16</a>, <a class="reference internal" href="bibliography.html#id34" title="Mengdi Ji and Jianlong Wang. Review and comparison of various hydrogen production methods based on costs and life cycle impact assessment indicators. International Journal of Hydrogen Energy, 46(78):38612–38635, 2021. doi:10.1016/j.ijhydene.2021.09.142.">JW21</a>, <a class="reference internal" href="bibliography.html#id35" title="B Parkinson, P Balcombe, JF Speirs, AD Hawkes, and K Hellgardt. Levelized cost of CO2 mitigation from hydrogen production routes. Energy &amp; environmental science, 12(1):19–40, 2019. doi:10.1039/C8EE02079E.">PBS+19</a>, <a class="reference internal" href="bibliography.html#id36" title="Osamah Siddiqui and Ibrahim Dincer. A well to pump life cycle environmental impact assessment of some hydrogen production routes. International Journal of Hydrogen Energy, 44(12):5773–5786, 2019. doi:10.1016/j.ijhydene.2019.01.118.">SD19</a>, <a class="reference internal" href="bibliography.html#id32" title="International Energy Agency. The Future of Hydrogen – Seizing today’s opportunities. Technical Report, IEA, 2019. URL: https://www.iea.org/reports/the-future-of-hydrogen.">InternationalEAgency19</a>]</span>. On the one hand, its
+production can be based on the use of fossil resources via the steam reformation of methane or the gasification of
+coal. These are the two production methods most commonly used today. The median values of the emission factors of
+these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and
+192 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. The impact of these processes can be reduced by using carbon
+capture and storage solutions. In this case, the emission factors are respectively
+31 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. On the other
+hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen
+then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of
+0.59. Finally, if the hydrogen is used in liquid form, additional losses must be taken into account for the
+liquefaction stage.</p>
+<p>Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require
+hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant or directly into
+the atmosphere. In this work, the emission factor of this type of fuel is obtained from the emission factor of the
+electric mix and an energy efficiency of 0.4 <span id="id14">[<a class="reference internal" href="bibliography.html#id37" title="Falko Ueckerdt, Christian Bauer, Alois Dirnaichner, Jordan Everall, Romain Sacchi, and Gunnar Luderer. Potential and risks of hydrogen-based e-fuels in climate change mitigation. Nature Climate Change, 11(5):384–393, 2021. doi:10.1038/s41558-021-01032-7.">UBD+21</a>]</span>.</p>
+<p>In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this,
+reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years…).
+An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values.
+An application with a quadratic interpolation, based on the objectives of the ReFuelEU initiative, is proposed on the
+following figure. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it
+possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy
+used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal
+models are used, but the principle remains the same.</p>
+</section>
+<section id="simplified-modeling">
+<h3>Simplified modeling<a class="headerlink" href="#simplified-modeling" title="Permalink to this heading">#</a></h3>
+<p>A simplified approach is also possible. In the latter, an average alternative fuel is considered. The disadvantage of
+this approach is that it does not allow to distinguish different types of fuel, and in particular hydrogen which
+requires specific architectures. Moreover, it does not allow to easily model the evolution of the emission factor of
+a fuel, especially for those based on electricity.</p>
+<p>First, the notion of decarbonization rate is introduced. The decarbonization rate of a fuel is defined as the reduction
+of its CO content compared to fossil kerosene. For example, taking the emission factor of fossil kerosene of
+87.5 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (including direct and indirect emissions), a decarbonization rate of a
+fuel of 75% means that its emission factor is 21.9 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. More generally, the
+decarbonization rate of the aircraft fleet is defined as the reduction in the CO<sub>2</sub> content of the average
+energy used by the fleet compared to that of a similar fleet operating on fossil kerosene.</p>
+<p>In this approach, to model the rate of decarbonization of the fleet, logistic functions are used. This time, the
+parameter <span class="math notranslate nohighlight">\(A\)</span> represents the final decarbonization rate of the fleet. This parameter corresponds to the
+decarbonization rate of the average alternative fuel considered. The parameter <span class="math notranslate nohighlight">\(k\)</span> corresponds to the introduction
+speed of the alternative fuels in the fleet, while the parameter <span class="math notranslate nohighlight">\(x_0\)</span> allows to set the integration timing.</p>
+</section>
 </section>
 <section id="other-levers-of-action-reduction-of-non-co-sub-2-sub-effects">
 <h2>Other levers of action: reduction of non-CO<sub>2</sub> effects<a class="headerlink" href="#other-levers-of-action-reduction-of-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h2>
@@ -696,7 +762,11 @@ action.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-load-factor">Improvements in aircraft load factor</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-of-fuels-and-their-integration-into-the-fleet">Modeling of fuels and their integration into the fleet</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling">Simplified modeling</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-levers-of-action-reduction-of-non-co-sub-2-sub-effects">Other levers of action: reduction of non-CO<sub>2</sub> effects</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modelling-of-additional-options-for-aviation">Modelling of additional options for aviation</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#carbon-offsetting">Carbon offsetting</a></li>

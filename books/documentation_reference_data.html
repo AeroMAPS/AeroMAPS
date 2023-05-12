@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Reference data &#8212; AeroMAPS documentation</title>
+    <title>Reference data and settings &#8212; AeroMAPS documentation</title>
   
   
   
@@ -154,7 +154,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Reference data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Reference data and settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
 </li>
@@ -316,7 +316,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Reference data</h1>
+    <h1>Reference data and settings</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -326,9 +326,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-transport">Air transport</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-radiative-forcing">Effective radiative forcing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#others">Others</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-data">Reference data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air-transport">Air transport</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-radiative-forcing">Effective radiative forcing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#others">Others</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
 </ul>
             </nav>
         </div>
@@ -340,12 +344,15 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="reference-data">
-<h1>Reference data<a class="headerlink" href="#reference-data" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="reference-data-and-settings">
+<h1>Reference data and settings<a class="headerlink" href="#reference-data-and-settings" title="Permalink to this heading">#</a></h1>
+<p>COMPLETE</p>
+<section id="reference-data">
+<h2>Reference data<a class="headerlink" href="#reference-data" title="Permalink to this heading">#</a></h2>
 <p>The set of reference data and associated sources is given in the following. The detailed value can also be found on
 the graphical user interface in the tab <b>Data</b>.</p>
 <section id="air-transport">
-<h2>Air transport<a class="headerlink" href="#air-transport" title="Permalink to this heading">#</a></h2>
+<h3>Air transport<a class="headerlink" href="#air-transport" title="Permalink to this heading">#</a></h3>
 <p>The various air traffic data are derived from the ICAO (International Civil Aviation Organisation), such as annual
 passenger numbers, Revenue Passenger Kilometrer (RPK) or aircraft load factor.</p>
 <p>The data on world kerosene consumption by the aviation sector are from the
@@ -363,7 +370,7 @@ military) generated 3.8% of the effective radiative forcing between 1750 and 201
 responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).</p>
 </section>
 <section id="effective-radiative-forcing">
-<h2>Effective radiative forcing<a class="headerlink" href="#effective-radiative-forcing" title="Permalink to this heading">#</a></h2>
+<h3>Effective radiative forcing<a class="headerlink" href="#effective-radiative-forcing" title="Permalink to this heading">#</a></h3>
 <p>Data on effective radiative forcing of aviation are obtained using <span id="id4">[<a class="reference internal" href="bibliography.html#id17" title="David S Lee, DW Fahey, Agnieszka Skowron, MR Allen, Ulrike Burkhardt, Q Chen, SJ Doherty, S Freeman, PM Forster, J Fuglestvedt, and others. The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244:117834, 2021. doi:10.1016/j.atmosenv.2020.117834.">LFS+21</a>]</span>.
 This paper quantifies the effects of aviation on the climate using the notion of effective radiative forcing. Thus,
 the climate impact of each contributor can be approximated by multiplying the amount of emissions (or the total
@@ -377,12 +384,17 @@ distance for contrails) with a factor obtained from the data of Lee et al. The f
 </ul>
 </section>
 <section id="others">
-<h2>Others<a class="headerlink" href="#others" title="Permalink to this heading">#</a></h2>
+<h3>Others<a class="headerlink" href="#others" title="Permalink to this heading">#</a></h3>
 <p>The coefficients to obtain the CO<sub>2</sub> emissions associated with the production and combustion of kerosene
 have been extracted from the <a href="https://www.bilans-ges.ademe.fr/docutheque/docs/%5BBase%20Carbone%5D%20Documentation%20g%C3%A9n%C3%A9rale%20v11.5.pdf" target="_blank">carbon base</a>
 from Agence française de la transition écologique called ADEME. The annual global CO<sub>2</sub> emissions, including
 fossil fuel combustion and deforestation activities, come from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a>
 while annual global GHG emissions, including land-use change, are from <a href="https://www.globalcarbonproject.org/" target="_blank"><em>Emissions Gap Report 2020</em> from ONU</a>.</p>
+</section>
+</section>
+<section id="reference-settings">
+<h2>Reference settings<a class="headerlink" href="#reference-settings" title="Permalink to this heading">#</a></h2>
+<p>COMPLETE</p>
 </section>
 </section>
 
@@ -453,9 +465,13 @@ while annual global GHG emissions, including land-use change, are from <a href="
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#air-transport">Air transport</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-radiative-forcing">Effective radiative forcing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#others">Others</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-data">Reference data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#air-transport">Air transport</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-radiative-forcing">Effective radiative forcing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#others">Others</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
 </ul>
   </nav></div>
 

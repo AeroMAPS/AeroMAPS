@@ -1,9 +1,13 @@
-# Reference data
+# Reference data and settings
+
+COMPLETE
+
+## Reference data
 
 The set of reference data and associated sources is given in the following. The detailed value can also be found on 
 the graphical user interface in the tab <b>Data</b>.
 
-## Air transport
+### Air transport
 
 The various air traffic data are derived from the ICAO (International Civil Aviation Organisation), such as annual 
 passenger numbers, Revenue Passenger Kilometrer (RPK) or aircraft load factor. 
@@ -26,7 +30,7 @@ military) generated 3.8% of the effective radiative forcing between 1750 and 201
 responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).
     
 
-## Effective radiative forcing
+### Effective radiative forcing
 
 Data on effective radiative forcing of aviation are obtained using {cite}`lee2021contribution`.
 This paper quantifies the effects of aviation on the climate using the notion of effective radiative forcing. Thus, 
@@ -40,7 +44,7 @@ distance for contrails) with a factor obtained from the data of Lee et al. The f
 <li>One for contrails, expressed in $W/m^2/km$ where the distance corresponds to the total distance travelled by aircraft annually</li>
 </ul>
 
-## Others
+### Others
 
 The coefficients to obtain the CO<sub>2</sub> emissions associated with the production and combustion of kerosene 
 have been extracted from the <a href="https://www.bilans-ges.ademe.fr/docutheque/docs/%5BBase%20Carbone%5D%20Documentation%20g%C3%A9n%C3%A9rale%20v11.5.pdf" target="_blank">carbon base</a>
@@ -48,3 +52,7 @@ from Agence française de la transition écologique called ADEME. The annual glo
 fossil fuel combustion and deforestation activities, come from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a>
 while annual global GHG emissions, including land-use change, are from <a href="https://www.globalcarbonproject.org/" target="_blank">*Emissions Gap Report 2020* from ONU</a>.
 
+
+## Reference settings
+
+COMPLETE

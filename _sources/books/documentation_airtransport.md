@@ -226,20 +226,92 @@ parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
 
 ## Aircraft energy: decarbonization of energy
 
-The decarbonization rate of energy is defined here as a percentage (%) in relation to kerosene. A 0% energy corresponds 
-to an energy that emits as much $CO_2$ per unit of energy as kerosene, a 50% energy to an energy that emits half as 
-much $CO_2$ per unit of energy as kerosene and a 100% energy to a totally carbon neutral energy (only theoretical 
-case). The evolution of this rate is also modelled by a sigmoid function which is well adapted to this rate of 
-decarbonation limited to 100% and even less since all energies are today carbonated because of the production phases. 
-The model therefore includes the following three parameters:
-<ul>
-<li>Maximum projected decarbonation level noted $\tau_{d_{final}}$</li>
-<li>Speed of application noted $\alpha$</li>
-<li>Timing of implementation noted $t$</li>
-</ul>
+The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the $CO_2/E$ energy. 
+Its evolution is based on the introduction of alternative fuels in the fleet to replace fossil kerosene. The objective 
+is therefore to estimate the emission factor of alternative fuels over their entire life cycle. The latter is 
+expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will be directly assimilated to CO<sub>2</sub> for 
+simplification purposes. In the following, two approaches are proposed. The first one is based on a detailed modeling 
+of the fuels and their integration in the fleet. The second is a simplified approach based on a representative 
+alternative fuel.
 
-Thus, by noting $\tau_d$ the decarbonation rate of the energy used and $k$ the year considered, we obtain : 
-$\tau_{d_k} = \frac{\tau_{d_{final}}}{1+e^{-\alpha(k-t)}}$
+### Modeling of fuels and their integration into the fleet
+
+First, the objective is to estimate the main characteristics of alternative fuels. These are obtained by statistical 
+analysis of data from the scientific literature. Many alternative energy carriers are considered to decarbonize 
+aviation fuel. In this work, three main alternatives are studied: biofuels, hydrogen and electrofuels. Biofuels and 
+electrofuels are drop-in fuels, while hydrogen requires specific aircraft architectures. The selectivity of fuels 
+during their production is not directly considered.
+
+Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is 
+complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and 
+the production route. It is then possible to define a single representative biofuel by weighting. The resources 
+considered in this work are waste (household waste or used cooking oil), forest residues, agricultural residues, 
+dedicated energy crops (lignocellulose, sugar and starch-based materials or vegetable oils) and algae. Regarding the 
+production routes, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet) 
+processes are considered. Not all routes and resources are directly compatible and the industrial production maturity 
+of the different biofuels differs. 
+
+The characteristics of these representative biofuels are statistically estimated to obtain the first quartile Q1, 
+the median and the third quartile Q3. The data used are from 
+{cite}`elgowainy2012development, prussi2021corsia, staples2014lifecycle, staples2018aviation, stratton2010life, zhao2021estimating` 
+for emission factors, as well as from 
+{cite}`de2015feasibility, han2013life, kreutz2008fischer, o2021estimating, pearlson2013techno, wise2017biojet` 
+for other data. Emission factors and energy efficiencies are given in the following tables. In addition, the HEFA 
+process to convert oil to fuel requires the addition of hydrogen. A median value of 
+9 MJ<sub>H</sub>2<sub></sub>/MJ</sub>fuel</sub> is used. 
+
+TABLE 
+
+TABLE
+
+Hydrogen can be produced in several ways. In this work, five main routes are considered. The estimated characteristics 
+are derived from a statistical analysis of data from the references 
+{cite}`aiehydrogen, dincer2016review, ji2021review, parkinson2019levelized, siddiqui2019well`. On the one hand, its 
+production can be based on the use of fossil resources via the steam reformation of methane or the gasification of 
+coal. These are the two production methods most commonly used today. The median values of the emission factors of 
+these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and 
+192 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. The impact of these processes can be reduced by using carbon 
+capture and storage solutions. In this case, the emission factors are respectively 
+31 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. On the other 
+hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen 
+then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of 
+0.59. Finally, if the hydrogen is used in liquid form, additional losses must be taken into account for the 
+liquefaction stage. 
+
+Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require 
+hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant or directly into 
+the atmosphere. In this work, the emission factor of this type of fuel is obtained from the emission factor of the 
+electric mix and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
+
+In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this, 
+reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
+An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values. 
+An application with a quadratic interpolation, based on the objectives of the ReFuelEU initiative, is proposed on the 
+following figure. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it 
+possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy 
+used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
+models are used, but the principle remains the same.
+
+
+### Simplified modeling
+
+A simplified approach is also possible. In the latter, an average alternative fuel is considered. The disadvantage of 
+this approach is that it does not allow to distinguish different types of fuel, and in particular hydrogen which 
+requires specific architectures. Moreover, it does not allow to easily model the evolution of the emission factor of 
+a fuel, especially for those based on electricity.
+
+First, the notion of decarbonization rate is introduced. The decarbonization rate of a fuel is defined as the reduction
+of its CO content compared to fossil kerosene. For example, taking the emission factor of fossil kerosene of 
+87.5 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (including direct and indirect emissions), a decarbonization rate of a 
+fuel of 75% means that its emission factor is 21.9 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. More generally, the 
+decarbonization rate of the aircraft fleet is defined as the reduction in the CO<sub>2</sub> content of the average 
+energy used by the fleet compared to that of a similar fleet operating on fossil kerosene. 
+
+In this approach, to model the rate of decarbonization of the fleet, logistic functions are used. This time, the 
+parameter $A$ represents the final decarbonization rate of the fleet. This parameter corresponds to the 
+decarbonization rate of the average alternative fuel considered. The parameter $k$ corresponds to the introduction 
+speed of the alternative fuels in the fleet, while the parameter $x_0$ allows to set the integration timing. 
+
 
 
 ## Other levers of action: reduction of non-CO<sub>2</sub> effects
