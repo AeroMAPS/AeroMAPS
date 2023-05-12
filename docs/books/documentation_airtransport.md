@@ -193,8 +193,82 @@ complex approach makes it possible to directly link aircraft design and prospect
 
 #### Top-down approach
 
+In this approach, aircraft efficiency improvements are modelled via a gain in aircraft energy consumption per ASK. 
+A fixed rate of change is chosen as a parameter. A positive rate implies a reduction in aircraft consumption per RPK. 
+The negative case corresponding to a reduction in aircraft performance is not considered. This rate is expressed as 
+a percentage (%). Fleet renewal is considered as regular and is therefore included in this rate. 
+
+Thus, noting $E_{ASK}$ the energy consumed per ASK, $k$ a given year and $\tau$ the rate of technological improvement, 
+the evolution of aircraft efficiency (per category) is given in the following equation.
+
+$E_{ASK{k+1}} = E_{ASK} (1-\tau)$
+
+Hydrogen aircraft are taking into account considering specific models. For this, hydrogen aircraft introductions via 
+logistic functions (detailed in the bottom-up approach) are used, correcting the evolution of the efficiency of these 
+architectures compared to conventional aircraft.
+
+
 #### Bottom-up approach
 
+In this second approach, the objective is to model the evolution of aircraft fleet energy efficiency using fleet 
+renewal models. This approach is particularly interesting because it facilitates the links with aircraft design.
+
+The fleet renewal models developed are based on logistic functions. A formulation of these functions is given 
+in the following equation, with $A$, $k$ and $x_0$ parameters detailed in the following that allow to fit the model.
+
+$f(x) = \frac{A}{1+e^{-k~(x-x_0)}}$
+
+These functions, also called sigmoids or S-shaped curves, are particularly relevant to model the introduction of a 
+product in a market. Consequently, they are used in multiple disciplinary fields 
+{cite}`jarne2007s, kucharavy2011application, kucharavy2015application`: economics, sociology, demography, 
+technology or even medicine. This type of functions has already been used in the scientific literature to study the 
+renewal of aircraft fleets {cite}`grewe2021evaluating, hassan2017quantifying, hassan2015framework, hassan2018impact`.
+
+In this work, the logistic functions correspond to the shares that different aircraft architectures represent in the 
+fleet. In order to use these functions, a calibration of the different coefficients is necessary. The initialization 
+of the data is performed using the approach with representative aircraft by category explained previously.
+
+The coefficient $A$ represents the final value of the function. In this work, its value is initially set to 1 to model 
+the fact that in the long run, a new aircraft architecture is totally imposed on the market. Then, the coefficient 
+$k$ allows setting the speed of renewal of the fleet. It can be related to the duration $D$ to replace $(100-l)$% of 
+the fleet using the following equation. Finally, the parameter $x_0$ is used to define the timing of the introduction
+of the aircraft in the fleet. It can be computed from the following equation with $x_a$ the year of introduction of 
+the aircraft.
+
+$k = \frac{ln\left(\frac{100}{l}-1\right)}{D/2}$
+
+$x_0 = x_a + D/2$
+
+A limitation of these basic models is that they can only be directly used for a single homogeneous category. Indeed, 
+it is not possible to model a category that is divided into two main architectures on the market. This aspect is 
+however important to integrate specific architectures such as hydrogen aircraft on the short and medium-haul markets 
+or narrow-body aircraft on the long-haul category (such as the Airbus A321XLR). Therefore, the models are adapted to 
+allow the creation of subcategories. To do so, the $A$ coefficient is adjusted to vary the different market shares 
+within the whole category.
+
+Two examples of use are presented in the following. The medium-haul category is considered using representative 
+aircraft detailed previously. A first simple example is given in Fig.X which represents the distribution of 
+different aircraft within a fleet. It is assumed that a new aircraft appears every 15 years with a period of 20 years 
+for a replacement of 98% of the fleet, i.e. $l=2$. A second example is given in Fig.X. In addition to the previous 
+assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually 
+represent 50% of the market.
+
+![](/figs/loadfactor_recap.pdf)
+*Fig.X Basic use of fleet renewal models.*
+
+![](/figs/loadfactor_recap.pdf)
+*Fig.X Use of fleet renewal models including a subcategory.*
+
+Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per 
+seat and per kilometer of the $E_{mean}$ aircraft fleet for year $x$. The following equation is then used from the 
+performance of each aircraft $E_i$ and the number of seat-kilometers achieved by each aircraft $ASK_i$. The latter
+is obtained from the total ASK and the annual distribution from the fleet renewal models.
+
+$E_{mean}(x) = \frac{\sum_{i} E_i ~ ASK_i(x)}{\sum_{i} ASK_i(x)}$
+
+In addition to fuel consumption, the previous model can also be applied to other characteristics such as NO<sub>x</sub> 
+or particulate emissions. The fleet renewal models also allow to estimate the annual production of aircraft
+according to the traffic evolution.
 
 
 ### Improvements in aircraft operations
@@ -281,7 +355,7 @@ alternative fuel. However, the direct impact of alternative fuels on non-CO<sub>
 few models present in the literature {cite}`grewe2021evaluating, klower2021quantifying`.
 
 
-### Modeling of fuels and their integration into the fleet
+### Detailed modeling
 
 First, the objective is to estimate the main characteristics of alternative fuels. These are obtained by statistical 
 analysis of data from the scientific literature. Many alternative energy carriers are considered to decarbonize 
