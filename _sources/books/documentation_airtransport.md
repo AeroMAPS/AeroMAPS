@@ -99,12 +99,13 @@ derived from the analysis of {cite}`icctco2`. They are then converted to energy 
 using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
 given in Tab.1.
 
-| \textbf{Categoriy}       | \textbf{Emission factor}  | \textbf{Energy consumption} |
-|--------------------------|---------------------------|-----------------------------|
-| Short-haul - Regional    | 172.8 gCO<sub>2</sub>/RPK | 1.95 MJ/ASK                 |
-| Short-haul - Narrow-body | 98.8 gCO<sub>2</sub>/RPK  | 1,11 MJ/ASK                 |
-| Medium-haul              | 76.9 gCO<sub>2</sub>/RPK  | 0.87 MJ/ASK                 |
-| Long-haul                | 89.9 gCO<sub>2</sub>/RPK  | 1.01 MJ/ASK                 |
+| **Category**             | **Emission factor**       | **Energy consumption**    |
+|--------------------------|---------------------------|---------------------------|
+| Short-haul - Regional    | 172.8 gCO<sub>2</sub>/RPK | 1.95 MJ/ASK               |
+| Short-haul - Narrow-body | 98.8 gCO<sub>2</sub>/RPK  | 1,11 MJ/ASK               |
+| Medium-haul              | 76.9 gCO<sub>2</sub>/RPK  | 0.87 MJ/ASK               |
+| Long-haul                | 89.9 gCO<sub>2</sub>/RPK  | 1.01 MJ/ASK               |
+
 *Tab.1 Average aircraft fleet characteristics in 2019.*
 
 Then, for each category, two representative planes are considered: one for the old generation, another for the 
@@ -114,7 +115,13 @@ market. This is done using data on the number of aircraft in service, their perf
 Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
 Airbus A320neo. The results of energy consumption by ASK are then given in Tab.2.
 
-TABLE
+| **Representative aircraft**   | **Energy consumption**   | **Representative distribution of the fleet**   |
+|-------------------------------|--------------------------|------------------------------------------------|
+| Mean aircraft                 | 0.87 MJ/ASK              | 100%                                           |
+| Old aircraft                  | 0.92 MJ/ASK              | 77%                                            |
+| Recent aircraft               | 0.70 MJ/ASK              | 23%                                            |
+
+*Tab.2 Characteristics of representative aircraft for the medium-haul category.*
 
 Finally, for each category, the representative distribution of old and recent aircraft is determined using the 
 following equation. The results for the medium-haul category are, for example, given in the previous table. The values 
