@@ -376,10 +376,10 @@ approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emission
 elements of the air transport system described in the AeroMAPS architecture.</p>
 <p>The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population <span class="math notranslate nohighlight">\(POP\)</span>),
 economic (GDP per capita <span class="math notranslate nohighlight">\(GDP/POP\)</span>) and technological factors (energy intensity <span class="math notranslate nohighlight">\(E/GDP\)</span> which can be assimilated to
-an output and the CO<sub>2</sub> content <span class="math notranslate nohighlight">\(CO_2/E\)</span>) <span id="id1">[<a class="reference internal" href="bibliography.html#id2" title="Yoichi Kaya, Keiichi Yokobori, and others. Environment, energy, and economy: strategies for sustainability. United Nations University Press Tokyo, 1997.">KY+97</a>]</span>. The interest of this identity is that it indicates
-different levers to act on CO<sub>2</sub> <span id="id2">[<a class="reference internal" href="bibliography.html#id3" title="Birgit Friedl and Michael Getzner. Determinants of CO2 emissions in a small open economy. Ecological economics, 45(1):133–148, 2003. doi:10.1016/S0921-8009(03)00008-9.">FG03</a>, <a class="reference internal" href="bibliography.html#id4" title="William F Lamb, Thomas Wiedmann, Julia Pongratz, Robbie Andrew, Monica Crippa, Jos GJ Olivier, Dominik Wiedenhofer, Giulio Mattioli, Alaa Al Khourdajie, Jo House, and others. A review of trends and drivers of greenhouse gas emissions by sector from 1990 to 2018. Environmental research letters, 16(7):073005, 2021. doi:10.1088/1748-9326/abee4e.">LWP+21</a>]</span>. Different studies, often based on specific
-decomposition methods, justify the choice of relevant parameters for decomposing emissions
-<span id="id3">[<a class="reference internal" href="bibliography.html#id5" title="Beng Wah Ang and Fang Q Zhang. A survey of index decomposition analysis in energy and environmental studies. Energy, 25(12):1149–1176, 2000. doi:10.1016/S0360-5442(00)00039-6.">AZ00</a>, <a class="reference internal" href="bibliography.html#id6" title="Qunwei Wang, Yung-Ho Chiu, and Ching-Ren Chiu. Driving factors behind carbon dioxide emissions in China: A modified production-theoretical decomposition analysis. Energy Economics, 51:252–260, 2015. doi:10.1016/j.eneco.2015.07.009.">WCC15</a>]</span>. Nevertheless, some parameters are interdependent and interpretations
+an output and the CO<sub>2</sub> content <span class="math notranslate nohighlight">\(CO_2/E\)</span>) <span id="id1">[<a class="reference internal" href="bibliography.html#id2" title="Yoichi Kaya, Keiichi Yokobori, and others. Environment, energy, and economy: strategies for sustainability. United Nations University Press Tokyo, 1997.">KY+97</a>]</span>. The interest of this identity is that
+it indicates different levers to act on CO<sub>2</sub> <span id="id2">[<a class="reference internal" href="bibliography.html#id3" title="Birgit Friedl and Michael Getzner. Determinants of CO2 emissions in a small open economy. Ecological economics, 45(1):133–148, 2003. doi:10.1016/S0921-8009(03)00008-9.">FG03</a>, <a class="reference internal" href="bibliography.html#id4" title="William F Lamb, Thomas Wiedmann, Julia Pongratz, Robbie Andrew, Monica Crippa, Jos GJ Olivier, Dominik Wiedenhofer, Giulio Mattioli, Alaa Al Khourdajie, Jo House, and others. A review of trends and drivers of greenhouse gas emissions by sector from 1990 to 2018. Environmental research letters, 16(7):073005, 2021. doi:10.1088/1748-9326/abee4e.">LWP+21</a>]</span>. Different
+studies, often based on specific decomposition methods, justify the choice of relevant parameters for decomposing
+emissions <span id="id3">[<a class="reference internal" href="bibliography.html#id5" title="Beng Wah Ang and Fang Q Zhang. A survey of index decomposition analysis in energy and environmental studies. Energy, 25(12):1149–1176, 2000. doi:10.1016/S0360-5442(00)00039-6.">AZ00</a>, <a class="reference internal" href="bibliography.html#id6" title="Qunwei Wang, Yung-Ho Chiu, and Ching-Ren Chiu. Driving factors behind carbon dioxide emissions in China: A modified production-theoretical decomposition analysis. Energy Economics, 51:252–260, 2015. doi:10.1016/j.eneco.2015.07.009.">WCC15</a>]</span>. Nevertheless, some parameters are interdependent and interpretations
 can be complex <span id="id4">[<a class="reference internal" href="bibliography.html#id7" title="Heinz Schandl, Steve Hatfield-Dodds, Thomas Wiedmann, Arne Geschke, Yiyong Cai, James West, David Newth, Tim Baynes, Manfred Lenzen, and Anne Owen. Decoupling global environmental pressure and economic growth: scenarios for energy use, materials use and carbon emissions. Journal of Cleaner Production, 132:45–56, 2016. doi:10.1016/j.jclepro.2015.06.100.">SHDW+16</a>]</span>.</p>
 <p><span class="math notranslate nohighlight">\(CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}\)</span></p>
 <p>This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via
@@ -527,7 +527,7 @@ The growth rate obtained is 5.5% over the period 1991–2019, with an RMS error 
 to the last ten years, the growth rate obtained is then 6.5%, which shows an acceleration of air traffic growth
 in recent years.</p>
 <p><span class="math notranslate nohighlight">\(RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}\)</span></p>
-<p><img alt="" src="../_images/air_traffic.pdf" />
+<p><img alt="" src="../_images/air_traffic.svg" />
 <em>Fig.2 Modeling the historical evolution of air traffic.</em></p>
 <p>This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed
 from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can
@@ -605,15 +605,15 @@ or narrow-body aircraft on the long-haul category (such as the Airbus A321XLR). 
 allow the creation of subcategories. To do so, the <span class="math notranslate nohighlight">\(A\)</span> coefficient is adjusted to vary the different market shares
 within the whole category.</p>
 <p>Two examples of use are presented in the following. The medium-haul category is considered using representative
-aircraft detailed previously. A first simple example is given in Fig.X which represents the distribution of
+aircraft detailed previously. A first simple example is given in Fig.3 which represents the distribution of
 different aircraft within a fleet. It is assumed that a new aircraft appears every 15 years with a period of 20 years
-for a replacement of 98% of the fleet, i.e. <span class="math notranslate nohighlight">\(l=2\)</span>. A second example is given in Fig.X. In addition to the previous
+for a replacement of 98% of the fleet, i.e. <span class="math notranslate nohighlight">\(l=2\)</span>. A second example is given in Fig.4. In addition to the previous
 assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually
 represent 50% of the market.</p>
 <p><img alt="" src="../_images/loadfactor_recap.pdf" />
-<em>Fig.X Basic use of fleet renewal models.</em></p>
+<em>Fig.3 Basic use of fleet renewal models.</em></p>
 <p><img alt="" src="../_images/loadfactor_recap.pdf" />
-<em>Fig.X Use of fleet renewal models including a subcategory.</em></p>
+<em>Fig.4 Use of fleet renewal models including a subcategory.</em></p>
 <p>Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per
 seat and per kilometer of the <span class="math notranslate nohighlight">\(E_{mean}\)</span> aircraft fleet for year <span class="math notranslate nohighlight">\(x\)</span>. The following equation is then used from the
 performance of each aircraft <span class="math notranslate nohighlight">\(E_i\)</span> and the number of seat-kilometers achieved by each aircraft <span class="math notranslate nohighlight">\(ASK_i\)</span>. The latter
@@ -640,9 +640,9 @@ the commissioning dates differ.</p>
 <section id="improvements-in-aircraft-load-factor">
 <h3>Improvements in aircraft load factor<a class="headerlink" href="#improvements-in-aircraft-load-factor" title="Permalink to this heading">#</a></h3>
 <p>To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the
-energy consumption per ASK is used. The results are summarized in Fig.X.</p>
+energy consumption per ASK is used. The results are summarized in Fig.5.</p>
 <p><img alt="" src="../_images/loadfactor_recap.pdf" />
-<em>Fig.X Modeling the trend projection of aircraft load factors.</em></p>
+<em>Fig.5 Modeling the trend projection of aircraft load factors.</em></p>
 <p>Historical data are modeled from the function given in the following equation for year <span class="math notranslate nohighlight">\(x\)</span>. The
 coefficients, given to three significant figures, were determined to minimize the RMS error between the historical
 data since 1991 and the model. A small value of 6.6.10<sup>-5</sup> is obtained. The model is then used to
@@ -811,13 +811,13 @@ electric mix and an energy efficiency of 0.4 <span id="id23">[<a class="referenc
 <p>In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this,
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years…).
 An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values.
-An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on the
-following figure. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it
+An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on
+Fig.6. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it
 possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal
 models are used, but the principle remains the same.</p>
 <p><img alt="" src="../_images/loadfactor_recap.pdf" />
-<em>Fig.X Example scenario for introducing drop-in fuels into the fleet.</em></p>
+<em>Fig.6 Example scenario for introducing drop-in fuels into the fleet.</em></p>
 </section>
 <section id="simplified-modeling">
 <h3>Simplified modeling<a class="headerlink" href="#simplified-modeling" title="Permalink to this heading">#</a></h3>
