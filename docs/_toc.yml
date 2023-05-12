@@ -3,7 +3,6 @@
 
 format: jb-book
 root: intro
-maxdepth: 1
 chapters:
 - file: books/about
 - file: books/citations
