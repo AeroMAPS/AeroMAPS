@@ -303,13 +303,28 @@ the median and the third quartile Q3. The data used are from
 {cite}`elgowainy2012development, prussi2021corsia, staples2014lifecycle, staples2018aviation, stratton2010life, zhao2021estimating` 
 for emission factors, as well as from 
 {cite}`de2015feasibility, han2013life, kreutz2008fischer, o2021estimating, pearlson2013techno, wise2017biojet` 
-for other data. Emission factors and energy efficiencies are given in the following tables. In addition, the HEFA 
-process to convert oil to fuel requires the addition of hydrogen. A median value of 
+for other data. Emission factors and energy efficiencies are given in Tab. 3 and Tab.4 respectively. In addition, 
+the HEFA process to convert oil to fuel requires the addition of hydrogen. A median value of 
 9 MJ<sub>H</sub>2<sub></sub>/MJ</sub>fuel</sub> is used. 
 
-TABLE 
+| **Pathway** | **Resource**                     | **Q1** | **Median** | **Q3** |
+|-------------|----------------------------------|--------|------------|--------|
+| FT          | Municipal waste                  | -      | 27.6       | -      |
+| FT          | Lignocelullose and residues      | 0.3    | 7.7        | 12.6   |
+| ATJ         | Sugar and starch based materials | 33.7   | 52.2       | 68.4   |
+| HEFA        | Vegetable oils and algae         | 42.1   | 61         | 73.9   |
+| HEFA        | Used cooking oil                 | -      | 20.7       | -      |
+ 
+*Tab.3 Emission factors in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> for representative biofuels.*
 
-TABLE
+| **Pathway**            | **Q1** | **Median** | **Q3** |
+|------------------------|--------|------------|--------|
+| FT                     | 0.4    | 0.46       | 0.49   |
+| ATJ                    | 0.31   | 0.48       | 0.58   |
+| HEFA -- Biomass to oil | 0.42   | 0.66       | 0.85   |
+| HEFA -- Oil to fuel    | 0.71   | 0.88       | 0.92   |
+
+*Tab.4 Energy efficiencies in MJ<sub>fuel</sub>/MJ<sub>biomass</sub> for representative biofuels.*
 
 Hydrogen can be produced in several ways. In this work, five main routes are considered. The estimated characteristics 
 are derived from a statistical analysis of data from the references 
