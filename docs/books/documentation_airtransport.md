@@ -13,10 +13,10 @@ elements of the air transport system described in the AeroMAPS architecture.
 
 The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
 economic (GDP per capita $GDP/POP$) and technological factors (energy intensity $E/GDP$ which can be assimilated to 
-an output and the CO<sub>2</sub> content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that it indicates 
-different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different studies, often based on specific 
-decomposition methods, justify the choice of relevant parameters for decomposing emissions 
-{cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
+an output and the CO<sub>2</sub> content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that 
+it indicates different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different 
+studies, often based on specific decomposition methods, justify the choice of relevant parameters for decomposing 
+emissions {cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
 can be complex {cite}`schandl2016decoupling`.
 
 $CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}$
@@ -149,7 +149,7 @@ in recent years.
 
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
-![](/figs/air_traffic.pdf)
+![](/figs/air_traffic.svg)
 *Fig.2 Modeling the historical evolution of air traffic.*
 
 This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
@@ -247,17 +247,17 @@ allow the creation of subcategories. To do so, the $A$ coefficient is adjusted t
 within the whole category.
 
 Two examples of use are presented in the following. The medium-haul category is considered using representative 
-aircraft detailed previously. A first simple example is given in Fig.X which represents the distribution of 
+aircraft detailed previously. A first simple example is given in Fig.3 which represents the distribution of 
 different aircraft within a fleet. It is assumed that a new aircraft appears every 15 years with a period of 20 years 
-for a replacement of 98% of the fleet, i.e. $l=2$. A second example is given in Fig.X. In addition to the previous 
+for a replacement of 98% of the fleet, i.e. $l=2$. A second example is given in Fig.4. In addition to the previous 
 assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually 
 represent 50% of the market.
 
 ![](/figs/loadfactor_recap.pdf)
-*Fig.X Basic use of fleet renewal models.*
+*Fig.3 Basic use of fleet renewal models.*
 
 ![](/figs/loadfactor_recap.pdf)
-*Fig.X Use of fleet renewal models including a subcategory.*
+*Fig.4 Use of fleet renewal models including a subcategory.*
 
 Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per 
 seat and per kilometer of the $E_{mean}$ aircraft fleet for year $x$. The following equation is then used from the 
@@ -289,10 +289,10 @@ the commissioning dates differ.
 ### Improvements in aircraft load factor
 
 To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the 
-energy consumption per ASK is used. The results are summarized in Fig.X. 
+energy consumption per ASK is used. The results are summarized in Fig.5. 
 
 ![](/figs/loadfactor_recap.pdf)
-*Fig.X Modeling the trend projection of aircraft load factors.*
+*Fig.5 Modeling the trend projection of aircraft load factors.*
 
 Historical data are modeled from the function given in the following equation for year $x$. The 
 coefficients, given to three significant figures, were determined to minimize the RMS error between the historical 
@@ -422,14 +422,14 @@ electric mix and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
 In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this, 
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
 An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values. 
-An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on the 
-following figure. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it 
+An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on 
+Fig.6. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it 
 possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy 
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
 models are used, but the principle remains the same.
 
 ![](/figs/loadfactor_recap.pdf)
-*Fig.X Example scenario for introducing drop-in fuels into the fleet.*
+*Fig.6 Example scenario for introducing drop-in fuels into the fleet.*
 
 
 ### Simplified modeling
