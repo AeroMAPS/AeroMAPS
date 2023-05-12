@@ -4,6 +4,9 @@
 format: jb-book
 root: intro
 chapters:
+- file: books/about
+- file: books/citations
+- file: books/_changelog
 - file: books/installation
 - file: books/documentation
   sections:
@@ -18,5 +21,4 @@ chapters:
     - file: books/markdown-notebooks
     - file: books/markdown-notebooks2
 - file: books/api
-- file: books/citations
-- file: books/about
+
