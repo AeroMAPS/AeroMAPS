@@ -99,7 +99,12 @@ derived from the analysis of {cite}`icctco2`. They are then converted to energy 
 using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
 given in the following table.
 
-TABLE
+| \textbf{Categoriy}       | \textbf{Emission factor}  | \textbf{Energy consumption} |
+|--------------------------|---------------------------|-----------------------------|
+| Short-haul - Regional    | 172.8 gCO<sub>2</sub>/RPK | 1.95 MJ/ASK                 |
+| Short-haul - Narrow-body | 98.8 gCO<sub>2</sub>/RPK  | 1,11 MJ/ASK                 |
+| Medium-haul              | 76.9 gCO<sub>2</sub>/RPK  | 0.87 MJ/ASK                 |
+| Long-haul                | 89.9 gCO<sub>2</sub>/RPK  | 1.01 MJ/ASK                 |
 
 Then, for each category, two representative planes are considered: one for the old generation, another for the 
 most recent. The characteristics of these aircraft are constructed from a weighting of different aircraft on the 
