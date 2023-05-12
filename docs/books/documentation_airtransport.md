@@ -171,7 +171,7 @@ operations and load factor. In addition to these levers,
 ### Improvements of aircraft efficiency
 
 Here, efficiency improvements through the use of more efficient aircraft are studied. The parameter modeled is thus 
-the energy consumption per seat and per kilometer~$E/ASK$. Two approaches are presented in the following. On the one 
+the energy consumption per seat and per kilometer $E/ASK$. Two approaches are presented in the following. On the one 
 hand, a so-called top-down approach is used to simply model the efficiency improvement via annual 
 technological gains. On the other hand, an approach called bottom-up is used to model more finely the 
 evolution of the fleet's energy efficiency by relying on gains per architecture and fleet renewal models. This more 
@@ -230,7 +230,10 @@ parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
 More globally, specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements 
 are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</sub> and contrails) are studied.
 
-Regarding NO<sub>x</sub> emissions, their reduction is achieved by reducing fuel consumption and/or lowering the 
+Regarding NO<sub>x</sub> emissions, their reduction could lead to a reduction of the aviation effective radiative 
+forcing, although there are still doubts about the future effect of NO<sub>x</sub> emissions on climate, depending in 
+particular on NO<sub>x</sub> and methane background concentrations {cite}`skowron2021greater, terrenoire2022impact`.
+The reduction of emissions could nevertheless be achieved by reducing fuel consumption and/or lowering the 
 NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via fleet turnover are used to estimate 
 the NO<sub>x</sub> emission factor. In particular, the equation for estimating the energy consumption in the bottom-up
 approach can be adapted by replacing the energy consumptions $E_i$ with the NO<sub>x</sub> emission factors per 
