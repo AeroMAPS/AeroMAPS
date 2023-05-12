@@ -14,11 +14,13 @@ chapters:
     - file: books/documentation_airtransport
     - file: books/documentation_impacts
     - file: books/documentation_reference_data
+    - file: books/documentation_software
+    - file: books/documentation_gui
     - file: books/bibliography
 - file: books/examples
   sections:
-    - file: books/notebooks
-    - file: books/markdown-notebooks
-    - file: books/markdown-notebooks2
+    - file: books/examples_basic
+    - file: books/examples_fleet
+    - file: books/examples_figures
 - file: books/api
 

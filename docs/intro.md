@@ -12,4 +12,5 @@ and the examples section for discovering some applications.
 
 
 ```{tableofcontents}
+:depth: 1
 ```
