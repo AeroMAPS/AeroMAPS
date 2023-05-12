@@ -47,7 +47,8 @@ Despite significant improvements in fuel efficiency via technology and load fact
 sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
 to the almost exclusive use of fossil kerosene.
 
-![](/figs/kaya_aviation.pdf)
+![](/figs/kaya_aviation.svg)
+
 *Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.*
 
 This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
@@ -150,6 +151,7 @@ in recent years.
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
 ![](/figs/air_traffic.svg)
+
 *Fig.2 Modeling the historical evolution of air traffic.*
 
 This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
@@ -253,10 +255,12 @@ for a replacement of 98% of the fleet, i.e. $l=2$. A second example is given in 
 assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually 
 represent 50% of the market.
 
-![](/figs/loadfactor_recap.pdf)
+![](/figs/loadfactor_recap.svg)
+
 *Fig.3 Basic use of fleet renewal models.*
 
-![](/figs/loadfactor_recap.pdf)
+![](/figs/loadfactor_recap.svg)
+
 *Fig.4 Use of fleet renewal models including a subcategory.*
 
 Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per 
@@ -291,7 +295,8 @@ the commissioning dates differ.
 To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the 
 energy consumption per ASK is used. The results are summarized in Fig.5. 
 
-![](/figs/loadfactor_recap.pdf)
+![](/figs/loadfactor_recap.svg)
+
 *Fig.5 Modeling the trend projection of aircraft load factors.*
 
 Historical data are modeled from the function given in the following equation for year $x$. The 
@@ -428,7 +433,8 @@ possible to determine the decarbonization rate of the fleet and thus the CO<sub>
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
 models are used, but the principle remains the same.
 
-![](/figs/loadfactor_recap.pdf)
+![](/figs/loadfactor_recap.svg)
+
 *Fig.6 Example scenario for introducing drop-in fuels into the fleet.*
 
 
