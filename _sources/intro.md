@@ -9,8 +9,3 @@ The objective of this documentation is to provide the main elements concerning A
 In particular, check out the installation section for understanding how to use AeroMAPS, 
 the documentation section for understanding the general principles of AeroMAPS, 
 and the examples section for discovering some applications.
-
-
-```{tableofcontents}
-:depth: 1
-```
