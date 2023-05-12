@@ -158,13 +158,15 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_reference_data.html">Reference data and settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_gui.html">Use of the graphical user interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Example</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks.html">Basic example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown-notebooks.html">Use of fleet renewal models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown-notebooks2.html">Figure display</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Use of fleet renewal models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_figures.html">Figure display</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -333,17 +335,18 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h1>
-<p>COMPLETE</p>
-<p>To assess the complexity behind the AeroMAPS process, the number of inputs and outputs are given here. AeroMAPS
-uses 24 input variables to allow users to define their own prospective scenarios. In addition, it uses 69 input
-parameters present in the models developed to perform the analyses proposed in AeroMAPS. These parameters
-are not meant to be modified by the user but rather updated when more recent literature and data are available.
-The AeroMAPS methodology can then compute and provide 88 outputs along with 35 different figures.</p>
-<p>Regarding the software development of the framework, AeroMAPS is developed using the Python programming language.
-The data and models are mainly manipulated and implemented using the Pandas package but also use other scientific
-computing package like GEMSEO and Scipy for solving implicit models for instance. The user interface uses ipywidgets
-for the widgets and ipympl for the graphs. The AeroMAPS software is deployed as a web application thanks to Voilà.</p>
+<p>The complete documentation allows understanding the structure of the AeroMAPS framework, the data, methods and models
+used as well as information on software development.</p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_impacts.html">Impact modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_reference_data.html">Reference data and settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation_gui.html">Use of the graphical user interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
 </div>
 </section>
 
