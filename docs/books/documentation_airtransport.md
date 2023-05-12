@@ -51,11 +51,12 @@ to the almost exclusive use of fossil kerosene.
 *Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.*
 
 This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
-In the following, in addition to a section devoted to strategies against non-CO<sub>2</sub> effects, deterministic 
-models for estimating the following parameters are presented:
+In the following, deterministic models for estimating the following parameters are presented:
 - usage evolution through the evolution of air traffic ;
 - energy efficiency through improvements in energy intensity with various levers (fleet renewal for more efficient aircraft, operations, load factor) ;
 - energy decarbonization through incorporation of alternative fuels to replace fossil fuel.
+These models are particularly focused on their links to the sector's CO<sub>2</sub> emissions, but some elements 
+concerning strategies against non-CO<sub>2</sub> effects are also provided.
 
 
 ## Air traffic: usage evolution
@@ -149,23 +150,23 @@ Nevertheless, the difficulty lies in estimating the future growth rate $\tau$. I
 different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a 
 decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which 
 means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such 
-as the Covid-19 epidemic.
+as the Covid-19 epidemic. Moreover, specific settings for the impact of the Covid-19 epidemic are proposed, defining a 
+year of air traffic recovery compared to a certain level of air traffic compared to 2019.
 
 Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017 
 {cite}`fichert2020aviation`. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However, 
-the Covid-19 epidemic  has led to a decline in these projections. ATAG now projects 3.1% annual growth in air 
+the Covid-19 epidemic has led to a decline in these projections. ATAG now projects 3.1% annual growth in air 
 passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects 3.6% for 
 the period 2019-2041 {cite}`airbus`. Despite the Covid-19 health crisis, all the scenarios presented thus forecast 
 a growth in air traffic in the coming decades.
-
 
 
 ## Aircraft fleet and operations: energy efficiency improvements
 
 The parameter that corresponds to energy efficiency is the energy intensity per passenger per kilometer $E/RPK$. In 
 this work, this parameter is influenced by three distinct levers: fleet renewal with more efficient aircraft, 
-operations and load factor.
+operations and load factor. In addition to these levers, 
 
 ### Improvements of aircraft efficiency
 
@@ -224,6 +225,33 @@ Scenarios can thus be defined as for the energy consumption by ASK. For this, th
 parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
 
 
+### Improvements for reducing non-CO<sub>2</sub>
+
+More globally, specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements 
+are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</sub> and contrails) are studied.
+
+Regarding NO<sub>x</sub> emissions, their reduction is achieved by reducing fuel consumption and/or lowering the 
+NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via fleet turnover are used to estimate 
+the NO<sub>x</sub> emission factor. In particular, the equation for estimating the energy consumption in the bottom-up
+approach can be adapted by replacing the energy consumptions $E_i$ with the NO<sub>x</sub> emission factors per 
+aircraft.
+
+As far as contrails are concerned, several mitigation measures are studied. For instance, operational strategies, based 
+on trajectory modification, are modeled since they represent promising strategies {cite}`gierens2008review`. These 
+strategies could be applied on a reduced number of flights. Indeed, a study in the Japanese airspace shows that 2% of 
+the flights are responsible for 80% of the contrails {cite}`teoh2020mitigating`. Another possibility is to modify 
+the emissions, in particular by reducing the amount of particles emitted {cite}`noppel2007overview`. The improvement of 
+engines are notably envisaged. Overall, the implementation of operational strategies, possibly coupled with improved 
+engines, could reduce the radiative forcing induced by condensation trails from 20% to more than 90%, for marginal 
+additional fuel consumption {cite}`matthes2020climate, teoh2020mitigating`. In this work, simplified models, 
+based on logistic functions as in fleet renewal models, are used to model the reduction of contrail-induced radiative 
+forcing. This time, the parameter $A$ represents the final reduction allowed by the adopted measures. The parameter 
+$k$ corresponds to the speed of implementation of the strategies, while the parameter $x_0$ allows to set the timing 
+of the implementation.
+
+
+
+
 ## Aircraft energy: decarbonization of energy
 
 The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the $CO_2/E$ energy. 
@@ -232,7 +260,10 @@ is therefore to estimate the emission factor of alternative fuels over their ent
 expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will be directly assimilated to CO<sub>2</sub> for 
 simplification purposes. In the following, two approaches are proposed. The first one is based on a detailed modeling 
 of the fuels and their integration in the fleet. The second is a simplified approach based on a representative 
-alternative fuel.
+alternative fuel. However, the direct impact of alternative fuels on non-CO<sub>2</sub>, which is complex to evaluate 
+{cite}`marquart2005upgraded, noppel2007overview`, is not directly considered so far because of the low maturity of the 
+few models present in the literature {cite}`grewe2021evaluating, klower2021quantifying`.
+
 
 ### Modeling of fuels and their integration into the fleet
 
@@ -269,10 +300,10 @@ are derived from a statistical analysis of data from the references
 {cite}`aiehydrogen, dincer2016review, ji2021review, parkinson2019levelized, siddiqui2019well`. On the one hand, its 
 production can be based on the use of fossil resources via the steam reformation of methane or the gasification of 
 coal. These are the two production methods most commonly used today. The median values of the emission factors of 
-these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and 
-192 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. The impact of these processes can be reduced by using carbon 
+these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 
+192 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. The impact of these processes can be reduced by using carbon 
 capture and storage solutions. In this case, the emission factors are respectively 
-31 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H</sub>2<sub></sub>. On the other 
+31 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. On the other 
 hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen 
 then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of 
 0.59. Finally, if the hydrogen is used in liquid form, additional losses must be taken into account for the 
@@ -286,11 +317,14 @@ electric mix and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
 In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this, 
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
 An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values. 
-An application with a quadratic interpolation, based on the objectives of the ReFuelEU initiative, is proposed on the 
+An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on the 
 following figure. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it 
 possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy 
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
 models are used, but the principle remains the same.
+
+![](/figs/loadfactor_recap.pdf)
+*Fig.X Example scenario for introducing drop-in fuels into the fleet.*
 
 
 ### Simplified modeling
@@ -311,47 +345,3 @@ In this approach, to model the rate of decarbonization of the fleet, logistic fu
 parameter $A$ represents the final decarbonization rate of the fleet. This parameter corresponds to the 
 decarbonization rate of the average alternative fuel considered. The parameter $k$ corresponds to the introduction 
 speed of the alternative fuels in the fleet, while the parameter $x_0$ allows to set the integration timing. 
-
-
-
-## Other levers of action: reduction of non-CO<sub>2</sub> effects
-
-Additional lever of action does not directly address aviation $CO_2$ emissions, but addresses strategies to fight 
-contrails. This lever of action is modelled assuming a reduction in contrails from 0% (no strategy) to 100% 
-(strategy that removes all contrails; currently a theoretical case). Some strategies may result in a slight 
-over-consumption of fuel, which is reflected in a coefficient to the energy consumption per RPK. For example, 
-a strategy can be represented by a 50% reduction in contrails (half as many as appearing) at the cost of an overall 
-increase in consumption of 0.1% (averaged for the entire fleet and flights). This modelling is also carried out using 
-<a href="https://en.wikipedia.org/wiki/Sigmoid_function" target="_blank">sigmoid functions</a> as for other levers of 
-action.
-
-
-
-
-#### Modelling of additional options for aviation
-
-In addition to the different levers of action, additional options are implemented in order to test various more specific effects. A description of these is given below.
-    
-##### Carbon offsetting
-
-Carbon offsetting is one of the solutions being considered by the aviation sector, particularly in the context of <u><a href="https://www.icao.int/environmental-protection/CORSIA/Pages/default.aspx" target="_blank">CORSIA</a></u>. It is a question of offsetting part of the $CO_2$ emissions by actions that allow to store $CO_2$ (tree plantations...) or to install low-carbon infrastructures. One option allows offsetting emissions above the 2019 level, in the same way as CORSIA. This option shows the interest of offsetting emissions in the short term, the time it takes to implement breakthrough architectures. It is important to note that carbon offsetting does not prevent $CO_2$ emissions and that a framework must be put in place to ensure that emissions are properly offset. Further details on carbon offsetting are available on this document detailing the project <u><a href="http://www.carbone4.com/wp-content/uploads/2020/04/Carbone-4-NZI-Guidelines-april-2020-2.pdf" target="_blank">*Net Zero Initiative* of Carbone 4</a></u>. 
-
-##### Total replacement of the fleet
-
-This option makes it possible to take into account a total replacement of the aircraft fleet every 10 years. This leads to sharp falls in consumption per RPK every 10 years (linked to the rate of technological improvement, which is reduced to the equivalent rate over 10 years) and stagnation for 10 years thereafter. Without this option, renewal is ensured on a regular basis via the annual rate of technological improvement. A complete and rapid renewal of the fleet enables the cumulative $CO_2$ emissions to be lowered. The effect of rapidly bringing these aircraft to end of life has not been considered at the life cycle level, but the production and end-of-life phases are negligible in terms of $CO_2$ emissions, for example via the results of Johanning et al. in 2013 in <u><a href="https://www.fzt.haw-hamburg.de/pers/Scholz/Airport2030/Airport2030_PUB_DLRK_13-09-10.pdf" target="_blank">*A first step towards the integration of life cycle assessment into conceptual aircraft design*</a></u> or of Melo et al. in 2020 in <u><a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank">*Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools*</a></u>. This option is unrealistic in terms of aircraft production rates, but makes it possible to measure the impact of fleet renewal.
-
-##### Cancellation of substitutable flights
-
-Today, the plane is in competition with the train on certain routes. This option makes it possible to substitute a share of air traffic with rail traffic at a global level. The carbon impact of trains replacing aircraft has not been taken into account in the balance sheet. The reduction is set here at 10% of global flights in 2030.
-    
-##### Improvement of the other phases of the life cycle
-
-In addition to direct emissions (fuel combustion) and indirect emissions from fuel production, the other phases of the life cycle are also responsible for around 2% of the $CO_2$ emissions (using the work of Melo et al. in 2020 in <u><a href="https://www.mdpi.com/2071-1050/12/14/5663" target="_blank">*Sustainability Assessment and Engineering of Emerging Aircraft Technologies — Challenges, Methods and Tools*</a></u>). One option makes it possible to halve the $CO_2$ emissions due to the extraction of raw materials, the production of aircraft, the end of life of aircraft and aeronautical infrastructures (production plants, airports). The technical means to decarbonise these life cycle phases are, for example, better aircraft recycling, the use of decarbonised energy in airports or better supply chain management for aircraft production. Nevertheless, the effects of these efforts remain small compared to direct emissions and fuel production.
-    
-##### Societal aspects on the distribution of flights
-
-The results of this part are based on the work of S. Gössling and A. Humpe in 2020 in <u><a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a></u>. The authors show that only 11% of the world's population flies, and only between 2 and 4% go abroad. Moreover, 'frequent flyers', about 1% of the world's population who fly an average of 56,000 km per year (about 3 long-range trips), are responsible for about 50% of aviation $CO_2$ emissions, taking into account their number of flights but also the more frequent use of upper classes. Therefore, if on average these 'frequent flyers' flew half as often, aviation emissions would be reduced by 25%.
-    
-##### Covid-19
-
-The global Covid-19 outbreak has significantly disrupted global air traffic in 2020. The consequences of the latter are likely to disrupt global traffic for several years. To take account of this epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level by 2024 according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>. This option also takes into account the one-off change in the aircraft load factor in 2020, which has dropped to 58.5% according to <u><a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a></u>, against 82.4% in 2019. Thus, due to this deterioration in the aircraft load factor, a paradoxical situation is present on the tool. Indeed, the deterioration in the aircraft load factor, considered as a potential improvement in efficiency, leads here to an increase in emissions compared to those expected without modification of the efficiency levers of action.
