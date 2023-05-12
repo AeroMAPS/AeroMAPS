@@ -36,13 +36,12 @@ Data on effective radiative forcing of aviation are obtained using {cite}`lee202
 This paper quantifies the effects of aviation on the climate using the notion of effective radiative forcing. Thus, 
 the climate impact of each contributor can be approximated by multiplying the amount of emissions (or the total 
 distance for contrails) with a factor obtained from the data of Lee et al. The factors considered are as follows:
-<ul>
-<li>One for CO<sub>2</sub> emissions, considering cumulative and not annual emissions to take into account the long lifetime of this gas in the atmosphere, expressed in $W/m^2/gCO_{2cum}$</li>
-<li>One for NO<sub>x</sub> emissions, expressed in $W/m^2/gNOx$</li>
-<li>One for water vapour emissions, expressed in $W/m^2/gH_2O$</li>
-<li>Two for aerosols: one for SO<sub>x</sub> emissions, expressed in $W/m^2/gSO_2$; one for black carbon emissions, expressed in $W/m^2/gBC$</li>
-<li>One for contrails, expressed in $W/m^2/km$ where the distance corresponds to the total distance travelled by aircraft annually</li>
-</ul>
+- One for CO<sub>2</sub> emissions, considering cumulative and not annual emissions to take into account the long lifetime of this gas in the atmosphere, expressed in W/m<sup>2</sup>/gCO<sub>2cum</sub>
+- One for NO<sub>x</sub> emissions, expressed in W/m<sup>2</sup>/gNO<sub>x</sub>
+- One for water vapour emissions, expressed in W/m<sup>2</sup>/gH<sub>2</sub>O
+- Two for aerosols: one for SO<sub>x</sub> emissions, expressed in W/m<sup>2</sup>/gSO<sub>2</sub>; one for black carbon emissions, expressed in W/m<sup>2</sup>/gBC
+- One for contrails, expressed in W/m<sup>2</sup>/km where the distance corresponds to the total distance travelled by aircraft annually
+
 
 ### Others
 
