@@ -97,16 +97,22 @@ First, the energy consumption per ASK is estimated for each category. The value 
 influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are 
 derived from the analysis of {cite}`icctco2`. They are then converted to energy consumption per ASK 
 using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
-given in the following table.
+given in Tab.1.
 
-TABLE
+| \textbf{Categoriy}       | \textbf{Emission factor}  | \textbf{Energy consumption} |
+|--------------------------|---------------------------|-----------------------------|
+| Short-haul - Regional    | 172.8 gCO<sub>2</sub>/RPK | 1.95 MJ/ASK                 |
+| Short-haul - Narrow-body | 98.8 gCO<sub>2</sub>/RPK  | 1,11 MJ/ASK                 |
+| Medium-haul              | 76.9 gCO<sub>2</sub>/RPK  | 0.87 MJ/ASK                 |
+| Long-haul                | 89.9 gCO<sub>2</sub>/RPK  | 1.01 MJ/ASK                 |
+*Tab.1 Average aircraft fleet characteristics in 2019.*
 
 Then, for each category, two representative planes are considered: one for the old generation, another for the 
 most recent. The characteristics of these aircraft are constructed from a weighting of different aircraft on the 
 market. This is done using data on the number of aircraft in service, their performance and their missions 
 {cite}`icao18`. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
 Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
-Airbus A320neo. The results of energy consumption by ASK are then given in the following table.
+Airbus A320neo. The results of energy consumption by ASK are then given in Tab.2.
 
 TABLE
 
