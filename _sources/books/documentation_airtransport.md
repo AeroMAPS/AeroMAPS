@@ -1,7 +1,7 @@
 # Air transport modeling
 
-The modeling of the air transport system presented in the AeroMAPS architecture includes the modeling of action levers 
-to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, different levers 
+The modeling of the air transport system presented in the AeroMAPS architecture includes the modeling of levers of 
+action to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, different levers 
 of action are identified.
 
 
