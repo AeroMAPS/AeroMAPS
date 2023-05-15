@@ -447,8 +447,8 @@ a fuel, especially for those based on electricity.
 
 First, the notion of decarbonization rate is introduced. The decarbonization rate of a fuel is defined as the reduction
 of its CO content compared to fossil kerosene. For example, taking the emission factor of fossil kerosene of 
-87.5 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (including direct and indirect emissions), a decarbonization rate of a 
-fuel of 75% means that its emission factor is 21.9 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. More generally, the 
+88.5 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (including direct and indirect emissions), a decarbonization rate of a 
+fuel of 75% means that its emission factor is 22.1 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. More generally, the 
 decarbonization rate of the aircraft fleet is defined as the reduction in the CO<sub>2</sub> content of the average 
 energy used by the fleet compared to that of a similar fleet operating on fossil kerosene. 
 

@@ -1,13 +1,63 @@
 # Impact modeling and sustainability assessment
 
-
+After defining the evolution of air transport via dedicated models, specific models allow to evaluate the associated 
+impacts, but also to compare them with limits via a sustainability assessment in a last step.
 
 
 ## Impact modeling
 
-In the following, the models used for estimating the impacts induced by air transport are described. 
+In the following, the models used for estimating the impacts induced by air transport are described. Currently, the 
+majority of impact modeling concern environmental impacts.
 
 ### Emissions and climate
+
+#### CO<sub>2</sub> emissions
+
+direct/indirect {cite}`jing2022understanding`
+
+Kaya
+
+Finally, a coefficient corresponding to other life cycle emissions (excluding combustion and fuel production) can also 
+be applied. A value of the order of 2% can for instance be used by taking an intermediate value from 
+{cite}`pinheiro2020sustainability`.
+
+
+#### Non-CO<sub>2</sub> emissions
+
+For estimating non-CO<sub>2</sub> emissions, the concept of Emission Index (EI) is used. They make it possible to 
+obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...)depending on fuel consumption (or CO<sub>2</sub> 
+emissions). Values for fossil kerosene from {cite}`lee2021contribution` have been used and are provided in Tab.1. The 
+values can be adapted for alternative fuels.
+
+| **Emission**              | **Value** | **Unit**                            |
+|---------------------------|-----------|-------------------------------------|
+| CO<sub>2</sub>            | 3.15      | kgCO<sub>2</sub>/kg<sub>fuel</sub>  |
+| H<sub>2</sub>O            | 1.23      | kgH<sub>2</sub>O/kg<sub>fuel</sub>  |
+| NO<sub>x</sub>            | 15.1      | gNO<sub>x</sub>/kg<sub>fuel</sub>   |
+| Aerosols (BC)             | 0.03      | gBC/kg<sub>fuel</sub>               |
+| Aerosols (SO<sub>x</sub>) | 1.2       | gSO<sub>x</sub>/kg<sub>fuel</sub>   |
+
+*Tab.1 Emission Index for fossil kerosene combustion.*
+
+Based on these data, the estimation of the climate impact of aviation is achieved by the calculation of the ERF 
+(Effective Radiative Forcing), which is based on the use of coefficients for the different impacts. These are obtained 
+through an analysis of the data from {cite}`lee2021contribution` and are summarized in Tab.2. CO<sub>2</sub> emissions 
+are cumulative: therefore, at first order, the coefficient to estimate the ERF must be applied on the cumulative 
+CO<sub>2</sub> emissions. The impact of the other emissions is estimated from the annual emissions. Finally, the impact 
+of contrails is assumed to be correlated with the total annual distance flown.
+
+| **Climate impact**          | **Value**              | **Unit**                          |
+|-----------------------------|------------------------|-----------------------------------|
+| CO<sub>2</sub> (cumulative) | 0.88                   | mW/m<sup>2</sup>/GtCO<sub>2</sub> |
+| H<sub>2</sub>O              | 0.0052                 | mW/m<sup>2</sup>/TgH<sub>2</sub>O |
+| NO<sub>x</sub>              | 11.55                  | mW/m<sup>2</sup>/TgN              |
+| Aerosols (BC)               | 100.7                  | mW/m<sup>2</sup>/TgBC             |
+| Aerosols (SO<sub>x</sub>)   | -19.9                  | mW/m<sup>2</sup>/TgSO<sub>2</sub> |
+| Condensation trails         | 1.058.10<sup>-9</sup>} | mW/m<sup>2</sup>/km               |
+
+*Tab.2 Coefficients for estimating the ERF of aviation climate impacts.*
+
+Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions.
 
 GWP<sup>*</sup>
 
@@ -35,9 +85,9 @@ These models are under development.
 
 ## Sustainability assessment
 
-In the following, the methodologies used to assess the environmental sustainability of the scenarios are presented. 
-Only climate and energy issues are considered. Indeed, these two environmental issues are the most 
-impacting for air transport (see for instance {cite}`planes2022dimensionnement`).
+In the following, the methodologies used to assess the environmental sustainability of the scenarios are presented, 
+based on the estimates of induced environmental impacts. Only climate and energy issues are considered. Indeed, these 
+two environmental issues are the most impacting for air transport (see for instance {cite}`planes2022dimensionnement`).
 
 
 ### Climate sustainability
@@ -105,7 +155,7 @@ are less than or equal to the carbon budget, the climate target is met.
 #### CO<sub>2</sub> and non-CO<sub>2</sub> effects
 
 For assessing the sustainability of aviation climate impact, a first solution is to directly estimate the temperature
-increase due to aviation, and to compare it to a climate objective (via an allocation or an arbitrary choice) which is 
+increase due to aviation, and to compare it to a climate objective (via an allocation or an absolute target) which is 
 for instance performed in {cite}`grewe2021evaluating, klower2021quantifying`. For this purpose, the equivalent 
 emissions estimated using the GWP<sup>*</sup> climate metric can also be converted into temperature impacts using the 
 TCRE coefficient (or climate models for more accurate solutions).
@@ -153,7 +203,7 @@ In the following, some examples of reasonable values are proposed.
 
 The estimation of the available biomass at the global level is complex and depends on several criteria. In this work, 
 a statistical analysis of IRENA (International Renewable ENergy Agency) data is performed. The resource categories 
-described for the biofuel pathways are used. The results are given in Tab.1. The lower and upper fences are determined 
+described for the biofuel pathways are used. The results are given in Tab.3. The lower and upper fences are determined 
 to exclude extreme values (outliers).
 
 | **Resource**           | **Lower fence** | **Q1** | **Median** | **Q3** | **Upper fence** |
@@ -165,7 +215,7 @@ to exclude extreme values (outliers).
 | Algae                  | 5               | 8      | 15         | 31     | 50              |
 | Total                  | 37              | 100    | 164        | 302    | 557             |
 
-*Tab.1 Global biomass availability (in EJ) scenarios to 2050.*
+*Tab.3 Global biomass availability (in EJ) scenarios to 2050.*
 
 The estimates in Tab.1 are refined using an analysis of the references {cite}`staples2017limits, staples2018aviation` 
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about 
