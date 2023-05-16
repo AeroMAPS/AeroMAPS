@@ -78,7 +78,7 @@ of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is cons
 comparison with alternative energy carriers. As a consequence, using these data and including indirect CO<sub>2</sub> 
 emissions, commercial aviation was for instance responsible for 2.6% of world CO<sub>2</sub> emissions in 2019 
 (compared with data from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a> 
-including fossil fuel combustion and land use). 
+including fossil fuel combustion and land use). See for instance {cite}`delbecq2022isae` for more details. 
 
 
 ## Air traffic: usage evolution

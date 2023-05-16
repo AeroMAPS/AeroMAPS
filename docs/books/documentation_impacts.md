@@ -13,12 +13,10 @@ majority of impact modeling concern environmental impacts.
 
 #### CO<sub>2</sub> emissions
 
-
-Kaya
-
-Finally, a coefficient corresponding to other life cycle emissions (excluding combustion and fuel production) can also 
-be applied. A value of the order of 2% can for instance be used by taking an intermediate value from 
-{cite}`pinheiro2020sustainability`.
+Based on the modeling of the air transport system through a Kaya decomposition, the estimation of the evolution of 
+CO<sub>2</sub> emissions is simple by multiplying the different factors. In addition, a coefficient corresponding to 
+other life cycle emissions (excluding combustion and fuel production) can also be applied. A value of the order of 2% 
+can for instance be used by taking an intermediate value from {cite}`pinheiro2020sustainability`.
 
 
 #### Non-CO<sub>2</sub> emissions
