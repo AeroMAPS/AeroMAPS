@@ -35,7 +35,8 @@ You can install the latest version with this command::
 Citation
 --------
 
-If you use AeroMAPS in your work, please cite the following reference:
+If you use AeroMAPS in your work, please cite the following reference. Other references are available in the
+documentation.
 
 Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
 Simulation and evaluation of sustainable climate trajectories for aviation.
