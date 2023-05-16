@@ -333,7 +333,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impact-modeling">Impact modeling</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-and-climate">Emissions and climate</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-linked-to-climate-impacts">Emissions linked to climate impacts</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-emissions">CO<sub>2</sub> emissions</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co-sub-2-sub-emissions">Non-CO<sub>2</sub> emissions</a></li>
 </ul>
@@ -374,14 +374,14 @@ impacts, but also to compare them with limits via a sustainability assessment in
 <h2>Impact modeling<a class="headerlink" href="#impact-modeling" title="Permalink to this heading">#</a></h2>
 <p>In the following, the models used for estimating the impacts induced by air transport are described. Currently, the
 majority of impact modeling concern environmental impacts.</p>
-<section id="emissions-and-climate">
-<h3>Emissions and climate<a class="headerlink" href="#emissions-and-climate" title="Permalink to this heading">#</a></h3>
+<section id="emissions-linked-to-climate-impacts">
+<h3>Emissions linked to climate impacts<a class="headerlink" href="#emissions-linked-to-climate-impacts" title="Permalink to this heading">#</a></h3>
 <section id="co-sub-2-sub-emissions">
 <h4>CO<sub>2</sub> emissions<a class="headerlink" href="#co-sub-2-sub-emissions" title="Permalink to this heading">#</a></h4>
-<p>Kaya</p>
-<p>Finally, a coefficient corresponding to other life cycle emissions (excluding combustion and fuel production) can also
-be applied. A value of the order of 2% can for instance be used by taking an intermediate value from
-<span id="id1">[<a class="reference internal" href="bibliography.html#id20" title="Sofia Pinheiro Melo, Alexander Barke, Felipe Cerdas, Christian Thies, Mark Mennenga, Thomas S Spengler, and Christoph Herrmann. Sustainability assessment and engineering of emerging aircraft technologies — Challenges, methods and tools. Sustainability, 12(14):5663, 2020. doi:10.3390/su12145663.">PMBC+20</a>]</span>.</p>
+<p>Based on the modeling of the air transport system through a Kaya decomposition, the estimation of the evolution of
+CO<sub>2</sub> emissions is simple by multiplying the different factors. In addition, a coefficient corresponding to
+other life cycle emissions (excluding combustion and fuel production) can also be applied. A value of the order of 2%
+can for instance be used by taking an intermediate value from <span id="id1">[<a class="reference internal" href="bibliography.html#id20" title="Sofia Pinheiro Melo, Alexander Barke, Felipe Cerdas, Christian Thies, Mark Mennenga, Thomas S Spengler, and Christoph Herrmann. Sustainability assessment and engineering of emerging aircraft technologies — Challenges, methods and tools. Sustainability, 12(14):5663, 2020. doi:10.3390/su12145663.">PMBC+20</a>]</span>.</p>
 </section>
 <section id="non-co-sub-2-sub-emissions">
 <h4>Non-CO<sub>2</sub> emissions<a class="headerlink" href="#non-co-sub-2-sub-emissions" title="Permalink to this heading">#</a></h4>
@@ -461,23 +461,45 @@ of contrails is assumed to be correlated with the total annual distance flown.</
 </tbody>
 </table>
 <p><em>Tab.2 Coefficients for estimating the ERF of aviation climate impacts.</em></p>
-<p>Also including non-CO<sub>2</sub> effects, aviation (including private and
+<p>Using the data and taking into account CO<sub>2</sub> and non-CO<sub>2</sub> effects, aviation (including private and
 military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is
-responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).</p>
-<p>Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions.</p>
-<p>GWP<sup>*</sup></p>
-<p>For this purpose, the following equation is used to estimate the equivalent emissions of the different non-CO<sub>2</sub>
-effects. It is a rewriting of the previous equation based on assumptions from
-<span id="id4">[<a class="reference internal" href="bibliography.html#id54" title="Myles R Allen, Keith P Shine, Jan S Fuglestvedt, Richard J Millar, Michelle Cain, David J Frame, and Adrian H Macey. A solution to the misrepresentations of CO2-equivalent emissions of short-lived climate pollutants under ambitious mitigation. Npj Climate and Atmospheric Science, 1(1):1–8, 2018. doi:10.1038/s41612-018-0026-8.">ASF+18</a>, <a class="reference internal" href="bibliography.html#id18" title="David S Lee, DW Fahey, Agnieszka Skowron, MR Allen, Ulrike Burkhardt, Q Chen, SJ Doherty, S Freeman, PM Forster, J Fuglestvedt, and others. The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244:117834, 2021. doi:10.1016/j.atmosenv.2020.117834.">LFS+21</a>]</span>, with in particular <span class="math notranslate nohighlight">\(r=1\)</span> and <span class="math notranslate nohighlight">\(s=0\)</span>.</p>
+responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000–2018), compared to
+global ERF estimated in the IPCC AR6.</p>
+<p>Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions, but also to
+estimate the impacts on the temperature evolution in a second step. Multiple metrics are available in the scientific
+literature for estimating them <span id="id4">[<a class="reference internal" href="bibliography.html#id54" title="B Aamaas, GP Peters, and JS Fuglestvedt. Simple emission metrics for climate impacts. Earth System Dynamics, 4(1):145–170, 2013. doi:10.5194/esd-4-145-2013.">APF13</a>, <a class="reference internal" href="bibliography.html#id55" title="Keith P Shine, Jan S Fuglestvedt, Kinfe Hailemariam, and Nicola Stuber. Alternatives to the global warming potential for comparing climate impacts of emissions of greenhouse gases. Climatic Change, 68(3):281–302, 2005. doi:10.1007/s10584-005-1146-9.">SFHS05</a>]</span>:GWP, AGWP, GTP, AGTP, etc.
+GWP is the most known and used metric, often used with a 100-year time horizon. However, this
+metric is limited for representing the evolution in terms of temperature for Short-Lived Climate Pollutants (SLCPs)
+<span id="id5">[<a class="reference internal" href="bibliography.html#id56" title="John Lynch, Michelle Cain, Raymond Pierrehumbert, and Myles Allen. Demonstrating GWP*: A means of reporting warming-equivalent emissions that captures the contrasting impacts of short-and long-lived climate pollutants. Environmental Research Letters, 15(4):044023, 2020. doi:10.1088/1748-9326/ab6d7e.">LCPA20</a>]</span>, which is the case for aviation non-CO<sub>2</sub> effects. As a consequence, an
+alternative metric is used here. GWP</sup>*</sup> is an improved climate metric developed recently
+<span id="id6">[<a class="reference internal" href="bibliography.html#id57" title="Myles R Allen, Keith P Shine, Jan S Fuglestvedt, Richard J Millar, Michelle Cain, David J Frame, and Adrian H Macey. A solution to the misrepresentations of CO2-equivalent emissions of short-lived climate pollutants under ambitious mitigation. Npj Climate and Atmospheric Science, 1(1):1–8, 2018. doi:10.1038/s41612-018-0026-8.">ASF+18</a>, <a class="reference internal" href="bibliography.html#id58" title="Michelle Cain, John Lynch, Myles R Allen, Jan S Fuglestvedt, David J Frame, and Adrian H Macey. Improved calculation of warming-equivalent emissions for short-lived climate pollutants. NPJ climate and atmospheric science, 2(1):1–7, 2019. doi:10.1038/s41612-019-0086-4.">CLA+19</a>, <a class="reference internal" href="bibliography.html#id59" title="William J Collins, David J Frame, Jan S Fuglestvedt, and Keith P Shine. Stable climate metrics for emissions of short and long-lived species – Combining steps and pulses. Environmental Research Letters, 15(2):024018, 2020. doi:10.1088/1748-9326/ab6039.">CFFS20</a>]</span>, one of the major interests of which is to better
+evaluate the effect of SLCPs. It allows to estimate the equivalent emissions in CO<sub>2</sub>-we for a better
+correspond with the evolution in temperature (warming equivalent). In this sense, it thus represents a simplified
+climate model compared to other more complex climate models that may require long computation times
+<span id="id7">[<a class="reference internal" href="bibliography.html#id60" title="Malte Meinshausen and Zebedee Nicholls. GWP* is a model, not a metric. Environmental Research Letters, 17(4):041002, 2022. doi:10.1088/1748-9326/ac5930.">MN22</a>]</span>. Compared to GWP, it does not only take into account the absolute value of the emissions but
+also the variation of the emission rate. The following equation allows estimating the equivalent emissions, noted
+<span class="math notranslate nohighlight">\(E_{CO\textsubscript{2}\text{-we}}\)</span>, of a gas <span class="math notranslate nohighlight">\(G\)</span> for a time horizon <span class="math notranslate nohighlight">\(H\)</span>, as a function of the absolute emissions <span class="math notranslate nohighlight">\(E_G\)</span>
+and the variation of emissions <span class="math notranslate nohighlight">\(\Delta E_G\)</span> over a period <span class="math notranslate nohighlight">\(Delta t\)</span>. The parameters <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(s\)</span> depend on the gas and
+represent the influence of cumulative or short-term effects.</p>
+<p><span class="math notranslate nohighlight">\(E_{CO\textsubscript{2}} = \text{GWP}_H ~ \left(r ~\frac{\Delta E_G}{\Delta t}~H + s~E_G \right)\)</span></p>
+<p>This equation can be modified for being used for aviation non-CO<sub>2</sub> effects, based on assumptions from
+<span id="id8">[<a class="reference internal" href="bibliography.html#id57" title="Myles R Allen, Keith P Shine, Jan S Fuglestvedt, Richard J Millar, Michelle Cain, David J Frame, and Adrian H Macey. A solution to the misrepresentations of CO2-equivalent emissions of short-lived climate pollutants under ambitious mitigation. Npj Climate and Atmospheric Science, 1(1):1–8, 2018. doi:10.1038/s41612-018-0026-8.">ASF+18</a>, <a class="reference internal" href="bibliography.html#id18" title="David S Lee, DW Fahey, Agnieszka Skowron, MR Allen, Ulrike Burkhardt, Q Chen, SJ Doherty, S Freeman, PM Forster, J Fuglestvedt, and others. The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244:117834, 2021. doi:10.1016/j.atmosenv.2020.117834.">LFS+21</a>]</span>, with in particular <span class="math notranslate nohighlight">\(r=1\)</span> and <span class="math notranslate nohighlight">\(s=0\)</span>. As a consequence, the following
+equation is used with <span class="math notranslate nohighlight">\(E_{CO_2\text{-}we}\)</span> the equivalent emissions for a given year of a non-CO<sub>2</sub> effect,
+<span class="math notranslate nohighlight">\(\Delta F\)</span> the corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a
+period <span class="math notranslate nohighlight">\(\Delta t\)</span> of 20 years, a time horizon <span class="math notranslate nohighlight">\(H\)</span> of 100 years and <span class="math notranslate nohighlight">\(AGWP_H=88~years.mW/m^2/GtCO_2\)</span> the absolute global
+warming potential of CO<sub>2</sub> over 100 years.</p>
 <p><span class="math notranslate nohighlight">\(E_{CO_2{text{-}we} = \frac{Delta F}{Delta t} \frac{H}{AGWP_H}\)</span></p>
-<p>with <span class="math notranslate nohighlight">\(E_{CO_2\text{-}we}\)</span> the equivalent emissions for a given year of a non-CO<sub>2</sub> effect, <span class="math notranslate nohighlight">\(\Delta F\)</span> the
-corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a period <span class="math notranslate nohighlight">\(\Delta t\)</span>
-of 20 years, a time horizon <span class="math notranslate nohighlight">\(H\)</span> of 100 years and <span class="math notranslate nohighlight">\(AGWP_H=88~years. mW/m^2/GtCO_2\)</span> the absolute global warming
-potential of CCO<sub>2</sub> over 100 years.</p>
 </section>
 </section>
 <section id="energy-resources">
 <h3>Energy resources<a class="headerlink" href="#energy-resources" title="Permalink to this heading">#</a></h3>
+<p>The description of the energy carriers envisaged for air transport makes it possible to estimate the quantities of
+energy to be embarked, but also the quantity of energy to produce them using energy efficiencies. The quantities of
+biomass and electricity consumed are then directly calculated. The selectivity of the pathways for producing these
+energy carriers, defined as the proportion of kerosene in the fuel output (usually measured by energy), can also be
+taken into account. It allows estimating the amount of energy that have to be mobilized to produce kerosene and other
+outputs. However, in general, an allocation of consumption is made to other outputs for estimating the “real
+consumption” due to kerosene (which means that selectivity is not taken into account).</p>
 </section>
 <section id="economic">
 <h3>Economic<a class="headerlink" href="#economic" title="Permalink to this heading">#</a></h3>
@@ -488,7 +510,7 @@ potential of CCO<sub>2</sub> over 100 years.</p>
 <h2>Sustainability assessment<a class="headerlink" href="#sustainability-assessment" title="Permalink to this heading">#</a></h2>
 <p>In the following, the methodologies used to assess the environmental sustainability of the scenarios are presented,
 based on the estimates of induced environmental impacts. Only climate and energy issues are considered. Indeed, these
-two environmental issues are the most impacting for air transport (see for instance <span id="id5">[<a class="reference internal" href="bibliography.html#id55" title="Thomas Planès. Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios prospectifs durables pour le transport aérien. PhD thesis, Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace, 2022. URL: https://www.theses.fr/2022ESAE0059.">Planes22</a>]</span>).</p>
+two environmental issues are the most impacting for air transport (see for instance <span id="id9">[<a class="reference internal" href="bibliography.html#id61" title="Thomas Planès. Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios prospectifs durables pour le transport aérien. PhD thesis, Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace, 2022. URL: https://www.theses.fr/2022ESAE0059.">Planes22</a>]</span>).</p>
 <section id="climate-sustainability">
 <h3>Climate sustainability<a class="headerlink" href="#climate-sustainability" title="Permalink to this heading">#</a></h3>
 <p>Climate sustainability assessment can be performed using various methodologies. For example, carbon
@@ -498,9 +520,9 @@ increase below a certain value (for example +1.5°C). For instance, Tab.3 summar
 different temperature rises. The emissions considered are calculated in a net way: they are
 the difference between gross anthropogenic CO<sub>2</sub> emissions and anthropogenic carbon sinks. Cumulative
 CO<sub>2</sub> emissions and mean temperature increase are linked by a quasi-linear relationship, which facilitates
-the estimation of carbon budgets <span id="id6">[<a class="reference internal" href="bibliography.html#id56" title="H Damon Matthews, Nathan P Gillett, Peter A Stott, and Kirsten Zickfeld. The proportionality of global warming to cumulative carbon emissions. Nature, 459(7248):829–832, 2009. doi:10.1038/nature08047.">MGSZ09</a>]</span>. Consequently, the use of carbon budgets allows
+the estimation of carbon budgets <span id="id10">[<a class="reference internal" href="bibliography.html#id62" title="H Damon Matthews, Nathan P Gillett, Peter A Stott, and Kirsten Zickfeld. The proportionality of global warming to cumulative carbon emissions. Nature, 459(7248):829–832, 2009. doi:10.1038/nature08047.">MGSZ09</a>]</span>. Consequently, the use of carbon budgets allows
 for example to simply evaluate the relevance of transition scenarios to reach climate objectives based on their
-CO<sub>2</sub> emissions alone <span id="id7">[<a class="reference internal" href="bibliography.html#id57" title="Pierre Friedlingstein, Robbie M Andrew, Joeri Rogelj, Glen P Peters, Josep G Canadell, Reto Knutti, Gunnar Luderer, Michael R Raupach, Michiel Schaeffer, Detlef P van Vuuren, and others. Persistent growth of CO2 emissions and implications for reaching climate targets. Nature geoscience, 7(10):709–715, 2014. doi:10.1038/ngeo2248.">FAR+14</a>]</span>.</p>
+CO<sub>2</sub> emissions alone <span id="id11">[<a class="reference internal" href="bibliography.html#id63" title="Pierre Friedlingstein, Robbie M Andrew, Joeri Rogelj, Glen P Peters, Josep G Canadell, Reto Knutti, Gunnar Luderer, Michael R Raupach, Michiel Schaeffer, Detlef P van Vuuren, and others. Persistent growth of CO2 emissions and implications for reaching climate targets. Nature geoscience, 7(10):709–715, 2014. doi:10.1038/ngeo2248.">FAR+14</a>]</span>.</p>
 <p><em>Tab.3 Estimates of carbon budgets according to IPCC AR6 (in GtCO<sub>2</sub>).</em></p>
 <p>In the following, a method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also
 extended to include non-CO<sub>2</sub> effects using two solutions.</p>
@@ -523,14 +545,14 @@ adjusted global gross carbon budget to 2050 <span class="math notranslate nohigh
 (by 2050) <span class="math notranslate nohighlight">\(GCB_A\)</span> is simply calculated using the following equation via an allocated share <span class="math notranslate nohighlight">\(F\)</span>.</p>
 <p><span class="math notranslate nohighlight">\(GCB_A = F~GCB_c\)</span></p>
 <p>The choice of the share allocated to the aviation sector is a political one and may involve multiple criteria
-(technical, economic, societal, etc.). Discussions on this allocation are proposed in <span id="id8">[<a class="reference internal" href="bibliography.html#id59" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.
+(technical, economic, societal, etc.). Discussions on this allocation are proposed in <span id="id12">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.
 An interesting reference value is the recent contribution of aviation to CO<sub>2</sub> emissions (also called
 grandfathering approach). For example, it is 2.6% on the perimeter of commercial aviation considering global
-CO<sub>2</sub> emissions <span id="id9">[<a class="reference internal" href="bibliography.html#id59" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>. This value can be interpreted as the share that would be allocated
+CO<sub>2</sub> emissions <span id="id13">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>. This value can be interpreted as the share that would be allocated
 to the aviation sector under a non-differentiated approach where all sectors reduce their emissions at the same rate.
 Allocations below or above this value can also be considered. However, allocating a larger share mechanically requires
 other sectors to reduce their emissions faster than the average to meet the global carbon budget. This type of
-trade-off may require multi-sectoral approaches, as for example proposed in <span id="id10">[<a class="reference internal" href="bibliography.html#id58" title="Science Based Targets Initiative. Sectoral Decarbonization Approach (SDA): A method for setting corporate emission reduction targets in line with climate science. Technical Report, SBTI, 2015.">ScienceBTInitiative15</a>]</span>. In this scenario,
+trade-off may require multi-sectoral approaches, as for example proposed in <span id="id14">[<a class="reference internal" href="bibliography.html#id64" title="Science Based Targets Initiative. Sectoral Decarbonization Approach (SDA): A method for setting corporate emission reduction targets in line with climate science. Technical Report, SBTI, 2015.">ScienceBTInitiative15</a>]</span>. In this scenario,
 cumulative direct CO<sub>2</sub> emissions from aviation would represent 3.4% of the considered carbon budget of
 1055 GtCO<sub>2</sub> over the period 2011–2050.</p>
 <p>Therefore, the climate sustainability of a scenario (regarding CO<sub>2</sub> emissions) can be assessed by comparing
@@ -541,13 +563,13 @@ are less than or equal to the carbon budget, the climate target is met.</p>
 <h4>CO<sub>2</sub> and non-CO<sub>2</sub> effects<a class="headerlink" href="#co-sub-2-sub-and-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h4>
 <p>For assessing the sustainability of aviation climate impact, a first solution is to directly estimate the temperature
 increase due to aviation, and to compare it to a climate objective (via an allocation or an absolute target) which is
-for instance performed in <span id="id11">[<a class="reference internal" href="bibliography.html#id24" title="Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. Nature Communications, 12(1):1–10, 2021. doi:10.1038/s41467-021-24091-y.">GGRGronstedt+21</a>, <a class="reference internal" href="bibliography.html#id35" title="Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. Environmental Research Letters, 16(10):104027, 2021. doi:10.1088/1748-9326/ac286e.">KlowerAL+21</a>]</span>. For this purpose, the equivalent
+for instance performed in <span id="id15">[<a class="reference internal" href="bibliography.html#id24" title="Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. Nature Communications, 12(1):1–10, 2021. doi:10.1038/s41467-021-24091-y.">GGRGronstedt+21</a>, <a class="reference internal" href="bibliography.html#id35" title="Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. Environmental Research Letters, 16(10):104027, 2021. doi:10.1088/1748-9326/ac286e.">KlowerAL+21</a>]</span>. For this purpose, the equivalent
 emissions estimated using the GWP<sup>*</sup> climate metric can also be converted into temperature impacts using the
 TCRE coefficient (or climate models for more accurate solutions).</p>
 <p>Another solution is to extend the previous approach in order to maintain a methodology similar to that used for
 CO<sub>2</sub> emissions. So-called equivalent carbon budgets are then calculated.
 For this purpose, a global equivalent gross carbon budget <span class="math notranslate nohighlight">\(EGCB\)</span> is calculated via the following equation, which has
-been adapted from simplified models for estimating carbon budgets described in <span id="id12">[<a class="reference internal" href="bibliography.html#id60" title="Joeri Rogelj, Piers M Forster, Elmar Kriegler, Christopher J Smith, and Roland Séférian. Estimating and tracking the remaining carbon budget for stringent climate targets. Nature, 571(7765):335–342, 2019. doi:10.1038/s41586-019-1368-z.">RFK+19</a>]</span>. The value
+been adapted from simplified models for estimating carbon budgets described in <span id="id16">[<a class="reference internal" href="bibliography.html#id66" title="Joeri Rogelj, Piers M Forster, Elmar Kriegler, Christopher J Smith, and Roland Séférian. Estimating and tracking the remaining carbon budget for stringent climate targets. Nature, 571(7765):335–342, 2019. doi:10.1038/s41586-019-1368-z.">RFK+19</a>]</span>. The value
 of the TCRE (Transient Climate Response to cumulative carbon Emissions) depends on the percentile considered, with
 median estimates on the order of 0.45°C/1000GtCO<sub>2</sub>. The <span class="math notranslate nohighlight">\(T_{non-CO_2}\)</span> term depends on the temperature
 objective considered: it is for example equal to 0.1°C for a +1.5°C target and to 0.2°C for +2°C.</p>
@@ -555,7 +577,7 @@ objective considered: it is for example equal to 0.1°C for a +1.5°C target and
 <p>The same approach as for CO<sub>2</sub> emissions is then used to define an equivalent carbon budget for aviation.
 Allocation rules must also be defined. The reference value considered this time is 5.1%, on the perimeter of commercial
 aviation, over a recent period and including global CO<sub>2</sub> emissions and non-CO<sub>2</sub> effects
-<span id="id13">[<a class="reference internal" href="bibliography.html#id59" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.</p>
+<span id="id17">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.</p>
 <p>Therefore, as before, the climate sustainability of a scenario (for all effects) can be assessed by comparing the
 cumulative equivalent emissions with the equivalent carbon budget calculated for aviation. As introduced previously,
 the equivalent emissions are also calculated using the GWP<sup>*</sup> climate metric. The total cumulative equivalent
@@ -637,13 +659,13 @@ to exclude extreme values (outliers).</p>
 </tbody>
 </table>
 <p><em>Tab.4 Global biomass availability (in EJ) scenarios to 2050.</em></p>
-<p>The estimates in Tab.4 are refined using an analysis of the references <span id="id14">[<a class="reference internal" href="bibliography.html#id61" title="Mark D Staples, Robert Malina, and Steven RH Barrett. The limits of bioenergy for mitigating global life-cycle greenhouse gas emissions from fossil fuels. Nature Energy, 2(2):1–8, 2017. doi:10.1038/nenergy.2016.202.">SMB17</a>, <a class="reference internal" href="bibliography.html#id39" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>]</span>
+<p>The estimates in Tab.4 are refined using an analysis of the references <span id="id18">[<a class="reference internal" href="bibliography.html#id67" title="Mark D Staples, Robert Malina, and Steven RH Barrett. The limits of bioenergy for mitigating global life-cycle greenhouse gas emissions from fossil fuels. Nature Energy, 2(2):1–8, 2017. doi:10.1038/nenergy.2016.202.">SMB17</a>, <a class="reference internal" href="bibliography.html#id39" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>]</span>
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about
 1 EJ, the rest being household waste. Energy crops are divided into 63% lignocellulose, 9% vegetable oils and 28% sugar
 or starch-based materials.</p>
-<p>The results obtained are consistent with <span id="id15">[<a class="reference internal" href="bibliography.html#id62" title="Raphael Slade, Ausilio Bauen, and Robert Gross. Global bioenergy resources. Nature Climate Change, 4(2):99–105, 2014.">SBG14</a>]</span> which concludes that likely estimates are less than
+<p>The results obtained are consistent with <span id="id19">[<a class="reference internal" href="bibliography.html#id68" title="Raphael Slade, Ausilio Bauen, and Robert Gross. Global bioenergy resources. Nature Climate Change, 4(2):99–105, 2014.">SBG14</a>]</span> which concludes that likely estimates are less than
 300 EJ. Similarly, the results by resource type are of the same order of magnitude as those given in
-<span id="id16">[<a class="reference internal" href="bibliography.html#id45" title="Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.">OMalleyPS21</a>]</span>.</p>
+<span id="id20">[<a class="reference internal" href="bibliography.html#id45" title="Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.">OMalleyPS21</a>]</span>.</p>
 </section>
 <section id="electricity-availability">
 <h4>Electricity availability<a class="headerlink" href="#electricity-availability" title="Permalink to this heading">#</a></h4>
@@ -654,7 +676,7 @@ the electricity mix. It is interesting to note the reference point in 2019 and t
 On the other hand, all the scenarios forecast an increase in electricity production and a decrease in the emission
 factor. For comparison, the emission factors at the global level for low-carbon production means are lower than
 50 gCO<sub>2</sub>-eq/kWh, with values of the order of 10 gCO<sub>2</sub>-eq/kWh for wind or nuclear power
-<span id="id17">[<a class="reference internal" href="bibliography.html#id63" title="T.F. Stocker, Dahe Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex, and P.M. Midgley. Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change. Cambridge University Press, 2013.">SQP+13</a>]</span>. In this work, the electricity energy resource budget is therefore based on these different estimates.</p>
+<span id="id21">[<a class="reference internal" href="bibliography.html#id69" title="T.F. Stocker, Dahe Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex, and P.M. Midgley. Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change. Cambridge University Press, 2013.">SQP+13</a>]</span>. In this work, the electricity energy resource budget is therefore based on these different estimates.</p>
 <p><img alt="" src="../_images/electricity_2050.png" /></p>
 <p><em>Fig.1 Global electricity production scenarios to 2050.</em></p>
 </section>
@@ -730,7 +752,7 @@ factor. For comparison, the emission factors at the global level for low-carbon 
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impact-modeling">Impact modeling</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-and-climate">Emissions and climate</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-linked-to-climate-impacts">Emissions linked to climate impacts</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-emissions">CO<sub>2</sub> emissions</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co-sub-2-sub-emissions">Non-CO<sub>2</sub> emissions</a></li>
 </ul>

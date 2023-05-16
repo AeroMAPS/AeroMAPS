@@ -9,17 +9,15 @@ impacts, but also to compare them with limits via a sustainability assessment in
 In the following, the models used for estimating the impacts induced by air transport are described. Currently, the 
 majority of impact modeling concern environmental impacts.
 
-### Emissions and climate
+
+### Emissions linked to climate impacts
 
 #### CO<sub>2</sub> emissions
 
-
-Kaya
-
-Finally, a coefficient corresponding to other life cycle emissions (excluding combustion and fuel production) can also 
-be applied. A value of the order of 2% can for instance be used by taking an intermediate value from 
-{cite}`pinheiro2020sustainability`.
-
+Based on the modeling of the air transport system through a Kaya decomposition, the estimation of the evolution of 
+CO<sub>2</sub> emissions is simple by multiplying the different factors. In addition, a coefficient corresponding to 
+other life cycle emissions (excluding combustion and fuel production) can also be applied. A value of the order of 2% 
+can for instance be used by taking an intermediate value from {cite}`pinheiro2020sustainability`.
 
 #### Non-CO<sub>2</sub> emissions
 
@@ -56,26 +54,50 @@ of contrails is assumed to be correlated with the total annual distance flown.
 
 *Tab.2 Coefficients for estimating the ERF of aviation climate impacts.*
 
-Also including non-CO<sub>2</sub> effects, aviation (including private and 
+Using the data and taking into account CO<sub>2</sub> and non-CO<sub>2</sub> effects, aviation (including private and 
 military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is 
-responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).
+responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000--2018), compared to
+global ERF estimated in the IPCC AR6.
 
-Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions.
+Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions, but also to 
+estimate the impacts on the temperature evolution in a second step. Multiple metrics are available in the scientific 
+literature for estimating them {cite}`aamaas2013simple, shine2005alternatives`:GWP, AGWP, GTP, AGTP, etc. 
+GWP is the most known and used metric, often used with a 100-year time horizon. However, this
+metric is limited for representing the evolution in terms of temperature for Short-Lived Climate Pollutants (SLCPs)
+{cite}`lynch2020demonstrating`, which is the case for aviation non-CO<sub>2</sub> effects. As a consequence, an 
+alternative metric is used here. GWP</sup>*</sup> is an improved climate metric developed recently 
+{cite}`allen2018solution, cain2019improved, collins2020stable`, one of the major interests of which is to better 
+evaluate the effect of SLCPs. It allows to estimate the equivalent emissions in CO<sub>2</sub>-we for a better 
+correspond with the evolution in temperature (warming equivalent). In this sense, it thus represents a simplified 
+climate model compared to other more complex climate models that may require long computation times 
+{cite}`meinshausen2022gwp`. Compared to GWP, it does not only take into account the absolute value of the emissions but 
+also the variation of the emission rate. The following equation allows estimating the equivalent emissions, noted 
+$E_{CO\textsubscript{2}\text{-we}}$, of a gas $G$ for a time horizon $H$, as a function of the absolute emissions $E_G$ 
+and the variation of emissions $\Delta E_G$ over a period $Delta t$. The parameters $r$ and $s$ depend on the gas and 
+represent the influence of cumulative or short-term effects.
 
-GWP<sup>*</sup>
+$E_{CO\textsubscript{2}} = \text{GWP}_H ~ \left(r ~\frac{\Delta E_G}{\Delta t}~H + s~E_G \right)$
 
-For this purpose, the following equation is used to estimate the equivalent emissions of the different non-CO<sub>2</sub> 
-effects. It is a rewriting of the previous equation based on assumptions from 
-{cite}`allen2018solution, lee2021contribution`, with in particular $r=1$ and $s=0$. 
+This equation can be modified for being used for aviation non-CO<sub>2</sub> effects, based on assumptions from 
+{cite}`allen2018solution, lee2021contribution`, with in particular $r=1$ and $s=0$. As a consequence, the following 
+equation is used with $E_{CO_2\text{-}we}$ the equivalent emissions for a given year of a non-CO<sub>2</sub> effect, 
+$\Delta F$ the corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a 
+period $\Delta t$ of 20 years, a time horizon $H$ of 100 years and $AGWP_H=88~years.mW/m^2/GtCO_2$ the absolute global
+warming potential of CO<sub>2</sub> over 100 years. 
 
 $E_{CO_2{text{-}we} = \frac{Delta F}{Delta t} \frac{H}{AGWP_H}$
 
-with $E_{CO_2\text{-}we}$ the equivalent emissions for a given year of a non-CO<sub>2</sub> effect, $\Delta F$ the 
-corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a period $\Delta t$ 
-of 20 years, a time horizon $H$ of 100 years and $AGWP_H=88~years. mW/m^2/GtCO_2$ the absolute global warming 
-potential of CCO<sub>2</sub> over 100 years.
+
 
 ### Energy resources
+
+The description of the energy carriers envisaged for air transport makes it possible to estimate the quantities of 
+energy to be embarked, but also the quantity of energy to produce them using energy efficiencies. The quantities of 
+biomass and electricity consumed are then directly calculated. The selectivity of the pathways for producing these 
+energy carriers, defined as the proportion of kerosene in the fuel output (usually measured by energy), can also be 
+taken into account. It allows estimating the amount of energy that have to be mobilized to produce kerosene and other 
+outputs. However, in general, an allocation of consumption is made to other outputs for estimating the "real 
+consumption" due to kerosene (which means that selectivity is not taken into account). 
 
 ### Economic
 
