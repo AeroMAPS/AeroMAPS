@@ -61,7 +61,7 @@ global ERF estimated in the IPCC AR6.
 
 Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions, but also to 
 estimate the impacts on the temperature evolution in a second step. Multiple metrics are available in the scientific 
-literature for estimating them {cite}`aamaas2013simple, shine2005alternatives`:GWP, AGWP, GTP, AGTP, etc. 
+literature for estimating them {cite}`aamaas2013simple, shine2005alternatives`: GWP, AGWP, GTP, AGTP, etc. 
 GWP is the most known and used metric, often used with a 100-year time horizon. However, this
 metric is limited for representing the evolution in terms of temperature for Short-Lived Climate Pollutants (SLCPs)
 {cite}`lynch2020demonstrating`, which is the case for aviation non-CO<sub>2</sub> effects. As a consequence, an 
@@ -72,11 +72,11 @@ correspond with the evolution in temperature (warming equivalent). In this sense
 climate model compared to other more complex climate models that may require long computation times 
 {cite}`meinshausen2022gwp`. Compared to GWP, it does not only take into account the absolute value of the emissions but 
 also the variation of the emission rate. The following equation allows estimating the equivalent emissions, noted 
-$E_{CO\textsubscript{2}\text{-we}}$, of a gas $G$ for a time horizon $H$, as a function of the absolute emissions $E_G$ 
-and the variation of emissions $\Delta E_G$ over a period $Delta t$. The parameters $r$ and $s$ depend on the gas and 
+$E_{CO_2\text{-we}}$, of a gas $G$ for a time horizon $H$, as a function of the absolute emissions $E_G$ 
+and the variation of emissions $\Delta E_G$ over a period $\Delta t$. The parameters $r$ and $s$ depend on the gas and 
 represent the influence of cumulative or short-term effects.
 
-$E_{CO\textsubscript{2}} = \text{GWP}_H ~ \left(r ~\frac{\Delta E_G}{\Delta t}~H + s~E_G \right)$
+$E_{CO_2\text{-we}} = \text{GWP}_H ~ \left(r ~\frac{\Delta E_G}{\Delta t}~H + s~E_G \right)$
 
 This equation can be modified for being used for aviation non-CO<sub>2</sub> effects, based on assumptions from 
 {cite}`allen2018solution, lee2021contribution`, with in particular $r=1$ and $s=0$. As a consequence, the following 
@@ -85,7 +85,7 @@ $\Delta F$ the corresponding variation of the ERF (smoothed over 5 years to bett
 period $\Delta t$ of 20 years, a time horizon $H$ of 100 years and $AGWP_H=88~years.mW/m^2/GtCO_2$ the absolute global
 warming potential of CO<sub>2</sub> over 100 years. 
 
-$E_{CO_2{text{-}we} = \frac{Delta F}{Delta t} \frac{H}{AGWP_H}$
+$E_{CO_2\text{-}we} = \frac{Delta F}{Delta t} \frac{H}{AGWP_H}$
 
 
 
@@ -148,7 +148,7 @@ simplified model of emissions decay at a fixed annual rate $x$ is considered. Th
 written as the following one. This is a geometric series which can then be expressed more simply. This equation can 
 then be solved implicitly to determine the annual rate of decrease of emissions $x$.
 
-$GCB = \sum_{k=2020}^{2100} E_{CO_2,2019}~(1-x)^{k-2019} = E_{CO_2,2019}~ \frac{(1-x)-(1-x)^{82}{x}$
+$GCB = \sum_{k=2020}^{2100} E_{CO_2,2019}~(1-x)^{k-2019} = E_{CO_2,2019}~ \frac{(1-x)-(1-x)^{82}}{x}$
 
 Here, the scope of the scenario studies is limited to 2050. Therefore, the following equation is used to determine the 
 adjusted global gross carbon budget to 2050 $GCB_c$.
