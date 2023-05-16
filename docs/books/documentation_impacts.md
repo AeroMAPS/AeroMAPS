@@ -85,7 +85,7 @@ $\Delta F$ the corresponding variation of the ERF (smoothed over 5 years to bett
 period $\Delta t$ of 20 years, a time horizon $H$ of 100 years and $AGWP_H=88~years.mW/m^2/GtCO_2$ the absolute global
 warming potential of CO<sub>2</sub> over 100 years. 
 
-$E_{CO_2\text{-}we} = \frac{Delta F}{Delta t} \frac{H}{AGWP_H}$
+$E_{CO_2\text{-}we} = \frac{\Delta F}{\Delta t} \frac{H}{AGWP_H}$
 
 
 
@@ -137,7 +137,6 @@ CO<sub>2</sub> emissions alone {cite}`friedlingstein2014persistent`.
 | 1.9                  | 2000     | 1450     | 1200     | 1000     | 800      |
 | 2.0                  | 2300     | 1700     | 1350     | 1150     | 900      |
 
-
 *Tab.3 Estimates of carbon budgets depending on TCRE percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
 
 In the following, a method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also 
@@ -149,7 +148,7 @@ extended to include non-CO<sub>2</sub> effects using two solutions.
 First, a global gross carbon budget $GCB$ is considered. As a reminder, it is defined as the sum of a net carbon budget
 and a CDR (Carbon Dioxide Removal) capacity (afforestation, BECCS, DACCS...). It is assumed that this budget will be 
 entirely consumed by 2100. This constraint is expressed in the following equation via cumulative emissions, considering 
-$E_{CO_2,k}$ emissions for year~$k$ from 2020.
+$E_{CO_2,k}$ emissions for year $k$ from 2020.
 
 $GCB = \sum_{k=2020}^{2100} E_{CO_2,k}$
 
