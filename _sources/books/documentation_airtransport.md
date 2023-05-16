@@ -55,9 +55,30 @@ This work thus allows identifying and linking the different levers of action to 
 In the following, deterministic models for estimating the following parameters are presented:
 - usage evolution through the evolution of air traffic ;
 - energy efficiency through improvements in energy intensity with various levers (fleet renewal for more efficient aircraft, operations, load factor) ;
-- energy decarbonization through incorporation of alternative fuels to replace fossil fuel.
+- energy decarbonization through incorporation of alternative energy carriers to replace fossil fuel.
 These models are particularly focused on their links to the sector's CO<sub>2</sub> emissions, but some elements 
 concerning strategies against non-CO<sub>2</sub> effects are also provided.
+
+
+## Main historical data
+
+Before detailing the different models for representing the evolution of the different elements of air transport, the 
+historical data used are briefly provided. The various air traffic data are derived from the ICAO (International Civil 
+Aviation Organisation), such as annual passenger numbers, RPK, RTK, ASK or aircraft load factor. Then, the historical 
+evolution of the term $\frac{E}{RPK}$ is obtained using the previous traffic data and data on world kerosene consumption 
+by the aviation sector, extracted and adapted from 
+<a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
+Indeed, not all kerosene is consumed by commercial aviation alone. According to {cite}`gossling2020global`, 
+military aviation consumes 8% of kerosene and general and private aviation 4%. The consumption of alternative energy 
+carriers is considered as negligible in the last decades. Lastly, the term $\frac{CO_2}{E}$ is considered as constant 
+for the same reason. The values considered depend on the scope chosen, in particular the inclusion of emissions related 
+to fossil kerosene production. Here, mean values from a review paper {cite}`jing2022understanding` are used: a direct 
+emission factor of 74.0 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> and a global (including fuel production) emission factor 
+of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is considered by default for facilitating the 
+comparison with alternative energy carriers. As a consequence, using these data and including indirect CO<sub>2</sub> 
+emissions, commercial aviation was for instance responsible for 2.6% of world CO<sub>2</sub> emissions in 2019 
+(compared with data from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a> 
+including fossil fuel combustion and land use). 
 
 
 ## Air traffic: usage evolution
@@ -350,23 +371,24 @@ of the implementation.
 ## Aircraft energy: decarbonization of energy
 
 The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the $CO_2/E$ energy. 
-Its evolution is based on the introduction of alternative fuels in the fleet to replace fossil kerosene. The objective 
-is therefore to estimate the emission factor of alternative fuels over their entire life cycle. The latter is 
-expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will be directly assimilated to CO<sub>2</sub> for 
-simplification purposes. In the following, two approaches are proposed. The first one is based on a detailed modeling 
-of the fuels and their integration in the fleet. The second is a simplified approach based on a representative 
-alternative fuel. However, the direct impact of alternative fuels on non-CO<sub>2</sub>, which is complex to evaluate 
-{cite}`marquart2005upgraded, noppel2007overview`, is not directly considered so far because of the low maturity of the 
-few models present in the literature {cite}`grewe2021evaluating, klower2021quantifying`.
+Its evolution is based on the introduction of alternative energy carriers in the fleet to replace fossil kerosene. The 
+objective is therefore to estimate the emission factor of alternative energy carriers (only in the form of fuel so far) 
+over their entire life cycle. The latter is expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will 
+be directly assimilated to CO<sub>2</sub> for simplification purposes. In the following, two approaches are proposed. 
+The first one is based on a detailed modeling of the fuels and their integration in the fleet. The second is a 
+simplified approach based on a representative alternative energy carrier. However, the direct impact of alternative 
+energy carriers on non-CO<sub>2</sub>, which is complex to evaluate {cite}`marquart2005upgraded, noppel2007overview`, 
+is not directly considered so far because of the low maturity of the few models present in the literature 
+{cite}`grewe2021evaluating, klower2021quantifying`.
 
 
 ### Detailed modeling
 
-First, the objective is to estimate the main characteristics of alternative fuels. These are obtained by statistical 
-analysis of data from the scientific literature. Many alternative energy carriers are considered to decarbonize 
-aviation fuel. In this work, three main alternatives are studied: biofuels, hydrogen and electrofuels. Biofuels and 
-electrofuels are drop-in fuels, while hydrogen requires specific aircraft architectures. The selectivity of fuels 
-during their production is not directly considered.
+First, the objective is to estimate the main characteristics of alternative energy carriers. These are obtained by 
+statistical analysis of data from the scientific literature. Many alternative energy carriers are considered to 
+decarbonize aviation fuel. In this work, three main alternatives are studied: biofuels, hydrogen and electrofuels. 
+Biofuels and electrofuels are drop-in fuels, while hydrogen requires specific aircraft architectures. The selectivity 
+of fuels during their production is not directly considered.
 
 Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is 
 complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and 
@@ -440,10 +462,10 @@ models are used, but the principle remains the same.
 
 ### Simplified modeling
 
-A simplified approach is also possible. In the latter, an average alternative fuel is considered. The disadvantage of 
-this approach is that it does not allow to distinguish different types of fuel, and in particular hydrogen which 
-requires specific architectures. Moreover, it does not allow to easily model the evolution of the emission factor of 
-a fuel, especially for those based on electricity.
+A simplified approach is also possible. In the latter, an average alternative energy carrier is considered. The 
+disadvantage of this approach is that it does not allow to distinguish different types of fuel, and in particular 
+hydrogen which requires specific architectures. Moreover, it does not allow to easily model the evolution of the 
+emission factor of a fuel, especially for those based on electricity.
 
 First, the notion of decarbonization rate is introduced. The decarbonization rate of a fuel is defined as the reduction
 of its CO content compared to fossil kerosene. For example, taking the emission factor of fossil kerosene of 
@@ -454,5 +476,5 @@ energy used by the fleet compared to that of a similar fleet operating on fossil
 
 In this approach, to model the rate of decarbonization of the fleet, logistic functions are used. This time, the 
 parameter $A$ represents the final decarbonization rate of the fleet. This parameter corresponds to the 
-decarbonization rate of the average alternative fuel considered. The parameter $k$ corresponds to the introduction 
-speed of the alternative fuels in the fleet, while the parameter $x_0$ allows to set the integration timing. 
+decarbonization rate of the average alternative energy carrier considered. The parameter $k$ corresponds to the introduction 
+speed of the alternative energy carriers in the fleet, while the parameter $x_0$ allows to set the integration timing. 

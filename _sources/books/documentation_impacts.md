@@ -13,7 +13,6 @@ majority of impact modeling concern environmental impacts.
 
 #### CO<sub>2</sub> emissions
 
-direct/indirect {cite}`jing2022understanding`
 
 Kaya
 
@@ -27,7 +26,7 @@ be applied. A value of the order of 2% can for instance be used by taking an int
 For estimating non-CO<sub>2</sub> emissions, the concept of Emission Index (EI) is used. They make it possible to 
 obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...)depending on fuel consumption (or CO<sub>2</sub> 
 emissions). Values for fossil kerosene from {cite}`lee2021contribution` have been used and are provided in Tab.1. The 
-values can be adapted for alternative fuels.
+values can be adapted for alternative energy carriers.
 
 | **Emission**              | **Value** | **Unit**                            |
 |---------------------------|-----------|-------------------------------------|
@@ -46,16 +45,20 @@ are cumulative: therefore, at first order, the coefficient to estimate the ERF m
 CO<sub>2</sub> emissions. The impact of the other emissions is estimated from the annual emissions. Finally, the impact 
 of contrails is assumed to be correlated with the total annual distance flown.
 
-| **Climate impact**          | **Value**              | **Unit**                          |
-|-----------------------------|------------------------|-----------------------------------|
-| CO<sub>2</sub> (cumulative) | 0.88                   | mW/m<sup>2</sup>/GtCO<sub>2</sub> |
-| H<sub>2</sub>O              | 0.0052                 | mW/m<sup>2</sup>/TgH<sub>2</sub>O |
-| NO<sub>x</sub>              | 11.55                  | mW/m<sup>2</sup>/TgN              |
-| Aerosols (BC)               | 100.7                  | mW/m<sup>2</sup>/TgBC             |
-| Aerosols (SO<sub>x</sub>)   | -19.9                  | mW/m<sup>2</sup>/TgSO<sub>2</sub> |
-| Condensation trails         | 1.058.10<sup>-9</sup>} | mW/m<sup>2</sup>/km               |
+| **Climate impact**          | **Value**             | **Unit**                          |
+|-----------------------------|-----------------------|-----------------------------------|
+| CO<sub>2</sub> (cumulative) | 0.88                  | mW/m<sup>2</sup>/GtCO<sub>2</sub> |
+| H<sub>2</sub>O              | 0.0052                | mW/m<sup>2</sup>/TgH<sub>2</sub>O |
+| NO<sub>x</sub>              | 11.55                 | mW/m<sup>2</sup>/TgN              |
+| Aerosols (BC)               | 100.7                 | mW/m<sup>2</sup>/TgBC             |
+| Aerosols (SO<sub>x</sub>)   | -19.9                 | mW/m<sup>2</sup>/TgSO<sub>2</sub> |
+| Condensation trails         | 1.058.10<sup>-9</sup> | mW/m<sup>2</sup>/km               |
 
 *Tab.2 Coefficients for estimating the ERF of aviation climate impacts.*
+
+Also including non-CO<sub>2</sub> effects, aviation (including private and 
+military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is 
+responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).
 
 Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions.
 
@@ -95,7 +98,7 @@ two environmental issues are the most impacting for air transport (see for insta
 Climate sustainability assessment can be performed using various methodologies. For example, carbon 
 budgets which is an interesting concept used by the IPCC in the context of global warming mitigation strategies. It is 
 defined as the maximum remaining cumulative CO<sub>2</sub> emissions that can be emitted to limit the temperature 
-increase below a certain value (for example +1.5°C). For instance, Tab.X summarizes estimates of carbon budgets for 
+increase below a certain value (for example +1.5°C). For instance, Tab.3 summarizes estimates of carbon budgets for 
 different temperature rises. The emissions considered are calculated in a net way: they are 
 the difference between gross anthropogenic CO<sub>2</sub> emissions and anthropogenic carbon sinks. Cumulative 
 CO<sub>2</sub> emissions and mean temperature increase are linked by a quasi-linear relationship, which facilitates 
@@ -103,7 +106,7 @@ the estimation of carbon budgets {cite}`matthews2009proportionality`. Consequent
 for example to simply evaluate the relevance of transition scenarios to reach climate objectives based on their 
 CO<sub>2</sub> emissions alone {cite}`friedlingstein2014persistent`.
 
-TABLE
+*Tab.3 Estimates of carbon budgets according to IPCC AR6 (in GtCO<sub>2</sub>).*
 
 In the following, a method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also 
 extended to include non-CO<sub>2</sub> effects using two solutions. 
@@ -203,7 +206,7 @@ In the following, some examples of reasonable values are proposed.
 
 The estimation of the available biomass at the global level is complex and depends on several criteria. In this work, 
 a statistical analysis of IRENA (International Renewable ENergy Agency) data is performed. The resource categories 
-described for the biofuel pathways are used. The results are given in Tab.3. The lower and upper fences are determined 
+described for the biofuel pathways are used. The results are given in Tab.4. The lower and upper fences are determined 
 to exclude extreme values (outliers).
 
 | **Resource**           | **Lower fence** | **Q1** | **Median** | **Q3** | **Upper fence** |
@@ -215,9 +218,9 @@ to exclude extreme values (outliers).
 | Algae                  | 5               | 8      | 15         | 31     | 50              |
 | Total                  | 37              | 100    | 164        | 302    | 557             |
 
-*Tab.3 Global biomass availability (in EJ) scenarios to 2050.*
+*Tab.4 Global biomass availability (in EJ) scenarios to 2050.*
 
-The estimates in Tab.1 are refined using an analysis of the references {cite}`staples2017limits, staples2018aviation` 
+The estimates in Tab.4 are refined using an analysis of the references {cite}`staples2017limits, staples2018aviation` 
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about 
 1 EJ, the rest being household waste. Energy crops are divided into 63% lignocellulose, 9% vegetable oils and 28% sugar 
 or starch-based materials.
