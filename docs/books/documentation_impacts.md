@@ -128,7 +128,17 @@ the estimation of carbon budgets {cite}`matthews2009proportionality`. Consequent
 for example to simply evaluate the relevance of transition scenarios to reach climate objectives based on their 
 CO<sub>2</sub> emissions alone {cite}`friedlingstein2014persistent`.
 
-*Tab.3 Estimates of carbon budgets according to IPCC AR6 (in GtCO<sub>2</sub>).*
+| **Temperature [°C]** | **17th** | **33rd** | **50th** | **67th** | **83rd** |
+|----------------------|----------|----------|----------|----------|----------|
+| 1.5                  | 900      | 650      | 500      | 400      | 300      |
+| 1.6                  | 1200     | 850      | 650      | 550      | 400      |
+| 1.7                  | 1450     | 1050     | 850      | 700      | 550      |
+| 1.8                  | 1750     | 1250     | 1000     | 850      | 650      |
+| 1.9                  | 2000     | 1450     | 1200     | 1000     | 800      |
+| 2.0                  | 2300     | 1700     | 1350     | 1150     | 900      |
+
+
+*Tab.3 Estimates of carbon budgets depending on TCRE percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
 
 In the following, a method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also 
 extended to include non-CO<sub>2</sub> effects using two solutions. 
