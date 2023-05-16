@@ -13,7 +13,6 @@ majority of impact modeling concern environmental impacts.
 
 #### CO<sub>2</sub> emissions
 
-direct/indirect {cite}`jing2022understanding`
 
 Kaya
 
@@ -27,7 +26,7 @@ be applied. A value of the order of 2% can for instance be used by taking an int
 For estimating non-CO<sub>2</sub> emissions, the concept of Emission Index (EI) is used. They make it possible to 
 obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...)depending on fuel consumption (or CO<sub>2</sub> 
 emissions). Values for fossil kerosene from {cite}`lee2021contribution` have been used and are provided in Tab.1. The 
-values can be adapted for alternative fuels.
+values can be adapted for alternative energy carriers.
 
 | **Emission**              | **Value** | **Unit**                            |
 |---------------------------|-----------|-------------------------------------|
@@ -56,6 +55,10 @@ of contrails is assumed to be correlated with the total annual distance flown.
 | Condensation trails         | 1.058.10<sup>-9</sup> | mW/m<sup>2</sup>/km               |
 
 *Tab.2 Coefficients for estimating the ERF of aviation climate impacts.*
+
+Also including non-CO<sub>2</sub> effects, aviation (including private and 
+military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is 
+responsible for 5.1% of the increase in effective radiative forcing over a more recent period (2000-2018).
 
 Lastly, equivalent emissions can be estimated for simplifying the comparison with CO<sub>2</sub> emissions.
 
