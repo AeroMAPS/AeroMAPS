@@ -82,8 +82,8 @@ This equation can be modified for being used for aviation non-CO<sub>2</sub> eff
 {cite}`allen2018solution, lee2021contribution`, with in particular $r=1$ and $s=0$. As a consequence, the following 
 equation is used with $E_{CO_2\text{-}we}$ the equivalent emissions for a given year of a non-CO<sub>2</sub> effect, 
 $\Delta F$ the corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a 
-period $\Delta t$ of 20 years, a time horizon $H$ of 100 years and $AGWP_H=88~years.mW/m^2/GtCO_2$ the absolute global
-warming potential of CO<sub>2</sub> over 100 years. 
+period $\Delta t$ of 20 years, a time horizon $H$ of 100 years and the absolute global
+warming potential of CO<sub>2</sub> over 100 years $AGWP_H$ of 88 yr.mW/m<sup>2</sup>/GtCO<sub>2</sub>. 
 
 $E_{CO_2\text{-}we} = \frac{\Delta F}{\Delta t} \frac{H}{AGWP_H}$
 
