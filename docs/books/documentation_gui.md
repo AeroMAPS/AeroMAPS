@@ -1,10 +1,60 @@
 # Use of the graphical user interface
 
-UNDER CONSTRUCTION
+This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
+it on a computer. In a first step, a tutorial is provided for understanding the use of the GUI. In a second step, the 
+default settings used on the GUI are provided.
+
+
+## Tutorial
+
+### Use of CAST
+
+The AeroMAPS GUI is composed of 3 tabs: 
+- **Simulator** which is the integrated simulator to directly simulate prospective scenarios for air transport ;
+- **Data** which allows to visualize data and retrieve them in CSV format in order to post-process them ;
+- **About AeroMAPS** which provides brief information, explanations and documentation about the framework
+
+Moving on the tool and on the explanatory tabs is quite intuitive by clicking on the corresponding tabs. To adjust 
+the size of the tool to the size of his screen, the user can use the zoom (out) functionalities on his browser. 
+The display language can be chosen : English or French (coming soon).
+
+To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two distinct blocks then appear on the 
+user's screen (see the following figure). 
+
+![](/figs/tutorial page.png)
+
+On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
+selecting specific figures using drop-down menus. A first graph allows plotting 
+CO<sub>2</sub> emissions or effective radiative forcing from aviation. A second one provide figures concerning the 
+assessment of the sustainability of a scenario, for instance in terms of climate. A last graph represents a set of 
+figures for analyzing scenarios more deeply.
+
+On the other hand, a set of sliders is available in the lower part of the screen for performing scenario simulation.
+For facilitating the handling of the tool according to the user, the user can use three distinct modes of varying 
+complexity. In the *Discovery mode*, the user uses directly sliders: this mode provides a good understanding of the 
+sensitivities of the main levers of action. In the *Scenarios mode*, the user displays scenarios that have already been 
+defined and parameterized: this is the easiest mode to use which only allows analyzing scenarios. Finally, the 
+*Advanced mode*, not directly available on the GUI, links to the AeroMAPS GitHub to be able to manipulate in detail the 
+AeroMAPS framework using Jupyter Notebooks.
+
+> **_NOTE:_**  Additional information on the different levers of action on the *Discovery mode* is provided by hovering 
+> the mouse over them (tooltip).
+
+
+### Example of use
+
+To illustrate the handling of AeroMAPS, an animation is given below. In this animation, the user tries out different 
+AeroMAPS functionalities: moving on the tabs, using different simulator modes, displaying different figures, setting 
+scenario parameters.
+
+![](/figs/gif_tutorial.gif)
+
+
+
 
 ## Reference settings
 
-COMPLETE
+COMPLETE (and choose between the two following levers)
 
 Finally, as mentioned previously, the global Covid-19 outbreak has significantly disrupted global air traffic in 2020. 
 The consequences of the latter are likely to disrupt global traffic for several years. To take account of this 

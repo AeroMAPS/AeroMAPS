@@ -13,8 +13,8 @@ chapters:
     - file: books/documentation_architecture
     - file: books/documentation_airtransport
     - file: books/documentation_impacts
-    - file: books/documentation_software
     - file: books/documentation_gui
+    - file: books/documentation_software
     - file: books/bibliography
 - file: books/examples
   sections:
