@@ -19,7 +19,7 @@ The display language can be chosen : English or French (coming soon).
 To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two distinct blocks then appear on the 
 user's screen (see the following figure). 
 
-![](/figs/tutorial page.png)
+![](/figs/tutorial_page.png)
 
 On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
 selecting specific figures using drop-down menus. A first graph allows plotting 
