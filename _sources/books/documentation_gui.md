@@ -69,6 +69,6 @@ A. Humpe in 2020 in
 <a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a>. 
 The authors show that only 11% of the world's population flies, and only between 2 and 4% go abroad. Moreover, 
 'frequent flyers', about 1% of the world's population who fly an average of 56,000 km per year (about 3 
-long-range trips), are responsible for about 50% of aviation $CO_2$ emissions, taking into account their number of 
+long-range trips), are responsible for about 50% of aviation CO<sub>2</sub> emissions, taking into account their number of 
 flights but also the more frequent use of upper classes. Therefore, if on average these 'frequent flyers' flew half 
 as often, aviation emissions would be reduced by 25%.
