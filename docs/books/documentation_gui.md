@@ -7,8 +7,6 @@ default settings used on the GUI are provided.
 
 ## Tutorial
 
-### Use of CAST
-
 The AeroMAPS GUI is composed of 3 tabs: 
 - **Simulator** which is the integrated simulator to directly simulate prospective scenarios for air transport ;
 - **Data** which allows to visualize data and retrieve them in CSV format in order to post-process them ;
@@ -39,9 +37,6 @@ AeroMAPS framework using Jupyter Notebooks.
 
 > **_NOTE:_**  Additional information on the different levers of action on the *Discovery mode* is provided by hovering 
 > the mouse over them (tooltip).
-
-
-### Example of use
 
 To illustrate the handling of AeroMAPS, an animation is given below. In this animation, the user tries out different 
 AeroMAPS functionalities: moving on the tabs, using different simulator modes, displaying different figures, setting 
