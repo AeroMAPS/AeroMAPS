@@ -66,8 +66,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'books/documentation_gui';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Bibliography" href="bibliography.html" />
-    <link rel="prev" title="Software developments" href="documentation_software.html" />
+    <link rel="next" title="Software developments" href="documentation_software.html" />
+    <link rel="prev" title="Impact modeling and sustainability assessment" href="documentation_impacts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,8 +159,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling and sustainability assessment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Use of the graphical user interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
 </li>
@@ -332,6 +332,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-of-cast">Use of CAST</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-of-use">Example of use</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
 </ul>
             </nav>
@@ -346,10 +351,53 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="use-of-the-graphical-user-interface">
 <h1>Use of the graphical user interface<a class="headerlink" href="#use-of-the-graphical-user-interface" title="Permalink to this heading">#</a></h1>
-<p>UNDER CONSTRUCTION</p>
+<p>This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use
+it on a computer. In a first step, a tutorial is provided for understanding the use of the GUI. In a second step, the
+default settings used on the GUI are provided.</p>
+<section id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading">#</a></h2>
+<section id="use-of-cast">
+<h3>Use of CAST<a class="headerlink" href="#use-of-cast" title="Permalink to this heading">#</a></h3>
+<p>The AeroMAPS GUI is composed of 3 tabs:</p>
+<ul class="simple">
+<li><p><strong>Simulator</strong> which is the integrated simulator to directly simulate prospective scenarios for air transport ;</p></li>
+<li><p><strong>Data</strong> which allows to visualize data and retrieve them in CSV format in order to post-process them ;</p></li>
+<li><p><strong>About AeroMAPS</strong> which provides brief information, explanations and documentation about the framework</p></li>
+</ul>
+<p>Moving on the tool and on the explanatory tabs is quite intuitive by clicking on the corresponding tabs. To adjust
+the size of the tool to the size of his screen, the user can use the zoom (out) functionalities on his browser.
+The display language can be chosen : English or French (coming soon).</p>
+<p>To use the AeroMAPS simulator, the user must select the <strong>Simulator</strong> tab. Two distinct blocks then appear on the
+user’s screen (see the following figure).</p>
+<p>![](/figs/tutorial page.png)</p>
+<p>On the one hand, three different graphs are available in the upper part of the screen, with the possibility of
+selecting specific figures using drop-down menus. A first graph allows plotting
+CO<sub>2</sub> emissions or effective radiative forcing from aviation. A second one provide figures concerning the
+assessment of the sustainability of a scenario, for instance in terms of climate. A last graph represents a set of
+figures for analyzing scenarios more deeply.</p>
+<p>On the other hand, a set of sliders is available in the lower part of the screen for performing scenario simulation.
+For facilitating the handling of the tool according to the user, the user can use three distinct modes of varying
+complexity. In the <em>Discovery mode</em>, the user uses directly sliders: this mode provides a good understanding of the
+sensitivities of the main levers of action. In the <em>Scenarios mode</em>, the user displays scenarios that have already been
+defined and parameterized: this is the easiest mode to use which only allows analyzing scenarios. Finally, the
+<em>Advanced mode</em>, not directly available on the GUI, links to the AeroMAPS GitHub to be able to manipulate in detail the
+AeroMAPS framework using Jupyter Notebooks.</p>
+<blockquote>
+<div><p><strong><em>NOTE:</em></strong>  Additional information on the different levers of action on the <em>Discovery mode</em> is provided by hovering
+the mouse over them (tooltip).</p>
+</div></blockquote>
+</section>
+<section id="example-of-use">
+<h3>Example of use<a class="headerlink" href="#example-of-use" title="Permalink to this heading">#</a></h3>
+<p>To illustrate the handling of AeroMAPS, an animation is given below. In this animation, the user tries out different
+AeroMAPS functionalities: moving on the tabs, using different simulator modes, displaying different figures, setting
+scenario parameters.</p>
+<p><img alt="" src="../_images/gif_tutorial.gif" /></p>
+</section>
+</section>
 <section id="reference-settings">
 <h2>Reference settings<a class="headerlink" href="#reference-settings" title="Permalink to this heading">#</a></h2>
-<p>COMPLETE</p>
+<p>COMPLETE (and choose between the two following levers)</p>
 <p>Finally, as mentioned previously, the global Covid-19 outbreak has significantly disrupted global air traffic in 2020.
 The consequences of the latter are likely to disrupt global traffic for several years. To take account of this
 epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level
@@ -405,20 +453,20 @@ as often, aviation emissions would be reduced by 25%.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="documentation_software.html"
+       href="documentation_impacts.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Software developments</p>
+        <p class="prev-next-title">Impact modeling and sustainability assessment</p>
       </div>
     </a>
     <a class="right-next"
-       href="bibliography.html"
+       href="documentation_software.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Bibliography</p>
+        <p class="prev-next-title">Software developments</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -440,6 +488,11 @@ as often, aviation emissions would be reduced by 25%.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-of-cast">Use of CAST</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-of-use">Example of use</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
 </ul>
   </nav></div>
