@@ -331,7 +331,18 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discovery-mode"><em>Discovery mode</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-fleet-and-operations">Aircraft fleet and operations</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy">Aircraft energy</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-energy">Climate &amp; Energy</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#allocations">Allocations</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scenarios-mode"><em>Scenarios mode</em></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -385,9 +396,22 @@ scenario parameters.</p>
 </section>
 <section id="reference-settings">
 <h2>Reference settings<a class="headerlink" href="#reference-settings" title="Permalink to this heading">#</a></h2>
-<p>COMPLETE (and choose between the two following levers)</p>
-<p>Finally, as mentioned previously, the global Covid-19 outbreak has significantly disrupted global air traffic in 2020.
-The consequences of the latter are likely to disrupt global traffic for several years. To take account of this
+<p>The different default settings for using the interface are detailed in the following, both for the <em>Discovery mode</em> and
+the <em>Scenarios mode</em>.</p>
+<section id="discovery-mode">
+<h3><em>Discovery mode</em><a class="headerlink" href="#discovery-mode" title="Permalink to this heading">#</a></h3>
+<p>In this mode, the user can play with different sliders corresponding roughly to the AeroMAPS architecture. On the
+one hand, aviation settings are provided for modeling the air transport evolution through the air traffic, aircraft
+fleet and operations, and aircraft energy. On the other hand, environmental settings are given via climate and energy
+assumptions and allocations choices.</p>
+<section id="air-traffic">
+<h4>Air traffic<a class="headerlink" href="#air-traffic" title="Permalink to this heading">#</a></h4>
+<p>For making assumptions on air traffic evolution, the user can directly define mean air traffic growth rates on the
+period 2020–2050 for the four considered markets in the model: passenger short-range, passenger medium-range,
+passenger long-range and freight. By default, these values are fixed to 3% per year, i.e. values close to aviation
+industry’s projections <span id="id1">[<a class="reference internal" href="bibliography.html#id16" title="Air Transport Action Group. Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">AirTransportActionGroup21</a>]</span>.</p>
+<p>Moreover, by default, a modeling of Covid-19 epidemic is included. It significantly disrupted global air traffic
+in 2020 and its consequences are likely to disrupt global traffic for several years. To take account of this
 epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level
 by 2024 according to
 <a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a>.
@@ -398,14 +422,32 @@ against 82.4% in 2019. Thus, due to this deterioration in the aircraft load fact
 on the tool. Indeed, the deterioration in the aircraft load factor, considered as a potential improvement in
 efficiency, leads here to an increase in emissions compared to those expected without modification of the
 efficiency levers of action. + E/ASK</p>
-<p>Societal aspects on the distribution of flights. The results of this part are based on the work of S. Gössling and
-A. Humpe in 2020 in
+<p>LAST OPTION (TO BE DONE CORRECTED)</p>
+<p>Lastly, a last option is provided for studying societal aspects on the distribution of flights. The results of this
+part are based on the work of S. Gössling and A. Humpe in 2020 in
 <a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank"><em>The global scale, distribution and growth of aviation: Implications for climate change</em></a>.
 The authors show that only 11% of the world’s population flies, and only between 2 and 4% go abroad. Moreover,
 ‘frequent flyers’, about 1% of the world’s population who fly an average of 56,000 km per year (about 3
 long-range trips), are responsible for about 50% of aviation CO<sub>2</sub> emissions, taking into account their number of
 flights but also the more frequent use of upper classes. Therefore, if on average these ‘frequent flyers’ flew half
 as often, aviation emissions would be reduced by 25%.</p>
+</section>
+<section id="aircraft-fleet-and-operations">
+<h4>Aircraft fleet and operations<a class="headerlink" href="#aircraft-fleet-and-operations" title="Permalink to this heading">#</a></h4>
+</section>
+<section id="aircraft-energy">
+<h4>Aircraft energy<a class="headerlink" href="#aircraft-energy" title="Permalink to this heading">#</a></h4>
+</section>
+<section id="climate-energy">
+<h4>Climate &amp; Energy<a class="headerlink" href="#climate-energy" title="Permalink to this heading">#</a></h4>
+</section>
+<section id="allocations">
+<h4>Allocations<a class="headerlink" href="#allocations" title="Permalink to this heading">#</a></h4>
+</section>
+</section>
+<section id="scenarios-mode">
+<h3><em>Scenarios mode</em><a class="headerlink" href="#scenarios-mode" title="Permalink to this heading">#</a></h3>
+</section>
 </section>
 </section>
 
@@ -477,7 +519,18 @@ as often, aviation emissions would be reduced by 25%.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-settings">Reference settings</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discovery-mode"><em>Discovery mode</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#air-traffic">Air traffic</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-fleet-and-operations">Aircraft fleet and operations</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy">Aircraft energy</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-energy">Climate &amp; Energy</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#allocations">Allocations</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scenarios-mode"><em>Scenarios mode</em></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
