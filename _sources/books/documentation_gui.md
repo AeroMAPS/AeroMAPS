@@ -166,6 +166,15 @@ The
 
 #### Allocations
 
+Last, but not least, the user can assume allocation rules concerning the different environmental limits considered in
+the model. The term allocation means here the result of complex mechanisms of negotiation, competition, arbitration and 
+regulation for access to resources. Here, our issues, that are estimated using the climate and energy settings, are 
+considered: the carbon budget, equivalent carbon budget (which corresponds roughly to temperature), biomass budget and 
+electricity budget. Each time, several allocations are proposed. More specifically, grandfathering allocations can be 
+assumed, which corresponds to the current impact of aviation on an environmental impact. For instance, aviation 
+representing currently 2.6% of CO<sub>2</sub> emissions, the grandfathering allocation for carbon budget corresponds to 
+2.6%. The justification of the default values are provided on the tooltips.
+
 
 
 ### *Scenarios mode*
