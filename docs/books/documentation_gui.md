@@ -106,19 +106,20 @@ constant efficiency at 2019 level or efficiency corresponding to fleet renewal w
 (default option), others allow integrating future more efficient architecture. A trend option includes a deployment
 similar to the previous one in terms of efficiency gains, Entry-Into-Service (EIS) year and fleet renewal rate, which 
 corresponds to an annual efficiency gains of around 1%. A more optimistic solution considers the same assumptions with 
-an accelerated fleet turnover. Lastly, an ambitious option takes into account the introduction of very efficient 
+an accelerated fleet turnover. Finally, an ambitious option takes into account the introduction of very efficient 
 aircraft.
 
 Another slider represents the improvements in terms of operations through flight trajectories, air traffic management, 
 formation flights or ground operations evolution. The user can choose efficiency gains more or less ambitious, from 0%
-to 12%.
+to 12% by 2050. For each option, the settings corresponding to the deployment of these solutions are similar, i.e. a 
+duration of deployment of 20 years (for reaching 98% of the total gains) from 2025.
 
 The user can also set the evolution of the mean aircraft load factor in 2050. The default setting corresponds to a 
-trend estimation of 89% by 2050. The more pessimistic option correspond to 2019 value, whereas the more optimistic one 
-is probably be hard to reach for all the fleet, corresponding to a value of 95% that has been nevertheless already 
-reached by some airlines.
+trend estimation of 89% by 2050, but other settings are available: 82.4%, 85%, 92%, 95%. The more pessimistic option 
+corresponds to 2019 value, whereas the more optimistic one is probably be hard to reach for all the fleet even if some
+airlines have  already reached this value in 2019.
 
-Finally, ...
+Lastly, ...
  
 
 #### Aircraft energy
@@ -126,12 +127,35 @@ Finally, ...
 The user can define the energy that will be use by the future aircraft fleet. Here, only three main alternative fuels 
 are considered as alternative energy carriers.
 
-On the one hand,
+On the one hand, the user can define the future mix of drop-in fuels, i.e. fuels that can (almost) directly replace 
+fossil kerosene such as biofuels and electrofuels. A default option corresponds to the exclusive use of fossil kerosene.
+Then, a biofuel option represents the exclusive use of biofuels by 2050, with a progressive replacement of fossil
+kerosene by biofuels from 2025. A similar one represents the exclusive use of electrofuels by 2050, with a progressive
+replacement of fossil kerosene by electrofuels from 2030. Finally, the ReFuelEU option corresponds to the implementation
+of the blending mandates at the european level, considering only drop-in fuels. This option considers the deployment of 
+biofuels from 2025 and electrofuels from 2030, with a final mix in 2050 of 35% biofuels, 35% electrofuels and 30% fossil
+kerosene.
 
-On the other hand,
+On the other hand, the user can also introduce hydrogen aircraft into the fleet. This type of aircraft also requires 
+dedicated architectures (unlike drop-in fuels) which will probably be limited to low ranges for structural reasons (low 
+gravimetric indices). As a consequence, the settings used are based on the fleet renewal values.
+The default option does not consider the use of hydrogen aircraft. A limited introduction considers a late EIS in 2040 
+only for 50% of the short-range market, whereas a moderate one considers a forecast EIS in 2035 for the same market. 
+Finally, an ambitious option includes the large deployment of hydrogen aircraft for all the short-range market from 
+2035 and 50% of the medium-range market from 2040.
 
 Concerning the production of these alternative fuels, the user can make assumptions on biofuel emission factors, 
-hydrogen production pathways and electricity production emission factors.
+hydrogen production pathways and electricity production emission factors. For biofuels, the default value corresponds to
+the median value for HEFA pathway (20.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>), which is the most used pathway currently. 
+A high-carbon value of 52.2 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (corresponding to AtJ pathway) and a low-carbon value
+of 7.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (corresponding to FT pathway) can also be chosen. These values can be 
+compared to the value of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> for fossil kerosene (including production emissions).
+Concerning hydrogen production, four options are proposed: a current one which is mainly a mix between steam reformation
+of methane or the gasification of coal, two other ones based on steam reformation of methane only with or without carbon
+capture and storage (CCS), a last one based on electrolysis whose emission factor depends on electricity mix. Finally, 
+the electricity mix can be assumed as more or less low-carbon, with a default option corresponding to the current value
+of emission factor (429 gCO<sub>2</sub>-eq/kWh). For each case, a transition profile to reach the final value of 
+emission factor has been defined.
 
 #### Climate & Energy
 
