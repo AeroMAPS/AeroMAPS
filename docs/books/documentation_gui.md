@@ -2,7 +2,8 @@
 
 This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
 it on a computer. In a first step, a tutorial is provided for understanding the use of the GUI. In a second step, the 
-default settings used on the GUI are provided.
+default settings used on the GUI are provided. For details concerning the models, refer to the dedicated sections of 
+this documentation.
 
 
 ## Tutorial
