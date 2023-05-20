@@ -162,7 +162,26 @@ option corresponds to dedicated electricity from renewable (20 gCO<sub>2</sub>-e
 
 #### Climate & Energy
 
-The
+The user has to set environmental assumptions. 
+
+On the one hand, several sliders are available concerning the climate settings. First, the user has to choose the 
+temperature target for the assessment of the climate sustainability (between +1.5°C and +2.0°C, corresponding to extreme
+values from Paris Agreement), as well as the percentage of success for achieving this climate target. This last value 
+corresponds to the percentile considered for the TCRE coefficient used in climate sciences (for instance for estimating
+net carbon budgets). The default setting represents SBTi targets (+1.8°C with 67% of success). Moreover, the user can 
+assume Carbon Dioxide Removal (CDR), which corresponds to negative emissions through for instance reforestation, 
+bioenergy with capture and carbon storage (BECSS) or direct air capture with carbon storage (DACCS). By default, this 
+option is disabled but the user can select values obtained from a statistical analysis of IPCC AR6 (Q1, median, Q3). The 
+cumulative CDR over the period 2020--2100 ranges between 285 GtCO<sub>2</sub> and 733 GtCO<sub>2</sub> with a median 
+value of 527 GtCO<sub>2</sub>. It allows estimating gross carbon budget.
+
+On the other hand, two sliders are available concerning the energy settings. Indeed, the user can make assumptions on
+biomass and electricity availability in 2050. The biomass can be waste, agricultural or forrest residues, energy crops 
+and algae. The default value of 164 EJ of biomass available in 2050 corresponds to a median value obtained from a 
+statistical analysis of scientific papers and reports. The other values correspond to other statistical characteristics,
+ranging from 37 EJ to 557 EJ. For electricity, the values range from 100 EJ (current availability) to 300 EJ, based on 
+IPCC, IRENA and IEA data. A default and arbitrary value of 200 EJ is considered.
+
 
 #### Allocations
 
