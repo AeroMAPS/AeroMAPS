@@ -145,7 +145,7 @@ Finally, an ambitious option includes the large deployment of hydrogen aircraft 
 2035 and 50% of the medium-range market from 2040.
 
 Concerning the production of these alternative fuels, the user can make assumptions on biofuel emission factors, 
-hydrogen production pathways and electricity production emission factors. For biofuels, the default value corresponds to
+hydrogen production pathways and electric mix. For biofuels, the default value corresponds to
 the median value for HEFA pathway (20.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>), which is the most used pathway currently. 
 A high-carbon value of 52.2 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (corresponding to AtJ pathway) and a low-carbon value
 of 7.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (corresponding to FT pathway) can also be chosen. These values can be 
