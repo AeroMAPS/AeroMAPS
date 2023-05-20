@@ -1,7 +1,7 @@
 # About AeroMAPS
 
-AeroMAPS, formerly CAST, is an open-source framework developed in Python by ISAE-SUPAERO (Toulouse, France).
-It is also fed by multiple multidisciplinary works from the Institute for Sustainable Aviation (ISA).
+AeroMAPS, formerly CAST published in 2021, is an open-source framework developed in Python by ISAE-SUPAERO (Toulouse, 
+France). It is also fed by multiple multidisciplinary works from the Institute for Sustainable Aviation (ISA).
 Providing a free framework that researchers, organizations, authorities and companies can interact with for
 defining sustainable aviation prospective scenarios was the initial main motivation.
 
