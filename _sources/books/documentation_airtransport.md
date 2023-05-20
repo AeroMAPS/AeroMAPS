@@ -256,7 +256,7 @@ the fact that in the long run, a new aircraft architecture is totally imposed on
 $k$ allows setting the speed of renewal of the fleet. It can be related to the duration $D$ to replace $(100-l)$% of 
 the fleet using the following equation. Finally, the parameter $x_0$ is used to define the timing of the introduction
 of the aircraft in the fleet. It can be computed from the following equation with $x_a$ the year of introduction of 
-the aircraft.
+the aircraft, also called Entry-Into-Service (EIS).
 
 $k = \frac{ln\left(\frac{100}{l}-1\right)}{D/2}$
 

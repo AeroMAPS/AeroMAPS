@@ -365,7 +365,7 @@ default settings used on the GUI are provided.</p>
 <ul class="simple">
 <li><p><strong>Simulator</strong> which is the integrated simulator to directly simulate prospective scenarios for air transport ;</p></li>
 <li><p><strong>Data</strong> which allows to visualize data and retrieve them in CSV format in order to post-process them ;</p></li>
-<li><p><strong>About AeroMAPS</strong> which provides brief information, explanations and documentation about the framework</p></li>
+<li><p><strong>About AeroMAPS</strong> which provides brief information, explanations and documentation about the framework.</p></li>
 </ul>
 <p>Moving on the tool and on the explanatory tabs is quite intuitive by clicking on the corresponding tabs. To adjust
 the size of the tool to the size of his screen, the user can use the zoom (out) functionalities on his browser.
@@ -397,16 +397,18 @@ scenario parameters.</p>
 <section id="reference-settings">
 <h2>Reference settings<a class="headerlink" href="#reference-settings" title="Permalink to this heading">#</a></h2>
 <p>The different default settings for using the interface are detailed in the following, both for the <em>Discovery mode</em> and
-the <em>Scenarios mode</em>.</p>
+the <em>Scenarios mode</em>. For accessing to the detailed data, the advanced user can directly check the values into the code
+in the GUI section.</p>
 <section id="discovery-mode">
 <h3><em>Discovery mode</em><a class="headerlink" href="#discovery-mode" title="Permalink to this heading">#</a></h3>
 <p>In this mode, the user can play with different sliders corresponding roughly to the AeroMAPS architecture. On the
-one hand, aviation settings are provided for modeling the air transport evolution through the air traffic, aircraft
+one hand, aviation settings are provided for modeling the air transport evolution through air traffic, aircraft
 fleet and operations, and aircraft energy. On the other hand, environmental settings are given via climate and energy
 assumptions and allocations choices.</p>
 <section id="air-traffic">
 <h4>Air traffic<a class="headerlink" href="#air-traffic" title="Permalink to this heading">#</a></h4>
-<p>For making assumptions on air traffic evolution, the user can directly define mean air traffic growth rates on the
+<p>The user can first make assumptions on the evolution of air traffic.</p>
+<p>Overall, the user can directly define mean air traffic growth rates on the
 period 2020–2050 for the four considered markets in the model: passenger short-range, passenger medium-range,
 passenger long-range and freight. By default, these values are fixed to 3% per year, i.e. values close to aviation
 industry’s projections <span id="id1">[<a class="reference internal" href="bibliography.html#id16" title="Air Transport Action Group. Waypoint 2050. Technical Report, ATAG, 2021. URL: https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/.">AirTransportActionGroup21</a>]</span>.</p>
@@ -434,12 +436,36 @@ as often, aviation emissions would be reduced by 25%.</p>
 </section>
 <section id="aircraft-fleet-and-operations">
 <h4>Aircraft fleet and operations<a class="headerlink" href="#aircraft-fleet-and-operations" title="Permalink to this heading">#</a></h4>
+<p>The user can improve the aircraft fleet and operations.</p>
+<p>For that, a first slider allows introducing new aircraft into the fleet, which can be improved in terms of propulsion
+(more efficient engines), aerodynamics, mass, systems or breakthrough architectures. Whereas basic options correspond to
+constant efficiency at 2019 level or efficiency corresponding to fleet renewal with current more efficient aircraft
+(default option), others allow integrating future more efficient architecture. A trend option includes a deployment
+similar to the previous one in terms of efficiency gains, Entry-Into-Service (EIS) year and fleet renewal rate, which
+corresponds to an annual efficiency gains of around 1%. A more optimistic solution considers the same assumptions with
+an accelerated fleet turnover. Lastly, an ambitious option takes into account the introduction of very efficient
+aircraft.</p>
+<p>Another slider represents the improvements in terms of operations through flight trajectories, air traffic management,
+formation flights or ground operations evolution. The user can choose efficiency gains more or less ambitious, from 0%
+to 12%.</p>
+<p>The user can also set the evolution of the mean aircraft load factor in 2050. The default setting corresponds to a
+trend estimation of 89% by 2050. The more pessimistic option correspond to 2019 value, whereas the more optimistic one
+is probably be hard to reach for all the fleet, corresponding to a value of 95% that has been nevertheless already
+reached by some airlines.</p>
+<p>Finally, …</p>
 </section>
 <section id="aircraft-energy">
 <h4>Aircraft energy<a class="headerlink" href="#aircraft-energy" title="Permalink to this heading">#</a></h4>
+<p>The user can define the energy that will be use by the future aircraft fleet. Here, only three main alternative fuels
+are considered as alternative energy carriers.</p>
+<p>On the one hand,</p>
+<p>On the other hand,</p>
+<p>Concerning the production of these alternative fuels, the user can make assumptions on biofuel emission factors,
+hydrogen production pathways and electricity production emission factors.</p>
 </section>
 <section id="climate-energy">
 <h4>Climate &amp; Energy<a class="headerlink" href="#climate-energy" title="Permalink to this heading">#</a></h4>
+<p>The</p>
 </section>
 <section id="allocations">
 <h4>Allocations<a class="headerlink" href="#allocations" title="Permalink to this heading">#</a></h4>
