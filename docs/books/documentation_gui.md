@@ -153,9 +153,12 @@ compared to the value of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> for fossil ke
 Concerning hydrogen production, four options are proposed: a current one which is mainly a mix between steam reformation
 of methane or the gasification of coal, two other ones based on steam reformation of methane only with or without carbon
 capture and storage (CCS), a last one based on electrolysis whose emission factor depends on electricity mix. Finally, 
-the electricity mix can be assumed as more or less low-carbon, with a default option corresponding to the current value
-of emission factor (429 gCO<sub>2</sub>-eq/kWh). For each case, a transition profile to reach the final value of 
-emission factor has been defined.
+the electric mix can be assumed as more or less low-carbon, with a default option corresponding to the current world 
+grid electric mix (429 gCO<sub>2</sub>-eq/kWh). In addition to an illustrative option with high-carbon electricity
+(1100 gCO<sub>2</sub>-eq/kWh), two examples of grid electric mixes can be considered, assuming a transition for reaching 
+medium- (240 gCO<sub>2</sub>-eq/kWh) or low-carbon (70 gCO<sub>2</sub>-eq/kWh) final mix by 2050. Moreover, a last 
+option corresponds to dedicated electricity from renewable (20 gCO<sub>2</sub>-eq/kWh) from today.
+
 
 #### Climate & Energy
 
