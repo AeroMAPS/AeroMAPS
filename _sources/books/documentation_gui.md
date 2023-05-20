@@ -138,7 +138,7 @@ kerosene.
 
 On the other hand, the user can also introduce hydrogen aircraft into the fleet. This type of aircraft also requires 
 dedicated architectures (unlike drop-in fuels) which will probably be limited to low ranges for structural reasons (low 
-gravimetric indices). As a consequence, the settings used are based on the fleet renewal values.
+gravimetric index for hydrogen tanks). As a consequence, the settings used are based on the fleet renewal values.
 The default option does not consider the use of hydrogen aircraft. A limited introduction considers a late EIS in 2040 
 only for 50% of the short-range market, whereas a moderate one considers a forecast EIS in 2035 for the same market. 
 Finally, an ambitious option includes the large deployment of hydrogen aircraft for all the short-range market from 
