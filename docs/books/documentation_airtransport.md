@@ -237,7 +237,6 @@ Hydrogen aircraft are taken into account considering specific models. For this, 
 logistic functions (detailed in the bottom-up approach) are used, correcting for the evolution of the energy efficiency of these 
 architectures compared to conventional aircraft.
 
-<!-- STOP -->
 #### Bottom-up approach
 
 In this second approach, the objective is to model the evolution of aircraft fleet energy efficiency using fleet 
@@ -285,13 +284,17 @@ represent 50% of the market.
 
 ![](/figs/loadfactor_recap.svg)
 
+<!-- Mauvaise figure -->
+
 *Fig.3 Basic use of fleet renewal models.*
 
 ![](/figs/loadfactor_recap.svg)
 
+<!-- Mauvaise figure -->
+
 *Fig.4 Use of fleet renewal models including a subcategory.*
 
-Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per 
+Knowing how the fleet renews itself <!-- is renewed --> from these models, it is possible to estimate the average energy consumption per 
 seat and per kilometer of the $E_{mean}$ aircraft fleet for year $x$. The following equation is then used from the 
 performance of each aircraft $E_i$ and the number of seat-kilometers achieved by each aircraft $ASK_i$. The latter
 is obtained from the total ASK and the annual distribution from the fleet renewal models.
@@ -299,17 +302,17 @@ is obtained from the total ASK and the annual distribution from the fleet renewa
 $E_{mean}(x) = \frac{\sum_{i} E_i ~ ASK_i(x)}{\sum_{i} ASK_i(x)}$
 
 In addition to fuel consumption, the previous model can also be applied to other characteristics such as NO<sub>x</sub> 
-or particulate emissions. The fleet renewal models also allow to estimate the annual production of aircraft
+or particulate matter emissions. The fleet renewal models also allow to estimate the annual production of aircraft
 according to the traffic evolution.
 
 
 ### Improvements in aircraft operations
 
-The improvement of operations concerns the ground phases (taxiing, holding, etc.) and in flight (trajectory 
+The improvement of operations concerns both the ground phases (taxiing, holding, etc.) and the flight phases (trajectory 
 optimization, air traffic management, formation flights, etc.). The potential gains in fuel consumption estimated 
 by the industry range from a few percent to about ten percent.
 
-Regarding their modeling, it is complex to use historical data since they are often confused with data on energy 
+Regarding their modeling, it is complex to use historical data since they are often confused with <!-- included in--> data on energy 
 consumption per seat and per kilometer. Therefore, an approach based on estimates of future gains is considered using 
 logistic functions as for fleet renewal models. This time, the parameter $A$ represents 
 the achievable consumption gain. The parameter $k$ corresponds to the implementation speed of the operational measure, 
@@ -320,7 +323,7 @@ the commissioning dates differ.
 
 ### Improvements in aircraft load factor
 
-To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the 
+To model the evolution of the load factor, a similar approach to the one used for the 
 energy consumption per ASK is used. The results are summarized in Fig.5. 
 
 ![](/figs/loadfactor_recap.svg)
@@ -330,7 +333,7 @@ energy consumption per ASK is used. The results are summarized in Fig.5.
 Historical data are modeled from the function given in the following equation for year $x$. The 
 coefficients, given to three significant figures, were determined to minimize the RMS error between the historical 
 data since 1991 and the model. A small value of 6.6.10<sup>-5</sup> is obtained. The model is then used to 
-obtain a trend projection of the fill rate. It is interesting to note that the model converges towards a load factor 
+obtain a trend projection of the fill rate <!-- load factor ? -->. It is interesting to note that the model converges towards a load factor 
 of 89%, an ambitious value already reached by some airlines.
 
 $f(x) = 52.3 + \frac{36.7}{1+e^{-0.0776~(x-2000)}}$
@@ -341,17 +344,18 @@ $LF$ for year $x$ is then modeled using the following equation with parameters $
 
 $LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4$
 
+<!-- j'ai pas compris le rôle de LF(x) vs f(x)? -->
 Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the 
 parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
 
 
-### Improvements for reducing non-CO<sub>2</sub>
+### Improvements for reducing non-CO<sub>2</sub> <!-- effects -->
 
-More globally, specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements 
+More globally, <!-- je commencerai la-->specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements 
 are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</sub> and contrails) are studied.
 
 Regarding NO<sub>x</sub> emissions, their reduction could lead to a reduction of the aviation effective radiative 
-forcing, although there are still doubts about the future effect of NO<sub>x</sub> emissions on climate, depending in 
+forcing, although there are still doubts <!-- uncertainties --> about the future effect of NO<sub>x</sub> emissions on climate, depending in 
 particular on NO<sub>x</sub> and methane background concentrations {cite}`skowron2021greater, terrenoire2022impact`.
 The reduction of emissions could nevertheless be achieved by reducing fuel consumption and/or lowering the 
 NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via fleet turnover are used to estimate 
@@ -364,7 +368,7 @@ on trajectory modification, are modeled since they represent promising strategie
 strategies could be applied on a reduced number of flights. Indeed, a study in the Japanese airspace shows that 2% of 
 the flights are responsible for 80% of the contrails {cite}`teoh2020mitigating`. Another possibility is to modify 
 the emissions, in particular by reducing the amount of particles emitted {cite}`noppel2007overview`. The improvement of 
-engines are notably envisaged. Overall, the implementation of operational strategies, possibly coupled with improved 
+engines are notably envisaged <!-- la phrase précédente suffit?-->. Overall, the implementation of operational strategies, possibly coupled with improved 
 engines, could reduce the radiative forcing induced by condensation trails from 20% to more than 90%, for marginal 
 additional fuel consumption {cite}`matthes2020climate, teoh2020mitigating`. In this work, simplified models, 
 based on logistic functions as in fleet renewal models, are used to model the reduction of contrail-induced radiative 
@@ -377,7 +381,7 @@ of the implementation.
 
 ## Aircraft energy: decarbonization of energy
 
-The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the $CO_2/E$ energy. 
+The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the energy $CO_2/E$. 
 Its evolution is based on the introduction of alternative energy carriers in the fleet to replace fossil kerosene. The 
 objective is therefore to estimate the emission factor of alternative energy carriers (only in the form of fuel so far) 
 over their entire life cycle. The latter is expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will 
@@ -399,10 +403,10 @@ of fuels during their production is not directly considered.
 
 Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is 
 complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and 
-the production route. It is then possible to define a single representative biofuel by weighting. The resources 
+the production pathway. It is then possible to define a single representative biofuel by weighting. The resources 
 considered in this work are waste (household waste or used cooking oil), forest residues, agricultural residues, 
 dedicated energy crops (lignocellulose, sugar and starch-based materials or vegetable oils) and algae. Regarding the 
-production routes, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet) 
+production pathways, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet) 
 processes are considered. Not all routes and resources are directly compatible and the industrial production maturity 
 of the different biofuels differs. 
 
@@ -434,26 +438,28 @@ the HEFA process to convert oil to fuel requires the addition of hydrogen. A med
 
 *Tab.4 Energy efficiencies in MJ<sub>fuel</sub>/MJ<sub>biomass</sub> for representative biofuels.*
 
-Hydrogen can be produced in several ways. In this work, five main routes are considered. The estimated characteristics 
+Hydrogen can be produced in several ways. In this work, five main pathways are considered. The estimated characteristics 
 are derived from a statistical analysis of data from the references 
 {cite}`aiehydrogen, dincer2016review, ji2021review, parkinson2019levelized, siddiqui2019well`. On the one hand, its 
 production can be based on the use of fossil resources via the steam reformation of methane or the gasification of 
-coal. These are the two production methods most commonly used today. The median values of the emission factors of 
+coal. These are the two most commonly used production methods today. The median values of the emission factors of 
 these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 
 192 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. The impact of these processes can be reduced by using carbon 
 capture and storage solutions. In this case, the emission factors are respectively 
 31 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. On the other 
 hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen 
 then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of 
-0.59. Finally, if the hydrogen is used in liquid form, additional losses must be taken into account for the 
+0.59. Finally, if the hydrogen is used in liquid form <!-- state ?-->, additional losses must be taken into account for the 
 liquefaction stage. 
 
 Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require 
-hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant or directly into 
+hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant <!-- could be captured directly from a CO<sub>2</sub> emmitimg plant  --> or directly into <!-- from -->
 the atmosphere. In this work, the emission factor of this type of fuel is obtained from the emission factor of the 
-electric mix and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
+electric mix <!-- power grid --> and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
 
-In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this, 
+<!-- Peut être reformuler au dessus pour dire CO2+ H2 et que ce dernier peut etre produit par electrolyse -->
+
+In a second step, fleet introduction models are used for the drop-in fuels(biofuels and electrofuels). For this, 
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
 An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values. 
 An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on 
@@ -463,6 +469,8 @@ used by the fleet annually. On the other hand, as far as hydrogen is concerned, 
 models are used, but the principle remains the same.
 
 ![](/figs/loadfactor_recap.svg)
+
+<!-- mauvaise figure -->
 
 *Fig.6 Example scenario for introducing drop-in fuels into the fleet.*
 
