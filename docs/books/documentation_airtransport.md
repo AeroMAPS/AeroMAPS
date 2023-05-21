@@ -4,22 +4,27 @@ The modeling of the air transport system presented in the AeroMAPS architecture 
 action to reduce the environmental impacts of the sector. Before detailing their modeling in AeroMAPS, different levers 
 of action are identified.
 
+<!-- Répétition de modelling, "The air transport system model presented in the AeroMAPS architecture includes levers of action to reduce the environmental impacts of the sector. 
+They are defined in the following, before describing their implementation in AeroMAPS."?  -->
+
 
 ## Identification of the main levers of action
 
 The different levers of action to reduce environmental impacts from air transport are identified and linked using an 
-approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emissions. It allows obtaining the three main 
+approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emissions. It allows for obtaining the three main 
 elements of the air transport system described in the AeroMAPS architecture.
 
 The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
-economic (GDP per capita $GDP/POP$) and technological factors (energy intensity $E/GDP$ which can be assimilated to 
+economic (GDP per capita $GDP/POP$), and technological factors (energy intensity $E/GDP$ which can be assimilated to 
 an output and the CO<sub>2</sub> content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that 
 it indicates different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different 
 studies, often based on specific decomposition methods, justify the choice of relevant parameters for decomposing 
 emissions {cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
 can be complex {cite}`schandl2016decoupling`.
 
-$CO_2 = POP \times \frac{PIB}{POP} \times \frac{E}{PIB} \times \frac{CO_2}{E}$
+$CO_2 = POP \times \frac{GDP}{POP} \times \frac{E}{GDP} \times \frac{CO_2}{E}$
+
+<!-- equation en francais, modifié-->
 
 This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via 
 the following equation. The different parameters are justified by other works related to transportation and aviation 
@@ -55,16 +60,15 @@ This work thus allows identifying and linking the different levers of action to 
 In the following, deterministic models for estimating the following parameters are presented:
 - usage evolution through the evolution of air traffic ;
 - energy efficiency through improvements in energy intensity with various levers (fleet renewal for more efficient aircraft, operations, load factor) ;
-- energy decarbonization through incorporation of alternative energy carriers to replace fossil fuel.
+- energy decarbonization through the incorporation of alternative energy carriers to replace fossil fuel.
 These models are particularly focused on their links to the sector's CO<sub>2</sub> emissions, but some elements 
 concerning strategies against non-CO<sub>2</sub> effects are also provided.
 
 
 ## Main historical data
 
-Before detailing the different models for representing the evolution of the different elements of air transport, the 
-historical data used are briefly provided. The various air traffic data are derived from the ICAO (International Civil 
-Aviation Organisation), such as annual passenger numbers, RPK, RTK, ASK or aircraft load factor. Then, the historical 
+Before detailing the different models for representing the evolution of the different elements of air transport, historical data used are briefly provided <!-- discussed-->. Various air traffic data used are derived from the ICAO (International Civil 
+Aviation Organisation <!-- lien site?-->), such as annual passenger numbers, RPK, RTK, ASK or aircraft load factor <!-- abbrev. introduites? -->. Then, the historical 
 evolution of the term $\frac{E}{RPK}$ is obtained using the previous traffic data and data on world kerosene consumption 
 by the aviation sector, extracted and adapted from 
 <a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
@@ -74,7 +78,7 @@ carriers is considered as negligible in the last decades. Lastly, the term $\fra
 for the same reason. The values considered depend on the scope chosen, in particular the inclusion of emissions related 
 to fossil kerosene production. Here, mean values from a review paper {cite}`jing2022understanding` are used: a direct 
 emission factor of 74.0 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> and a global (including fuel production) emission factor 
-of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is considered by default for facilitating the 
+of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is considered by default for facilitating <!-- to facilitate --> the 
 comparison with alternative energy carriers. As a consequence, using these data and including indirect CO<sub>2</sub> 
 emissions, commercial aviation was for instance responsible for 2.6% of world CO<sub>2</sub> emissions in 2019 
 (compared with data from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a> 
@@ -83,9 +87,9 @@ including fossil fuel combustion and land use). See for instance {cite}`delbecq2
 
 ## Air traffic: usage evolution
 
-The parameter that corresponds to the evolution of air traffic is the RPK. The modeling of the air traffic is based on 
-the study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or 
-to the different markets. Before detailing these models, the categorization and calibration of the aviation market 
+The parameter that corresponds <!-- represents--> to the evolution of air traffic is the RPK. The modeling of the air traffic is based on 
+the study of worldwide historical data. <!-- Air Traffic is modelled based on [] --> The models presented in this section can be applied to the fleet as a whole or 
+to the different markets <!-- described below -->. Before detailing these models, the categorization and calibration of the aviation market 
 used in AeroMAPS is presented.
 
 
@@ -107,15 +111,15 @@ These different categories are heterogeneous because they include different type
 representative aircraft types are considered in the following. It is assumed that the short-haul category is composed 
 of regional aircraft (with turbojets or turboprops) and narrow-body aircraft. It is also assumed that the medium-haul 
 category is composed of narrow-body aircraft while the long-haul category is composed of wide-body aircraft. Finally, 
-for freight, no representative aircraft are considered. It is assumed that the aircraft in this category are a 
-calibrated weighting of the other representative aircraft.
+for freight, no representative aircraft are considered. It is assumed that aircraft in this category are a 
+calibrated weighting <!-- weighted average ? --> of the other <!-- previous ? --> representative aircraft.
 
 The aircraft fleet is then modeled, which will be useful for modeling the evolution of the aircraft fleet. In order to 
 calibrate the average characteristics of the different fleet categories in 2019, a specific procedure is adopted to 
 obtain a representative fleet. It is important to note that this approach is a model and that the aircraft fleet is 
 actually more complex. In the following, the method is illustrated for the passenger aircraft categories.
 
-First, the energy consumption per ASK is estimated for each category. The value per ASK is used to eliminate the 
+First, the energy consumption per ASK is estimated for each category. The value per ASK is used to eliminate <!-- isolate --> the 
 influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are 
 derived from the analysis of {cite}`icctco2`. They are then converted to energy consumption per ASK 
 using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
@@ -131,7 +135,7 @@ given in Tab.1.
 *Tab.1 Average aircraft fleet characteristics in 2019.*
 
 Then, for each category, two representative planes are considered: one for the old generation, another for the 
-most recent. The characteristics of these aircraft are constructed from a weighting of different aircraft on the 
+most recent. The characteristics of these aircraft are constructed from <!-- using --> a weighting of different aircraft on the 
 market. This is done using data on the number of aircraft in service, their performance and their missions 
 {cite}`icao18`. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
 Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
@@ -159,7 +163,8 @@ per ASK for the newer representative aircraft, and $x$ is the representative sha
 ### Air traffic evolution modeling
 
 For choosing the model for the air traffic evolution, historical data is used.
-Fig.2 represents historical values since 1991 as well as a trend model that was performed. 
+<!-- Historical data is used to derive the air traffic evolution model. --> 
+Fig.2 represents historical values since 1991 as well as a trend model <! -- je stopperai la phrase là --> that was performed. 
 The latter was obtained using an exponential function with a fixed growth rate. The model is given in 
 equation with $RPK_{1991}$ the value of RPK in 1991, $x$ the year and $\tau$ a 
 smoothed growth rate. To determine $\tau$, an optimization is performed using the SLSQP method to minimize the 
@@ -184,16 +189,16 @@ $RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}$
 
 Nevertheless, the difficulty lies in estimating the future growth rate $\tau$. Indeed, the latter could be impacted for 
 different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a 
-decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which 
+decline in this <!-- lower ?--> growth rate in the future. Similarly, this rate could become much lower or even negative (which 
 means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such 
 as the Covid-19 epidemic. Moreover, specific settings for the impact of the Covid-19 epidemic are proposed, defining a 
 year of air traffic recovery compared to a certain level of air traffic compared to 2019.
 
-Various industry and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
+Various industry <!-- industrial --> and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017 
-{cite}`fichert2020aviation`. The ICAO projected air traffic growth of 4.1% per year between 2015 and 2045. However, 
-the Covid-19 epidemic has led to a decline in these projections. ATAG now projects 3.1% annual growth in air 
-passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects 3.6% for 
+{cite}`fichert2020aviation`. The ICAO projected <!-- an --> air traffic growth of 4.1% per year between 2015 and 2045. However, 
+the Covid-19 epidemic has led to a decline in <!-- a downwards revision of --> these projections. ATAG now projects a 3.1% annual growth in air 
+passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects a 3.6% annual growth for 
 the period 2019-2041 {cite}`airbus`. Despite the Covid-19 health crisis, all the scenarios presented thus forecast 
 a growth in air traffic in the coming decades.
 
@@ -202,7 +207,7 @@ a growth in air traffic in the coming decades.
 
 The parameter that corresponds to energy efficiency is the energy intensity per passenger per kilometer $E/RPK$. In 
 this work, this parameter is influenced by three distinct levers: fleet renewal with more efficient aircraft, 
-operations and load factor. In addition to these levers, 
+operations and load factor. In addition to these levers, <!-- manque un morceau -->
 
 ### Improvements of aircraft efficiency
 
@@ -226,11 +231,13 @@ the evolution of aircraft efficiency (per category) is given in the following eq
 
 $E_{ASK{k+1}} = E_{ASK} (1-\tau)$
 
-Hydrogen aircraft are taking into account considering specific models. For this, hydrogen aircraft introductions via 
-logistic functions (detailed in the bottom-up approach) are used, correcting the evolution of the efficiency of these 
+<!-- $E_{ASK_{k+1}} = E_{ASK_{k}} (1-\tau)$ -->
+
+Hydrogen aircraft are taken into account considering specific models. For this, hydrogen aircraft introductions via 
+logistic functions (detailed in the bottom-up approach) are used, correcting for the evolution of the energy efficiency of these 
 architectures compared to conventional aircraft.
 
-
+<!-- STOP -->
 #### Bottom-up approach
 
 In this second approach, the objective is to model the evolution of aircraft fleet energy efficiency using fleet 
