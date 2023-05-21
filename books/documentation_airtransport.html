@@ -347,7 +347,7 @@ document.write(`
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-operations">Improvements in aircraft operations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-load-factor">Improvements in aircraft load factor</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-for-reducing-non-co-sub-2-sub">Improvements for reducing non-CO<sub>2</sub></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-for-reducing-non-co-sub-2-sub-effects">Improvements for reducing non-CO<sub>2</sub> <!-- effects --></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
@@ -600,7 +600,6 @@ the evolution of aircraft efficiency (per category) is given in the following eq
 <p>Hydrogen aircraft are taken into account considering specific models. For this, hydrogen aircraft introductions via
 logistic functions (detailed in the bottom-up approach) are used, correcting for the evolution of the energy efficiency of these
 architectures compared to conventional aircraft.</p>
-<!-- STOP -->
 </section>
 <section id="bottom-up-approach">
 <h4>Bottom-up approach<a class="headerlink" href="#bottom-up-approach" title="Permalink to this heading">#</a></h4>
@@ -638,25 +637,27 @@ for a replacement of 98% of the fleet, i.e. <span class="math notranslate nohigh
 assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually
 represent 50% of the market.</p>
 <p><img alt="" src="../_images/loadfactor_recap.svg" /></p>
+<!-- Mauvaise figure -->
 <p><em>Fig.3 Basic use of fleet renewal models.</em></p>
 <p><img alt="" src="../_images/loadfactor_recap.svg" /></p>
+<!-- Mauvaise figure -->
 <p><em>Fig.4 Use of fleet renewal models including a subcategory.</em></p>
-<p>Knowing how the fleet renews itself from these models, it is possible to estimate the average energy consumption per
+<p>Knowing how the fleet renews itself <!-- is renewed --> from these models, it is possible to estimate the average energy consumption per
 seat and per kilometer of the <span class="math notranslate nohighlight">\(E_{mean}\)</span> aircraft fleet for year <span class="math notranslate nohighlight">\(x\)</span>. The following equation is then used from the
 performance of each aircraft <span class="math notranslate nohighlight">\(E_i\)</span> and the number of seat-kilometers achieved by each aircraft <span class="math notranslate nohighlight">\(ASK_i\)</span>. The latter
 is obtained from the total ASK and the annual distribution from the fleet renewal models.</p>
 <p><span class="math notranslate nohighlight">\(E_{mean}(x) = \frac{\sum_{i} E_i ~ ASK_i(x)}{\sum_{i} ASK_i(x)}\)</span></p>
 <p>In addition to fuel consumption, the previous model can also be applied to other characteristics such as NO<sub>x</sub>
-or particulate emissions. The fleet renewal models also allow to estimate the annual production of aircraft
+or particulate matter emissions. The fleet renewal models also allow to estimate the annual production of aircraft
 according to the traffic evolution.</p>
 </section>
 </section>
 <section id="improvements-in-aircraft-operations">
 <h3>Improvements in aircraft operations<a class="headerlink" href="#improvements-in-aircraft-operations" title="Permalink to this heading">#</a></h3>
-<p>The improvement of operations concerns the ground phases (taxiing, holding, etc.) and in flight (trajectory
+<p>The improvement of operations concerns both the ground phases (taxiing, holding, etc.) and the flight phases (trajectory
 optimization, air traffic management, formation flights, etc.). The potential gains in fuel consumption estimated
 by the industry range from a few percent to about ten percent.</p>
-<p>Regarding their modeling, it is complex to use historical data since they are often confused with data on energy
+<p>Regarding their modeling, it is complex to use historical data since they are often confused with <!-- included in--> data on energy
 consumption per seat and per kilometer. Therefore, an approach based on estimates of future gains is considered using
 logistic functions as for fleet renewal models. This time, the parameter <span class="math notranslate nohighlight">\(A\)</span> represents
 the achievable consumption gain. The parameter <span class="math notranslate nohighlight">\(k\)</span> corresponds to the implementation speed of the operational measure,
@@ -666,29 +667,30 @@ the commissioning dates differ.</p>
 </section>
 <section id="improvements-in-aircraft-load-factor">
 <h3>Improvements in aircraft load factor<a class="headerlink" href="#improvements-in-aircraft-load-factor" title="Permalink to this heading">#</a></h3>
-<p>To model the evolution of the To model the evolution of the fill rate, a similar approach to the one used for the
+<p>To model the evolution of the load factor, a similar approach to the one used for the
 energy consumption per ASK is used. The results are summarized in Fig.5.</p>
 <p><img alt="" src="../_images/loadfactor_recap.svg" /></p>
 <p><em>Fig.5 Modeling the trend projection of aircraft load factors.</em></p>
 <p>Historical data are modeled from the function given in the following equation for year <span class="math notranslate nohighlight">\(x\)</span>. The
 coefficients, given to three significant figures, were determined to minimize the RMS error between the historical
 data since 1991 and the model. A small value of 6.6.10<sup>-5</sup> is obtained. The model is then used to
-obtain a trend projection of the fill rate. It is interesting to note that the model converges towards a load factor
+obtain a trend projection of the fill rate <!-- load factor ? -->. It is interesting to note that the model converges towards a load factor
 of 89%, an ambitious value already reached by some airlines.</p>
 <p><span class="math notranslate nohighlight">\(f(x) = 52.3 + \frac{36.7}{1+e^{-0.0776~(x-2000)}}\)</span></p>
 <p>The projection is modeled using a second-order polynomial function because of its simplicity. The trend load factor
 <span class="math notranslate nohighlight">\(LF\)</span> for year <span class="math notranslate nohighlight">\(x\)</span> is then modeled using the following equation with parameters <span class="math notranslate nohighlight">\(a=-5.3.10^{-3}\)</span> and <span class="math notranslate nohighlight">\(b=0.36\)</span>
 (given with two significant figures). The RMS error obtained is then 5.3.10<sup>-7</sup>.</p>
 <p><span class="math notranslate nohighlight">\(LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4\)</span></p>
+<!-- j'ai pas compris le rôle de LF(x) vs f(x)? -->
 <p>Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the
 parameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> in order to obtain the desired filling rate in 2050.</p>
 </section>
-<section id="improvements-for-reducing-non-co-sub-2-sub">
-<h3>Improvements for reducing non-CO<sub>2</sub><a class="headerlink" href="#improvements-for-reducing-non-co-sub-2-sub" title="Permalink to this heading">#</a></h3>
-<p>More globally, specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements
+<section id="improvements-for-reducing-non-co-sub-2-sub-effects">
+<h3>Improvements for reducing non-CO<sub>2</sub> <!-- effects --><a class="headerlink" href="#improvements-for-reducing-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h3>
+<p>More globally, <!-- je commencerai la-->specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements
 are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</sub> and contrails) are studied.</p>
 <p>Regarding NO<sub>x</sub> emissions, their reduction could lead to a reduction of the aviation effective radiative
-forcing, although there are still doubts about the future effect of NO<sub>x</sub> emissions on climate, depending in
+forcing, although there are still doubts <!-- uncertainties --> about the future effect of NO<sub>x</sub> emissions on climate, depending in
 particular on NO<sub>x</sub> and methane background concentrations <span id="id16">[<a class="reference internal" href="bibliography.html#id28" title="Agnieszka Skowron, David S. Lee, Rubén Rodríguez De León, Ling L. Lim, and Bethan Owen. Greater fuel efficiency is potentially preferable to reducing no\textsubscript x emissions for aviation's climate impacts. Nature Communications, 12(1):564, 2021. doi:10.1038/s41467-020-20771-3.">SLDLeon+21</a>, <a class="reference internal" href="bibliography.html#id29" title="Etienne Terrenoire, Didier A Hauglustaine, Yann Cohen, Anne Cozic, Richard Valorso, Franck Lefèvre, and Sigrun Matthes. Impact of present and future aircraft NOx and aerosol emissions on atmospheric composition and associated direct radiative forcing of climate. Atmospheric Chemistry and Physics, 22(18):11987–12023, 2022. doi:10.5194/acp-22-11987-2022.">THC+22</a>]</span>.
 The reduction of emissions could nevertheless be achieved by reducing fuel consumption and/or lowering the
 NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via fleet turnover are used to estimate
@@ -700,7 +702,7 @@ on trajectory modification, are modeled since they represent promising strategie
 strategies could be applied on a reduced number of flights. Indeed, a study in the Japanese airspace shows that 2% of
 the flights are responsible for 80% of the contrails <span id="id18">[<a class="reference internal" href="bibliography.html#id31" title="Roger Teoh, Ulrich Schumann, Arnab Majumdar, and Marc EJ Stettler. Mitigating the climate forcing of aircraft contrails by small-scale diversions and technology adoption. Environmental Science &amp; Technology, 54(5):2941–2950, 2020. doi:10.1021/acs.est.9b05608.">TSMS20</a>]</span>. Another possibility is to modify
 the emissions, in particular by reducing the amount of particles emitted <span id="id19">[<a class="reference internal" href="bibliography.html#id32" title="Frank Noppel and Riti Singh. Overview on contrail and cirrus cloud avoidance technology. Journal of Aircraft, 44(5):1721–1726, 2007. doi:10.2514/1.28655.">NS07</a>]</span>. The improvement of
-engines are notably envisaged. Overall, the implementation of operational strategies, possibly coupled with improved
+engines are notably envisaged <!-- la phrase précédente suffit?-->. Overall, the implementation of operational strategies, possibly coupled with improved
 engines, could reduce the radiative forcing induced by condensation trails from 20% to more than 90%, for marginal
 additional fuel consumption <span id="id20">[<a class="reference internal" href="bibliography.html#id33" title="Sigrun Matthes, Benjamin Lührs, Katrin Dahlmann, Volker Grewe, Florian Linke, Feijia Yin, Emma Klingaman, and Keith P Shine. Climate-optimized trajectories and robust mitigation potential: Flying ATM4E. Aerospace, 7(11):156, 2020. doi:10.3390/aerospace7110156.">MLuhrsD+20</a>, <a class="reference internal" href="bibliography.html#id31" title="Roger Teoh, Ulrich Schumann, Arnab Majumdar, and Marc EJ Stettler. Mitigating the climate forcing of aircraft contrails by small-scale diversions and technology adoption. Environmental Science &amp; Technology, 54(5):2941–2950, 2020. doi:10.1021/acs.est.9b05608.">TSMS20</a>]</span>. In this work, simplified models,
 based on logistic functions as in fleet renewal models, are used to model the reduction of contrail-induced radiative
@@ -711,7 +713,7 @@ of the implementation.</p>
 </section>
 <section id="aircraft-energy-decarbonization-of-energy">
 <h2>Aircraft energy: decarbonization of energy<a class="headerlink" href="#aircraft-energy-decarbonization-of-energy" title="Permalink to this heading">#</a></h2>
-<p>The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the <span class="math notranslate nohighlight">\(CO_2/E\)</span> energy.
+<p>The parameter that corresponds to the decarbonization of energy is the CO<sub>2</sub> content of the energy <span class="math notranslate nohighlight">\(CO_2/E\)</span>.
 Its evolution is based on the introduction of alternative energy carriers in the fleet to replace fossil kerosene. The
 objective is therefore to estimate the emission factor of alternative energy carriers (only in the form of fuel so far)
 over their entire life cycle. The latter is expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will
@@ -730,10 +732,10 @@ Biofuels and electrofuels are drop-in fuels, while hydrogen requires specific ai
 of fuels during their production is not directly considered.</p>
 <p>Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is
 complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and
-the production route. It is then possible to define a single representative biofuel by weighting. The resources
+the production pathway. It is then possible to define a single representative biofuel by weighting. The resources
 considered in this work are waste (household waste or used cooking oil), forest residues, agricultural residues,
 dedicated energy crops (lignocellulose, sugar and starch-based materials or vegetable oils) and algae. Regarding the
-production routes, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet)
+production pathways, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet)
 processes are considered. Not all routes and resources are directly compatible and the industrial production maturity
 of the different biofuels differs.</p>
 <p>The characteristics of these representative biofuels are statistically estimated to obtain the first quartile Q1,
@@ -819,24 +821,25 @@ the HEFA process to convert oil to fuel requires the addition of hydrogen. A med
 </tbody>
 </table>
 <p><em>Tab.4 Energy efficiencies in MJ<sub>fuel</sub>/MJ<sub>biomass</sub> for representative biofuels.</em></p>
-<p>Hydrogen can be produced in several ways. In this work, five main routes are considered. The estimated characteristics
+<p>Hydrogen can be produced in several ways. In this work, five main pathways are considered. The estimated characteristics
 are derived from a statistical analysis of data from the references
 <span id="id25">[<a class="reference internal" href="bibliography.html#id49" title="Ibrahim Dincer and Canan Acar. Review and evaluation of hydrogen production methods for better sustainability. International Scientific Journal for Alternative Energy and Ecology (ISJAEE), 2495:14–36, 2016. doi:10.1016/j.ijhydene.2014.12.035.">DA16</a>, <a class="reference internal" href="bibliography.html#id50" title="Mengdi Ji and Jianlong Wang. Review and comparison of various hydrogen production methods based on costs and life cycle impact assessment indicators. International Journal of Hydrogen Energy, 46(78):38612–38635, 2021. doi:10.1016/j.ijhydene.2021.09.142.">JW21</a>, <a class="reference internal" href="bibliography.html#id51" title="B Parkinson, P Balcombe, JF Speirs, AD Hawkes, and K Hellgardt. Levelized cost of CO2 mitigation from hydrogen production routes. Energy &amp; environmental science, 12(1):19–40, 2019. doi:10.1039/C8EE02079E.">PBS+19</a>, <a class="reference internal" href="bibliography.html#id52" title="Osamah Siddiqui and Ibrahim Dincer. A well to pump life cycle environmental impact assessment of some hydrogen production routes. International Journal of Hydrogen Energy, 44(12):5773–5786, 2019. doi:10.1016/j.ijhydene.2019.01.118.">SD19</a>, <a class="reference internal" href="bibliography.html#id48" title="International Energy Agency. The Future of Hydrogen – Seizing today’s opportunities. Technical Report, IEA, 2019. URL: https://www.iea.org/reports/the-future-of-hydrogen.">InternationalEAgency19</a>]</span>. On the one hand, its
 production can be based on the use of fossil resources via the steam reformation of methane or the gasification of
-coal. These are the two production methods most commonly used today. The median values of the emission factors of
+coal. These are the two most commonly used production methods today. The median values of the emission factors of
 these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and
 192 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. The impact of these processes can be reduced by using carbon
 capture and storage solutions. In this case, the emission factors are respectively
 31 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. On the other
 hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen
 then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of
-0.59. Finally, if the hydrogen is used in liquid form, additional losses must be taken into account for the
+0.59. Finally, if the hydrogen is used in liquid form <!-- state ?-->, additional losses must be taken into account for the
 liquefaction stage.</p>
 <p>Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require
-hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant or directly into
+hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which is recovered at the end of the plant <!-- could be captured directly from a CO<sub>2</sub> emmitimg plant  --> or directly into <!-- from -->
 the atmosphere. In this work, the emission factor of this type of fuel is obtained from the emission factor of the
-electric mix and an energy efficiency of 0.4 <span id="id26">[<a class="reference internal" href="bibliography.html#id53" title="Falko Ueckerdt, Christian Bauer, Alois Dirnaichner, Jordan Everall, Romain Sacchi, and Gunnar Luderer. Potential and risks of hydrogen-based e-fuels in climate change mitigation. Nature Climate Change, 11(5):384–393, 2021. doi:10.1038/s41558-021-01032-7.">UBD+21</a>]</span>.</p>
-<p>In a second step, fleet introduction models are used for the fuels drop-in (biofuels and electrofuels). For this,
+electric mix <!-- power grid --> and an energy efficiency of 0.4 <span id="id26">[<a class="reference internal" href="bibliography.html#id53" title="Falko Ueckerdt, Christian Bauer, Alois Dirnaichner, Jordan Everall, Romain Sacchi, and Gunnar Luderer. Potential and risks of hydrogen-based e-fuels in climate change mitigation. Nature Climate Change, 11(5):384–393, 2021. doi:10.1038/s41558-021-01032-7.">UBD+21</a>]</span>.</p>
+<!-- Peut être reformuler au dessus pour dire CO2+ H2 et que ce dernier peut etre produit par electrolyse -->
+<p>In a second step, fleet introduction models are used for the drop-in fuels(biofuels and electrofuels). For this,
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years…).
 An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values.
 An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on
@@ -845,6 +848,7 @@ possible to determine the decarbonization rate of the fleet and thus the CO<sub>
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal
 models are used, but the principle remains the same.</p>
 <p><img alt="" src="../_images/loadfactor_recap.svg" /></p>
+<!-- mauvaise figure -->
 <p><em>Fig.6 Example scenario for introducing drop-in fuels into the fleet.</em></p>
 </section>
 <section id="simplified-modeling">
@@ -949,7 +953,7 @@ speed of the alternative energy carriers in the fleet, while the parameter <span
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-operations">Improvements in aircraft operations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-in-aircraft-load-factor">Improvements in aircraft load factor</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-for-reducing-non-co-sub-2-sub">Improvements for reducing non-CO<sub>2</sub></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improvements-for-reducing-non-co-sub-2-sub-effects">Improvements for reducing non-CO<sub>2</sub> <!-- effects --></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
