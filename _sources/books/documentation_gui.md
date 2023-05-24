@@ -1,7 +1,7 @@
 # Use of the graphical user interface
 
 This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
-it on a computer. In a first step, a tutorial is provided for understanding the use of the GUI. In a second step, the 
+it on a computer. First, a tutorial is provided for understanding the use of the GUI. Then, the 
 default settings used on the GUI are provided. For details concerning the models, refer to the dedicated sections of 
 this documentation.
 
@@ -13,14 +13,15 @@ The AeroMAPS GUI is composed of 3 tabs:
 - **Data** which allows to visualize data and retrieve them in CSV format in order to post-process them ;
 - **About AeroMAPS** which provides brief information, explanations and documentation about the framework.
 
-Moving on the tool and on the explanatory tabs is quite intuitive by clicking on the corresponding tabs. To adjust 
-the size of the tool to the size of his screen, the user can use the zoom (out) functionalities on his browser. 
+Navigating on the tool and on the explanatory tabs is quite intuitive by clicking on the corresponding tabs. To adjust 
+the size of the tool to the size of his screen, the user can use the zoom (out) functionalities of his browser. 
 The display language can be chosen : English or French (coming soon).
 
 To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two distinct blocks then appear on the 
 user's screen (see the following figure). 
 
 ![](/figs/tutorial_page.png)
+<!-- Update avec nvl figure à faire-->
 
 On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
 selecting specific figures using drop-down menus. A first graph allows plotting 
@@ -28,9 +29,9 @@ CO<sub>2</sub> emissions or effective radiative forcing from aviation. A second 
 assessment of the sustainability of a scenario, for instance in terms of climate. A last graph represents a set of 
 figures for analyzing scenarios more deeply.
 
-On the other hand, a set of sliders is available in the lower part of the screen for performing scenario simulation.
-For facilitating the handling of the tool according to the user, the user can use three distinct modes of varying 
-complexity. In the *Discovery mode*, the user uses directly sliders: this mode provides a good understanding of the 
+On the other hand, a set of sliders is available in the lower part of the screen for performing scenario simulation <!-- to set scenario parameters-->.
+For facilitating <!-- To facilitate--> the handling of the tool according to the user <!-- according to the user un peu redodant-->, the user can use three distinct modes of varying 
+complexity. In the *Discovery mode*, the user uses directly <!-- directly uses--> sliders: this mode provides a good understanding of the 
 sensitivities of the main levers of action. In the *Scenarios mode*, the user displays scenarios that have already been 
 defined and parameterized: this is the easiest mode to use which only allows analyzing scenarios. Finally, the 
 *Advanced mode*, not directly available on the GUI, links to the AeroMAPS GitHub to be able to manipulate in detail the 
@@ -51,7 +52,7 @@ scenario parameters.
 ## Reference settings
 
 The different default settings for using the interface are detailed in the following, both for the *Discovery mode* and
-the *Scenarios mode*. For accessing to the detailed data, the advanced user can directly check the values into the code
+the *Scenarios mode*. To acess the detailed data, the advanced user can directly check the values into the source code
 in the GUI section.
 
 
@@ -101,12 +102,12 @@ as often, aviation emissions would be reduced by 25%.
 The user can improve the aircraft fleet and operations. 
 
 For that, a first slider allows introducing new aircraft into the fleet, which can be improved in terms of propulsion
-(more efficient engines), aerodynamics, mass, systems or breakthrough architectures. Whereas basic options correspond to
+(more efficient engines), aerodynamics, mass, systems or breakthrough architectures. Whereas "basic" option correspond to
 constant efficiency at 2019 level or efficiency corresponding to fleet renewal with current more efficient aircraft 
-(default option), others allow integrating future more efficient architecture. A trend option includes a deployment
+(default option), others allow integrating future more efficient architecture. A "trend" option includes a deployment
 similar to the previous one in terms of efficiency gains, Entry-Into-Service (EIS) year and fleet renewal rate, which 
-corresponds to an annual efficiency gains of around 1%. A more optimistic solution considers the same assumptions with 
-an accelerated fleet turnover. Finally, an ambitious option takes into account the introduction of very efficient 
+corresponds to an annual efficiency gains of around 1%. A more "optimistic" solution considers the same assumptions with 
+an accelerated fleet turnover. Finally, an "ambitious" option takes into account the introduction of very efficient 
 aircraft.
 
 Another slider represents the improvements in terms of operations through flight trajectories, air traffic management, 
@@ -120,7 +121,7 @@ corresponds to 2019 value, whereas the more optimistic one is probably be hard t
 airlines have  already reached this value in 2019.
 
 Lastly, ...
- 
+<!-- a checker avant la release--> 
 
 #### Aircraft energy
 
@@ -154,9 +155,9 @@ Concerning hydrogen production, four options are proposed: a current one which i
 of methane or the gasification of coal, two other ones based on steam reformation of methane only with or without carbon
 capture and storage (CCS), a last one based on electrolysis whose emission factor depends on electricity mix. Finally, 
 the electric mix can be assumed as more or less low-carbon, with a default option corresponding to the current world 
-grid electric mix (429 gCO<sub>2</sub>-eq/kWh). In addition to an illustrative option with high-carbon electricity
-(1100 gCO<sub>2</sub>-eq/kWh), two examples of grid electric mixes can be considered, assuming a transition for reaching 
-medium- (240 gCO<sub>2</sub>-eq/kWh) or low-carbon (70 gCO<sub>2</sub>-eq/kWh) final mix by 2050. Moreover, a last 
+grid electric mix (429 gCO<sub>2</sub>-eq/kWh). In addition to an illustrative option with high-carbon intensive electricity
+(1100 gCO<sub>2</sub>-eq/kWh), two examples of power grid can be considered, assuming a transition reaching 
+medium- (240 gCO<sub>2</sub>-eq/kWh) or low-carbon (70 gCO<sub>2</sub>-eq/kWh) final mixes by 2050. Moreover, a last 
 option corresponds to dedicated electricity from renewable (20 gCO<sub>2</sub>-eq/kWh) from today.
 
 
@@ -166,7 +167,7 @@ The user has to set environmental assumptions.
 
 On the one hand, several sliders are available concerning the climate settings. First, the user has to choose the 
 temperature target for the assessment of the climate sustainability (between +1.5°C and +2.0°C, corresponding to extreme
-values from Paris Agreement), as well as the percentage of success for achieving this climate target. This last value 
+values from Paris Agreement), as well as the percentage <!--chances--> of success for achieving this climate target. This last value 
 corresponds to the percentile considered for the TCRE coefficient used in climate sciences (for instance for estimating
 net carbon budgets). The default setting represents SBTi targets (+1.8°C with 67% of success). Moreover, the user can 
 assume Carbon Dioxide Removal (CDR), which corresponds to negative emissions through for instance reforestation, 
@@ -188,7 +189,7 @@ IPCC, IRENA and IEA data. A default and arbitrary value of 200 EJ is considered.
 Last, but not least, the user can assume allocation rules concerning the different environmental limits considered in
 the model. It finally allows comparing absolute impacts of aviation with dedicated targets/limits for the sector.
 The term allocation means here the result of complex mechanisms of negotiation, competition, arbitration and 
-regulation for access to resources. Here, our issues, that are estimated using the climate and energy settings, are 
+regulation for ressources access. Here, our issues <!-- ? -->, that are estimated using the climate and energy settings, are 
 considered: the carbon budget, equivalent carbon budget (which corresponds roughly to temperature), biomass budget and 
 electricity budget. Each time, several allocations are proposed. More specifically, grandfathering allocations can be 
 assumed, which corresponds to the current impact of aviation on an environmental impact. For instance, aviation 
