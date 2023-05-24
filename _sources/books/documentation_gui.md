@@ -29,9 +29,9 @@ CO<sub>2</sub> emissions or effective radiative forcing from aviation. A second 
 assessment of the sustainability of a scenario, for instance in terms of climate. A last graph represents a set of 
 figures for analyzing scenarios more deeply.
 
-On the other hand, a set of sliders is available in the lower part of the screen for performing scenario simulation <!-- to set scenario parameters-->.
-For facilitating <!-- To facilitate--> the handling of the tool according to the user <!-- according to the user un peu redodant-->, the user can use three distinct modes of varying 
-complexity. In the *Discovery mode*, the user uses directly <!-- directly uses--> sliders: this mode provides a good understanding of the 
+On the other hand, a set of sliders is available in the lower part of the screen to set scenario parameters.
+To facilitate the handling of the tool, the user can use three distinct modes of varying complexity. In the 
+*Discovery mode*, the user directly uses sliders: this mode provides a good understanding of the 
 sensitivities of the main levers of action. In the *Scenarios mode*, the user displays scenarios that have already been 
 defined and parameterized: this is the easiest mode to use which only allows analyzing scenarios. Finally, the 
 *Advanced mode*, not directly available on the GUI, links to the AeroMAPS GitHub to be able to manipulate in detail the 
@@ -102,7 +102,7 @@ as often, aviation emissions would be reduced by 25%.
 The user can improve the aircraft fleet and operations. 
 
 For that, a first slider allows introducing new aircraft into the fleet, which can be improved in terms of propulsion
-(more efficient engines), aerodynamics, mass, systems or breakthrough architectures. Whereas "basic" option correspond to
+(more efficient engines), aerodynamics, mass, systems or breakthrough architectures. Whereas some options correspond to
 constant efficiency at 2019 level or efficiency corresponding to fleet renewal with current more efficient aircraft 
 (default option), others allow integrating future more efficient architecture. A "trend" option includes a deployment
 similar to the previous one in terms of efficiency gains, Entry-Into-Service (EIS) year and fleet renewal rate, which 
@@ -167,7 +167,7 @@ The user has to set environmental assumptions.
 
 On the one hand, several sliders are available concerning the climate settings. First, the user has to choose the 
 temperature target for the assessment of the climate sustainability (between +1.5°C and +2.0°C, corresponding to extreme
-values from Paris Agreement), as well as the percentage <!--chances--> of success for achieving this climate target. This last value 
+values from Paris Agreement), as well as the chances of success for achieving this climate target. This last value 
 corresponds to the percentile considered for the TCRE coefficient used in climate sciences (for instance for estimating
 net carbon budgets). The default setting represents SBTi targets (+1.8°C with 67% of success). Moreover, the user can 
 assume Carbon Dioxide Removal (CDR), which corresponds to negative emissions through for instance reforestation, 
@@ -189,7 +189,7 @@ IPCC, IRENA and IEA data. A default and arbitrary value of 200 EJ is considered.
 Last, but not least, the user can assume allocation rules concerning the different environmental limits considered in
 the model. It finally allows comparing absolute impacts of aviation with dedicated targets/limits for the sector.
 The term allocation means here the result of complex mechanisms of negotiation, competition, arbitration and 
-regulation for ressources access. Here, our issues <!-- ? -->, that are estimated using the climate and energy settings, are 
+regulation for resources access. Here, four budgets, that are estimated using the climate and energy settings, are 
 considered: the carbon budget, equivalent carbon budget (which corresponds roughly to temperature), biomass budget and 
 electricity budget. Each time, several allocations are proposed. More specifically, grandfathering allocations can be 
 assumed, which corresponds to the current impact of aviation on an environmental impact. For instance, aviation 

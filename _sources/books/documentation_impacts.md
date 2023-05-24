@@ -16,10 +16,8 @@ majority of impact modeling concern environmental impacts.
 
 Based on the modeling of the air transport system through a Kaya decomposition, the estimation of the evolution of 
 CO<sub>2</sub> emissions is simple by multiplying the different factors. In addition, a coefficient corresponding to 
-other life cycle emissions (excluding combustion and fuel production) can also be applied. A value in the order of 2% 
-can for instance be used by taking an intermediate value from {cite}`pinheiro2020sustainability`.
-
-<!-- je rédigerais ca en mode "is applied" plutot que "can be", car c'est activé par défaut non? -->
+other life cycle emissions (excluding combustion and fuel production) can also be applied, but it only represents a few 
+percent of the aviation environmental impacts {cite}`pinheiro2020sustainability`.
 
 #### Non-CO<sub>2</sub> emissions
 
@@ -28,13 +26,13 @@ obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>...) depending on fuel
 emissions). Values for fossil kerosene from {cite}`lee2021contribution` have been used and are provided in Tab.1. The 
 values can be adapted for alternative energy carriers.
 
-| **Emission**              | **Value** | **Unit**                            |
-|---------------------------|-----------|-------------------------------------|
-| CO<sub>2</sub>            | 3.15      | kgCO<sub>2</sub>/kg<sub>fuel</sub>  |
-| H<sub>2</sub>O            | 1.23      | kgH<sub>2</sub>O/kg<sub>fuel</sub>  |
-| NO<sub>x</sub>            | 15.1      | gNO<sub>x</sub>/kg<sub>fuel</sub>   |
-| Aerosols (BC)             | 0.03      | gBC/kg<sub>fuel</sub>               |
-| Aerosols (SO<sub>x</sub>) | 1.2       | gSO<sub>x</sub>/kg<sub>fuel</sub>   |
+| **Emission**      | **Value** | **Unit**                            |
+|-------------------|-----------|-------------------------------------|
+| CO<sub>2</sub>    | 3.15      | kgCO<sub>2</sub>/kg<sub>fuel</sub>  |
+| H<sub>2</sub>O    | 1.23      | kgH<sub>2</sub>O/kg<sub>fuel</sub>  |
+| NO<sub>x</sub>    | 15.1      | gNO<sub>x</sub>/kg<sub>fuel</sub>   |
+| Aerosols (soot)   | 0.03      | gBC/kg<sub>fuel</sub>               |
+| Aerosols (sulfur) | 1.2       | gSO<sub>x</sub>/kg<sub>fuel</sub>   |
 
 *Tab.1 Emission Index for fossil kerosene combustion.*
 
@@ -50,11 +48,9 @@ of contrails is assumed to be correlated with the total annual distance flown.
 | CO<sub>2</sub> (cumulative) | 0.88                  | mW/m<sup>2</sup>/GtCO<sub>2</sub> |
 | H<sub>2</sub>O              | 0.0052                | mW/m<sup>2</sup>/TgH<sub>2</sub>O |
 | NO<sub>x</sub>              | 11.55                 | mW/m<sup>2</sup>/TgN              |
-| Aerosols (BC)               | 100.7                 | mW/m<sup>2</sup>/TgBC             |
-| Aerosols (SO<sub>x</sub>)   | -19.9                 | mW/m<sup>2</sup>/TgSO<sub>2</sub> |
+| Aerosols (soot)             | 100.7                 | mW/m<sup>2</sup>/TgBC             |
+| Aerosols (sulfur)           | -19.9                 | mW/m<sup>2</sup>/TgSO<sub>2</sub> |
 | Condensation trails         | 1.058.10<sup>-9</sup> | mW/m<sup>2</sup>/km               |
-
-<!-- Aerosols c'est pas Particulate matter en anglais?-->
 
 *Tab.2 Coefficients for estimating the ERF of aviation climate impacts.*
 
@@ -84,10 +80,10 @@ $E_{CO_2\text{-we}} = \text{GWP}_H ~ \left(r ~\frac{\Delta E_G}{\Delta t}~H + s~
 
 This equation can be modified to be used for aviation non-CO<sub>2</sub> effects, based on assumptions from 
 {cite}`allen2018solution, lee2021contribution`, with in particular $r=1$ and $s=0$. As a consequence, the following 
-equation is used with $E_{CO_2\text{-}we}$ the equivalent emissions for a given year of a non-CO<sub>2</sub> effect, <!-- inverser for a given year a a non Co2 -->
-$\Delta F$ the corresponding variation of the ERF (smoothed over 5 years to better represent global trends) over a 
-period $\Delta t$ of 20 years,<!-- idem inverser parenthèse et 20 years--> a time horizon $H$ of 100 years and the absolute global
-warming potential of CO<sub>2</sub> over 100 years $AGWP_H$ of 88 yr.mW/m<sup>2</sup>/GtCO<sub>2</sub>. 
+equation is used with $E_{CO_2\text{-}we}$ the equivalent emissions of a non-CO<sub>2</sub> effect for a given year,
+$\Delta F$ the corresponding variation of the ERF over a period $\Delta t$ of 20 years (smoothed over 5 years to better 
+represent global trends), a time horizon $H$ of 100 years and the absolute global warming potential of CO<sub>2</sub> 
+over 100 years $AGWP_H$ of 88 yr.mW/m<sup>2</sup>/GtCO<sub>2</sub>. 
 
 $E_{CO_2\text{-}we} = \frac{\Delta F}{\Delta t} \frac{H}{AGWP_H}$
 
@@ -96,12 +92,12 @@ $E_{CO_2\text{-}we} = \frac{\Delta F}{\Delta t} \frac{H}{AGWP_H}$
 ### Energy resources
 
 The description of the energy carriers envisaged for air transport makes it possible to estimate the quantities of 
-energy to be embarked<!-- embarked pas tres clair je trouve + confusion enetre energy la et energy phrase suivante, "quantities of fuels to be used"?-->, but also the quantity of energy <!--required--> to produce them using energy <!-- conversion plutot que energy--> efficiencies. The quantities of 
-biomass and electricity consumed are then <!--thus--> directly calculated. The selectivity of the pathways producing these 
-energy carriers, defined as the proportion of kerosene in the fuel output (usually measured by energy), can also be 
-taken into account. It allows to estimate the amount of energy that has to be used to produce kerosene and other 
-outputs. However, in general, an allocation of consumption is made to other outputs for estimating the "real 
-consumption" due to kerosene (which means that selectivity is not taken into account). <!-- dernière phrase a reformuler je trouve, c'est pas tres clair sans être familier avec la selectivité-->
+fuels to be used (embarked energy), but also the quantities of energy required to produce them using conversion
+efficiencies. The quantities of biomass and electricity consumed are then directly calculated. The selectivity of the 
+pathways producing these energy carriers, defined as the proportion of kerosene in the fuel output (usually measured by 
+energy), can also be taken into account. It allows to estimate the amount of energy that has to be used to produce 
+kerosene and other outputs. However, in general, an allocation of consumption is made to other outputs for estimating 
+the "real consumption" due to kerosene (which means that selectivity is not taken into account). 
 
 ### Economic
 
@@ -116,7 +112,8 @@ These models are under development.
 
 In the following, the methodologies used to assess the environmental sustainability of scenarios are presented, 
 based on estimates of induced environmental impacts. Only climate and energy issues are considered. Indeed, these 
-two environmental issues are the most impacting when considering air transport (see for instance {cite}`planes2022dimensionnement`).
+two environmental issues are the most impacting when considering air transport (see for instance 
+{cite}`planes2022dimensionnement`).
 
 
 ### Climate sustainability
@@ -141,12 +138,11 @@ CO<sub>2</sub> emissions alone {cite}`friedlingstein2014persistent`.
 | 1.9                  | 2000     | 1450     | 1200     | 1000     | 800      |
 | 2.0                  | 2300     | 1700     | 1350     | 1150     | 900      |
 
-*Tab.3 Estimates of carbon budgets depending on TCRE percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
+*Tab.3 Estimates of carbon budgets depending on TCRE (see below) percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
 
-<!--TCRE non encore introduit-->
-<!-- Rajouter une phrase de transition BC global - aviation -->
-In the following, a method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also 
-extended to include non-CO<sub>2</sub> effects using two solutions. 
+However, these carbon budgets are defined globally and not by country or sector (like aviation). In the following, a 
+method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also extended to include 
+non-CO<sub>2</sub> effects using two solutions. 
 
 
 #### CO<sub>2</sub> effects
@@ -204,7 +200,7 @@ Another solution is to extend the previous approach in order to maintain a metho
 CO<sub>2</sub> emissions. So-called equivalent carbon budgets are then calculated. 
 For this purpose, a global equivalent gross carbon budget $EGCB$ is calculated via the following equation, which has
 been adapted from simplified models for estimating carbon budgets described in {cite}`rogelj2019estimating`. The value 
-of the TCRE (Transient Climate Response to cumulative carbon Emissions) depends on the percentile <!--of what--> considered, with 
+of the TCRE (Transient Climate Response to cumulative carbon Emissions) depends on climate model settings, with 
 median estimates on the order of 0.45°C/1000GtCO<sub>2</sub>. The $T_{non-CO_2}$ term depends on the temperature 
 objective considered: it is for example equal to 0.1°C for a +1.5°C target and to 0.2°C for +2°C.
 
@@ -225,14 +221,14 @@ emissions for each non-CO<sub>2</sub> effect from 2020 to 2050.
 
 ### Energy resource sustainability
 
-The assessment of energy <!--consumption--> sustainability is based on an approach similar to the one presented for climate issues. 
-This time, rather than comparing cumulative emissions to carbon budgets, the energy consumption of a scenario is 
+The assessment of energy resource sustainability is based on an approach similar to the one presented for climate 
+issues. This time, rather than comparing cumulative emissions to carbon budgets, the energy consumption of a scenario is 
 compared to available energy resource budgets. Only biomass and electricity energy resources are studied in this work. 
 To simplify the comparisons, the availabilities are checked in 2050. A more comprehensive approach would be to check 
 the availability of energy resources on an annual basis. 
 
-In the same way as for carbon budgets, a (political <!--arbitrary-->) allocation of energy resources for aviation is assumed. The 
-choice of a reference value can, for example, be based on the contribution <!--importance--> of the sector to world energy or oil 
+In the same way as for carbon budgets, an arbitrary allocation of energy resources for aviation is assumed. The 
+choice of a reference value can, for example, be based on the contribution of the sector to world energy or oil 
 consumption (of the order of 2 to 3% or 7 to 8%). Thus, a scenario can be considered sustainable from an energy point 
 of view if the consumption of energy resources in 2050 does not exceed the energy resource budget considered.
 
@@ -259,8 +255,8 @@ to exclude extreme values (outliers).
 
 The estimates in Tab.4 are refined using an analysis of the references {cite}`staples2017limits, staples2018aviation` 
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about 
-1 EJ, the rest being household waste <!-- municipal solid waste-->. Energy crops are divided into 63% lignocellulose, 9% vegetable oils and 28% sugar 
-or starch-based materials.
+1 EJ, the rest being municipal solid waste. Energy crops are divided into 63% lignocellulose, 9% vegetable oils and 28% 
+sugar or starch-based materials.
 
 The results obtained are consistent with {cite}`slade2014global` which concludes that likely estimates are less than 
 300 EJ. Similarly, the results by resource type are of the same order of magnitude as those given in 
@@ -273,13 +269,11 @@ Concerning electricity at the global level, the estimation is also complex due t
 factors. Multiple availability scenarios are proposed by academic, industrial and institutional actors. Several 
 scenarios are thus represented on Fig.1, with the estimation of the availability but also of the emission factor of 
 the electricity mix. It is interesting to note the reference point in 2019 and the wide dispersion of the scenarios. 
-On the other hand <!-- je crois que ca s'utilise seulement apres on the one hand -->, all the scenarios forecast an increase in electricity production and a decrease in the emission 
+Moreover, all the scenarios forecast an increase in electricity production and a decrease in the emission 
 factor. For comparison, the emission factors at the global level for low-carbon production means are lower than 
 50 gCO<sub>2</sub>-eq/kWh, with values of the order of 10 gCO<sub>2</sub>-eq/kWh for wind or nuclear power 
 {cite}`IPCC-AR5`. In this work, the electricity energy resource budget is therefore based on these different estimates.
 
 ![](/figs/electricity_2050.png)
-
-<!-- figure pas tres lisible sur mon écran de pc portable-->
 
 *Fig.1 Global electricity production scenarios to 2050.*
