@@ -38,8 +38,8 @@ If not, see <https://www.gnu.org/licenses/>.
 
 ## Acknowledgments
 
-The authors and contributors would like to thank the following people who participated in the development of AeroMAPS versions:
-Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.
+The authors and contributors would like to thank the following people who participated in the development of AeroMAPS 
+versions: Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.
 
 
 ## Contact
