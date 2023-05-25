@@ -352,7 +352,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-modeling">Detailed modeling</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling">Simplified modeling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling-awaiting-robust-implementation">Simplified modeling (awaiting robust implementation)</a></li>
 </ul>
 </li>
 </ul>
@@ -401,7 +401,7 @@ Finally, as with the original Kaya identity, economic parameters can be incorpor
 carrier may lead to an increase in energy consumption per passenger and per kilometer. Similarly, the level of air
 traffic can affect the load factor. Only the main interactions are considered in the following.</p>
 <p>Before modeling the evolution of these different parameters, it is interesting to plot their historical evolution.
-Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the filling rate <span class="math notranslate nohighlight">\(RPK/ASK\)</span>.
+Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the load factor <span class="math notranslate nohighlight">\(RPK/ASK\)</span>.
 Despite significant improvements in fuel efficiency via technology and load factor, CO<sub>2</sub> emissions from the
 sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due
 to the almost exclusive use of fossil kerosene.</p>
@@ -678,7 +678,7 @@ factor <span class="math notranslate nohighlight">\(LF\)</span> for year <span c
 (given with two significant figures). The RMS error obtained is then 5.3.10<sup>-7</sup>.</p>
 <p><span class="math notranslate nohighlight">\(LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4\)</span></p>
 <p>Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the
-parameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> in order to obtain the desired filling rate in 2050.</p>
+parameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> in order to obtain the desired load factor in 2050.</p>
 </section>
 <section id="improvements-for-reducing-non-co-sub-2-sub-effects">
 <h3>Improvements for reducing non-CO<sub>2</sub> effects<a class="headerlink" href="#improvements-for-reducing-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h3>
@@ -844,8 +844,8 @@ models are used, but the principle remains the same.</p>
 <p><img alt="" src="../_images/introduction_fuel.svg" /></p>
 <p><em>Fig.6 Example scenario for introducing drop-in fuels into the fleet.</em></p>
 </section>
-<section id="simplified-modeling">
-<h3>Simplified modeling<a class="headerlink" href="#simplified-modeling" title="Permalink to this heading">#</a></h3>
+<section id="simplified-modeling-awaiting-robust-implementation">
+<h3>Simplified modeling (awaiting robust implementation)<a class="headerlink" href="#simplified-modeling-awaiting-robust-implementation" title="Permalink to this heading">#</a></h3>
 <p>A simplified approach is also possible. In the latter, an average alternative energy carrier is considered. The
 disadvantage of this approach is that it does not allow to distinguish different types of fuel, and in particular
 hydrogen which requires specific architectures. Moreover, it does not allow to easily model the evolution of the
@@ -952,7 +952,7 @@ integration timing.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-modeling">Detailed modeling</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling">Simplified modeling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simplified-modeling-awaiting-robust-implementation">Simplified modeling (awaiting robust implementation)</a></li>
 </ul>
 </li>
 </ul>
