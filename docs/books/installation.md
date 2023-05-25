@@ -4,7 +4,7 @@
 
 For a quick start in order to discover the different features of AeroMAPS,
 a graphical user interface has been developed for facilitating the first uses.
-It is available at the following address: https://cast.isae-supaero.fr
+It is available at the following address: https://aeromaps.isae-supaero.fr
 
 
 ## Installation from the Python Package Index (PyPI)

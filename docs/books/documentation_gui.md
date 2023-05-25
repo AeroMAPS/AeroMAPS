@@ -2,8 +2,8 @@
 
 This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
 it on a computer. First, a tutorial is provided for understanding the use of the GUI. Then, the 
-default settings used on the GUI are provided. For details concerning the models, refer to the dedicated sections of 
-this documentation.
+default settings used on the GUI are provided (for details concerning the models, refer to the dedicated sections of 
+this documentation). Finally, a procedure for using the GUI locally is presented.
 
 
 ## Tutorial
@@ -199,6 +199,16 @@ representing currently 2.6% of CO<sub>2</sub> emissions, the grandfathering allo
 
 
 ### *Scenarios mode*
+
+
+## Local use of the GUI
+
+The GUI can be used directly from the following website: https://aeromaps.isae-supaero.fr. However, it is also possible 
+to use the GUI locally. For this purpose, after installing AeroMAPS (see dedicated section), this command can be used:
+
+```
+voila ./aeromaps/app.ipynb
+```
 
 
 
