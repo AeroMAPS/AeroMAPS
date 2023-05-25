@@ -20,6 +20,5 @@ chapters:
   sections:
     - file: books/examples_basic
     - file: books/examples_fleet
-    - file: books/examples_figures
 - file: books/api
 
