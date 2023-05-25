@@ -29,17 +29,10 @@ If not, see <https://www.gnu.org/licenses/>.
 - Antoine Salgas, PhD Student at ISAE-SUPAERO and Toulouse Business School
 
 
-## Contributors
-
-- Laurent Joly, Professor at ISAE-SUPAERO, Director of Institute for Sustainable Aviation
-- Florian Simatos, Professor at ISAE-SUPAERO
-- Valérie Pommier-Budinger, Professor at ISAE-SUPAERO
-
-
 ## Acknowledgments
 
-The authors and contributors would like to thank the following people who participated in the development of AeroMAPS 
-versions: Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.
+The authors would like to thank the following people who contributed to the development of AeroMAPS versions: Laurent 
+Joly, Valérie Pommier-Budinger, Florian Simatos, Alice Fabre, Martin Delavenne, Félix Pollet and Emmanuel Bénard.
 
 
 ## Contact
