@@ -42,7 +42,7 @@ carrier may lead to an increase in energy consumption per passenger and per kilo
 traffic can affect the load factor. Only the main interactions are considered in the following.
 
 Before modeling the evolution of these different parameters, it is interesting to plot their historical evolution. 
-Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the filling rate $RPK/ASK$. 
+Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the load factor $RPK/ASK$. 
 Despite significant improvements in fuel efficiency via technology and load factor, CO<sub>2</sub> emissions from the 
 sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
 to the almost exclusive use of fossil kerosene.
@@ -337,7 +337,7 @@ factor $LF$ for year $x$ is then modeled using the following equation with param
 $LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4$
 
 Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the 
-parameters $a$ and $b$ in order to obtain the desired filling rate in 2050.
+parameters $a$ and $b$ in order to obtain the desired load factor in 2050.
 
 
 ### Improvements for reducing non-CO<sub>2</sub> effects
@@ -462,7 +462,7 @@ models are used, but the principle remains the same.
 *Fig.6 Example scenario for introducing drop-in fuels into the fleet.*
 
 
-### Simplified modeling
+### Simplified modeling (awaiting robust implementation)
 
 A simplified approach is also possible. In the latter, an average alternative energy carrier is considered. The 
 disadvantage of this approach is that it does not allow to distinguish different types of fuel, and in particular 

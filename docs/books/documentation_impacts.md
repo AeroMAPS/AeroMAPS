@@ -10,7 +10,7 @@ In the following, the models used for estimating the impacts induced by air tran
 majority of impact modeling concern environmental impacts.
 
 
-### Emissions linked to climate impacts
+### Emissions and climate impacts
 
 #### CO<sub>2</sub> emissions
 
@@ -88,6 +88,20 @@ over 100 years $AGWP_H$ of 88 yr.mW/m<sup>2</sup>/GtCO<sub>2</sub>.
 $E_{CO_2\text{-}we} = \frac{\Delta F}{\Delta t} \frac{H}{AGWP_H}$
 
 
+#### Temperature estimation
+
+Based on the knowledge of the CO<sub>2</sub> emissions and non-CO<sub>2</sub> effects via equivalent emissions, it is 
+possible to estimate the temperature increase due to air transport $T_{k}$ for the year $k$. For this purpose, the 
+following equation is used with $T_{2019}$ the temperature increase from air transport in 2019 (from 
+{cite}`grewe2021evaluating`), $E_{CO_2, k}$ the annual CO<sub>2</sub> emissions and $E_{CO_2\text{-}we, k}$ the annual 
+equivalent emissions for non-CO<sub>2</sub> effects using GWP</sup>*</sup>. The value of the TCRE (Transient Climate 
+Response to cumulative carbon Emissions) depends on climate model settings, with median estimates on the order of 
+0.45°C/1000GtCO<sub>2</sub>. However, it is also possible to estimate the temperature increase from air transport using 
+dedicated climate models for more accurate results.
+
+$T_{k} = T_{2019} + TCRE ~ \sum_{i=2019}^{k} (E_{CO_2, k} + E_{CO_2\text{-}we, k})$
+
+
 
 ### Energy resources
 
@@ -138,7 +152,7 @@ CO<sub>2</sub> emissions alone {cite}`friedlingstein2014persistent`.
 | 1.9                  | 2000     | 1450     | 1200     | 1000     | 800      |
 | 2.0                  | 2300     | 1700     | 1350     | 1150     | 900      |
 
-*Tab.3 Estimates of carbon budgets depending on TCRE (see below) percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
+*Tab.3 Estimates of carbon budgets depending on TCRE percentile according to IPCC AR6 (in GtCO<sub>2</sub>).*
 
 However, these carbon budgets are defined globally and not by country or sector (like aviation). In the following, a 
 method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also extended to include 
@@ -190,19 +204,16 @@ are less than or equal to the carbon budget, the climate target is met.
 
 #### CO<sub>2</sub> and non-CO<sub>2</sub> effects
 
-For assessing the sustainability of aviation climate impact, a first solution is to directly estimate the temperature
-increase due to aviation, and to compare it to a climate objective (via an allocation or an absolute target) which is 
-for instance performed in {cite}`grewe2021evaluating, klower2021quantifying`. For this purpose, the equivalent 
-emissions estimated using the GWP<sup>*</sup> climate metric can also be converted into temperature impacts using the 
-TCRE coefficient (or climate models for more accurate solutions).
+For assessing the sustainability of aviation climate impact, a first solution is to directly compare the temperature
+increase from air transport to a climate objective (via an allocation or an absolute target) which is 
+for instance performed in {cite}`grewe2021evaluating, klower2021quantifying`. 
 
 Another solution is to extend the previous approach in order to maintain a methodology similar to that used for
 CO<sub>2</sub> emissions. So-called equivalent carbon budgets are then calculated. 
 For this purpose, a global equivalent gross carbon budget $EGCB$ is calculated via the following equation, which has
-been adapted from simplified models for estimating carbon budgets described in {cite}`rogelj2019estimating`. The value 
-of the TCRE (Transient Climate Response to cumulative carbon Emissions) depends on climate model settings, with 
-median estimates on the order of 0.45°C/1000GtCO<sub>2</sub>. The $T_{non-CO_2}$ term depends on the temperature 
-objective considered: it is for example equal to 0.1°C for a +1.5°C target and to 0.2°C for +2°C.
+been adapted from simplified models for estimating carbon budgets described in {cite}`rogelj2019estimating`. The 
+$T_{non-CO_2}$ term depends on the temperature objective considered: it is for example equal to 0.1°C for a +1.5°C 
+target and to 0.2°C for +2°C.
 
 $EGCB = GCB + \frac{T_{non-CO_2}}{TCRE}$
 
