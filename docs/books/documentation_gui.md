@@ -70,12 +70,10 @@ in 2020 and its consequences are likely to disrupt global traffic for several ye
 epidemic, a 66% decline in air traffic in 2020 compared with 2019 and a return to the 2019 level by 2024 according to 
 <a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a>
 are considered. This modeling also takes into account the decrease aircraft load factor in 2020, which has dropped to 
-58.5% according to 
-<a href="https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf" target="_blank">IATA</a>, 
-against 82.4% in 2019. Similarly, due to the fact that more efficient aircraft did not fly, overall fleet performance
-has dropped (energy intensity per ASK increased by 30.5%). Thus, due to these factors, a paradoxical situation is 
-obtained. Indeed, this drop in performance leads here to an increase in emissions compared to those expected without 
-modification of the efficiency levers of action.
+65.2%, against 82.4% in 2019. Similarly, due to the fact that more efficient aircraft did not fly, overall fleet 
+performance has dropped (energy intensity per ASK increased by 30.5%). Thus, due to these factors, a paradoxical 
+situation is obtained. Indeed, this drop in performance leads here to an increase in emissions compared to those 
+expected without modification of the efficiency levers of action.
 
 Overall, the user can directly define mean air traffic growth rates on the period 2020--2050 for the four considered 
 markets in the model: passenger short-range, passenger medium-range, passenger long-range and freight. By default, 
