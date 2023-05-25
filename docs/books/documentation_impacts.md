@@ -99,7 +99,7 @@ Response to cumulative carbon Emissions) depends on climate model settings, with
 0.45°C/1000GtCO<sub>2</sub>. However, it is also possible to estimate the temperature increase from air transport using 
 dedicated climate models for more accurate results.
 
-$T_{k} = T_{2019} + TCRE ~ \sum_{i=2019}^{k} (E_{CO_2, k} + E_{CO_2\text{-}we, k})$
+$T_{k} = T_{2019} + TCRE ~ \sum_{i=2020}^{k} (E_{CO_2, k} + E_{CO_2\text{-}we, k})$
 
 
 
