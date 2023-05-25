@@ -21,7 +21,6 @@ To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two d
 user's screen (see the following figure). 
 
 ![](/figs/tutorial_page.png)
-<!-- Update avec nvl figure à faire-->
 
 On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
 selecting specific figures using drop-down menus. A first graph allows plotting 
