@@ -65,14 +65,8 @@ assumptions and allocations choices.
 
 #### Air traffic
 
-The user can first make assumptions on the evolution of air traffic.
-
-Overall, the user can directly define mean air traffic growth rates on the 
-period 2020--2050 for the four considered markets in the model: passenger short-range, passenger medium-range, 
-passenger long-range and freight. By default, these values are fixed to 3% per year, i.e. values close to aviation
-industry's projections {cite}`atagwaypoint`.
-
-Moreover, by default, a modeling of Covid-19 epidemic is included. It significantly disrupted global air traffic
+The user can first make assumptions on the evolution of air traffic. 
+By default, a modeling of Covid-19 epidemic is included. It significantly disrupted global air traffic
 in 2020 and its consequences are likely to disrupt global traffic for several years. To take account of this 
 epidemic, this option incorporates a 66% decline in traffic in 2020 compared with 2019 and a return to the 2019 level 
 by 2024 according to 
@@ -85,16 +79,22 @@ on the tool. Indeed, the deterioration in the aircraft load factor, considered a
 efficiency, leads here to an increase in emissions compared to those expected without modification of the 
 efficiency levers of action. + E/ASK
 
-LAST OPTION (TO BE DONE CORRECTED)
+Overall, the user can directly define mean air traffic growth rates on the period 2020--2050 for the four considered 
+markets in the model: passenger short-range, passenger medium-range, passenger long-range and freight. By default, 
+these values are fixed to 3% per year, i.e. values close to aviation industry's projections {cite}`atagwaypoint`.
 
-Lastly, a last option is provided for studying societal aspects on the distribution of flights. The results of this 
-part are based on the work of S. Gössling and A. Humpe in 2020 in 
-<a href="https://www.sciencedirect.com/science/article/pii/S0959378020307779" target="_blank">*The global scale, distribution and growth of aviation: Implications for climate change*</a>. 
-The authors show that only 11% of the world's population flies, and only between 2 and 4% go abroad. Moreover, 
-'frequent flyers', about 1% of the world's population who fly an average of 56,000 km per year (about 3 
-long-range trips), are responsible for about 50% of aviation CO<sub>2</sub> emissions, taking into account their number of 
-flights but also the more frequent use of upper classes. Therefore, if on average these 'frequent flyers' flew half 
-as often, aviation emissions would be reduced by 25%.
+Moreover, an option is proposed for modeling a reduction of short-range flights, which could be induced by modal shift
+(substitution with rail traffic for instance) or political air route ban. Therefore, an illustrative reduction of 50% of
+short-range flights is integrated. The implementation is based on a logistic function with a starting year in 2025 and 
+a duration of 5 years.
+
+Lastly, a last option is provided for studying societal aspects on the distribution of flights, based on 
+{cite}`gossling2020global`. The authors show that only 11% of the world's population flies, and only between 2 and 4% 
+go abroad. Moreover,'frequent flyers', about 1% of the world's population, who fly an average of 56,000 km per year 
+(about 3 long-range trips), are responsible for about 50% of aviation CO<sub>2</sub> emissions, taking into account 
+their number of flights but also the more frequent use of upper classes. Therefore, an option for halving the number of
+flights of these people is present, by reducing by 25% the traffic (via RPK) for each market. The implementation is
+based on a logistic function with a starting year in 2025 and a duration of 5 years.
 
 
 #### Aircraft fleet and operations
