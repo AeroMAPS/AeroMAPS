@@ -65,7 +65,7 @@ concerning strategies against non-CO<sub>2</sub> effects are also provided.
 Before detailing the different models for representing the evolution of the different elements of air transport, 
 historical data used are briefly discussed. Various air traffic data used are derived from
 <a href="https://www.icao.int/annual-report-2019/Pages/the-world-of-air-transport-in-2019-statistical-results.aspx" target="_blank">International Civil Aviation Organization (ICAO)</a>, 
-such as annual passenger numbers, RPK, RTK (Revenue Ton Kilometer), ASK (Available Seat Kilometer) or aircraft load 
+such as annual passenger numbers, RPK, RTK (Revenue Tonne Kilometer), ASK (Available Seat Kilometer) or aircraft load 
 factor. Then, the historical evolution of the term $\frac{E}{RPK}$ is obtained using the previous traffic data and data 
 on world kerosene consumption by the aviation sector, extracted and adapted from 
 <a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 

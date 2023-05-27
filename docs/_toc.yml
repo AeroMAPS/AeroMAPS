@@ -18,7 +18,7 @@ chapters:
     - file: books/bibliography
 - file: books/examples
   sections:
-    - file: books/examples_basic
+    - file: ../notebooks_test/examples_basic
     - file: books/examples_fleet
 - file: books/api
 
