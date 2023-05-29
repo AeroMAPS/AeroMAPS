@@ -414,7 +414,7 @@ the HEFA process to convert oil to fuel requires the addition of hydrogen. A med
 |-------------|----------------------------------|--------|------------|--------|
 | FT          | Municipal waste                  | -      | 27.6       | -      |
 | FT          | Lignocelullose and residues      | 0.3    | 7.7        | 12.6   |
-| ATJ         | Sugar and starch based materials | 33.7   | 52.2       | 68.4   |
+| ATJ         | Sugar and starch-based materials | 33.7   | 52.2       | 68.4   |
 | HEFA        | Vegetable oils and algae         | 42.1   | 61         | 73.9   |
 | HEFA        | Used cooking oil                 | -      | 20.7       | -      |
  
