@@ -154,7 +154,7 @@ the electric mix can be assumed as more or less low-carbon, with a default optio
 grid electric mix (429 gCO<sub>2</sub>-eq/kWh). In addition to an illustrative option with high-carbon intensive electricity
 (1100 gCO<sub>2</sub>-eq/kWh), two examples of power grid can be considered, assuming a transition reaching 
 medium- (240 gCO<sub>2</sub>-eq/kWh) or low-carbon (70 gCO<sub>2</sub>-eq/kWh) final mixes by 2050. Moreover, a last 
-option corresponds to dedicated electricity from renewable (10-50 gCO<sub>2</sub>-eq/kWh) from today.
+option corresponds to dedicated electricity from renewable (20 gCO<sub>2</sub>-eq/kWh) from today.
 
 
 #### Climate & Energy
