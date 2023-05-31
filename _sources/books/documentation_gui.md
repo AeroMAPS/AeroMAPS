@@ -36,7 +36,7 @@ defined and parameterized: this is the easiest mode to use which only allows ana
 *Advanced mode*, not directly available on the GUI, links to the AeroMAPS GitHub to be able to manipulate in detail the 
 AeroMAPS framework using Jupyter Notebooks.
 
-> **_NOTE:_**  Additional information on the different levers of action on the *Discovery mode* is provided by hovering 
+> **_NOTE:_**  Additional information on the different sliders on the *Discovery mode* is provided by hovering 
 > the mouse over them (tooltip).
 
 To illustrate the handling of AeroMAPS, an animation is given below. In this animation, the user tries out different 
