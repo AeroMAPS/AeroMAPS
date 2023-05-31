@@ -116,8 +116,13 @@ trend estimation of 89% by 2050, but other settings are available: 82.4%, 85%, 9
 corresponds to 2019 value, whereas the more optimistic one is probably be hard to reach for all the fleet even if some
 airlines have  already reached this value in 2019.
 
-Lastly, ...
-<!-- a checker avant la release--> 
+Lastly, two options can be activated by the user. On the one hand, the use of turboprop aircraft on short-range market
+is proposed for reducing fuel consumption (but at the cost of lower flight speed). The considered EIS is 2030 with a 
+20% reduction in fuel consumption per ASK compared with turbofan engines. On the other hand, another option consists of 
+dedicated operational measures for avoiding contrails. It is assumed a contrails climate impact reduction of 59.4% for
+a fuel overconsumption of 0.014%. The implementation is based on a logistic function with a starting year in 2030 and a 
+duration of 15 years.
+
 
 #### Aircraft energy
 
