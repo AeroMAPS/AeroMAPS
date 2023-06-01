@@ -16,8 +16,8 @@ Traceback (most recent call last):
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
 %matplotlib widget
-from cast.core.process import AeromapsProcess
-from cast.core.models import models_simple
+from aeromaps.core.process import AeromapsProcess
+from aeromaps.core.models import models_simple
 ------------------
 
 
@@ -25,8 +25,8 @@ from cast.core.models import models_simple
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
 Cell [0;32mIn[1], line 1[0m
 [0;32m----> 1[0m [43mget_ipython[49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[43mrun_line_magic[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mmatplotlib[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mwidget[39;49m[38;5;124;43m'[39;49m[43m)[49m
-[1;32m      2[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcast[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m AeromapsProcess
-[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcast[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m models_simple
+[1;32m      2[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m AeromapsProcess
+[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m models_simple
 
 File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/interactiveshell.py:2414[0m, in [0;36mInteractiveShell.run_line_magic[0;34m(self, magic_name, line, _stack_depth)[0m
 [1;32m   2412[0m     kwargs[[38;5;124m'[39m[38;5;124mlocal_ns[39m[38;5;124m'[39m] [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mget_local_scope(stack_depth)

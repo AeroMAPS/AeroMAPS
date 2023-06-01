@@ -354,8 +354,8 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
-<span class="kn">from</span> <span class="nn">cast.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
-<span class="kn">from</span> <span class="nn">cast.core.models</span> <span class="kn">import</span> <span class="n">models_simple</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_simple</span>
 </pre></div>
 </div>
 </div>
@@ -364,8 +364,8 @@ document.write(`
 <span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;matplotlib&#39;</span><span class="p">,</span> <span class="s1">&#39;widget&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">cast.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">cast.core.models</span> <span class="kn">import</span> <span class="n">models_simple</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_simple</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/interactiveshell.py:2414,</span> in <span class="ni">InteractiveShell.run_line_magic</span><span class="nt">(self, magic_name, line, _stack_depth)</span>
 <span class="g g-Whitespace">   </span><span class="mi">2412</span>     <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;local_ns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_scope</span><span class="p">(</span><span class="n">stack_depth</span><span class="p">)</span>
@@ -436,6 +436,16 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span><span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_simple</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/s.delbecq/PycharmProjects/AeroMAPS/aeromaps/core/process.py:241: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data[&quot;Type&quot;] = data_type
 </pre></div>
 </div>
 </div>
@@ -662,7 +672,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Aircraft fleet and operation evolution - Aircraft load factor</span>
 
 <span class="c1">## Aircraft load factor in 2050 [%]</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">load_factor_end_year</span> <span class="o">=</span> <span class="mi">85</span> <span class="c1"># 2019 value: 82.399312</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">load_factor_end_year</span> <span class="o">=</span> <span class="mi">85</span>  <span class="c1"># 2019 value: 82.399312</span>
 </pre></div>
 </div>
 </div>
@@ -681,15 +691,9 @@ document.write(`
 <span class="c1">### Values for setting logistic functions by category</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_final_market_share_short_range</span> <span class="o">=</span> <span class="mf">50.0</span>  <span class="c1"># [%]</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_introduction_year_short_range</span> <span class="o">=</span> <span class="mi">2035</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_final_market_share_medium_range</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># [%]</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_introduction_year_medium_range</span> <span class="o">=</span> <span class="mi">2051</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_final_market_share_long_range</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># [%]</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_introduction_year_long_range</span> <span class="o">=</span> <span class="mi">2051</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">fleet_renewal_duration</span> <span class="o">=</span> <span class="mf">20.0</span>
 <span class="c1">### Relative energy consumption for hydrogen aircraft with respect to drop-in aircraft [%]</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_short_range</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_medium_range</span> <span class="o">=</span> <span class="mf">10.0</span>
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_long_range</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">relative_energy_per_ask_hydrogen_wrt_dropin_short_range</span> <span class="o">=</span> <span class="mf">1.0</span>
 </pre></div>
 </div>
 </div>
@@ -807,6 +811,16 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/s.delbecq/PycharmProjects/AeroMAPS/aeromaps/core/process.py:241: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data[&quot;Type&quot;] = data_type
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="results">
@@ -833,7 +847,7 @@ document.write(`
  &#39;gross_carbon_budget_2050&#39;: 797.2411428790518,
  &#39;aviation_carbon_budget&#39;: 20.72826971485535,
  &#39;biomass_consumption_end_year&#39;: 10.012331819431708,
- &#39;electricity_consumption_end_year&#39;: 18.450559621454865,
+ &#39;electricity_consumption_end_year&#39;: 16.136202297091078,
  &#39;equivalent_gross_carbon_budget&#39;: 1574.4444444444443,
  &#39;equivalent_gross_carbon_budget_2050&#39;: 1102.610171118651,
  &#39;aviation_equivalent_carbon_budget&#39;: 56.23311872705119,
@@ -848,14 +862,10 @@ document.write(`
  &#39;available_biomass_atj&#39;: 17.64,
  &#39;available_biomass_total&#39;: 164.0,
  &#39;aviation_available_biomass&#39;: 8.200000000000001,
- &#39;carbon_budget_consumed_share&#39;: 3.5215371616443343,
- &#39;equivalent_carbon_budget_consumed_share&#39;: 9.368242508145897,
- &#39;indicator_traffic&#39;: 0.014971959695894304,
- &#39;indicator_technology&#39;: 0.031093434310343816,
- &#39;indicator_efficiency&#39;: 0.01851088863751288,
- &#39;indicator_decarbonisation&#39;: 0.011653544610122689,
+ &#39;carbon_budget_consumed_share&#39;: 3.4940330490009734,
+ &#39;equivalent_carbon_budget_consumed_share&#39;: 9.327285523545568,
  &#39;biomass_consumed_share&#39;: 6.105080377702261,
- &#39;electricity_consumed_share&#39;: 7.380223848581946,
+ &#39;electricity_consumed_share&#39;: 6.45448091883643,
  &#39;aviation_available_electricity&#39;: 12.5}
 </pre></div>
 </div>
@@ -1122,32 +1132,32 @@ document.write(`
       <td>2.165777e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.165777e+12</td>
       <td>2.165777e+12</td>
       <td>2.165777e+12</td>
       <td>8.326708e+12</td>
       <td>1.690697</td>
-      <td>33.813939</td>
-      <td>1.651277</td>
-      <td>1.651277</td>
-      <td>1.448983</td>
-      <td>14.489834</td>
-      <td>1.857686</td>
-      <td>0.0</td>
       <td>1.690697</td>
-      <td>33.813939</td>
+      <td>1.651277</td>
+      <td>1.651277</td>
       <td>1.448983</td>
-      <td>14.489834</td>
+      <td>1.448983</td>
       <td>1.857686</td>
-      <td>0.0</td>
+      <td>1.857686</td>
+      <td>1.690697</td>
+      <td>1.690697</td>
+      <td>1.448983</td>
+      <td>1.448983</td>
+      <td>1.857686</td>
+      <td>1.857686</td>
       <td>10.577627</td>
-      <td>116.882776</td>
       <td>10.577627</td>
       <td>10.577627</td>
       <td>10.577627</td>
-      <td>116.882776</td>
+      <td>10.577627</td>
+      <td>10.577627</td>
       <td>232.958576</td>
       <td>1.211385</td>
       <td>NaN</td>
@@ -1276,32 +1286,32 @@ document.write(`
       <td>2.117861e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.117861e+12</td>
       <td>2.117861e+12</td>
       <td>2.117861e+12</td>
       <td>8.142489e+12</td>
       <td>1.658842</td>
-      <td>33.176841</td>
-      <td>1.620164</td>
-      <td>1.620164</td>
-      <td>1.421683</td>
-      <td>14.216827</td>
-      <td>1.822685</td>
-      <td>0.0</td>
       <td>1.658842</td>
-      <td>33.176841</td>
+      <td>1.620164</td>
+      <td>1.620164</td>
       <td>1.421683</td>
-      <td>14.216827</td>
+      <td>1.421683</td>
       <td>1.822685</td>
-      <td>0.0</td>
+      <td>1.822685</td>
+      <td>1.658842</td>
+      <td>1.658842</td>
+      <td>1.421683</td>
+      <td>1.421683</td>
+      <td>1.822685</td>
+      <td>1.822685</td>
       <td>11.023225</td>
-      <td>121.806633</td>
       <td>11.023225</td>
       <td>11.023225</td>
       <td>11.023225</td>
-      <td>121.806633</td>
+      <td>11.023225</td>
+      <td>11.023225</td>
       <td>227.804625</td>
       <td>1.184584</td>
       <td>NaN</td>
@@ -1430,32 +1440,32 @@ document.write(`
       <td>2.137027e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.137027e+12</td>
       <td>2.137027e+12</td>
       <td>2.137027e+12</td>
       <td>8.216176e+12</td>
       <td>1.683848</td>
-      <td>33.676968</td>
-      <td>1.644588</td>
-      <td>1.644588</td>
-      <td>1.443114</td>
-      <td>14.431140</td>
-      <td>1.850161</td>
-      <td>0.0</td>
       <td>1.683848</td>
-      <td>33.676968</td>
+      <td>1.644588</td>
+      <td>1.644588</td>
       <td>1.443114</td>
-      <td>14.431140</td>
+      <td>1.443114</td>
       <td>1.850161</td>
-      <td>0.0</td>
+      <td>1.850161</td>
+      <td>1.683848</td>
+      <td>1.683848</td>
+      <td>1.443114</td>
+      <td>1.443114</td>
+      <td>1.850161</td>
+      <td>1.850161</td>
       <td>9.727507</td>
-      <td>107.488948</td>
       <td>9.727507</td>
       <td>9.727507</td>
       <td>9.727507</td>
-      <td>107.488948</td>
+      <td>9.727507</td>
+      <td>9.727507</td>
       <td>229.866206</td>
       <td>1.195304</td>
       <td>NaN</td>
@@ -1584,32 +1594,32 @@ document.write(`
       <td>2.117861e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.117861e+12</td>
       <td>2.117861e+12</td>
       <td>2.117861e+12</td>
       <td>8.142489e+12</td>
       <td>1.618260</td>
-      <td>32.365199</td>
-      <td>1.580529</td>
-      <td>1.580529</td>
-      <td>1.386903</td>
-      <td>13.869025</td>
-      <td>1.778095</td>
-      <td>0.0</td>
       <td>1.618260</td>
-      <td>32.365199</td>
+      <td>1.580529</td>
+      <td>1.580529</td>
       <td>1.386903</td>
-      <td>13.869025</td>
+      <td>1.386903</td>
       <td>1.778095</td>
-      <td>0.0</td>
+      <td>1.778095</td>
+      <td>1.618260</td>
+      <td>1.618260</td>
+      <td>1.386903</td>
+      <td>1.386903</td>
+      <td>1.778095</td>
+      <td>1.778095</td>
       <td>9.089019</td>
-      <td>100.433661</td>
       <td>9.089019</td>
       <td>9.089019</td>
       <td>9.089019</td>
-      <td>100.433661</td>
+      <td>9.089019</td>
+      <td>9.089019</td>
       <td>227.804625</td>
       <td>1.184584</td>
       <td>NaN</td>
@@ -1738,32 +1748,32 @@ document.write(`
       <td>2.261608e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.261608e+12</td>
       <td>2.261608e+12</td>
       <td>2.261608e+12</td>
       <td>8.695146e+12</td>
       <td>1.538983</td>
-      <td>30.779664</td>
-      <td>1.503100</td>
-      <td>1.503100</td>
-      <td>1.318960</td>
-      <td>13.189597</td>
-      <td>1.690988</td>
-      <td>0.0</td>
       <td>1.538983</td>
-      <td>30.779664</td>
+      <td>1.503100</td>
+      <td>1.503100</td>
       <td>1.318960</td>
-      <td>13.189597</td>
+      <td>1.318960</td>
       <td>1.690988</td>
-      <td>0.0</td>
+      <td>1.690988</td>
+      <td>1.538983</td>
+      <td>1.538983</td>
+      <td>1.318960</td>
+      <td>1.318960</td>
+      <td>1.690988</td>
+      <td>1.690988</td>
       <td>8.667295</td>
-      <td>95.773613</td>
       <td>8.667295</td>
       <td>8.667295</td>
       <td>8.667295</td>
-      <td>95.773613</td>
+      <td>8.667295</td>
+      <td>8.667295</td>
       <td>243.266478</td>
       <td>1.264986</td>
       <td>NaN</td>
@@ -1892,32 +1902,32 @@ document.write(`
       <td>2.347855e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.347855e+12</td>
       <td>2.347855e+12</td>
       <td>2.347855e+12</td>
       <td>9.026741e+12</td>
       <td>1.504345</td>
-      <td>30.086910</td>
-      <td>1.469270</td>
-      <td>1.469270</td>
-      <td>1.289274</td>
-      <td>12.892740</td>
-      <td>1.652929</td>
-      <td>0.0</td>
       <td>1.504345</td>
-      <td>30.086910</td>
+      <td>1.469270</td>
+      <td>1.469270</td>
       <td>1.289274</td>
-      <td>12.892740</td>
+      <td>1.289274</td>
       <td>1.652929</td>
-      <td>0.0</td>
+      <td>1.652929</td>
+      <td>1.504345</td>
+      <td>1.504345</td>
+      <td>1.289274</td>
+      <td>1.289274</td>
+      <td>1.652929</td>
+      <td>1.652929</td>
       <td>8.809556</td>
-      <td>97.345592</td>
       <td>8.809556</td>
       <td>8.809556</td>
       <td>8.809556</td>
-      <td>97.345592</td>
+      <td>8.809556</td>
+      <td>8.809556</td>
       <td>252.543589</td>
       <td>1.313227</td>
       <td>NaN</td>
@@ -2046,32 +2056,32 @@ document.write(`
       <td>2.376605e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.376605e+12</td>
       <td>2.376605e+12</td>
       <td>2.376605e+12</td>
       <td>9.137272e+12</td>
       <td>1.447581</td>
-      <td>28.951623</td>
-      <td>1.413829</td>
-      <td>1.413829</td>
-      <td>1.240625</td>
-      <td>12.406251</td>
-      <td>1.590558</td>
-      <td>0.0</td>
       <td>1.447581</td>
-      <td>28.951623</td>
+      <td>1.413829</td>
+      <td>1.413829</td>
       <td>1.240625</td>
-      <td>12.406251</td>
+      <td>1.240625</td>
       <td>1.590558</td>
-      <td>0.0</td>
+      <td>1.590558</td>
+      <td>1.447581</td>
+      <td>1.447581</td>
+      <td>1.240625</td>
+      <td>1.240625</td>
+      <td>1.590558</td>
+      <td>1.590558</td>
       <td>8.337536</td>
-      <td>92.129771</td>
       <td>8.337536</td>
       <td>8.337536</td>
       <td>8.337536</td>
-      <td>92.129771</td>
+      <td>8.337536</td>
+      <td>8.337536</td>
       <td>255.635960</td>
       <td>1.329307</td>
       <td>NaN</td>
@@ -2200,32 +2210,32 @@ document.write(`
       <td>2.443686e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.443686e+12</td>
       <td>2.443686e+12</td>
       <td>2.443686e+12</td>
       <td>9.395179e+12</td>
       <td>1.391500</td>
-      <td>27.830009</td>
-      <td>1.359056</td>
-      <td>1.359056</td>
-      <td>1.192562</td>
-      <td>11.925621</td>
-      <td>1.528938</td>
-      <td>0.0</td>
       <td>1.391500</td>
-      <td>27.830009</td>
+      <td>1.359056</td>
+      <td>1.359056</td>
       <td>1.192562</td>
-      <td>11.925621</td>
+      <td>1.192562</td>
       <td>1.528938</td>
-      <td>0.0</td>
+      <td>1.528938</td>
+      <td>1.391500</td>
+      <td>1.391500</td>
+      <td>1.192562</td>
+      <td>1.192562</td>
+      <td>1.528938</td>
+      <td>1.528938</td>
       <td>8.153461</td>
-      <td>90.095748</td>
       <td>8.153461</td>
       <td>8.153461</td>
       <td>8.153461</td>
-      <td>90.095748</td>
+      <td>8.153461</td>
+      <td>8.153461</td>
       <td>262.851491</td>
       <td>1.366828</td>
       <td>NaN</td>
@@ -2354,32 +2364,32 @@ document.write(`
       <td>2.414937e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.414937e+12</td>
       <td>2.414937e+12</td>
       <td>2.414937e+12</td>
       <td>9.284648e+12</td>
       <td>1.332805</td>
-      <td>26.656099</td>
-      <td>1.301729</td>
-      <td>1.301729</td>
-      <td>1.142258</td>
-      <td>11.422581</td>
-      <td>1.464445</td>
-      <td>0.0</td>
       <td>1.332805</td>
-      <td>26.656099</td>
+      <td>1.301729</td>
+      <td>1.301729</td>
       <td>1.142258</td>
-      <td>11.422581</td>
+      <td>1.142258</td>
       <td>1.464445</td>
-      <td>0.0</td>
+      <td>1.464445</td>
+      <td>1.332805</td>
+      <td>1.332805</td>
+      <td>1.142258</td>
+      <td>1.142258</td>
+      <td>1.464445</td>
+      <td>1.464445</td>
       <td>8.136862</td>
-      <td>89.912324</td>
       <td>8.136862</td>
       <td>8.136862</td>
       <td>8.136862</td>
-      <td>89.912324</td>
+      <td>8.136862</td>
+      <td>8.136862</td>
       <td>259.759120</td>
       <td>1.350747</td>
       <td>NaN</td>
@@ -2508,32 +2518,32 @@ document.write(`
       <td>2.280774e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.280774e+12</td>
       <td>2.280774e+12</td>
       <td>2.280774e+12</td>
       <td>8.768834e+12</td>
       <td>1.282918</td>
-      <td>25.658368</td>
-      <td>1.253006</td>
-      <td>1.253006</td>
-      <td>1.099504</td>
-      <td>10.995037</td>
-      <td>1.409632</td>
-      <td>0.0</td>
       <td>1.282918</td>
-      <td>25.658368</td>
+      <td>1.253006</td>
+      <td>1.253006</td>
       <td>1.099504</td>
-      <td>10.995037</td>
+      <td>1.099504</td>
       <td>1.409632</td>
-      <td>0.0</td>
+      <td>1.409632</td>
+      <td>1.282918</td>
+      <td>1.282918</td>
+      <td>1.099504</td>
+      <td>1.099504</td>
+      <td>1.409632</td>
+      <td>1.409632</td>
       <td>8.441365</td>
-      <td>93.277086</td>
       <td>8.441365</td>
       <td>8.441365</td>
       <td>8.441365</td>
-      <td>93.277086</td>
+      <td>8.441365</td>
+      <td>8.441365</td>
       <td>245.328058</td>
       <td>1.275706</td>
       <td>NaN</td>
@@ -2662,32 +2672,32 @@ document.write(`
       <td>2.405354e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.405354e+12</td>
       <td>2.405354e+12</td>
       <td>2.405354e+12</td>
       <td>9.247804e+12</td>
       <td>1.276074</td>
-      <td>25.521471</td>
-      <td>1.246321</td>
-      <td>1.246321</td>
-      <td>1.093637</td>
-      <td>10.936374</td>
-      <td>1.402111</td>
-      <td>0.0</td>
       <td>1.276074</td>
-      <td>25.521471</td>
+      <td>1.246321</td>
+      <td>1.246321</td>
       <td>1.093637</td>
-      <td>10.936374</td>
+      <td>1.093637</td>
       <td>1.402111</td>
-      <td>0.0</td>
+      <td>1.402111</td>
+      <td>1.276074</td>
+      <td>1.276074</td>
+      <td>1.093637</td>
+      <td>1.093637</td>
+      <td>1.402111</td>
+      <td>1.402111</td>
       <td>7.361026</td>
-      <td>81.339334</td>
       <td>7.361026</td>
       <td>7.361026</td>
       <td>7.361026</td>
-      <td>81.339334</td>
+      <td>7.361026</td>
+      <td>7.361026</td>
       <td>258.728330</td>
       <td>1.345387</td>
       <td>NaN</td>
@@ -2816,32 +2826,32 @@ document.write(`
       <td>2.472435e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.472435e+12</td>
       <td>2.472435e+12</td>
       <td>2.472435e+12</td>
       <td>9.505711e+12</td>
       <td>1.228131</td>
-      <td>24.562623</td>
-      <td>1.199496</td>
-      <td>1.199496</td>
-      <td>1.052549</td>
-      <td>10.525492</td>
-      <td>1.349433</td>
-      <td>0.0</td>
       <td>1.228131</td>
-      <td>24.562623</td>
+      <td>1.199496</td>
+      <td>1.199496</td>
       <td>1.052549</td>
-      <td>10.525492</td>
+      <td>1.052549</td>
       <td>1.349433</td>
-      <td>0.0</td>
+      <td>1.349433</td>
+      <td>1.228131</td>
+      <td>1.228131</td>
+      <td>1.052549</td>
+      <td>1.052549</td>
+      <td>1.349433</td>
+      <td>1.349433</td>
       <td>7.543696</td>
-      <td>83.357841</td>
       <td>7.543696</td>
       <td>7.543696</td>
       <td>7.543696</td>
-      <td>83.357841</td>
+      <td>7.543696</td>
+      <td>7.543696</td>
       <td>265.943861</td>
       <td>1.382908</td>
       <td>NaN</td>
@@ -2970,32 +2980,32 @@ document.write(`
       <td>2.501185e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.501185e+12</td>
       <td>2.501185e+12</td>
       <td>2.501185e+12</td>
       <td>9.616242e+12</td>
       <td>1.192262</td>
-      <td>23.845230</td>
-      <td>1.164463</td>
-      <td>1.164463</td>
-      <td>1.021808</td>
-      <td>10.218077</td>
-      <td>1.310020</td>
-      <td>0.0</td>
       <td>1.192262</td>
-      <td>23.845230</td>
+      <td>1.164463</td>
+      <td>1.164463</td>
       <td>1.021808</td>
-      <td>10.218077</td>
+      <td>1.021808</td>
       <td>1.310020</td>
-      <td>0.0</td>
+      <td>1.310020</td>
+      <td>1.192262</td>
+      <td>1.192262</td>
+      <td>1.021808</td>
+      <td>1.021808</td>
+      <td>1.310020</td>
+      <td>1.310020</td>
       <td>7.711831</td>
-      <td>85.215735</td>
       <td>7.711831</td>
       <td>7.711831</td>
       <td>7.711831</td>
-      <td>85.215735</td>
+      <td>7.711831</td>
+      <td>7.711831</td>
       <td>269.036232</td>
       <td>1.398988</td>
       <td>NaN</td>
@@ -3124,32 +3134,32 @@ document.write(`
       <td>2.568266e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.568266e+12</td>
       <td>2.568266e+12</td>
       <td>2.568266e+12</td>
       <td>9.874149e+12</td>
       <td>1.169616</td>
-      <td>23.392323</td>
-      <td>1.142345</td>
-      <td>1.142345</td>
-      <td>1.002400</td>
-      <td>10.023999</td>
-      <td>1.285138</td>
-      <td>0.0</td>
       <td>1.169616</td>
-      <td>23.392323</td>
+      <td>1.142345</td>
+      <td>1.142345</td>
       <td>1.002400</td>
-      <td>10.023999</td>
+      <td>1.002400</td>
       <td>1.285138</td>
-      <td>0.0</td>
+      <td>1.285138</td>
+      <td>1.169616</td>
+      <td>1.169616</td>
+      <td>1.002400</td>
+      <td>1.002400</td>
+      <td>1.285138</td>
+      <td>1.285138</td>
       <td>7.887289</td>
-      <td>87.154538</td>
       <td>7.887289</td>
       <td>7.887289</td>
       <td>7.887289</td>
-      <td>87.154538</td>
+      <td>7.887289</td>
+      <td>7.887289</td>
       <td>276.251763</td>
       <td>1.436509</td>
       <td>NaN</td>
@@ -3278,32 +3288,32 @@ document.write(`
       <td>2.644931e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.644931e+12</td>
       <td>2.644931e+12</td>
       <td>2.644931e+12</td>
       <td>1.016890e+13</td>
       <td>1.139977</td>
-      <td>22.799541</td>
-      <td>1.113397</td>
-      <td>1.113397</td>
-      <td>0.976998</td>
-      <td>9.769982</td>
-      <td>1.252572</td>
-      <td>0.0</td>
       <td>1.139977</td>
-      <td>22.799541</td>
+      <td>1.113397</td>
+      <td>1.113397</td>
       <td>0.976998</td>
-      <td>9.769982</td>
+      <td>0.976998</td>
       <td>1.252572</td>
-      <td>0.0</td>
+      <td>1.252572</td>
+      <td>1.139977</td>
+      <td>1.139977</td>
+      <td>0.976998</td>
+      <td>0.976998</td>
+      <td>1.252572</td>
+      <td>1.252572</td>
       <td>7.761413</td>
-      <td>85.763614</td>
       <td>7.761413</td>
       <td>7.761413</td>
       <td>7.761413</td>
-      <td>85.763614</td>
+      <td>7.761413</td>
+      <td>7.761413</td>
       <td>284.498084</td>
       <td>1.479390</td>
       <td>NaN</td>
@@ -3432,32 +3442,32 @@ document.write(`
       <td>2.788677e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.788677e+12</td>
       <td>2.788677e+12</td>
       <td>2.788677e+12</td>
       <td>1.072156e+13</td>
       <td>1.125389</td>
-      <td>22.507771</td>
-      <td>1.099149</td>
-      <td>1.099149</td>
-      <td>0.964495</td>
-      <td>9.644953</td>
-      <td>1.236543</td>
-      <td>0.0</td>
       <td>1.125389</td>
-      <td>22.507771</td>
+      <td>1.099149</td>
+      <td>1.099149</td>
       <td>0.964495</td>
-      <td>9.644953</td>
+      <td>0.964495</td>
       <td>1.236543</td>
-      <td>0.0</td>
+      <td>1.236543</td>
+      <td>1.125389</td>
+      <td>1.125389</td>
+      <td>0.964495</td>
+      <td>0.964495</td>
+      <td>1.236543</td>
+      <td>1.236543</td>
       <td>8.079505</td>
-      <td>89.278534</td>
       <td>8.079505</td>
       <td>8.079505</td>
       <td>8.079505</td>
-      <td>89.278534</td>
+      <td>8.079505</td>
+      <td>8.079505</td>
       <td>299.959937</td>
       <td>1.559792</td>
       <td>NaN</td>
@@ -3586,32 +3596,32 @@ document.write(`
       <td>2.932423e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.932423e+12</td>
       <td>2.932423e+12</td>
       <td>2.932423e+12</td>
       <td>1.127422e+13</td>
       <td>1.102597</td>
-      <td>22.051936</td>
-      <td>1.076889</td>
-      <td>1.076889</td>
-      <td>0.944962</td>
-      <td>9.449621</td>
-      <td>1.211500</td>
-      <td>0.0</td>
       <td>1.102597</td>
-      <td>22.051936</td>
+      <td>1.076889</td>
+      <td>1.076889</td>
       <td>0.944962</td>
-      <td>9.449621</td>
+      <td>0.944962</td>
       <td>1.211500</td>
-      <td>0.0</td>
+      <td>1.211500</td>
+      <td>1.102597</td>
+      <td>1.102597</td>
+      <td>0.944962</td>
+      <td>0.944962</td>
+      <td>1.211500</td>
+      <td>1.211500</td>
       <td>8.202412</td>
-      <td>90.636651</td>
       <td>8.202412</td>
       <td>8.202412</td>
       <td>8.202412</td>
-      <td>90.636651</td>
+      <td>8.202412</td>
+      <td>8.202412</td>
       <td>315.421789</td>
       <td>1.640193</td>
       <td>NaN</td>
@@ -3740,32 +3750,32 @@ document.write(`
       <td>3.124085e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.124085e+12</td>
       <td>3.124085e+12</td>
       <td>3.124085e+12</td>
       <td>1.201109e+13</td>
       <td>1.103729</td>
-      <td>22.074587</td>
-      <td>1.077995</td>
-      <td>1.077995</td>
-      <td>0.945933</td>
-      <td>9.459327</td>
-      <td>1.212744</td>
-      <td>0.0</td>
       <td>1.103729</td>
-      <td>22.074587</td>
+      <td>1.077995</td>
+      <td>1.077995</td>
       <td>0.945933</td>
-      <td>9.459327</td>
+      <td>0.945933</td>
       <td>1.212744</td>
-      <td>0.0</td>
+      <td>1.212744</td>
+      <td>1.103729</td>
+      <td>1.103729</td>
+      <td>0.945933</td>
+      <td>0.945933</td>
+      <td>1.212744</td>
+      <td>1.212744</td>
       <td>8.001456</td>
-      <td>88.416086</td>
       <td>8.001456</td>
       <td>8.001456</td>
       <td>8.001456</td>
-      <td>88.416086</td>
+      <td>8.001456</td>
+      <td>8.001456</td>
       <td>336.037592</td>
       <td>1.747395</td>
       <td>NaN</td>
@@ -3894,32 +3904,32 @@ document.write(`
       <td>3.267831e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.267831e+12</td>
       <td>3.267831e+12</td>
       <td>3.267831e+12</td>
       <td>1.256375e+13</td>
       <td>1.079972</td>
-      <td>21.599438</td>
-      <td>1.054791</td>
-      <td>1.054791</td>
-      <td>0.925572</td>
-      <td>9.255718</td>
-      <td>1.186640</td>
-      <td>0.0</td>
       <td>1.079972</td>
-      <td>21.599438</td>
+      <td>1.054791</td>
+      <td>1.054791</td>
       <td>0.925572</td>
-      <td>9.255718</td>
+      <td>0.925572</td>
       <td>1.186640</td>
-      <td>0.0</td>
+      <td>1.186640</td>
+      <td>1.079972</td>
+      <td>1.079972</td>
+      <td>0.925572</td>
+      <td>0.925572</td>
+      <td>1.186640</td>
+      <td>1.186640</td>
       <td>8.131877</td>
-      <td>89.857237</td>
       <td>8.131877</td>
       <td>8.131877</td>
       <td>8.131877</td>
-      <td>89.857237</td>
+      <td>8.131877</td>
+      <td>8.131877</td>
       <td>351.499445</td>
       <td>1.827797</td>
       <td>NaN</td>
@@ -4048,32 +4058,32 @@ document.write(`
       <td>3.306164e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.306164e+12</td>
       <td>3.306164e+12</td>
       <td>3.306164e+12</td>
       <td>1.271112e+13</td>
       <td>1.049468</td>
-      <td>20.989364</td>
-      <td>1.024999</td>
-      <td>1.024999</td>
-      <td>0.899429</td>
-      <td>8.994291</td>
-      <td>1.153124</td>
-      <td>0.0</td>
       <td>1.049468</td>
-      <td>20.989364</td>
+      <td>1.024999</td>
+      <td>1.024999</td>
       <td>0.899429</td>
-      <td>8.994291</td>
+      <td>0.899429</td>
       <td>1.153124</td>
-      <td>0.0</td>
+      <td>1.153124</td>
+      <td>1.049468</td>
+      <td>1.049468</td>
+      <td>0.899429</td>
+      <td>0.899429</td>
+      <td>1.153124</td>
+      <td>1.153124</td>
       <td>8.474046</td>
-      <td>93.638203</td>
       <td>8.474046</td>
       <td>8.474046</td>
       <td>8.474046</td>
-      <td>93.638203</td>
+      <td>8.474046</td>
+      <td>8.474046</td>
       <td>355.622605</td>
       <td>1.849238</td>
       <td>NaN</td>
@@ -4202,32 +4212,32 @@ document.write(`
       <td>1.826106e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>1.826106e+12</td>
       <td>1.826106e+12</td>
       <td>1.826106e+12</td>
       <td>6.800966e+12</td>
       <td>1.349013</td>
-      <td>26.980253</td>
-      <td>1.317559</td>
-      <td>1.317559</td>
-      <td>1.156149</td>
-      <td>11.561486</td>
-      <td>1.482254</td>
-      <td>0.0</td>
       <td>1.349013</td>
-      <td>26.980253</td>
+      <td>1.317559</td>
+      <td>1.317559</td>
       <td>1.156149</td>
-      <td>11.561486</td>
+      <td>1.156149</td>
       <td>1.482254</td>
-      <td>0.0</td>
+      <td>1.482254</td>
+      <td>1.349013</td>
+      <td>1.349013</td>
+      <td>1.156149</td>
+      <td>1.156149</td>
+      <td>1.482254</td>
+      <td>1.482254</td>
       <td>10.892750</td>
-      <td>120.364887</td>
       <td>10.892750</td>
       <td>10.892750</td>
       <td>10.892750</td>
-      <td>120.364887</td>
+      <td>10.892750</td>
+      <td>10.892750</td>
       <td>190.272474</td>
       <td>0.989417</td>
       <td>0.0</td>
@@ -4356,32 +4366,32 @@ document.write(`
       <td>1.613545e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>1.613545e+12</td>
       <td>1.613545e+12</td>
       <td>1.613545e+12</td>
       <td>6.207220e+12</td>
       <td>1.018220</td>
-      <td>20.364405</td>
-      <td>0.994479</td>
-      <td>0.994479</td>
-      <td>0.872649</td>
-      <td>8.726486</td>
-      <td>1.118789</td>
-      <td>0.0</td>
       <td>1.018220</td>
-      <td>20.364405</td>
+      <td>0.994479</td>
+      <td>0.994479</td>
       <td>0.872649</td>
-      <td>8.726486</td>
+      <td>0.872649</td>
       <td>1.118789</td>
-      <td>0.0</td>
+      <td>1.118789</td>
+      <td>1.018220</td>
+      <td>1.018220</td>
+      <td>0.872649</td>
+      <td>0.872649</td>
+      <td>1.118789</td>
+      <td>1.118789</td>
       <td>8.221731</td>
-      <td>90.850126</td>
       <td>8.221731</td>
       <td>8.221731</td>
       <td>8.221731</td>
-      <td>90.850126</td>
+      <td>8.221731</td>
+      <td>8.221731</td>
       <td>173.661100</td>
       <td>0.903038</td>
       <td>0.0</td>
@@ -4510,32 +4520,32 @@ document.write(`
       <td>2.104709e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.104709e+12</td>
       <td>2.104709e+12</td>
       <td>2.104709e+12</td>
       <td>8.098975e+12</td>
       <td>1.002947</td>
-      <td>20.058939</td>
-      <td>0.979562</td>
-      <td>0.979562</td>
-      <td>0.859559</td>
-      <td>8.595588</td>
-      <td>1.102007</td>
-      <td>0.0</td>
       <td>1.002947</td>
-      <td>20.058939</td>
+      <td>0.979562</td>
+      <td>0.979562</td>
       <td>0.859559</td>
-      <td>8.595588</td>
+      <td>0.859559</td>
       <td>1.102007</td>
-      <td>0.0</td>
+      <td>1.102007</td>
+      <td>1.002947</td>
+      <td>1.002947</td>
+      <td>0.859559</td>
+      <td>0.859559</td>
+      <td>1.102007</td>
+      <td>1.102007</td>
       <td>8.098405</td>
-      <td>89.487374</td>
       <td>8.098405</td>
       <td>8.098405</td>
       <td>8.098405</td>
-      <td>89.487374</td>
+      <td>8.098405</td>
+      <td>8.098405</td>
       <td>226.587220</td>
       <td>1.178254</td>
       <td>0.0</td>
@@ -4664,32 +4674,32 @@ document.write(`
       <td>2.579059e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.579059e+12</td>
       <td>2.579059e+12</td>
       <td>2.579059e+12</td>
       <td>9.926968e+12</td>
       <td>0.987903</td>
-      <td>19.758055</td>
-      <td>0.964869</td>
-      <td>0.964869</td>
-      <td>0.846665</td>
-      <td>8.466655</td>
-      <td>1.085477</td>
-      <td>0.0</td>
       <td>0.987903</td>
-      <td>19.758055</td>
+      <td>0.964869</td>
+      <td>0.964869</td>
       <td>0.846665</td>
-      <td>8.466655</td>
+      <td>0.846665</td>
       <td>1.085477</td>
-      <td>0.0</td>
+      <td>1.085477</td>
+      <td>0.987903</td>
+      <td>0.987903</td>
+      <td>0.846665</td>
+      <td>0.846665</td>
+      <td>1.085477</td>
+      <td>1.085477</td>
       <td>7.976929</td>
-      <td>88.145063</td>
       <td>7.976929</td>
       <td>7.976929</td>
       <td>7.976929</td>
-      <td>88.145063</td>
+      <td>7.976929</td>
+      <td>7.976929</td>
       <td>277.729489</td>
       <td>1.444193</td>
       <td>0.0</td>
@@ -4818,32 +4828,32 @@ document.write(`
       <td>3.037119e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.037119e+12</td>
       <td>3.037119e+12</td>
       <td>3.037119e+12</td>
       <td>1.169312e+13</td>
       <td>0.973084</td>
-      <td>19.461684</td>
-      <td>0.950396</td>
-      <td>0.950396</td>
-      <td>0.833965</td>
-      <td>8.339655</td>
-      <td>1.069195</td>
-      <td>0.0</td>
       <td>0.973084</td>
-      <td>19.461684</td>
+      <td>0.950396</td>
+      <td>0.950396</td>
       <td>0.833965</td>
-      <td>8.339655</td>
+      <td>0.833965</td>
       <td>1.069195</td>
-      <td>0.0</td>
+      <td>1.069195</td>
+      <td>0.973084</td>
+      <td>0.973084</td>
+      <td>0.833965</td>
+      <td>0.833965</td>
+      <td>1.069195</td>
+      <td>1.069195</td>
       <td>7.857275</td>
-      <td>86.822887</td>
       <td>7.857275</td>
       <td>7.857275</td>
       <td>7.857275</td>
-      <td>86.822887</td>
+      <td>7.857275</td>
+      <td>7.857275</td>
       <td>327.141582</td>
       <td>1.701136</td>
       <td>0.0</td>
@@ -4972,32 +4982,32 @@ document.write(`
       <td>3.076207e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.067318e+12</td>
       <td>3.072233e+12</td>
       <td>3.076207e+12</td>
       <td>1.184658e+13</td>
       <td>0.956954</td>
-      <td>19.139087</td>
+      <td>0.956954</td>
       <td>0.934642</td>
       <td>0.936140</td>
       <td>0.820142</td>
-      <td>8.201417</td>
+      <td>0.820142</td>
       <td>1.051472</td>
-      <td>0.0</td>
+      <td>1.051472</td>
       <td>0.958488</td>
-      <td>19.169759</td>
+      <td>0.958488</td>
       <td>0.821456</td>
-      <td>8.214560</td>
+      <td>0.821456</td>
       <td>1.053157</td>
-      <td>0.0</td>
+      <td>1.053157</td>
       <td>7.727033</td>
-      <td>85.383711</td>
+      <td>7.727033</td>
       <td>7.727033</td>
       <td>7.739416</td>
       <td>7.739416</td>
-      <td>85.520544</td>
+      <td>7.739416</td>
       <td>330.904710</td>
       <td>1.720704</td>
       <td>0.0</td>
@@ -5126,32 +5136,32 @@ document.write(`
       <td>3.116008e+12</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.087486e+12</td>
       <td>3.094196e+12</td>
       <td>3.116008e+12</td>
       <td>1.200275e+13</td>
       <td>0.942063</td>
-      <td>18.841265</td>
+      <td>0.942063</td>
       <td>0.920098</td>
       <td>0.922098</td>
       <td>0.807379</td>
-      <td>8.073795</td>
+      <td>0.807379</td>
       <td>1.035110</td>
-      <td>0.0</td>
+      <td>1.035110</td>
       <td>0.944111</td>
-      <td>18.882213</td>
+      <td>0.944111</td>
       <td>0.809134</td>
-      <td>8.091342</td>
+      <td>0.809134</td>
       <td>1.037360</td>
-      <td>0.0</td>
+      <td>1.037360</td>
       <td>7.606793</td>
-      <td>84.055060</td>
+      <td>7.606793</td>
       <td>7.606793</td>
       <td>7.623325</td>
       <td>7.623325</td>
-      <td>84.237736</td>
+      <td>7.623325</td>
       <td>335.075913</td>
       <td>1.742395</td>
       <td>0.0</td>
@@ -5280,32 +5290,32 @@ document.write(`
       <td>3.156536e+12</td>
       <td>6.058519e+09</td>
       <td>6.076332e+09</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.095510e+12</td>
       <td>3.104611e+12</td>
       <td>3.156536e+12</td>
       <td>1.216167e+13</td>
       <td>0.927223</td>
-      <td>18.544454</td>
+      <td>0.927223</td>
       <td>0.905604</td>
       <td>0.908266</td>
       <td>0.794661</td>
-      <td>7.946606</td>
+      <td>0.794661</td>
       <td>1.018804</td>
-      <td>0.0</td>
+      <td>1.018804</td>
       <td>0.929949</td>
-      <td>18.598979</td>
+      <td>0.929949</td>
       <td>0.796997</td>
-      <td>7.969971</td>
+      <td>0.796997</td>
       <td>1.021800</td>
-      <td>0.0</td>
+      <td>1.021800</td>
       <td>7.486961</td>
-      <td>82.730919</td>
+      <td>7.486961</td>
       <td>7.486961</td>
       <td>7.508975</td>
       <td>7.508975</td>
-      <td>82.974170</td>
+      <td>7.508975</td>
       <td>339.252861</td>
       <td>1.764115</td>
       <td>0.0</td>
@@ -5434,32 +5444,32 @@ document.write(`
       <td>3.197806e+12</td>
       <td>1.486415e+10</td>
       <td>1.492309e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.094292e+12</td>
       <td>3.106562e+12</td>
       <td>3.197806e+12</td>
       <td>1.232340e+13</td>
       <td>0.912382</td>
-      <td>18.247638</td>
+      <td>0.912382</td>
       <td>0.891109</td>
       <td>0.894642</td>
       <td>0.781942</td>
-      <td>7.819416</td>
+      <td>0.781942</td>
       <td>1.002497</td>
-      <td>0.0</td>
+      <td>1.002497</td>
       <td>0.916000</td>
-      <td>18.319995</td>
+      <td>0.916000</td>
       <td>0.785042</td>
-      <td>7.850422</td>
+      <td>0.785042</td>
       <td>1.006473</td>
-      <td>0.0</td>
+      <td>1.006473</td>
       <td>7.367127</td>
-      <td>81.406759</td>
+      <td>7.367127</td>
       <td>7.367127</td>
       <td>7.396340</td>
       <td>7.396340</td>
-      <td>81.729557</td>
+      <td>7.396340</td>
       <td>343.413388</td>
       <td>1.785750</td>
       <td>0.0</td>
@@ -5588,32 +5598,32 @@ document.write(`
       <td>3.239831e+12</td>
       <td>2.586193e+10</td>
       <td>2.599964e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.083934e+12</td>
       <td>3.100356e+12</td>
       <td>3.239831e+12</td>
       <td>1.248799e+13</td>
       <td>0.897481</td>
-      <td>17.949615</td>
+      <td>0.897481</td>
       <td>0.876555</td>
       <td>0.881223</td>
       <td>0.769171</td>
-      <td>7.691708</td>
+      <td>0.769171</td>
       <td>0.986124</td>
-      <td>0.0</td>
+      <td>0.986124</td>
       <td>0.902260</td>
-      <td>18.045195</td>
+      <td>0.902260</td>
       <td>0.773267</td>
-      <td>7.732666</td>
+      <td>0.773267</td>
       <td>0.991375</td>
-      <td>0.0</td>
+      <td>0.991375</td>
       <td>7.246806</td>
-      <td>80.077209</td>
+      <td>7.246806</td>
       <td>7.246806</td>
       <td>7.285395</td>
       <td>7.285395</td>
-      <td>80.503614</td>
+      <td>7.285395</td>
       <td>347.529299</td>
       <td>1.807152</td>
       <td>0.0</td>
@@ -5742,32 +5752,32 @@ document.write(`
       <td>3.282626e+12</td>
       <td>3.911338e+10</td>
       <td>3.939151e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.063881e+12</td>
       <td>3.085668e+12</td>
       <td>3.282626e+12</td>
       <td>1.265549e+13</td>
       <td>0.882451</td>
-      <td>17.649017</td>
+      <td>0.882451</td>
       <td>0.861876</td>
       <td>0.868004</td>
       <td>0.756290</td>
-      <td>7.562897</td>
+      <td>0.756290</td>
       <td>0.969610</td>
-      <td>0.0</td>
+      <td>0.969610</td>
       <td>0.888726</td>
-      <td>17.774517</td>
+      <td>0.888726</td>
       <td>0.761668</td>
-      <td>7.616676</td>
+      <td>0.761668</td>
       <td>0.976505</td>
-      <td>0.0</td>
+      <td>0.976505</td>
       <td>7.125446</td>
-      <td>78.736178</td>
+      <td>7.125446</td>
       <td>7.125446</td>
       <td>7.176114</td>
       <td>7.176114</td>
-      <td>79.296060</td>
+      <td>7.176114</td>
       <td>351.566179</td>
       <td>1.828144</td>
       <td>0.0</td>
@@ -5896,32 +5906,32 @@ document.write(`
       <td>3.326206e+12</td>
       <td>5.467192e+10</td>
       <td>5.518729e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>3.033564e+12</td>
       <td>3.062160e+12</td>
       <td>3.326206e+12</td>
       <td>1.282596e+13</td>
       <td>0.867220</td>
-      <td>17.344400</td>
+      <td>0.867220</td>
       <td>0.847000</td>
       <td>0.854984</td>
       <td>0.743236</td>
-      <td>7.432363</td>
+      <td>0.743236</td>
       <td>0.952875</td>
-      <td>0.0</td>
+      <td>0.952875</td>
       <td>0.875395</td>
-      <td>17.507899</td>
+      <td>0.875395</td>
       <td>0.750243</td>
-      <td>7.502425</td>
+      <td>0.750243</td>
       <td>0.961857</td>
-      <td>0.0</td>
+      <td>0.961857</td>
       <td>7.002463</td>
-      <td>77.377214</td>
+      <td>7.002463</td>
       <td>7.002463</td>
       <td>7.068472</td>
       <td>7.068472</td>
-      <td>78.106619</td>
+      <td>7.068472</td>
       <td>355.484386</td>
       <td>1.848519</td>
       <td>0.0</td>
@@ -6050,32 +6060,32 @@ document.write(`
       <td>3.370586e+12</td>
       <td>7.258026e+10</td>
       <td>7.347877e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.992437e+12</td>
       <td>3.029483e+12</td>
       <td>3.370586e+12</td>
       <td>1.299945e+13</td>
       <td>0.851720</td>
-      <td>17.034402</td>
+      <td>0.851720</td>
       <td>0.831861</td>
       <td>0.842159</td>
       <td>0.729952</td>
-      <td>7.299524</td>
+      <td>0.729952</td>
       <td>0.935844</td>
-      <td>0.0</td>
+      <td>0.935844</td>
       <td>0.862264</td>
-      <td>17.245281</td>
+      <td>0.862264</td>
       <td>0.738989</td>
-      <td>7.389889</td>
+      <td>0.738989</td>
       <td>0.947429</td>
-      <td>0.0</td>
+      <td>0.947429</td>
       <td>6.877307</td>
-      <td>75.994242</td>
+      <td>6.877307</td>
       <td>6.877307</td>
       <td>6.962445</td>
       <td>6.962445</td>
-      <td>76.935019</td>
+      <td>6.962445</td>
       <td>359.242014</td>
       <td>1.868058</td>
       <td>0.0</td>
@@ -6177,9 +6187,9 @@ document.write(`
       <td>79.031950</td>
       <td>550.262768</td>
       <td>274.070517</td>
-      <td>1054.095869</td>
+      <td>1053.749336</td>
       <td>48.714847</td>
-      <td>48.706232</td>
+      <td>48.705927</td>
       <td>50.601411</td>
       <td>143.866459</td>
       <td>66.286548</td>
@@ -6191,9 +6201,9 @@ document.write(`
       <td>15.364120</td>
       <td>13.244875</td>
       <td>13.513035</td>
-      <td>13.553179</td>
-      <td>22.432441</td>
-      <td>35.985620</td>
+      <td>13.552832</td>
+      <td>22.432299</td>
+      <td>35.985131</td>
       <td>0.906229</td>
       <td>0.906229</td>
       <td>159.6725</td>
@@ -6204,32 +6214,32 @@ document.write(`
       <td>3.415783e+12</td>
       <td>9.286897e+10</td>
       <td>9.436099e+10</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.940038e+12</td>
       <td>2.987273e+12</td>
       <td>3.415783e+12</td>
       <td>1.317603e+13</td>
       <td>0.835901</td>
-      <td>16.718011</td>
+      <td>0.835901</td>
       <td>0.816411</td>
       <td>0.829527</td>
       <td>0.716395</td>
-      <td>7.163945</td>
+      <td>0.716395</td>
       <td>0.918462</td>
-      <td>0.0</td>
+      <td>0.918462</td>
       <td>0.849330</td>
-      <td>16.986601</td>
+      <td>0.849330</td>
       <td>0.727904</td>
-      <td>7.279041</td>
+      <td>0.727904</td>
       <td>0.933218</td>
-      <td>0.0</td>
+      <td>0.933218</td>
       <td>6.749570</td>
-      <td>74.582753</td>
+      <td>6.749570</td>
       <td>6.749570</td>
       <td>6.858009</td>
       <td>6.858009</td>
-      <td>75.780994</td>
+      <td>6.858009</td>
       <td>362.800647</td>
       <td>1.886563</td>
       <td>0.0</td>
@@ -6243,9 +6253,9 @@ document.write(`
       <td>87.455000</td>
       <td>0.8</td>
       <td>84.217037</td>
-      <td>2074.482029</td>
-      <td>89.967227</td>
-      <td>1.825544</td>
+      <td>2074.339891</td>
+      <td>89.964725</td>
+      <td>1.825419</td>
       <td>4.462065</td>
       <td>15.685137</td>
       <td>0.0</td>
@@ -6269,12 +6279,12 @@ document.write(`
       <td>0.890350</td>
       <td>0.309297</td>
       <td>-6.155013</td>
-      <td>0.063094</td>
+      <td>0.063093</td>
       <td>7.332695e+10</td>
-      <td>2.968020</td>
-      <td>3128.577898</td>
+      <td>2.968533</td>
+      <td>3128.089227</td>
       <td>138.601796</td>
-      <td>138.673459</td>
+      <td>138.670652</td>
     </tr>
     <tr>
       <th>2034</th>
@@ -6331,9 +6341,9 @@ document.write(`
       <td>75.979467</td>
       <td>529.570676</td>
       <td>271.389531</td>
-      <td>1044.657165</td>
+      <td>1043.829147</td>
       <td>49.636231</td>
-      <td>49.625530</td>
+      <td>49.624496</td>
       <td>51.540129</td>
       <td>147.276694</td>
       <td>67.369385</td>
@@ -6345,9 +6355,9 @@ document.write(`
       <td>16.858855</td>
       <td>14.291902</td>
       <td>14.658134</td>
-      <td>14.597836</td>
-      <td>24.514035</td>
-      <td>39.111871</td>
+      <td>14.596661</td>
+      <td>24.513541</td>
+      <td>39.110202</td>
       <td>1.127815</td>
       <td>1.127815</td>
       <td>149.1400</td>
@@ -6358,32 +6368,32 @@ document.write(`
       <td>3.461811e+12</td>
       <td>1.155579e+11</td>
       <td>1.179324e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
       <td>2.876059e+12</td>
       <td>2.935155e+12</td>
       <td>3.461811e+12</td>
       <td>1.335575e+13</td>
       <td>0.819746</td>
-      <td>16.394927</td>
+      <td>0.819746</td>
       <td>0.800633</td>
       <td>0.817084</td>
       <td>0.702550</td>
-      <td>7.025498</td>
+      <td>0.702550</td>
       <td>0.900712</td>
-      <td>0.0</td>
+      <td>0.900712</td>
       <td>0.836590</td>
-      <td>16.731802</td>
+      <td>0.836590</td>
       <td>0.716986</td>
-      <td>7.169855</td>
+      <td>0.716986</td>
       <td>0.919220</td>
-      <td>0.0</td>
+      <td>0.919220</td>
       <td>6.619132</td>
-      <td>73.141404</td>
+      <td>6.619132</td>
       <td>6.619132</td>
       <td>6.755138</td>
       <td>6.755138</td>
-      <td>74.644279</td>
+      <td>6.755138</td>
       <td>366.134171</td>
       <td>1.903898</td>
       <td>0.0</td>
@@ -6397,9 +6407,9 @@ document.write(`
       <td>84.786667</td>
       <td>0.8</td>
       <td>84.306336</td>
-      <td>2081.593865</td>
-      <td>92.597017</td>
-      <td>1.831803</td>
+      <td>2081.241822</td>
+      <td>92.590821</td>
+      <td>1.831493</td>
       <td>4.503064</td>
       <td>15.829257</td>
       <td>0.0</td>
@@ -6425,15 +6435,15 @@ document.write(`
       <td>-6.022046</td>
       <td>0.064500</td>
       <td>7.552676e+10</td>
-      <td>2.992610</td>
-      <td>3126.251030</td>
+      <td>2.993853</td>
+      <td>3125.070969</td>
       <td>142.153178</td>
-      <td>142.222547</td>
+      <td>142.215317</td>
     </tr>
     <tr>
       <th>2035</th>
       <td>-4.943499</td>
-      <td>0.911022</td>
+      <td>0.909498</td>
       <td>1.424690e+13</td>
       <td>5.371083e+12</td>
       <td>5.371083e+12</td>
@@ -6471,75 +6481,75 @@ document.write(`
       <td>1.677443</td>
       <td>1.054938</td>
       <td>0.060317</td>
-      <td>1035.252827</td>
+      <td>1033.520162</td>
       <td>1539.577330</td>
       <td>1539.577330</td>
-      <td>162.750035</td>
-      <td>1210.687027</td>
-      <td>1035.252827</td>
-      <td>1156.650406</td>
-      <td>1180.209427</td>
+      <td>158.198018</td>
+      <td>1208.874441</td>
+      <td>1033.520162</td>
+      <td>1154.811138</td>
+      <td>1178.442470</td>
       <td>337.819806</td>
       <td>269.555700</td>
-      <td>872.502792</td>
-      <td>72.569508</td>
-      <td>522.549181</td>
-      <td>265.127285</td>
-      <td>1032.617828</td>
-      <td>50.547254</td>
-      <td>50.534234</td>
-      <td>52.485204</td>
-      <td>150.717681</td>
-      <td>68.413153</td>
-      <td>78.316336</td>
-      <td>34.675038</td>
+      <td>875.322145</td>
+      <td>72.804005</td>
+      <td>507.933804</td>
+      <td>267.946638</td>
+      <td>1031.126004</td>
+      <td>50.545729</td>
+      <td>50.531887</td>
+      <td>52.475482</td>
+      <td>150.703648</td>
+      <td>68.399120</td>
+      <td>78.309787</td>
+      <td>34.677331</td>
       <td>82.304528</td>
-      <td>15.327154</td>
+      <td>15.325422</td>
       <td>18.398433</td>
       <td>18.398433</td>
-      <td>15.327154</td>
-      <td>15.814784</td>
-      <td>15.630454</td>
-      <td>26.592077</td>
-      <td>42.222530</td>
-      <td>1.497548</td>
+      <td>15.325422</td>
+      <td>15.812945</td>
+      <td>15.627787</td>
+      <td>26.590922</td>
+      <td>42.218709</td>
+      <td>1.453013</td>
       <td>1.368906</td>
       <td>140.0625</td>
-      <td>0.128641</td>
+      <td>0.084107</td>
       <td>98.422084</td>
       <td>...</td>
       <td>3.386159e+12</td>
       <td>3.473602e+12</td>
       <td>1.392558e+11</td>
       <td>1.428519e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>3.420362e+10</td>
+      <td>3.508689e+10</td>
       <td>2.772417e+12</td>
       <td>2.844012e+12</td>
-      <td>3.473602e+12</td>
-      <td>1.356022e+13</td>
+      <td>3.508689e+12</td>
+      <td>1.353866e+13</td>
       <td>0.803297</td>
-      <td>16.065940</td>
-      <td>0.782167</td>
-      <td>0.802365</td>
+      <td>0.803297</td>
+      <td>0.784567</td>
+      <td>0.804828</td>
       <td>0.688452</td>
-      <td>6.884522</td>
+      <td>0.688452</td>
       <td>0.882638</td>
-      <td>0.0</td>
+      <td>0.882638</td>
       <td>0.824041</td>
-      <td>16.480825</td>
+      <td>0.824041</td>
       <td>0.706231</td>
-      <td>7.062307</td>
+      <td>0.706231</td>
       <td>0.905431</td>
-      <td>0.0</td>
+      <td>0.905431</td>
       <td>6.486310</td>
-      <td>71.673721</td>
-      <td>6.663619</td>
-      <td>6.835700</td>
+      <td>6.486310</td>
+      <td>6.486310</td>
       <td>6.653811</td>
-      <td>73.524615</td>
-      <td>372.682862</td>
-      <td>1.937951</td>
+      <td>6.653811</td>
+      <td>6.653811</td>
+      <td>371.106346</td>
+      <td>1.929753</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>82.428496</td>
@@ -6551,11 +6561,11 @@ document.write(`
       <td>81.875000</td>
       <td>0.8</td>
       <td>84.390229</td>
-      <td>2078.041391</td>
-      <td>95.305846</td>
-      <td>1.828676</td>
-      <td>4.531139</td>
-      <td>15.927949</td>
+      <td>2077.380890</td>
+      <td>95.294221</td>
+      <td>1.828095</td>
+      <td>4.529913</td>
+      <td>15.923639</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>2.517381</td>
@@ -6577,17 +6587,17 @@ document.write(`
       <td>0.903426</td>
       <td>0.293815</td>
       <td>-5.846926</td>
-      <td>0.065900</td>
+      <td>0.065898</td>
       <td>7.779256e+10</td>
-      <td>3.012401</td>
-      <td>3110.659219</td>
-      <td>145.774182</td>
-      <td>145.840079</td>
+      <td>3.014672</td>
+      <td>3108.506893</td>
+      <td>145.760149</td>
+      <td>145.826108</td>
     </tr>
     <tr>
       <th>2036</th>
       <td>-4.755425</td>
-      <td>0.897551</td>
+      <td>0.895433</td>
       <td>1.466068e+13</td>
       <td>5.527075e+12</td>
       <td>5.527075e+12</td>
@@ -6625,75 +6635,75 @@ document.write(`
       <td>2.349361</td>
       <td>0.988427</td>
       <td>0.084477</td>
-      <td>1019.944672</td>
+      <td>1017.537245</td>
       <td>1585.764650</td>
       <td>1585.764650</td>
-      <td>162.190870</td>
-      <td>1229.151871</td>
-      <td>1019.944672</td>
-      <td>1166.620205</td>
-      <td>1191.262312</td>
+      <td>155.875682</td>
+      <td>1226.463564</td>
+      <td>1017.537245</td>
+      <td>1163.904041</td>
+      <td>1188.656875</td>
       <td>332.580701</td>
       <td>265.375274</td>
-      <td>857.753801</td>
-      <td>69.264831</td>
-      <td>505.586256</td>
-      <td>259.797827</td>
-      <td>1018.443359</td>
-      <td>51.444805</td>
-      <td>51.430464</td>
-      <td>53.406377</td>
-      <td>154.216864</td>
-      <td>69.443201</td>
-      <td>76.498897</td>
-      <td>34.420119</td>
+      <td>861.661564</td>
+      <td>69.580389</td>
+      <td>485.900360</td>
+      <td>263.705589</td>
+      <td>1016.045217</td>
+      <td>51.441162</td>
+      <td>51.426007</td>
+      <td>53.390628</td>
+      <td>154.194750</td>
+      <td>69.421086</td>
+      <td>76.496434</td>
+      <td>34.422774</td>
       <td>84.773664</td>
-      <td>16.347099</td>
+      <td>16.342959</td>
       <td>19.984197</td>
       <td>19.984197</td>
-      <td>16.347099</td>
-      <td>16.981404</td>
-      <td>16.648897</td>
-      <td>28.654037</td>
-      <td>45.302935</td>
-      <td>1.843783</td>
+      <td>16.342959</td>
+      <td>16.976849</td>
+      <td>16.643833</td>
+      <td>28.651772</td>
+      <td>45.295605</td>
+      <td>1.778016</td>
       <td>1.654097</td>
       <td>131.7800</td>
-      <td>0.189686</td>
+      <td>0.123919</td>
       <td>92.601962</td>
       <td>...</td>
       <td>3.396416e+12</td>
       <td>3.504443e+12</td>
       <td>1.676924e+11</td>
       <td>1.730260e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>5.038754e+10</td>
+      <td>5.199017e+10</td>
       <td>2.676828e+12</td>
       <td>2.761968e+12</td>
-      <td>3.504443e+12</td>
-      <td>1.375687e+13</td>
+      <td>3.556433e+12</td>
+      <td>1.372484e+13</td>
       <td>0.786660</td>
-      <td>15.733199</td>
-      <td>0.764881</td>
-      <td>0.789209</td>
+      <td>0.786660</td>
+      <td>0.768318</td>
+      <td>0.792755</td>
       <td>0.674194</td>
-      <td>6.741937</td>
+      <td>0.674194</td>
       <td>0.864358</td>
-      <td>0.0</td>
+      <td>0.864358</td>
       <td>0.811681</td>
-      <td>16.233613</td>
+      <td>0.811681</td>
       <td>0.695637</td>
-      <td>6.956373</td>
+      <td>0.695637</td>
       <td>0.891850</td>
-      <td>0.0</td>
+      <td>0.891850</td>
       <td>6.351972</td>
-      <td>70.189289</td>
-      <td>6.605806</td>
-      <td>6.815912</td>
+      <td>6.351972</td>
+      <td>6.351972</td>
       <td>6.554004</td>
-      <td>72.421746</td>
-      <td>377.225479</td>
-      <td>1.961572</td>
+      <td>6.554004</td>
+      <td>6.554004</td>
+      <td>374.897338</td>
+      <td>1.949466</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>77.554143</td>
@@ -6705,11 +6715,11 @@ document.write(`
       <td>78.813333</td>
       <td>0.8</td>
       <td>84.468717</td>
-      <td>2061.960927</td>
-      <td>98.093899</td>
-      <td>1.814526</td>
-      <td>4.562112</td>
-      <td>16.036823</td>
+      <td>2060.850090</td>
+      <td>98.074348</td>
+      <td>1.813548</td>
+      <td>4.560301</td>
+      <td>16.030458</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>3.082577</td>
@@ -6731,17 +6741,17 @@ document.write(`
       <td>0.909271</td>
       <td>0.284658</td>
       <td>-5.664696</td>
-      <td>0.067286</td>
+      <td>0.067283</td>
       <td>8.012634e+10</td>
-      <td>3.024620</td>
-      <td>3080.404286</td>
-      <td>149.461440</td>
-      <td>149.524362</td>
+      <td>3.028305</td>
+      <td>3076.895307</td>
+      <td>149.439325</td>
+      <td>149.500355</td>
     </tr>
     <tr>
       <th>2037</th>
       <td>-4.555919</td>
-      <td>0.883226</td>
+      <td>0.880305</td>
       <td>1.508744e+13</td>
       <td>5.687966e+12</td>
       <td>5.687966e+12</td>
@@ -6779,75 +6789,75 @@ document.write(`
       <td>3.114877</td>
       <td>0.847325</td>
       <td>0.112003</td>
-      <td>1003.666001</td>
+      <td>1000.346969</td>
       <td>1633.337589</td>
       <td>1633.337589</td>
-      <td>162.052188</td>
-      <td>1248.278443</td>
-      <td>1003.666001</td>
-      <td>1176.579237</td>
-      <td>1202.225936</td>
+      <td>153.357865</td>
+      <td>1244.308609</td>
+      <td>1000.346969</td>
+      <td>1172.587781</td>
+      <td>1198.402560</td>
       <td>326.991979</td>
       <td>260.915879</td>
-      <td>841.613813</td>
-      <td>65.982043</td>
-      <td>490.440730</td>
-      <td>253.705955</td>
-      <td>1002.602429</td>
-      <td>52.328031</td>
-      <td>52.312754</td>
-      <td>54.316396</td>
-      <td>157.765720</td>
-      <td>70.448847</td>
-      <td>74.640766</td>
-      <td>34.154493</td>
+      <td>846.989104</td>
+      <td>66.403463</td>
+      <td>464.127910</td>
+      <td>259.081246</td>
+      <td>998.982080</td>
+      <td>52.321467</td>
+      <td>52.305111</td>
+      <td>54.292041</td>
+      <td>157.732012</td>
+      <td>70.415138</td>
+      <td>74.647170</td>
+      <td>34.157724</td>
       <td>87.316873</td>
-      <td>17.350765</td>
+      <td>17.343306</td>
       <td>21.617535</td>
       <td>21.617535</td>
-      <td>17.350765</td>
-      <td>18.157983</td>
-      <td>17.651500</td>
-      <td>30.705074</td>
-      <td>48.356574</td>
-      <td>2.278674</td>
+      <td>17.343306</td>
+      <td>18.149437</td>
+      <td>17.642815</td>
+      <td>30.701046</td>
+      <td>48.343861</td>
+      <td>2.182028</td>
       <td>2.000317</td>
       <td>123.6325</td>
-      <td>0.278357</td>
+      <td>0.181711</td>
       <td>86.876704</td>
       <td>...</td>
       <td>3.398181e+12</td>
       <td>3.528352e+12</td>
       <td>2.018010e+11</td>
       <td>2.095312e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>7.387778e+10</td>
+      <td>7.670774e+10</td>
       <td>2.572253e+12</td>
       <td>2.670786e+12</td>
-      <td>3.528352e+12</td>
-      <td>1.396171e+13</td>
+      <td>3.605060e+12</td>
+      <td>1.391434e+13</td>
       <td>0.770009</td>
-      <td>15.400189</td>
-      <td>0.747159</td>
-      <td>0.775780</td>
+      <td>0.770009</td>
+      <td>0.752056</td>
+      <td>0.780864</td>
       <td>0.659924</td>
-      <td>6.599236</td>
+      <td>0.659924</td>
       <td>0.846063</td>
-      <td>0.0</td>
+      <td>0.846063</td>
       <td>0.799505</td>
-      <td>15.990109</td>
+      <td>0.799505</td>
       <td>0.685203</td>
-      <td>6.852027</td>
+      <td>0.685203</td>
       <td>0.878472</td>
-      <td>0.0</td>
+      <td>0.878472</td>
       <td>6.217525</td>
-      <td>68.703655</td>
-      <td>6.579168</td>
-      <td>6.831189</td>
+      <td>6.217525</td>
+      <td>6.217525</td>
       <td>6.455694</td>
-      <td>71.335420</td>
-      <td>382.377804</td>
-      <td>1.988365</td>
+      <td>6.455694</td>
+      <td>6.455694</td>
+      <td>378.956556</td>
+      <td>1.970574</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>72.759240</td>
@@ -6859,11 +6869,11 @@ document.write(`
       <td>75.695000</td>
       <td>0.8</td>
       <td>84.541799</td>
-      <td>2051.036861</td>
-      <td>100.962184</td>
-      <td>1.804912</td>
-      <td>4.589316</td>
-      <td>16.132451</td>
+      <td>2049.274326</td>
+      <td>100.931164</td>
+      <td>1.803361</td>
+      <td>4.586655</td>
+      <td>16.123097</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>3.689282</td>
@@ -6885,17 +6895,17 @@ document.write(`
       <td>0.914212</td>
       <td>0.274881</td>
       <td>-5.470131</td>
-      <td>0.068660</td>
+      <td>0.068655</td>
       <td>8.253013e+10</td>
-      <td>3.045713</td>
-      <td>3053.639290</td>
-      <td>153.209802</td>
-      <td>153.274938</td>
+      <td>3.051362</td>
+      <td>3048.256406</td>
+      <td>153.176093</td>
+      <td>153.236275</td>
     </tr>
     <tr>
       <th>2038</th>
       <td>-4.345617</td>
-      <td>0.867967</td>
+      <td>0.863980</td>
       <td>1.552763e+13</td>
       <td>5.853918e+12</td>
       <td>5.853918e+12</td>
@@ -6933,75 +6943,75 @@ document.write(`
       <td>3.964484</td>
       <td>0.636311</td>
       <td>0.142553</td>
-      <td>986.326482</td>
+      <td>981.794894</td>
       <td>1682.337717</td>
       <td>1682.337717</td>
-      <td>162.477381</td>
-      <td>1268.239160</td>
-      <td>986.326482</td>
-      <td>1186.999660</td>
-      <td>1213.568942</td>
+      <td>150.622081</td>
+      <td>1262.413299</td>
+      <td>981.794894</td>
+      <td>1181.172324</td>
+      <td>1207.994217</td>
       <td>321.029233</td>
       <td>256.158041</td>
-      <td>823.849101</td>
-      <td>62.708058</td>
-      <td>477.405389</td>
-      <td>246.661827</td>
-      <td>985.143587</td>
-      <td>53.195998</td>
-      <td>53.179680</td>
-      <td>55.216404</td>
-      <td>161.368828</td>
-      <td>71.432448</td>
-      <td>72.707323</td>
-      <td>33.877793</td>
+      <td>831.172813</td>
+      <td>63.265509</td>
+      <td>442.571099</td>
+      <td>253.985540</td>
+      <td>980.247709</td>
+      <td>53.185446</td>
+      <td>53.167729</td>
+      <td>55.179879</td>
+      <td>161.318647</td>
+      <td>71.382267</td>
+      <td>72.730330</td>
+      <td>33.881901</td>
       <td>89.936380</td>
-      <td>18.337092</td>
+      <td>18.325101</td>
       <td>23.299873</td>
       <td>23.299873</td>
-      <td>18.337092</td>
-      <td>19.344983</td>
-      <td>18.636643</td>
-      <td>33.288954</td>
-      <td>51.925597</td>
-      <td>2.813411</td>
+      <td>18.325101</td>
+      <td>19.330609</td>
+      <td>18.623062</td>
+      <td>33.282373</td>
+      <td>51.905436</td>
+      <td>2.672313</td>
       <td>2.407549</td>
       <td>115.6200</td>
-      <td>0.405862</td>
+      <td>0.264764</td>
       <td>81.246311</td>
       <td>...</td>
       <td>3.389417e+12</td>
       <td>3.542107e+12</td>
       <td>2.411909e+11</td>
       <td>2.520563e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.076323e+11</td>
+      <td>1.124811e+11</td>
       <td>2.458005e+12</td>
       <td>2.568736e+12</td>
-      <td>3.542107e+12</td>
-      <td>1.417683e+13</td>
+      <td>3.654588e+12</td>
+      <td>1.410724e+13</td>
       <td>0.753565</td>
-      <td>15.071308</td>
-      <td>0.729064</td>
-      <td>0.761907</td>
+      <td>0.753565</td>
+      <td>0.735995</td>
+      <td>0.769151</td>
       <td>0.645831</td>
-      <td>6.458306</td>
+      <td>0.645831</td>
       <td>0.827995</td>
-      <td>0.0</td>
+      <td>0.827995</td>
       <td>0.787513</td>
-      <td>15.750257</td>
+      <td>0.787513</td>
       <td>0.674925</td>
-      <td>6.749247</td>
+      <td>0.674925</td>
       <td>0.865295</td>
-      <td>0.0</td>
+      <td>0.865295</td>
       <td>6.084746</td>
-      <td>67.236445</td>
-      <td>6.596686</td>
-      <td>6.893860</td>
+      <td>6.084746</td>
+      <td>6.084746</td>
       <td>6.358859</td>
-      <td>70.265388</td>
-      <td>388.539574</td>
-      <td>2.020406</td>
+      <td>6.358859</td>
+      <td>6.358859</td>
+      <td>383.544715</td>
+      <td>1.994433</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>68.043785</td>
@@ -7013,11 +7023,11 @@ document.write(`
       <td>72.520000</td>
       <td>0.8</td>
       <td>84.609477</td>
-      <td>2583.879286</td>
-      <td>103.912880</td>
-      <td>2.273814</td>
-      <td>4.613096</td>
-      <td>16.216044</td>
+      <td>2581.327018</td>
+      <td>103.867960</td>
+      <td>2.271568</td>
+      <td>4.609211</td>
+      <td>16.202388</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>4.310718</td>
@@ -7039,17 +7049,17 @@ document.write(`
       <td>0.918257</td>
       <td>0.264516</td>
       <td>-5.263873</td>
-      <td>0.070267</td>
+      <td>0.070257</td>
       <td>8.500603e+10</td>
-      <td>3.622845</td>
-      <td>3569.022873</td>
-      <td>157.023211</td>
-      <td>157.092560</td>
+      <td>3.633342</td>
+      <td>3561.574726</td>
+      <td>156.973030</td>
+      <td>157.035689</td>
     </tr>
     <tr>
       <th>2039</th>
       <td>-4.125049</td>
-      <td>0.851684</td>
+      <td>0.846306</td>
       <td>1.598170e+13</td>
       <td>6.025101e+12</td>
       <td>6.025101e+12</td>
@@ -7087,75 +7097,75 @@ document.write(`
       <td>4.887913</td>
       <td>0.360549</td>
       <td>0.175757</td>
-      <td>967.822165</td>
+      <td>961.711130</td>
       <td>1732.807848</td>
       <td>1732.807848</td>
-      <td>163.612360</td>
-      <td>1289.255966</td>
-      <td>967.822165</td>
-      <td>1198.451921</td>
-      <td>1225.857803</td>
+      <td>147.643975</td>
+      <td>1280.781413</td>
+      <td>961.711130</td>
+      <td>1190.018957</td>
+      <td>1217.799979</td>
       <td>314.674182</td>
       <td>251.087171</td>
-      <td>804.209806</td>
-      <td>59.430286</td>
-      <td>466.738138</td>
-      <td>238.448453</td>
-      <td>966.719322</td>
-      <td>54.047682</td>
-      <td>54.030393</td>
-      <td>56.107993</td>
-      <td>165.031107</td>
-      <td>72.396636</td>
-      <td>70.661524</td>
-      <td>33.589588</td>
+      <td>814.067155</td>
+      <td>60.158734</td>
+      <td>421.185014</td>
+      <td>248.305803</td>
+      <td>960.196251</td>
+      <td>54.031752</td>
+      <td>54.012702</td>
+      <td>56.054476</td>
+      <td>164.957828</td>
+      <td>72.323357</td>
+      <td>70.712927</td>
+      <td>33.594988</td>
       <td>92.634471</td>
-      <td>19.304914</td>
+      <td>19.286812</td>
       <td>25.032680</td>
       <td>25.032680</td>
-      <td>19.304914</td>
-      <td>20.543435</td>
-      <td>19.603362</td>
-      <td>36.342696</td>
-      <td>55.946059</td>
-      <td>3.461992</td>
+      <td>19.286812</td>
+      <td>20.520628</td>
+      <td>19.583259</td>
+      <td>36.332462</td>
+      <td>55.915721</td>
+      <td>3.257804</td>
       <td>2.875351</td>
       <td>107.7425</td>
-      <td>0.586641</td>
+      <td>0.382453</td>
       <td>75.710782</td>
       <td>...</td>
       <td>3.367384e+12</td>
       <td>3.541536e+12</td>
       <td>2.852118e+11</td>
       <td>2.999622e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.554596e+11</td>
+      <td>1.634996e+11</td>
       <td>2.333204e+12</td>
       <td>2.453871e+12</td>
-      <td>3.541536e+12</td>
-      <td>1.440495e+13</td>
+      <td>3.705035e+12</td>
+      <td>1.430358e+13</td>
       <td>0.737556</td>
-      <td>14.751114</td>
-      <td>0.710631</td>
-      <td>0.747383</td>
+      <td>0.737556</td>
+      <td>0.720359</td>
+      <td>0.757614</td>
       <td>0.632110</td>
-      <td>6.321097</td>
+      <td>0.632110</td>
       <td>0.810404</td>
-      <td>0.0</td>
+      <td>0.810404</td>
       <td>0.775700</td>
-      <td>15.514003</td>
+      <td>0.775700</td>
       <td>0.664801</td>
-      <td>6.648008</td>
+      <td>0.664801</td>
       <td>0.852316</td>
-      <td>0.0</td>
+      <td>0.852316</td>
       <td>5.955474</td>
-      <td>65.807990</td>
-      <td>6.673890</td>
-      <td>7.019046</td>
+      <td>5.955474</td>
+      <td>5.955474</td>
       <td>6.263476</td>
-      <td>69.211408</td>
-      <td>396.213673</td>
-      <td>2.060311</td>
+      <td>6.263476</td>
+      <td>6.263476</td>
+      <td>388.985418</td>
+      <td>2.022724</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>63.407780</td>
@@ -7167,11 +7177,11 @@ document.write(`
       <td>69.288333</td>
       <td>0.8</td>
       <td>84.671749</td>
-      <td>3053.742687</td>
-      <td>106.949045</td>
-      <td>2.687294</td>
-      <td>4.633749</td>
-      <td>16.288643</td>
+      <td>3050.089144</td>
+      <td>106.884743</td>
+      <td>2.684078</td>
+      <td>4.628127</td>
+      <td>16.268880</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>4.917423</td>
@@ -7193,17 +7203,17 @@ document.write(`
       <td>0.921384</td>
       <td>0.253590</td>
       <td>-5.046433</td>
-      <td>0.072076</td>
+      <td>0.072062</td>
       <td>8.755621e+10</td>
-      <td>4.158872</td>
-      <td>4020.462009</td>
-      <td>160.906058</td>
-      <td>160.979438</td>
+      <td>4.176527</td>
+      <td>4010.285395</td>
+      <td>160.832779</td>
+      <td>160.897445</td>
     </tr>
     <tr>
       <th>2040</th>
       <td>-3.894496</td>
-      <td>0.834204</td>
+      <td>0.827067</td>
       <td>1.645010e+13</td>
       <td>6.201689e+12</td>
       <td>6.201689e+12</td>
@@ -7241,75 +7251,75 @@ document.write(`
       <td>5.873814</td>
       <td>0.025678</td>
       <td>0.211208</td>
-      <td>947.958616</td>
+      <td>939.848305</td>
       <td>1784.792084</td>
       <td>1784.792084</td>
-      <td>165.557505</td>
-      <td>1311.593942</td>
-      <td>947.958616</td>
-      <td>1211.533563</td>
-      <td>1239.684238</td>
+      <td>144.387847</td>
+      <td>1299.416782</td>
+      <td>939.848305</td>
+      <td>1199.475151</td>
+      <td>1228.174706</td>
       <td>307.895327</td>
       <td>245.678137</td>
-      <td>782.401111</td>
-      <td>56.134607</td>
-      <td>458.531134</td>
-      <td>228.827648</td>
-      <td>947.110518</td>
-      <td>54.881885</td>
-      <td>54.863851</td>
-      <td>56.992950</td>
-      <td>168.756785</td>
-      <td>73.343280</td>
-      <td>68.463955</td>
-      <td>33.289533</td>
+      <td>795.460457</td>
+      <td>57.071571</td>
+      <td>399.899258</td>
+      <td>241.886994</td>
+      <td>938.581384</td>
+      <td>54.858819</td>
+      <td>54.838654</td>
+      <td>56.916137</td>
+      <td>168.651714</td>
+      <td>73.238208</td>
+      <td>68.560592</td>
+      <td>33.296762</td>
       <td>95.413505</td>
-      <td>20.252872</td>
+      <td>20.226660</td>
       <td>26.817473</td>
       <td>26.817473</td>
-      <td>20.252872</td>
-      <td>21.754969</td>
-      <td>20.550473</td>
-      <td>39.780758</td>
-      <td>60.331231</td>
-      <td>4.240568</td>
+      <td>20.226660</td>
+      <td>21.720103</td>
+      <td>20.521840</td>
+      <td>39.765372</td>
+      <td>60.287213</td>
+      <td>3.948597</td>
       <td>3.402629</td>
       <td>100.0000</td>
-      <td>0.837939</td>
+      <td>0.545968</td>
       <td>70.270118</td>
       <td>...</td>
       <td>3.328566e+12</td>
       <td>3.521645e+12</td>
       <td>3.328566e+11</td>
       <td>3.521645e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>2.219044e+11</td>
+      <td>2.347763e+11</td>
       <td>2.196854e+12</td>
       <td>2.324285e+12</td>
-      <td>3.521645e+12</td>
-      <td>1.464926e+13</td>
+      <td>3.756421e+12</td>
+      <td>1.450346e+13</td>
       <td>0.722174</td>
-      <td>14.443478</td>
-      <td>0.691846</td>
-      <td>0.731978</td>
+      <td>0.722174</td>
+      <td>0.705336</td>
+      <td>0.746250</td>
       <td>0.618927</td>
-      <td>6.189270</td>
+      <td>0.618927</td>
       <td>0.793503</td>
-      <td>0.0</td>
+      <td>0.793503</td>
       <td>0.764065</td>
-      <td>15.281293</td>
+      <td>0.764065</td>
       <td>0.654829</td>
-      <td>6.548288</td>
+      <td>0.654829</td>
       <td>0.839531</td>
-      <td>0.0</td>
+      <td>0.839531</td>
       <td>5.831272</td>
-      <td>64.435557</td>
-      <td>6.827545</td>
-      <td>7.223587</td>
+      <td>5.831272</td>
+      <td>5.831272</td>
       <td>6.169524</td>
-      <td>68.173236</td>
-      <td>405.973890</td>
-      <td>2.111064</td>
+      <td>6.169524</td>
+      <td>6.169524</td>
+      <td>395.638109</td>
+      <td>2.057318</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>58.851224</td>
@@ -7321,11 +7331,11 @@ document.write(`
       <td>66.000000</td>
       <td>0.8</td>
       <td>84.728616</td>
-      <td>3438.061388</td>
-      <td>110.075187</td>
-      <td>3.025494</td>
-      <td>4.651297</td>
-      <td>16.350330</td>
+      <td>3432.910092</td>
+      <td>109.984525</td>
+      <td>3.020961</td>
+      <td>4.643258</td>
+      <td>16.322071</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>5.482619</td>
@@ -7347,17 +7357,17 @@ document.write(`
       <td>0.923505</td>
       <td>0.242111</td>
       <td>-4.818002</td>
-      <td>0.074049</td>
+      <td>0.074029</td>
       <td>9.018290e+10</td>
-      <td>4.630053</td>
-      <td>4385.171906</td>
-      <td>164.862289</td>
-      <td>164.939038</td>
+      <td>4.657552</td>
+      <td>4371.491476</td>
+      <td>164.757217</td>
+      <td>164.823178</td>
     </tr>
     <tr>
       <th>2041</th>
       <td>-3.654067</td>
-      <td>0.816485</td>
+      <td>0.807206</td>
       <td>1.693332e+13</td>
       <td>6.383863e+12</td>
       <td>6.383863e+12</td>
@@ -7395,75 +7405,75 @@ document.write(`
       <td>6.281280</td>
       <td>0.027460</td>
       <td>0.225859</td>
-      <td>927.823347</td>
+      <td>917.279957</td>
       <td>1838.335846</td>
       <td>1838.335846</td>
-      <td>168.515602</td>
-      <td>1335.532062</td>
-      <td>927.823347</td>
-      <td>1226.783224</td>
-      <td>1255.578881</td>
+      <td>141.021959</td>
+      <td>1318.323296</td>
+      <td>917.279957</td>
+      <td>1209.816574</td>
+      <td>1239.400338</td>
       <td>301.114432</td>
       <td>240.267474</td>
-      <td>759.307745</td>
-      <td>52.891007</td>
-      <td>453.130033</td>
-      <td>217.925839</td>
-      <td>925.975935</td>
-      <td>55.698370</td>
-      <td>55.678709</td>
-      <td>57.874020</td>
-      <td>172.549899</td>
-      <td>74.273988</td>
-      <td>66.176763</td>
-      <td>32.977942</td>
+      <td>776.257998</td>
+      <td>54.071709</td>
+      <td>379.201001</td>
+      <td>234.876092</td>
+      <td>915.081609</td>
+      <td>55.666025</td>
+      <td>55.643925</td>
+      <td>57.766053</td>
+      <td>172.402170</td>
+      <td>74.126260</td>
+      <td>66.342285</td>
+      <td>32.987645</td>
       <td>98.275910</td>
-      <td>21.180696</td>
+      <td>21.143940</td>
       <td>28.655808</td>
       <td>28.655808</td>
-      <td>21.180696</td>
-      <td>22.981752</td>
-      <td>21.476449</td>
-      <td>43.516575</td>
-      <td>64.993024</td>
-      <td>5.165247</td>
+      <td>21.143940</td>
+      <td>22.929920</td>
+      <td>21.436922</td>
+      <td>43.494067</td>
+      <td>64.930988</td>
+      <td>4.754432</td>
       <td>3.987385</td>
       <td>92.3925</td>
-      <td>1.177862</td>
+      <td>0.767047</td>
       <td>64.924319</td>
       <td>...</td>
       <td>3.269014e+12</td>
       <td>3.477179e+12</td>
       <td>3.826871e+11</td>
       <td>4.070559e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>3.117339e+11</td>
+      <td>3.315846e+11</td>
       <td>2.048200e+12</td>
       <td>2.178626e+12</td>
-      <td>3.477179e+12</td>
-      <td>1.491317e+13</td>
+      <td>3.808763e+12</td>
+      <td>1.470692e+13</td>
       <td>0.707548</td>
-      <td>14.150964</td>
-      <td>0.672641</td>
-      <td>0.715474</td>
+      <td>0.707548</td>
+      <td>0.691051</td>
+      <td>0.735056</td>
       <td>0.606392</td>
-      <td>6.063923</td>
+      <td>0.606392</td>
       <td>0.777432</td>
-      <td>0.0</td>
+      <td>0.777432</td>
       <td>0.752604</td>
-      <td>15.052074</td>
+      <td>0.752604</td>
       <td>0.645006</td>
-      <td>6.450064</td>
+      <td>0.645006</td>
       <td>0.826938</td>
-      <td>0.0</td>
+      <td>0.826938</td>
       <td>5.713175</td>
-      <td>63.130587</td>
-      <td>7.072812</td>
-      <td>7.523197</td>
+      <td>5.713175</td>
+      <td>5.713175</td>
       <td>6.076981</td>
-      <td>67.150638</td>
-      <td>418.394305</td>
-      <td>2.175650</td>
+      <td>6.076981</td>
+      <td>6.076981</td>
+      <td>403.851462</td>
+      <td>2.100028</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>54.374117</td>
@@ -7475,11 +7485,11 @@ document.write(`
       <td>62.655000</td>
       <td>0.8</td>
       <td>84.780078</td>
-      <td>3735.817529</td>
-      <td>113.295251</td>
-      <td>3.287519</td>
-      <td>4.665418</td>
-      <td>16.399968</td>
+      <td>3728.694017</td>
+      <td>113.169877</td>
+      <td>3.281251</td>
+      <td>4.654107</td>
+      <td>16.360207</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>5.986616</td>
@@ -7501,17 +7511,17 @@ document.write(`
       <td>0.924455</td>
       <td>0.230076</td>
       <td>-4.578522</td>
-      <td>0.076147</td>
+      <td>0.076119</td>
       <td>9.288838e+10</td>
-      <td>5.034465</td>
-      <td>4661.793464</td>
-      <td>168.895832</td>
-      <td>168.973961</td>
+      <td>5.074712</td>
+      <td>4643.775626</td>
+      <td>168.748103</td>
+      <td>168.813803</td>
     </tr>
     <tr>
       <th>2042</th>
       <td>-3.404035</td>
-      <td>0.796947</td>
+      <td>0.785200</td>
       <td>1.743185e+13</td>
       <td>6.571808e+12</td>
       <td>6.571808e+12</td>
@@ -7549,75 +7559,75 @@ document.write(`
       <td>6.650544</td>
       <td>0.029074</td>
       <td>0.239137</td>
-      <td>905.621981</td>
+      <td>892.272632</td>
       <td>1893.485922</td>
       <td>1893.485922</td>
-      <td>172.063048</td>
-      <td>1361.299504</td>
-      <td>905.621981</td>
-      <td>1244.587705</td>
-      <td>1273.920271</td>
+      <td>137.282759</td>
+      <td>1337.504900</td>
+      <td>892.272632</td>
+      <td>1221.215340</td>
+      <td>1251.652997</td>
       <td>293.821441</td>
       <td>234.448196</td>
-      <td>733.558932</td>
-      <td>49.609150</td>
-      <td>449.193145</td>
-      <td>205.289295</td>
-      <td>902.844151</td>
-      <td>56.495317</td>
-      <td>56.473212</td>
-      <td>58.751731</td>
-      <td>176.411835</td>
-      <td>75.187647</td>
-      <td>63.669216</td>
-      <td>32.654780</td>
+      <td>754.989873</td>
+      <td>51.058483</td>
+      <td>358.394639</td>
+      <td>226.720236</td>
+      <td>889.316556</td>
+      <td>56.451225</td>
+      <td>56.426524</td>
+      <td>58.603465</td>
+      <td>176.208796</td>
+      <td>74.984608</td>
+      <td>63.931276</td>
+      <td>32.667633</td>
       <td>101.224188</td>
-      <td>22.086318</td>
+      <td>22.036213</td>
       <td>30.549294</td>
       <td>30.549294</td>
-      <td>22.086318</td>
-      <td>24.226339</td>
-      <td>22.379293</td>
-      <td>47.451065</td>
-      <td>69.830358</td>
-      <td>6.247871</td>
+      <td>22.036213</td>
+      <td>24.151135</td>
+      <td>22.326238</td>
+      <td>47.418938</td>
+      <td>69.745176</td>
+      <td>5.681954</td>
       <td>4.626726</td>
       <td>84.9200</td>
-      <td>1.621145</td>
+      <td>1.055228</td>
       <td>59.673384</td>
       <td>...</td>
       <td>3.185362e+12</td>
       <td>3.403849e+12</td>
       <td>4.328695e+11</td>
       <td>4.625604e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>4.288207e+11</td>
+      <td>4.582339e+11</td>
       <td>1.887433e+12</td>
       <td>2.016894e+12</td>
-      <td>3.403849e+12</td>
-      <td>1.519949e+13</td>
+      <td>3.862083e+12</td>
+      <td>1.491405e+13</td>
       <td>0.693731</td>
-      <td>13.874621</td>
-      <td>0.652956</td>
-      <td>0.697743</td>
+      <td>0.693731</td>
+      <td>0.677556</td>
+      <td>0.724030</td>
       <td>0.594551</td>
-      <td>5.945505</td>
+      <td>0.594551</td>
       <td>0.762250</td>
-      <td>0.0</td>
+      <td>0.762250</td>
       <td>0.741315</td>
-      <td>14.826293</td>
+      <td>0.741315</td>
       <td>0.635331</td>
-      <td>6.353313</td>
+      <td>0.635331</td>
       <td>0.814534</td>
-      <td>0.0</td>
+      <td>0.814534</td>
       <td>5.601607</td>
-      <td>61.897760</td>
-      <td>7.418433</td>
-      <td>7.927269</td>
+      <td>5.601607</td>
+      <td>5.601607</td>
       <td>5.985826</td>
-      <td>66.143378</td>
-      <td>433.925673</td>
-      <td>2.256413</td>
+      <td>5.985826</td>
+      <td>5.985826</td>
+      <td>413.892217</td>
+      <td>2.152240</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>49.976460</td>
@@ -7629,11 +7639,11 @@ document.write(`
       <td>59.253333</td>
       <td>0.8</td>
       <td>84.826135</td>
-      <td>3934.489962</td>
-      <td>116.612520</td>
-      <td>3.462351</td>
-      <td>4.675645</td>
-      <td>16.435917</td>
+      <td>3924.870999</td>
+      <td>116.443226</td>
+      <td>3.453886</td>
+      <td>4.660063</td>
+      <td>16.381144</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>6.418810</td>
@@ -7655,17 +7665,17 @@ document.write(`
       <td>0.924061</td>
       <td>0.217492</td>
       <td>-4.328096</td>
-      <td>0.078324</td>
+      <td>0.078285</td>
       <td>9.567504e+10</td>
-      <td>5.357884</td>
-      <td>4837.334114</td>
-      <td>173.007800</td>
-      <td>173.085732</td>
+      <td>5.413356</td>
+      <td>4814.187555</td>
+      <td>172.804761</td>
+      <td>172.869750</td>
     </tr>
     <tr>
       <th>2043</th>
       <td>-3.145327</td>
-      <td>0.774975</td>
+      <td>0.760580</td>
       <td>1.794621e+13</td>
       <td>6.765720e+12</td>
       <td>6.765720e+12</td>
@@ -7703,75 +7713,75 @@ document.write(`
       <td>6.979654</td>
       <td>0.030513</td>
       <td>0.250971</td>
-      <td>880.653566</td>
+      <td>864.296020</td>
       <td>1950.290499</td>
       <td>1950.290499</td>
-      <td>175.675783</td>
-      <td>1388.977776</td>
-      <td>880.653566</td>
-      <td>1265.086812</td>
-      <td>1294.844259</td>
+      <td>133.090708</td>
+      <td>1356.965597</td>
+      <td>864.296020</td>
+      <td>1233.739021</td>
+      <td>1265.001603</td>
       <td>285.885347</td>
       <td>228.115769</td>
-      <td>704.977783</td>
-      <td>46.287634</td>
-      <td>445.266663</td>
-      <td>190.976667</td>
-      <td>877.147279</td>
-      <td>57.270292</td>
-      <td>57.245102</td>
-      <td>59.624441</td>
-      <td>180.343152</td>
-      <td>76.082239</td>
-      <td>60.910592</td>
-      <td>32.319975</td>
+      <td>731.205312</td>
+      <td>48.009689</td>
+      <td>337.330817</td>
+      <td>217.204196</td>
+      <td>860.894131</td>
+      <td>57.211806</td>
+      <td>57.184111</td>
+      <td>59.426232</td>
+      <td>180.071481</td>
+      <td>75.810567</td>
+      <td>61.298136</td>
+      <td>32.336545</td>
       <td>104.260913</td>
-      <td>22.966971</td>
+      <td>22.900509</td>
       <td>32.499585</td>
       <td>32.499585</td>
-      <td>22.966971</td>
-      <td>25.491426</td>
-      <td>23.256440</td>
-      <td>51.063098</td>
-      <td>74.319538</td>
-      <td>7.490159</td>
+      <td>22.900509</td>
+      <td>25.384874</td>
+      <td>23.187132</td>
+      <td>51.018338</td>
+      <td>74.205471</td>
+      <td>6.731133</td>
       <td>5.317497</td>
       <td>77.5825</td>
-      <td>2.172663</td>
+      <td>1.413637</td>
       <td>54.517315</td>
       <td>...</td>
       <td>3.076547e+12</td>
       <td>3.300208e+12</td>
       <td>4.814334e+11</td>
       <td>5.164330e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>5.744313e+11</td>
+      <td>6.161917e+11</td>
       <td>1.716559e+12</td>
       <td>1.841351e+12</td>
-      <td>3.300208e+12</td>
-      <td>1.550922e+13</td>
+      <td>3.916399e+12</td>
+      <td>1.512492e+13</td>
       <td>0.680708</td>
-      <td>13.614166</td>
-      <td>0.632828</td>
-      <td>0.678834</td>
+      <td>0.680708</td>
+      <td>0.664837</td>
+      <td>0.713170</td>
       <td>0.583390</td>
-      <td>5.833896</td>
+      <td>0.583390</td>
       <td>0.747941</td>
-      <td>0.0</td>
+      <td>0.747941</td>
       <td>0.730195</td>
-      <td>14.603898</td>
+      <td>0.730195</td>
       <td>0.625801</td>
-      <td>6.258013</td>
+      <td>0.625801</td>
       <td>0.802316</td>
-      <td>0.0</td>
+      <td>0.802316</td>
       <td>5.496454</td>
-      <td>60.735812</td>
-      <td>7.860448</td>
-      <td>8.431892</td>
+      <td>5.496454</td>
+      <td>5.496454</td>
       <td>5.896039</td>
-      <td>65.151228</td>
-      <td>452.720848</td>
-      <td>2.354148</td>
+      <td>5.896039</td>
+      <td>5.896039</td>
+      <td>425.851313</td>
+      <td>2.214427</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>45.658251</td>
@@ -7783,11 +7793,11 @@ document.write(`
       <td>55.795000</td>
       <td>0.8</td>
       <td>84.866786</td>
-      <td>3612.032879</td>
-      <td>120.029878</td>
-      <td>3.178589</td>
-      <td>4.681869</td>
-      <td>16.457798</td>
+      <td>3599.400759</td>
+      <td>119.807553</td>
+      <td>3.167473</td>
+      <td>4.660971</td>
+      <td>16.384335</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>6.777179</td>
@@ -7809,17 +7819,17 @@ document.write(`
       <td>0.922273</td>
       <td>0.204402</td>
       <td>-4.067600</td>
-      <td>0.080344</td>
+      <td>0.080292</td>
       <td>9.854529e+10</td>
-      <td>5.117932</td>
-      <td>4489.180158</td>
-      <td>177.197825</td>
-      <td>177.274980</td>
+      <td>5.181003</td>
+      <td>4460.294889</td>
+      <td>176.926153</td>
+      <td>176.991664</td>
     </tr>
     <tr>
       <th>2044</th>
       <td>-2.879851</td>
-      <td>0.749904</td>
+      <td>0.732940</td>
       <td>1.847692e+13</td>
       <td>6.965799e+12</td>
       <td>6.965799e+12</td>
@@ -7857,75 +7867,75 @@ document.write(`
       <td>7.269102</td>
       <td>0.031778</td>
       <td>0.261379</td>
-      <td>852.163246</td>
+      <td>832.885864</td>
       <td>2008.799214</td>
       <td>2008.799214</td>
-      <td>178.527541</td>
-      <td>1418.398204</td>
-      <td>852.163246</td>
-      <td>1288.095796</td>
-      <td>1318.172161</td>
+      <td>128.374377</td>
+      <td>1376.709446</td>
+      <td>832.885864</td>
+      <td>1247.371709</td>
+      <td>1279.429190</td>
       <td>277.151003</td>
       <td>221.146396</td>
-      <td>673.635705</td>
-      <td>42.941522</td>
-      <td>439.315252</td>
-      <td>175.338306</td>
-      <td>848.002830</td>
-      <td>58.020196</td>
-      <td>57.991344</td>
-      <td>60.487385</td>
-      <td>184.344766</td>
-      <td>76.956025</td>
-      <td>57.887219</td>
-      <td>31.973231</td>
+      <td>704.511487</td>
+      <td>44.909726</td>
+      <td>315.899839</td>
+      <td>206.214089</td>
+      <td>829.182391</td>
+      <td>57.944745</td>
+      <td>57.913791</td>
+      <td>60.230421</td>
+      <td>183.992366</td>
+      <td>76.603625</td>
+      <td>58.424856</td>
+      <td>31.993783</td>
       <td>107.388741</td>
-      <td>23.819134</td>
+      <td>23.733395</td>
       <td>34.508384</td>
       <td>34.508384</td>
-      <td>23.819134</td>
-      <td>26.779522</td>
-      <td>24.104443</td>
-      <td>54.441278</td>
-      <td>78.545721</td>
-      <td>8.878378</td>
+      <td>23.733395</td>
+      <td>26.632246</td>
+      <td>24.016315</td>
+      <td>54.380433</td>
+      <td>78.396748</td>
+      <td>7.892322</td>
       <td>6.057737</td>
       <td>70.3800</td>
-      <td>2.820641</td>
+      <td>1.834586</td>
       <td>49.456109</td>
       <td>...</td>
       <td>2.945644e+12</td>
       <td>3.169614e+12</td>
       <td>5.267990e+11</td>
       <td>5.668537e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>7.454409e+11</td>
+      <td>8.021198e+11</td>
       <td>1.539983e+12</td>
       <td>1.657074e+12</td>
-      <td>3.169614e+12</td>
-      <td>1.584040e+13</td>
+      <td>3.971733e+12</td>
+      <td>1.533959e+13</td>
       <td>0.668419</td>
-      <td>13.368387</td>
-      <td>0.612490</td>
-      <td>0.659060</td>
+      <td>0.668419</td>
+      <td>0.652834</td>
+      <td>0.702472</td>
       <td>0.572858</td>
-      <td>5.728576</td>
+      <td>0.572858</td>
       <td>0.734439</td>
-      <td>0.0</td>
+      <td>0.734439</td>
       <td>0.719242</td>
-      <td>14.384840</td>
+      <td>0.719242</td>
       <td>0.616414</td>
-      <td>6.164143</td>
+      <td>0.616414</td>
       <td>0.790281</td>
-      <td>0.0</td>
+      <td>0.790281</td>
       <td>5.397225</td>
-      <td>59.639336</td>
-      <td>8.376871</td>
-      <td>9.013799</td>
+      <td>5.397225</td>
+      <td>5.397225</td>
       <td>5.807598</td>
-      <td>64.173959</td>
-      <td>474.459440</td>
-      <td>2.467189</td>
+      <td>5.807598</td>
+      <td>5.807598</td>
+      <td>439.553080</td>
+      <td>2.285676</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>41.419492</td>
@@ -7937,11 +7947,11 @@ document.write(`
       <td>52.280000</td>
       <td>0.8</td>
       <td>84.902032</td>
-      <td>3378.180126</td>
-      <td>123.550320</td>
-      <td>2.972799</td>
-      <td>4.684954</td>
-      <td>16.468640</td>
+      <td>3362.094491</td>
+      <td>123.267213</td>
+      <td>2.958643</td>
+      <td>4.657804</td>
+      <td>16.373204</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.066143</td>
@@ -7963,17 +7973,17 @@ document.write(`
       <td>0.919328</td>
       <td>0.190914</td>
       <td>-3.799179</td>
-      <td>0.082246</td>
+      <td>0.082179</td>
       <td>1.015016e+11</td>
-      <td>4.983690</td>
-      <td>4226.182957</td>
-      <td>181.464915</td>
-      <td>181.541664</td>
+      <td>5.054710</td>
+      <td>4191.276882</td>
+      <td>181.112515</td>
+      <td>181.181004</td>
     </tr>
     <tr>
       <th>2045</th>
       <td>-2.610335</td>
-      <td>0.721137</td>
+      <td>0.702008</td>
       <td>1.902454e+13</td>
       <td>7.172252e+12</td>
       <td>7.172252e+12</td>
@@ -8011,75 +8021,75 @@ document.write(`
       <td>7.522963</td>
       <td>0.032888</td>
       <td>0.270507</td>
-      <td>819.474255</td>
+      <td>797.736180</td>
       <td>2069.063191</td>
       <td>2069.063191</td>
-      <td>179.606996</td>
-      <td>1449.097389</td>
-      <td>819.474255</td>
-      <td>1313.092342</td>
-      <td>1343.401158</td>
+      <td>123.083758</td>
+      <td>1396.740569</td>
+      <td>797.736180</td>
+      <td>1262.043703</td>
+      <td>1294.863210</td>
       <td>267.448578</td>
       <td>213.404565</td>
-      <td>639.867259</td>
-      <td>39.600894</td>
-      <td>429.098585</td>
-      <td>159.014116</td>
-      <td>814.834888</td>
-      <td>58.741333</td>
-      <td>58.708399</td>
-      <td>61.332385</td>
-      <td>188.418863</td>
-      <td>77.808461</td>
-      <td>54.606972</td>
-      <td>31.613906</td>
+      <td>674.652422</td>
+      <td>41.753722</td>
+      <td>294.059071</td>
+      <td>193.799279</td>
+      <td>793.892939</td>
+      <td>58.646753</td>
+      <td>58.612417</td>
+      <td>61.010274</td>
+      <td>187.977120</td>
+      <td>77.366718</td>
+      <td>55.308636</td>
+      <td>31.638221</td>
       <td>110.610403</td>
-      <td>24.638609</td>
+      <td>24.531131</td>
       <td>36.577447</td>
       <td>36.577447</td>
-      <td>24.638609</td>
-      <td>28.092614</td>
-      <td>24.919278</td>
-      <td>57.698378</td>
-      <td>82.617656</td>
-      <td>10.382295</td>
+      <td>24.531131</td>
+      <td>27.894289</td>
+      <td>24.810208</td>
+      <td>57.617701</td>
+      <td>82.427909</td>
+      <td>9.146250</td>
       <td>6.848541</td>
       <td>63.3125</td>
-      <td>3.533754</td>
+      <td>2.297709</td>
       <td>44.489769</td>
       <td>...</td>
       <td>2.800724e+12</td>
       <td>3.021080e+12</td>
       <td>5.684303e+11</td>
       <td>6.131533e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>9.335747e+11</td>
+      <td>1.007027e+12</td>
       <td>1.364186e+12</td>
       <td>1.471518e+12</td>
-      <td>3.021080e+12</td>
-      <td>1.618747e+13</td>
+      <td>4.028106e+12</td>
+      <td>1.555816e+13</td>
       <td>0.656779</td>
-      <td>13.135585</td>
-      <td>0.592394</td>
-      <td>0.639002</td>
+      <td>0.656779</td>
+      <td>0.641466</td>
+      <td>0.691935</td>
       <td>0.562882</td>
-      <td>5.628816</td>
+      <td>0.562882</td>
       <td>0.721649</td>
-      <td>0.0</td>
+      <td>0.721649</td>
       <td>0.708453</td>
-      <td>14.169067</td>
+      <td>0.708453</td>
       <td>0.607168</td>
-      <td>6.071681</td>
+      <td>0.607168</td>
       <td>0.778427</td>
-      <td>0.0</td>
+      <td>0.778427</td>
       <td>5.303236</td>
-      <td>58.600755</td>
-      <td>8.927467</td>
-      <td>9.629863</td>
+      <td>5.303236</td>
+      <td>5.303236</td>
       <td>5.720484</td>
-      <td>63.211350</td>
-      <td>498.279189</td>
-      <td>2.591052</td>
+      <td>5.720484</td>
+      <td>5.720484</td>
+      <td>454.523212</td>
+      <td>2.363521</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>37.260181</td>
@@ -8091,11 +8101,11 @@ document.write(`
       <td>48.708333</td>
       <td>0.8</td>
       <td>84.931873</td>
-      <td>3257.099700</td>
-      <td>127.177442</td>
-      <td>2.866248</td>
-      <td>4.687069</td>
-      <td>16.476075</td>
+      <td>3237.268644</td>
+      <td>126.828416</td>
+      <td>2.848796</td>
+      <td>4.653036</td>
+      <td>16.356444</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.293936</td>
@@ -8117,17 +8127,17 @@ document.write(`
       <td>0.915832</td>
       <td>0.177194</td>
       <td>-3.526167</td>
-      <td>0.084078</td>
+      <td>0.083993</td>
       <td>1.045467e+11</td>
-      <td>4.997251</td>
-      <td>4071.934588</td>
-      <td>185.808529</td>
-      <td>185.885841</td>
+      <td>5.077714</td>
+      <td>4031.161583</td>
+      <td>185.366786</td>
+      <td>185.440833</td>
     </tr>
     <tr>
       <th>2046</th>
       <td>-2.339581</td>
-      <td>0.688249</td>
+      <td>0.667675</td>
       <td>1.958964e+13</td>
       <td>7.385295e+12</td>
       <td>7.385295e+12</td>
@@ -8165,75 +8175,75 @@ document.write(`
       <td>7.748640</td>
       <td>0.033875</td>
       <td>0.278622</td>
-      <td>782.101103</td>
+      <td>758.721258</td>
       <td>2131.135086</td>
       <td>2131.135086</td>
-      <td>177.957955</td>
-      <td>1480.389642</td>
-      <td>782.101103</td>
-      <td>1339.314296</td>
-      <td>1369.799668</td>
+      <td>117.193763</td>
+      <td>1417.063144</td>
+      <td>758.721258</td>
+      <td>1277.659183</td>
+      <td>1311.203868</td>
       <td>256.601610</td>
       <td>204.749471</td>
-      <td>604.143148</td>
-      <td>36.300929</td>
-      <td>412.775597</td>
-      <td>142.792066</td>
-      <td>777.187507</td>
-      <td>59.429582</td>
-      <td>59.392324</td>
-      <td>62.148743</td>
-      <td>192.568834</td>
-      <td>78.640119</td>
-      <td>51.096182</td>
-      <td>31.241032</td>
+      <td>641.527496</td>
+      <td>38.547228</td>
+      <td>271.832329</td>
+      <td>180.176414</td>
+      <td>754.838057</td>
+      <td>59.314428</td>
+      <td>59.276675</td>
+      <td>61.758783</td>
+      <td>192.034386</td>
+      <td>78.105671</td>
+      <td>51.960735</td>
+      <td>31.268346</td>
       <td>113.928715</td>
-      <td>25.420710</td>
+      <td>25.289852</td>
       <td>38.708582</td>
       <td>38.708582</td>
-      <td>25.420710</td>
-      <td>29.431929</td>
-      <td>25.696466</td>
-      <td>60.945927</td>
-      <td>86.642393</td>
-      <td>11.961290</td>
+      <td>25.289852</td>
+      <td>29.171948</td>
+      <td>25.565046</td>
+      <td>60.841579</td>
+      <td>86.406625</td>
+      <td>10.468430</td>
       <td>7.695285</td>
       <td>56.3800</td>
-      <td>4.266005</td>
+      <td>2.773145</td>
       <td>39.618293</td>
       <td>...</td>
       <td>2.653634e+12</td>
       <td>2.867874e+12</td>
       <td>6.072576e+11</td>
       <td>6.562842e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.126702e+12</td>
+      <td>1.217666e+12</td>
       <td>1.196258e+12</td>
       <td>1.292837e+12</td>
-      <td>2.867874e+12</td>
-      <td>1.654221e+13</td>
+      <td>4.085540e+12</td>
+      <td>1.578069e+13</td>
       <td>0.645697</td>
-      <td>12.913933</td>
-      <td>0.573126</td>
-      <td>0.619397</td>
+      <td>0.645697</td>
+      <td>0.630642</td>
+      <td>0.681556</td>
       <td>0.553383</td>
-      <td>5.533834</td>
+      <td>0.553383</td>
       <td>0.709472</td>
-      <td>0.0</td>
+      <td>0.709472</td>
       <td>0.697827</td>
-      <td>13.956531</td>
+      <td>0.697827</td>
       <td>0.598061</td>
-      <td>5.980605</td>
+      <td>0.598061</td>
       <td>0.766750</td>
-      <td>0.0</td>
+      <td>0.766750</td>
       <td>5.213748</td>
-      <td>57.611915</td>
-      <td>9.461545</td>
-      <td>10.225417</td>
+      <td>5.213748</td>
+      <td>5.213748</td>
       <td>5.634677</td>
-      <td>62.263180</td>
-      <td>522.915521</td>
-      <td>2.719161</td>
+      <td>5.634677</td>
+      <td>5.634677</td>
+      <td>470.068281</td>
+      <td>2.444355</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>33.180320</td>
@@ -8245,11 +8255,11 @@ document.write(`
       <td>45.080000</td>
       <td>0.8</td>
       <td>84.956309</td>
-      <td>3247.549417</td>
-      <td>130.915680</td>
-      <td>2.857843</td>
-      <td>4.691422</td>
-      <td>16.491376</td>
+      <td>3223.877905</td>
+      <td>130.499062</td>
+      <td>2.837013</td>
+      <td>4.650318</td>
+      <td>16.346889</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.470329</td>
@@ -8271,17 +8281,17 @@ document.write(`
       <td>0.912678</td>
       <td>0.163430</td>
       <td>-3.252259</td>
-      <td>0.085889</td>
+      <td>0.085783</td>
       <td>1.076831e+11</td>
-      <td>5.178592</td>
-      <td>4024.736924</td>
-      <td>190.229253</td>
-      <td>190.308004</td>
+      <td>5.270953</td>
+      <td>3978.715961</td>
+      <td>189.694805</td>
+      <td>189.775736</td>
     </tr>
     <tr>
       <th>2047</th>
       <td>-2.069478</td>
-      <td>0.651008</td>
+      <td>0.629926</td>
       <td>2.017281e+13</td>
       <td>7.605150e+12</td>
       <td>7.605150e+12</td>
@@ -8319,75 +8329,75 @@ document.write(`
       <td>7.954939</td>
       <td>0.034776</td>
       <td>0.286040</td>
-      <td>739.782267</td>
+      <td>715.825372</td>
       <td>2195.069139</td>
       <td>2195.069139</td>
-      <td>172.936387</td>
-      <td>1511.548042</td>
-      <td>739.782267</td>
-      <td>1365.954762</td>
-      <td>1396.594200</td>
+      <td>110.694730</td>
+      <td>1437.681413</td>
+      <td>715.825372</td>
+      <td>1294.116691</td>
+      <td>1328.345158</td>
       <td>244.432503</td>
       <td>195.039407</td>
-      <td>566.845880</td>
-      <td>33.067827</td>
-      <td>389.444670</td>
-      <td>127.373970</td>
-      <td>734.745037</td>
-      <td>60.080591</td>
-      <td>60.038900</td>
-      <td>62.925156</td>
-      <td>196.798161</td>
-      <td>79.451585</td>
-      <td>47.388794</td>
-      <td>30.853488</td>
+      <td>605.130642</td>
+      <td>35.301227</td>
+      <td>249.279364</td>
+      <td>165.658732</td>
+      <td>711.895424</td>
+      <td>59.944354</td>
+      <td>59.903142</td>
+      <td>62.468727</td>
+      <td>196.173381</td>
+      <td>78.826805</td>
+      <td>48.399592</td>
+      <td>30.882611</td>
       <td>117.346576</td>
-      <td>26.160492</td>
+      <td>26.005678</td>
       <td>40.903651</td>
       <td>40.903651</td>
-      <td>26.160492</td>
-      <td>30.797883</td>
-      <td>26.431211</td>
-      <td>64.294273</td>
-      <td>90.725484</td>
-      <td>13.576027</td>
+      <td>26.005678</td>
+      <td>30.466065</td>
+      <td>26.276941</td>
+      <td>64.162525</td>
+      <td>90.439466</td>
+      <td>11.836607</td>
       <td>8.607228</td>
       <td>49.5825</td>
-      <td>4.968799</td>
+      <td>3.229379</td>
       <td>34.841681</td>
       <td>...</td>
       <td>2.516874e+12</td>
       <td>2.724039e+12</td>
       <td>6.455405e+11</td>
       <td>6.986750e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.312025e+12</td>
+      <td>1.420018e+12</td>
       <td>1.041860e+12</td>
       <td>1.127616e+12</td>
-      <td>2.724039e+12</td>
-      <td>1.689585e+13</td>
+      <td>4.144056e+12</td>
+      <td>1.600726e+13</td>
       <td>0.635085</td>
-      <td>12.701704</td>
-      <td>0.555238</td>
-      <td>0.600940</td>
+      <td>0.635085</td>
+      <td>0.620278</td>
+      <td>0.671333</td>
       <td>0.544289</td>
-      <td>5.442891</td>
+      <td>0.544289</td>
       <td>0.697812</td>
-      <td>0.0</td>
+      <td>0.697812</td>
       <td>0.687359</td>
-      <td>13.747183</td>
+      <td>0.687359</td>
       <td>0.589090</td>
-      <td>5.890896</td>
+      <td>0.589090</td>
       <td>0.755249</td>
-      <td>0.0</td>
+      <td>0.755249</td>
       <td>5.128065</td>
-      <td>56.665119</td>
-      <td>9.931552</td>
-      <td>10.749019</td>
+      <td>5.128065</td>
+      <td>5.128065</td>
       <td>5.550157</td>
-      <td>61.329232</td>
-      <td>547.031873</td>
-      <td>2.844566</td>
+      <td>5.550157</td>
+      <td>5.550157</td>
+      <td>485.456383</td>
+      <td>2.524373</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>29.179908</td>
@@ -8399,11 +8409,11 @@ document.write(`
       <td>41.395000</td>
       <td>0.8</td>
       <td>84.975340</td>
-      <td>3348.345998</td>
-      <td>134.770184</td>
-      <td>2.946544</td>
-      <td>4.701393</td>
-      <td>16.526428</td>
+      <td>3320.945751</td>
+      <td>134.287939</td>
+      <td>2.922432</td>
+      <td>4.653501</td>
+      <td>16.358077</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.605041</td>
@@ -8425,17 +8435,17 @@ document.write(`
       <td>0.910807</td>
       <td>0.149763</td>
       <td>-2.980284</td>
-      <td>0.087726</td>
+      <td>0.087598</td>
       <td>1.109136e+11</td>
-      <td>5.557154</td>
-      <td>4083.091035</td>
-      <td>194.728684</td>
-      <td>194.809083</td>
+      <td>5.664935</td>
+      <td>4032.841175</td>
+      <td>194.103903</td>
+      <td>194.191082</td>
     </tr>
     <tr>
       <th>2048</th>
       <td>-1.800362</td>
-      <td>0.609327</td>
+      <td>0.588739</td>
       <td>2.077466e+13</td>
       <td>7.832049e+12</td>
       <td>7.832049e+12</td>
@@ -8473,75 +8483,75 @@ document.write(`
       <td>8.149464</td>
       <td>0.035627</td>
       <td>0.293034</td>
-      <td>692.416665</td>
+      <td>669.021609</td>
       <td>2260.921213</td>
       <td>2260.921213</td>
-      <td>164.342106</td>
-      <td>1542.001979</td>
-      <td>692.416665</td>
-      <td>1392.364948</td>
-      <td>1423.162423</td>
+      <td>103.575714</td>
+      <td>1458.599677</td>
+      <td>669.021609</td>
+      <td>1311.321683</td>
+      <td>1346.187799</td>
       <td>230.765571</td>
       <td>184.134186</td>
-      <td>528.074559</td>
-      <td>29.908779</td>
-      <td>359.311409</td>
-      <td>113.174802</td>
-      <td>687.306878</td>
-      <td>60.689917</td>
-      <td>60.643730</td>
-      <td>63.651711</td>
-      <td>201.109003</td>
-      <td>80.242029</td>
-      <td>43.513346</td>
-      <td>30.450219</td>
+      <td>565.445895</td>
+      <td>32.025394</td>
+      <td>226.454051</td>
+      <td>150.546138</td>
+      <td>664.947617</td>
+      <td>60.533093</td>
+      <td>60.488296</td>
+      <td>63.133665</td>
+      <td>200.401034</td>
+      <td>79.534060</td>
+      <td>44.641518</td>
+      <td>30.479803</td>
       <td>120.866974</td>
-      <td>26.852909</td>
+      <td>26.674699</td>
       <td>43.164573</td>
       <td>43.164573</td>
-      <td>26.852909</td>
-      <td>32.190248</td>
-      <td>27.118518</td>
-      <td>67.745747</td>
-      <td>94.864265</td>
-      <td>15.199620</td>
+      <td>26.674699</td>
+      <td>31.777387</td>
+      <td>26.941889</td>
+      <td>67.583157</td>
+      <td>94.525046</td>
+      <td>13.237313</td>
       <td>9.595564</td>
       <td>42.9200</td>
-      <td>5.604056</td>
+      <td>3.641749</td>
       <td>30.159935</td>
       <td>...</td>
       <td>2.400179e+12</td>
       <td>2.600603e+12</td>
       <td>6.861951e+11</td>
       <td>7.434951e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.479529e+12</td>
+      <td>1.603075e+12</td>
       <td>9.037473e+11</td>
       <td>9.792137e+11</td>
-      <td>2.600603e+12</td>
-      <td>1.724152e+13</td>
+      <td>4.203678e+12</td>
+      <td>1.623797e+13</td>
       <td>0.624870</td>
-      <td>12.497395</td>
-      <td>0.539082</td>
-      <td>0.584098</td>
+      <td>0.624870</td>
+      <td>0.610300</td>
+      <td>0.661263</td>
       <td>0.535534</td>
-      <td>5.355341</td>
+      <td>0.535534</td>
       <td>0.686588</td>
-      <td>0.0</td>
+      <td>0.686588</td>
       <td>0.677049</td>
-      <td>13.540976</td>
+      <td>0.677049</td>
       <td>0.580253</td>
-      <td>5.802533</td>
+      <td>0.580253</td>
       <td>0.743921</td>
-      <td>0.0</td>
+      <td>0.743921</td>
       <td>5.045579</td>
-      <td>55.753649</td>
-      <td>10.305393</td>
-      <td>11.165933</td>
+      <td>5.045579</td>
+      <td>5.045579</td>
       <td>5.466904</td>
-      <td>60.409293</td>
-      <td>569.575622</td>
-      <td>2.961793</td>
+      <td>5.466904</td>
+      <td>5.466904</td>
+      <td>500.109966</td>
+      <td>2.600572</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>25.258945</td>
@@ -8553,11 +8563,11 @@ document.write(`
       <td>37.653333</td>
       <td>0.8</td>
       <td>84.988965</td>
-      <td>3451.473997</td>
-      <td>138.746401</td>
-      <td>3.037297</td>
-      <td>4.719568</td>
-      <td>16.590319</td>
+      <td>3420.632147</td>
+      <td>138.203584</td>
+      <td>3.010156</td>
+      <td>4.665540</td>
+      <td>16.400395</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.706835</td>
@@ -8579,17 +8589,17 @@ document.write(`
       <td>0.910943</td>
       <td>0.136246</td>
       <td>-2.711305</td>
-      <td>0.089589</td>
+      <td>0.089436</td>
       <td>1.142410e+11</td>
-      <td>6.021736</td>
-      <td>4138.780875</td>
-      <td>199.308641</td>
-      <td>199.390130</td>
+      <td>6.144213</td>
+      <td>4085.579764</td>
+      <td>198.600672</td>
+      <td>198.691880</td>
     </tr>
     <tr>
       <th>2049</th>
       <td>-1.531053</td>
-      <td>0.563157</td>
+      <td>0.543992</td>
       <td>2.139584e+13</td>
       <td>8.066230e+12</td>
       <td>8.066230e+12</td>
@@ -8627,75 +8637,75 @@ document.write(`
       <td>8.336767</td>
       <td>0.036446</td>
       <td>0.299769</td>
-      <td>639.950897</td>
+      <td>618.172701</td>
       <td>2328.748850</td>
       <td>2328.748850</td>
-      <td>152.368751</td>
-      <td>1571.447684</td>
-      <td>639.950897</td>
-      <td>1418.166577</td>
-      <td>1449.139672</td>
+      <td>95.810734</td>
+      <td>1479.822302</td>
+      <td>618.172701</td>
+      <td>1329.192691</td>
+      <td>1364.645625</td>
       <td>215.428256</td>
       <td>171.896121</td>
-      <td>487.582146</td>
-      <td>26.811061</td>
-      <td>323.430402</td>
-      <td>100.257769</td>
-      <td>639.950897</td>
-      <td>61.253074</td>
-      <td>61.253074</td>
-      <td>64.320948</td>
-      <td>205.501362</td>
-      <td>81.008379</td>
-      <td>39.484574</td>
-      <td>30.030388</td>
+      <td>522.361967</td>
+      <td>28.723526</td>
+      <td>203.375719</td>
+      <td>135.037590</td>
+      <td>618.172701</td>
+      <td>61.077085</td>
+      <td>61.077085</td>
+      <td>63.748390</td>
+      <td>204.720295</td>
+      <td>80.227312</td>
+      <td>40.693958</td>
+      <td>30.059212</td>
       <td>124.492983</td>
-      <td>27.492860</td>
+      <td>27.292872</td>
       <td>45.493322</td>
       <td>45.493322</td>
-      <td>27.492860</td>
-      <td>33.608415</td>
-      <td>27.758468</td>
-      <td>71.295661</td>
-      <td>99.054129</td>
-      <td>16.822554</td>
+      <td>27.292872</td>
+      <td>33.106580</td>
+      <td>27.560061</td>
+      <td>71.098691</td>
+      <td>98.658753</td>
+      <td>14.668222</td>
       <td>10.671054</td>
       <td>36.3925</td>
-      <td>6.151500</td>
+      <td>3.997168</td>
       <td>25.573053</td>
       <td>...</td>
       <td>2.308620e+12</td>
       <td>2.503469e+12</td>
       <td>7.319826e+11</td>
       <td>7.937623e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.623902e+12</td>
+      <td>1.760961e+12</td>
       <td>7.815833e+11</td>
       <td>8.475493e+11</td>
-      <td>2.503469e+12</td>
-      <td>1.757555e+13</td>
+      <td>4.264429e+12</td>
+      <td>1.647288e+13</td>
       <td>0.614988</td>
-      <td>12.299756</td>
-      <td>0.524751</td>
-      <td>0.569040</td>
+      <td>0.614988</td>
+      <td>0.600649</td>
+      <td>0.651344</td>
       <td>0.527065</td>
-      <td>5.270650</td>
+      <td>0.527065</td>
       <td>0.675730</td>
-      <td>0.0</td>
+      <td>0.675730</td>
       <td>0.666893</td>
-      <td>13.337861</td>
+      <td>0.666893</td>
       <td>0.571549</td>
-      <td>5.715495</td>
+      <td>0.571549</td>
       <td>0.732762</td>
-      <td>0.0</td>
+      <td>0.732762</td>
       <td>4.965786</td>
-      <td>54.871939</td>
-      <td>10.571252</td>
-      <td>11.463470</td>
+      <td>4.965786</td>
+      <td>4.965786</td>
       <td>5.384901</td>
-      <td>59.503154</td>
-      <td>589.975804</td>
-      <td>3.067874</td>
+      <td>5.384901</td>
+      <td>5.384901</td>
+      <td>513.712474</td>
+      <td>2.671305</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>21.417432</td>
@@ -8707,11 +8717,11 @@ document.write(`
       <td>33.855000</td>
       <td>0.8</td>
       <td>84.997185</td>
-      <td>3549.913396</td>
-      <td>142.717235</td>
-      <td>3.123924</td>
-      <td>4.747195</td>
-      <td>16.687431</td>
+      <td>3515.533976</td>
+      <td>142.112157</td>
+      <td>3.093670</td>
+      <td>4.687879</td>
+      <td>16.478922</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.783142</td>
@@ -8733,17 +8743,17 @@ document.write(`
       <td>0.913448</td>
       <td>0.122839</td>
       <td>-2.444501</td>
-      <td>0.091474</td>
+      <td>0.091296</td>
       <td>1.176682e+11</td>
-      <td>6.547165</td>
-      <td>4189.864293</td>
-      <td>203.970309</td>
-      <td>203.970309</td>
+      <td>6.686977</td>
+      <td>4133.706677</td>
+      <td>203.189242</td>
+      <td>203.189242</td>
     </tr>
     <tr>
       <th>2050</th>
       <td>-1.259399</td>
-      <td>0.512409</td>
+      <td>0.495437</td>
       <td>2.203698e+13</td>
       <td>8.307942e+12</td>
       <td>8.307942e+12</td>
@@ -8781,75 +8791,75 @@ document.write(`
       <td>8.517982</td>
       <td>0.037238</td>
       <td>0.306285</td>
-      <td>582.283458</td>
+      <td>562.997147</td>
       <td>2398.611315</td>
       <td>2398.611315</td>
-      <td>137.438003</td>
-      <td>1599.840644</td>
-      <td>582.283458</td>
-      <td>1443.246189</td>
-      <td>1474.413138</td>
+      <td>87.354064</td>
+      <td>1501.353717</td>
+      <td>562.997147</td>
+      <td>1347.663231</td>
+      <td>1383.647586</td>
       <td>198.251229</td>
       <td>158.190100</td>
-      <td>444.845455</td>
-      <td>23.748607</td>
-      <td>283.239973</td>
-      <td>88.404126</td>
-      <td>582.283458</td>
-      <td>61.765484</td>
-      <td>61.765484</td>
-      <td>64.927753</td>
-      <td>209.973163</td>
-      <td>81.745391</td>
-      <td>35.302226</td>
-      <td>29.593393</td>
+      <td>475.643083</td>
+      <td>25.392775</td>
+      <td>180.024173</td>
+      <td>119.201754</td>
+      <td>562.997147</td>
+      <td>61.572522</td>
+      <td>61.572522</td>
+      <td>64.308765</td>
+      <td>209.130178</td>
+      <td>80.902406</td>
+      <td>36.553828</td>
+      <td>29.620576</td>
       <td>128.227772</td>
-      <td>28.075143</td>
+      <td>27.855869</td>
       <td>47.891933</td>
       <td>47.891933</td>
-      <td>28.075143</td>
-      <td>35.051661</td>
-      <td>28.340752</td>
-      <td>74.954443</td>
-      <td>103.295195</td>
-      <td>18.450560</td>
+      <td>27.855869</td>
+      <td>34.454243</td>
+      <td>28.123059</td>
+      <td>74.720540</td>
+      <td>102.843599</td>
+      <td>16.136202</td>
       <td>11.842470</td>
       <td>30.0000</td>
-      <td>6.608090</td>
+      <td>4.293732</td>
       <td>21.081036</td>
       <td>...</td>
       <td>2.242771e+12</td>
       <td>2.433563e+12</td>
       <td>7.849699e+11</td>
       <td>8.517469e+11</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>1.744378e+12</td>
+      <td>1.892771e+12</td>
       <td>6.728314e+11</td>
       <td>7.300688e+11</td>
-      <td>2.433563e+12</td>
-      <td>1.789740e+13</td>
+      <td>4.326333e+12</td>
+      <td>1.671209e+13</td>
       <td>0.605390</td>
-      <td>12.107790</td>
-      <td>0.512117</td>
-      <td>0.555683</td>
+      <td>0.605390</td>
+      <td>0.591274</td>
+      <td>0.641574</td>
       <td>0.518839</td>
-      <td>5.188389</td>
+      <td>0.518839</td>
       <td>0.665183</td>
-      <td>0.0</td>
+      <td>0.665183</td>
       <td>0.656890</td>
-      <td>13.137793</td>
+      <td>0.656890</td>
       <td>0.562976</td>
-      <td>5.629762</td>
+      <td>0.562976</td>
       <td>0.721770</td>
-      <td>0.0</td>
+      <td>0.721770</td>
       <td>4.888284</td>
-      <td>54.015535</td>
-      <td>10.734427</td>
-      <td>11.647598</td>
+      <td>4.888284</td>
+      <td>4.888284</td>
       <td>5.304127</td>
-      <td>58.610607</td>
-      <td>608.128662</td>
-      <td>3.162269</td>
+      <td>5.304127</td>
+      <td>5.304127</td>
+      <td>526.200413</td>
+      <td>2.736242</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>17.655367</td>
@@ -8861,11 +8871,11 @@ document.write(`
       <td>30.000000</td>
       <td>0.8</td>
       <td>85.000000</td>
-      <td>3658.782224</td>
-      <td>146.948281</td>
-      <td>3.219728</td>
-      <td>4.784236</td>
-      <td>16.817638</td>
+      <td>3621.849065</td>
+      <td>146.298257</td>
+      <td>3.187227</td>
+      <td>4.720514</td>
+      <td>16.593641</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>7.840000</td>
@@ -8887,12 +8897,12 @@ document.write(`
       <td>0.918331</td>
       <td>0.109434</td>
       <td>-2.177730</td>
-      <td>0.093383</td>
+      <td>0.093180</td>
       <td>1.211983e+11</td>
-      <td>7.283507</td>
-      <td>4241.065682</td>
-      <td>208.713764</td>
-      <td>208.713764</td>
+      <td>7.433157</td>
+      <td>4184.846211</td>
+      <td>207.870779</td>
+      <td>207.870779</td>
     </tr>
   </tbody>
 </table>
@@ -8941,22 +8951,22 @@ document.write(`
 2032    1063.862686
 2033    1057.198827
 2034    1047.026814
-2035    1035.252827
-2036    1019.944672
-2037    1003.666001
-2038     986.326482
-2039     967.822165
-2040     947.958616
-2041     927.823347
-2042     905.621981
-2043     880.653566
-2044     852.163246
-2045     819.474255
-2046     782.101103
-2047     739.782267
-2048     692.416665
-2049     639.950897
-2050     582.283458
+2035    1033.520162
+2036    1017.537245
+2037    1000.346969
+2038     981.794894
+2039     961.711130
+2040     939.848305
+2041     917.279957
+2042     892.272632
+2043     864.296020
+2044     832.885864
+2045     797.736180
+2046     758.721258
+2047     715.825372
+2048     669.021609
+2049     618.172701
+2050     562.997147
 Name: co2_emissions, dtype: float64
 </pre></div>
 </div>
@@ -9021,10 +9031,10 @@ Name: co2_emissions, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;cast.plots.main.AirTransportCO2EmissionsPlot at 0x17954ecb2b0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x17f2f58e0&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0a001ffc01f94b228df66732dc6a0bad", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7b6c702f7e574057a388ebc8813fda81", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
 </section>
