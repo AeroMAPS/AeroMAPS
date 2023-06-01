@@ -1,0 +1,61 @@
+[tool.black]
+line-length = 100
+
+[tool.poetry]
+name = "aeromaps"
+version = "0.0.0"
+description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
+readme = "README.rst"
+authors = [
+    "Thomas PLANES <thomas.planes@isae-supaero.fr>",
+    "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",
+    "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
+]
+keywords = [
+    "aviation",
+    "climate change"
+]
+license = "GPL-3.0-only"
+homepage = "https://github.com/AeroMAPS/AeroMAPS"
+
+[tool.poetry.dependencies]
+python = "^3.8.0,<3.10"
+numpy = "^1.20.3"
+scipy = "^1.4.1"
+pandas = "^1.1.0"
+xlrd = "1.2.0"
+openpyxl = "*"
+voila = "^0.4.0"
+jupyterlab = "^3.3.0"
+matplotlib = "^3.1.2, <3.7.0"
+ipywidgets = "^8.0.6"
+ipysheet = ">=0.5.0, <1"
+plotly = "^5.0.0"
+markdown = "*"
+ipympl = "*"
+tornado = "*"
+notebook = "*"
+scikit-learn = "*"
+gemseo = "^5.0.0rc0"
+ipyvuetify = "*"
+aenum = "*"
+ipydatagrid = "^1.1.14"
+ipytree = "*"
+docstring-inheritance = "^1.0.0"
+dacite = "^1.8.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+pytest-cov = "^3.0"
+coverage = { extras = ["toml"], version = "^5.5" }
+pre-commit = "^2.14.1"
+black = { version = "22.3.0", extras = ["jupyter"], allow-prereleases = true }
+pylint = "^2.10.2"
+nbval = "^0.9.6"
+
+[tool.poetry.scripts]
+    aeromaps = "aeromaps.app:main"
+
+[build-system]
+    requires = ["poetry>=0.12"]
+    build-backend = "poetry.masonry.api"

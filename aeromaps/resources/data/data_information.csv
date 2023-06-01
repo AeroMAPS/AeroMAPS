@@ -1,0 +1,459 @@
+﻿Name;Type;Unit;Description
+ask_init;Vector;ASK;Historical number of Available Seat Kilometer (ASK) over 2000-2019
+energy_consumption_init;Vector;MJ;Historical energy consumption of aviation over 2000-2019
+freight_init;Vector;ton;Historical freight quantity in mass over 2000-2019
+pax_init;Vector;PAX;Historical number of passengers (PAX) over 2000-2019
+rpk_init;Vector;RPK;Historical number of Revenue Passenger Kilometer (RPK) over 2000-2019
+rtk_init;Vector;RTK;Historical number of Revenue Tonne Kilometer (RTK) over 2000-2019
+temperature_increase_from_aviation_init;Vector;°C;Historical temperature increase from air transport over 2000-2019
+total_aircraft_distance_init;Vector;km;Historical total distance travelled by aircraft over 2000-2019
+agricultural_residues_biomass;Float;EJ;Available biomass in the form of agricultural residues in 2050
+algae_biomass;Float;EJ;Available biomass in the form of algae in 2050
+available_electricity;Float;EJ;Available electricity in 2050
+aviation_biomass_allocated_share;Float;%;Share of the biomass resource allocated to aviation in 2050
+aviation_carbon_budget_allocated_share;Float;%;Share of the carbon budget allocated to aviation over 2020-2050
+aviation_electricity_allocated_share;Float;%;Share of the electricity resource allocated to aviation in 2050
+aviation_equivalentcarbonbudget_allocated_share;Float;%;Share of the equivalent carbon budget allocated to aviation over 2020-2050
+biofuel_atj_efficiency_2020;Float;-;Conversion efficiency of the AtJ pathway for producing biofuel in 2020
+biofuel_atj_efficiency_2050;Float;-;Conversion efficiency of the AtJ pathway for producing biofuel in 2050
+biofuel_atj_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from AtJ pathway in 2020
+biofuel_atj_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from AtJ pathway in 2050
+biofuel_atj_selectivity;Float;-;Selectivity of biofuel from AtJ pathway
+biofuel_ft_efficiency_2020;Float;-;Conversion efficiency of the FT pathway for producing biofuel in 2020
+biofuel_ft_efficiency_2050;Float;-;Conversion efficiency of the FT pathway for producing biofuel in 2050
+biofuel_ft_msw_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) in 2020
+biofuel_ft_msw_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) in 2050
+biofuel_ft_msw_share_2020;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2020
+biofuel_ft_msw_share_2030;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2030
+biofuel_ft_msw_share_2040;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2040
+biofuel_ft_msw_share_2050;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2050
+biofuel_ft_others_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) in 2020
+biofuel_ft_others_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) in 2050
+biofuel_ft_others_share_2020;Float;%;Share of biofuel production from FT pathway (from others) in 2020
+biofuel_ft_others_share_2030;Float;%;Share of biofuel production from FT pathway (from others) in 2030
+biofuel_ft_others_share_2040;Float;%;Share of biofuel production from FT pathway (from others) in 2040
+biofuel_ft_others_share_2050;Float;%;Share of biofuel production from FT pathway (from others) in 2050
+biofuel_ft_selectivity;Float;-;Selectivity of biofuel from FT pathway
+biofuel_hefa_fog_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) in 2020
+biofuel_hefa_fog_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) in 2050
+biofuel_hefa_fog_share_2020;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2020
+biofuel_hefa_fog_share_2030;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2030
+biofuel_hefa_fog_share_2040;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2040
+biofuel_hefa_fog_share_2050;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2050
+biofuel_hefa_fuel_efficiency_2020;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2020 (oil to fuel)
+biofuel_hefa_fuel_efficiency_2050;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2050 (oil to fuel)
+biofuel_hefa_oil_efficiency_2020;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2020 (biomass to oil)
+biofuel_hefa_oil_efficiency_2050;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2050 (biomass to oil)
+biofuel_hefa_others_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) in 2020
+biofuel_hefa_others_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) in 2050
+biofuel_hefa_others_share_2020;Float;%;Share of biofuel production from HEFA pathway (from others) in 2020
+biofuel_hefa_others_share_2030;Float;%;Share of biofuel production from HEFA pathway (from others) in 2030
+biofuel_hefa_others_share_2040;Float;%;Share of biofuel production from HEFA pathway (from others) in 2040
+biofuel_hefa_others_share_2050;Float;%;Share of biofuel production from HEFA pathway (from others) in 2050
+biofuel_hefa_selectivity;Float;-;Selectivity of biofuel from HEFA pathway
+biofuel_share_2020;Float;%;Share of biofuel in drop-in fuel in 2020
+biofuel_share_2030;Float;%;Share of biofuel in drop-in fuel in 2030
+biofuel_share_2040;Float;%;Share of biofuel in drop-in fuel in 2040
+biofuel_share_2050;Float;%;Share of biofuel in drop-in fuel in 2050
+carbon_dioxyde_removal_2100;Float;GtCO2;Cumulative Carbon Dioxide Removal (CDR) over 2020-2100
+commercial_aviation_coefficient;Float;-;Coefficient to only include commercial aviation (passenger and freight) and exclude private and military aviation
+covid_end_year;Float;yr;Covid-19 end year
+covid_end_year_reference_rpk_ratio;Float;%;Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year
+covid_energy_intensity_per_ask_increase_2020;Float;%;Increase in energy intensity per ASK due to Covid-19 for the start year
+covid_load_factor_2020;Float;%;Load factor due to Covid-19 for the start_year
+covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year
+covid_start_year;Float;yr;Covid-19 start year
+crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050
+direct_co2_erf_2018_reference;Float;mW/m²;Effective radiative due to direct CO2 emissions from commercial aviation in 2018
+electricity_emission_factor_2020;Float;gCO2/kWh;Electricity emission factor in 2020
+electricity_emission_factor_2030;Float;gCO2/kWh;Electricity emission factor in 2030
+electricity_emission_factor_2040;Float;gCO2/kWh;Electricity emission factor in 2040
+electricity_emission_factor_2050;Float;gCO2/kWh;Electricity emission factor in 2050
+electrofuel_hydrogen_efficiency_2020;Float;-;Conversion efficiency for producing electrofuel from hydrogen in 2020
+electrofuel_hydrogen_efficiency_2050;Float;-;Conversion efficiency for producing electrofuel from hydrogen in 2050
+electrofuel_share_2020;Float;%;Share of electrofuel in drop-in fuel in 2020
+electrofuel_share_2030;Float;%;Share of electrofuel in drop-in fuel in 2030
+electrofuel_share_2040;Float;%;Share of electrofuel in drop-in fuel in 2040
+electrofuel_share_2050;Float;%;Share of electrofuel in drop-in fuel in 2050
+electrolysis_efficiency_2020;Float;-;Conversion efficiency of the electrolysis pathway for producing hydrogen in 2020
+electrolysis_efficiency_2050;Float;-;Conversion efficiency of the electrolysis pathway for producing hydrogen in 2050
+emission_index_h2o_biofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for biofuel combustion
+emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for electrofuel combustion
+emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion
+emission_index_h2o_kerosene;Float;kg_H2O/kg_fuel;Emission index of water vapor for kerosene combustion
+emission_index_nox_biofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion in 2019
+emission_index_nox_dropin_fuel_evolution;Float;%;Evolution of NOx emission index for drop-in fuel combustion
+emission_index_nox_electrofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion in 209
+emission_index_nox_hydrogen_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion in 2019
+emission_index_nox_hydrogen_evolution;Float;%;Evolution of NOx emission index for hydrogen fuel combustion
+emission_index_nox_kerosene_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion in 2019
+emission_index_soot_biofuel;Float;kg_BC/kg_fuel;Emission index of soot for biofuel combustion
+emission_index_soot_electrofuel;Float;kg_BC/kg_fuel;Emission index of soot for electrofuel combustion
+emission_index_soot_hydrogen;Float;kg_BC/kg_fuel;Emission index of soot for hydrogen combustion
+emission_index_soot_kerosene;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion
+emission_index_sulfur_biofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for biofuel combustion
+emission_index_sulfur_electrofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for electrofuel combustion
+emission_index_sulfur_hydrogen;Float;kg_SOx/kg_fuel;Emission index of sulfur for hydrogen combustion
+emission_index_sulfur_kerosene;Float;kg_SOx/kg_fuel;Emission index of sulfur for kerosene combustion
+end_year;Float;yr;End year for the calculation
+energy_per_ask_long_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
+energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
+energy_per_ask_short_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
+erf_coefficient_co2;Float;mW/m²/GtCO2;Coefficient for estimating the effective radiative forcing of cumulative CO2 emissions from aviation
+erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation
+erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation
+erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation
+erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation
+erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation
+fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet
+fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050
+forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050
+freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019
+growth_rate_2020_2030_long_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger long-range market
+growth_rate_2020_2030_medium_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger medium-range market
+growth_rate_2020_2030_reference;Float;%;Reference air traffic compound annual growth rate over 2020-2030 for passenger and freight markets
+growth_rate_2020_2030_rtk;Float;%;Air traffic compound annual growth rate over 2020-2030 for freight market
+growth_rate_2020_2030_short_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger short-range market
+growth_rate_2030_2040_long_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger long-range market
+growth_rate_2030_2040_medium_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger medium-range market
+growth_rate_2030_2040_reference;Float;%;Reference air traffic compound annual growth rate over 2030-2040 for passenger and freight markets
+growth_rate_2030_2040_rtk;Float;%;Air traffic compound annual growth rate over 2030-2040 for freight market
+growth_rate_2030_2040_short_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger short-range market
+growth_rate_2040_2050_long_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger long-range market
+growth_rate_2040_2050_medium_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger medium-range market
+growth_rate_2040_2050_reference;Float;%;Reference air traffic compound annual growth rate over 2040-2050 for passenger and freight markets
+growth_rate_2040_2050_rtk;Float;%;Air traffic compound annual growth rate over 2040-2050 for freight market
+growth_rate_2040_2050_short_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger short-range market
+historic_start_year;Float;yr;Historic start year for the data
+hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage
+hydrogen_coal_ccs_share_2020;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2020
+hydrogen_coal_ccs_share_2030;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2030
+hydrogen_coal_ccs_share_2040;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2040
+hydrogen_coal_ccs_share_2050;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2050
+hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage
+hydrogen_electrolysis_share_2020;Float;%;Share of hydrogen production from electrolysis pathway in 2020
+hydrogen_electrolysis_share_2030;Float;%;Share of hydrogen production from electrolysis pathway in 2030
+hydrogen_electrolysis_share_2040;Float;%;Share of hydrogen production from electrolysis pathway in 2040
+hydrogen_electrolysis_share_2050;Float;%;Share of hydrogen production from electrolysis pathway in 2050
+hydrogen_final_market_share_long_range;Float;%;Share of hydrogen aircraft in the passenger long-range market
+hydrogen_final_market_share_medium_range;Float;%;Share of hydrogen aircraft in the passenger medium-range market
+hydrogen_final_market_share_short_range;Float;%;Share of hydrogen aircraft in the passenger short-range market
+hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage
+hydrogen_gas_ccs_share_2020;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2020
+hydrogen_gas_ccs_share_2030;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2030
+hydrogen_gas_ccs_share_2040;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2040
+hydrogen_gas_ccs_share_2050;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2050
+hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage
+hydrogen_gas_share_2020;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2020
+hydrogen_gas_share_2030;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2030
+hydrogen_gas_share_2040;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2040
+hydrogen_gas_share_2050;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2050
+hydrogen_introduction_year_long_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for long-range market
+hydrogen_introduction_year_medium_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for medium-range market
+hydrogen_introduction_year_short_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for short-range market
+hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production from HEFA pathway
+kerosene_emission_factor_2019;Float;gCO2/MJ;Emission factor of fossil kerosene in 2019
+lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
+lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
+lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen
+lhv_kerosene;Float;MJ/kg;Lower Heating Value of kerosene
+lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose
+liquefaction_efficiency_2020;Float;-;Liquefaction efficiency for hydrogen in 2020
+liquefaction_efficiency_2050;Float;-;Liquefaction efficiency for hydrogen in 2050
+load_factor_end_year;Float;%;Value of mean aircraft load factor in the considered end year
+long_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger long-range market in 2019
+long_range_rpk_share_2019;Float;%;Share of RPK from long-range market in 2019
+medium_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger medium-range market in 2019
+medium_range_rpk_share_2019;Float;%;Share of RPK from medium-range market in 2019
+net_carbon_budget;Float;GtCO2;Considered (net) carbon budget 
+oil_crops_biomass_share;Float;%;Share of energy crops biomass from vegetable oils
+operations_contrails_duration;Float;yr;Duration for implementing 98% of contrail operational improvements to reduce contrail climate impacts
+operations_contrails_final_gain;Float;%;Final impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
+operations_contrails_final_overconsumption;Float;%;Final impact of contrail operational improvements in terms of percentage increase in fuel consumption
+operations_contrails_start_year;Float;yr;Start year for implementing contrail operational improvements to reduce contrail climate impacts
+operations_duration;Float;yr;Duration for implementing 98% of operational improvements to reduce fuel consumption
+operations_final_gain;Float;%;Final impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
+operations_start_year;Float;yr;Start year for implementing operational improvements to reduce fuel consumption
+prospection_start_year;Float;yr;Start year for the calculation
+relative_energy_per_ask_hydrogen_wrt_dropin_long_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_medium_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_short_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market
+rpk_long_range_measures_duration;Float;yr;Duration for implementing 98% of specific measures to reduce RPK on long-range market
+rpk_long_range_measures_final_impact;Float;%;Final impact of specific measures in terms of percentage reduction in RPK for long-range market
+rpk_long_range_measures_start_year;Float;yr;Start year for implementing specific measures to reduce RPK on long-range market
+rpk_medium_range_measures_duration;Float;yr;Duration for implementing 98% of specific measures to reduce RPK on medium-range market
+rpk_medium_range_measures_final_impact;Float;%;Final impact of specific measures in terms of percentage reduction in RPK for medium-range market
+rpk_medium_range_measures_start_year;Float;yr;Start year for implementing specific measures to reduce RPK on medium-range market
+rpk_short_range_measures_duration;Float;yr;Duration for implementing 98% of specific measures to reduce RPK on short-range market
+rpk_short_range_measures_final_impact;Float;%;Final impact of specific measures in terms of percentage reduction in RPK for short-range market
+rpk_short_range_measures_start_year;Float;yr;Start year for implementing specific measures to reduce RPK on short-range market
+short_range_basicturbofan_share_2019;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2019
+short_range_basicturbofan_share_2030;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2030
+short_range_basicturbofan_share_2040;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2040
+short_range_basicturbofan_share_2050;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2050
+short_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger short-range market in 2019
+short_range_regionalturbofan_share_2019;Float;%;Share of regional turbofan architectures in passenger short-range market in 2019
+short_range_regionalturboprop_share_2019;Float;%;Share of regional turboprop architectures in passenger short-range market in 2019
+short_range_regionalturboprop_share_2030;Float;%;Share of regional turboprop architectures in passenger short-range market in 2030
+short_range_regionalturboprop_share_2040;Float;%;Share of regional turboprop architectures in passenger short-range market in 2040
+short_range_regionalturboprop_share_2050;Float;%;Share of regional turboprop architectures in passenger short-range market in 2050
+short_range_rpk_share_2019;Float;%;Share of RPK from short-range market in 2019
+sugarystarchy_crops_biomass_share;Float;%;Share of energy crops biomass from sugar and starch-based materials
+T_nonCO2;Float;°C;Characteristic temperature for integrating non-CO2 effects into gross carbon budget calculation
+TCRE;Float;°C/GtCO2;Transient Climate Response to cumulative Emissions of carbon dioxide coefficient
+waste_biomass;Float;EJ;Available biomass in the form of waste in 2050
+world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019
+world_ghg_emissions_2019;Float;GtCO2-eq;World greenhouse gas emissions in 2019
+aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
+annual_co2_erf;Vector;mW/m²;Effective radiative forcing due to CO2 emissions over a year without considering past emissions
+ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
+ask_long_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market
+ask_long_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
+ask_long_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
+ask_long_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft
+ask_long_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft
+ask_medium_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market
+ask_medium_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
+ask_medium_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft
+ask_medium_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft
+ask_medium_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft
+ask_short_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market
+ask_short_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
+ask_short_range_dropin_fuel_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft
+ask_short_range_hydrogen;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft
+ask_short_range_hydrogen_share;Vector;%;Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft
+biofuel_atj_efficiency;Vector;-;Conversion efficiency of the AtJ pathway for producing biofuel
+biofuel_atj_emission_factor;Vector;gCO2/MJ;Emission factor of biofuel from AtJ pathway
+biofuel_atj_share;Vector;%;Share of biofuel production from AtJ pathway
+biofuel_ft_efficiency;Vector;-;Conversion efficiency of the FT pathway for producing biofuel
+biofuel_ft_msw_emission_factor;Vector;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste)
+biofuel_ft_msw_share;Vector;%;Share of biofuel production from FT pathway (from municipal solid waste)
+biofuel_ft_others_emission_factor;Vector;gCO2/MJ;Emission factor of biofuel from FT pathway (from others)
+biofuel_ft_others_share;Vector;%;Share of biofuel production from FT pathway (from others)
+biofuel_hefa_fog_emission_factor;Vector;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease)
+biofuel_hefa_fog_share;Vector;%;Share of biofuel production from HEFA pathway (from fats, oils and grease)
+biofuel_hefa_fuel_efficiency;Vector;-;Conversion efficiency of the HEFA pathway for producing biofuel (oil to fuel)
+biofuel_hefa_oil_efficiency;Vector;-;Conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil)
+biofuel_hefa_others_emission_factor;Vector;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others)
+biofuel_hefa_others_share;Vector;%;Share of biofuel production from HEFA pathway (from others)
+biofuel_mean_emission_factor;Vector;gCO2/MJ;Mean emission factor of biofuel
+biofuel_share;Vector;%;Share of biofuel in drop-in fuel
+biomass_atj_consumption;Vector;EJ;Biomass consumption from AtJ pathway
+biomass_consumption;Vector;EJ;Biomass consumption including all pathways
+biomass_ft_consumption;Vector;EJ;Biomass consumption from FT pathway
+biomass_hefa_fog_consumption;Vector;EJ;Biomass consumption from HEFA pathway (from fats, oils and grease)
+biomass_hefa_others_consumption;Vector;EJ;Biomass consumption from HEFA pathway (from others)
+co2_emissions;Vector;MtCO2;CO2 emissions from all commercial air transport
+co2_emissions_2019technology;Vector;MtCO2;CO2 emissions from all commercial air transport based on 2019 technological level
+co2_emissions_2019technology_baseline3;Vector;MtCO2;CO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth
+co2_emissions_freight;Vector;MtCO2;CO2 emissions from freight air transport
+co2_emissions_including_aircraft_efficiency;Vector;MtCO2;CO2 emissions from all commercial air transport including aircraft efficiency improvements
+co2_emissions_including_energy;Vector;MtCO2;CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements and energy decarbonization
+co2_emissions_including_load_factor;Vector;MtCO2;CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements
+co2_emissions_including_operations;Vector;MtCO2;CO2 emissions from all commercial air transport including aircraft efficiency and operation improvements
+co2_emissions_long_range;Vector;MtCO2;CO2 emissions from passenger air transport for long-range market
+co2_emissions_medium_range;Vector;MtCO2;CO2 emissions from passenger air transport for medium-range market
+co2_emissions_passenger;Vector;MtCO2;CO2 emissions from passenger air transport
+co2_emissions_per_rpk;Vector;MtCO2;Mean CO2 emissions per RPK (for passenger)
+co2_emissions_per_rtk;Vector;MtCO2;Mean CO2 emissions per RTK (for freight)
+co2_emissions_short_range;Vector;MtCO2;CO2 emissions from passenger air transport for short-range market
+co2_emissions_smooth;Vector;MtCO2;CO2 emissions from all commercial air transport smoothed over 5 years
+co2_erf;Vector;mW/m²;Effective radiative forcing due to CO2 emissions
+co2_erf_smooth;Vector;mW/m²;Effective radiative forcing due to CO2 emissions considering emissions smoothed over 5 years
+co2_h2o_erf;Vector;mW/m²;Effective radiative forcing due to CO2 and water vapor emissions
+co2_h2o_nox_contrails_erf;Vector;mW/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions and contrails
+co2_h2o_nox_erf;Vector;mW/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions
+co2_per_energy_mean;Vector;gCO2/MJ;Mean emission factor of aircraft energy
+co2_total_erf_ratio;Vector;%;Percentage ratio between effective radiative forcing due to CO2 emissions and total effective radiative forcing from aviation
+contrails_erf;Vector;mW/m²;Effective radiative forcing due to contrails
+cumulative_co2_emissions;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport
+cumulative_co2_emissions_2019technology;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport based on 2019 technological level
+cumulative_co2_emissions_2019technology_baseline3;Vector;GtCO2;CumulativeCO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth
+cumulative_co2_emissions_including_energy;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements and energy decarbonization
+cumulative_co2_emissions_including_load_factor;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport including aircraft efficiency, operation and load factor improvements
+cumulative_co2_emissions_smooth;Vector;GtCO2-we;Cumulative CO2 emissions from all commercial air transport smoothed over 5 years
+cumulative_non_co2_equivalent_emissions;Vector;GtCO2-we;Cumulative equivalent emissions for non-CO2 effects from all commercial air transport
+cumulative_total_equivalent_emissions;Vector;GtCO2-we;Cumulative equivalent emissions for all climate effects from all commercial air transport
+electricity_consumption;Vector;EJ;Electricity consumption from electrofuel and hydrogen production
+electricity_electrofuel_consumption;Vector;EJ;Electricity consumption from electrofuel production
+electricity_emission_factor;Vector;gCO2/kWh;Electricity emission factor
+electricity_hydrogen_consumption;Vector;EJ;Electricity consumption from hydrogen production
+electrofuel_emission_factor;Vector;gCO2/MJ;Emission factor of electrofuel
+electrofuel_hydrogen_efficiency;Vector;-;Conversion efficiency for producing electrofuel from hydrogen
+electrofuel_share;Vector;%;Share of electrofuel in drop-in fuel
+electrolysis_efficiency;Vector;-;Conversion efficiency of the electrolysis pathway for producing hydrogen
+emission_index_nox_biofuel;Vector;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion
+emission_index_nox_electrofuel;Vector;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion
+emission_index_nox_hydrogen;Vector;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion
+emission_index_nox_kerosene;Vector;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion
+energy_consumption;Vector;MJ;Energy consumption including all fuels from all commercial air transport
+energy_consumption_biofuel;Vector;MJ;Energy consumption in the form of biofuels from all commercial air transport
+energy_consumption_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from all commercial air transport
+energy_consumption_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from all commercial air transport
+energy_consumption_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from all commercial air transport
+energy_consumption_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from all commercial air transport
+energy_consumption_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from all commercial air transport
+energy_consumption_freight;Vector;MJ;Energy consumption including all fuels from freight air transport
+energy_consumption_freight_biofuel;Vector;MJ;Energy consumption in the form of biofuels from freight air transport
+energy_consumption_freight_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from freight air transport
+energy_consumption_freight_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from freight air transport
+energy_consumption_freight_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from freight air transport
+energy_consumption_freight_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from freight air transport
+energy_consumption_freight_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from freight air transport
+energy_consumption_freight_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from freight air transport
+energy_consumption_freight_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from freight air transport
+energy_consumption_freight_kerosene;Vector;MJ;Energy consumption in the form of kerosene from freight air transport
+energy_consumption_freight_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from freight air transport
+energy_consumption_freight_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from freight air transport
+energy_consumption_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from all commercial air transport
+energy_consumption_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from all commercial air transport
+energy_consumption_kerosene;Vector;MJ;Energy consumption in the form of kerosene from all commercial air transport
+energy_consumption_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from all commercial air transport
+energy_consumption_long_range;Vector;MJ;Energy consumption including all fuels from passenger long-range market air transport
+energy_consumption_long_range_biofuel;Vector;MJ;Energy consumption in the form of biofuels from passenger long-range market air transport
+energy_consumption_long_range_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from passenger long-range market air transport
+energy_consumption_long_range_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from passenger long-range market air transport
+energy_consumption_long_range_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from passenger long-range market air transport
+energy_consumption_long_range_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from passenger long-range market air transport
+energy_consumption_long_range_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from passenger long-range market air transport
+energy_consumption_long_range_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from passenger long-range market air transport
+energy_consumption_long_range_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from passenger long-range market air transport
+energy_consumption_long_range_kerosene;Vector;MJ;Energy consumption in the form of kerosene from passenger long-range market air transport
+energy_consumption_long_range_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from passenger long-range market air transport
+energy_consumption_long_range_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from passenger long-range market air transport
+energy_consumption_medium_range;Vector;MJ;Energy consumption including all fuels from passenger medium-range market air transport
+energy_consumption_medium_range_biofuel;Vector;MJ;Energy consumption in the form of biofuels from passenger medium-range market air transport
+energy_consumption_medium_range_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from passenger medium-range market air transport
+energy_consumption_medium_range_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from passenger medium-range market air transport
+energy_consumption_medium_range_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from passenger medium-range market air transport
+energy_consumption_medium_range_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from passenger medium-range market air transport
+energy_consumption_medium_range_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from passenger medium-range market air transport
+energy_consumption_medium_range_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from passenger medium-range market air transport
+energy_consumption_medium_range_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from passenger medium-range market air transport
+energy_consumption_medium_range_kerosene;Vector;MJ;Energy consumption in the form of kerosene from passenger medium-range market air transport
+energy_consumption_medium_range_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from passenger medium-range market air transport
+energy_consumption_medium_range_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from passenger medium-range market air transport
+energy_consumption_passenger;Vector;MJ;Energy consumption including all fuels from passenger air transport
+energy_consumption_passenger_biofuel;Vector;MJ;Energy consumption in the form of biofuels from passenger air transport
+energy_consumption_passenger_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from passenger air transport
+energy_consumption_passenger_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from passenger air transport
+energy_consumption_passenger_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from passenger air transport
+energy_consumption_passenger_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from passenger air transport
+energy_consumption_passenger_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from passenger air transport
+energy_consumption_passenger_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from passenger air transport
+energy_consumption_passenger_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from passenger air transport
+energy_consumption_passenger_kerosene;Vector;MJ;Energy consumption in the form of kerosene from passenger air transport
+energy_consumption_passenger_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from passenger air transport
+energy_consumption_passenger_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from passenger air transport
+energy_consumption_short_range;Vector;MJ;Energy consumption including all fuels from passenger short-range market air transport
+energy_consumption_short_range_biofuel;Vector;MJ;Energy consumption in the form of biofuels from passenger short-range market air transport
+energy_consumption_short_range_biofuel_without_operations;Vector;MJ;Energy consumption in the form of biofuels without considering operation improvements from passenger short-range market air transport
+energy_consumption_short_range_dropin_fuel;Vector;MJ;Energy consumption in the form of drop-in fuels from passenger short-range market air transport
+energy_consumption_short_range_dropin_fuel_without_operations;Vector;MJ;Energy consumption in the form of drop-in fuels without considering operation improvements from passenger short-range market air transport
+energy_consumption_short_range_electrofuel;Vector;MJ;Energy consumption in the form of electrofuels from passenger short-range market air transport
+energy_consumption_short_range_electrofuel_without_operations;Vector;MJ;Energy consumption in the form of electrofuels without considering operation improvements from passenger short-range market air transport
+energy_consumption_short_range_hydrogen;Vector;MJ;Energy consumption in the form of hydrogen from passenger short-range market air transport
+energy_consumption_short_range_hydrogen_without_operations;Vector;MJ;Energy consumption in the form of hydrogen without considering operation improvements from passenger short-range market air transport
+energy_consumption_short_range_kerosene;Vector;MJ;Energy consumption in the form of kerosene from passenger short-range market air transport
+energy_consumption_short_range_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from passenger short-range market air transport
+energy_consumption_short_range_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from passenger short-range market air transport
+energy_consumption_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from all commercial air transport
+energy_per_ask_long_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel
+energy_per_ask_long_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using hydrogen
+energy_per_ask_mean;Vector;MJ/ASK;Mean energy consumption per ASK for passenger market
+energy_per_ask_mean_without_operations;Vector;MJ/ASK;Mean energy consumption per ASK for passenger market without considering operation improvements
+energy_per_ask_medium_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel
+energy_per_ask_medium_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger medium-range market aircraft using hydrogen
+energy_per_ask_short_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel
+energy_per_ask_short_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger short-range market aircraft using hydrogen
+energy_per_ask_without_operations_long_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements
+energy_per_ask_without_operations_long_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements
+energy_per_ask_without_operations_medium_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements
+energy_per_ask_without_operations_medium_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements
+energy_per_ask_without_operations_short_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements
+energy_per_ask_without_operations_short_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements
+energy_per_rtk_freight_dropin_fuel;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using drop-in fuel
+energy_per_rtk_freight_hydrogen;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using hydrogen
+energy_per_rtk_mean;Vector;MJ/RTK;Mean energy consumption per RTK for freight market
+energy_per_rtk_mean_without_operations;Vector;MJ/RTK;Mean energy consumption per RTK for freight market without considering operation improvements
+energy_per_rtk_without_operations_freight_dropin_fuel;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements
+energy_per_rtk_without_operations_freight_hydrogen;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using hydrogen without considering operation improvements
+h2o_emissions;Vector;MtH2O;Water vapor emissions from all commercial air transport
+h2o_erf;Vector;mW/m²;Effective radiative forcing due to water vapor emissions
+hydrogen_coal_ccs_share;Vector;%;Share of hydrogen production from coal pathway with carbon capture and storage
+hydrogen_coal_share;Vector;%;Share of hydrogen production from coal pathway without carbon capture and storage
+hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of hydrogen from electrolysis pathway
+hydrogen_electrolysis_share;Vector;%;Share of hydrogen production from electrolysis pathway
+hydrogen_gas_ccs_share;Vector;%;Share of hydrogen production from gas pathway with carbon capture and storage
+hydrogen_gas_share;Vector;%;Share of hydrogen production from gas pathway without carbon capture and storage
+hydrogen_mean_emission_factor;Vector;gCO2/MJ;Mean emission factor of hydrogen
+kerosene_emission_factor;Vector;gCO2/MJ;Emission factor of kerosene
+kerosene_share;Vector;%;Share of kerosene in drop-in fuel
+liquefaction_efficiency;Vector;-;Liquefaction efficiency for hydrogen
+load_factor;Vector;%;Mean aircraft load factor
+non_co2_equivalent_emissions;Vector;MtCO2-we;Non-CO2 equivalent emissions from all commercial air transport
+non_co2_erf_smooth;Vector;mW/m²;Effective radiative forcing due to non-CO2 effects considering emissions smoothed over 5 years
+non_co2_erf_smooth_variation;Vector;mW/m²/yr;Variation over 20 years of effective radiative forcing due to non-CO2 effects considering emissions smoothed over 5 years
+nox_emissions;Vector;MtNOx;NOx emissions from all commercial air transport
+nox_erf;Vector;mW/m²;Effective radiative forcing due to NOx emissions
+operations_contrails_gain;Vector;%;Impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
+operations_contrails_overconsumption;Vector;%;Impact of contrail operational improvements in terms of percentage increase in fuel consumption
+operations_gain;Vector;%;Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
+rpk;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for all passenger air transport
+rpk_long_range;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for passenger long-range market
+rpk_long_range_measures_impact;Vector;-;Impact coefficient of specific measures on RPK for passenger long-range market
+rpk_medium_range;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for passenger medium-range market
+rpk_medium_range_measures_impact;Vector;-;Impact coefficient of specific measures on RPK for passenger medium-range market
+rpk_reference;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for all passenger air transport with a baseline air traffic growth
+rpk_short_range;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for passenger short-range market
+rpk_short_range_measures_impact;Vector;-;Impact coefficient of specific measures on RPK for passenger short-range market
+rtk;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air transport
+rtk_dropin_fuel;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air transport from drop-in fuel aircraft
+rtk_dropin_fuel_share;Vector;RTK;Share of Revenue Tonne Kilometer (RTK) for freight air transport from drop-in fuel aircraft
+rtk_hydrogen;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft
+rtk_hydrogen_share;Vector;RTK;Share of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft
+rtk_reference;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air transport with a baseline air traffic growth
+soot_emissions;Vector;MtBC;Soot emissions from all commercial air transport
+soot_erf;Vector;mW/m²;Effective radiative forcing due to soot emissions
+sulfur_emissions;Vector;MtSOx;Sulfur emissions from all commercial air transport
+sulfur_erf;Vector;mW/m²;Effective radiative forcing due to sulfur emissions
+temperature_increase_from_aviation;Vector;°C;Temperature increase from air transport
+total_aircraft_distance;Vector;km;Total distance travelled by aircraft (based on RPK traffic)
+total_co2_equivalent_emissions_ratio;Vector;-;Percentage ratio between total equivalent emissions and CO2 emissions from aviation
+total_equivalent_emissions;Vector;MtCO2-we;Total equivalent emissions from all commercial air transport
+total_erf;Vector;mW/m²;Effective radiative forcing due to all aviation climate effects
+total_erf_smooth;Vector;mW/m²;Effective radiative forcing due to all aviation climate effects considering emissions smoothed over 5 years
+available_biomass_atj;Float;EJ;Available biomass for AtJ pathways in 2050
+available_biomass_ft_msw;Float;EJ;Available biomass for FT pathways (from municipal solid waste) in 2050
+available_biomass_ft_others;Float;EJ;Available biomass for FT pathways (from others) in 2050
+available_biomass_hefa_fog;Float;EJ;Available biomass for HEFA pathways (from fats, oils and grease) in 2050
+available_biomass_hefa_others;Float;EJ;Available biomass for HEFA pathways (from others) in 2050
+available_biomass_total;Float;EJ;Total available biomass in 2050
+aviation_available_biomass;Float;EJ;Allocated biomass resources for aviation in 2050
+aviation_available_electricity;Float;EJ;Allocated electricity resources for aviation in 2050
+aviation_carbon_budget;Float;GtCO2;Allocated carbon budget for aviation over 2020-2050
+aviation_equivalent_carbon_budget;Float;GtCO2-we;Allocated equivalent carbon budget for aviation over 2020-2050
+biomass_consumed_share;Float;%;Share of biomass resources consumed by aviation in 2050
+biomass_consumption_end_year;Float;EJ;Biomass resources consumed by aviation in 2050
+cagr_rpk;Float;%;Air traffic coumpound annual growth rate over 2019-2050 for passenger market
+cagr_rpk_long_range;Float;%;Air traffic coumpound annual growth rate over 2019-2050 for passenger long-range market
+cagr_rpk_medium_range;Float;%;Air traffic coumpound annual growth rate over 2019-2050 for passenger medium-range market
+cagr_rpk_short_range;Float;%;Air traffic coumpound annual growth rate over 2019-2050 for passenger short-range market
+cagr_rtk;Float;%;Air traffic coumpound annual growth rate over 2019-2050 for freight market
+carbon_budget_consumed_share;Float;%;Share of carbon budget consumed by aviation over 2020-2050
+electricity_consumed_share;Float;%;Share of electricity resources consumed by aviation in 2050
+electricity_consumption_end_year;Float;EJ;Electricity resources consumed by aviation in 2050
+equivalent_carbon_budget_consumed_share;Float;%;Share of equivalent carbon budget consumed by aviation over 2020-2050
+equivalent_gross_carbon_budget;Float;GtCO2-we;World equivalent gross carbon budget
+equivalent_gross_carbon_budget_2050;Float;GtCO2-we;World equivalent gross carbon budget until 2050
+gross_carbon_budget;Float;GtCO2;World gross carbon budget
+gross_carbon_budget_2050;Float;GtCO2;World gross carbon budget until 2050
+lignocellulosic_crops_biomass;Float;EJ;Available biomass in the form of lignocellulose from energy crops in 2050
+oil_crops_biomass;Float;EJ;Available biomass in the form of vegetable oils from energy crops in 2050
+prospective_evolution_rpk;Float;%;Evolution in percentage of Revenue Passenger Kilometer (RPK) for all passenger market between 2019 and 2050
+prospective_evolution_rpk_long_range;Float;%;Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger long-range market between 2019 and 2050
+prospective_evolution_rpk_medium_range;Float;%;Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger medium-range market between 2019 and 2050
+prospective_evolution_rpk_short_range;Float;%;Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger short-range market between 2019 and 2050
+prospective_evolution_rtk;Float;%;Evolution in percentage of Revenue Tonne Kilometer (RTK) for freight market between 2019 and 2050
+solid_waste_biomass;Float;EJ;Available biomass in the form of municipal solid waste in 2050
+sugarystarchy_crops_biomass;Float;EJ;Available biomass in the form of sugar and starch-based materials from energy crops in 2050
