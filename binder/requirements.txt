@@ -1,1 +1,1 @@
-pip install +git https://github.com/AeroMAPS/AeroMAPS.git
+pip install git+https://github.com/AeroMAPS/AeroMAPS.git
