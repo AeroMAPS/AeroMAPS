@@ -1,3 +1,6 @@
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD?urlpath=voila%2Frender%2Faeromaps%2Fapp.ipynb
+
 AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport
 ====
 
