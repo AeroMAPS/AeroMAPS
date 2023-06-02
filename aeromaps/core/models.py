@@ -75,7 +75,10 @@ from aeromaps.models.impacts.equivalent_co2_emissions.equivalent_co2_emissions i
 )
 from aeromaps.models.impacts.climate.climate import Temperature
 from aeromaps.models.impacts.others.others import EmissionsPerRPK, EmissionsPerRTK
-from aeromaps.models.impacts.others.comparison import CarbonBudgetConsumedShare, ResourcesConsumedShare
+from aeromaps.models.impacts.others.comparison import (
+    CarbonBudgetConsumedShare,
+    ResourcesConsumedShare,
+)
 
 
 year_parameters = YearParameters(
@@ -235,7 +238,7 @@ models_simple = {
     ),
     "resources_consumed_share": ResourcesConsumedShare(
         "resources_consumed_share", year_parameters=year_parameters, parameters=AllParameters()
-    )
+    ),
 }
 
 
