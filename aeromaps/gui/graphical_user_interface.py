@@ -4,7 +4,7 @@ import matplotlib
 import ipywidgets as widgets
 import markdown as md
 from aeromaps.core.process import DATA_FOLDER, EXCEL_DATA_FILE
-from IPython.display import display, HTML
+from IPython.display import display, HTML, Javascript
 import matplotlib.pyplot as plt
 import pandas as pd
 from ipydatagrid import DataGrid
@@ -723,12 +723,13 @@ class GraphicalUserInterface(widgets.VBox):
                         self.w_action_scenarios,
                     ]
                 ),
-                widgets.Button(
-                    description="Jupyter Lab",
-                    disabled=False,
-                    button_style="",  # 'success', 'info', 'warning', 'danger' or ''
-                    tooltip="Launches a Jupyter Lab session to use Advanced mode",
-                    icon="plane",  # (FontAwesome names without the `fa-` prefix)
+                widgets.VBox(
+                    [
+                        widgets.Label("Create detailed scenarios"),
+                        widgets.HTML(value="<p style='padding: 10px; border: 3px solid black;'><a "
+                                           "href=https://aeromaps.isae-supaero.fr/ target='_blank'>"
+                                           "<b>Jupyter Notebooks</b></a></p>",),
+                    ]
                 ),
             ]
         )
@@ -749,6 +750,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.controls = widgets.HBox([scenarios, self.aviation, self.environment])
         self.controls.layout = make_box_layout()
         self.controls.layout.align_items = "flex-start"
+
 
     def _update_scenario_infos(self, change=True):
         desc = ""
@@ -783,7 +785,7 @@ class GraphicalUserInterface(widgets.VBox):
                 title = "Description of the Advanced mode"
                 desc = (
                     "This mode allows manipulating in detail the AeroMAPS framework using Jupyter Notebooks. "
-                    "For directly using it, click on the 'Jupyter Lab' button on the left of the screen. "
+                    "For directly using it, click on the 'Jupyter Notebooks' button on the left of the screen. "
                     "For a thorough use, you can also directly access the code source on a "
                     " <u><a href='https://github.com/AeroMAPS/AeroMAPS' target='_blank'>GitHub repository</a></u>."
                 )
