@@ -727,8 +727,8 @@ class GraphicalUserInterface(widgets.VBox):
                     [
                         widgets.Label("Create detailed scenarios"),
                         widgets.HTML(value="<p style='padding: 10px; border: 3px solid black;'><a "
-                                           "href=https://aeromaps.isae-supaero.fr/ target='_blank'>"
-                                           "<b>Jupyter Notebooks</b></a></p>",),
+                                           "href=https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD?labpath=aeromaps%2Fnotebooks%2Fbasic_example.ipynb "
+                                           "target='_blank'> <b>Jupyter Notebooks</b></a></p>",),
                     ]
                 ),
             ]
