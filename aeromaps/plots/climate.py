@@ -4,23 +4,12 @@ from .constants import plot_3_x, plot_3_y
 
 
 class FinalEffectiveRadiativeForcingPlot:
-    def __init__(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
-
-        self.years = list(
-            range(self.parameters["historic_start_year"], self.parameters["end_year"] + 1)
-        )
-        self.historic_years = list(
-            range(
-                self.parameters["historic_start_year"],
-                self.parameters["prospection_start_year"],
-            )
-        )
-        self.prospective_years = list(
-            range(self.parameters["prospection_start_year"] - 1, self.parameters["end_year"] + 1)
-        )
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
             figsize=(plot_3_x, plot_3_y),
@@ -63,10 +52,12 @@ class FinalEffectiveRadiativeForcingPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         chosen_year = 2050
         y1 = [
@@ -89,23 +80,12 @@ class FinalEffectiveRadiativeForcingPlot:
 
 
 class DistributionEffectiveRadiativeForcingPlot:
-    def __init__(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
-
-        self.years = list(
-            range(self.parameters["historic_start_year"], self.parameters["end_year"] + 1)
-        )
-        self.historic_years = list(
-            range(
-                self.parameters["historic_start_year"],
-                self.parameters["prospection_start_year"],
-            )
-        )
-        self.prospective_years = list(
-            range(self.parameters["prospection_start_year"] - 1, self.parameters["end_year"] + 1)
-        )
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
             figsize=(plot_3_x, plot_3_y),
@@ -174,10 +154,12 @@ class DistributionEffectiveRadiativeForcingPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2_erf_share.set_ydata(self.df["co2_erf"] / self.df["total_erf"] * 100)
 
@@ -199,23 +181,12 @@ class DistributionEffectiveRadiativeForcingPlot:
 
 
 class EquivalentEmissionsPlot:
-    def __init__(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
-
-        self.years = list(
-            range(self.parameters["historic_start_year"], self.parameters["end_year"] + 1)
-        )
-        self.historic_years = list(
-            range(
-                self.parameters["historic_start_year"],
-                self.parameters["prospection_start_year"],
-            )
-        )
-        self.prospective_years = list(
-            range(self.parameters["prospection_start_year"] - 1, self.parameters["end_year"] + 1)
-        )
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
             figsize=(plot_3_x, plot_3_y),
@@ -264,10 +235,12 @@ class EquivalentEmissionsPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2.set_ydata(self.df.loc[self.prospective_years, "co2_emissions_smooth"])
 
@@ -285,23 +258,12 @@ class EquivalentEmissionsPlot:
 
 
 class CumulativeEquivalentEmissionsPlot:
-    def __init__(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
-
-        self.years = list(
-            range(self.parameters["historic_start_year"], self.parameters["end_year"] + 1)
-        )
-        self.historic_years = list(
-            range(
-                self.parameters["historic_start_year"],
-                self.parameters["prospection_start_year"],
-            )
-        )
-        self.prospective_years = list(
-            range(self.parameters["prospection_start_year"] - 1, self.parameters["end_year"] + 1)
-        )
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
             figsize=(plot_3_x, plot_3_y),
@@ -352,10 +314,12 @@ class CumulativeEquivalentEmissionsPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2.set_ydata(
             self.df.loc[self.prospective_years, "cumulative_co2_emissions_smooth"]
@@ -377,23 +341,12 @@ class CumulativeEquivalentEmissionsPlot:
 
 
 class EquivalentEmissionsRatioPlot:
-    def __init__(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
-
-        self.years = list(
-            range(self.parameters["historic_start_year"], self.parameters["end_year"] + 1)
-        )
-        self.historic_years = list(
-            range(
-                self.parameters["historic_start_year"],
-                self.parameters["prospection_start_year"],
-            )
-        )
-        self.prospective_years = list(
-            range(self.parameters["prospection_start_year"] - 1, self.parameters["end_year"] + 1)
-        )
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
             figsize=(plot_3_x, plot_3_y),
@@ -425,10 +378,12 @@ class EquivalentEmissionsRatioPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.line_coef.set_ydata(
             self.df.loc[self.prospective_years, "total_co2_equivalent_emissions_ratio"]
@@ -443,11 +398,8 @@ class EquivalentEmissionsRatioPlot:
 
 class TemperatureIncreaseFromAirTransportPlot:
     def __init__(self, data):
-
-        self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -491,11 +443,8 @@ class TemperatureIncreaseFromAirTransportPlot:
         self.fig.tight_layout()
 
     def update(self, data):
-
-        self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]

@@ -6,7 +6,6 @@ class RevenuePassengerKilometerPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -52,7 +51,6 @@ class RevenuePassengerKilometerPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -70,7 +68,6 @@ class RevenueTonneKilometerPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -116,7 +113,6 @@ class RevenueTonneKilometerPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -134,7 +130,6 @@ class AvailableSeatKilometerPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -180,7 +175,6 @@ class AvailableSeatKilometerPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -198,7 +192,6 @@ class TotalAircraftDistancePlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -244,7 +237,6 @@ class TotalAircraftDistancePlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]

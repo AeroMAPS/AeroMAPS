@@ -7,7 +7,6 @@ class MeanFuelConsumptionLiterPerPAX100kmPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -63,7 +62,6 @@ class MeanFuelConsumptionLiterPerPAX100kmPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -87,7 +85,6 @@ class MeanLoadFactorPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -133,7 +130,6 @@ class MeanLoadFactorPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -151,7 +147,6 @@ class MeanEnergyPerASKPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -199,7 +194,6 @@ class MeanEnergyPerASKPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -219,7 +213,6 @@ class MeanEnergyPerRTKPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -264,10 +257,12 @@ class MeanEnergyPerRTKPlot:
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, json, df):
-        self.parameters = json["parameters"]
-        self.df = df
-        self.float_outputs = json["float_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
 
         self.line_energy_per_rtk.set_ydata(
             self.df.loc[self.prospective_years, "energy_per_rtk_mean"]

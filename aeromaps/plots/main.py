@@ -5,11 +5,8 @@ from .constants import plot_1_x, plot_1_y
 
 class AirTransportCO2EmissionsPlot:
     def __init__(self, data):
-
-        self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -149,7 +146,6 @@ class AirTransportCO2EmissionsPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -227,7 +223,6 @@ class AirTransportClimateImpactsPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -351,7 +346,6 @@ class AirTransportClimateImpactsPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]

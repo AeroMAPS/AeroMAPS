@@ -7,7 +7,6 @@ class MeanCO2PerRPKPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -55,7 +54,6 @@ class MeanCO2PerRPKPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -75,7 +73,6 @@ class MeanCO2PerRTKPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -123,7 +120,6 @@ class MeanCO2PerRTKPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -143,7 +139,6 @@ class PassengerKayaFactorsPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -212,7 +207,6 @@ class PassengerKayaFactorsPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -244,7 +238,6 @@ class FreightKayaFactorsPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -311,7 +304,6 @@ class FreightKayaFactorsPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -341,7 +333,6 @@ class LeversOfActionDistributionPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -493,7 +484,6 @@ class LeversOfActionDistributionPlot:
     def update(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
-
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
