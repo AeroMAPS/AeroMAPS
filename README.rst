@@ -20,7 +20,7 @@ Quick start
 
 For a quick start in order to discover the different features of AeroMAPS,
 a graphical user interface has been developed for facilitating the first uses.
-It is available at the following address: https://aeromaps.isae-supaero.fr
+It is available at the following address: https://aeromaps.isae-supaero.fr/
 
 
 Quick installation
@@ -45,4 +45,4 @@ documentation.
 Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
 Simulation and evaluation of sustainable climate trajectories for aviation.
 Journal of Environmental Management, 295, 113079.
-https://doi.org/10.1016/j.jenvman.2021.113079
+https://doi.org/10.1016/j.jenvman.2021.113079/
