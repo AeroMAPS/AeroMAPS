@@ -208,7 +208,6 @@ class FleetGrowthModel(AeromapsModel):
                 subcategory_dropin_share = ref_old_aircraft_share + ref_recent_aircraft_share
                 subcategory_hydrogen_share = 0.0
 
-
                 # Energy consumption
                 subcategory_dropin_consumption_per_ask = copy.copy(subcat_consumption_per_ask)
                 subcategory_hydrogen_consumption_per_ask = 0.0
@@ -281,7 +280,6 @@ class FleetGrowthModel(AeromapsModel):
                             + ":aircraft_share"
                         ]
 
-
                         subcategory_dropin_consumption_per_ask += (
                             subcategory.recent_reference_aircraft.energy_per_ask
                             * (1 - float(aircraft.parameters.consumption_gain) / 100)
@@ -316,7 +314,6 @@ class FleetGrowthModel(AeromapsModel):
                     category.name + ":" + subcategory.name + ":share:hydrogen"
                 ] = subcategory_hydrogen_share
 
-
                 # Mean energy consumption per subcategory
                 self.df[
                     category.name + ":" + subcategory.name + ":energy_consumption"
@@ -336,57 +333,48 @@ class FleetGrowthModel(AeromapsModel):
                 var_name = category.name + ":energy_consumption"
                 if var_name in self.df:
                     # Mean
-                    self.df[category.name + ":energy_consumption"] += (
-                        subcat_consumption_per_ask / (subcategory.parameters.share / 100)
+                    self.df[category.name + ":energy_consumption"] += subcat_consumption_per_ask / (
+                        subcategory.parameters.share / 100
                     )
                     # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] += (
-                        subcategory_dropin_share
-                    )
+                    self.df[category.name + ":share:dropin_fuel"] += subcategory_dropin_share
                     # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] += (
-                        subcategory_hydrogen_share
-                    )
+                    self.df[category.name + ":share:hydrogen"] += subcategory_hydrogen_share
                 else:
                     # Mean
-                    self.df[category.name + ":energy_consumption"] = (
-                        subcat_consumption_per_ask / (subcategory.parameters.share / 100)
+                    self.df[category.name + ":energy_consumption"] = subcat_consumption_per_ask / (
+                        subcategory.parameters.share / 100
                     )
                     # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] =  (
-                        subcategory_dropin_share
-                    )
+                    self.df[category.name + ":share:dropin_fuel"] = subcategory_dropin_share
                     # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] = (
-                        subcategory_hydrogen_share
-                    )
+                    self.df[category.name + ":share:hydrogen"] = subcategory_hydrogen_share
 
             for subcategory in category.subcategories.values():
                 # TODO: verify aircraft order
                 # Mean energy consumption per category
                 var_name = category.name + ":energy_consumption:dropin_fuel"
                 if var_name in self.df:
-                    self.df[category.name + ":energy_consumption:dropin_fuel"] += (
-                            self.df[category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"] / (self.df[category.name + ":share:dropin_fuel"]/ 100)
-                    )
-                    self.df[category.name + ":energy_consumption:hydrogen"] += (
-                            self.df[category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"] / (self.df[category.name + ":share:hydrogen"]/ 100)
-                    )
+                    self.df[category.name + ":energy_consumption:dropin_fuel"] += self.df[
+                        category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"
+                    ] / (self.df[category.name + ":share:dropin_fuel"] / 100)
+                    self.df[category.name + ":energy_consumption:hydrogen"] += self.df[
+                        category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"
+                    ] / (self.df[category.name + ":share:hydrogen"] / 100)
                 else:
-                    self.df[category.name + ":energy_consumption:dropin_fuel"] = (
-                            self.df[category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"] / (self.df[category.name + ":share:dropin_fuel"] / 100)
-                    )
-                    self.df[category.name + ":energy_consumption:hydrogen"] = (
-                            self.df[category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"] / (self.df[category.name + ":share:hydrogen"] / 100)
-                    )
-
+                    self.df[category.name + ":energy_consumption:dropin_fuel"] = self.df[
+                        category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"
+                    ] / (self.df[category.name + ":share:dropin_fuel"] / 100)
+                    self.df[category.name + ":energy_consumption:hydrogen"] = self.df[
+                        category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"
+                    ] / (self.df[category.name + ":share:hydrogen"] / 100)
 
         var_name = "global_fleet:energy_consumption"
 
         # Mean energy consumption for the global fleet
-        self.df[var_name] = self.df["Short range" + ":energy_consumption"] * 0.272
-        self.df[var_name] += self.df["Medium range" + ":energy_consumption"] * 0.351
-        self.df[var_name] += self.df["Long range" + ":energy_consumption"] * 0.377
+        self.df[var_name] = self.df["Short Range" + ":energy_consumption"] * 0.272
+        self.df[var_name] += self.df["Medium Range" + ":energy_consumption"] * 0.351
+        self.df[var_name] += self.df["Long Range" + ":energy_consumption"] * 0.377
 
     def plot(self):
         x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
@@ -646,7 +634,7 @@ class Category(object):
             subcategory_data = np.array(
                 [
                     "New subcategory",
-                    10.0,
+                    0.0,
                 ]
             ).reshape((1, len(SUBCATEGORY_COLUMNS)))
         else:
@@ -951,7 +939,7 @@ class Fleet(object):
 
         # Short range narrow-body
         subcat_params = SubcategoryParameters(share=100.0)
-        sr_nb_cat = SubCategory("Short range narrow-body", parameters=subcat_params)
+        sr_nb_cat = SubCategory("Conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
         sr_nb_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -970,7 +958,7 @@ class Fleet(object):
 
         # Short range regional turboprop
         subcat_params = SubcategoryParameters(share=0.0)
-        sr_rp_cat = SubCategory("Short range turboprop", parameters=subcat_params)
+        sr_rp_cat = SubCategory("Regional turboprop", parameters=subcat_params)
         # Reference aircraft
         # Old
         sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -989,7 +977,7 @@ class Fleet(object):
 
         # Short range regional turbofan
         subcat_params = SubcategoryParameters(share=0.0)
-        sr_tf_cat = SubCategory("Short range turbofan", parameters=subcat_params)
+        sr_tf_cat = SubCategory("Regional turbofan", parameters=subcat_params)
         # Reference aircraft
         # Old
         sr_tf_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1010,14 +998,14 @@ class Fleet(object):
         cat_params = CategoryParameters(
             ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
         )
-        sr_cat = Category("Short range", parameters=cat_params)
+        sr_cat = Category("Short Range", parameters=cat_params)
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
         # sr_cat.add_subcategory(subcategory=sr_rp_cat)
         # sr_cat.add_subcategory(subcategory=sr_tf_cat)
 
         # Medium range
         subcat_params = SubcategoryParameters(share=100.0)
-        mr_subcat = SubCategory("Medium-range", parameters=subcat_params)
+        mr_subcat = SubCategory("Conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
         mr_subcat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1037,12 +1025,12 @@ class Fleet(object):
         cat_params = CategoryParameters(
             ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
         )
-        mr_cat = Category(name="Medium range", parameters=cat_params)
+        mr_cat = Category(name="Medium Range", parameters=cat_params)
         mr_cat.add_subcategory(subcategory=mr_subcat)
 
         # Long range
         subcat_params = SubcategoryParameters(share=100.0)
-        lr_subcat = SubCategory("Long-range", parameters=subcat_params)
+        lr_subcat = SubCategory("Conventional wide-body", parameters=subcat_params)
         # Reference aircraft
         # Old
         lr_subcat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1062,7 +1050,7 @@ class Fleet(object):
         cat_params = CategoryParameters(
             ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
         )
-        lr_cat = Category("Long range", parameters=cat_params)
+        lr_cat = Category("Long Range", parameters=cat_params)
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
         self.categories[sr_cat.name] = sr_cat

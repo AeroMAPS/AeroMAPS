@@ -726,9 +726,11 @@ class GraphicalUserInterface(widgets.VBox):
                 widgets.VBox(
                     [
                         widgets.Label("Create detailed scenarios"),
-                        widgets.HTML(value="<p style='padding: 10px; border: 3px solid black;'><a "
-                                           "href=https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD?labpath=aeromaps%2Fnotebooks%2Fbasic_example.ipynb "
-                                           "target='_blank'> <b>Jupyter Notebooks</b></a></p>",),
+                        widgets.HTML(
+                            value="<p style='padding: 10px; border: 3px solid black;'><a "
+                            "href=https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD?labpath=aeromaps%2Fnotebooks%2Fbasic_example.ipynb "
+                            "target='_blank'> <b>Jupyter Notebooks</b></a></p>",
+                        ),
                     ]
                 ),
             ]
@@ -750,7 +752,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.controls = widgets.HBox([scenarios, self.aviation, self.environment])
         self.controls.layout = make_box_layout()
         self.controls.layout.align_items = "flex-start"
-
 
     def _update_scenario_infos(self, change=True):
         desc = ""
