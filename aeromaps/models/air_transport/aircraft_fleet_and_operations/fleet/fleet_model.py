@@ -490,8 +490,7 @@ class FleetModel(AeromapsModel):
                     )
 
                 else:
-                    pass
-                    # subcat_consumption_per_ask = 0.0
+                    self.df[category.name + ":" + subcategory.name + ":energy_consumption"] = 0.0
 
                 # Initial shares
                 self.df[category.name + ":" + subcategory.name + ":share:total"] = (
@@ -526,17 +525,7 @@ class FleetModel(AeromapsModel):
                             ]
                             != 0.0
                         ):
-                            print(
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
-                            )
+
                             self.df.loc[
                                 k, category.name + ":" + subcategory.name + ":share:total"
                             ] += self.df.loc[
