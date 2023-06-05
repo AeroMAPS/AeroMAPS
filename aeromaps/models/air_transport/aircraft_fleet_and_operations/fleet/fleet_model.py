@@ -655,7 +655,7 @@ class FleetModel(AeromapsModel):
             ax.fill_between(
                 x,
                 self.df[var_name],
-                label=subcategory.name + " - Old reference",
+                label=subcategory.name + " - Old reference aircraft",
             )
 
             # Recent reference aircraft
@@ -669,7 +669,7 @@ class FleetModel(AeromapsModel):
             ax.fill_between(
                 x,
                 self.df[var_name],
-                label=subcategory.name + " - Recent reference",
+                label=subcategory.name + " - Recent reference aircraft",
             )
 
             for j, subcategory in category.subcategories.items():
