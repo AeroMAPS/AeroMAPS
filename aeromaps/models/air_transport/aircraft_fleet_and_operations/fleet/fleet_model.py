@@ -292,7 +292,7 @@ class FleetModel(AeromapsModel):
                             self.df[var_name] = single_aircraft_share
 
                     else:
-                        for aircraft in subcategory.aircraft.values():
+                        for i, aircraft in subcategory.aircraft.items():
                             single_aircraft_share = oldest_single_aircraft_share + self._compute(
                                 float(category.parameters.life),
                                 float(aircraft.parameters.entry_into_service_year),
@@ -655,7 +655,7 @@ class FleetModel(AeromapsModel):
             ax.fill_between(
                 x,
                 self.df[var_name],
-                label="recent_reference " + subcategory.name,
+                label=subcategory.name + " - Old reference",
             )
 
             # Recent reference aircraft
@@ -669,7 +669,7 @@ class FleetModel(AeromapsModel):
             ax.fill_between(
                 x,
                 self.df[var_name],
-                label="recent_reference " + subcategory.name,
+                label=subcategory.name + " - Recent reference",
             )
 
             for j, subcategory in category.subcategories.items():
@@ -687,7 +687,7 @@ class FleetModel(AeromapsModel):
                     ax.fill_between(
                         x,
                         self.df[var_name],
-                        label=aircraft.name,
+                        label=subcategory.name + " - " + aircraft.name,
                     )
 
             ax.set_xlim(self.prospection_start_year, self.end_year)
