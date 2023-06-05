@@ -70,167 +70,257 @@ class FleetModel(AeromapsModel):
             parameter_base = np.log(100 / limit - 1) / (life_base / 2)
             parameter_renewal = np.log(100 / limit - 1) / (category.parameters.life / 2)
 
-            for i, subcategory in reversed(subcategory.items()):
+            if len(category.subcategories.values()) == 1:
+                subcategory = list(category.subcategories.values())[0]
+                # Reference recent aircraft
+                year_ref_recent_begin = (
+                    subcategory.recent_reference_aircraft.entry_into_service_year
+                )
+                year_ref_recent_base = year_ref_recent_begin + life_base / 2
+                year_ref_recent = (
+                    self.prospection_start_year
+                    - parameter_base
+                    / parameter_renewal
+                    * (self.prospection_start_year - year_ref_recent_base)
+                )
+                ref_recent_single_aircraft_share = self._compute(
+                    float(category.parameters.life),
+                    float(year_ref_recent),
+                    # Should always be 100% as there is only one subcategory
+                    float(subcategory.parameters.share),
+                    recent=True,
+                )
+                var_name = (
+                    category.name
+                    + ":"
+                    + subcategory.name
+                    + ":"
+                    + "recent_reference:single_aircraft_share"
+                )
+                self.df[var_name] = ref_recent_single_aircraft_share
 
-                if dernière:
+                # Reference old aircraft
+                ref_old_single_aircraft_share = 100
+                var_name = (
+                    category.name
+                    + ":"
+                    + subcategory.name
+                    + ":"
+                    + "old_reference:single_aircraft_share"
+                )
+                self.df[var_name] = ref_old_single_aircraft_share
 
-                    for aircraft in subcategory.aircraft.values():
-                        single_aircraft_share = self._compute(
-                            float(category.parameters.life),
-                            float(aircraft.parameters.entry_into_service_year),
-                            float(subcategory.parameters.share),
-                        )
-                        var_name = (
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                                + ":single_aircraft_share"
-                        )
-                        self.df[var_name] = single_aircraft_share
-
-                elif autres:
-
-                    for aircraft in subcategory.aircraft.values():
-                        single_aircraft_share = single_aircraft_share_precedent + self._compute(
-                            float(category.parameters.life),
-                            float(aircraft.parameters.entry_into_service_year),
-                            float(subcategory.parameters.share),
-                        )
-                        var_name = (
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                                + ":single_aircraft_share"
-                        )
-                        self.df[var_name] = single_aircraft_share
-
-
-                elif i == list(subcategory.aircraft.keys())[-1]:
-
-                    # Reference recent aircraft
-                    year_ref_recent_begin = (
-                        subcategory.recent_reference_aircraft.entry_into_service_year
-                    )
-                    year_ref_recent_base = year_ref_recent_begin + life_base / 2
-                    year_ref_recent = (
-                        self.prospection_start_year
-                        - parameter_base
-                        / parameter_renewal
-                        * (self.prospection_start_year - year_ref_recent_base)
-                    )
-                    ref_recent_single_aircraft_share = single_aircraft_share_precedent + self._compute(
+                # New aircraft
+                for aircraft in subcategory.aircraft.values():
+                    single_aircraft_share = self._compute(
                         float(category.parameters.life),
-                        float(year_ref_recent),
-                        100.0-float(single_aircraft_share_precedent),
-                        recent=True,
+                        float(aircraft.parameters.entry_into_service_year),
+                        # Should always be 100% as there is only one subcategory
+                        float(subcategory.parameters.share),
                     )
                     var_name = (
                         category.name
                         + ":"
                         + subcategory.name
                         + ":"
-                        + "recent_reference:single_aircraft_share"
+                        + aircraft.name
+                        + ":single_aircraft_share"
                     )
-                    self.df[var_name] = ref_recent_single_aircraft_share
+                    self.df[var_name] = single_aircraft_share
 
-                    # Reference old aircraft
-                    ref_old_single_aircraft_share = 100
+            elif len(category.subcategories.values()) == 2:
+
+                # We start with last subcategory
+                subcategory = list(category.subcategories.values())[-1]
+
+                for i, aircraft in subcategory.aircraft.items():
+                    single_aircraft_share = self._compute(
+                        float(category.parameters.life),
+                        float(aircraft.parameters.entry_into_service_year),
+                        float(subcategory.parameters.share),
+                    )
+
                     var_name = (
                         category.name
                         + ":"
                         + subcategory.name
                         + ":"
-                        + "old_reference:single_aircraft_share"
+                        + aircraft.name
+                        + ":single_aircraft_share"
                     )
-                    self.df[var_name] = ref_old_single_aircraft_share
+                    self.df[var_name] = single_aircraft_share
+                    if i == 0:
+                        oldest_single_aircraft_share = single_aircraft_share
 
-                    # New aircraft
-                    for aircraft in subcategory.aircraft.values():
-                        single_aircraft_share = single_aircraft_share_precedent + self._compute(
-                            float(category.parameters.life),
-                            float(aircraft.parameters.entry_into_service_year),
-                            100.0 - float(single_aircraft_share_precedent),
+                # We now use the first subcategory
+                subcategory = list(category.subcategories.values())[0]
+
+                # Reference recent aircraft
+                year_ref_recent_begin = (
+                    subcategory.recent_reference_aircraft.entry_into_service_year
+                )
+                year_ref_recent_base = year_ref_recent_begin + life_base / 2
+                year_ref_recent = (
+                    self.prospection_start_year
+                    - parameter_base
+                    / parameter_renewal
+                    * (self.prospection_start_year - year_ref_recent_base)
+                )
+                ref_recent_single_aircraft_share = oldest_single_aircraft_share + self._compute(
+                    float(category.parameters.life),
+                    float(year_ref_recent),
+                    100 - oldest_single_aircraft_share,
+                    recent=True,
+                )
+                var_name = (
+                    category.name
+                    + ":"
+                    + subcategory.name
+                    + ":"
+                    + "recent_reference:single_aircraft_share"
+                )
+                self.df[var_name] = ref_recent_single_aircraft_share
+
+                # Reference old aircraft
+                ref_old_single_aircraft_share = 100
+                var_name = (
+                    category.name
+                    + ":"
+                    + subcategory.name
+                    + ":"
+                    + "old_reference:single_aircraft_share"
+                )
+                self.df[var_name] = ref_old_single_aircraft_share
+                # New aircraft
+                for aircraft in subcategory.aircraft.values():
+                    single_aircraft_share = oldest_single_aircraft_share + self._compute(
+                        float(category.parameters.life),
+                        float(aircraft.parameters.entry_into_service_year),
+                        100 - oldest_single_aircraft_share,
+                    )
+                    var_name = (
+                        category.name
+                        + ":"
+                        + subcategory.name
+                        + ":"
+                        + aircraft.name
+                        + ":single_aircraft_share"
+                    )
+                    self.df[var_name] = single_aircraft_share
+
+            # If more than two subcategories
+            else:
+                for key, subcategory in reversed(category.subcategories.items()):
+                    # Last subcategory
+                    if key == list(category.subcategories.keys())[-1]:
+                        for i, aircraft in subcategory.aircraft.items():
+                            single_aircraft_share = self._compute(
+                                float(category.parameters.life),
+                                float(aircraft.parameters.entry_into_service_year),
+                                float(subcategory.parameters.share),
+                            )
+
+                            var_name = (
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                                + ":single_aircraft_share"
+                            )
+                            self.df[var_name] = single_aircraft_share
+                            if i == 0:
+                                oldest_single_aircraft_share = single_aircraft_share
+                    # Initial subcategory
+                    elif key == list(category.subcategories.keys())[0]:
+                        # Reference recent aircraft
+                        year_ref_recent_begin = (
+                            subcategory.recent_reference_aircraft.entry_into_service_year
                         )
+                        year_ref_recent_base = year_ref_recent_begin + life_base / 2
+                        year_ref_recent = (
+                            self.prospection_start_year
+                            - parameter_base
+                            / parameter_renewal
+                            * (self.prospection_start_year - year_ref_recent_base)
+                        )
+                        ref_recent_single_aircraft_share = (
+                            oldest_single_aircraft_share
+                            + self._compute(
+                                float(category.parameters.life),
+                                float(year_ref_recent),
+                                100 - oldest_single_aircraft_share,
+                                recent=True,
+                            )
+                        )
+
                         var_name = (
                             category.name
                             + ":"
                             + subcategory.name
                             + ":"
-                            + aircraft.name
-                            + ":single_aircraft_share"
+                            + "recent_reference:single_aircraft_share"
                         )
-                        self.df[var_name] = single_aircraft_share
+                        self.df[var_name] = ref_recent_single_aircraft_share
 
+                        # Reference old aircraft
+                        ref_old_single_aircraft_share = 100
+                        var_name = (
+                            category.name
+                            + ":"
+                            + subcategory.name
+                            + ":"
+                            + "old_reference:single_aircraft_share"
+                        )
+                        self.df[var_name] = ref_old_single_aircraft_share
+
+                        # New aircraft
+                        for aircraft in subcategory.aircraft.values():
+                            single_aircraft_share = oldest_single_aircraft_share + self._compute(
+                                float(category.parameters.life),
+                                float(aircraft.parameters.entry_into_service_year),
+                                100 - oldest_single_aircraft_share,
+                            )
+                            var_name = (
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                                + ":single_aircraft_share"
+                            )
+                            self.df[var_name] = single_aircraft_share
+
+                    else:
+                        for aircraft in subcategory.aircraft.values():
+                            single_aircraft_share = oldest_single_aircraft_share + self._compute(
+                                float(category.parameters.life),
+                                float(aircraft.parameters.entry_into_service_year),
+                                float(subcategory.parameters.share),
+                            )
+                            var_name = (
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                                + ":single_aircraft_share"
+                            )
+                            self.df[var_name] = single_aircraft_share
+                            if i == 0:
+                                new_oldest_single_aircraft_share = single_aircraft_share
+                        oldest_single_aircraft_share = new_oldest_single_aircraft_share
 
         # Aircraft share computation
         for category in self.fleet.categories.values():
             # TODO: handling of subcategory
 
-            for subcategory in category.subcategories.values():
+            for key, subcategory in reversed(category.subcategories.items()):
                 # TODO: verify aircraft order
-
-                if (
-                    subcategory == "Conventional narrow-body"
-                    or subcategory == "Conventional wide-body"
-                ):
-                    ref_recent_single_aircraft_share = self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + "recent_reference:single_aircraft_share"
-                    ]
-
-                    next_aircraft_single_share = self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + subcategory.aircraft[0].name
-                        + ":single_aircraft_share"
-                    ]
-                    var_name = (
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + "recent_reference:aircraft_share"
-                    )
-                    ref_recent_aircraft_share = (
-                        ref_recent_single_aircraft_share - next_aircraft_single_share
-                    )
-                    self.df[var_name] = ref_recent_aircraft_share
-
-                    # Reference old aircraft
-                    ref_old_aircraft_share = 100 - ref_recent_single_aircraft_share
-                    var_name = (
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + "old_reference:aircraft_share"
-                    )
-                    self.df[var_name] = ref_old_aircraft_share
-
-                    subcat_consumption_per_ask = (
-                        subcategory.old_reference_aircraft.energy_per_ask
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.energy_per_ask
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-
-                else:
-                    subcat_consumption_per_ask = 0.0
-
-
                 for i, aircraft in reversed(subcategory.aircraft.items()):
-                    if i == list(subcategory.aircraft.keys())[-1]:
+                    if (i == list(subcategory.aircraft.keys())[-1]) and (
+                        key == list(category.subcategories.keys())[-1]
+                    ):
                         aircraft_share = self.df[
                             category.name
                             + ":"
@@ -250,8 +340,37 @@ class FleetModel(AeromapsModel):
                         )
 
                         self.df[var_name] = aircraft_share
-                    else:
+                    elif (i == list(subcategory.aircraft.keys())[-1]) and (
+                        key != list(category.subcategories.keys())[-1]
+                    ):
+                        single_aircraft_share = self.df[
+                            category.name
+                            + ":"
+                            + subcategory.name
+                            + ":"
+                            + aircraft.name
+                            + ":single_aircraft_share"
+                        ]
+                        single_aircraft_share_n1 = self.df[
+                            category.name
+                            + ":"
+                            + category.subcategories[key + 1].name
+                            + ":"
+                            + category.subcategories[key + 1].aircraft[0].name
+                            + ":single_aircraft_share"
+                        ]
 
+                        var_name = (
+                            category.name
+                            + ":"
+                            + subcategory.name
+                            + ":"
+                            + aircraft.name
+                            + ":aircraft_share"
+                        )
+                        aircraft_share = single_aircraft_share - single_aircraft_share_n1
+                        self.df[var_name] = aircraft_share
+                    else:
                         single_aircraft_share = self.df[
                             category.name
                             + ":"
@@ -280,52 +399,129 @@ class FleetModel(AeromapsModel):
                         aircraft_share = single_aircraft_share - single_aircraft_share_n1
                         self.df[var_name] = aircraft_share
 
+            # For a category
+            ref_recent_single_aircraft_share = self.df[
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + "recent_reference:single_aircraft_share"
+            ]
+
+            next_aircraft_single_share = self.df[
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + subcategory.aircraft[0].name
+                + ":single_aircraft_share"
+            ]
+            var_name = (
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + "recent_reference:aircraft_share"
+            )
+            ref_recent_aircraft_share = (
+                ref_recent_single_aircraft_share - next_aircraft_single_share
+            )
+            self.df[var_name] = ref_recent_aircraft_share
+
+            # Reference old aircraft
+            ref_old_aircraft_share = 100 - ref_recent_single_aircraft_share
+            var_name = (
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + "old_reference:aircraft_share"
+            )
+            self.df[var_name] = ref_old_aircraft_share
+
+        # Aircraft consumption computation and Dedicated calculations for drop-in fuel and hydrogen
+        for category in self.fleet.categories.values():
+            # TODO: handling of subcategory
+            # Reference aircraft information
+            ref_old_aircraft_share = self.df[
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + "old_reference:aircraft_share"
+            ]
+            ref_recent_aircraft_share = self.df[
+                category.name
+                + ":"
+                + category.subcategories[0].name
+                + ":"
+                + "recent_reference:aircraft_share"
+            ]
+
+            recent_reference_aircraft_energy_consumption = category.subcategories[
+                0
+            ].recent_reference_aircraft.energy_per_ask
+
+            for i, subcategory in category.subcategories.items():
+                # Initialization
+                if i == 0:
+                    subcat_consumption_per_ask = (
+                        subcategory.old_reference_aircraft.energy_per_ask
+                        * ref_old_aircraft_share
+                        / 100
+                        + subcategory.recent_reference_aircraft.energy_per_ask
+                        * ref_recent_aircraft_share
+                        / 100
+                    )
+
+                else:
+                    subcat_consumption_per_ask = 0.0
+
+                # Dedicated calculations for drop-in fuel and hydrogen
+
+                ## Initial share
+                subcategory_dropin_share = 100.0
+                subcategory_hydrogen_share = 0.0
+
+                # Initial energy consumption
+                subcategory_dropin_consumption_per_ask = copy.copy(subcat_consumption_per_ask)
+                subcategory_hydrogen_consumption_per_ask = 0.0
+
+                # Reference aircraft
+                subcategory_dropin_share = ref_old_aircraft_share + ref_recent_aircraft_share
+
+                for aircraft in subcategory.aircraft.values():
+                    aircraft_share = self.df[
+                        category.name
+                        + ":"
+                        + subcategory.name
+                        + ":"
+                        + aircraft.name
+                        + ":aircraft_share"
+                    ]
+
                     subcat_consumption_per_ask += (
-                        subcategory.recent_reference_aircraft.energy_per_ask
+                        recent_reference_aircraft_energy_consumption
                         * (1 - float(aircraft.parameters.consumption_gain) / 100)
                         * aircraft_share
                         / 100
                     )
 
-
-                    # Dedicated calculations for drop-in fuel and hydrogen
-
-                    ## Initial share
-                    subcategory_dropin_share = 100.0
-                    subcategory_hydrogen_share = 0.0
-                    # Initial energy consumption
-                    subcategory_dropin_consumption_per_ask = copy.copy(subcat_consumption_per_ask)
-                    subcategory_hydrogen_consumption_per_ask = 0.0
-
                     if aircraft.energy_type == "DROP_IN_FUEL":
-                        subcategory_dropin_share += self.df[
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                            + ":aircraft_share"
-                        ]
+                        subcategory_dropin_share += aircraft_share
 
                         subcategory_dropin_consumption_per_ask += (
-                            subcategory.recent_reference_aircraft.energy_per_ask
+                            recent_reference_aircraft_energy_consumption
                             * (1 - float(aircraft.parameters.consumption_gain) / 100)
                             * aircraft_share
                             / 100
                         )
 
                     if aircraft.energy_type == "HYDROGEN":
-                        subcategory_hydrogen_share += self.df[
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                            + ":aircraft_share"
-                        ]
+                        subcategory_hydrogen_share += aircraft_share
 
                         subcategory_hydrogen_consumption_per_ask += (
-                            subcategory.recent_reference_aircraft.energy_per_ask
+                            recent_reference_aircraft_energy_consumption
                             * (1 - float(aircraft.parameters.consumption_gain) / 100)
                             * aircraft_share
                             / 100
@@ -377,9 +573,10 @@ class FleetModel(AeromapsModel):
                     # Hydrogen
                     self.df[category.name + ":share:hydrogen"] = subcategory_hydrogen_share
 
+
+            # Mean energy consumption per category
             for subcategory in category.subcategories.values():
                 # TODO: verify aircraft order
-                # Mean energy consumption per category
                 var_name = category.name + ":energy_consumption:dropin_fuel"
                 if var_name in self.df:
                     self.df[category.name + ":energy_consumption:dropin_fuel"] += self.df[
@@ -397,13 +594,19 @@ class FleetModel(AeromapsModel):
                     ] / (self.df[category.name + ":share:hydrogen"] / 100)
 
             # Mean consumption
-            self.df[category.name + ":energy_consumption"] = self.df[
-                category.name + ":energy_consumption:dropin_fuel"
-            ] / (self.df[category.name + ":share:dropin_fuel"] / 100) + self.df[
-                category.name + ":energy_consumption:hydrogen"
-            ] / (
-                self.df[category.name + ":share:hydrogen"] / 100
-            )
+            for k in self.df.index:
+                if np.isnan(self.df.loc[k, category.name + ":energy_consumption:hydrogen"]):
+                    self.df.loc[k, category.name + ":energy_consumption"] = self.df.loc[
+                        k, category.name + ":energy_consumption:dropin_fuel"
+                    ] / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
+                else:
+                    self.df.loc[k, category.name + ":energy_consumption"] = self.df.loc[
+                        k, category.name + ":energy_consumption:dropin_fuel"
+                    ] / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100) + self.df.loc[
+                        k, category.name + ":energy_consumption:hydrogen"
+                    ] / (
+                        self.df.loc[k, category.name + ":share:hydrogen"] / 100
+                    )
 
         var_name = "global_fleet:energy_consumption"
 
@@ -423,28 +626,34 @@ class FleetModel(AeromapsModel):
         for i, category in enumerate(categories):
             # Top plot
             ax = axs[0, i]
-            off_set = 100
-            for j, subcategory in category.subcategories.items():
-                # if j > 0:
-                off_set -= subcategory.parameters.share
-                # Old aircraft
-                old_aircraft = 100 * np.ones(len(x)) * subcategory.parameters.share / 100 + off_set
-                ax.fill_between(x, old_aircraft, label="old_reference" + subcategory.name)
 
-                # Recent aircraft
-                var_name = (
-                    category.name
-                    + ":"
-                    + subcategory.name
-                    + ":"
-                    + "recent_reference:single_aircraft_share"
-                )
-                share_value = self.df[var_name] * subcategory.parameters.share / 100 + off_set
-                ax.fill_between(
-                    x,
-                    share_value,
-                    label="recent_reference " + subcategory.name,
-                )
+            # Initial subcategory
+            subcategory = category.subcategories[0]
+            # Old reference aircraft
+            var_name = (
+                category.name + ":" + subcategory.name + ":" + "old_reference:single_aircraft_share"
+            )
+            ax.fill_between(
+                x,
+                self.df[var_name],
+                label="recent_reference " + subcategory.name,
+            )
+
+            # Recent reference aircraft
+            var_name = (
+                category.name
+                + ":"
+                + subcategory.name
+                + ":"
+                + "recent_reference:single_aircraft_share"
+            )
+            ax.fill_between(
+                x,
+                self.df[var_name],
+                label="recent_reference " + subcategory.name,
+            )
+
+            for j, subcategory in category.subcategories.items():
 
                 # New aircraft
                 for aircraft in subcategory.aircraft.values():
@@ -456,10 +665,9 @@ class FleetModel(AeromapsModel):
                         + aircraft.name
                         + ":single_aircraft_share"
                     )
-                    share_value = self.df[var_name] * subcategory.parameters.share / 100 + off_set
                     ax.fill_between(
                         x,
-                        share_value,
+                        self.df[var_name],
                         label=aircraft.name,
                     )
 
@@ -480,7 +688,7 @@ class FleetModel(AeromapsModel):
             # ax.set_title(categories[i].name)
 
         plt.plot()
-        plt.savefig("fleet_renewal.pdf")
+        # plt.savefig("fleet_renewal.pdf")
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
         x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
@@ -497,7 +705,7 @@ class FleetModel(AeromapsModel):
         y_share = share / (1 + np.exp(-growth_rate * (x - midpoint_year)))
         y_share_max = 100 / (1 + np.exp(-growth_rate * (x - midpoint_year)))
 
-        y = np.where(y_share < limit, 0.0, y_share_max)
+        y = np.where(y_share_max < limit, 0.0, y_share)
         return y
 
 
@@ -1032,9 +1240,7 @@ class Fleet(object):
         sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
         # Short range
-        cat_params = CategoryParameters(
-            ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
-        )
+        cat_params = CategoryParameters(life=25)
         sr_cat = Category("Short Range", parameters=cat_params)
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
         # sr_cat.add_subcategory(subcategory=sr_rp_cat)
@@ -1059,9 +1265,7 @@ class Fleet(object):
         mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
         mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
 
-        cat_params = CategoryParameters(
-            ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
-        )
+        cat_params = CategoryParameters(life=25)
         mr_cat = Category(name="Medium Range", parameters=cat_params)
         mr_cat.add_subcategory(subcategory=mr_subcat)
 
@@ -1084,9 +1288,7 @@ class Fleet(object):
         lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
         lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
-        cat_params = CategoryParameters(
-            ask0=1e6, growth_rates={2030: 2.0, 2040: 2.0, 2050: 2.0}, life=25
-        )
+        cat_params = CategoryParameters(life=25)
         lr_cat = Category("Long Range", parameters=cat_params)
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
