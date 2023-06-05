@@ -446,7 +446,7 @@ class FleetModel(AeromapsModel):
         #             + ":"
         #             + subcategory.name
         #             + ":share:dropin_fuel"] = aircraft_share
-#
+        #
         # if aircraft.energy_type == "HYDROGEN":
         #     self.df[category.name
         #             + ":"
@@ -480,7 +480,7 @@ class FleetModel(AeromapsModel):
             for i, subcategory in category.subcategories.items():
                 # Initialization
                 if i == 0:
-                    subcat_consumption_per_ask = (
+                    self.df[category.name + ":" + subcategory.name + ":energy_consumption"] = (
                         subcategory.old_reference_aircraft.energy_per_ask
                         * ref_old_aircraft_share
                         / 100
@@ -491,85 +491,180 @@ class FleetModel(AeromapsModel):
 
                 else:
                     pass
-                    #subcat_consumption_per_ask = 0.0
+                    # subcat_consumption_per_ask = 0.0
 
                 # Initial shares
-                subcategory_dropin_share = 0.0
-                subcategory_hydrogen_share = 0.0
-                subcategory_total_share = 0.0
+                self.df[category.name + ":" + subcategory.name + ":share:total"] = (
+                    ref_old_aircraft_share + ref_recent_aircraft_share
+                )
+                self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = (
+                    ref_old_aircraft_share + ref_recent_aircraft_share
+                )
+                self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
 
                 # Initial energy consumption
-                subcategory_dropin_consumption_per_ask = copy.copy(subcat_consumption_per_ask)
-                subcategory_hydrogen_consumption_per_ask = 0.0
-
-                for aircraft in subcategory.aircraft.values():
-                    aircraft_share = self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":"
-                        + aircraft.name
-                        + ":aircraft_share"
-                    ]
-
-                    subcategory_total_share += aircraft_share
-
-                    subcat_consumption_per_ask += (
-                        recent_reference_aircraft_energy_consumption
-                        * (1 - float(aircraft.parameters.consumption_gain) / 100)
-                        * aircraft_share
-                        / 100
-                    )
-
-                    if aircraft.energy_type == "DROP_IN_FUEL":
-                        subcategory_dropin_share += aircraft_share
-
-                        subcategory_dropin_consumption_per_ask += (
-                            recent_reference_aircraft_energy_consumption
-                            * (1 - float(aircraft.parameters.consumption_gain) / 100)
-                            * aircraft_share
-                            / 100
-                        )
-
-                    if aircraft.energy_type == "HYDROGEN":
-                        subcategory_hydrogen_share += aircraft_share
-
-                        subcategory_hydrogen_consumption_per_ask += (
-                            recent_reference_aircraft_energy_consumption
-                            * (1 - float(aircraft.parameters.consumption_gain) / 100)
-                            * aircraft_share
-                            / 100
-                        )
-
-                # Share of drop-in fuel aircraft in subcategory
-                self.df[
-                    category.name + ":" + subcategory.name + ":share:total"
-                ] = subcategory_total_share
-
-                # Share of drop-in fuel aircraft in subcategory
-                self.df[
-                    category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                ] = subcategory_dropin_share / subcategory_total_share * 100
-
-                # Share of hydrogen aircraft in subcategory
-                self.df[
-                    category.name + ":" + subcategory.name + ":share:hydrogen"
-                ] = subcategory_hydrogen_share / subcategory_total_share * 100
-
-                # Mean energy consumption per subcategory
-                self.df[
-                    category.name + ":" + subcategory.name + ":energy_consumption"
-                ] = subcat_consumption_per_ask
-
-                # Mean energy consumption per subcategory (dropin aircraft)
                 self.df[
                     category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"
-                ] = subcategory_dropin_consumption_per_ask
-
-                # Mean energy consumption per subcategory (hydrogen aircraft)
+                ] = self.df[category.name + ":" + subcategory.name + ":energy_consumption"]
                 self.df[
                     category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"
-                ] = subcategory_hydrogen_consumption_per_ask
+                ] = 0.0
+
+                for aircraft in subcategory.aircraft.values():
+
+                    for k in self.df.index:
+
+                        if (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                                + ":aircraft_share",
+                            ]
+                            != 0.0
+                        ):
+                            print(
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":"
+                                    + aircraft.name
+                                    + ":aircraft_share",
+                                ]
+                            )
+                            self.df.loc[
+                                k, category.name + ":" + subcategory.name + ":share:total"
+                            ] += self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                                + ":aircraft_share",
+                            ]
+
+                            self.df.loc[
+                                k, category.name + ":" + subcategory.name + ":energy_consumption"
+                            ] += (
+                                recent_reference_aircraft_energy_consumption
+                                * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                * self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":"
+                                    + aircraft.name
+                                    + ":aircraft_share",
+                                ]
+                                / 100
+                            )
+
+                            if aircraft.energy_type == "DROP_IN_FUEL":
+                                self.df.loc[
+                                    k, category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                                ] += self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":"
+                                    + aircraft.name
+                                    + ":aircraft_share",
+                                ]
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":energy_consumption:dropin_fuel",
+                                ] += (
+                                    recent_reference_aircraft_energy_consumption
+                                    * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    / 100
+                                )
+
+                            if aircraft.energy_type == "HYDROGEN":
+                                self.df.loc[
+                                    k, category.name + ":" + subcategory.name + ":share:hydrogen"
+                                ] += self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":"
+                                    + aircraft.name
+                                    + ":aircraft_share",
+                                ]
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":energy_consumption:hydrogen",
+                                ] += (
+                                    recent_reference_aircraft_energy_consumption
+                                    * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    / 100
+                                )
+
+                # Share of drop-in fuel aircraft in subcategory
+                # self.df[
+                #    category.name + ":" + subcategory.name + ":share:total"
+                # ] = subcategory_total_share
+
+                # Share of drop-in fuel aircraft in subcategory
+                self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = (
+                    self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"]
+                    / self.df[category.name + ":" + subcategory.name + ":share:total"]
+                    * 100
+                )
+
+                # Share of hydrogen aircraft in subcategory
+                self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = (
+                    self.df[category.name + ":" + subcategory.name + ":share:hydrogen"]
+                    / self.df[category.name + ":" + subcategory.name + ":share:total"]
+                    * 100
+                )
+
+                # Mean energy consumption per subcategory
+                # self.df[
+                #    category.name + ":" + subcategory.name + ":energy_consumption"
+                # ] = subcat_consumption_per_ask
+
+                # Mean energy consumption per subcategory (dropin aircraft)
+                # self.df[
+                #    category.name + ":" + subcategory.name + ":energy_consumption:dropin_fuel"
+                # ] = subcategory_dropin_consumption_per_ask
+
+                # Mean energy consumption per subcategory (hydrogen aircraft)
+                # self.df[
+                #    category.name + ":" + subcategory.name + ":energy_consumption:hydrogen"
+                # ] = subcategory_hydrogen_consumption_per_ask
 
                 # Mean energy consumption per category
                 var_name = category.name + ":energy_consumption"
@@ -579,19 +674,26 @@ class FleetModel(AeromapsModel):
                     #    subcategory.parameters.share / 100
                     # )
                     # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] += subcategory_dropin_share
+                    self.df[category.name + ":share:dropin_fuel"] += self.df[
+                        category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                    ]
                     # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] += subcategory_hydrogen_share
+                    self.df[category.name + ":share:hydrogen"] += self.df[
+                        category.name + ":" + subcategory.name + ":share:hydrogen"
+                    ]
                 else:
                     # Mean
                     # self.df[category.name + ":energy_consumption"] = subcat_consumption_per_ask / (
                     #    subcategory.parameters.share / 100
                     # )
                     # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] = subcategory_dropin_share
+                    self.df[category.name + ":share:dropin_fuel"] = self.df[
+                        category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                    ]
                     # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] = subcategory_hydrogen_share
-
+                    self.df[category.name + ":share:hydrogen"] = self.df[
+                        category.name + ":" + subcategory.name + ":share:hydrogen"
+                    ]
 
             # Mean energy consumption per category
             for subcategory in category.subcategories.values():
