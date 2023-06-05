@@ -340,6 +340,7 @@ class FleetModel(AeromapsModel):
                         )
 
                         self.df[var_name] = aircraft_share
+
                     elif (i == list(subcategory.aircraft.keys())[-1]) and (
                         key != list(category.subcategories.keys())[-1]
                     ):
@@ -439,6 +440,20 @@ class FleetModel(AeromapsModel):
             )
             self.df[var_name] = ref_old_aircraft_share
 
+        # Dedicated calculation for drop-in fuel and hydrogen
+        # if aircraft.energy_type == "DROP_IN_FUEL":
+        #     self.df[category.name
+        #             + ":"
+        #             + subcategory.name
+        #             + ":share:dropin_fuel"] = aircraft_share
+#
+        # if aircraft.energy_type == "HYDROGEN":
+        #     self.df[category.name
+        #             + ":"
+        #             + subcategory.name
+        #             + ":"
+        #             + ":share:hydrogen"] = aircraft_share
+
         # Aircraft consumption computation and Dedicated calculations for drop-in fuel and hydrogen
         for category in self.fleet.categories.values():
             # TODO: handling of subcategory
@@ -475,20 +490,17 @@ class FleetModel(AeromapsModel):
                     )
 
                 else:
-                    subcat_consumption_per_ask = 0.0
+                    pass
+                    #subcat_consumption_per_ask = 0.0
 
-                # Dedicated calculations for drop-in fuel and hydrogen
-
-                ## Initial share
-                subcategory_dropin_share = 100.0
+                # Initial shares
+                subcategory_dropin_share = 0.0
                 subcategory_hydrogen_share = 0.0
+                subcategory_total_share = 0.0
 
                 # Initial energy consumption
                 subcategory_dropin_consumption_per_ask = copy.copy(subcat_consumption_per_ask)
                 subcategory_hydrogen_consumption_per_ask = 0.0
-
-                # Reference aircraft
-                subcategory_dropin_share = ref_old_aircraft_share + ref_recent_aircraft_share
 
                 for aircraft in subcategory.aircraft.values():
                     aircraft_share = self.df[
@@ -499,6 +511,8 @@ class FleetModel(AeromapsModel):
                         + aircraft.name
                         + ":aircraft_share"
                     ]
+
+                    subcategory_total_share += aircraft_share
 
                     subcat_consumption_per_ask += (
                         recent_reference_aircraft_energy_consumption
@@ -529,13 +543,18 @@ class FleetModel(AeromapsModel):
 
                 # Share of drop-in fuel aircraft in subcategory
                 self.df[
+                    category.name + ":" + subcategory.name + ":share:total"
+                ] = subcategory_total_share
+
+                # Share of drop-in fuel aircraft in subcategory
+                self.df[
                     category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                ] = subcategory_dropin_share
+                ] = subcategory_dropin_share / subcategory_total_share * 100
 
                 # Share of hydrogen aircraft in subcategory
                 self.df[
                     category.name + ":" + subcategory.name + ":share:hydrogen"
-                ] = subcategory_hydrogen_share
+                ] = subcategory_hydrogen_share / subcategory_total_share * 100
 
                 # Mean energy consumption per subcategory
                 self.df[
