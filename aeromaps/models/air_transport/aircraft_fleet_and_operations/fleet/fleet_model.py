@@ -1289,6 +1289,14 @@ class Fleet(object):
             "New Medium-range 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
         )
 
+        aircraft_params = AircraftParameters(
+            entry_into_service_year=2040, consumption_gain=-5.0, nox_gain=30.0, soot_gain=30.0
+        )
+
+        mr_aircraft_hydrogen = Aircraft(
+            "New Medium-range hydrogen", parameters=aircraft_params, energy_type="HYDROGEN"
+        )
+
         # Long range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
@@ -1307,7 +1315,7 @@ class Fleet(object):
         )
 
         # Short range narrow-body
-        subcat_params = SubcategoryParameters(share=100.0)
+        subcat_params = SubcategoryParameters(share=80.0)
         sr_nb_cat = SubCategory("Conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
@@ -1326,7 +1334,7 @@ class Fleet(object):
         sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
 
         # Short range regional turboprop
-        subcat_params = SubcategoryParameters(share=0.0)
+        subcat_params = SubcategoryParameters(share=20.0)
         sr_rp_cat = SubCategory("Regional turboprop", parameters=subcat_params)
         # Reference aircraft
         # Old
@@ -1364,15 +1372,19 @@ class Fleet(object):
         sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
         # Short range
-        cat_params = CategoryParameters(life=25)
+        cat_params = CategoryParameters(
+            life=25
+        )
         sr_cat = Category("Short Range", parameters=cat_params)
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
-        # sr_cat.add_subcategory(subcategory=sr_rp_cat)
+        sr_cat.add_subcategory(subcategory=sr_rp_cat)
         # sr_cat.add_subcategory(subcategory=sr_tf_cat)
 
         # Medium range
-        subcat_params = SubcategoryParameters(share=100.0)
+        subcat_params = SubcategoryParameters(share=50.0)
         mr_subcat = SubCategory("Conventional narrow-body", parameters=subcat_params)
+        subcat_params = SubcategoryParameters(share=50.0)
+        mr_subcat_u = SubCategory("Unconventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
         mr_subcat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1389,9 +1401,14 @@ class Fleet(object):
         mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
         mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
 
-        cat_params = CategoryParameters(life=25)
+        mr_subcat_u.add_aircraft(aircraft=mr_aircraft_hydrogen)
+
+        cat_params = CategoryParameters(
+            life=25
+        )
         mr_cat = Category(name="Medium Range", parameters=cat_params)
         mr_cat.add_subcategory(subcategory=mr_subcat)
+        mr_cat.add_subcategory(subcategory=mr_subcat_u)
 
         # Long range
         subcat_params = SubcategoryParameters(share=100.0)
@@ -1412,10 +1429,13 @@ class Fleet(object):
         lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
         lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
-        cat_params = CategoryParameters(life=25)
+        cat_params = CategoryParameters(
+            life=25
+        )
         lr_cat = Category("Long Range", parameters=cat_params)
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
         self.categories[sr_cat.name] = sr_cat
         self.categories[mr_cat.name] = mr_cat
         self.categories[lr_cat.name] = lr_cat
+
