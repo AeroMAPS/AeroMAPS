@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Use of fleet renewal models &#8212; AeroMAPS documentation</title>
+    <title>Fleet modeling &#8212; AeroMAPS documentation</title>
   
   
   
@@ -164,7 +164,8 @@ const thebe_selector_output = ".output, .cell_output"
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Use of fleet renewal models</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Fleet modeling</a></li>
+
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -237,7 +238,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/books/examples_fleet.md" target="_blank"
+      <li><a href="../_sources/books/examples_fleet.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -247,7 +248,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
 </li>
       
@@ -319,7 +320,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Use of fleet renewal models</h1>
+    <h1>Fleet modeling</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -329,10 +330,19 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-cell">An example cell</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-notebook-with-myst-markdown">Create a notebook with MyST Markdown</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quickly-add-yaml-metadata-for-myst-notebooks">Quickly add YAML metadata for MyST Notebooks</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Fleet modeling</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-fleet">Set up the fleet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results-and-plots">Results and plots</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#link-with-other-aeromaps-models">Link with other AeroMAPS models</a></li>
+</ul>
+</li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -343,49 +353,2721 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="use-of-fleet-renewal-models">
-<h1>Use of fleet renewal models<a class="headerlink" href="#use-of-fleet-renewal-models" title="Permalink to this heading">#</a></h1>
-<p>Jupyter Book also lets you write text-based notebooks using MyST Markdown.
-See <a class="reference external" href="https://jupyterbook.org/file-types/myst-notebooks.html">the Notebooks with MyST Markdown documentation</a> for more detailed instructions.
-This page shows off a notebook written in MyST Markdown.</p>
-<section id="an-example-cell">
-<h2>An example cell<a class="headerlink" href="#an-example-cell" title="Permalink to this heading">#</a></h2>
-<p>With MyST Markdown, you can define code cells with a directive like so:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="fleet-modeling">
+<h1>Fleet modeling<a class="headerlink" href="#fleet-modeling" title="Permalink to this heading">#</a></h1>
+<p>This notebook aims at using the classes dedicated to the fleet modelling that are used in AeroMAPS.</p>
+<section id="load-and-process">
+<h2>Load and process<a class="headerlink" href="#load-and-process" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AircraftParameters</span><span class="p">,</span>
+    <span class="n">SubcategoryParameters</span><span class="p">,</span>
+    <span class="n">CategoryParameters</span><span class="p">,</span>
+    <span class="n">Aircraft</span><span class="p">,</span>
+    <span class="n">SubCategory</span><span class="p">,</span>
+    <span class="n">Category</span><span class="p">,</span>
+    <span class="n">Fleet</span><span class="p">,</span>
+    <span class="n">FleetModel</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">aeromaps.models.parameters</span> <span class="kn">import</span> <span class="n">YearParameters</span>
+
+<span class="n">year_parameters</span> <span class="o">=</span> <span class="n">YearParameters</span><span class="p">(</span>
+    <span class="n">historic_start_year</span><span class="o">=</span><span class="mi">2020</span><span class="p">,</span> <span class="n">prospection_start_year</span><span class="o">=</span><span class="mi">2020</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">2050</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.constants</span> <span class="kn">import</span> <span class="n">EnergyTypes</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_rows&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.width&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">AircraftParameters</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">SubcategoryParameters</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">CategoryParameters</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">Aircraft</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">SubCategory</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">Category</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">Fleet</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">FleetModel</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="kn">from</span> <span class="nn">aeromaps.models.parameters</span> <span class="kn">import</span> <span class="n">YearParameters</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">year_parameters</span> <span class="o">=</span> <span class="n">YearParameters</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">15</span>     <span class="n">historic_start_year</span><span class="o">=</span><span class="mi">2020</span><span class="p">,</span> <span class="n">prospection_start_year</span><span class="o">=</span><span class="mi">2020</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">2050</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;aeromaps&#39;
 </pre></div>
 </div>
 </div>
 </div>
-<p>When your book is built, the contents of any <code class="docutils literal notranslate"><span class="pre">{code-cell}</span></code> blocks will be
-executed with your default Jupyter kernel, and their outputs will be displayed
-in-line with the rest of your content.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>Jupyter Book uses <a class="reference external" href="https://jupytext.readthedocs.io/en/latest/">Jupytext</a> to convert text-based files to notebooks, and can support <a class="reference external" href="https://jupyterbook.org/file-types/jupytext.html">many other text-based notebook files</a>.</p>
+<p>The fleet is divided into three main categories of aircraft, associated to an initial subcategory based on representative aircraft:</p>
+<ul class="simple">
+<li><p>Short range (Conventional narrow-body)</p></li>
+<li><p>Medium range (Conventional narrow-body)</p></li>
+<li><p>Long range (Conventional wide-body)</p></li>
+</ul>
+<p>Lets now assemble these categories into a fleet object. By default, two new aircraft have been added to the initial subcategories, and two subcategories have also been added for Short Range (turboprop aircraft and hydrogen aircraft). Illustrative values are considered.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet</span> <span class="o">=</span> <span class="n">Fleet</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 </section>
-<section id="create-a-notebook-with-myst-markdown">
-<h2>Create a notebook with MyST Markdown<a class="headerlink" href="#create-a-notebook-with-myst-markdown" title="Permalink to this heading">#</a></h2>
-<p>MyST Markdown notebooks are defined by two things:</p>
-<ol class="arabic simple">
-<li><p>YAML metadata that is needed to understand if / how it should convert text files to notebooks (including information about the kernel needed).
-See the YAML at the top of this page for example.</p></li>
-<li><p>The presence of <code class="docutils literal notranslate"><span class="pre">{code-cell}</span></code> directives, which will be executed with your book.</p></li>
-</ol>
-<p>That’s all that is needed to get started!</p>
-</section>
-<section id="quickly-add-yaml-metadata-for-myst-notebooks">
-<h2>Quickly add YAML metadata for MyST Notebooks<a class="headerlink" href="#quickly-add-yaml-metadata-for-myst-notebooks" title="Permalink to this heading">#</a></h2>
-<p>If you have a markdown file and you’d like to quickly add YAML metadata to it, so that Jupyter Book will treat it as a MyST Markdown Notebook, run the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span><span class="o">-</span><span class="n">book</span> <span class="n">myst</span> <span class="n">init</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">markdownfile</span><span class="o">.</span><span class="n">md</span>
+<section id="set-up-the-fleet">
+<h2>Set up the fleet<a class="headerlink" href="#set-up-the-fleet" title="Permalink to this heading">#</a></h2>
+<p>A dedicated user interface can be used for modifying the fleet using the following command. The can then directly change the future composition of the fleet by simply adding subcategories and aircraft. For subcategories, the final distribution between the different subcategories among a category has to be indicated. For aircraft, the user can choose an Entry-Into-Service year as well as the type of fuel used (DROP_IN_FUEL or HYDROGEN). The gains in terms of fuel consumption, NOx emission index and soot emission index, in comparison to the recent reference aircraft in the initial subcategory, also have to be specified. Negative values can be considered, meaning an increase in fuel consumption for instance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet</span><span class="o">.</span><span class="n">ui</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "19c92f562bbc459e974a5e34873e6aba", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="compute">
+<h2>Compute<a class="headerlink" href="#compute" title="Permalink to this heading">#</a></h2>
+<p>Once the fleet has been chosen, the user can compute.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">FleetModel</span><span class="p">(</span><span class="n">fleet</span><span class="o">=</span><span class="n">fleet</span><span class="p">,</span> <span class="n">year_parameters</span><span class="o">=</span><span class="n">year_parameters</span><span class="p">)</span>
+<span class="n">fleet_model</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="results-and-plots">
+<h2>Results and plots<a class="headerlink" href="#results-and-plots" title="Permalink to this heading">#</a></h2>
+<p>The user can then display the results.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet_model</span><span class="o">.</span><span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Short Range:SR hydrogen conventional narrow-body:New Short-range hydrogen:single_aircraft_share</th>
+      <th>Short Range:SR regional turboprop:New Regional turboprop 1:single_aircraft_share</th>
+      <th>Short Range:SR regional turboprop:New Regional turboprop 2:single_aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:recent_reference:single_aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:old_reference:single_aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:New Short-range Narrow-body 1:single_aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:New Short-range Narrow-body 2:single_aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:recent_reference:single_aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:old_reference:single_aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:New Medium-range narrow-body 1:single_aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:New Medium-range narrow-body 2:single_aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:recent_reference:single_aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:old_reference:single_aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:New Long-range wide-body 1:single_aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:New Long-range wide-body 2:single_aircraft_share</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:New Short-range hydrogen:aircraft_share</th>
+      <th>Short Range:SR regional turboprop:New Regional turboprop 2:aircraft_share</th>
+      <th>Short Range:SR regional turboprop:New Regional turboprop 1:aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:New Short-range Narrow-body 2:aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:New Short-range Narrow-body 1:aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:recent_reference:aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:old_reference:aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:New Medium-range narrow-body 2:aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:New Medium-range narrow-body 1:aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:recent_reference:aircraft_share</th>
+      <th>Medium Range:MR conventional narrow-body:old_reference:aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:New Long-range wide-body 2:aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:New Long-range wide-body 1:aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:recent_reference:aircraft_share</th>
+      <th>Long Range:LR conventional wide-body:old_reference:aircraft_share</th>
+      <th>Short Range:SR conventional narrow-body:energy_consumption</th>
+      <th>Short Range:SR conventional narrow-body:energy_consumption:dropin_fuel</th>
+      <th>Short Range:SR conventional narrow-body:energy_consumption:hydrogen</th>
+      <th>Short Range:SR conventional narrow-body:share:total</th>
+      <th>Short Range:SR conventional narrow-body:share:dropin_fuel</th>
+      <th>Short Range:SR conventional narrow-body:share:hydrogen</th>
+      <th>Short Range:share:dropin_fuel</th>
+      <th>Short Range:share:hydrogen</th>
+      <th>Short Range:SR regional turboprop:energy_consumption</th>
+      <th>Short Range:SR regional turboprop:energy_consumption:dropin_fuel</th>
+      <th>Short Range:SR regional turboprop:energy_consumption:hydrogen</th>
+      <th>Short Range:SR regional turboprop:share:total</th>
+      <th>Short Range:SR regional turboprop:share:dropin_fuel</th>
+      <th>Short Range:SR regional turboprop:share:hydrogen</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:energy_consumption</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:energy_consumption:dropin_fuel</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:energy_consumption:hydrogen</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:share:total</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:share:dropin_fuel</th>
+      <th>Short Range:SR hydrogen conventional narrow-body:share:hydrogen</th>
+      <th>Short Range:energy_consumption:dropin_fuel</th>
+      <th>Short Range:energy_consumption:hydrogen</th>
+      <th>Short Range:energy_consumption</th>
+      <th>Medium Range:MR conventional narrow-body:energy_consumption</th>
+      <th>Medium Range:MR conventional narrow-body:energy_consumption:dropin_fuel</th>
+      <th>Medium Range:MR conventional narrow-body:energy_consumption:hydrogen</th>
+      <th>Medium Range:MR conventional narrow-body:share:total</th>
+      <th>Medium Range:MR conventional narrow-body:share:dropin_fuel</th>
+      <th>Medium Range:MR conventional narrow-body:share:hydrogen</th>
+      <th>Medium Range:share:dropin_fuel</th>
+      <th>Medium Range:share:hydrogen</th>
+      <th>Medium Range:energy_consumption:dropin_fuel</th>
+      <th>Medium Range:energy_consumption:hydrogen</th>
+      <th>Medium Range:energy_consumption</th>
+      <th>Long Range:LR conventional wide-body:energy_consumption</th>
+      <th>Long Range:LR conventional wide-body:energy_consumption:dropin_fuel</th>
+      <th>Long Range:LR conventional wide-body:energy_consumption:hydrogen</th>
+      <th>Long Range:LR conventional wide-body:share:total</th>
+      <th>Long Range:LR conventional wide-body:share:dropin_fuel</th>
+      <th>Long Range:LR conventional wide-body:share:hydrogen</th>
+      <th>Long Range:share:dropin_fuel</th>
+      <th>Long Range:share:hydrogen</th>
+      <th>Long Range:energy_consumption:dropin_fuel</th>
+      <th>Long Range:energy_consumption:hydrogen</th>
+      <th>Long Range:energy_consumption</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2020</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>52.876766</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>29.166009</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>35.913905</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>52.876766</td>
+      <td>47.123234</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>29.166009</td>
+      <td>70.833991</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>35.913905</td>
+      <td>64.086095</td>
+      <td>1.088927</td>
+      <td>1.088927</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.088927</td>
+      <td>0.000000</td>
+      <td>1.088927</td>
+      <td>0.852613</td>
+      <td>0.852613</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.852613</td>
+      <td>0.0</td>
+      <td>0.852613</td>
+      <td>0.994180</td>
+      <td>0.994180</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.994180</td>
+      <td>0.0</td>
+      <td>0.994180</td>
+    </tr>
+    <tr>
+      <th>2021</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>60.504799</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>35.985595</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>43.345777</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>60.504799</td>
+      <td>39.495201</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>35.985595</td>
+      <td>64.014405</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>43.345777</td>
+      <td>56.654223</td>
+      <td>1.066086</td>
+      <td>1.066086</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.066086</td>
+      <td>0.000000</td>
+      <td>1.066086</td>
+      <td>0.837720</td>
+      <td>0.837720</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.837720</td>
+      <td>0.0</td>
+      <td>0.837720</td>
+      <td>0.974772</td>
+      <td>0.974772</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.974772</td>
+      <td>0.0</td>
+      <td>0.974772</td>
+    </tr>
+    <tr>
+      <th>2022</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>67.653409</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>43.422251</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>51.089537</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>67.653409</td>
+      <td>32.346591</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>43.422251</td>
+      <td>56.577749</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>51.089537</td>
+      <td>48.910463</td>
+      <td>1.044681</td>
+      <td>1.044681</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.044681</td>
+      <td>0.000000</td>
+      <td>1.044681</td>
+      <td>0.821479</td>
+      <td>0.821479</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.821479</td>
+      <td>0.0</td>
+      <td>0.821479</td>
+      <td>0.954548</td>
+      <td>0.954548</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.954548</td>
+      <td>0.0</td>
+      <td>0.954548</td>
+    </tr>
+    <tr>
+      <th>2023</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>74.062792</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>51.167334</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>58.781355</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>74.062792</td>
+      <td>25.937208</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>51.167334</td>
+      <td>48.832666</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>58.781355</td>
+      <td>41.218645</td>
+      <td>1.025489</td>
+      <td>1.025489</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.025489</td>
+      <td>0.000000</td>
+      <td>1.025489</td>
+      <td>0.804566</td>
+      <td>0.804566</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.804566</td>
+      <td>0.0</td>
+      <td>0.804566</td>
+      <td>0.934460</td>
+      <td>0.934460</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.934460</td>
+      <td>0.0</td>
+      <td>0.934460</td>
+    </tr>
+    <tr>
+      <th>2024</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>79.585401</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>58.856770</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>66.066961</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>79.585401</td>
+      <td>20.414599</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>58.856770</td>
+      <td>41.143230</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>66.066961</td>
+      <td>33.933039</td>
+      <td>1.008953</td>
+      <td>1.008953</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.008953</td>
+      <td>0.000000</td>
+      <td>1.008953</td>
+      <td>0.787773</td>
+      <td>0.787773</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.787773</td>
+      <td>0.0</td>
+      <td>0.787773</td>
+      <td>0.915433</td>
+      <td>0.915433</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.915433</td>
+      <td>0.0</td>
+      <td>0.915433</td>
+    </tr>
+    <tr>
+      <th>2025</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>84.183244</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>66.136725</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>72.663676</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>84.183244</td>
+      <td>15.816756</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>66.136725</td>
+      <td>33.863275</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>72.663676</td>
+      <td>27.336324</td>
+      <td>0.995186</td>
+      <td>0.995186</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.995186</td>
+      <td>0.000000</td>
+      <td>0.995186</td>
+      <td>0.771875</td>
+      <td>0.771875</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.771875</td>
+      <td>0.0</td>
+      <td>0.771875</td>
+      <td>0.898205</td>
+      <td>0.898205</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.898205</td>
+      <td>0.0</td>
+      <td>0.898205</td>
+    </tr>
+    <tr>
+      <th>2026</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.902949</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>72.725477</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>78.397295</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.902949</td>
+      <td>12.097051</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>72.725477</td>
+      <td>27.274523</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>78.397295</td>
+      <td>21.602705</td>
+      <td>0.984048</td>
+      <td>0.984048</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.984048</td>
+      <td>0.000000</td>
+      <td>0.984048</td>
+      <td>0.757486</td>
+      <td>0.757486</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.757486</td>
+      <td>0.0</td>
+      <td>0.757486</td>
+      <td>0.883232</td>
+      <td>0.883232</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.883232</td>
+      <td>0.0</td>
+      <td>0.883232</td>
+    </tr>
+    <tr>
+      <th>2027</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>90.843026</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>78.449978</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>83.206262</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>90.843026</td>
+      <td>9.156974</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>78.449978</td>
+      <td>21.550022</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>83.206262</td>
+      <td>16.793738</td>
+      <td>0.975244</td>
+      <td>0.975244</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.975244</td>
+      <td>0.000000</td>
+      <td>0.975244</td>
+      <td>0.744985</td>
+      <td>0.744985</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.744985</td>
+      <td>0.0</td>
+      <td>0.744985</td>
+      <td>0.870672</td>
+      <td>0.870672</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.870672</td>
+      <td>0.0</td>
+      <td>0.870672</td>
+    </tr>
+    <tr>
+      <th>2028</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>93.124436</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>83.249722</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.120576</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>93.124436</td>
+      <td>6.875564</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>83.249722</td>
+      <td>16.750278</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.120576</td>
+      <td>12.879424</td>
+      <td>0.968413</td>
+      <td>0.968413</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.968413</td>
+      <td>0.000000</td>
+      <td>0.968413</td>
+      <td>0.734503</td>
+      <td>0.734503</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.734503</td>
+      <td>0.0</td>
+      <td>0.734503</td>
+      <td>0.860450</td>
+      <td>0.860450</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.860450</td>
+      <td>0.0</td>
+      <td>0.860450</td>
+    </tr>
+    <tr>
+      <th>2029</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.869546</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.155471</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>90.229667</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.869546</td>
+      <td>5.130454</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>87.155471</td>
+      <td>12.844529</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>90.229667</td>
+      <td>9.770333</td>
+      <td>0.963187</td>
+      <td>0.963187</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.963187</td>
+      <td>0.000000</td>
+      <td>0.963187</td>
+      <td>0.725974</td>
+      <td>0.725974</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.725974</td>
+      <td>0.0</td>
+      <td>0.725974</td>
+      <td>0.852330</td>
+      <td>0.852330</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.852330</td>
+      <td>0.0</td>
+      <td>0.852330</td>
+    </tr>
+    <tr>
+      <th>2030</th>
+      <td>0.000000</td>
+      <td>0.600000</td>
+      <td>0.000000</td>
+      <td>96.212707</td>
+      <td>100</td>
+      <td>0.600000</td>
+      <td>0.600000</td>
+      <td>90.257080</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>92.651530</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.600000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>95.612707</td>
+      <td>3.787293</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>90.257080</td>
+      <td>9.742920</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>92.651530</td>
+      <td>7.348470</td>
+      <td>0.953479</td>
+      <td>0.953479</td>
+      <td>0.0</td>
+      <td>99.400000</td>
+      <td>99.400000</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.004550</td>
+      <td>0.004550</td>
+      <td>0.0</td>
+      <td>0.600000</td>
+      <td>0.600000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.958028</td>
+      <td>0.000000</td>
+      <td>0.958028</td>
+      <td>0.719200</td>
+      <td>0.719200</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.719200</td>
+      <td>0.0</td>
+      <td>0.719200</td>
+      <td>0.846005</td>
+      <td>0.846005</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.846005</td>
+      <td>0.0</td>
+      <td>0.846005</td>
+    </tr>
+    <tr>
+      <th>2031</th>
+      <td>0.000000</td>
+      <td>0.813216</td>
+      <td>0.000000</td>
+      <td>97.203399</td>
+      <td>100</td>
+      <td>0.813216</td>
+      <td>0.813216</td>
+      <td>92.672700</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.509593</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.813216</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.390183</td>
+      <td>2.796601</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>92.672700</td>
+      <td>7.327300</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.509593</td>
+      <td>5.490407</td>
+      <td>0.948491</td>
+      <td>0.948491</td>
+      <td>0.0</td>
+      <td>99.186784</td>
+      <td>99.186784</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.006166</td>
+      <td>0.006166</td>
+      <td>0.0</td>
+      <td>0.813216</td>
+      <td>0.813216</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.954657</td>
+      <td>0.000000</td>
+      <td>0.954657</td>
+      <td>0.713925</td>
+      <td>0.713925</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.713925</td>
+      <td>0.0</td>
+      <td>0.713925</td>
+      <td>0.841153</td>
+      <td>0.841153</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.841153</td>
+      <td>0.0</td>
+      <td>0.841153</td>
+    </tr>
+    <tr>
+      <th>2032</th>
+      <td>0.000000</td>
+      <td>1.099367</td>
+      <td>0.000000</td>
+      <td>97.941985</td>
+      <td>100</td>
+      <td>1.099367</td>
+      <td>1.099367</td>
+      <td>94.525726</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>95.918540</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.099367</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.842618</td>
+      <td>2.058015</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.525726</td>
+      <td>5.474274</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>95.918540</td>
+      <td>4.081460</td>
+      <td>0.943567</td>
+      <td>0.943567</td>
+      <td>0.0</td>
+      <td>98.900633</td>
+      <td>98.900633</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.008336</td>
+      <td>0.008336</td>
+      <td>0.0</td>
+      <td>1.099367</td>
+      <td>1.099367</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.951903</td>
+      <td>0.000000</td>
+      <td>0.951903</td>
+      <td>0.709878</td>
+      <td>0.709878</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.709878</td>
+      <td>0.0</td>
+      <td>0.709878</td>
+      <td>0.837473</td>
+      <td>0.837473</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.837473</td>
+      <td>0.0</td>
+      <td>0.837473</td>
+    </tr>
+    <tr>
+      <th>2033</th>
+      <td>0.000000</td>
+      <td>1.481098</td>
+      <td>0.000000</td>
+      <td>98.489997</td>
+      <td>100</td>
+      <td>1.481098</td>
+      <td>1.481098</td>
+      <td>95.930712</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.977487</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.481098</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>97.008899</td>
+      <td>1.510003</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>95.930712</td>
+      <td>4.069288</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.977487</td>
+      <td>3.022513</td>
+      <td>0.938308</td>
+      <td>0.938308</td>
+      <td>0.0</td>
+      <td>98.518902</td>
+      <td>98.518902</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.011231</td>
+      <td>0.011231</td>
+      <td>0.0</td>
+      <td>1.481098</td>
+      <td>1.481098</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.949539</td>
+      <td>0.000000</td>
+      <td>0.949539</td>
+      <td>0.706810</td>
+      <td>0.706810</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.706810</td>
+      <td>0.0</td>
+      <td>0.706810</td>
+      <td>0.834708</td>
+      <td>0.834708</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.834708</td>
+      <td>0.0</td>
+      <td>0.834708</td>
+    </tr>
+    <tr>
+      <th>2034</th>
+      <td>0.000000</td>
+      <td>1.986267</td>
+      <td>0.000000</td>
+      <td>98.895123</td>
+      <td>100</td>
+      <td>1.986267</td>
+      <td>1.986267</td>
+      <td>96.986600</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>97.768080</td>
+      <td>100</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.986267</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.908856</td>
+      <td>1.104877</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>96.986600</td>
+      <td>3.013400</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>97.768080</td>
+      <td>2.231920</td>
+      <td>0.932307</td>
+      <td>0.932307</td>
+      <td>0.0</td>
+      <td>98.013733</td>
+      <td>98.013733</td>
+      <td>0.0</td>
+      <td>100.000000</td>
+      <td>0.000000</td>
+      <td>0.015061</td>
+      <td>0.015061</td>
+      <td>0.0</td>
+      <td>1.986267</td>
+      <td>1.986267</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.947368</td>
+      <td>0.000000</td>
+      <td>0.947368</td>
+      <td>0.704504</td>
+      <td>0.704504</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.704504</td>
+      <td>0.0</td>
+      <td>0.704504</td>
+      <td>0.832643</td>
+      <td>0.832643</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.832643</td>
+      <td>0.0</td>
+      <td>0.832643</td>
+    </tr>
+    <tr>
+      <th>2035</th>
+      <td>1.000000</td>
+      <td>3.647741</td>
+      <td>1.000000</td>
+      <td>99.202033</td>
+      <td>100</td>
+      <td>5.574786</td>
+      <td>3.647741</td>
+      <td>97.774864</td>
+      <td>100</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>98.355386</td>
+      <td>100</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>2.647741</td>
+      <td>0.000000</td>
+      <td>1.927045</td>
+      <td>93.627246</td>
+      <td>0.797967</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+      <td>95.774864</td>
+      <td>2.225136</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+      <td>96.355386</td>
+      <td>1.644614</td>
+      <td>0.912901</td>
+      <td>0.912901</td>
+      <td>0.0</td>
+      <td>96.352259</td>
+      <td>96.352259</td>
+      <td>0.0</td>
+      <td>99.000000</td>
+      <td>1.000000</td>
+      <td>0.020077</td>
+      <td>0.020077</td>
+      <td>0.0</td>
+      <td>2.647741</td>
+      <td>2.647741</td>
+      <td>0.0</td>
+      <td>0.010426</td>
+      <td>0.0</td>
+      <td>0.010426</td>
+      <td>1.000000</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>0.942401</td>
+      <td>1.042608</td>
+      <td>0.943403</td>
+      <td>0.700689</td>
+      <td>0.700689</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.700689</td>
+      <td>0.0</td>
+      <td>0.700689</td>
+      <td>0.828629</td>
+      <td>0.828629</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.828629</td>
+      <td>0.0</td>
+      <td>0.828629</td>
+    </tr>
+    <tr>
+      <th>2036</th>
+      <td>1.355360</td>
+      <td>4.857324</td>
+      <td>1.355360</td>
+      <td>99.421576</td>
+      <td>100</td>
+      <td>7.436375</td>
+      <td>4.857324</td>
+      <td>98.360414</td>
+      <td>100</td>
+      <td>2.710720</td>
+      <td>0.000000</td>
+      <td>98.790061</td>
+      <td>100</td>
+      <td>2.710720</td>
+      <td>0.000000</td>
+      <td>1.355360</td>
+      <td>0.000000</td>
+      <td>3.501964</td>
+      <td>0.000000</td>
+      <td>2.579051</td>
+      <td>91.985201</td>
+      <td>0.578424</td>
+      <td>0.000000</td>
+      <td>2.710720</td>
+      <td>95.649695</td>
+      <td>1.639586</td>
+      <td>0.000000</td>
+      <td>2.710720</td>
+      <td>96.079341</td>
+      <td>1.209939</td>
+      <td>0.899851</td>
+      <td>0.899851</td>
+      <td>0.0</td>
+      <td>95.142676</td>
+      <td>95.142676</td>
+      <td>0.0</td>
+      <td>98.644640</td>
+      <td>1.355360</td>
+      <td>0.026554</td>
+      <td>0.026554</td>
+      <td>0.0</td>
+      <td>3.501964</td>
+      <td>3.501964</td>
+      <td>0.0</td>
+      <td>0.014131</td>
+      <td>0.0</td>
+      <td>0.014131</td>
+      <td>1.355360</td>
+      <td>0.0</td>
+      <td>1.355360</td>
+      <td>0.939134</td>
+      <td>1.042608</td>
+      <td>0.940537</td>
+      <td>0.698666</td>
+      <td>0.698666</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.698666</td>
+      <td>0.0</td>
+      <td>0.698666</td>
+      <td>0.826612</td>
+      <td>0.826612</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.826612</td>
+      <td>0.0</td>
+      <td>0.826612</td>
+    </tr>
+    <tr>
+      <th>2037</th>
+      <td>1.832278</td>
+      <td>6.417855</td>
+      <td>1.832278</td>
+      <td>99.582597</td>
+      <td>100</td>
+      <td>9.847225</td>
+      <td>6.417855</td>
+      <td>98.793777</td>
+      <td>100</td>
+      <td>3.664556</td>
+      <td>0.000000</td>
+      <td>99.110889</td>
+      <td>100</td>
+      <td>3.664556</td>
+      <td>0.000000</td>
+      <td>1.832278</td>
+      <td>0.000000</td>
+      <td>4.585577</td>
+      <td>0.000000</td>
+      <td>3.429370</td>
+      <td>89.735372</td>
+      <td>0.417403</td>
+      <td>0.000000</td>
+      <td>3.664556</td>
+      <td>95.129221</td>
+      <td>1.206223</td>
+      <td>0.000000</td>
+      <td>3.664556</td>
+      <td>95.446333</td>
+      <td>0.889111</td>
+      <td>0.883369</td>
+      <td>0.883369</td>
+      <td>0.0</td>
+      <td>93.582145</td>
+      <td>93.582145</td>
+      <td>0.0</td>
+      <td>98.167722</td>
+      <td>1.832278</td>
+      <td>0.034771</td>
+      <td>0.034771</td>
+      <td>0.0</td>
+      <td>4.585577</td>
+      <td>4.585577</td>
+      <td>0.0</td>
+      <td>0.019103</td>
+      <td>0.0</td>
+      <td>0.019103</td>
+      <td>1.832278</td>
+      <td>0.0</td>
+      <td>1.832278</td>
+      <td>0.935277</td>
+      <td>1.042608</td>
+      <td>0.937243</td>
+      <td>0.696721</td>
+      <td>0.696721</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.696721</td>
+      <td>0.0</td>
+      <td>0.696721</td>
+      <td>0.824591</td>
+      <td>0.824591</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.824591</td>
+      <td>0.0</td>
+      <td>0.824591</td>
+    </tr>
+    <tr>
+      <th>2038</th>
+      <td>2.468497</td>
+      <td>8.397958</td>
+      <td>2.468497</td>
+      <td>99.700380</td>
+      <td>100</td>
+      <td>12.920344</td>
+      <td>8.397958</td>
+      <td>99.113629</td>
+      <td>100</td>
+      <td>4.936993</td>
+      <td>0.000000</td>
+      <td>99.347209</td>
+      <td>100</td>
+      <td>4.936993</td>
+      <td>0.000000</td>
+      <td>2.468497</td>
+      <td>0.000000</td>
+      <td>5.929461</td>
+      <td>0.000000</td>
+      <td>4.522387</td>
+      <td>86.780036</td>
+      <td>0.299620</td>
+      <td>0.000000</td>
+      <td>4.936993</td>
+      <td>94.176635</td>
+      <td>0.886371</td>
+      <td>0.000000</td>
+      <td>4.936993</td>
+      <td>94.410215</td>
+      <td>0.652791</td>
+      <td>0.862695</td>
+      <td>0.862695</td>
+      <td>0.0</td>
+      <td>91.602042</td>
+      <td>91.602042</td>
+      <td>0.0</td>
+      <td>97.531503</td>
+      <td>2.468497</td>
+      <td>0.044961</td>
+      <td>0.044961</td>
+      <td>0.0</td>
+      <td>5.929461</td>
+      <td>5.929461</td>
+      <td>0.0</td>
+      <td>0.025737</td>
+      <td>0.0</td>
+      <td>0.025737</td>
+      <td>2.468497</td>
+      <td>0.0</td>
+      <td>2.468497</td>
+      <td>0.930628</td>
+      <td>1.042608</td>
+      <td>0.933392</td>
+      <td>0.694691</td>
+      <td>0.694691</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.694691</td>
+      <td>0.0</td>
+      <td>0.694691</td>
+      <td>0.822396</td>
+      <td>0.822396</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.822396</td>
+      <td>0.0</td>
+      <td>0.822396</td>
+    </tr>
+    <tr>
+      <th>2039</th>
+      <td>3.310445</td>
+      <td>10.860634</td>
+      <td>3.310445</td>
+      <td>99.786253</td>
+      <td>100</td>
+      <td>16.762453</td>
+      <td>10.860634</td>
+      <td>99.349225</td>
+      <td>100</td>
+      <td>6.620890</td>
+      <td>0.000000</td>
+      <td>99.521019</td>
+      <td>100</td>
+      <td>6.620890</td>
+      <td>0.000000</td>
+      <td>3.310445</td>
+      <td>0.000000</td>
+      <td>7.550189</td>
+      <td>0.000000</td>
+      <td>5.901820</td>
+      <td>83.023800</td>
+      <td>0.213747</td>
+      <td>0.000000</td>
+      <td>6.620890</td>
+      <td>92.728334</td>
+      <td>0.650775</td>
+      <td>0.000000</td>
+      <td>6.620890</td>
+      <td>92.900129</td>
+      <td>0.478981</td>
+      <td>0.837135</td>
+      <td>0.837135</td>
+      <td>0.0</td>
+      <td>89.139366</td>
+      <td>89.139366</td>
+      <td>0.0</td>
+      <td>96.689555</td>
+      <td>3.310445</td>
+      <td>0.057250</td>
+      <td>0.057250</td>
+      <td>0.0</td>
+      <td>7.550189</td>
+      <td>7.550189</td>
+      <td>0.0</td>
+      <td>0.034515</td>
+      <td>0.0</td>
+      <td>0.034515</td>
+      <td>3.310445</td>
+      <td>0.0</td>
+      <td>3.310445</td>
+      <td>0.925006</td>
+      <td>1.042608</td>
+      <td>0.928900</td>
+      <td>0.692413</td>
+      <td>0.692413</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.692413</td>
+      <td>0.0</td>
+      <td>0.692413</td>
+      <td>0.819854</td>
+      <td>0.819854</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.819854</td>
+      <td>0.0</td>
+      <td>0.819854</td>
+    </tr>
+    <tr>
+      <th>2040</th>
+      <td>4.412902</td>
+      <td>13.853079</td>
+      <td>4.412902</td>
+      <td>99.848598</td>
+      <td>100</td>
+      <td>21.456238</td>
+      <td>13.853079</td>
+      <td>99.522501</td>
+      <td>100</td>
+      <td>8.825804</td>
+      <td>0.000000</td>
+      <td>99.648715</td>
+      <td>100</td>
+      <td>8.825804</td>
+      <td>0.000000</td>
+      <td>4.412902</td>
+      <td>0.000000</td>
+      <td>9.440177</td>
+      <td>0.000000</td>
+      <td>7.603159</td>
+      <td>78.392360</td>
+      <td>0.151402</td>
+      <td>0.000000</td>
+      <td>8.825804</td>
+      <td>90.696697</td>
+      <td>0.477499</td>
+      <td>0.000000</td>
+      <td>8.825804</td>
+      <td>90.822911</td>
+      <td>0.351285</td>
+      <td>0.806166</td>
+      <td>0.806166</td>
+      <td>0.0</td>
+      <td>86.146921</td>
+      <td>86.146921</td>
+      <td>0.0</td>
+      <td>95.587098</td>
+      <td>4.412902</td>
+      <td>0.071581</td>
+      <td>0.071581</td>
+      <td>0.0</td>
+      <td>9.440177</td>
+      <td>9.440177</td>
+      <td>0.0</td>
+      <td>0.046009</td>
+      <td>0.0</td>
+      <td>0.046009</td>
+      <td>4.412902</td>
+      <td>0.0</td>
+      <td>4.412902</td>
+      <td>0.918269</td>
+      <td>1.042608</td>
+      <td>0.923756</td>
+      <td>0.689727</td>
+      <td>0.689727</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.689727</td>
+      <td>0.0</td>
+      <td>0.689727</td>
+      <td>0.816786</td>
+      <td>0.816786</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.816786</td>
+      <td>0.0</td>
+      <td>0.816786</td>
+    </tr>
+    <tr>
+      <th>2041</th>
+      <td>5.836607</td>
+      <td>17.396273</td>
+      <td>5.836607</td>
+      <td>99.893615</td>
+      <td>100</td>
+      <td>27.038783</td>
+      <td>17.396273</td>
+      <td>99.649804</td>
+      <td>100</td>
+      <td>11.673214</td>
+      <td>0.000000</td>
+      <td>99.742456</td>
+      <td>100</td>
+      <td>11.673214</td>
+      <td>0.000000</td>
+      <td>5.836607</td>
+      <td>0.000000</td>
+      <td>11.559665</td>
+      <td>0.000000</td>
+      <td>9.642510</td>
+      <td>72.854832</td>
+      <td>0.106385</td>
+      <td>0.000000</td>
+      <td>11.673214</td>
+      <td>87.976589</td>
+      <td>0.350196</td>
+      <td>0.000000</td>
+      <td>11.673214</td>
+      <td>88.069241</td>
+      <td>0.257544</td>
+      <td>0.769548</td>
+      <td>0.769548</td>
+      <td>0.0</td>
+      <td>82.603727</td>
+      <td>82.603727</td>
+      <td>0.0</td>
+      <td>94.163393</td>
+      <td>5.836607</td>
+      <td>0.087652</td>
+      <td>0.087652</td>
+      <td>0.0</td>
+      <td>11.559665</td>
+      <td>11.559665</td>
+      <td>0.0</td>
+      <td>0.060853</td>
+      <td>0.0</td>
+      <td>0.060853</td>
+      <td>5.836607</td>
+      <td>0.0</td>
+      <td>5.836607</td>
+      <td>0.910333</td>
+      <td>1.042608</td>
+      <td>0.918054</td>
+      <td>0.686468</td>
+      <td>0.686468</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.686468</td>
+      <td>0.0</td>
+      <td>0.686468</td>
+      <td>0.813009</td>
+      <td>0.813009</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.813009</td>
+      <td>0.0</td>
+      <td>0.813009</td>
+    </tr>
+    <tr>
+      <th>2042</th>
+      <td>7.642628</td>
+      <td>21.477434</td>
+      <td>7.642628</td>
+      <td>99.925901</td>
+      <td>100</td>
+      <td>33.479810</td>
+      <td>21.477434</td>
+      <td>99.743254</td>
+      <td>100</td>
+      <td>15.285256</td>
+      <td>0.000000</td>
+      <td>99.811229</td>
+      <td>100</td>
+      <td>15.285256</td>
+      <td>0.000000</td>
+      <td>7.642628</td>
+      <td>0.000000</td>
+      <td>13.834806</td>
+      <td>0.000000</td>
+      <td>12.002375</td>
+      <td>66.446092</td>
+      <td>0.074099</td>
+      <td>0.000000</td>
+      <td>15.285256</td>
+      <td>84.457998</td>
+      <td>0.256746</td>
+      <td>0.000000</td>
+      <td>15.285256</td>
+      <td>84.525973</td>
+      <td>0.188771</td>
+      <td>0.727414</td>
+      <td>0.727414</td>
+      <td>0.0</td>
+      <td>78.522566</td>
+      <td>78.522566</td>
+      <td>0.0</td>
+      <td>92.357372</td>
+      <td>7.642628</td>
+      <td>0.104904</td>
+      <td>0.104904</td>
+      <td>0.0</td>
+      <td>13.834806</td>
+      <td>13.834806</td>
+      <td>0.0</td>
+      <td>0.079683</td>
+      <td>0.0</td>
+      <td>0.079683</td>
+      <td>7.642628</td>
+      <td>0.0</td>
+      <td>7.642628</td>
+      <td>0.901193</td>
+      <td>1.042608</td>
+      <td>0.912001</td>
+      <td>0.682482</td>
+      <td>0.682482</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.682482</td>
+      <td>0.0</td>
+      <td>0.682482</td>
+      <td>0.808350</td>
+      <td>0.808350</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.808350</td>
+      <td>0.0</td>
+      <td>0.808350</td>
+    </tr>
+    <tr>
+      <th>2043</th>
+      <td>9.882435</td>
+      <td>26.047629</td>
+      <td>9.882435</td>
+      <td>99.948872</td>
+      <td>100</td>
+      <td>40.664219</td>
+      <td>26.047629</td>
+      <td>99.811815</td>
+      <td>100</td>
+      <td>19.764870</td>
+      <td>0.000000</td>
+      <td>99.861663</td>
+      <td>100</td>
+      <td>19.764870</td>
+      <td>0.000000</td>
+      <td>9.882435</td>
+      <td>0.000000</td>
+      <td>16.165194</td>
+      <td>0.000000</td>
+      <td>14.616590</td>
+      <td>59.284652</td>
+      <td>0.051128</td>
+      <td>0.000000</td>
+      <td>19.764870</td>
+      <td>80.046944</td>
+      <td>0.188185</td>
+      <td>0.000000</td>
+      <td>19.764870</td>
+      <td>80.096792</td>
+      <td>0.138337</td>
+      <td>0.680311</td>
+      <td>0.680311</td>
+      <td>0.0</td>
+      <td>73.952371</td>
+      <td>73.952371</td>
+      <td>0.0</td>
+      <td>90.117565</td>
+      <td>9.882435</td>
+      <td>0.122574</td>
+      <td>0.122574</td>
+      <td>0.0</td>
+      <td>16.165194</td>
+      <td>16.165194</td>
+      <td>0.0</td>
+      <td>0.103035</td>
+      <td>0.0</td>
+      <td>0.103035</td>
+      <td>9.882435</td>
+      <td>0.0</td>
+      <td>9.882435</td>
+      <td>0.890931</td>
+      <td>1.042608</td>
+      <td>0.905921</td>
+      <td>0.677643</td>
+      <td>0.677643</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.677643</td>
+      <td>0.0</td>
+      <td>0.677643</td>
+      <td>0.802663</td>
+      <td>0.802663</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.802663</td>
+      <td>0.0</td>
+      <td>0.802663</td>
+    </tr>
+    <tr>
+      <th>2044</th>
+      <td>12.583648</td>
+      <td>31.023982</td>
+      <td>12.583648</td>
+      <td>99.965064</td>
+      <td>100</td>
+      <td>48.383380</td>
+      <td>31.023982</td>
+      <td>99.862092</td>
+      <td>100</td>
+      <td>25.167295</td>
+      <td>0.000000</td>
+      <td>99.898636</td>
+      <td>100</td>
+      <td>25.167295</td>
+      <td>0.000000</td>
+      <td>12.583648</td>
+      <td>0.000000</td>
+      <td>18.440335</td>
+      <td>0.000000</td>
+      <td>17.359398</td>
+      <td>51.581684</td>
+      <td>0.034936</td>
+      <td>0.000000</td>
+      <td>25.167295</td>
+      <td>74.694797</td>
+      <td>0.137908</td>
+      <td>0.000000</td>
+      <td>25.167295</td>
+      <td>74.731341</td>
+      <td>0.101364</td>
+      <td>0.629196</td>
+      <td>0.629196</td>
+      <td>0.0</td>
+      <td>68.976018</td>
+      <td>68.976018</td>
+      <td>0.0</td>
+      <td>87.416352</td>
+      <td>12.583648</td>
+      <td>0.139826</td>
+      <td>0.139826</td>
+      <td>0.0</td>
+      <td>18.440335</td>
+      <td>18.440335</td>
+      <td>0.0</td>
+      <td>0.131198</td>
+      <td>0.0</td>
+      <td>0.131198</td>
+      <td>12.583648</td>
+      <td>0.0</td>
+      <td>12.583648</td>
+      <td>0.879723</td>
+      <td>1.042608</td>
+      <td>0.900220</td>
+      <td>0.671877</td>
+      <td>0.671877</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.671877</td>
+      <td>0.0</td>
+      <td>0.671877</td>
+      <td>0.795866</td>
+      <td>0.795866</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.795866</td>
+      <td>0.0</td>
+      <td>0.795866</td>
+    </tr>
+    <tr>
+      <th>2045</th>
+      <td>15.733629</td>
+      <td>36.293452</td>
+      <td>16.333629</td>
+      <td>99.976363</td>
+      <td>100</td>
+      <td>56.340155</td>
+      <td>37.567582</td>
+      <td>99.898951</td>
+      <td>100</td>
+      <td>31.467258</td>
+      <td>2.000000</td>
+      <td>99.925735</td>
+      <td>100</td>
+      <td>31.467258</td>
+      <td>2.000000</td>
+      <td>15.733629</td>
+      <td>0.600000</td>
+      <td>19.959823</td>
+      <td>1.274131</td>
+      <td>18.772573</td>
+      <td>43.636207</td>
+      <td>0.023637</td>
+      <td>2.000000</td>
+      <td>29.467258</td>
+      <td>68.431693</td>
+      <td>0.101049</td>
+      <td>2.000000</td>
+      <td>29.467258</td>
+      <td>68.458477</td>
+      <td>0.074265</td>
+      <td>0.573585</td>
+      <td>0.573585</td>
+      <td>0.0</td>
+      <td>63.706548</td>
+      <td>63.706548</td>
+      <td>0.0</td>
+      <td>84.266371</td>
+      <td>15.733629</td>
+      <td>0.155044</td>
+      <td>0.155044</td>
+      <td>0.0</td>
+      <td>20.559823</td>
+      <td>20.559823</td>
+      <td>0.0</td>
+      <td>0.164040</td>
+      <td>0.0</td>
+      <td>0.164040</td>
+      <td>15.733629</td>
+      <td>0.0</td>
+      <td>15.733629</td>
+      <td>0.864673</td>
+      <td>1.042608</td>
+      <td>0.892669</td>
+      <td>0.663108</td>
+      <td>0.663108</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.663108</td>
+      <td>0.0</td>
+      <td>0.663108</td>
+      <td>0.785501</td>
+      <td>0.785501</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.785501</td>
+      <td>0.0</td>
+      <td>0.785501</td>
+    </tr>
+    <tr>
+      <th>2046</th>
+      <td>19.266109</td>
+      <td>41.715921</td>
+      <td>20.079325</td>
+      <td>99.984159</td>
+      <td>100</td>
+      <td>64.174069</td>
+      <td>43.295839</td>
+      <td>99.925965</td>
+      <td>100</td>
+      <td>38.532218</td>
+      <td>2.710720</td>
+      <td>99.945593</td>
+      <td>100</td>
+      <td>38.532218</td>
+      <td>2.710720</td>
+      <td>19.266109</td>
+      <td>0.813216</td>
+      <td>21.636596</td>
+      <td>1.579918</td>
+      <td>20.878231</td>
+      <td>35.810089</td>
+      <td>0.015841</td>
+      <td>2.710720</td>
+      <td>35.821499</td>
+      <td>61.393747</td>
+      <td>0.074035</td>
+      <td>2.710720</td>
+      <td>35.821499</td>
+      <td>61.413375</td>
+      <td>0.054407</td>
+      <td>0.518303</td>
+      <td>0.518303</td>
+      <td>0.0</td>
+      <td>58.284079</td>
+      <td>58.284079</td>
+      <td>0.0</td>
+      <td>80.733891</td>
+      <td>19.266109</td>
+      <td>0.169072</td>
+      <td>0.169072</td>
+      <td>0.0</td>
+      <td>22.449811</td>
+      <td>22.449811</td>
+      <td>0.0</td>
+      <td>0.200870</td>
+      <td>0.0</td>
+      <td>0.200870</td>
+      <td>19.266109</td>
+      <td>0.0</td>
+      <td>19.266109</td>
+      <td>0.851408</td>
+      <td>1.042608</td>
+      <td>0.888244</td>
+      <td>0.654909</td>
+      <td>0.654909</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.654909</td>
+      <td>0.0</td>
+      <td>0.654909</td>
+      <td>0.775806</td>
+      <td>0.775806</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.775806</td>
+      <td>0.0</td>
+      <td>0.775806</td>
+    </tr>
+    <tr>
+      <th>2047</th>
+      <td>23.058010</td>
+      <td>47.128549</td>
+      <td>24.157377</td>
+      <td>99.989474</td>
+      <td>100</td>
+      <td>71.510758</td>
+      <td>49.066053</td>
+      <td>99.945762</td>
+      <td>100</td>
+      <td>46.116020</td>
+      <td>3.664556</td>
+      <td>99.960143</td>
+      <td>100</td>
+      <td>46.116020</td>
+      <td>3.664556</td>
+      <td>23.058010</td>
+      <td>1.099367</td>
+      <td>22.971172</td>
+      <td>1.937504</td>
+      <td>22.444705</td>
+      <td>28.478716</td>
+      <td>0.010526</td>
+      <td>3.664556</td>
+      <td>42.451464</td>
+      <td>53.829742</td>
+      <td>0.054238</td>
+      <td>3.664556</td>
+      <td>42.451464</td>
+      <td>53.844123</td>
+      <td>0.039857</td>
+      <td>0.463741</td>
+      <td>0.463741</td>
+      <td>0.0</td>
+      <td>52.871451</td>
+      <td>52.871451</td>
+      <td>0.0</td>
+      <td>76.941990</td>
+      <td>23.058010</td>
+      <td>0.180954</td>
+      <td>0.180954</td>
+      <td>0.0</td>
+      <td>24.070539</td>
+      <td>24.070539</td>
+      <td>0.0</td>
+      <td>0.240405</td>
+      <td>0.0</td>
+      <td>0.240405</td>
+      <td>23.058010</td>
+      <td>0.0</td>
+      <td>23.058010</td>
+      <td>0.837897</td>
+      <td>1.042608</td>
+      <td>0.885100</td>
+      <td>0.645927</td>
+      <td>0.645927</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.645927</td>
+      <td>0.0</td>
+      <td>0.645927</td>
+      <td>0.765179</td>
+      <td>0.765179</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.765179</td>
+      <td>0.0</td>
+      <td>0.765179</td>
+    </tr>
+    <tr>
+      <th>2048</th>
+      <td>26.941990</td>
+      <td>52.356413</td>
+      <td>28.423088</td>
+      <td>99.993052</td>
+      <td>100</td>
+      <td>78.028674</td>
+      <td>54.708574</td>
+      <td>99.960267</td>
+      <td>100</td>
+      <td>53.883980</td>
+      <td>4.936993</td>
+      <td>99.970803</td>
+      <td>100</td>
+      <td>53.883980</td>
+      <td>4.936993</td>
+      <td>26.941990</td>
+      <td>1.481098</td>
+      <td>23.933325</td>
+      <td>2.352161</td>
+      <td>23.320100</td>
+      <td>21.964378</td>
+      <td>0.006948</td>
+      <td>4.936993</td>
+      <td>48.946987</td>
+      <td>46.076287</td>
+      <td>0.039733</td>
+      <td>4.936993</td>
+      <td>48.946987</td>
+      <td>46.086823</td>
+      <td>0.029197</td>
+      <td>0.411755</td>
+      <td>0.411755</td>
+      <td>0.0</td>
+      <td>47.643587</td>
+      <td>47.643587</td>
+      <td>0.0</td>
+      <td>73.058010</td>
+      <td>26.941990</td>
+      <td>0.190602</td>
+      <td>0.190602</td>
+      <td>0.0</td>
+      <td>25.414423</td>
+      <td>25.414423</td>
+      <td>0.0</td>
+      <td>0.280899</td>
+      <td>0.0</td>
+      <td>0.280899</td>
+      <td>26.941990</td>
+      <td>0.0</td>
+      <td>26.941990</td>
+      <td>0.824491</td>
+      <td>1.042608</td>
+      <td>0.883256</td>
+      <td>0.636431</td>
+      <td>0.636431</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.636431</td>
+      <td>0.0</td>
+      <td>0.636431</td>
+      <td>0.753939</td>
+      <td>0.753939</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.753939</td>
+      <td>0.0</td>
+      <td>0.753939</td>
+    </tr>
+    <tr>
+      <th>2049</th>
+      <td>30.733891</td>
+      <td>57.231927</td>
+      <td>32.720158</td>
+      <td>99.995431</td>
+      <td>100</td>
+      <td>83.520513</td>
+      <td>60.063554</td>
+      <td>99.970894</td>
+      <td>100</td>
+      <td>61.467782</td>
+      <td>6.620890</td>
+      <td>99.978613</td>
+      <td>100</td>
+      <td>61.467782</td>
+      <td>6.620890</td>
+      <td>30.733891</td>
+      <td>1.986267</td>
+      <td>24.511769</td>
+      <td>2.831627</td>
+      <td>23.456959</td>
+      <td>16.474919</td>
+      <td>0.004569</td>
+      <td>6.620890</td>
+      <td>54.846891</td>
+      <td>38.503112</td>
+      <td>0.029106</td>
+      <td>6.620890</td>
+      <td>54.846891</td>
+      <td>38.510831</td>
+      <td>0.021387</td>
+      <td>0.363979</td>
+      <td>0.363979</td>
+      <td>0.0</td>
+      <td>42.768073</td>
+      <td>42.768073</td>
+      <td>0.0</td>
+      <td>69.266109</td>
+      <td>30.733891</td>
+      <td>0.198100</td>
+      <td>0.198100</td>
+      <td>0.0</td>
+      <td>26.498036</td>
+      <td>26.498036</td>
+      <td>0.0</td>
+      <td>0.320434</td>
+      <td>0.0</td>
+      <td>0.320434</td>
+      <td>30.733891</td>
+      <td>0.0</td>
+      <td>30.733891</td>
+      <td>0.811478</td>
+      <td>1.042608</td>
+      <td>0.882513</td>
+      <td>0.626706</td>
+      <td>0.626706</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.626706</td>
+      <td>0.0</td>
+      <td>0.626706</td>
+      <td>0.742425</td>
+      <td>0.742425</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.742425</td>
+      <td>0.0</td>
+      <td>0.742425</td>
+    </tr>
+    <tr>
+      <th>2050</th>
+      <td>34.266371</td>
+      <td>61.618630</td>
+      <td>36.914113</td>
+      <td>99.996997</td>
+      <td>100</td>
+      <td>87.922435</td>
+      <td>65.006095</td>
+      <td>99.978679</td>
+      <td>100</td>
+      <td>68.532742</td>
+      <td>8.825804</td>
+      <td>99.984334</td>
+      <td>100</td>
+      <td>68.532742</td>
+      <td>8.825804</td>
+      <td>34.266371</td>
+      <td>2.647741</td>
+      <td>24.704517</td>
+      <td>3.387465</td>
+      <td>22.916341</td>
+      <td>12.074561</td>
+      <td>0.003003</td>
+      <td>8.825804</td>
+      <td>59.706938</td>
+      <td>31.445937</td>
+      <td>0.021321</td>
+      <td>8.825804</td>
+      <td>59.706938</td>
+      <td>31.451591</td>
+      <td>0.015666</td>
+      <td>0.321584</td>
+      <td>0.321584</td>
+      <td>0.0</td>
+      <td>38.381370</td>
+      <td>38.381370</td>
+      <td>0.0</td>
+      <td>65.733629</td>
+      <td>34.266371</td>
+      <td>0.203637</td>
+      <td>0.203637</td>
+      <td>0.0</td>
+      <td>27.352259</td>
+      <td>27.352259</td>
+      <td>0.0</td>
+      <td>0.357264</td>
+      <td>0.0</td>
+      <td>0.357264</td>
+      <td>34.266371</td>
+      <td>0.0</td>
+      <td>34.266371</td>
+      <td>0.799014</td>
+      <td>1.042608</td>
+      <td>0.882485</td>
+      <td>0.616985</td>
+      <td>0.616985</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.616985</td>
+      <td>0.0</td>
+      <td>0.616985</td>
+      <td>0.730913</td>
+      <td>0.730913</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>100.0</td>
+      <td>0.0</td>
+      <td>0.730913</td>
+      <td>0.0</td>
+      <td>0.730913</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>More simply, the user can plot fleet renewal and its impact on energy consumption per ASK for each category.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet_model</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/853f926d656ab48671b0a7dd172c66eec9ee2c54e0a6094c375afce5afbe5373.png" src="../_images/853f926d656ab48671b0a7dd172c66eec9ee2c54e0a6094c375afce5afbe5373.png" />
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<section id="link-with-other-aeromaps-models">
+<h2>Link with other AeroMAPS models<a class="headerlink" href="#link-with-other-aeromaps-models" title="Permalink to this heading">#</a></h2>
+<p>This fleet model can be used in AeroMAPS. For this purpose, a dedicated model, based on the bottom-up approach using fleet model, is loaded. It replaces the basic top-down approach for modeling the evolution of the fleet efficiency, based on annual efficiency gains.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_complex</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here, an example using the previous fleet generated is performed with the AeroMAPS default float inputs. The hydrogen used for hydrogen aircraft is assumed to be produced via electrolysis using dedicated low-carbon electricity.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span><span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\core\process.py:262: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data[&quot;Type&quot;] = data_type
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Hydrogen production</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_2020</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_2030</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_2040</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_2050</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1"># Electricity emission factor</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_2020</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_2030</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_2040</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_2050</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\core\process.py:262: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data[&quot;Type&quot;] = data_type
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x1f3a9466610&gt;
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d125385b020d4ad5b99b3fb91e20d16e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
 </section>
@@ -457,10 +3139,19 @@ See the YAML at the top of this page for example.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-cell">An example cell</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-notebook-with-myst-markdown">Create a notebook with MyST Markdown</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quickly-add-yaml-metadata-for-myst-notebooks">Quickly add YAML metadata for MyST Notebooks</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Fleet modeling</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-fleet">Set up the fleet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results-and-plots">Results and plots</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#link-with-other-aeromaps-models">Link with other AeroMAPS models</a></li>
+</ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>

@@ -1,0 +1,64 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
+    AircraftParameters,
+    SubcategoryParameters,
+    CategoryParameters,
+    Aircraft,
+    SubCategory,
+    Category,
+    Fleet,
+    FleetModel,
+)
+
+from aeromaps.models.parameters import YearParameters
+
+year_parameters = YearParameters(
+    historic_start_year=2020, prospection_start_year=2020, end_year=2050
+)
+
+from aeromaps.models.air_transport.constants import EnergyTypes
+
+import pandas as pd
+
+pd.set_option("display.max_rows", 500)
+pd.set_option("display.max_columns", 500)
+pd.set_option("display.width", 1000)
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[1], line 1[0m
+[0;32m----> 1[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m[38;5;21;01m.[39;00m[38;5;21;01mair_transport[39;00m[38;5;21;01m.[39;00m[38;5;21;01maircraft_fleet_and_operations[39;00m[38;5;21;01m.[39;00m[38;5;21;01mfleet[39;00m[38;5;21;01m.[39;00m[38;5;21;01mfleet_model[39;00m [38;5;28;01mimport[39;00m (
+[1;32m      2[0m     AircraftParameters,
+[1;32m      3[0m     SubcategoryParameters,
+[1;32m      4[0m     CategoryParameters,
+[1;32m      5[0m     Aircraft,
+[1;32m      6[0m     SubCategory,
+[1;32m      7[0m     Category,
+[1;32m      8[0m     Fleet,
+[1;32m      9[0m     FleetModel,
+[1;32m     10[0m )
+[1;32m     12[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m[38;5;21;01m.[39;00m[38;5;21;01mparameters[39;00m [38;5;28;01mimport[39;00m YearParameters
+[1;32m     14[0m year_parameters [38;5;241m=[39m YearParameters(
+[1;32m     15[0m     historic_start_year[38;5;241m=[39m[38;5;241m2020[39m, prospection_start_year[38;5;241m=[39m[38;5;241m2020[39m, end_year[38;5;241m=[39m[38;5;241m2050[39m
+[1;32m     16[0m )
+
+[0;31mModuleNotFoundError[0m: No module named 'aeromaps'
+
