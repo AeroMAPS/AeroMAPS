@@ -8,13 +8,19 @@ pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
 
-from aeromaps.core.gemseo import AeromapsModelWrapper
-from aeromaps.core.models import models_simple
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
+
+
+from aeromaps.core.gemseo import AeromapsModelWrapper
+from aeromaps.core.models import models_simple, year_parameters
 from aeromaps.models.parameters import all_parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
+    Fleet,
+    FleetModel,
+)
 
 
 DATA_FOLDER = pth.join(pth.dirname(__file__), "..", "resources", "data")
@@ -29,7 +35,9 @@ OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
 
 
 class AeromapsProcess(object):
-    def __init__(self, models=models_simple, parameters=all_parameters, read_json=False):
+    def __init__(
+        self, models=models_simple, parameters=all_parameters, read_json=False, fleet=False
+    ):
         self.models = models
         self.parameters = parameters
         self.disciplines = []
@@ -63,6 +71,13 @@ class AeromapsProcess(object):
             else:
                 print(model.name)
 
+        if fleet:
+            self.fleet = Fleet()
+            self.fleet_model = FleetModel(fleet=self.fleet, year_parameters=year_parameters)
+            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
+        else:
+            self.fleet = None
+
         self.process = create_mda(
             "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
@@ -70,6 +85,9 @@ class AeromapsProcess(object):
         self._update_variables()
 
     def compute(self):
+        if self.fleet is not None:
+            self.fleet_model.compute()
+            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
@@ -145,15 +163,18 @@ class AeromapsProcess(object):
         vector_inputs = {}
 
         for name in all_inputs:
-            value = getattr(self.parameters, name)
-            if isinstance(value, (float, int)):
-                float_inputs[name] = value
-            else:
-                new_values = []
-                for val in value:
-                    if not np.isnan(val):
-                        new_values.append(val)
-                vector_inputs[name] = new_values
+            try:
+                value = getattr(self.parameters, name)
+                if isinstance(value, (float, int)):
+                    float_inputs[name] = value
+                else:
+                    new_values = []
+                    for val in value:
+                        if not np.isnan(val):
+                            new_values.append(val)
+                    vector_inputs[name] = new_values
+            except:
+                pass
 
         self.data["float_inputs"] = float_inputs
         self.data["vector_inputs"] = vector_inputs

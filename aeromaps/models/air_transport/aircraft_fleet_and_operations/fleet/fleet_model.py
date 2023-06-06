@@ -652,7 +652,7 @@ class FleetModel(AeromapsModel):
                     # Dropin
                     self.df[category.name + ":share:dropin_fuel"] = self.df[
                         category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                        ]
+                    ]
 
                 var_name = category.name + ":share:hydrogen"
                 if var_name in self.df:
@@ -694,16 +694,12 @@ class FleetModel(AeromapsModel):
                             k, category.name + ":energy_consumption:hydrogen"
                         ] += self.df.loc[
                             k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":energy_consumption:hydrogen",
+                            category.name + ":" + subcategory.name + ":energy_consumption:hydrogen",
                         ] / (
                             self.df.loc[k, category.name + ":share:hydrogen"] / 100
                         )
                     else:
                         self.df.loc[k, category.name + ":energy_consumption:hydrogen"] = 0.0
-
 
             # Mean consumption
             for k in self.df.index:
@@ -714,7 +710,6 @@ class FleetModel(AeromapsModel):
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
-
 
         # Mean energy consumption for the global fleet
         # Considering fixed category distribution in 2019
@@ -1282,7 +1277,6 @@ class Fleet(object):
             "New Medium-range 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
         )
 
-
         # Long range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
@@ -1321,7 +1315,9 @@ class Fleet(object):
 
         # Short range hydrogen aircraft
         subcat_params = SubcategoryParameters(share=50.0)
-        sr_subcat_hydrogen = SubCategory("Hydrogen conventional narrow-body", parameters=subcat_params)
+        sr_subcat_hydrogen = SubCategory(
+            "Hydrogen conventional narrow-body", parameters=subcat_params
+        )
 
         sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
 
