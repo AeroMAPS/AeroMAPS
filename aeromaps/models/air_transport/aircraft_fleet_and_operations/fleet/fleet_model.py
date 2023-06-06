@@ -456,7 +456,6 @@ class FleetModel(AeromapsModel):
 
         # Aircraft consumption computation and Dedicated calculations for drop-in fuel and hydrogen
         for category in self.fleet.categories.values():
-            # TODO: handling of subcategory
             # Reference aircraft information
             ref_old_aircraft_share = self.df[
                 category.name
@@ -567,15 +566,21 @@ class FleetModel(AeromapsModel):
                             if aircraft.energy_type == "DROP_IN_FUEL":
                                 self.df.loc[
                                     k, category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                                ] += self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
+                                ] += (
+                                    self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    # / self.df.loc[
+                                    #     k, category.name + ":" + subcategory.name + ":share:total"
+                                    # ]
+                                    # * 100
+                                )
                                 self.df.loc[
                                     k,
                                     category.name
@@ -600,15 +605,21 @@ class FleetModel(AeromapsModel):
                             if aircraft.energy_type == "HYDROGEN":
                                 self.df.loc[
                                     k, category.name + ":" + subcategory.name + ":share:hydrogen"
-                                ] += self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
+                                ] += (
+                                    self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    # / self.df.loc[
+                                    #     k, category.name + ":" + subcategory.name + ":share:total"
+                                    # ]
+                                    # * 100
+                                )
                                 self.df.loc[
                                     k,
                                     category.name
@@ -1372,9 +1383,7 @@ class Fleet(object):
         sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
         # Short range
-        cat_params = CategoryParameters(
-            life=25
-        )
+        cat_params = CategoryParameters(life=25)
         sr_cat = Category("Short Range", parameters=cat_params)
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
         sr_cat.add_subcategory(subcategory=sr_rp_cat)
@@ -1403,9 +1412,7 @@ class Fleet(object):
 
         mr_subcat_u.add_aircraft(aircraft=mr_aircraft_hydrogen)
 
-        cat_params = CategoryParameters(
-            life=25
-        )
+        cat_params = CategoryParameters(life=25)
         mr_cat = Category(name="Medium Range", parameters=cat_params)
         mr_cat.add_subcategory(subcategory=mr_subcat)
         mr_cat.add_subcategory(subcategory=mr_subcat_u)
@@ -1429,13 +1436,10 @@ class Fleet(object):
         lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
         lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
-        cat_params = CategoryParameters(
-            life=25
-        )
+        cat_params = CategoryParameters(life=25)
         lr_cat = Category("Long Range", parameters=cat_params)
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
         self.categories[sr_cat.name] = sr_cat
         self.categories[mr_cat.name] = mr_cat
         self.categories[lr_cat.name] = lr_cat
-
