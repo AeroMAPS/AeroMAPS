@@ -791,7 +791,7 @@ class FleetModel(AeromapsModel):
 
             ax.set_xlim(self.prospection_start_year, self.end_year)
             ax.set_xlabel("Year")
-            ax.set_ylabel("Fleet mean energy consumption")
+            ax.set_ylabel("Fleet mean energy consumption [MJ/ASK]")
             # ax.set_title(categories[i].name)
 
         plt.plot()
