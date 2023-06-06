@@ -15,50 +15,79 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
-    AircraftParameters,
-    SubcategoryParameters,
-    CategoryParameters,
-    Aircraft,
-    SubCategory,
-    Category,
-    Fleet,
-    FleetModel,
-)
-
-from aeromaps.models.parameters import YearParameters
-
-year_parameters = YearParameters(
-    historic_start_year=2020, prospection_start_year=2020, end_year=2050
-)
-
-from aeromaps.models.air_transport.constants import EnergyTypes
-
-import pandas as pd
-
-pd.set_option("display.max_rows", 500)
-pd.set_option("display.max_columns", 500)
-pd.set_option("display.width", 1000)
+%matplotlib widget
+from aeromaps.core.process import AeromapsProcess
+from aeromaps.core.models import models_complex
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
 Cell [0;32mIn[1], line 1[0m
-[0;32m----> 1[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m[38;5;21;01m.[39;00m[38;5;21;01mair_transport[39;00m[38;5;21;01m.[39;00m[38;5;21;01maircraft_fleet_and_operations[39;00m[38;5;21;01m.[39;00m[38;5;21;01mfleet[39;00m[38;5;21;01m.[39;00m[38;5;21;01mfleet_model[39;00m [38;5;28;01mimport[39;00m (
-[1;32m      2[0m     AircraftParameters,
-[1;32m      3[0m     SubcategoryParameters,
-[1;32m      4[0m     CategoryParameters,
-[1;32m      5[0m     Aircraft,
-[1;32m      6[0m     SubCategory,
-[1;32m      7[0m     Category,
-[1;32m      8[0m     Fleet,
-[1;32m      9[0m     FleetModel,
-[1;32m     10[0m )
-[1;32m     12[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m[38;5;21;01m.[39;00m[38;5;21;01mparameters[39;00m [38;5;28;01mimport[39;00m YearParameters
-[1;32m     14[0m year_parameters [38;5;241m=[39m YearParameters(
-[1;32m     15[0m     historic_start_year[38;5;241m=[39m[38;5;241m2020[39m, prospection_start_year[38;5;241m=[39m[38;5;241m2020[39m, end_year[38;5;241m=[39m[38;5;241m2050[39m
-[1;32m     16[0m )
+[0;32m----> 1[0m [43mget_ipython[49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[43mrun_line_magic[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mmatplotlib[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mwidget[39;49m[38;5;124;43m'[39;49m[43m)[49m
+[1;32m      2[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m AeromapsProcess
+[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m models_complex
 
-[0;31mModuleNotFoundError[0m: No module named 'aeromaps'
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/interactiveshell.py:2414[0m, in [0;36mInteractiveShell.run_line_magic[0;34m(self, magic_name, line, _stack_depth)[0m
+[1;32m   2412[0m     kwargs[[38;5;124m'[39m[38;5;124mlocal_ns[39m[38;5;124m'[39m] [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mget_local_scope(stack_depth)
+[1;32m   2413[0m [38;5;28;01mwith[39;00m [38;5;28mself[39m[38;5;241m.[39mbuiltin_trap:
+[0;32m-> 2414[0m     result [38;5;241m=[39m [43mfn[49m[43m([49m[38;5;241;43m*[39;49m[43margs[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
+[1;32m   2416[0m [38;5;66;03m# The code below prevents the output from being displayed[39;00m
+[1;32m   2417[0m [38;5;66;03m# when using magics with decodator @output_can_be_silenced[39;00m
+[1;32m   2418[0m [38;5;66;03m# when the last Python token in the expression is a ';'.[39;00m
+[1;32m   2419[0m [38;5;28;01mif[39;00m [38;5;28mgetattr[39m(fn, magic[38;5;241m.[39mMAGIC_OUTPUT_CAN_BE_SILENCED, [38;5;28;01mFalse[39;00m):
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/magics/pylab.py:99[0m, in [0;36mPylabMagics.matplotlib[0;34m(self, line)[0m
+[1;32m     97[0m     [38;5;28mprint[39m([38;5;124m"[39m[38;5;124mAvailable matplotlib backends: [39m[38;5;132;01m%s[39;00m[38;5;124m"[39m [38;5;241m%[39m backends_list)
+[1;32m     98[0m [38;5;28;01melse[39;00m:
+[0;32m---> 99[0m     gui, backend [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mshell[49m[38;5;241;43m.[39;49m[43menable_matplotlib[49m[43m([49m[43margs[49m[38;5;241;43m.[39;49m[43mgui[49m[38;5;241;43m.[39;49m[43mlower[49m[43m([49m[43m)[49m[43m [49m[38;5;28;43;01mif[39;49;00m[43m [49m[38;5;28;43misinstance[39;49m[43m([49m[43margs[49m[38;5;241;43m.[39;49m[43mgui[49m[43m,[49m[43m [49m[38;5;28;43mstr[39;49m[43m)[49m[43m [49m[38;5;28;43;01melse[39;49;00m[43m [49m[43margs[49m[38;5;241;43m.[39;49m[43mgui[49m[43m)[49m
+[1;32m    100[0m     [38;5;28mself[39m[38;5;241m.[39m_show_matplotlib_backend(args[38;5;241m.[39mgui, backend)
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/interactiveshell.py:3600[0m, in [0;36mInteractiveShell.enable_matplotlib[0;34m(self, gui)[0m
+[1;32m   3596[0m         [38;5;28mprint[39m([38;5;124m'[39m[38;5;124mWarning: Cannot change to a different GUI toolkit: [39m[38;5;132;01m%s[39;00m[38;5;124m.[39m[38;5;124m'[39m
+[1;32m   3597[0m                 [38;5;124m'[39m[38;5;124m Using [39m[38;5;132;01m%s[39;00m[38;5;124m instead.[39m[38;5;124m'[39m [38;5;241m%[39m (gui, [38;5;28mself[39m[38;5;241m.[39mpylab_gui_select))
+[1;32m   3598[0m         gui, backend [38;5;241m=[39m pt[38;5;241m.[39mfind_gui_and_backend([38;5;28mself[39m[38;5;241m.[39mpylab_gui_select)
+[0;32m-> 3600[0m [43mpt[49m[38;5;241;43m.[39;49m[43mactivate_matplotlib[49m[43m([49m[43mbackend[49m[43m)[49m
+[1;32m   3601[0m configure_inline_support([38;5;28mself[39m, backend)
+[1;32m   3603[0m [38;5;66;03m# Now we must activate the gui pylab wants to use, and fix %run to take[39;00m
+[1;32m   3604[0m [38;5;66;03m# plot updates into account[39;00m
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/pylabtools.py:360[0m, in [0;36mactivate_matplotlib[0;34m(backend)[0m
+[1;32m    355[0m [38;5;66;03m# Due to circular imports, pyplot may be only partially initialised[39;00m
+[1;32m    356[0m [38;5;66;03m# when this function runs.[39;00m
+[1;32m    357[0m [38;5;66;03m# So avoid needing matplotlib attribute-lookup to access pyplot.[39;00m
+[1;32m    358[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmatplotlib[39;00m [38;5;28;01mimport[39;00m pyplot [38;5;28;01mas[39;00m plt
+[0;32m--> 360[0m [43mplt[49m[38;5;241;43m.[39;49m[43mswitch_backend[49m[43m([49m[43mbackend[49m[43m)[49m
+[1;32m    362[0m plt[38;5;241m.[39mshow[38;5;241m.[39m_needmain [38;5;241m=[39m [38;5;28;01mFalse[39;00m
+[1;32m    363[0m [38;5;66;03m# We need to detect at runtime whether show() is called by the user.[39;00m
+[1;32m    364[0m [38;5;66;03m# For this, we wrap it into a decorator which adds a 'called' flag.[39;00m
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/pyplot.py:271[0m, in [0;36mswitch_backend[0;34m(newbackend)[0m
+[1;32m    268[0m [38;5;66;03m# have to escape the switch on access logic[39;00m
+[1;32m    269[0m old_backend [38;5;241m=[39m [38;5;28mdict[39m[38;5;241m.[39m[38;5;21m__getitem__[39m(rcParams, [38;5;124m'[39m[38;5;124mbackend[39m[38;5;124m'[39m)
+[0;32m--> 271[0m backend_mod [38;5;241m=[39m [43mimportlib[49m[38;5;241;43m.[39;49m[43mimport_module[49m[43m([49m
+[1;32m    272[0m [43m    [49m[43mcbook[49m[38;5;241;43m.[39;49m[43m_backend_module_name[49m[43m([49m[43mnewbackend[49m[43m)[49m[43m)[49m
+[1;32m    274[0m required_framework [38;5;241m=[39m _get_required_interactive_framework(backend_mod)
+[1;32m    275[0m [38;5;28;01mif[39;00m required_framework [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/importlib/__init__.py:127[0m, in [0;36mimport_module[0;34m(name, package)[0m
+[1;32m    125[0m             [38;5;28;01mbreak[39;00m
+[1;32m    126[0m         level [38;5;241m+[39m[38;5;241m=[39m [38;5;241m1[39m
+[0;32m--> 127[0m [38;5;28;01mreturn[39;00m [43m_bootstrap[49m[38;5;241;43m.[39;49m[43m_gcd_import[49m[43m([49m[43mname[49m[43m[[49m[43mlevel[49m[43m:[49m[43m][49m[43m,[49m[43m [49m[43mpackage[49m[43m,[49m[43m [49m[43mlevel[49m[43m)[49m
+
+File [0;32m<frozen importlib._bootstrap>:1014[0m, in [0;36m_gcd_import[0;34m(name, package, level)[0m
+
+File [0;32m<frozen importlib._bootstrap>:991[0m, in [0;36m_find_and_load[0;34m(name, import_)[0m
+
+File [0;32m<frozen importlib._bootstrap>:961[0m, in [0;36m_find_and_load_unlocked[0;34m(name, import_)[0m
+
+File [0;32m<frozen importlib._bootstrap>:219[0m, in [0;36m_call_with_frames_removed[0;34m(f, *args, **kwds)[0m
+
+File [0;32m<frozen importlib._bootstrap>:1014[0m, in [0;36m_gcd_import[0;34m(name, package, level)[0m
+
+File [0;32m<frozen importlib._bootstrap>:991[0m, in [0;36m_find_and_load[0;34m(name, import_)[0m
+
+File [0;32m<frozen importlib._bootstrap>:973[0m, in [0;36m_find_and_load_unlocked[0;34m(name, import_)[0m
+
+[0;31mModuleNotFoundError[0m: No module named 'ipympl'
 
