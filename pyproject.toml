@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "aeromaps"
-version = "0.0.0"
+version = "0.1.0"
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.rst"
 authors = [
@@ -12,8 +12,10 @@ authors = [
     "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
 ]
 keywords = [
-    "aviation",
-    "climate change"
+    "air transport",
+    "climate change",
+    "prospective scenarios",
+    "energy issues",
 ]
 license = "GPL-3.0-only"
 homepage = "https://github.com/AeroMAPS/AeroMAPS"
@@ -24,23 +26,19 @@ numpy = "^1.20.3"
 scipy = "^1.4.1"
 pandas = "^1.1.0"
 xlrd = "1.2.0"
-openpyxl = "*"
+openpyxl = "^3.1.2"
 voila = "^0.4.0"
 jupyterlab = "^3.3.0"
 matplotlib = "^3.1.2, <3.7.0"
 ipywidgets = "^8.0.6"
 ipysheet = ">=0.5.0, <1"
 plotly = "^5.0.0"
-markdown = "*"
-ipympl = "*"
-tornado = "*"
-notebook = "*"
-scikit-learn = "*"
+markdown = "^3.4.3"
+ipympl = "^0.9.3"
 gemseo = "^5.0.0rc0"
-ipyvuetify = "*"
-aenum = "*"
+aenum = "^3.1.12"
 ipydatagrid = "^1.1.14"
-ipytree = "*"
+ipytree = "^0.2.2"
 docstring-inheritance = "^1.0.0"
 dacite = "^1.8.0"
 
