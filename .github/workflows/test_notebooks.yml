@@ -1,0 +1,38 @@
+name: test-notebooks
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [ 3.8, 3.9 ]
+        os: [ ubuntu-20.04, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry==1.4.1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+      - name: Activate environment and install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Notebook tests
+        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps/notebooks
+        shell: bash
