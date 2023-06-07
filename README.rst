@@ -2,7 +2,7 @@
  :target: https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD?urlpath=voila%2Frender%2Faeromaps%2Fapp.ipynb
 
 AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport
-====
+=================================================================================
 
 AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport. For
 instance, it allows simulating and analyzing scenarios for reducing aviation climate impacts through various levers of
@@ -16,7 +16,7 @@ A `documentation <https://aeromaps.github.io/AeroMAPS/>`_ is available for more 
 
 
 Quick start
---------
+-----------
 
 For a quick start in order to discover the different features of AeroMAPS,
 a graphical user interface has been developed for facilitating the first uses.
@@ -24,7 +24,7 @@ It is available at the following address: https://aeromaps.isae-supaero.fr/
 
 
 Quick installation
---------
+------------------
 
 The use of the Python Package Index (`PyPI <https://pypi.org/>`_) is the simplest method for installing AeroMAPS.
 More details and other solutions are provided in the documentation.
