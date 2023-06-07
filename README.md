@@ -29,7 +29,7 @@ Quick installation
 The use of the Python Package Index ([PyPI](https://pypi.org/)) is the simplest method for installing AeroMAPS.
 More details and other solutions are provided in the documentation.
 
-**Prerequisite**: AeroMAPS needs at least **Python 3.8.0**.
+**Prerequisite**: AeroMAPS needs at least Python 3.8.0.
 
 You can install the latest version with this command:
 
