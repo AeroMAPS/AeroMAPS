@@ -95,17 +95,17 @@ class AeromapsProcess(object):
 
         self._update_variables()
 
-        self.write_variables()
+        self.write_json()
 
-    def write_variables(self):
-        self.write_json_variables()
-        self.write_excel_variables()
+    def write_data(self):
+        self.write_json()
+        self.write_excel()
 
-    def write_json_variables(self, file_name=OUTPUTS_JSON_DATA_FILE):
+    def write_json(self, file_name=OUTPUTS_JSON_DATA_FILE):
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
 
-    def write_excel_variables(self, file_name=EXCEL_DATA_FILE):
+    def write_excel(self, file_name=EXCEL_DATA_FILE):
 
         with pd.ExcelWriter(file_name) as writer:
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
