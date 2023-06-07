@@ -1,5 +1,5 @@
 # Changelog
 
-## Version 0.1.0a
+## Version 0.1.0-beta
 
-- First alpha release
+- First beta release
