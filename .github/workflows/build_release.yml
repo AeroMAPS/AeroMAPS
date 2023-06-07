@@ -1,4 +1,4 @@
-name: Build PyPI package and Binder image
+name: Build PyPI package
 
 on:
   workflow_dispatch:
