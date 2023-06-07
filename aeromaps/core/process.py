@@ -7,6 +7,7 @@ import pandas as pd
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
+pd.options.mode.chained_assignment = None
 
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
