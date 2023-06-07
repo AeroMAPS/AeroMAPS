@@ -5,6 +5,7 @@ line-length = 100
 name = "aeromaps"
 version = "0.1.0-beta"
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
+readme = "README.rst"
 authors = [
     "Thomas PLANES <thomas.planes@isae-supaero.fr>",
     "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",

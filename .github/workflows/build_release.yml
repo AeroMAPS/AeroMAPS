@@ -48,18 +48,19 @@ jobs:
       - name: Install Poetry
         run: |
           pipx install poetry==1.4.1
-          pipx inject poetry poetry-dynamic-versioning[plugin]
         shell: bash
 
       - name: Poetry path
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
         shell: bash
 
-      - name: Build AeroMAPS
-        run: poetry build
+      - name: Set version and build AeroMAPS
+        run: |
+          poetry version $( echo ${{ github.ref }} | sed 's%refs/tags/%%' )
+          poetry build
         shell: bash
 
-      - name: publish AeroMAPS to PyPI
+      - name: publish to PyPI
         env:
           TOKEN: ${{ secrets.PyPI }} # do not use the secret directly in run command, it would write it plainly in the log
         run: |
