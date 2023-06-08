@@ -26,15 +26,23 @@ class Main:
         machine = "server" if args.server else "local"
         print(MAIN_NOTEBOOK_NAME)
         if machine == "server":
-            os.system(
-                """voila --port=8080 --no-browser --VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
-                + str(MAIN_NOTEBOOK_NAME)
+            command = (
+                "voila "
+                "--port=8080 "
+                "--no-browser "
+                "--MappingKernelManager.cull_idle_timeout=1200 "
+                """--VoilaConfiguration.file_whitelist "="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
             )
         else:
-            os.system(
-                """voila --VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
-                + str(MAIN_NOTEBOOK_NAME)
+            command = (
+                "voila "
+                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
             )
+
+        os.system(
+            command
+            + str(MAIN_NOTEBOOK_NAME)
+        )
 
     # ENTRY POINT ==================================================================================
     def run(self):
