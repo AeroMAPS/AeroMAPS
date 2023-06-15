@@ -2,8 +2,6 @@
 # @Author : a.salgas
 # @File : lausanne_prep.py
 # @Software: PyCharm
-
-
 from typing import Tuple
 
 import numpy as np
@@ -156,7 +154,7 @@ class AircraftRC(AeromapsModel):
 
 
 class AircraftDropInDOC(AeromapsModel):
-    def __init__(self, name="aircraft_doc", *args, **kwargs):
+    def __init__(self, name="aircraft_dropin_doc", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
@@ -192,15 +190,49 @@ class AircraftDropInDOC(AeromapsModel):
         pd.Series(dtype="float64")
     ]:
         fuel_lhv = 35.3
-        doc_bio = energy_ask_aircraft_type * (biofuel_hefa_fog_mfsp*biofuel_hefa_fog_share+
+        doc_bio = energy_ask_aircraft_type * (biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share+
                                               biofuel_hefa_others_mfsp * biofuel_hefa_others_share+
-                                              biofuel_atj_mfsp*biofuel_atj_share+
-                                              biofuel_ft_msw_mfsp*biofuel_ft_msw_share+
+                                              biofuel_atj_mfsp * biofuel_atj_share+
+                                              biofuel_ft_msw_mfsp * biofuel_ft_msw_share+
                                               biofuel_ft_others_share*biofuel_ft_others_mfsp) * biofuel_share / fuel_lhv
         doc_efuel = energy_ask_aircraft_type * electrofuel_avg_cost_per_l * electrofuel_share /fuel_lhv
         doc_kerosene = energy_ask_aircraft_type * kerosene_market_price * kerosene_share /fuel_lhv
 
         doc_energy_aircraft_type_ask=doc_kerosene+doc_efuel+doc_bio
+
+        doc_energy_aircraft_type=doc_energy_aircraft_type_ask*ask_aircraft_type
+
+        doc_non_fuel_ask_aircraft_type = doc_non_fuel_aircraft_type_ask*ask_aircraft_type
+
+        return (
+            doc_energy_aircraft_type,
+            doc_non_fuel_ask_aircraft_type,
+            doc_energy_aircraft_type_ask
+        )
+
+
+class AircraftLh2DOC(AeromapsModel):
+    def __init__(self, name="aircraft_lh2_doc", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            energy_ask_aircraft_type: float=0.0,
+            doc_non_fuel_aircraft_type_ask: float=0.0,
+            ask_aircraft_type: pd.Series = pd.Series(dtype="float64"),
+
+
+            h2_avg_cost_per_kg_electrolysis: pd.Series = pd.Series(dtype="float64"),
+
+
+    ) -> Tuple[
+        pd.Series(dtype="float64"),
+        pd.Series(dtype="float64"),
+        pd.Series(dtype="float64")
+    ]:
+        hydrogen_specific_energy = 119.93  # MJ/kg
+
+        doc_energy_aircraft_type_ask = energy_ask_aircraft_type * h2_avg_cost_per_kg_electrolysis / hydrogen_specific_energy
 
         doc_energy_aircraft_type=doc_energy_aircraft_type_ask*ask_aircraft_type
 
