@@ -56,3 +56,132 @@ class ImpactsParameters(object):
         "temperature_increase_from_aviation_init"
     ]  # [°C] Using Grewe et al. (2021)
     TCRE: float = 0.00045  # [°C/GtCO2]
+
+
+    ### COSTS ###
+    # Hydrogen Cost parameters
+    hydrogen_replacement_ratio: float =1.0
+
+
+    # Electrolysis CAPEX (€ / (kg/day)
+    electrolyser_capex_2020: float = 588.0
+    electrolyser_capex_2030: float = 459.0
+    electrolyser_capex_2040: float = 433.0
+    electrolyser_capex_2050: float = 419.0
+
+    # Electrolysis Opex (€ / (kg/day) /year and €/kg
+
+    electrolyser_fixed_opex_2020: float = 21.3
+    electrolyser_fixed_opex_2030: float = 20.57
+    electrolyser_fixed_opex_2040: float = 20.25
+    electrolyser_fixed_opex_2050: float = 20.04
+    electrolyser_var_opex_2020: float = 0.20
+    electrolyser_var_opex_2030: float = 0.19
+    electrolyser_var_opex_2040: float = 0.18
+    electrolyser_var_opex_2050: float = 0.18
+
+    # Electrolysis Specific Electricity (kWh/kg)
+    electrolyser_specific_electricity_2020: float = 51.0
+    electrolyser_specific_electricity_2030: float = 49.3
+    electrolyser_specific_electricity_2040: float = 48.5
+    electrolyser_specific_electricity_2050: float = 48.0
+
+    # Liquefier Capex (€/ (kg/day))
+    liquefier_capex_2020: float = 1457.33
+    liquefier_capex_2030: float = 1457.33
+    liquefier_capex_2040: float = 1457.33
+    liquefier_capex_2050: float = 1457.33
+
+    # Liquefier sp. electricity (kWh/kg)
+    liquefier_specific_electricity_2020: float = 7.54
+    liquefier_specific_electricity_2030: float = 7.54
+    liquefier_specific_electricity_2040: float = 7.54
+    liquefier_specific_electricity_2050: float = 7.54
+
+    # Electrofuel plant capex € / (kg/day)
+    electrofuel_capex_2020: float = 2311
+    electrofuel_capex_2030: float = 2311
+    electrofuel_capex_2040: float = 2311
+    electrofuel_capex_2050: float = 2311
+
+    # Electrofuel plant Opex (€ / (kg/day) /year
+    electrofuel_fixed_opex_2020: float = 0.0
+    electrofuel_fixed_opex_2030: float = 0.0
+    electrofuel_fixed_opex_2040: float = 0.0
+    electrofuel_fixed_opex_2050: float = 0.0
+
+    # €/kg
+    electrofuel_var_opex_2020: float = 0.38
+    electrofuel_var_opex_2030: float = 0.38
+    electrofuel_var_opex_2040: float = 0.38
+    electrofuel_var_opex_2050: float = 0.38
+
+    # Electrofuel plant specific electricity (kWh/kg)
+
+    electrofuel_specific_electricity_2020: float = 22.9
+    electrofuel_specific_electricity_2030: float = 22.9
+    electrofuel_specific_electricity_2040: float = 22.9
+    electrofuel_specific_electricity_2050: float = 22.9
+
+    # Electrofuel plant specific co2 (kg/kg)
+    electrofuel_specific_co2_2020: float = 4.47
+    electrofuel_specific_co2_2030: float = 4.47
+    electrofuel_specific_co2_2040: float = 4.47
+    electrofuel_specific_co2_2050: float = 4.47
+
+    # Electricity market price (€/kWh)
+
+    electricity_cost_2020: float = 0.08
+    electricity_cost_2030: float = 0.08
+    electricity_cost_2040: float = 0.08
+    electricity_cost_2050: float = 0.08
+
+    # Electricity load factor
+
+    electricity_load_factor: float = 0.95
+
+    # CO2 DAC market price (€/kg)
+
+    co2_cost_2020: float = 0.225
+    co2_cost_2030: float = 0.225
+    co2_cost_2040: float = 0.225
+    co2_cost_2050: float = 0.225
+
+    ### Kerosene
+
+    # €/L
+
+    kerosene_price_2020: float = 0.41
+    kerosene_price_2030: float = 0.41
+    kerosene_price_2040: float = 0.41
+    kerosene_price_2050: float = 0.41
+
+    ### Biofuel
+
+    # €/L
+
+    biofuel_hefa_fog_mfsp_2020: float = 0.89
+    biofuel_hefa_fog_mfsp_2050: float = 0.89
+    biofuel_hefa_others_mfsp_2020: float = 1.08
+    biofuel_hefa_others_mfsp_2050: float = 1.08
+    biofuel_ft_others_mfsp_2020: float = 0.54 * 1.02 + 0.46 * 1.28
+    biofuel_ft_others_mfsp_2050: float = 0.54 * 1.02 + 0.46 * 1.28
+    biofuel_ft_msw_mfsp_2020: float = 1.02
+    biofuel_ft_msw_mfsp_2050: float = 1.02
+    biofuel_atj_mfsp_2020: float = 1.42
+    biofuel_atj_mfsp_2050: float = 1.42
+
+    # €/kg/day
+    biofuel_hefa_fog_capex_2020: float = 307.0
+    biofuel_hefa_fog_capex_2050: float = 307.0
+    biofuel_hefa_others_capex_2020: float = 276.0
+    biofuel_hefa_others_capex_2050: float = 276.0
+    biofuel_ft_others_capex_2020: float = 1601 * 0.54 + 2192 * 0.46
+    biofuel_ft_others_capex_2050: float = 1601 * 0.54 + 2192 * 0.46
+    biofuel_ft_msw_capex_2020: float = 2056.0
+    biofuel_ft_msw_capex_2050: float = 2056.0
+    biofuel_atj_capex_2020: float = 1211.0
+    biofuel_atj_capex_2050: float = 1212.0
+
+    # Economic analyses
+    social_discount_rate: float = 0.03

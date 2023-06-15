@@ -47,6 +47,14 @@ from aeromaps.plots.climate import (
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
+
+from aeromaps.plots.costs import (
+    ScenarioEnergyCapitalPlot,
+    ScenarioEnergyExpensesPlot,
+    ScenarioEnergyUnitCostPlot,
+    DiscountEffect
+)
+
 # Left plot
 plot_1 = {
     "Air transport CO2 emissions": AirTransportCO2EmissionsPlot,
@@ -93,4 +101,8 @@ plot_3 = {
     "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
+    "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
+    "Annual expenses for energy procurement (using MFSP)": ScenarioEnergyExpensesPlot,
+    "Evolution of pathways MFSP": ScenarioEnergyUnitCostPlot,
+    "Effect of the discount rate on total energy costs":DiscountEffect
 }

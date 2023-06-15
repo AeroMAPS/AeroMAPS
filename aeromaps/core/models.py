@@ -1,3 +1,4 @@
+from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 from aeromaps.models.parameters import YearParameters
 from aeromaps.models.air_transport.air_traffic.rpk import (
     RPK,
@@ -79,6 +80,31 @@ from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
     ResourcesConsumedShare,
 )
+
+
+# COSTS
+from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
+from aeromaps.models.impacts.costs.energy.market_prices import ElectricityCost, Co2Cost, KeroseneCost, KerosenePrice
+from aeromaps.models.impacts.costs.energy.power_to_liquid import (
+    ElectrofuelCost,
+    ElectrofuelCapex,
+    ElectrofuelFixedOpex,
+    ElectrofuelVarOpex,
+    ElectrofuelSpecificElectricity,
+    ElectrofuelSpecificCo2
+)
+
+from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
+    LiquidHydrogenCost,
+    ElectrolyserCapex,
+    ElectrolyserFixedOpex,
+    ElectrolyserVarOpex,
+    ElectrolyserSpecificElectricity,
+    LiquefierCapex,
+    LiquefierSpecificElectricity,
+)
+
+from aeromaps.models.impacts.costs.scenario.scenario_cost import DicountedScenarioCost, NonDiscountedScenarioCost
 
 
 year_parameters = YearParameters(
@@ -239,6 +265,75 @@ models_simple = {
     "resources_consumed_share": ResourcesConsumedShare(
         "resources_consumed_share", year_parameters=year_parameters, parameters=AllParameters()
     ),
+    "biofuel_mfsp": BiofuelMfsp(
+        "biofuel_mfsp", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_capex": BiofuelCapex(
+        "biofuel_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "kerosene_market_price": KerosenePrice(
+        "kerosene_market_price", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "kerosene_cost": KeroseneCost(
+        "kerosene_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_cost": BiofuelCost(
+        "biofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "co2_cost": Co2Cost(
+        "co2_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electricity_cost": ElectricityCost(
+        "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquid_hydrogen_cost": LiquidHydrogenCost(
+        "liquid_hydrogen_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_capex": ElectrolyserCapex(
+        "electrolyser_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_fixed_opex": ElectrolyserFixedOpex(
+        "electrolyser_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_var_opex": ElectrolyserVarOpex(
+        "electrolyser_var_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
+        "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquefier_capex": LiquefierCapex(
+        "liquefier_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquefier_specific_electricity": LiquefierSpecificElectricity(
+        "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_cost": ElectrofuelCost(
+        "electrofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_capex": ElectrofuelCapex(
+        "electrofuel_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_fixed_opex": ElectrofuelFixedOpex(
+        "electrofuel_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_var_opex": ElectrofuelVarOpex(
+        "electrofuel_var_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_specific_electricity": ElectrofuelSpecificElectricity(
+        "electrofuel_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_specific_co2": ElectrofuelSpecificCo2(
+        "electrofuel_specific_co2", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "discounted_scenario_cost": DicountedScenarioCost(
+        "discounted_scenario_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "non_discounted_scenario_cost": NonDiscountedScenarioCost(
+        "non_discounted_scenario_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_abatement_potential": BiofuelAbatementPotential(
+        "biofuel_abatement_potential", year_parameters=year_parameters, parameters=AllParameters()
+    )
 }
 
 
@@ -396,4 +491,73 @@ models_complex = {
     "resources_consumed_share": ResourcesConsumedShare(
         "resources_consumed_share", year_parameters=year_parameters, parameters=AllParameters()
     ),
+    "biofuel_mfsp": BiofuelMfsp(
+        "biofuel_mfsp", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_capex": BiofuelCapex(
+        "biofuel_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "kerosene_market_price": KerosenePrice(
+        "kerosene_market_price", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "kerosene_cost": KeroseneCost(
+        "kerosene_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_cost": BiofuelCost(
+        "biofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "co2_cost": Co2Cost(
+        "co2_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electricity_cost": ElectricityCost(
+        "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquid_hydrogen_cost": LiquidHydrogenCost(
+        "liquid_hydrogen_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_capex": ElectrolyserCapex(
+        "electrolyser_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_fixed_opex": ElectrolyserFixedOpex(
+        "electrolyser_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_var_opex": ElectrolyserVarOpex(
+        "electrolyser_var_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
+        "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquefier_capex": LiquefierCapex(
+        "liquefier_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "liquefier_specific_electricity": LiquefierSpecificElectricity(
+        "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_cost": ElectrofuelCost(
+        "electrofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_capex": ElectrofuelCapex(
+        "electrofuel_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_fixed_opex": ElectrofuelFixedOpex(
+        "electrofuel_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_var_opex": ElectrofuelVarOpex(
+        "electrofuel_var_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_specific_electricity": ElectrofuelSpecificElectricity(
+        "electrofuel_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "electrofuel_specific_co2": ElectrofuelSpecificCo2(
+        "electrofuel_specific_co2", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "discounted_scenario_cost": DicountedScenarioCost(
+        "discounted_scenario_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "non_discounted_scenario_cost": NonDiscountedScenarioCost(
+        "non_discounted_scenario_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "biofuel_abatement_potential": BiofuelAbatementPotential(
+        "biofuel_abatement_potential", year_parameters=year_parameters, parameters=AllParameters()
+    )
 }
