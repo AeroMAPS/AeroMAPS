@@ -25,7 +25,6 @@ class AircraftASK(AeromapsModel):
 
 class ExistingAircraftAvailability(AeromapsModel):
 
-    # TODO A tester
     def __init__(self, name="existing_aircraft_availability", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
