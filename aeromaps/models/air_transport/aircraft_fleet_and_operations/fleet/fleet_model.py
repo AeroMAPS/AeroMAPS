@@ -793,7 +793,7 @@ class FleetModel(AeromapsModel):
         # plt.savefig("fleet_renewal.pdf")
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
-        x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
+        x = np.linspace(self.historic_start_year, self.end_year, self.end_year-self.historic_start_year+1)
 
         # Intermediate variable for S-shaped function
         limit = 2
