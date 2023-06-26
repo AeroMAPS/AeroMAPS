@@ -61,7 +61,8 @@ class FleetModel(AeromapsModel):
     def compute(
         self,
     ):
-
+        # Start from empty dataframe
+        self.df = self.df.filter([])
         # Single aircraft share computation (for obtaining the main plot on fleet renewal)
         for category in self.fleet.categories.values():
 
