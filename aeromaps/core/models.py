@@ -21,6 +21,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
     PassengerAircraftEfficiencySimple,
     FreightAircraftEfficiencySimple,
     PassengerAircraftEfficiencyComplex,
+    FreightAircraftEfficiency
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
@@ -373,8 +374,8 @@ models_complex = {
         year_parameters=year_parameters,
         parameters=AllParameters(),
     ),
-    "freight_aircraft_efficiency_simple": FreightAircraftEfficiencySimple(
-        "freight_aircraft_efficiency_simple",
+    "freight_aircraft_efficiency": FreightAircraftEfficiency(
+        "freight_aircraft_efficiency",
         year_parameters=year_parameters,
         parameters=AllParameters(),
     ),
