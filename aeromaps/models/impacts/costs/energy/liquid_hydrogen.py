@@ -63,7 +63,6 @@ class LiquidHydrogenCost(AeromapsModel):
         pd.Series,
         pd.Series
     ]:
-        print()
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
