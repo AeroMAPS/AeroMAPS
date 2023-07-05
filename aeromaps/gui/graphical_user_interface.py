@@ -575,7 +575,7 @@ class GraphicalUserInterface(widgets.VBox):
                         self.w_aircraft_efficiency,
                         self.w_operations,
                         self.w_load_factor,
-                        #self.w_turboprop,
+                        # self.w_turboprop,
                         self.w_contrails_avoidance,
                     ]
                 ),

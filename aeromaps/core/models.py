@@ -19,7 +19,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency import (
     PassengerAircraftEfficiencySimple,
     PassengerAircraftEfficiencyComplex,
-    FreightAircraftEfficiency
+    FreightAircraftEfficiency,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
