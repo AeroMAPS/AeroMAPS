@@ -101,16 +101,16 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
 
         self.df.loc[
             2020, "energy_per_ask_without_operations_short_range_dropin_fuel"
-        ] = self.df.loc[2020, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
+        ] = self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
             1 + covid_energy_intensity_per_ask_increase_2020 / 100
         )
         self.df.loc[
             2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-        ] = self.df.loc[2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
+        ] = self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
             1 + covid_energy_intensity_per_ask_increase_2020 / 100
         )
         self.df.loc[2020, "energy_per_ask_without_operations_long_range_dropin_fuel"] = self.df.loc[
-            2020, "energy_per_ask_without_operations_long_range_dropin_fuel"
+            2019, "energy_per_ask_without_operations_long_range_dropin_fuel"
         ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
 
         energy_per_ask_without_operations_short_range_dropin_fuel = self.df[
@@ -249,7 +249,6 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
             ask_medium_range_hydrogen,
             ask_long_range_hydrogen,
         )
-
 
 
 class PassengerAircraftEfficiencyComplex(AeromapsModel):
@@ -394,16 +393,16 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
 
         self.df.loc[
             2020, "energy_per_ask_without_operations_short_range_dropin_fuel"
-        ] = self.df.loc[2020, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
+        ] = self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
             1 + covid_energy_intensity_per_ask_increase_2020 / 100
         )
         self.df.loc[
             2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-        ] = self.df.loc[2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
+        ] = self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
             1 + covid_energy_intensity_per_ask_increase_2020 / 100
         )
         self.df.loc[2020, "energy_per_ask_without_operations_long_range_dropin_fuel"] = self.df.loc[
-            2020, "energy_per_ask_without_operations_long_range_dropin_fuel"
+            2019, "energy_per_ask_without_operations_long_range_dropin_fuel"
         ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
 
         energy_per_ask_without_operations_short_range_dropin_fuel = self.df[
@@ -543,6 +542,8 @@ class FreightAircraftEfficiency(AeromapsModel):
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Energy consumption per RTK (without operations) calculation."""
+        # args = locals()
+        # print(args)
 
         # Initialization based on 2019 share: to correct to include load factor
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -550,46 +551,60 @@ class FreightAircraftEfficiency(AeromapsModel):
                 energy_consumption_init.loc[k] / rtk.loc[k] * freight_energy_share_2019 / 100
             )
 
+        # Covid
+        self.df.loc[2020, "energy_per_rtk_without_operations_freight_dropin_fuel"] = self.df.loc[
+            2019, "energy_per_rtk_without_operations_freight_dropin_fuel"
+        ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+
         # Projections
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = self.df.loc[
-                k - 1, "energy_per_rtk_without_operations_freight_dropin_fuel"
-            ] * (
-                energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
+        energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k = self.df.loc[
+            2019, "energy_per_rtk_without_operations_freight_dropin_fuel"
+        ]
+        energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k = self.df.loc[
+            2019, "energy_per_rtk_without_operations_freight_dropin_fuel"
+        ]
+        energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k = self.df.loc[
+            2019, "energy_per_rtk_without_operations_freight_dropin_fuel"
+        ]
+        for k in range(self.prospection_start_year + 1, self.end_year + 1):
+            energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k = (
+                energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k
+                * energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
                 / energy_per_ask_without_operations_short_range_dropin_fuel.loc[k - 1]
-                * (
-                    ask_short_range_dropin_fuel.loc[k]
-                    / (
-                        ask_short_range_dropin_fuel.loc[k]
-                        + ask_medium_range_dropin_fuel.loc[k]
-                        + ask_long_range_dropin_fuel.loc[k]
-                    )
-                )
-                + energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
+            )
+            energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k = (
+                energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k
+                * energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
                 / energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k - 1]
-                * (
-                    ask_medium_range_dropin_fuel.loc[k]
-                    / (
-                        ask_short_range_dropin_fuel.loc[k]
-                        + ask_medium_range_dropin_fuel.loc[k]
-                        + ask_long_range_dropin_fuel.loc[k]
-                    )
-                )
-                + energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            )
+            energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k = (
+                energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k
+                * energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
                 / energy_per_ask_without_operations_long_range_dropin_fuel.loc[k - 1]
-                * (
-                    ask_long_range_dropin_fuel.loc[k]
-                    / (
-                        ask_short_range_dropin_fuel.loc[k]
-                        + ask_medium_range_dropin_fuel.loc[k]
-                        + ask_long_range_dropin_fuel.loc[k]
-                    )
+            )
+            self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = (
+                energy_per_rtk_without_operations_freight_dropin_fuel_short_range_k
+                * ask_short_range_dropin_fuel.loc[k]
+                / (
+                    ask_short_range_dropin_fuel.loc[k]
+                    + ask_medium_range_dropin_fuel.loc[k]
+                    + ask_long_range_dropin_fuel.loc[k]
+                )
+                + energy_per_rtk_without_operations_freight_dropin_fuel_medium_range_k
+                * ask_medium_range_dropin_fuel.loc[k]
+                / (
+                    ask_short_range_dropin_fuel.loc[k]
+                    + ask_medium_range_dropin_fuel.loc[k]
+                    + ask_long_range_dropin_fuel.loc[k]
+                )
+                + energy_per_rtk_without_operations_freight_dropin_fuel_long_range_k
+                * ask_long_range_dropin_fuel.loc[k]
+                / (
+                    ask_short_range_dropin_fuel.loc[k]
+                    + ask_medium_range_dropin_fuel.loc[k]
+                    + ask_long_range_dropin_fuel.loc[k]
                 )
             )
-
-        self.df.loc[2020, "energy_per_rtk_without_operations_freight_dropin_fuel"] = self.df.loc[
-            2020, "energy_per_rtk_without_operations_freight_dropin_fuel"
-        ] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
 
         energy_per_rtk_without_operations_freight_dropin_fuel = self.df[
             "energy_per_rtk_without_operations_freight_dropin_fuel"
@@ -607,6 +622,8 @@ class FreightAircraftEfficiency(AeromapsModel):
             energy_per_ask_without_operations_long_range_hydrogen
             / energy_per_ask_without_operations_long_range_dropin_fuel
         )
+
+        #for k in range(self.prospection_start_year + 1, self.end_year + 1):
 
         energy_per_rtk_without_operations_freight_hydrogen = (
             energy_per_rtk_without_operations_freight_dropin_fuel
