@@ -625,12 +625,12 @@ class FreightAircraftEfficiency(AeromapsModel):
                     * (ask_short_range.loc[k] / ask.loc[k])
                     / rtk_hydrogen_share.loc[k]
                     + relative_energy_per_ask_hydrogen_wrt_dropin_medium_range.loc[k]
-                    * ask_short_range_hydrogen_share.loc[k]
-                    * (ask_short_range.loc[k] / ask.loc[k])
+                    * ask_medium_range_hydrogen_share.loc[k]
+                    * (ask_medium_range.loc[k] / ask.loc[k])
                     / rtk_hydrogen_share.loc[k]
                     + relative_energy_per_ask_hydrogen_wrt_dropin_long_range.loc[k]
-                    * ask_short_range_hydrogen_share.loc[k]
-                    * (ask_short_range.loc[k] / ask.loc[k])
+                    * ask_long_range_hydrogen_share.loc[k]
+                    * (ask_long_range.loc[k] / ask.loc[k])
                     / rtk_hydrogen_share.loc[k]
                 )
 
