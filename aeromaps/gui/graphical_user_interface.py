@@ -1537,10 +1537,8 @@ class GraphicalUserInterface(widgets.VBox):
             self.download_output.clear_output(wait=True)
         else:
             self.download_output = widgets.Output()
-        # file_name = "data.xlsx"
-        file_name = "data.txt"
-        # file_path = "/resources/data/" + file_name
-        file_path = pth.join(DATA_FOLDER, file_name)
+        file_name = "data.xlsx"
+        file_path = "/resources/data/" + file_name
 
         self._trigger_download(file_path, file_name, self.download_output)
         # os.remove(filepath)
