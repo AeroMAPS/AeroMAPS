@@ -61,7 +61,8 @@ class FleetModel(AeromapsModel):
     def compute(
         self,
     ):
-
+        # Start from empty dataframe
+        self.df = self.df.filter([])
         # Single aircraft share computation (for obtaining the main plot on fleet renewal)
         for category in self.fleet.categories.values():
 
@@ -719,7 +720,11 @@ class FleetModel(AeromapsModel):
         # self.df[var_name] += self.df["Long Range" + ":energy_consumption"] * 0.377
 
     def plot(self):
-        x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
+        x = np.linspace(
+            self.prospection_start_year,
+            self.end_year,
+            self.end_year - self.prospection_start_year + 1,
+        )
 
         categories = list(self.fleet.categories.values())
 
@@ -737,7 +742,7 @@ class FleetModel(AeromapsModel):
             )
             ax.fill_between(
                 x,
-                self.df[var_name],
+                self.df.loc[self.prospection_start_year : self.end_year, var_name],
                 label=subcategory.name + " - Old reference aircraft",
             )
 
@@ -751,7 +756,7 @@ class FleetModel(AeromapsModel):
             )
             ax.fill_between(
                 x,
-                self.df[var_name],
+                self.df.loc[self.prospection_start_year : self.end_year, var_name],
                 label=subcategory.name + " - Recent reference aircraft",
             )
 
@@ -769,7 +774,7 @@ class FleetModel(AeromapsModel):
                     )
                     ax.fill_between(
                         x,
-                        self.df[var_name],
+                        self.df.loc[self.prospection_start_year : self.end_year, var_name],
                         label=subcategory.name + " - " + aircraft.name,
                     )
 
@@ -782,7 +787,13 @@ class FleetModel(AeromapsModel):
 
             # Bottom plot
             ax = axs[1, i]
-            ax.plot(x, self.df[category.name + ":energy_consumption"])
+            ax.plot(
+                x,
+                self.df.loc[
+                    self.prospection_start_year : self.end_year,
+                    category.name + ":energy_consumption",
+                ],
+            )
 
             ax.set_xlim(self.prospection_start_year, self.end_year)
             ax.set_xlabel("Year")
@@ -793,7 +804,9 @@ class FleetModel(AeromapsModel):
         # plt.savefig("fleet_renewal.pdf")
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
-        x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
+        x = np.linspace(
+            self.historic_start_year, self.end_year, self.end_year - self.historic_start_year + 1
+        )
 
         # Intermediate variable for S-shaped function
         limit = 2
