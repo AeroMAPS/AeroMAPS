@@ -946,9 +946,9 @@ class GraphicalUserInterface(widgets.VBox):
         self.process.parameters.growth_rate_2040_2050_long_range = (
             self.w_growth_long_range_percent.value
         )
-        self.process.parameters.growth_rate_2020_2030_rtk = self.w_growth_freight_percent.value
-        self.process.parameters.growth_rate_2030_2040_rtk = self.w_growth_freight_percent.value
-        self.process.parameters.growth_rate_2040_2050_rtk = self.w_growth_freight_percent.value
+        self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_freight_percent.value
+        self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_freight_percent.value
+        self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_freight_percent.value
 
         if self.w_short_range_reduction.value == False and self.w_social_measure.value == False:
             self.process.parameters.rpk_short_range_measures_final_impact = 0.0
@@ -1285,9 +1285,9 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.growth_rate_2020_2030_long_range = 3
                 self.process.parameters.growth_rate_2030_2040_long_range = 3
                 self.process.parameters.growth_rate_2040_2050_long_range = 3
-                self.process.parameters.growth_rate_2020_2030_rtk = 3
-                self.process.parameters.growth_rate_2030_2040_rtk = 3
-                self.process.parameters.growth_rate_2040_2050_rtk = 3
+                self.process.parameters.growth_rate_2020_2030_freight = 3
+                self.process.parameters.growth_rate_2030_2040_freight = 3
+                self.process.parameters.growth_rate_2040_2050_freight = 3
                 #  RPK measures
                 self.process.parameters.rpk_short_range_measures_final_impact = 0.0
                 self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
