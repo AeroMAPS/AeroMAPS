@@ -16,6 +16,7 @@ AIRCRAFT_COLUMNS = [
     "Consumption gain [%]",
     "NOx gain [%]",
     "Soot gain [%]",
+    "Cruise altitude [m]",
     "Energy Type",
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
@@ -27,6 +28,7 @@ class AircraftParameters:
     consumption_gain: float = None
     nox_gain: float = None
     soot_gain: float = None
+    cruise_altitude: float = None
 
 
 @dataclass
@@ -35,6 +37,7 @@ class ReferenceAircraftParameters:
     emission_index_nox: float = None
     emission_index_soot: float = None
     entry_into_service_year: float = None
+    cruise_altitude: float = None
 
 
 @dataclass
@@ -855,7 +858,8 @@ class Aircraft(object):
         self.parameters.consumption_gain = row[AIRCRAFT_COLUMNS[2]]
         self.parameters.nox_gain = row[AIRCRAFT_COLUMNS[3]]
         self.parameters.soot_gain = row[AIRCRAFT_COLUMNS[4]]
-        self.energy_type = row[AIRCRAFT_COLUMNS[5]]
+        self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[5]]
+        self.energy_type = row[AIRCRAFT_COLUMNS[6]]
 
         return self
 
@@ -884,6 +888,7 @@ class SubCategory(object):
                     5.0,
                     10.0,
                     10.0,
+                    12000.0,
                     "DROP_IN_FUEL",
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
@@ -895,6 +900,7 @@ class SubCategory(object):
                     aircraft.parameters.consumption_gain,
                     aircraft.parameters.nox_gain,
                     aircraft.parameters.soot_gain,
+                    aircraft.parameters.cruise_altitude,
                     aircraft.energy_type,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
@@ -1218,7 +1224,11 @@ class Fleet(object):
     def _build_default_fleet(self):
         # Short range narrow-body
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2035,
+            consumption_gain=15.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         sr_nb_aircraft_1 = Aircraft(
@@ -1226,7 +1236,11 @@ class Fleet(object):
         )
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2045, consumption_gain=30.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2045,
+            consumption_gain=30.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         sr_nb_aircraft_2 = Aircraft(
@@ -1235,7 +1249,11 @@ class Fleet(object):
 
         # Short range regional turboprop
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2030, consumption_gain=20.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2030,
+            consumption_gain=20.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=6000.0,
         )
 
         sr_tp_aircraft_1 = Aircraft(
@@ -1245,7 +1263,11 @@ class Fleet(object):
         )
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2045, consumption_gain=35.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2045,
+            consumption_gain=35.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=6000.0,
         )
 
         sr_tp_aircraft_2 = Aircraft(
@@ -1256,7 +1278,11 @@ class Fleet(object):
 
         # Short range regional turbofan
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2035,
+            consumption_gain=15.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         sr_tf_aircraft_1 = Aircraft(
@@ -1266,7 +1292,11 @@ class Fleet(object):
         )
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2045, consumption_gain=30.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2045,
+            consumption_gain=30.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         sr_tf_aircraft_2 = Aircraft(
@@ -1278,7 +1308,11 @@ class Fleet(object):
         # Short range hydrogen aircraft
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2035, consumption_gain=-10.0, nox_gain=0.0, soot_gain=100.0
+            entry_into_service_year=2035,
+            consumption_gain=-10.0,
+            nox_gain=0.0,
+            soot_gain=100.0,
+            cruise_altitude=12000.0,
         )
 
         sr_aircraft_hydrogen = Aircraft(
@@ -1287,7 +1321,11 @@ class Fleet(object):
 
         # Medium range
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2035,
+            consumption_gain=15.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         mr_aircraft_1 = Aircraft(
@@ -1295,7 +1333,11 @@ class Fleet(object):
         )
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2045, consumption_gain=30.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2045,
+            consumption_gain=30.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         mr_aircraft_2 = Aircraft(
@@ -1304,7 +1346,11 @@ class Fleet(object):
 
         # Long range
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2035, consumption_gain=15.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2035,
+            consumption_gain=15.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         lr_aircraft_1 = Aircraft(
@@ -1312,7 +1358,11 @@ class Fleet(object):
         )
 
         aircraft_params = AircraftParameters(
-            entry_into_service_year=2045, consumption_gain=30.0, nox_gain=30.0, soot_gain=30.0
+            entry_into_service_year=2045,
+            consumption_gain=30.0,
+            nox_gain=30.0,
+            soot_gain=30.0,
+            cruise_altitude=12000.0,
         )
 
         lr_aircraft_2 = Aircraft(
@@ -1328,12 +1378,14 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2007.13
         sr_nb_cat.recent_reference_aircraft.energy_per_ask = 84.2 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
         sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
@@ -1355,12 +1407,14 @@ class Fleet(object):
         # sr_rp_cat.old_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
         # sr_rp_cat.old_reference_aircraft.emission_index_nox = 0.01514
         # sr_rp_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        # sr_rp_cat.old_reference_aircraft.cruise_altitude = 6000.0
 
         # Recent
         # sr_rp_cat.recent_reference_aircraft.entry_into_service_year = 2005
         # sr_rp_cat.recent_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
         # sr_rp_cat.recent_reference_aircraft.emission_index_nox = 0.01514
         # sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        # sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
 
         sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
         sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
@@ -1374,12 +1428,14 @@ class Fleet(object):
         # sr_tf_cat.old_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
         # sr_tf_cat.old_reference_aircraft.emission_index_nox = 0.01514
         # sr_tf_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        # sr_tf_cat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
         # sr_tf_cat.recent_reference_aircraft.entry_into_service_year = 2000
         # sr_tf_cat.recent_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
         # sr_tf_cat.recent_reference_aircraft.emission_index_nox = 0.01514
         # sr_tf_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        # sr_tf_cat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_1)
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
@@ -1401,12 +1457,14 @@ class Fleet(object):
         mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
+        mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
         mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
         mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
+        mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
         mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
@@ -1424,12 +1482,14 @@ class Fleet(object):
         lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
+        lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
         lr_subcat.recent_reference_aircraft.entry_into_service_year = 2009.36
         lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
+        lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
         lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
