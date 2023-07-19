@@ -39,10 +39,7 @@ class Main:
                 """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
             )
 
-        os.system(
-            command
-            + str(MAIN_NOTEBOOK_NAME)
-        )
+        os.system(command + str(MAIN_NOTEBOOK_NAME))
 
     # ENTRY POINT ==================================================================================
     def run(self):
