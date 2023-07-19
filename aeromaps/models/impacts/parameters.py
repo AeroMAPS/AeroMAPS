@@ -23,8 +23,8 @@ class ImpactsParameters(object):
     emission_index_nox_hydrogen_2019: float = 0.007
 
     # Other emission index [kg/kg_fuel]
-    emission_index_soot_biofuel: float = 3e-5
-    emission_index_soot_electrofuel: float = 3e-5
+    emission_index_soot_biofuel: float = 6e-6
+    emission_index_soot_electrofuel: float = 6e-6
     emission_index_soot_kerosene: float = 3e-5
     emission_index_soot_hydrogen: float = 0.0
     emission_index_h2o_biofuel: float = 1.231
