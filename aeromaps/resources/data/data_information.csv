@@ -82,12 +82,13 @@ emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapo
 emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion
 emission_index_h2o_kerosene;Float;kg_H2O/kg_fuel;Emission index of water vapor for kerosene combustion
 emission_index_nox_biofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion in 2019
-emission_index_nox_dropin_fuel_evolution;Float;%;Evolution of NOx emission index for drop-in fuel combustion
+emission_index_nox_dropin_fuel_evolution;Float;%;Annual evolution of NOx emission index for drop-in fuel combustion due to engine evolution
 emission_index_nox_electrofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion in 209
 emission_index_nox_hydrogen_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion in 2019
-emission_index_nox_hydrogen_evolution;Float;%;Evolution of NOx emission index for hydrogen fuel combustion
+emission_index_nox_hydrogen_evolution;Float;%;Annual evolution of NOx emission index for hydrogen fuel combustion due to engine evolution
 emission_index_nox_kerosene_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion in 2019
 emission_index_soot_biofuel;Float;kg_BC/kg_fuel;Emission index of soot for biofuel combustion
+emission_index_soot_dropin_fuel_evolution;Float;%;Annual evolution of soot emission index for drop-in fuel combustion due to engine evolution
 emission_index_soot_electrofuel;Float;kg_BC/kg_fuel;Emission index of soot for electrofuel combustion
 emission_index_soot_hydrogen;Float;kg_BC/kg_fuel;Emission index of soot for hydrogen combustion
 emission_index_soot_kerosene;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion

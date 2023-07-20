@@ -54,6 +54,53 @@ class NOxEmissionIndex(AeromapsModel):
         )
 
 
+class SootEmissionIndex(AeromapsModel):
+    def __init__(self, name="nox_emission_index", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        emission_index_soot_biofuel_2019: float = 0.0,
+        emission_index_soot_electrofuel_2019: float = 0.0,
+        emission_index_soot_kerosene_2019: float = 0.0,
+        emission_index_soot_hydrogen_2019: float = 0.0,
+        emission_index_soot_dropin_fuel_evolution: float = 0.0,
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+        """Soot emission index calculation."""
+
+        # Initialization
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "emission_index_soot_biofuel"] = emission_index_soot_biofuel_2019
+            self.df.loc[k, "emission_index_soot_electrofuel"] = emission_index_soot_electrofuel_2019
+            self.df.loc[k, "emission_index_soot_kerosene"] = emission_index_soot_kerosene_2019
+            self.df.loc[k, "emission_index_soot_hydrogen"] = emission_index_soot_hydrogen_2019
+
+        # Calculation
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "emission_index_soot_biofuel"] = self.df.loc[
+                k - 1, "emission_index_soot_biofuel"
+            ] * (1 + emission_index_soot_dropin_fuel_evolution / 100)
+            self.df.loc[k, "emission_index_soot_electrofuel"] = self.df.loc[
+                k - 1, "emission_index_soot_electrofuel"
+            ] * (1 + emission_index_soot_dropin_fuel_evolution / 100)
+            self.df.loc[k, "emission_index_soot_kerosene"] = self.df.loc[
+                k - 1, "emission_index_soot_kerosene"
+            ] * (1 + emission_index_soot_dropin_fuel_evolution / 100)
+            self.df.loc[k, "emission_index_soot_hydrogen"] = emission_index_soot_hydrogen_2019
+
+        emission_index_soot_biofuel = self.df["emission_index_soot_biofuel"]
+        emission_index_soot_electrofuel = self.df["emission_index_soot_electrofuel"]
+        emission_index_soot_kerosene = self.df["emission_index_soot_kerosene"]
+        emission_index_soot_hydrogen = self.df["emission_index_soot_hydrogen"]
+
+        return (
+            emission_index_soot_biofuel,
+            emission_index_soot_electrofuel,
+            emission_index_soot_kerosene,
+            emission_index_soot_hydrogen,
+        )
+
+
 class NonCO2Emissions(AeromapsModel):
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)

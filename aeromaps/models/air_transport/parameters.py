@@ -34,9 +34,9 @@ class AirTransportParameters(object):
     energy_per_ask_long_range_dropin_fuel_gain: float = 2  # [%]
 
     # NOx and soot emission index for simple models [%] - Positive means augmentation
-    emission_index_nox_dropin_fuel_evolution: float = 0.0
-    emission_index_nox_hydrogen_evolution: float = 0.0
-    emission_index_soot_dropin_fuel_evolution: float = 0.0
+    emission_index_nox_dropin_fuel_evolution: float = 0.0  # [%]
+    emission_index_nox_hydrogen_evolution: float = 0.0  # [%]
+    emission_index_soot_dropin_fuel_evolution: float = 0.0  # [%]
 
     # Energy distribution [%]
     short_range_energy_share_2019: float = 30.6 * 0.85
