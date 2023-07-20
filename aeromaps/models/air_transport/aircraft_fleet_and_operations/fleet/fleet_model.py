@@ -976,7 +976,7 @@ class SubCategory(object):
         self.datagrid.on_cell_change(self._update_parameters_from_grid)
 
         self.ui = ipw.VBox([ipw.HBox([button_add_row, button_remove_row]), self.datagrid])
-        self.ui.layout.width = "600px"
+        self.ui.layout.width = "1200px"
         self.datagrid.auto_fit_columns = True
 
     def _update_parameters_from_grid(self, change=None):
@@ -1212,6 +1212,7 @@ class Fleet(object):
 
     def _setup_ui(self):
         self.ui = ipw.HBox([self.tree, self.selected_item.ui])
+        self.ui.layout
 
     def _update_ui(self):
         if self.ui is not None:
