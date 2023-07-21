@@ -1,5 +1,6 @@
 import os.path as pth
 from json import dump
+from dataclasses import fields
 
 import numpy as np
 import pandas as pd
@@ -145,6 +146,7 @@ class AeromapsProcess(object):
     def _set_inputs(self):
 
         all_inputs = {}
+        self._format_input_vectors()
         # TODO: make this more efficient
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
@@ -153,6 +155,20 @@ class AeromapsProcess(object):
             all_inputs.update(disc.default_inputs)
 
         return all_inputs
+
+    def _format_input_vectors(self):
+        for field in fields(self.parameters):
+            field_name = field.name
+            field_value = getattr(self.parameters, field_name)
+            if not isinstance(field_value, (float, int)):
+                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
+                new_value = np.pad(
+                    field_value,
+                    (0, new_size - field_value.size),
+                    mode="constant",
+                    constant_values=np.nan,
+                )
+                setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):
 
@@ -217,7 +233,7 @@ class AeromapsProcess(object):
         )
 
         self.vector_inputs_df = _dict_to_df(self.data["vector_inputs"], orient="columns")
-        self.vector_inputs_df.index = historic_years
+        # self.vector_inputs_df.index = historic_years
         self.vector_inputs_df.sort_index(axis=1, inplace=True)
 
         # Float outputs df
