@@ -14,7 +14,7 @@ from gemseo import generate_n2_plot, create_mda
 
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
-from aeromaps.core.models import models_simple, year_parameters
+from aeromaps.core.models import models_simple
 from aeromaps.models.parameters import all_parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
@@ -65,7 +65,9 @@ class AeromapsProcess(object):
         )
 
         for name, model in self.models.items():
+            # TODO: check how to avoid providing all parameters
             model.parameters = self.parameters
+            model._initialize_df()
             if hasattr(model, "compute"):
                 model = AeromapsModelWrapper(model=model)
                 self.disciplines.append(model)
@@ -74,7 +76,9 @@ class AeromapsProcess(object):
 
         if fleet:
             self.fleet = Fleet()
-            self.fleet_model = FleetModel(fleet=self.fleet, year_parameters=year_parameters)
+            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model.parameters = self.parameters
+            self.fleet_model._initialize_df()
             self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
         else:
             self.fleet = None
@@ -144,6 +148,7 @@ class AeromapsProcess(object):
         # TODO: make this more efficient
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
+            disc.model._initialize_df()
             disc.update_defaults()
             all_inputs.update(disc.default_inputs)
 
