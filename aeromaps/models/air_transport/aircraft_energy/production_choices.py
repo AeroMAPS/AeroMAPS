@@ -32,7 +32,7 @@ class BiofuelProduction(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biomass production calculation using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.parameters.end_year]
 
         # HEFA FOG
         reference_values_hefa_fog = [
@@ -135,7 +135,7 @@ class HydrogenProduction(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen production calculation using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.parameters.end_year]
 
         # Electrolysis
         reference_values_electrolysis = [

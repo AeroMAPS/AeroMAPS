@@ -26,7 +26,7 @@ class FuelDistribution(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Fuel distribution calculation using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.parameters.end_year]
 
         # Biofuel
         reference_values_biofuel = [
