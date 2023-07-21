@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.2.0-beta
+
+- Changed:
+    - Added cruise altitude parameter to fleet renewal model. (#8)
+    - Added possibility to change the end year. (#8)
+
+- Fixed:
+    - Minor corrections in freight model. (#8)
+
 ## Version 0.1.1-beta
 
 - Changed:
