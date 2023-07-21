@@ -18,9 +18,9 @@ class RTK(AeromapsModel):
         covid_rpk_drop_start_year: float = 0.0,
         covid_end_year: int = 0,
         covid_end_year_reference_rpk_ratio: float = 0.0,
-        growth_rate_2020_2030_rtk: float = 0.0,
-        growth_rate_2030_2040_rtk: float = 0.0,
-        growth_rate_2040_2050_rtk: float = 0.0,
+        growth_rate_2020_2030_freight: float = 0.0,
+        growth_rate_2030_2040_freight: float = 0.0,
+        growth_rate_2040_2050_freight: float = 0.0,
     ) -> Tuple[pd.Series, float, float,]:
         """RTK calculation."""
 
@@ -42,15 +42,15 @@ class RTK(AeromapsModel):
             self.df.loc[k, "rtk"] = self.df.loc[covid_start_year - 1, "rtk"] * covid_function(k)
         for k in range(covid_end_year + 1, 2031):
             self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2020_2030_rtk / 100
+                1 + growth_rate_2020_2030_freight / 100
             )
         for k in range(2031, 2041):
             self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2030_2040_rtk / 100
+                1 + growth_rate_2030_2040_freight / 100
             )
         for k in range(2041, self.end_year + 1):
             self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2040_2050_rtk / 100
+                1 + growth_rate_2040_2050_freight / 100
             )
 
         for k in range(self.historic_start_year, self.prospection_start_year):
