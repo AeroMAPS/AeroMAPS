@@ -85,7 +85,8 @@ from aeromaps.models.impacts.others.comparison import (
 
 # COSTS
 from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
-from aeromaps.models.impacts.costs.energy.market_prices import ElectricityCost, Co2Cost, KeroseneCost, KerosenePrice
+from aeromaps.models.impacts.costs.energy.market_prices import ElectricityCost, Co2Cost, KeroseneCost, KerosenePrice, \
+    Co2Tax, KeroseneBAUCost
 from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCost,
     ElectrofuelCapex,
@@ -278,11 +279,17 @@ models_simple = {
     "kerosene_cost": KeroseneCost(
         "kerosene_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
+    "kerosene_BAU_cost": KeroseneBAUCost(
+        "kerosene_BAU_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
     "biofuel_cost": BiofuelCost(
         "biofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "co2_cost": Co2Cost(
         "co2_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "co2_tax": Co2Tax(
+        "co2_tax", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "electricity_cost": ElectricityCost(
         "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()
@@ -509,6 +516,9 @@ models_complex = {
     ),
     "co2_cost": Co2Cost(
         "co2_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "co2_tax": Co2Tax(
+        "co2_tax", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "electricity_cost": ElectricityCost(
         "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()

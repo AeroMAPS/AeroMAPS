@@ -43,7 +43,10 @@ class LiquidHydrogenCost(AeromapsModel):
             electricity_load_factor: float = 0.0,
             transport_cost_ratio: float = 0.0,
             energy_replacement_ratio: float = 1.0,
+            carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -141,8 +144,10 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "total_h2_capex"] = total_h2_capex
         # M€
 
+        # TODO add liouqefaction and transport cprem
         h2_cost_premium_electrolysis = electrolysis_h2_total_cost - \
-                                       energy_consumption_hydrogen * hydrogen_electrolysis_share / 100 / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
+                                       energy_consumption_hydrogen * hydrogen_electrolysis_share / 100 \
+                                       / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
         self.df.loc[:, "h2_cost_premium_electrolysis"] = h2_cost_premium_electrolysis
         # M€
@@ -155,6 +160,14 @@ class LiquidHydrogenCost(AeromapsModel):
         carbon_abatement_cost_h2_electrolysis = h2_cost_premium_electrolysis * 1000000 / total_avoided_emissions
         self.df.loc[:, 'carbon_abatement_cost_h2_electrolysis'] = carbon_abatement_cost_h2_electrolysis
         # €/t
+
+        electrolysis_h2_carbon_tax = energy_consumption_hydrogen * hydrogen_electrolysis_share / 100 * hydrogen_electrolysis_emission_factor / 1000000 * carbon_tax /1000000
+        # M€
+        self.df.loc[:, 'electrolysis_h2_carbon_tax'] = electrolysis_h2_carbon_tax
+
+        electrolysis_h2_mfsp_carbon_tax_supplement = carbon_tax * hydrogen_electrolysis_emission_factor / 1000000 * hydrogen_specific_energy
+        # €/kg_H2
+        self.df.loc[:, 'electrolysis_h2_mfsp_carbon_tax_supplement'] = electrolysis_h2_mfsp_carbon_tax_supplement
 
         return (
             electrolysis_plant_building_scenario,
@@ -174,7 +187,9 @@ class LiquidHydrogenCost(AeromapsModel):
             total_hydrogen_supply_cost,
             total_h2_capex,
             h2_cost_premium_electrolysis,
-            carbon_abatement_cost_h2_electrolysis
+            carbon_abatement_cost_h2_electrolysis,
+            electrolysis_h2_carbon_tax,
+            electrolysis_h2_mfsp_carbon_tax_supplement
         )
 
     @staticmethod
@@ -576,6 +591,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 
 class ElectrolyserSpecificElectricity(AeromapsModel):
 
+    #TODO adapt to efficiency
     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
     def __init__(self, name="electrolyser_specific_electricity", *args, **kwargs):
@@ -652,7 +668,7 @@ class LiquefierCapex(AeromapsModel):
 
 
 class LiquefierSpecificElectricity(AeromapsModel):
-
+    # TODO adapt to efficiency
     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
     def __init__(self, name="liquefier_specific_electricity", *args, **kwargs):

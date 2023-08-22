@@ -147,6 +147,13 @@ class ImpactsParameters(object):
     co2_cost_2040: float = 0.225
     co2_cost_2050: float = 0.225
 
+    # CO2 tax level (€/ton)
+
+    co2_tax_2020: float = 0
+    co2_tax_2030: float = 0
+    co2_tax_2040: float = 0
+    co2_tax_2050: float = 0
+
     ### Kerosene
 
     # €/L

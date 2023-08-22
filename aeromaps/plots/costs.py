@@ -115,20 +115,34 @@ class ScenarioEnergyExpensesPlot:
 
     def create_plot(self):
         # mine
-        colors = ['#2A3438', '#ee9b00', '#ffbf47', '#bb3e03', '#0c9e30', '#097223', '#828782', '#0075A3', ]
+        colors = ['#2A3438', '#2A3438', '#ee9b00', '#ee9b00', '#ffbf47', '#ffbf47', '#bb3e03','#bb3e03', '#0c9e30', '#0c9e30', '#097223', '#097223', '#828782', '#828782', '#0075A3', '#0075A3']
 
         self.annual_energy_expenses = self.ax.stackplot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "kerosene_cost"],
+            self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"],
             self.df.loc[self.prospective_years, "biofuel_cost_hefa_fog"],
+            self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"],
             self.df.loc[self.prospective_years, "biofuel_cost_hefa_others"],
+            self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"],
             self.df.loc[self.prospective_years, "biofuel_cost_atj"],
+            self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"],
             self.df.loc[self.prospective_years, "biofuel_cost_ft_others"],
+            self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"],
             self.df.loc[self.prospective_years, "biofuel_cost_ft_msw"],
+            self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"],
             self.df.loc[self.prospective_years, "electrofuel_total_cost"],
+            self.df.loc[self.prospective_years, "electrofuel_carbon_tax"],
             self.df.loc[self.prospective_years, "total_hydrogen_supply_cost"],
-            colors=colors
+            self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"],
+        colors=colors,
         )
+
+        stacks= self.annual_energy_expenses
+
+        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//","", "//", "", "//"]
+        for stack, hatch in zip(stacks, hatches):
+            stack.set_hatch(hatch)
 
 
         self.ax.grid(axis='y')
@@ -137,14 +151,126 @@ class ScenarioEnergyExpensesPlot:
         self.ax = plt.gca()
         self.ax.legend([
             'Fossil Kerosene',
+            'Fossil Kerosene-$C0_2$ tax',
             'Bio - HEFA FOG',
+            'Bio - HEFA FOG-$C0_2$ tax',
             'Bio - HEFA Others',
+            'Bio - HEFA Others-$C0_2$ tax',
             'Bio - Alcohol to Jet',
+            'Bio - Alcohol to Jet-$C0_2$ tax',
             'Bio - FT Others',
+            'Bio - FT Others-$C0_2$ tax',
             'Bio - FT Municipal Waste',
+            'Bio - FT Municipal Waste-$C0_2$ tax',
             'Electrofuel',
             'LH2 '
-        ])
+    ],   loc='upper left' )
+
+        self.ax.set_xlim(2020, 2050)
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # # self.fig.canvas.layout.width = "auto"
+        # # self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, df_data):
+
+        # TODO implement plot updater
+        self.data = df_data
+        #
+        # columns = ['plant_building_cost_hefa_fog',
+        #            'plant_building_cost_hefa_others',
+        #            'plant_building_cost_atj',
+        #            'plant_building_cost_ft_others',
+        #            'plant_building_cost_ft_msw',
+        #            'electrofuel_plant_building_cost',
+        #            'electrolysis_plant_building_cost',
+        #            'liquefaction_plant_building_cost',
+        #            ]
+        #
+        # colors = ['#ee9b00', '#ffbf47', '#bb3e03', '#0c9e30', '#097223', '#828782', '#0075A3', '#00BBE0', ]
+        #
+        # self.bar_annual_investment = self.data.loc[range(2020, 2050 + 1), columns].plot.bar(
+        #     stacked=True,
+        #     width=0.8,
+        #     ax=self.ax,
+        #     color=colors
+        # )
+        #
+        # self.ax.collections.clear()
+        #
+        # self.ax.relim()
+        # self.ax.autoscale_view()
+        # self.fig.canvas.draw()
+        #
+
+
+class ScenarioEnergyCarbonTaxPlot:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+
+        # TODO add e-fuel  & h2
+
+        self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "non_discounted_energy_expenses"],
+            label='Scenario energy expenses',
+            linestyle='-',
+            color='#0c9e30'
+        )
+
+        self.ax.plot(
+            self.prospective_years,
+            (self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]+
+             self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"] +
+             self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"] +
+             self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"] +
+             self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"] +
+             self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"] +
+             self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"] +
+             self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"] +
+             self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+             ),
+            label='Scenario energy expenses incl. carbon tax',
+            linestyle='--',
+            color = '#0c9e30'
+        )
+        self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"],
+            label='Business as usual energy expenses',
+            linestyle='-',
+            color='#2A3438'
+        )
+        self.ax.plot(
+            self.prospective_years,
+            (self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"] +
+            self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]),
+            label = 'Business as usual energy expenses incl. carbon tax',
+            linestyle = '--',
+            color = '#2A3438'
+        )
+
+
+        self.ax.grid(axis='y')
+        self.ax.legend(loc='upper left')
+        self.ax.set_title("Annual energy expenses per pathway")
+        self.ax.set_ylabel("Energy expenses [M€]")
+        self.ax = plt.gca()
+
+
         self.ax.set_xlim(2020, 2050)
         # #
         self.fig.canvas.header_visible = False

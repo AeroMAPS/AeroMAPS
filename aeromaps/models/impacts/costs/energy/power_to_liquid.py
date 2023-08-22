@@ -32,6 +32,7 @@ class ElectrofuelCost(AeromapsModel):
             co2_market_price: pd.Series = pd.Series(dtype="float64"),
             electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
             electricity_load_factor: float = 0.0,
+            carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -43,6 +44,8 @@ class ElectrofuelCost(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series
     ]:
 
         ######## HYDROGEN PRODUCTION ########
@@ -75,18 +78,29 @@ class ElectrofuelCost(AeromapsModel):
 
         ######## SYNTHESIS ########
 
+        fuel_lhv=35.3 # MJ/L
+
         # Compute the total cost premium (M€)
-        electrofuel_cost_premium = electrofuel_total_cost - (energy_consumption_electrofuel / 35.3 * kerosene_market_price)/1000000
+        electrofuel_cost_premium = electrofuel_total_cost - (energy_consumption_electrofuel / fuel_lhv * kerosene_market_price)/1000000
         self.df.loc[:, "electrofuel_cost_premium"] = electrofuel_cost_premium
 
         # Average cost per L
-        electrofuel_avg_cost_per_l = electrofuel_total_cost / energy_consumption_electrofuel * 35.3 * 1000000
+        electrofuel_avg_cost_per_l = electrofuel_total_cost / energy_consumption_electrofuel * fuel_lhv * 1000000
         self.df.loc[:, "electrofuel_avg_cost_per_l"] = electrofuel_avg_cost_per_l
 
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
         electrofuel_abatement_cost = electrofuel_cost_premium * 1000000 / energy_consumption_electrofuel / (
                 kerosene_emission_factor - electrofuel_emission_factor) * 1000000
         self.df.loc[:, "electrofuel_abatement_cost"] = electrofuel_abatement_cost
+
+        electrofuel_carbon_tax = energy_consumption_electrofuel * electrofuel_emission_factor / 1000000 * carbon_tax / 1000000
+        # M€
+        self.df.loc[:, 'electrofuel_carbon_tax'] = electrofuel_carbon_tax
+
+        electrofuel_mfsp_carbon_tax_supplement = carbon_tax * electrofuel_emission_factor / 1000000 * fuel_lhv
+        # €/L
+        self.df.loc[:, 'electrofuel_mfsp_carbon_tax_supplement'] = electrofuel_mfsp_carbon_tax_supplement
+
 
         return (
             electrofuel_plant_building_scenario,
@@ -99,6 +113,8 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_cost_premium,
             electrofuel_avg_cost_per_l,
             electrofuel_abatement_cost,
+            electrofuel_carbon_tax,
+            electrofuel_mfsp_carbon_tax_supplement
         )
 
     @staticmethod
