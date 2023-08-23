@@ -411,6 +411,14 @@ class TemperatureIncreaseFromAirTransportPlot:
 
     def create_plot(self):
         self.ax.plot(
+            self.years,
+            np.zeros(len(self.years)),
+            color="tomato",
+            linestyle="-",
+            linewidth=1,
+        )
+
+        self.ax.plot(
             self.historic_years,
             self.df.loc[self.historic_years, "temperature_increase_from_aviation"] * 1000,
             color="black",
@@ -428,13 +436,30 @@ class TemperatureIncreaseFromAirTransportPlot:
             linewidth=2,
         )
 
+        self.ax.fill_between(
+            self.years,
+            self.df["temperature_increase_from_co2_from_aviation"] * 1000,
+            np.zeros(len(self.years)),
+            color="tomato",
+            label="CO2",
+        )
+
+        self.ax.fill_between(
+            self.years,
+            self.df["temperature_increase_from_aviation"] * 1000,
+            self.df["temperature_increase_from_co2_from_aviation"] * 1000,
+            color="firebrick",
+            label="Non-CO2",
+        )
+
         self.ax.grid()
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
+        # self.ax.set_ylim(0,)
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -454,6 +479,22 @@ class TemperatureIncreaseFromAirTransportPlot:
         )
 
         self.ax.collections.clear()
+
+        self.ax.fill_between(
+            self.years,
+            self.df["temperature_increase_from_co2_from_aviation"] * 1000,
+            np.zeros(len(self.years)),
+            color="tomato",
+            label="CO2",
+        )
+
+        self.ax.fill_between(
+            self.years,
+            self.df["temperature_increase_from_aviation"] * 1000,
+            self.df["temperature_increase_from_co2_from_aviation"] * 1000,
+            color="firebrick",
+            label="Non-CO2",
+        )
 
         self.ax.relim()
         self.ax.autoscale_view()
