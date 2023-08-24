@@ -101,9 +101,10 @@ from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
     ElectrolyserCapex,
     ElectrolyserFixedOpex,
     ElectrolyserVarOpex,
-    ElectrolyserSpecificElectricity,
-    LiquefierCapex,
-    LiquefierSpecificElectricity,
+    # ElectrolyserSpecificElectricity,
+    LiquefierCapex, CcsCost, CoalEfficiency, CoalFixedOpex, CoalCapex, CoalCcsEfficiency, CoalCcsFixedOpex,
+    CoalCcsCapex, GasEfficiency, GasFixedOpex, GasCapex, GasCcsEfficiency, GasCcsFixedOpex, GasCcsCapex,
+    # LiquefierSpecificElectricity,
 )
 
 from aeromaps.models.impacts.costs.scenario.scenario_cost import DicountedScenarioCost, NonDiscountedScenarioCost
@@ -306,15 +307,54 @@ models_simple = {
     "electrolyser_var_opex": ElectrolyserVarOpex(
         "electrolyser_var_opex", year_parameters=year_parameters, parameters=AllParameters()
     ),
-    "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
-        "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
+    #     "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # ),
+    "gas_ccs_capex": GasCcsCapex(
+        "gas_ccs_capex",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_ccs_fixed_opex": GasCcsFixedOpex(
+        "gas_ccs_fixed_opex",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_ccs_efficiency": GasCcsEfficiency(
+        "gas_ccs_efficiency",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_capex": GasCapex(
+        "gas_capex",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_fixed_opex": GasFixedOpex(
+        "gas_fixed_opex",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_efficiency": GasEfficiency(
+        "gas_efficiency",  year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_capex": CoalCcsCapex(
+        "coal_ccs_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_fixed_opex": CoalCcsFixedOpex(
+        "coal_ccs_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_efficiency": CoalCcsEfficiency(
+        "coal_ccs_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_capex": CoalCapex(
+        "coal_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_fixed_opex": CoalFixedOpex(
+        "coal_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_efficiency": CoalEfficiency(
+        "coal_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "ccs_cost": CcsCost(
+        "ccs_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "liquefier_capex": LiquefierCapex(
         "liquefier_capex", year_parameters=year_parameters, parameters=AllParameters()
     ),
-    "liquefier_specific_electricity": LiquefierSpecificElectricity(
-        "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
-    ),
+    # "liquefier_specific_electricity": LiquefierSpecificElectricity(
+    #     "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # ),
     "electrofuel_cost": ElectrofuelCost(
         "electrofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
@@ -535,15 +575,54 @@ models_complex = {
     "electrolyser_var_opex": ElectrolyserVarOpex(
         "electrolyser_var_opex", year_parameters=year_parameters, parameters=AllParameters()
     ),
-    "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
-        "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # "electrolyser_specific_electricity": ElectrolyserSpecificElectricity(
+    #     "electrolyser_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # ),
+    "gas_ccs_capex": GasCcsCapex(
+        "gas_ccs_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_ccs_fixed_opex": GasCcsFixedOpex(
+        "gas_ccs_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_ccs_efficiency": GasCcsEfficiency(
+        "gas_ccs_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_capex": GasCapex(
+        "gas_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_fixed_opex": GasFixedOpex(
+        "gas_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_efficiency": GasEfficiency(
+        "gas_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_capex": CoalCcsCapex(
+        "coal_ccs_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_fixed_opex": CoalCcsFixedOpex(
+        "coal_ccs_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_ccs_efficiency": CoalCcsEfficiency(
+        "coal_ccs_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_capex": CoalCapex(
+        "coal_capex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_fixed_opex": CoalFixedOpex(
+        "coal_fixed_opex", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_efficiency": CoalEfficiency(
+        "coal_efficiency", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "ccs_cost": CcsCost(
+        "ccs_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "liquefier_capex": LiquefierCapex(
         "liquefier_capex", year_parameters=year_parameters, parameters=AllParameters()
     ),
-    "liquefier_specific_electricity": LiquefierSpecificElectricity(
-        "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
-    ),
+    # "liquefier_specific_electricity": LiquefierSpecificElectricity(
+    #     "liquefier_specific_electricity", year_parameters=year_parameters, parameters=AllParameters()
+    # ),
     "electrofuel_cost": ElectrofuelCost(
         "electrofuel_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),

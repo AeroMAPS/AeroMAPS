@@ -25,6 +25,7 @@ class ElectricityCost(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """LCOE"""
         # FT MSW
+        print("in lains0")
         reference_values_electricity = [
             electricity_cost_2020,
             electricity_cost_2030,
@@ -47,6 +48,81 @@ class ElectricityCost(AeromapsModel):
         return (
             electricity_market_price
         )
+    
+    
+
+class CoalCost(AeromapsModel):
+    def __init__(self, name="coal_cost", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_cost_2020: float = 0.0,
+            coal_cost_2030: float = 0.0,
+            coal_cost_2040: float = 0.0,
+            coal_cost_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+
+        print("in lains1")
+        reference_values_coal = [
+            coal_cost_2020,
+            coal_cost_2030,
+            coal_cost_2040,
+            coal_cost_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_price_function = interp1d(
+            reference_years, reference_values_coal, kind="quadratic"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_market_price"
+            ] = coal_price_function(k)
+
+        coal_market_price = self.df.loc[:, "coal_market_price"]
+
+        return (
+            coal_market_price
+        )
+    
+
+class GasCost(AeromapsModel):
+    def __init__(self, name="gas_cost", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_cost_2020: float = 0.0,
+            gas_cost_2030: float = 0.0,
+            gas_cost_2040: float = 0.0,
+            gas_cost_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        print("in lains2")
+        # FT MSW
+        reference_values_gas = [
+            gas_cost_2020,
+            gas_cost_2030,
+            gas_cost_2040,
+            gas_cost_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_price_function = interp1d(
+            reference_years, reference_values_gas, kind="quadratic"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_market_price"
+            ] = gas_price_function(k)
+
+        gas_market_price = self.df.loc[:, "gas_market_price"]
+
+        return (
+            gas_market_price
+        )
 
 
 class Co2Cost(AeromapsModel):
@@ -62,6 +138,7 @@ class Co2Cost(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """LCOE"""
         # FT MSW
+        print("in lains3")
         reference_values_co2 = [
             co2_cost_2020,
             co2_cost_2030,
@@ -98,7 +175,7 @@ class Co2Tax(AeromapsModel):
             co2_tax_2040: float = 0.0,
             co2_tax_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-
+        print("in lains4")
         # FT MSW
         reference_values_co2 = [
             co2_tax_2020,
@@ -135,7 +212,7 @@ class KerosenePrice(AeromapsModel):
             kerosene_price_2040: float = 0.0,
             kerosene_price_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-
+        print("in lains5")
         # FT MSW
         reference_values_kerosene = [
             kerosene_price_2020,
@@ -157,7 +234,6 @@ class KerosenePrice(AeromapsModel):
 
         kerosene_market_price = self.df.loc[:, "kerosene_market_price"]
 
-        print("sucess kerpri")
         return (
             kerosene_market_price
         )
@@ -174,7 +250,7 @@ class KeroseneCost(AeromapsModel):
             kerosene_emission_factor: pd.Series=pd.Series(dtype="float64"),
             carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-
+        print("in lains6")
         # kerosene_market_price €/L
 
         # fuel lower heating value in MJ/L at 15 degrees
@@ -214,7 +290,7 @@ class KeroseneBAUCost(AeromapsModel):
             carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         # kerosene_market_price €/L
-
+        print("in lains7")
         # fuel lower heating value in MJ/L at 15 degrees
         fuel_lhv = 35.3
 
@@ -232,3 +308,5 @@ class KeroseneBAUCost(AeromapsModel):
         return (
             kerosene_carbon_tax_BAU
         )
+
+

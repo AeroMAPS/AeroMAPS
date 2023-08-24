@@ -37,8 +37,8 @@ class NonDiscountedScenarioCost(AeromapsModel):
             electrofuel_cost_premium: pd.Series = pd.Series(dtype="float64"),
 
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-        print(biofuel_cost_premium_atj)
         # TODO add hydrogen and e-kero cost premiums
+        print("Tha 1")
 
         non_discounted_energy_expenses = kerosene_cost \
                                          + biofuel_cost_hefa_fog \
@@ -65,7 +65,6 @@ class NonDiscountedScenarioCost(AeromapsModel):
         self.df.loc[:, "non_discounted_energy_cost_premium"] = non_discounted_energy_cost_premium
         self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
 
-        print(non_discounted_BAU_energy_expenses)
         return (
             non_discounted_energy_expenses,
             non_discounted_energy_cost_premium,

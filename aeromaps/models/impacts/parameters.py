@@ -12,7 +12,6 @@ data = _dict_from_json(file_name=filename)
 
 @dataclass
 class ImpactsParameters(object):
-
     # CO2 emission factor [gCO2/MJ]
     kerosene_emission_factor_2019: float = 87.5  # Global (direct emissions: 73.2)
 
@@ -57,11 +56,9 @@ class ImpactsParameters(object):
     ]  # [°C] Using Grewe et al. (2021)
     TCRE: float = 0.00045  # [°C/GtCO2]
 
-
     ### COSTS ###
     # Hydrogen Cost parameters
-    hydrogen_replacement_ratio: float =1.0
-
+    hydrogen_replacement_ratio: float = 1.0
 
     # Electrolysis CAPEX (€ / (kg/day)
     electrolyser_capex_2020: float = 588.0
@@ -81,10 +78,102 @@ class ImpactsParameters(object):
     electrolyser_var_opex_2050: float = 0.18
 
     # Electrolysis Specific Electricity (kWh/kg)
-    electrolyser_specific_electricity_2020: float = 51.0
-    electrolyser_specific_electricity_2030: float = 49.3
-    electrolyser_specific_electricity_2040: float = 48.5
-    electrolyser_specific_electricity_2050: float = 48.0
+    # TODO remove switch to efficicency
+    # electrolyser_specific_electricity_2020: float = 51.0
+    # electrolyser_specific_electricity_2030: float = 49.3
+    # electrolyser_specific_electricity_2040: float = 48.5
+    # electrolyser_specific_electricity_2050: float = 48.0
+
+
+
+    # Fossil hydrogen plant load factors (also called availability factors)
+    gas_ccs_load_factor: float = 0.95
+    gas_load_factor: float = 0.95
+    coal_ccs_load_factor: float = 0.9
+    coal_load_factor: float = 0.9
+
+    # Define carbon capture and storage efficiencies
+    gas_ccs_ccs_efficiency: float = 0.95
+    coal_ccs_ccs_efficiency: float = 0.95
+
+
+    # GAS + CCS CAPEX (€/ (kg/day))
+    gas_ccs_eis_capex_2020: float = 1728
+    gas_ccs_eis_capex_2030: float = 1728
+    gas_ccs_eis_capex_2040: float = 1728
+    gas_ccs_eis_capex_2050: float = 1728
+
+    # GAS + CCS OPEX (€/ (kg/day)) / year
+    gas_ccs_eis_fixed_opex_2020: float = 1728 * 0.04
+    gas_ccs_eis_fixed_opex_2030: float = 1728 * 0.04
+    gas_ccs_eis_fixed_opex_2040: float = 1728 * 0.04
+    gas_ccs_eis_fixed_opex_2050: float = 1728 * 0.04
+
+    # GAS + CCS efficicency
+    gas_ccs_efficiency_2020: float = 0.69
+    gas_ccs_efficiency_2030: float = 0.69
+    gas_ccs_efficiency_2040: float = 0.69
+    gas_ccs_efficiency_2050: float = 0.69
+
+    # GAS + CAPEX (€/ (kg/day))
+    gas_eis_capex_2020: float = 917
+    gas_eis_capex_2030: float = 917
+    gas_eis_capex_2040: float = 917
+    gas_eis_capex_2050: float = 917
+
+    # GAS OPEX (€/ (kg/day)) / year
+    gas_eis_fixed_opex_2020: float = 917 * 0.047
+    gas_eis_fixed_opex_2030: float = 917 * 0.047
+    gas_eis_fixed_opex_2040: float = 917 * 0.047
+    gas_eis_fixed_opex_2050: float = 917 * 0.047
+
+    # GAS efficicency
+    gas_efficiency_2020: float = 0.76
+    gas_efficiency_2030: float = 0.76
+    gas_efficiency_2040: float = 0.76
+    gas_efficiency_2050: float = 0.76
+
+    # Coal + CCS CAPEX (€/ (kg/day))
+    coal_ccs_eis_capex_2020: float = 2399
+    coal_ccs_eis_capex_2030: float = 2399
+    coal_ccs_eis_capex_2040: float = 2399
+    coal_ccs_eis_capex_2050: float = 2399
+
+    # Coal + CCS OPEX (€/ (kg/day)) / year
+    coal_ccs_eis_fixed_opex_2020: float = 2399 * 0.05
+    coal_ccs_eis_fixed_opex_2030: float = 2399 * 0.05
+    coal_ccs_eis_fixed_opex_2040: float = 2399 * 0.05
+    coal_ccs_eis_fixed_opex_2050: float = 2399 * 0.05
+
+    # Coal + CCS efficicency
+    coal_ccs_efficiency_2020: float = 0.58
+    coal_ccs_efficiency_2030: float = 0.58
+    coal_ccs_efficiency_2040: float = 0.58
+    coal_ccs_efficiency_2050: float = 0.58
+
+    # Coal CAPEX (€/ (kg/day))
+    coal_eis_capex_2020: float = 2304
+    coal_eis_capex_2030: float = 2304
+    coal_eis_capex_2040: float = 2304
+    coal_eis_capex_2050: float = 2304
+
+    # Coal OPEX (€/ (kg/day)) / year
+    coal_eis_fixed_opex_2020: float = 2304 * 0.05
+    coal_eis_fixed_opex_2030: float = 2304 * 0.05
+    coal_eis_fixed_opex_2040: float = 2304 * 0.05
+    coal_eis_fixed_opex_2050: float = 2304 * 0.05
+
+    # Coal efficicency
+    coal_efficiency_2020: float = 0.6
+    coal_efficiency_2030: float = 0.6
+    coal_efficiency_2040: float = 0.6
+    coal_efficiency_2050: float = 0.6
+
+    # CCS price (€/kgCO2)
+    ccs_cost_2020: float= 0.02
+    ccs_cost_2030: float= 0.02
+    ccs_cost_2040: float= 0.02
+    ccs_cost_2050: float= 0.02
 
     # Liquefier Capex (€/ (kg/day))
     liquefier_capex_2020: float = 1457.33
@@ -93,10 +182,11 @@ class ImpactsParameters(object):
     liquefier_capex_2050: float = 1457.33
 
     # Liquefier sp. electricity (kWh/kg)
-    liquefier_specific_electricity_2020: float = 7.54
-    liquefier_specific_electricity_2030: float = 7.54
-    liquefier_specific_electricity_2040: float = 7.54
-    liquefier_specific_electricity_2050: float = 7.54
+    # TODO remove switch to efficicency
+    # liquefier_specific_electricity_2020: float = 7.54
+    # liquefier_specific_electricity_2030: float = 7.54
+    # liquefier_specific_electricity_2040: float = 7.54
+    # liquefier_specific_electricity_2050: float = 7.54
 
     # Electrofuel plant capex € / (kg/day)
     electrofuel_capex_2020: float = 2311
@@ -124,6 +214,7 @@ class ImpactsParameters(object):
     electrofuel_specific_electricity_2050: float = 22.9
 
     # Electrofuel plant specific co2 (kg/kg)
+
     electrofuel_specific_co2_2020: float = 4.47
     electrofuel_specific_co2_2030: float = 4.47
     electrofuel_specific_co2_2040: float = 4.47
@@ -135,6 +226,20 @@ class ImpactsParameters(object):
     electricity_cost_2030: float = 0.08
     electricity_cost_2040: float = 0.08
     electricity_cost_2050: float = 0.08
+
+
+    # Gas market price (€/kWh)
+
+    gas_cost_2020: float = 0.005
+    gas_cost_2030: float = 0.011
+    gas_cost_2040: float = 0.010
+    gas_cost_2050: float = 0.009
+
+    # Electricity market price (€/kWh)
+    coal_cost_2020: float = 0.006
+    coal_cost_2030: float = 0.0057
+    coal_cost_2040: float = 0.0054
+    coal_cost_2050: float = 0.0052
 
     # Electricity load factor
 

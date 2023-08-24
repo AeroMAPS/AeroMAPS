@@ -48,6 +48,7 @@ class ElectrofuelCost(AeromapsModel):
         pd.Series
     ]:
 
+
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
@@ -238,6 +239,7 @@ class ElectrofuelCost(AeromapsModel):
         Specific CO2 in kg/kg
         Electricity market price in €/kWh
         Electrofuel price returned in €/kg
+        TODO SWITCH to efficiency
         """
         operational_time = 30
         hydrogen_prices = {}

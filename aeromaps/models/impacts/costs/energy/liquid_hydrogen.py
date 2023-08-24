@@ -33,42 +33,38 @@ class LiquidHydrogenCost(AeromapsModel):
             electrolyser_eis_capex: pd.Series = pd.Series(dtype="float64"),
             electrolyser_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
             electrolyser_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-            electrolyser_eis_specific_electricity: pd.Series = pd.Series(dtype="float64"),
+            electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
             gas_ccs_eis_capex: pd.Series = pd.Series(dtype="float64"),
             gas_ccs_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-            gas_ccs_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
             gas_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
             gas_ccs_load_factor: float = 0.0,
             gas_ccs_h2_emission_factor: float = 0.0,
             gas_ccs_ccs_efficiency: float = 0.0,
             gas_eis_capex: pd.Series = pd.Series(dtype="float64"),
             gas_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-            gas_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
             gas_efficiency: pd.Series = pd.Series(dtype="float64"),
             gas_load_factor: float = 0.0,
             gas_h2_emission_factor: float = 0.0,
             coal_ccs_eis_capex: pd.Series = pd.Series(dtype="float64"),
             coal_ccs_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-            coal_ccs_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
             coal_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
             coal_ccs_load_factor: float = 0.0,
             coal_ccs_h2_emission_factor: float = 0.0,
             coal_ccs_ccs_efficiency: float = 0.0,
             coal_eis_capex: pd.Series = pd.Series(dtype="float64"),
             coal_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-            coal_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
             coal_efficiency: pd.Series = pd.Series(dtype="float64"),
             coal_load_factor: float = 0.0,
             coal_h2_emission_factor: float = 0.0,
             liquefier_eis_capex: pd.Series = pd.Series(dtype="float64"),
-            liquefier_eis_specific_electricity: pd.Series = pd.Series(dtype="float64"),
+            liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
             kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
             kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
             hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
             electricity_market_price: pd.Series = pd.Series(dtype="float64"),
             gas_market_price: pd.Series = pd.Series(dtype="float64"),
             coal_market_price: pd.Series = pd.Series(dtype="float64"),
-            ccs_price: pd.Series = pd.Series(dtype="float64"),
+            ccs_cost: pd.Series = pd.Series(dtype="float64"),
             electricity_load_factor: float = 0.0,
             transport_cost_ratio: float = 0.0,
             energy_replacement_ratio: float = 1.0,
@@ -144,7 +140,7 @@ class LiquidHydrogenCost(AeromapsModel):
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
-
+        print("inbig")
         electrolysis_plant_building_scenario, \
             electrolysis_plant_building_cost, \
             electrolysis_h2_total_cost, \
@@ -153,7 +149,7 @@ class LiquidHydrogenCost(AeromapsModel):
             electrolysis_h2_elec_cost = self.electrolysis_computation(electrolyser_eis_capex,
                                                                       electrolyser_eis_fixed_opex,
                                                                       electrolyser_eis_var_opex,
-                                                                      electrolyser_eis_specific_electricity,
+                                                                      electrolysis_efficiency,
                                                                       electricity_market_price,
                                                                       energy_consumption_hydrogen,
                                                                       hydrogen_electrolysis_share,
@@ -176,10 +172,10 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_ccs_h2_elec_cost, \
             gas_ccs_h2_ccs_cost = self.fossil_computation(gas_ccs_eis_capex,
                                                           gas_ccs_eis_fixed_opex,
-                                                          gas_ccs_eis_var_opex,
+                                                          # gas_ccs_eis_var_opex,
                                                           gas_ccs_efficiency,
                                                           gas_market_price,
-                                                          ccs_price,
+                                                          ccs_cost,
                                                           energy_consumption_hydrogen,
                                                           hydrogen_gas_ccs_share,
                                                           gas_ccs_load_factor,
@@ -204,10 +200,10 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_h2_elec_cost, \
             gas_h2_cost = self.fossil_computation(gas_eis_capex,
                                                   gas_eis_fixed_opex,
-                                                  gas_eis_var_opex,
+                                                  # gas_eis_var_opex,
                                                   gas_efficiency,
                                                   gas_market_price,
-                                                  ccs_price,
+                                                  ccs_cost,
                                                   energy_consumption_hydrogen,
                                                   hydrogen_gas_share,
                                                   gas_load_factor,
@@ -231,10 +227,10 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_ccs_h2_elec_cost, \
             coal_ccs_h2_ccs_cost = self.fossil_computation(coal_ccs_eis_capex,
                                                            coal_ccs_eis_fixed_opex,
-                                                           coal_ccs_eis_var_opex,
+                                                           # coal_ccs_eis_var_opex,
                                                            coal_ccs_efficiency,
                                                            coal_market_price,
-                                                           ccs_price,
+                                                           ccs_cost,
                                                            energy_consumption_hydrogen,
                                                            hydrogen_coal_ccs_share,
                                                            coal_ccs_load_factor,
@@ -259,10 +255,10 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_h2_elec_cost, \
             coal_h2_cost = self.fossil_computation(coal_eis_capex,
                                                    coal_eis_fixed_opex,
-                                                   coal_eis_var_opex,
+                                                   # coal_eis_var_opex,
                                                    coal_efficiency,
                                                    coal_market_price,
-                                                   ccs_price,
+                                                   ccs_cost,
                                                    energy_consumption_hydrogen,
                                                    hydrogen_coal_share,
                                                    coal_load_factor,
@@ -284,7 +280,7 @@ class LiquidHydrogenCost(AeromapsModel):
             liquefaction_h2_capex_cost, \
             liquefaction_h2_opex_cost, \
             liquefaction_h2_elec_cost = self.liquefaction_computation(liquefier_eis_capex,
-                                                                      liquefier_eis_specific_electricity,
+                                                                      liquefaction_efficiency,
                                                                       electricity_market_price,
                                                                       energy_consumption_hydrogen)
 
@@ -381,11 +377,11 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "total_h2_capex"] = total_h2_capex
         # M€
 
-        # TODO add liouqefaction and transport cprem
         # Compute Cost premiums, abatements costs and carbon tax for each pathway
 
         #### ELECTROLYSIS ####
-        h2_cost_premium_electrolysis = electrolysis_h2_total_cost + (liquefaction_h2_total_cost+ transport_h2_total_cost)*hydrogen_electrolysis_share - \
+        h2_cost_premium_electrolysis = electrolysis_h2_total_cost + (
+                liquefaction_h2_total_cost + transport_h2_total_cost) * hydrogen_electrolysis_share - \
                                        energy_consumption_hydrogen * hydrogen_electrolysis_share / 100 \
                                        / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
@@ -410,7 +406,8 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'electrolysis_h2_mfsp_carbon_tax_supplement'] = electrolysis_h2_mfsp_carbon_tax_supplement
 
         #### GAS CCS ####
-        h2_cost_premium_gas_ccs = gas_ccs_h2_total_cost + (liquefaction_h2_total_cost+ transport_h2_total_cost)*hydrogen_gas_ccs_share - \
+        h2_cost_premium_gas_ccs = gas_ccs_h2_total_cost + (
+                liquefaction_h2_total_cost + transport_h2_total_cost) * hydrogen_gas_ccs_share - \
                                   energy_consumption_hydrogen * hydrogen_gas_ccs_share / 100 \
                                   / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
@@ -435,7 +432,8 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'gas_ccs_h2_mfsp_carbon_tax_supplement'] = gas_ccs_h2_mfsp_carbon_tax_supplement
 
         #### GAS ####
-        h2_cost_premium_gas = gas_h2_total_cost + (liquefaction_h2_total_cost+ transport_h2_total_cost)*hydrogen_gas_share - \
+        h2_cost_premium_gas = gas_h2_total_cost + (
+                liquefaction_h2_total_cost + transport_h2_total_cost) * hydrogen_gas_share - \
                               energy_consumption_hydrogen * hydrogen_gas_share / 100 \
                               / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
@@ -460,7 +458,8 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'gas_h2_mfsp_carbon_tax_supplement'] = gas_h2_mfsp_carbon_tax_supplement
 
         #### COAL CCS ####
-        h2_cost_premium_coal_ccs = coal_ccs_h2_total_cost + (liquefaction_h2_total_cost + transport_h2_total_cost)*hydrogen_coal_ccs_share - \
+        h2_cost_premium_coal_ccs = coal_ccs_h2_total_cost + (
+                liquefaction_h2_total_cost + transport_h2_total_cost) * hydrogen_coal_ccs_share - \
                                    energy_consumption_hydrogen * hydrogen_coal_ccs_share / 100 \
                                    / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
@@ -485,7 +484,8 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'coal_ccs_h2_mfsp_carbon_tax_supplement'] = coal_ccs_h2_mfsp_carbon_tax_supplement
 
         #### COAL ####
-        h2_cost_premium_coal = coal_h2_total_cost + (liquefaction_h2_total_cost + transport_h2_total_cost)*hydrogen_coal_share - \
+        h2_cost_premium_coal = coal_h2_total_cost + (
+                liquefaction_h2_total_cost + transport_h2_total_cost) * hydrogen_coal_share - \
                                energy_consumption_hydrogen * hydrogen_coal_share / 100 \
                                / energy_replacement_ratio / kerosene_lhv * kerosene_market_price / 1000000
 
@@ -583,7 +583,7 @@ class LiquidHydrogenCost(AeromapsModel):
             electrolyser_eis_capex: pd.Series = pd.Series(dtype="float64"),
             electrolyser_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
             electrolyser_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-            electrolyser_eis_specific_energy: pd.Series = pd.Series(dtype="float64"),
+            electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
             electricity_market_price: pd.Series = pd.Series(dtype="float64"),
             energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
             pathway_share: pd.Series = pd.Series(dtype="float64"),
@@ -624,14 +624,14 @@ class LiquidHydrogenCost(AeromapsModel):
             # Production missing in year n+1 must be supplied by plant build in year n
             if hydrogen_production[year + 1] < demand_scenario[year + 1]:
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
-                hydrogen_cost = LiquidHydrogenCost.compute_fossil_year_lcoh(year,
-                                                                            electricity_market_price,
-                                                                            electricity_load_factor,
-                                                                            electrolyser_eis_capex,
-                                                                            electrolyser_eis_fixed_opex,
-                                                                            electrolyser_eis_var_opex,
-                                                                            electrolyser_eis_specific_energy
-                                                                            )
+                hydrogen_cost = LiquidHydrogenCost.compute_electrolyser_year_lcoh(year,
+                                                                                  electricity_market_price,
+                                                                                  electricity_load_factor,
+                                                                                  electrolyser_eis_capex,
+                                                                                  electrolyser_eis_fixed_opex,
+                                                                                  electrolyser_eis_var_opex,
+                                                                                  electrolysis_efficiency
+                                                                                  )
 
                 # Getting the production not matched by plants already commissioned
                 missing_production = demand_scenario[year + 1] - hydrogen_production[year + 1]
@@ -677,7 +677,7 @@ class LiquidHydrogenCost(AeromapsModel):
                                        electrolyser_capex,
                                        electrolyser_fixed_opex,
                                        electrolyser_var_opex,
-                                       electrolyser_specific_electricity
+                                       plant_efficiency
                                        ):
         """
         This function computes the MFSP for hydrogen production for an electrolyser commissioned at the base year.
@@ -695,6 +695,10 @@ class LiquidHydrogenCost(AeromapsModel):
         operational_time = 30
         hydrogen_prices = {}
         construction_time = 3
+
+        hydrogen_specific_energy = 119.93 / 3.6  # kWh/kg
+        # compute plant specific energy #kWh energy/kg h2
+        electrolyser_specific_electricity = hydrogen_specific_energy / plant_efficiency
 
         discount = 0.10
         load_fact = min(0.95, electricity_load_factor)
@@ -736,10 +740,10 @@ class LiquidHydrogenCost(AeromapsModel):
     def fossil_computation(
             plant_eis_capex: pd.Series = pd.Series(dtype="float64"),
             plant_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-            plant_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
+            # plant_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
             plant_efficiency: pd.Series = pd.Series(dtype="float64"),
             fuel_market_price: pd.Series = pd.Series(dtype="float64"),
-            ccs_price: pd.Series = pd.Series(dtype="float64"),
+            ccs_cost: pd.Series = pd.Series(dtype="float64"),
             energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
             pathway_share: pd.Series = pd.Series(dtype="float64"),
             plant_load_factor: float = 0.0,
@@ -792,13 +796,13 @@ class LiquidHydrogenCost(AeromapsModel):
                 # Getting the production not matched by plants already commissioned by creating an plant with year data technical data
                 hydrogen_cost = LiquidHydrogenCost.compute_fossil_year_lcoh(year,
                                                                             fuel_market_price,
-                                                                            ccs_price,
+                                                                            ccs_cost,
                                                                             ccs_efficiency,
                                                                             emission_factor,
                                                                             plant_load_factor,
                                                                             plant_eis_capex,
                                                                             plant_eis_fixed_opex,
-                                                                            plant_eis_var_opex,
+                                                                            # plant_eis_var_opex,
                                                                             plant_efficiency
                                                                             )
 
@@ -849,13 +853,13 @@ class LiquidHydrogenCost(AeromapsModel):
     @staticmethod
     def compute_fossil_year_lcoh(base_year,
                                  fuel_market_price,
-                                 ccs_price,
+                                 ccs_cost,
                                  ccs_efficiency,
                                  emission_factor,
                                  plant_load_factor,
                                  plant_capex,
                                  plant_fixed_opex,
-                                 plant_var_opex,
+                                 # plant_var_opex,
                                  plant_efficiency
                                  ):
         """
@@ -889,7 +893,7 @@ class LiquidHydrogenCost(AeromapsModel):
         discount = 0.10
         load_fact = plant_load_factor
         real_year_days = 365.25 * load_fact
-        real_var_opex = plant_var_opex[base_year] * real_year_days
+        real_var_opex = 0  # plant_var_opex[base_year] * real_year_days
 
         cap_cost_npv = 0
         fix_op_cost_npv = 0
@@ -916,7 +920,7 @@ class LiquidHydrogenCost(AeromapsModel):
         for year in range(base_year, end_bound + 1):
             elec_price = fuel_market_price[year]
             elec_cost = elec_price * plant_specific_energy[base_year]
-            co2_ccs_cost = ccs_price[year] * carbon_captured_kg
+            co2_ccs_cost = ccs_cost[year] * carbon_captured_kg
             hydrogen_prices[year] = {"TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + elec_cost,
                                      "CAPEX": cap_cost_lc,
                                      "FIX_OPEX": fix_op_cost_lc, "VAR_OPEX": var_op_cost_lc, "ELECTRICITY": elec_cost,
@@ -927,7 +931,7 @@ class LiquidHydrogenCost(AeromapsModel):
     @staticmethod
     def liquefaction_computation(
             liquefier_eis_capex: pd.Series = pd.Series(dtype="float64"),
-            liquefier_eis_specific_energy: pd.Series = pd.Series(dtype="float64"),
+            liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
             electricity_market_price: pd.Series = pd.Series(dtype="float64"),
             energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
     ):
@@ -961,7 +965,7 @@ class LiquidHydrogenCost(AeromapsModel):
                 liquefaction_cost = LiquidHydrogenCost.compute_liquefier_year_lcoh(year,
                                                                                    electricity_market_price,
                                                                                    liquefier_eis_capex,
-                                                                                   liquefier_eis_specific_energy
+                                                                                   liquefaction_efficiency
                                                                                    )
 
                 # Getting the production not matched by plants already commissioned
@@ -1006,7 +1010,7 @@ class LiquidHydrogenCost(AeromapsModel):
     def compute_liquefier_year_lcoh(base_year,
                                     electricity_market_price,
                                     liquefier_capex,
-                                    liquefier_specific_electricity
+                                    liquefaction_efficiency
                                     ):
         """ This function computes the MFSP for hydrogen liquefaction for an liquefier commissioned at the base year.
         Costs are discounted to find a constant MFSP, excepted electricity, whose price is directly evolving
@@ -1015,6 +1019,10 @@ class LiquidHydrogenCost(AeromapsModel):
         operational_time = 30
         liquefaction_prices = {}
         construction_time = 3
+
+        hydrogen_specific_energy = 119.93 / 3.6  # kWh/kg
+        # compute plant specific energy #kWh energy/kg h2
+        liquefier_specific_electricity = hydrogen_specific_energy / liquefaction_efficiency
 
         discount = 0.10
         load_fact = 0.95
@@ -1164,46 +1172,43 @@ class ElectrolyserVarOpex(AeromapsModel):
             electrolyser_eis_var_opex
         )
 
-
-class ElectrolyserSpecificElectricity(AeromapsModel):
-
-    # TODO adapt to efficiency
-    # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
-    # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
-    def __init__(self, name="electrolyser_specific_electricity", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
-
-    def compute(
-            self,
-            electrolyser_specific_electricity_2020: float = 0.0,
-            electrolyser_specific_electricity_2030: float = 0.0,
-            electrolyser_specific_electricity_2040: float = 0.0,
-            electrolyser_specific_electricity_2050: float = 0.0,
-    ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        reference_values_specific_electricity = [
-            electrolyser_specific_electricity_2020,
-            electrolyser_specific_electricity_2030,
-            electrolyser_specific_electricity_2040,
-            electrolyser_specific_electricity_2050
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        specific_electricity_function = interp1d(
-            reference_years, reference_values_specific_electricity, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "electrolyser_eis_specific_electricity"
-            ] = specific_electricity_function(k)
-
-        electrolyser_eis_specific_electricity = self.df.loc[:, "electrolyser_eis_specific_electricity"]
-
-        return (
-            electrolyser_eis_specific_electricity
-        )
+#
+# class ElectrolyserSpecificElectricity(AeromapsModel):
+#     # TODO delete due to switch to efficiency
+#     def __init__(self, name="electrolyser_specific_electricity", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#             self,
+#             electrolyser_specific_electricity_2020: float = 0.0,
+#             electrolyser_specific_electricity_2030: float = 0.0,
+#             electrolyser_specific_electricity_2040: float = 0.0,
+#             electrolyser_specific_electricity_2050: float = 0.0,
+#     ) -> Tuple[pd.Series]:
+#         """Electrolyser efficiency at eis using interpolation functions"""
+#         # FT MSW
+#         reference_values_specific_electricity = [
+#             electrolyser_specific_electricity_2020,
+#             electrolyser_specific_electricity_2030,
+#             electrolyser_specific_electricity_2040,
+#             electrolyser_specific_electricity_2050
+#         ]
+#
+#         reference_years = [2020, 2030, 2040, 2050]
+#
+#         specific_electricity_function = interp1d(
+#             reference_years, reference_values_specific_electricity, kind="linear"
+#         )
+#         for k in range(self.prospection_start_year, self.end_year + 1):
+#             self.df.loc[
+#                 k, "electrolyser_eis_specific_electricity"
+#             ] = specific_electricity_function(k)
+#
+#         electrolyser_eis_specific_electricity = self.df.loc[:, "electrolyser_eis_specific_electricity"]
+#
+#         return (
+#             electrolyser_eis_specific_electricity
+#         )
 
 
 class LiquefierCapex(AeromapsModel):
@@ -1242,42 +1247,535 @@ class LiquefierCapex(AeromapsModel):
             liquefier_eis_capex
         )
 
+#
+# class LiquefierSpecificElectricity(AeromapsModel):
+#     # TODO delete due to switch to efficiency
+#     def __init__(self, name="liquefier_specific_electricity", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#             self,
+#             liquefier_specific_electricity_2020: float = 0.0,
+#             liquefier_specific_electricity_2030: float = 0.0,
+#             liquefier_specific_electricity_2040: float = 0.0,
+#             liquefier_specific_electricity_2050: float = 0.0,
+#     ) -> Tuple[pd.Series]:
+#         """liquefier efficiency at eis using interpolation functions"""
+#         # FT MSW
+#         reference_values_specific_electricity = [
+#             liquefier_specific_electricity_2020,
+#             liquefier_specific_electricity_2030,
+#             liquefier_specific_electricity_2040,
+#             liquefier_specific_electricity_2050
+#         ]
+#
+#         reference_years = [2020, 2030, 2040, 2050]
+#
+#         specific_electricity_function = interp1d(
+#             reference_years, reference_values_specific_electricity, kind="linear"
+#         )
+#         for k in range(self.prospection_start_year, self.end_year + 1):
+#             self.df.loc[
+#                 k, "liquefier_eis_specific_electricity"
+#             ] = specific_electricity_function(k)
+#
+#         liquefier_eis_specific_electricity = self.df.loc[:, "liquefier_eis_specific_electricity"]
+#
+#         return (
+#             liquefier_eis_specific_electricity
+#         )
 
-class LiquefierSpecificElectricity(AeromapsModel):
-    # TODO adapt to efficiency
-    # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
-    # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
-    def __init__(self, name="liquefier_specific_electricity", *args, **kwargs):
+
+class GasCcsCapex(AeromapsModel):
+    def __init__(self, name="gas_ccs_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
             self,
-            liquefier_specific_electricity_2020: float = 0.0,
-            liquefier_specific_electricity_2030: float = 0.0,
-            liquefier_specific_electricity_2040: float = 0.0,
-            liquefier_specific_electricity_2050: float = 0.0,
+            gas_ccs_eis_capex_2020: float = 0.0,
+            gas_ccs_eis_capex_2030: float = 0.0,
+            gas_ccs_eis_capex_2040: float = 0.0,
+            gas_ccs_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """liquefier efficiency at eis using interpolation functions"""
-        # FT MSW
-        reference_values_specific_electricity = [
-            liquefier_specific_electricity_2020,
-            liquefier_specific_electricity_2030,
-            liquefier_specific_electricity_2040,
-            liquefier_specific_electricity_2050
+        """Electrolyser efficiency at eis using interpolation functions"""
+        print("incol0")
+        reference_values_gas_ccs_capex = [
+            gas_ccs_eis_capex_2020,
+            gas_ccs_eis_capex_2030,
+            gas_ccs_eis_capex_2040,
+            gas_ccs_eis_capex_2050
         ]
 
         reference_years = [2020, 2030, 2040, 2050]
 
-        specific_electricity_function = interp1d(
-            reference_years, reference_values_specific_electricity, kind="linear"
+        gas_ccs_capex_function = interp1d(
+            reference_years, reference_values_gas_ccs_capex, kind="linear"
         )
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[
-                k, "liquefier_eis_specific_electricity"
-            ] = specific_electricity_function(k)
+                k, "gas_ccs_eis_capex"
+            ] = gas_ccs_capex_function(k)
 
-        liquefier_eis_specific_electricity = self.df.loc[:, "liquefier_eis_specific_electricity"]
+        gas_ccs_eis_capex = self.df.loc[:, "gas_ccs_eis_capex"]
 
         return (
-            liquefier_eis_specific_electricity
+            gas_ccs_eis_capex
         )
+
+
+class GasCcsFixedOpex(AeromapsModel):
+    def __init__(self, name="gas_ccs_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_ccs_eis_fixed_opex_2020: float = 0.0,
+            gas_ccs_eis_fixed_opex_2030: float = 0.0,
+            gas_ccs_eis_fixed_opex_2040: float = 0.0,
+            gas_ccs_eis_fixed_opex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol1")
+        reference_values_gas_ccs_fixed_opex = [
+            gas_ccs_eis_fixed_opex_2020,
+            gas_ccs_eis_fixed_opex_2030,
+            gas_ccs_eis_fixed_opex_2040,
+            gas_ccs_eis_fixed_opex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_ccs_fixed_opex_function = interp1d(
+            reference_years, reference_values_gas_ccs_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_ccs_eis_fixed_opex"
+            ] = gas_ccs_fixed_opex_function(k)
+
+        gas_ccs_eis_fixed_opex = self.df.loc[:, "gas_ccs_eis_fixed_opex"]
+
+        return (
+            gas_ccs_eis_fixed_opex
+        )
+
+
+class GasCcsEfficiency(AeromapsModel):
+    def __init__(self, name="gas_ccs_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_ccs_efficiency_2020: float = 0.0,
+            gas_ccs_efficiency_2030: float = 0.0,
+            gas_ccs_efficiency_2040: float = 0.0,
+            gas_ccs_efficiency_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol2")
+        reference_values_gas_ccs_efficiency = [
+            gas_ccs_efficiency_2020,
+            gas_ccs_efficiency_2030,
+            gas_ccs_efficiency_2040,
+            gas_ccs_efficiency_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_ccs_efficiency_function = interp1d(
+            reference_years, reference_values_gas_ccs_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_ccs_efficiency"
+            ] = gas_ccs_efficiency_function(k)
+
+        gas_ccs_efficiency = self.df.loc[:, "gas_ccs_efficiency"]
+
+        return (
+            gas_ccs_efficiency
+        )
+
+
+class GasCapex(AeromapsModel):
+    def __init__(self, name="gas_capex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_eis_capex_2020: float = 0.0,
+            gas_eis_capex_2030: float = 0.0,
+            gas_eis_capex_2040: float = 0.0,
+            gas_eis_capex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol3")
+        reference_values_gas_capex = [
+            gas_eis_capex_2020,
+            gas_eis_capex_2030,
+            gas_eis_capex_2040,
+            gas_eis_capex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_capex_function = interp1d(
+            reference_years, reference_values_gas_capex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_eis_capex"
+            ] = gas_capex_function(k)
+
+        gas_eis_capex = self.df.loc[:, "gas_eis_capex"]
+
+        return (
+            gas_eis_capex
+        )
+
+
+class GasFixedOpex(AeromapsModel):
+    def __init__(self, name="gas_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_eis_fixed_opex_2020: float = 0.0,
+            gas_eis_fixed_opex_2030: float = 0.0,
+            gas_eis_fixed_opex_2040: float = 0.0,
+            gas_eis_fixed_opex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol4")
+        reference_values_gas_fixed_opex = [
+            gas_eis_fixed_opex_2020,
+            gas_eis_fixed_opex_2030,
+            gas_eis_fixed_opex_2040,
+            gas_eis_fixed_opex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_fixed_opex_function = interp1d(
+            reference_years, reference_values_gas_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_eis_fixed_opex"
+            ] = gas_fixed_opex_function(k)
+
+        gas_eis_fixed_opex = self.df.loc[:, "gas_eis_fixed_opex"]
+
+        return (
+            gas_eis_fixed_opex
+        )
+
+
+class GasEfficiency(AeromapsModel):
+    def __init__(self, name="gas_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            gas_efficiency_2020: float = 0.0,
+            gas_efficiency_2030: float = 0.0,
+            gas_efficiency_2040: float = 0.0,
+            gas_efficiency_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol5")
+        reference_values_gas_efficiency = [
+            gas_efficiency_2020,
+            gas_efficiency_2030,
+            gas_efficiency_2040,
+            gas_efficiency_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        gas_efficiency_function = interp1d(
+            reference_years, reference_values_gas_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "gas_efficiency"
+            ] = gas_efficiency_function(k)
+
+        gas_efficiency = self.df.loc[:, "gas_efficiency"]
+
+        return (
+            gas_efficiency
+        )
+
+
+
+class CoalCcsCapex(AeromapsModel):
+    def __init__(self, name="coal_ccs_capex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_ccs_eis_capex_2020: float = 0.0,
+            coal_ccs_eis_capex_2030: float = 0.0,
+            coal_ccs_eis_capex_2040: float = 0.0,
+            coal_ccs_eis_capex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol6")
+        reference_values_coal_ccs_capex = [
+            coal_ccs_eis_capex_2020,
+            coal_ccs_eis_capex_2030,
+            coal_ccs_eis_capex_2040,
+            coal_ccs_eis_capex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_ccs_capex_function = interp1d(
+            reference_years, reference_values_coal_ccs_capex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_ccs_eis_capex"
+            ] = coal_ccs_capex_function(k)
+
+        coal_ccs_eis_capex = self.df.loc[:, "coal_ccs_eis_capex"]
+
+        return (
+            coal_ccs_eis_capex
+        )
+
+
+class CoalCcsFixedOpex(AeromapsModel):
+    def __init__(self, name="coal_ccs_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_ccs_eis_fixed_opex_2020: float = 0.0,
+            coal_ccs_eis_fixed_opex_2030: float = 0.0,
+            coal_ccs_eis_fixed_opex_2040: float = 0.0,
+            coal_ccs_eis_fixed_opex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol7")
+        reference_values_coal_ccs_fixed_opex = [
+            coal_ccs_eis_fixed_opex_2020,
+            coal_ccs_eis_fixed_opex_2030,
+            coal_ccs_eis_fixed_opex_2040,
+            coal_ccs_eis_fixed_opex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_ccs_fixed_opex_function = interp1d(
+            reference_years, reference_values_coal_ccs_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_ccs_eis_fixed_opex"
+            ] = coal_ccs_fixed_opex_function(k)
+
+        coal_ccs_eis_fixed_opex = self.df.loc[:, "coal_ccs_eis_fixed_opex"]
+
+        return (
+            coal_ccs_eis_fixed_opex
+        )
+
+
+class CoalCcsEfficiency(AeromapsModel):
+    def __init__(self, name="coal_ccs_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_ccs_efficiency_2020: float = 0.0,
+            coal_ccs_efficiency_2030: float = 0.0,
+            coal_ccs_efficiency_2040: float = 0.0,
+            coal_ccs_efficiency_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol8")
+        reference_values_coal_ccs_efficiency = [
+            coal_ccs_efficiency_2020,
+            coal_ccs_efficiency_2030,
+            coal_ccs_efficiency_2040,
+            coal_ccs_efficiency_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_ccs_efficiency_function = interp1d(
+            reference_years, reference_values_coal_ccs_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_ccs_efficiency"
+            ] = coal_ccs_efficiency_function(k)
+
+        coal_ccs_efficiency = self.df.loc[:, "coal_ccs_efficiency"]
+
+        return (
+            coal_ccs_efficiency
+        )
+
+
+class CoalCapex(AeromapsModel):
+    def __init__(self, name="coal_capex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_eis_capex_2020: float = 0.0,
+            coal_eis_capex_2030: float = 0.0,
+            coal_eis_capex_2040: float = 0.0,
+            coal_eis_capex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        """Electrolyser efficiency at eis using interpolation functions"""
+        # FT MSW
+        print("incol9")
+        reference_values_coal_capex = [
+            coal_eis_capex_2020,
+            coal_eis_capex_2030,
+            coal_eis_capex_2040,
+            coal_eis_capex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_capex_function = interp1d(
+            reference_years, reference_values_coal_capex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_eis_capex"
+            ] = coal_capex_function(k)
+
+        coal_eis_capex = self.df.loc[:, "coal_eis_capex"]
+
+        return (
+            coal_eis_capex
+        )
+
+
+class CoalFixedOpex(AeromapsModel):
+    def __init__(self, name="coal_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_eis_fixed_opex_2020: float = 0.0,
+            coal_eis_fixed_opex_2030: float = 0.0,
+            coal_eis_fixed_opex_2040: float = 0.0,
+            coal_eis_fixed_opex_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        print("incol10")
+        # FT MSW
+        reference_values_coal_fixed_opex = [
+            coal_eis_fixed_opex_2020,
+            coal_eis_fixed_opex_2030,
+            coal_eis_fixed_opex_2040,
+            coal_eis_fixed_opex_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_fixed_opex_function = interp1d(
+            reference_years, reference_values_coal_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_eis_fixed_opex"
+            ] = coal_fixed_opex_function(k)
+
+        coal_eis_fixed_opex = self.df.loc[:, "coal_eis_fixed_opex"]
+
+        return (
+            coal_eis_fixed_opex
+        )
+
+
+class CoalEfficiency(AeromapsModel):
+    def __init__(self, name="coal_fixed_opex", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            coal_efficiency_2020: float = 0.0,
+            coal_efficiency_2030: float = 0.0,
+            coal_efficiency_2040: float = 0.0,
+            coal_efficiency_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        print("incol11")
+        # FT MSW
+        reference_values_coal_efficiency = [
+            coal_efficiency_2020,
+            coal_efficiency_2030,
+            coal_efficiency_2040,
+            coal_efficiency_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        coal_efficiency_function = interp1d(
+            reference_years, reference_values_coal_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "coal_efficiency"
+            ] = coal_efficiency_function(k)
+
+        coal_efficiency = self.df.loc[:, "coal_efficiency"]
+
+        return (
+            coal_efficiency
+        )
+
+
+
+class CcsCost(AeromapsModel):
+    def __init__(self, name="ccs_cost", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            ccs_cost_2020: float = 0.0,
+            ccs_cost_2030: float = 0.0,
+            ccs_cost_2040: float = 0.0,
+            ccs_cost_2050: float = 0.0,
+    ) -> Tuple[pd.Series]:
+        print("incol12")
+        # FT MSW
+        reference_values_ccs_cost = [
+            ccs_cost_2020,
+            ccs_cost_2030,
+            ccs_cost_2040,
+            ccs_cost_2050
+        ]
+
+        reference_years = [2020, 2030, 2040, 2050]
+
+        ccs_cost_function = interp1d(
+            reference_years, reference_values_ccs_cost, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[
+                k, "ccs_cost"
+            ] = ccs_cost_function(k)
+
+        ccs_cost = self.df.loc[:, "ccs_cost"]
+
+        return (
+            ccs_cost
+        )
+
+
+
