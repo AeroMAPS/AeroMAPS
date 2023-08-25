@@ -32,6 +32,10 @@ class NonDiscountedScenarioCost(AeromapsModel):
             biofuel_cost_premium_ft_msw: pd.Series = pd.Series(dtype="float64"),
             biofuel_cost_premium_atj: pd.Series = pd.Series(dtype="float64"),
             h2_cost_premium_electrolysis: pd.Series = pd.Series(dtype="float64"),
+            h2_cost_premium_gas_ccs: pd.Series = pd.Series(dtype="float64"),
+            h2_cost_premium_gas: pd.Series = pd.Series(dtype="float64"),
+            h2_cost_premium_coal_ccs: pd.Series = pd.Series(dtype="float64"),
+            h2_cost_premium_coal: pd.Series = pd.Series(dtype="float64"),
             liquefaction_h2_total_cost: pd.Series = pd.Series(dtype="float64"),
             transport_h2_total_cost: pd.Series = pd.Series(dtype="float64"),
             electrofuel_cost_premium: pd.Series = pd.Series(dtype="float64"),
@@ -55,9 +59,13 @@ class NonDiscountedScenarioCost(AeromapsModel):
                                              + biofuel_cost_premium_hefa_others \
                                              + biofuel_cost_premium_hefa_fog \
                                              + h2_cost_premium_electrolysis \
-                                             + liquefaction_h2_total_cost \
-                                             + transport_h2_total_cost \
-                                            + electrofuel_cost_premium
+                                             + h2_cost_premium_gas_ccs \
+                                             + h2_cost_premium_gas \
+                                             + h2_cost_premium_coal_ccs \
+                                             + h2_cost_premium_coal \
+                                             + electrofuel_cost_premium
+
+        print(total_hydrogen_supply_cost)
 
         non_discounted_BAU_energy_expenses = non_discounted_energy_expenses - non_discounted_energy_cost_premium
 
@@ -105,6 +113,7 @@ class DicountedScenarioCost(AeromapsModel):
             hydrogen_discounted = total_hydrogen_supply_cost[k] / (1 + social_discount_rate) ** (
                     k - self.prospection_start_year)
 
+            # TODO add new pathways
             self.df.loc[k, "discounted_energy_expenses"] = kerosene_discounted \
                                                            + biofuel_atj_discounted \
                                                            + biofuel_ft_msw_discounted \

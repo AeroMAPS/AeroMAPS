@@ -115,7 +115,11 @@ class ScenarioEnergyExpensesPlot:
 
     def create_plot(self):
         # mine
-        colors = ['#2A3438', '#2A3438', '#ee9b00', '#ee9b00', '#ffbf47', '#ffbf47', '#bb3e03','#bb3e03', '#0c9e30', '#0c9e30', '#097223', '#097223', '#828782', '#828782', '#0075A3', '#0075A3']
+        colors = ['#2A3438', '#2A3438', '#ee9b00', '#ee9b00', '#ffbf47', '#ffbf47',
+                  '#bb3e03','#bb3e03', '#0c9e30', '#0c9e30', '#097223', '#097223',
+                  '#828782', '#828782', '#52F752', '#52F752', '#0ABAFF', '#0ABAFF',
+                  '#8CAAB6', '#8CAAB6', '#0ABAFF', '#0ABAFF', '#8CAAB6', '#8CAAB6',
+                  '#87AE87']
 
         self.annual_energy_expenses = self.ax.stackplot(
             self.prospective_years,
@@ -133,14 +137,25 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"],
             self.df.loc[self.prospective_years, "electrofuel_total_cost"],
             self.df.loc[self.prospective_years, "electrofuel_carbon_tax"],
-            self.df.loc[self.prospective_years, "total_hydrogen_supply_cost"],
+            self.df.loc[self.prospective_years, "electrolysis_h2_total_cost"],
             self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"],
+            self.df.loc[self.prospective_years, "gas_ccs_h2_total_cost"],
+            self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"],
+            self.df.loc[self.prospective_years, "gas_h2_total_cost"],
+            self.df.loc[self.prospective_years, "gas_h2_carbon_tax"],
+            self.df.loc[self.prospective_years, "coal_ccs_h2_total_cost"],
+            self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"],
+            self.df.loc[self.prospective_years, "coal_h2_total_cost"],
+            self.df.loc[self.prospective_years, "coal_h2_carbon_tax"],
+            self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"]+self.df.loc[self.prospective_years, "transport_h2_total_cost"],
+
+
         colors=colors,
         )
 
         stacks= self.annual_energy_expenses
 
-        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//","", "//", "", "//"]
+        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//","", "//", "", "//", "", "//", "", "//","", "//","", "//",""]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
@@ -149,22 +164,36 @@ class ScenarioEnergyExpensesPlot:
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
         self.ax = plt.gca()
-        self.ax.legend([
-            'Fossil Kerosene',
-            'Fossil Kerosene-$C0_2$ tax',
-            'Bio - HEFA FOG',
-            'Bio - HEFA FOG-$C0_2$ tax',
-            'Bio - HEFA Others',
-            'Bio - HEFA Others-$C0_2$ tax',
-            'Bio - Alcohol to Jet',
-            'Bio - Alcohol to Jet-$C0_2$ tax',
-            'Bio - FT Others',
-            'Bio - FT Others-$C0_2$ tax',
-            'Bio - FT Municipal Waste',
-            'Bio - FT Municipal Waste-$C0_2$ tax',
-            'Electrofuel',
-            'LH2 '
-    ],   loc='upper left' )
+
+        # TODO solve legend problem
+    #     self.ax.legend([
+    #         'Fossil Kerosene',
+    #         'Fossil Kerosene-$C0_2$ tax',
+    #         'Bio - HEFA FOG',
+    #         'Bio - HEFA FOG-$C0_2$ tax',
+    #         'Bio - HEFA Others',
+    #         'Bio - HEFA Others-$C0_2$ tax',
+    #         'Bio - Alcohol to Jet',
+    #         'Bio - Alcohol to Jet-$C0_2$ tax',
+    #         'Bio - FT Others',
+    #         'Bio - FT Others-$C0_2$ tax',
+    #         'Bio - FT Municipal Waste',
+    #         'Bio - FT Municipal Waste-$C0_2$ tax',
+    #         'Electrofuel',
+    #         'Electrofuel-$C0_2$ tax',
+    #         'Electrolysis $H_2$ ',
+    #         'Electrolysis $H_2$-$C0_2$ tax',
+    #         'Gas CCS $H_2$ ',
+    #         'Gas CCS $H_2$-$C0_2$ tax',
+    #         'Gas $H_2$ ',
+    #         'Gas $H_2$-$C0_2$ tax',
+    #         'Coal CCS $H_2$ ',
+    #         'Coal CCS $H_2$-$C0_2$ tax',
+    #         'Coal $H_2$ ',
+    #         'Coal $H_2$-$C0_2$ tax',
+    #         'Hydrogen Logistics*'
+    #
+    # ],    )
 
         self.ax.set_xlim(2020, 2050)
 
@@ -241,6 +270,10 @@ class ScenarioEnergyCarbonTaxPlot:
              self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"] +
              self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"] +
              self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"] +
+             self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"] +
+             self.df.loc[self.prospective_years, "gas_h2_carbon_tax"] +
+             self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"] +
+             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"] +
              self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
              ),
             label='Scenario energy expenses incl. carbon tax',

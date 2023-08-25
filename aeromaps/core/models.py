@@ -86,7 +86,7 @@ from aeromaps.models.impacts.others.comparison import (
 # COSTS
 from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
 from aeromaps.models.impacts.costs.energy.market_prices import ElectricityCost, Co2Cost, KeroseneCost, KerosenePrice, \
-    Co2Tax, KeroseneBAUCost
+    Co2Tax, KeroseneBAUCost, CoalCost, GasCost
 from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCost,
     ElectrofuelCapex,
@@ -294,6 +294,12 @@ models_simple = {
     ),
     "electricity_cost": ElectricityCost(
         "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "coal_cost": CoalCost(
+        "coal_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_cost": GasCost(
+        "coal_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
     "liquid_hydrogen_cost": LiquidHydrogenCost(
         "liquid_hydrogen_cost", year_parameters=year_parameters, parameters=AllParameters()

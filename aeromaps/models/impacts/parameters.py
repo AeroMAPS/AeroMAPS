@@ -181,8 +181,10 @@ class ImpactsParameters(object):
     liquefier_capex_2040: float = 1457.33
     liquefier_capex_2050: float = 1457.33
 
+    # TODO ADD H2 TRANSPORT COST RATIO INIT (IEA OR HOELZEN)
+
     # Liquefier sp. electricity (kWh/kg)
-    # TODO remove switch to efficicency
+    # TODO remove/switch to efficicency
     # liquefier_specific_electricity_2020: float = 7.54
     # liquefier_specific_electricity_2030: float = 7.54
     # liquefier_specific_electricity_2040: float = 7.54
