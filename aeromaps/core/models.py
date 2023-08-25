@@ -569,6 +569,12 @@ models_complex = {
     "electricity_cost": ElectricityCost(
         "electricity_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),
+    "coal_cost": CoalCost(
+        "coal_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "gas_cost": GasCost(
+        "coal_cost", year_parameters=year_parameters, parameters=AllParameters()
+    ),
     "liquid_hydrogen_cost": LiquidHydrogenCost(
         "liquid_hydrogen_cost", year_parameters=year_parameters, parameters=AllParameters()
     ),

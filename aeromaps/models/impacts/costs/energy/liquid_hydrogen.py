@@ -135,6 +135,7 @@ class LiquidHydrogenCost(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
         pd.Series
     ]:
         ######## HYDROGEN PRODUCTION ########
@@ -355,7 +356,6 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "h2_avg_cost_per_kg_coal"] = h2_avg_cost_per_kg_coal
         # €/kg
 
-        # WARNING/ to complete with other pathways once implemented !!
 
         total_hydrogen_supply_cost = electrolysis_h2_total_cost \
                                      + gas_ccs_h2_total_cost \
@@ -367,6 +367,10 @@ class LiquidHydrogenCost(AeromapsModel):
 
         self.df.loc[:, "total_hydrogen_supply_cost"] = total_hydrogen_supply_cost
         # M€
+
+        h2_avg_cost_per_kg = total_hydrogen_supply_cost / (energy_consumption_hydrogen / hydrogen_specific_energy) * 1000000
+        self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
+        # €/kg
 
         total_h2_capex = electrolysis_plant_building_cost \
                          + gas_ccs_plant_building_cost \
@@ -525,6 +529,7 @@ class LiquidHydrogenCost(AeromapsModel):
             transport_h2_total_cost,
             h2_avg_cost_per_kg_electrolysis,
             total_hydrogen_supply_cost,
+            h2_avg_cost_per_kg,
             total_h2_capex,
             h2_cost_premium_electrolysis,
             carbon_abatement_cost_h2_electrolysis,
