@@ -228,9 +228,9 @@ from aeromaps.models.base import AeromapsModel
 #             ask_long_range_hydrogen,
 #         )
 
-class PassengerAircraftDocEnergyComplex(AeromapsModel):
+class PassengerAircraftDocEnergy(AeromapsModel):
     def __init__(
-            self, name="passenger_aircraft_doc_energy_complex", fleet_model=None, *args, **kwargs
+            self, name="passenger_aircraft_doc_energy", fleet_model=None, *args, **kwargs
     ):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model

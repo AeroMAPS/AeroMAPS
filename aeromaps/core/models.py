@@ -1,3 +1,4 @@
+from aeromaps.models.impacts.costs.operations.average_ops_cost import PassengerAircraftDocEnergy, DropInMeanMfsp
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 from aeromaps.models.parameters import YearParameters
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -387,6 +388,12 @@ models_simple = {
     ),
     "biofuel_abatement_potential": BiofuelAbatementPotential(
         "biofuel_abatement_potential", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy(
+        "passenger_aircraft_doc_energy", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "dropin_mean_mfsp": DropInMeanMfsp(
+        "dropin_mean_mfsp", year_parameters=year_parameters, parameters=AllParameters()
     )
 }
 
@@ -661,5 +668,12 @@ models_complex = {
     ),
     "biofuel_abatement_potential": BiofuelAbatementPotential(
         "biofuel_abatement_potential", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy(
+        "passenger_aircraft_doc_energy", year_parameters=year_parameters, parameters=AllParameters()
+    ),
+    "dropin_mean_mfsp": DropInMeanMfsp(
+        "dropin_mean_mfsp", year_parameters=year_parameters, parameters=AllParameters()
     )
+
 }
