@@ -292,7 +292,7 @@ class AirTransportClimateImpactsPlot:
             self.years,
             np.zeros(len(self.years)),
             self.df["co2_erf"],
-            color="red",
+            color="tomato",
             label="CO2",
         )
 
@@ -369,7 +369,7 @@ class AirTransportClimateImpactsPlot:
             self.years,
             np.zeros(len(self.years)),
             self.df["co2_erf"],
-            color="red",
+            color="tomato",
             label="CO2",
         )
 

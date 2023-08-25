@@ -24,7 +24,7 @@ class ShortRangeDistribution(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
         """Short range distribution calculation."""
 
-        reference_years = [2019, 2030, 2040, 2050]
+        reference_years = [2019, 2030, 2040, self.end_year]
 
         # Basic Turbofan
         reference_values_basicturbofan = [

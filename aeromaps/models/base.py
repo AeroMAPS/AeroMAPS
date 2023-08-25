@@ -3,7 +3,6 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from aeromaps.models.constants import ModelType
-from aeromaps.models.parameters import YearParameters
 
 
 class AeromapsModel(object):
@@ -11,22 +10,21 @@ class AeromapsModel(object):
         self,
         name,
         parameters=None,
-        float_outputs={},
-        options={},
-        year_parameters: YearParameters = None,
     ):
         self.name = name
         self.parameters = parameters
-        self.options = options
-        self.float_outputs = float_outputs
-        if year_parameters is not None:
-            self.historic_start_year = year_parameters.historic_start_year
-            self.prospection_start_year = year_parameters.prospection_start_year
-            self.end_year = year_parameters.end_year
-            self.df: pd.DataFrame = pd.DataFrame(
-                index=range(year_parameters.historic_start_year, year_parameters.end_year + 1)
-            )
-            self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
+        self.float_outputs = {}
+        if self.parameters is not None:
+            self._initialize_df()
+
+    def _initialize_df(self):
+        self.historic_start_year = self.parameters.historic_start_year
+        self.prospection_start_year = self.parameters.prospection_start_year
+        self.end_year = self.parameters.end_year
+        self.df: pd.DataFrame = pd.DataFrame(
+            index=range(self.historic_start_year, self.end_year + 1)
+        )
+        self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
 class LogisticFunctionYearSeries(AeromapsModel):

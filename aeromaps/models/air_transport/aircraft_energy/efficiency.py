@@ -24,7 +24,7 @@ class BiofuelEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel production efficiency calculation using interpolation functions"""
 
-        reference_years = [2020, 2050]
+        reference_years = [2020, self.end_year]
 
         # FT
         reference_values_ft = [
@@ -100,7 +100,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Hydrogen and electrofuel production efficiency calculation using interpolation functions"""
 
-        reference_years = [2020, 2050]
+        reference_years = [2020, self.end_year]
 
         # Electrolysis
         reference_values_electrolysis = [
