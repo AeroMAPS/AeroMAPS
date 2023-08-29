@@ -5,11 +5,8 @@
 
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 from aeromaps.models.base import AeromapsModel
-
-from scipy.interpolate import interp1d
 
 
 class NonDiscountedScenarioCost(AeromapsModel):
@@ -36,14 +33,10 @@ class NonDiscountedScenarioCost(AeromapsModel):
             h2_cost_premium_gas: pd.Series = pd.Series(dtype="float64"),
             h2_cost_premium_coal_ccs: pd.Series = pd.Series(dtype="float64"),
             h2_cost_premium_coal: pd.Series = pd.Series(dtype="float64"),
-            liquefaction_h2_total_cost: pd.Series = pd.Series(dtype="float64"),
-            transport_h2_total_cost: pd.Series = pd.Series(dtype="float64"),
             electrofuel_cost_premium: pd.Series = pd.Series(dtype="float64"),
 
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-        # TODO add hydrogen and e-kero cost premiums
-        print("Tha 1")
-
+        # Compute the total energy expenses of the scenario
         non_discounted_energy_expenses = kerosene_cost \
                                          + biofuel_cost_hefa_fog \
                                          + biofuel_cost_hefa_others \
@@ -53,6 +46,7 @@ class NonDiscountedScenarioCost(AeromapsModel):
                                          + electrofuel_total_cost \
                                          + total_hydrogen_supply_cost
 
+        # Compute the total cost premium compared to the "business as usual"
         non_discounted_energy_cost_premium = biofuel_cost_premium_atj \
                                              + biofuel_cost_premium_ft_msw \
                                              + biofuel_cost_premium_ft_others \
@@ -65,8 +59,7 @@ class NonDiscountedScenarioCost(AeromapsModel):
                                              + h2_cost_premium_coal \
                                              + electrofuel_cost_premium
 
-        print(total_hydrogen_supply_cost)
-
+        # Compute the business as usual energy expenses
         non_discounted_BAU_energy_expenses = non_discounted_energy_expenses - non_discounted_energy_cost_premium
 
         self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
@@ -97,23 +90,20 @@ class DicountedScenarioCost(AeromapsModel):
             total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
         for k in range(self.prospection_start_year, self.end_year + 1):
-            kerosene_discounted = kerosene_cost[k] / (1 + social_discount_rate) ** (k - self.prospection_start_year)
-            biofuel_hefa_fog_discounted = biofuel_cost_hefa_fog[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            biofuel_hefa_others_discounted = biofuel_cost_hefa_others[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            biofuel_ft_others_discounted = biofuel_cost_ft_others[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            biofuel_ft_msw_discounted = biofuel_cost_ft_msw[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            biofuel_atj_discounted = biofuel_cost_atj[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            electrofuel_discounted = electrofuel_total_cost[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
-            hydrogen_discounted = total_hydrogen_supply_cost[k] / (1 + social_discount_rate) ** (
-                    k - self.prospection_start_year)
 
-            # TODO add new pathways
+            # Compute the discounter at year k
+            discount_k = (1 + social_discount_rate) ** (k - self.prospection_start_year)
+
+            # Compute the discounted expenses for each energy pathway
+            kerosene_discounted = kerosene_cost[k] / discount_k
+            biofuel_hefa_fog_discounted = biofuel_cost_hefa_fog[k] / discount_k
+            biofuel_hefa_others_discounted = biofuel_cost_hefa_others[k] / discount_k
+            biofuel_ft_others_discounted = biofuel_cost_ft_others[k] / discount_k
+            biofuel_ft_msw_discounted = biofuel_cost_ft_msw[k] / discount_k
+            biofuel_atj_discounted = biofuel_cost_atj[k] / discount_k
+            electrofuel_discounted = electrofuel_total_cost[k] / discount_k
+            hydrogen_discounted = total_hydrogen_supply_cost[k] / discount_k
+
             self.df.loc[k, "discounted_energy_expenses"] = kerosene_discounted \
                                                            + biofuel_atj_discounted \
                                                            + biofuel_ft_msw_discounted \

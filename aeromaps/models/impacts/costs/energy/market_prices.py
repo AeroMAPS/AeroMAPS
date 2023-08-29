@@ -5,7 +5,6 @@
 
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 from aeromaps.models.base import AeromapsModel
 
@@ -24,8 +23,7 @@ class ElectricityCost(AeromapsModel):
             electricity_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
         """LCOE"""
-        # FT MSW
-        print("in lains0")
+
         reference_values_electricity = [
             electricity_cost_2020,
             electricity_cost_2030,
@@ -63,7 +61,6 @@ class CoalCost(AeromapsModel):
             coal_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        print("in lains1")
         reference_values_coal = [
             coal_cost_2020,
             coal_cost_2030,
@@ -99,8 +96,7 @@ class GasCost(AeromapsModel):
             gas_cost_2040: float = 0.0,
             gas_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("in lains2")
-        # FT MSW
+
         reference_values_gas = [
             gas_cost_2020,
             gas_cost_2030,
@@ -136,9 +132,7 @@ class Co2Cost(AeromapsModel):
             co2_cost_2040: float = 0.0,
             co2_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """LCOE"""
-        # FT MSW
-        print("in lains3")
+
         reference_values_co2 = [
             co2_cost_2020,
             co2_cost_2030,
@@ -175,8 +169,7 @@ class Co2Tax(AeromapsModel):
             co2_tax_2040: float = 0.0,
             co2_tax_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("in lains4")
-        # FT MSW
+
         reference_values_co2 = [
             co2_tax_2020,
             co2_tax_2030,
@@ -212,8 +205,7 @@ class KerosenePrice(AeromapsModel):
             kerosene_price_2040: float = 0.0,
             kerosene_price_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("in lains5")
-        # FT MSW
+
         reference_values_kerosene = [
             kerosene_price_2020,
             kerosene_price_2030,
@@ -231,6 +223,7 @@ class KerosenePrice(AeromapsModel):
                 k, "kerosene_market_price"
             ] = kerosene_price_function(k)
 
+        print('wtf')
 
         kerosene_market_price = self.df.loc[:, "kerosene_market_price"]
 
@@ -250,7 +243,6 @@ class KeroseneCost(AeromapsModel):
             kerosene_emission_factor: pd.Series=pd.Series(dtype="float64"),
             carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-        print("in lains6")
         # kerosene_market_price €/L
 
         # fuel lower heating value in MJ/L at 15 degrees
@@ -290,7 +282,6 @@ class KeroseneBAUCost(AeromapsModel):
             carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         # kerosene_market_price €/L
-        print("in lains7")
         # fuel lower heating value in MJ/L at 15 degrees
         fuel_lhv = 35.3
 

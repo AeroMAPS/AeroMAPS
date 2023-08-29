@@ -141,7 +141,6 @@ class LiquidHydrogenCost(AeromapsModel):
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
-        print("inbig")
         electrolysis_plant_building_scenario, \
             electrolysis_plant_building_cost, \
             electrolysis_h2_total_cost, \
@@ -1302,8 +1301,7 @@ class GasCcsCapex(AeromapsModel):
             gas_ccs_eis_capex_2040: float = 0.0,
             gas_ccs_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        print("incol0")
+
         reference_values_gas_ccs_capex = [
             gas_ccs_eis_capex_2020,
             gas_ccs_eis_capex_2030,
@@ -1339,9 +1337,7 @@ class GasCcsFixedOpex(AeromapsModel):
             gas_ccs_eis_fixed_opex_2040: float = 0.0,
             gas_ccs_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol1")
+
         reference_values_gas_ccs_fixed_opex = [
             gas_ccs_eis_fixed_opex_2020,
             gas_ccs_eis_fixed_opex_2030,
@@ -1377,9 +1373,7 @@ class GasCcsEfficiency(AeromapsModel):
             gas_ccs_efficiency_2040: float = 0.0,
             gas_ccs_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol2")
+
         reference_values_gas_ccs_efficiency = [
             gas_ccs_efficiency_2020,
             gas_ccs_efficiency_2030,
@@ -1415,9 +1409,7 @@ class GasCapex(AeromapsModel):
             gas_eis_capex_2040: float = 0.0,
             gas_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol3")
+
         reference_values_gas_capex = [
             gas_eis_capex_2020,
             gas_eis_capex_2030,
@@ -1453,9 +1445,7 @@ class GasFixedOpex(AeromapsModel):
             gas_eis_fixed_opex_2040: float = 0.0,
             gas_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol4")
+
         reference_values_gas_fixed_opex = [
             gas_eis_fixed_opex_2020,
             gas_eis_fixed_opex_2030,
@@ -1491,9 +1481,7 @@ class GasEfficiency(AeromapsModel):
             gas_efficiency_2040: float = 0.0,
             gas_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol5")
+
         reference_values_gas_efficiency = [
             gas_efficiency_2020,
             gas_efficiency_2030,
@@ -1530,9 +1518,7 @@ class CoalCcsCapex(AeromapsModel):
             coal_ccs_eis_capex_2040: float = 0.0,
             coal_ccs_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol6")
+
         reference_values_coal_ccs_capex = [
             coal_ccs_eis_capex_2020,
             coal_ccs_eis_capex_2030,
@@ -1568,9 +1554,7 @@ class CoalCcsFixedOpex(AeromapsModel):
             coal_ccs_eis_fixed_opex_2040: float = 0.0,
             coal_ccs_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol7")
+
         reference_values_coal_ccs_fixed_opex = [
             coal_ccs_eis_fixed_opex_2020,
             coal_ccs_eis_fixed_opex_2030,
@@ -1606,9 +1590,7 @@ class CoalCcsEfficiency(AeromapsModel):
             coal_ccs_efficiency_2040: float = 0.0,
             coal_ccs_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol8")
+
         reference_values_coal_ccs_efficiency = [
             coal_ccs_efficiency_2020,
             coal_ccs_efficiency_2030,
@@ -1644,9 +1626,7 @@ class CoalCapex(AeromapsModel):
             coal_eis_capex_2040: float = 0.0,
             coal_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Electrolyser efficiency at eis using interpolation functions"""
-        # FT MSW
-        print("incol9")
+
         reference_values_coal_capex = [
             coal_eis_capex_2020,
             coal_eis_capex_2030,
@@ -1682,8 +1662,7 @@ class CoalFixedOpex(AeromapsModel):
             coal_eis_fixed_opex_2040: float = 0.0,
             coal_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("incol10")
-        # FT MSW
+
         reference_values_coal_fixed_opex = [
             coal_eis_fixed_opex_2020,
             coal_eis_fixed_opex_2030,
@@ -1719,8 +1698,7 @@ class CoalEfficiency(AeromapsModel):
             coal_efficiency_2040: float = 0.0,
             coal_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("incol11")
-        # FT MSW
+
         reference_values_coal_efficiency = [
             coal_efficiency_2020,
             coal_efficiency_2030,
@@ -1757,8 +1735,7 @@ class CcsCost(AeromapsModel):
             ccs_cost_2040: float = 0.0,
             ccs_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        print("incol12")
-        # FT MSW
+
         reference_values_ccs_cost = [
             ccs_cost_2020,
             ccs_cost_2030,
