@@ -3,9 +3,7 @@
 # @File : liquid_hydrogen.py
 # @Software: PyCharm
 
-# TODO :réfléchir à la facon implementer l'H2 avec toute la flexibilité dispo => ?
-# TODO 2: quid de l'hydrogène bleu pour les couts -> a priori modélisation simpliste comme biofuel, utiliser les données de Parkinson et al?
-# (pas prioritaire pour EASA, mais tdo avant bourget)
+
 
 from typing import Tuple, Union, Any
 
@@ -169,7 +167,7 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_ccs_h2_total_cost, \
             gas_ccs_h2_capex_cost, \
             gas_ccs_h2_opex_cost, \
-            gas_ccs_h2_elec_cost, \
+            gas_ccs_h2_fuel_cost, \
             gas_ccs_h2_ccs_cost = self.fossil_computation(gas_ccs_eis_capex,
                                                           gas_ccs_eis_fixed_opex,
                                                           # gas_ccs_eis_var_opex,
@@ -187,7 +185,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'gas_ccs_h2_total_cost'] = gas_ccs_h2_total_cost
         self.df.loc[:, 'gas_ccs_h2_capex_cost'] = gas_ccs_h2_capex_cost
         self.df.loc[:, 'gas_ccs_h2_opex_cost'] = gas_ccs_h2_opex_cost
-        self.df.loc[:, 'gas_ccs_h2_elec_cost'] = gas_ccs_h2_elec_cost
+        self.df.loc[:, 'gas_ccs_h2_fuel_cost'] = gas_ccs_h2_fuel_cost
         self.df.loc[:, 'gas_ccs_h2_ccs_cost'] = gas_ccs_h2_ccs_cost
 
         #### GAS ####
@@ -197,7 +195,7 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_h2_total_cost, \
             gas_h2_capex_cost, \
             gas_h2_opex_cost, \
-            gas_h2_elec_cost, \
+            gas_h2_fuel_cost, \
             gas_h2_cost = self.fossil_computation(gas_eis_capex,
                                                   gas_eis_fixed_opex,
                                                   # gas_eis_var_opex,
@@ -215,7 +213,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'gas_h2_total_cost'] = gas_h2_total_cost
         self.df.loc[:, 'gas_h2_capex_cost'] = gas_h2_capex_cost
         self.df.loc[:, 'gas_h2_opex_cost'] = gas_h2_opex_cost
-        self.df.loc[:, 'gas_h2_elec_cost'] = gas_h2_elec_cost
+        self.df.loc[:, 'gas_h2_fuel_cost'] = gas_h2_fuel_cost
 
         #### COAL CCS ####
 
@@ -224,7 +222,7 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_ccs_h2_total_cost, \
             coal_ccs_h2_capex_cost, \
             coal_ccs_h2_opex_cost, \
-            coal_ccs_h2_elec_cost, \
+            coal_ccs_h2_fuel_cost, \
             coal_ccs_h2_ccs_cost = self.fossil_computation(coal_ccs_eis_capex,
                                                            coal_ccs_eis_fixed_opex,
                                                            # coal_ccs_eis_var_opex,
@@ -242,7 +240,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'coal_ccs_h2_total_cost'] = coal_ccs_h2_total_cost
         self.df.loc[:, 'coal_ccs_h2_capex_cost'] = coal_ccs_h2_capex_cost
         self.df.loc[:, 'coal_ccs_h2_opex_cost'] = coal_ccs_h2_opex_cost
-        self.df.loc[:, 'coal_ccs_h2_elec_cost'] = coal_ccs_h2_elec_cost
+        self.df.loc[:, 'coal_ccs_h2_fuel_cost'] = coal_ccs_h2_fuel_cost
         self.df.loc[:, 'coal_ccs_h2_ccs_cost'] = coal_ccs_h2_ccs_cost
 
         #### COAL ####
@@ -252,7 +250,7 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_h2_total_cost, \
             coal_h2_capex_cost, \
             coal_h2_opex_cost, \
-            coal_h2_elec_cost, \
+            coal_h2_fuel_cost, \
             coal_h2_cost = self.fossil_computation(coal_eis_capex,
                                                    coal_eis_fixed_opex,
                                                    # coal_eis_var_opex,
@@ -270,7 +268,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, 'coal_h2_total_cost'] = coal_h2_total_cost
         self.df.loc[:, 'coal_h2_capex_cost'] = coal_h2_capex_cost
         self.df.loc[:, 'coal_h2_opex_cost'] = coal_h2_opex_cost
-        self.df.loc[:, 'coal_h2_elec_cost'] = coal_h2_elec_cost
+        self.df.loc[:, 'coal_h2_fuel_cost'] = coal_h2_fuel_cost
 
         ######## HYDROGEN LIQUEFACTION ########
 
@@ -294,12 +292,12 @@ class LiquidHydrogenCost(AeromapsModel):
         ######## HYDROGEN TRANSPORT ########
 
         transport_h2_total_cost = transport_cost_ratio * (
-                electrolysis_h2_total_cost
-                + gas_ccs_h2_total_cost
-                + gas_h2_total_cost
-                + coal_ccs_h2_total_cost
-                + coal_h2_total_cost
-                + liquefaction_h2_total_cost)
+                electrolysis_h2_total_cost.fillna(0)
+                + gas_ccs_h2_total_cost.fillna(0)
+                + gas_h2_total_cost.fillna(0)
+                + coal_ccs_h2_total_cost.fillna(0)
+                + coal_h2_total_cost.fillna(0)
+                + liquefaction_h2_total_cost.fillna(0))
 
         self.df.loc[:, 'transport_h2_total_cost'] = transport_h2_total_cost
 
@@ -324,6 +322,7 @@ class LiquidHydrogenCost(AeromapsModel):
                                       + (liquefaction_h2_total_cost + transport_h2_total_cost) / (
                                               energy_consumption_hydrogen / hydrogen_specific_energy)) \
                                      * 1000000
+
 
         self.df.loc[:, "h2_avg_cost_per_kg_gas_ccs"] = h2_avg_cost_per_kg_gas_ccs
         # €/kg
@@ -356,13 +355,13 @@ class LiquidHydrogenCost(AeromapsModel):
         # €/kg
 
 
-        total_hydrogen_supply_cost = electrolysis_h2_total_cost \
-                                     + gas_ccs_h2_total_cost \
-                                     + gas_h2_total_cost \
-                                     + coal_ccs_h2_total_cost \
-                                     + coal_h2_total_cost \
-                                     + liquefaction_h2_total_cost \
-                                     + transport_h2_total_cost
+        total_hydrogen_supply_cost = electrolysis_h2_total_cost.fillna(0) \
+                                     + gas_ccs_h2_total_cost.fillna(0) \
+                                     + gas_h2_total_cost.fillna(0) \
+                                     + coal_ccs_h2_total_cost.fillna(0) \
+                                     + coal_h2_total_cost.fillna(0) \
+                                     + liquefaction_h2_total_cost.fillna(0) \
+                                     + transport_h2_total_cost.fillna(0)
 
         self.df.loc[:, "total_hydrogen_supply_cost"] = total_hydrogen_supply_cost
         # M€
@@ -371,12 +370,13 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
         # €/kg
 
-        total_h2_capex = electrolysis_plant_building_cost \
-                         + gas_ccs_plant_building_cost \
-                         + gas_plant_building_cost \
-                         + coal_ccs_plant_building_cost \
-                         + coal_plant_building_cost \
-                         + liquefaction_plant_building_cost
+        total_h2_capex = electrolysis_plant_building_cost .fillna(0)\
+                         + gas_ccs_plant_building_cost.fillna(0) \
+                         + gas_plant_building_cost.fillna(0) \
+                         + coal_ccs_plant_building_cost.fillna(0) \
+                         + coal_plant_building_cost.fillna(0) \
+                         + liquefaction_plant_building_cost.fillna(0)
+
         self.df.loc[:, "total_h2_capex"] = total_h2_capex
         # M€
 
@@ -539,27 +539,27 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_ccs_h2_total_cost,
             gas_ccs_h2_capex_cost,
             gas_ccs_h2_opex_cost,
-            gas_ccs_h2_elec_cost,
+            gas_ccs_h2_fuel_cost,
             gas_ccs_h2_ccs_cost,
             gas_plant_building_scenario,
             gas_plant_building_cost,
             gas_h2_total_cost,
             gas_h2_capex_cost,
             gas_h2_opex_cost,
-            gas_h2_elec_cost,
+            gas_h2_fuel_cost,
             coal_ccs_plant_building_scenario,
             coal_ccs_plant_building_cost,
             coal_ccs_h2_total_cost,
             coal_ccs_h2_capex_cost,
             coal_ccs_h2_opex_cost,
-            coal_ccs_h2_elec_cost,
+            coal_ccs_h2_fuel_cost,
             coal_ccs_h2_ccs_cost,
             coal_plant_building_scenario,
             coal_plant_building_cost,
             coal_h2_total_cost,
             coal_h2_capex_cost,
             coal_h2_opex_cost,
-            coal_h2_elec_cost,
+            coal_h2_fuel_cost,
             h2_avg_cost_per_kg_gas_ccs,
             h2_avg_cost_per_kg_gas,
             h2_avg_cost_per_kg_coal_ccs,
@@ -664,6 +664,17 @@ class LiquidHydrogenCost(AeromapsModel):
                     h2_elec_cost[i] = h2_elec_cost[i] + (
                             missing_production * hydrogen_cost[i]['ELECTRICITY']) / 1000  # M€
                     hydrogen_production[i] = hydrogen_production[i] + missing_production
+
+        # MOD -> Scaling down production for diminishing production scenarios.
+        # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
+        # Stranded asset literature could be valuable to model this better.
+        # Proportional production scaling
+        scaling_factor =  demand_scenario / hydrogen_production
+        h2_total_cost = h2_total_cost * scaling_factor
+        h2_capex_cost = h2_capex_cost * scaling_factor
+        h2_opex_cost = h2_opex_cost * scaling_factor
+        h2_elec_cost = h2_elec_cost * scaling_factor
+
 
         return (
             plant_building_scenario,
@@ -790,14 +801,15 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
         h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
         h2_opex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_elec_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        h2_fuel_cost = pd.Series(np.zeros(len(indexes)), indexes)
         h2_ccs_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index)[:-1]:
             # Production missing in year n+1 must be supplied by plant build in year n
             if hydrogen_production[year + 1] < demand_scenario[year + 1]:
-                # Getting the production not matched by plants already commissioned by creating an plant with year data technical data
+
+                # Getting the production not matched by plants already commissioned by creating an plant with EIS year technical data
                 hydrogen_cost = LiquidHydrogenCost.compute_fossil_year_lcoh(year,
                                                                             fuel_market_price,
                                                                             ccs_cost,
@@ -828,6 +840,7 @@ class LiquidHydrogenCost(AeromapsModel):
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_life)
 
                 # Adding new plant production to future years
+                # TODO change to demand scenario for degrowing production scenarios...
                 for i in range(year + 1, end_bound + 1):
                     h2_total_cost[i] = h2_total_cost[i] + (
                             missing_production * hydrogen_cost[i][
@@ -837,12 +850,24 @@ class LiquidHydrogenCost(AeromapsModel):
                     h2_opex_cost[i] = h2_opex_cost[i] + (
                             missing_production * hydrogen_cost[i]['FIX_OPEX']) / 1000 + (
                                               missing_production * hydrogen_cost[i]['VAR_OPEX']) / 1000  # M€
-                    h2_elec_cost[i] = h2_elec_cost[i] + (
-                            missing_production * hydrogen_cost[i]['ELECTRICITY']) / 1000  # M€
+                    h2_fuel_cost[i] = h2_fuel_cost[i] + (
+                            missing_production * hydrogen_cost[i]['FUEL']) / 1000  # M€
                     h2_ccs_cost[i] = h2_ccs_cost[i] + (
                             missing_production * hydrogen_cost[i]['CCS']) / 1000  # M€
 
                     hydrogen_production[i] = hydrogen_production[i] + missing_production
+
+        # MOD -> Scaling down production for diminishing production scenarios.
+        # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
+        # Stranded asset literature could be valuable to model this better.
+        # Proportional production scaling
+
+        scaling_factor =  demand_scenario / hydrogen_production
+        h2_total_cost = h2_total_cost * scaling_factor
+        h2_capex_cost = h2_capex_cost * scaling_factor
+        h2_opex_cost = h2_opex_cost * scaling_factor
+        h2_fuel_cost = h2_fuel_cost * scaling_factor
+        h2_ccs_cost = h2_ccs_cost * scaling_factor
 
         return (
             plant_building_scenario,
@@ -850,7 +875,7 @@ class LiquidHydrogenCost(AeromapsModel):
             h2_total_cost,
             h2_capex_cost,
             h2_opex_cost,
-            h2_elec_cost,
+            h2_fuel_cost,
             h2_ccs_cost
         )
 
@@ -922,12 +947,12 @@ class LiquidHydrogenCost(AeromapsModel):
         end_bound = min(max(fuel_market_price.index), base_year + operational_time)
 
         for year in range(base_year, end_bound + 1):
-            elec_price = fuel_market_price[year]
-            elec_cost = elec_price * plant_specific_energy[base_year]
+            fuel_price = fuel_market_price[year]
+            fuel_cost = fuel_price * plant_specific_energy[base_year]
             co2_ccs_cost = ccs_cost[year] * carbon_captured_kg
-            hydrogen_prices[year] = {"TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + elec_cost,
+            hydrogen_prices[year] = {"TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + fuel_cost,
                                      "CAPEX": cap_cost_lc,
-                                     "FIX_OPEX": fix_op_cost_lc, "VAR_OPEX": var_op_cost_lc, "ELECTRICITY": elec_cost,
+                                     "FIX_OPEX": fix_op_cost_lc, "VAR_OPEX": var_op_cost_lc, "FUEL": fuel_cost,
                                      "CCS": co2_ccs_cost
                                      }
         return hydrogen_prices

@@ -86,8 +86,6 @@ class ImpactsParameters(object):
     # electrolyser_specific_electricity_2040: float = 48.5
     # electrolyser_specific_electricity_2050: float = 48.0
 
-
-
     # Fossil hydrogen plant load factors (also called availability factors)
     gas_ccs_load_factor: float = 0.95
     gas_load_factor: float = 0.95
@@ -97,7 +95,6 @@ class ImpactsParameters(object):
     # Define carbon capture and storage efficiencies
     gas_ccs_ccs_efficiency: float = 0.95
     coal_ccs_ccs_efficiency: float = 0.95
-
 
     # GAS + CCS CAPEX (€/ (kg/day))
     gas_ccs_eis_capex_2020: float = 1728
@@ -172,10 +169,10 @@ class ImpactsParameters(object):
     coal_efficiency_2050: float = 0.6
 
     # CCS price (€/kgCO2)
-    ccs_cost_2020: float= 0.02
-    ccs_cost_2030: float= 0.02
-    ccs_cost_2040: float= 0.02
-    ccs_cost_2050: float= 0.02
+    ccs_cost_2020: float = 0.02
+    ccs_cost_2030: float = 0.02
+    ccs_cost_2040: float = 0.02
+    ccs_cost_2050: float = 0.02
 
     # Liquefier Capex (€/ (kg/day))
     liquefier_capex_2020: float = 1457.33
@@ -230,7 +227,6 @@ class ImpactsParameters(object):
     electricity_cost_2030: float = 0.08
     electricity_cost_2040: float = 0.08
     electricity_cost_2050: float = 0.08
-
 
     # Gas market price (€/kWh)
 

@@ -51,7 +51,7 @@ from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
     ScenarioEnergyExpensesPlot,
     ScenarioEnergyUnitCostPlot,
-    DiscountEffect, ScenarioEnergyCarbonTaxPlot
+    DiscountEffect, ScenarioEnergyCarbonTaxPlot, ScenarioEnergyUnitCostWithCarbonTaxPlot
 )
 
 
@@ -95,6 +95,7 @@ available_plots = {
     "energy_capex": ScenarioEnergyCapitalPlot,
     "energy_expenses": ScenarioEnergyExpensesPlot,
     "energy_mfsp": ScenarioEnergyUnitCostPlot,
+    "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "energy_expenses_discounted": DiscountEffect,
-    "energy_carbon_tax_effect": ScenarioEnergyCarbonTaxPlot,
+    "energy_expenses_with_carbon_tax": ScenarioEnergyCarbonTaxPlot,
 }

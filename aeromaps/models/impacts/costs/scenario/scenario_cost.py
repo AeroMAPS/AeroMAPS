@@ -47,17 +47,17 @@ class NonDiscountedScenarioCost(AeromapsModel):
                                          + total_hydrogen_supply_cost
 
         # Compute the total cost premium compared to the "business as usual"
-        non_discounted_energy_cost_premium = biofuel_cost_premium_atj \
-                                             + biofuel_cost_premium_ft_msw \
-                                             + biofuel_cost_premium_ft_others \
-                                             + biofuel_cost_premium_hefa_others \
-                                             + biofuel_cost_premium_hefa_fog \
-                                             + h2_cost_premium_electrolysis \
-                                             + h2_cost_premium_gas_ccs \
-                                             + h2_cost_premium_gas \
-                                             + h2_cost_premium_coal_ccs \
-                                             + h2_cost_premium_coal \
-                                             + electrofuel_cost_premium
+        non_discounted_energy_cost_premium = biofuel_cost_premium_atj.fillna(0) \
+                                             + biofuel_cost_premium_ft_msw.fillna(0) \
+                                             + biofuel_cost_premium_ft_others.fillna(0) \
+                                             + biofuel_cost_premium_hefa_others.fillna(0) \
+                                             + biofuel_cost_premium_hefa_fog.fillna(0) \
+                                             + h2_cost_premium_electrolysis.fillna(0) \
+                                             + h2_cost_premium_gas_ccs.fillna(0) \
+                                             + h2_cost_premium_gas.fillna(0) \
+                                             + h2_cost_premium_coal_ccs.fillna(0) \
+                                             + h2_cost_premium_coal.fillna(0) \
+                                             + electrofuel_cost_premium.fillna(0)
 
         # Compute the business as usual energy expenses
         non_discounted_BAU_energy_expenses = non_discounted_energy_expenses - non_discounted_energy_cost_premium

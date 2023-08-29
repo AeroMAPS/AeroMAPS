@@ -266,7 +266,7 @@ class KeroseneCost(AeromapsModel):
         self.df.loc[:, 'kerosene_price_supplement_carbon_tax'] = kerosene_price_supplement_carbon_tax
 
         return (
-            kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax,
+            kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax
         )
 
 
