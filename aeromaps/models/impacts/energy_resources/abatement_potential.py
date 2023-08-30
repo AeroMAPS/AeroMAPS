@@ -112,6 +112,7 @@ class BiofuelAbatementPotential(AeromapsModel):
         self.df.loc[:, "energy_avail_electrofuel"] = energy_avail_electrofuel
 
         ##### Effective #####
+        # TODO delete this part?
 
         abatement_effective_atj = biomass_atj_consumption * 10 ** 12 * biofuel_atj_efficiency * (
                 kerosene_emission_factor - biofuel_atj_emission_factor) / 1000000

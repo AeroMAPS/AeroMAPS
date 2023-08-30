@@ -51,7 +51,7 @@ from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
     ScenarioEnergyExpensesPlot,
     ScenarioEnergyUnitCostPlot,
-    DiscountEffect, ScenarioEnergyCarbonTaxPlot, ScenarioEnergyUnitCostWithCarbonTaxPlot
+    DiscountEffect, ScenarioEnergyCarbonTaxPlot, ScenarioEnergyUnitCostWithCarbonTaxPlot, DropInMACC
 )
 
 
@@ -98,4 +98,5 @@ available_plots = {
     "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "energy_expenses_discounted": DiscountEffect,
     "energy_expenses_with_carbon_tax": ScenarioEnergyCarbonTaxPlot,
+    "drop_in_macc_curve": DropInMACC,
 }

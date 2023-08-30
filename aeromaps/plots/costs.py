@@ -5,6 +5,8 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import numpy as np
+import pandas as pd
 
 from .constants import plot_3_x, plot_3_y
 
@@ -26,8 +28,8 @@ class ScenarioEnergyCapitalPlot:
         # mine
         colors = ['#ee9b00', '#ffbf47',
                   '#bb3e03', '#0c9e30', '#097223',
-                  '#828782',  '#52F752',  '#0ABAFF',
-                  '#8CAAB6', '#0ABAFF', '#8CAAB6', '#00BBE0'
+                  '#828782', '#52F752', '#0ABAFF',
+                  '#8CAAB6', '#0ABAFF', '#8CAAB6', '#87AE87'
                   ]
 
         columns = ['plant_building_cost_hefa_fog',
@@ -44,43 +46,55 @@ class ScenarioEnergyCapitalPlot:
                    'liquefaction_plant_building_cost',
                    ]
 
-        self.bar_annual_investment = (self.df.loc[self.prospective_years, columns].plot.bar(
-            stacked=True,
-            width=0.8,
-            ax=self.ax,
-            color=colors))
+        data_to_plot = self.df.loc[self.prospective_years, columns]
+        bottom = None  # Initialize bottom positions for stacking
 
+        for col, color in zip(data_to_plot.columns, colors):
+            if bottom is None:
+                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color)
+                bottom = data_to_plot[col]
+            else:
+                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color,
+                                                         bottom=bottom)
+                bottom += data_to_plot[col]
+
+        tick_interval = 5
+        min_year = min(data_to_plot.index)
+        max_year = max(data_to_plot.index)
+        ticks = range(min_year, max_year + 1, tick_interval)
+        self.ax.set_xticks(ticks)
+        self.ax.set_xticklabels(ticks, rotation=45)
         self.ax.grid(axis='y')
         self.ax.set_title("Annual investment per pathway (w/o fossil)")
-        space_tick = 5
         self.ax.set_xlabel("Year")
-        ticks = self.ax.xaxis.get_ticklocs()
-        ticklabels = [l.get_text() for l in self.ax.xaxis.get_ticklabels()]
-        self.ax.xaxis.set_ticks(ticks[::space_tick])
-        self.ax.xaxis.set_ticklabels(ticklabels[::space_tick])
+        self.ax.set_xlim(2020, max(self.prospective_years))
         self.ax.set_ylabel("Annual Capital Investment [M€]")
         self.ax = plt.gca()
-        self.ax.legend([
+        legend = self.ax.legend([
             'Bio - HEFA FOG',
             'Bio - HEFA Others',
             'Bio - Alcohol to Jet',
             'Bio - FT Others',
             'Bio - FT Municipal Waste',
             'Electrofuel',
-            'LH2 (Electrolysis)',
-            'LH2 (Liquefaction)'
+            '$H_2$ - Electrolysis',
+            '$H_2$ - Gas + CCS',
+            '$H_2$ - Gas',
+            '$H_2$ - Coal + CCS',
+            '$H_2$ - Coal',
+            '(L-)$H_2$ (Liquefaction)'
         ])
-        # self.ax.set_xlim(2020, 2050)
-        #
+        legend.set_title('Pathways', prop={'size': 12})
+
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
+        self.fig.canvas.layout.width = "auto"
+        self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
-        # TODO a refaire plus proprement que juste dupliquer si possible?
-        self.data = df_data
+        # TODO Bien tester le update qui est une création directe de chatgpt...
+        self.df = df_data["vector_outputs"]
 
         columns = ['plant_building_cost_hefa_fog',
                    'plant_building_cost_hefa_others',
@@ -96,14 +110,10 @@ class ScenarioEnergyCapitalPlot:
                    'liquefaction_plant_building_cost',
                    ]
 
-        colors = ['#ee9b00', '#ffbf47', '#bb3e03', '#0c9e30', '#097223', '#828782', '#0075A3', '#00BBE0', ]
+        data_to_plot = self.df.loc[self.prospective_years, columns]
 
-        self.bar_annual_investment = self.data.loc[range(2020, 2050 + 1), columns].plot.bar(
-            stacked=True,
-            width=0.8,
-            ax=self.ax,
-            color=colors
-        )
+        for bar, col in zip(self.bar_annual_investment, data_to_plot.columns):
+            bar.set_height(data_to_plot[col])
 
         self.ax.collections.clear()
 
@@ -165,39 +175,37 @@ class ScenarioEnergyExpensesPlot:
             colors=colors,
         )
 
-
         self.ax.grid(axis='y')
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
         self.ax = plt.gca()
 
-
         primary_legend_entries = [
-                'Fossil Kerosene',
-                '_nolegend_',
-                'Bio - HEFA FOG',
-                '_nolegend_',
-                'Bio - HEFA Others',
-                '_nolegend_',
-                'Bio - Alcohol to Jet',
-                '_nolegend_',
-                'Bio - FT Others',
-                '_nolegend_',
-                'Bio - FT Municipal Waste',
-                '_nolegend_',
-                'Electrofuel',
-                '_nolegend_',
-                'Electrolysis $H_2$ ',
-                '_nolegend_',
-                'Gas CCS $H_2$ ',
-                '_nolegend_',
-                'Gas $H_2$ ',
-                '_nolegend_',
-                'Coal CCS $H_2$ ',
-                '_nolegend_',
-                'Coal $H_2$ ',
-                '_nolegend_',
-                'Hydrogen Logistics*'
+            'Fossil Kerosene',
+            '_nolegend_',
+            'Bio - HEFA FOG',
+            '_nolegend_',
+            'Bio - HEFA Others',
+            '_nolegend_',
+            'Bio - Alcohol to Jet',
+            '_nolegend_',
+            'Bio - FT Others',
+            '_nolegend_',
+            'Bio - FT Municipal Waste',
+            '_nolegend_',
+            'Electrofuel',
+            '_nolegend_',
+            'Electrolysis $H_2$ ',
+            '_nolegend_',
+            'Gas CCS $H_2$ ',
+            '_nolegend_',
+            'Gas $H_2$ ',
+            '_nolegend_',
+            'Coal CCS $H_2$ ',
+            '_nolegend_',
+            'Coal $H_2$ ',
+            '_nolegend_',
+            'Hydrogen Logistics*'
 
         ]
 
@@ -224,7 +232,7 @@ class ScenarioEnergyExpensesPlot:
         self.fig.tight_layout()
 
     def update(self, df_data):
-        #TODO a tester
+        # TODO a tester
 
         self.df = df_data["vector_outputs"]
 
@@ -256,7 +264,6 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0) + self.df.loc[
                 self.prospective_years, "transport_h2_total_cost"].fillna(0),
         )
-
 
 
 class ScenarioEnergyCarbonTaxPlot:
@@ -808,3 +815,133 @@ class DiscountEffect():
         self.line_discounted.set_ydata(
             self.df.loc[self.prospective_years, "discounted_energy_expenses"]
         )
+
+
+class DropInMACC():
+    # TODO do the same for LH2?
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        # Select year at which the MACC is plotted
+        year = 2050
+
+        # create a dataframe for the various pathways 
+        # (usage: sorting the values by increasing carbon abatement cost)
+
+        pathways = ["Bio - HEFA FOG",
+                    "Bio - HEFA Others",
+                    "Bio - Alcohol to Jet",
+                    "Bio - FT MSW",
+                    "Bio - FT Others",
+                    "Electrofuel"]
+
+        # Abatement potential in MtCO2e
+        abatement_potential = [elt / 1000000 for elt in
+                               [self.df.abatement_potential_hefa_fog[year],
+                                self.df.abatement_potential_hefa_others[year],
+                                self.df.abatement_potential_atj[year],
+                                self.df.abatement_potential_ft_msw[year],
+                                self.df.abatement_potential_ft_others[year],
+                                self.df.abatement_potential_electrofuel[year]]]
+
+        # Energy available in EJ
+        energy_avail = [elt / 1000000000000 for elt in [self.df.energy_avail_hefa_fog[year],
+                                                        self.df.energy_avail_hefa_others[year],
+                                                        self.df.energy_avail_atj[year],
+                                                        self.df.energy_avail_ft_msw[year],
+                                                        self.df.energy_avail_ft_others[year],
+                                                        self.df.energy_avail_electrofuel[year]]]
+
+        # carbon abatement cost in (€/tCO2e)
+        carbon_abatement_cost = [self.df.carbon_abatement_cost_hefa_fog[year],
+                                 self.df.carbon_abatement_cost_hefa_others[year],
+                                 self.df.carbon_abatement_cost_atj[year],
+                                 self.df.carbon_abatement_cost_ft_msw[year],
+                                 self.df.carbon_abatement_cost_ft_others[year],
+                                 self.df.electrofuel_abatement_cost[year]
+                                 ]
+
+        colors = ['#ee9b00', '#ffbf47',
+                  '#bb3e03', '#097223', '#0c9e30', '#828782']
+
+        macc_df = pd.DataFrame(data=[abatement_potential, energy_avail, carbon_abatement_cost, colors],
+                               columns=pathways, index=['abatement_potential', 'energy_avail',
+                                                        'carbon_abatement_cost', 'colors'])
+
+        macc_df = macc_df.transpose().sort_values(by='carbon_abatement_cost')
+
+        heights = macc_df['carbon_abatement_cost'].to_list()
+        names = macc_df.index.to_list()
+        heights.insert(0, 0)
+        heights.append(heights[-1])
+
+        # MAx potential MACC
+        widths_potential = macc_df['abatement_potential'].to_list()
+        widths_potential.insert(0, 0)
+        widths_potential.append(widths_potential[-1])
+
+        colors=macc_df['colors'].to_list()
+
+        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, 'g', where='post', color="#335C67",
+                label="Marginal abatement cost", linewidth=1.5)
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0,(len(widths_potential) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon([(np.cumsum(widths_potential)[i], 0), (np.cumsum(widths_potential)[i], heights[i+1]),
+                                   (np.cumsum(widths_potential)[i + 1], heights[i+1]),
+                                   (np.cumsum(widths_potential)[i + 1], 0)],
+                                  closed=True, color=colors[i], alpha=0.5)
+            self.ax.add_patch(polygon)
+
+        fuel = macc_df.energy_avail.to_list()
+        fuel.insert(0, 0)
+        widths_potential.pop()
+        self.ax2 = self.ax.twinx()
+        self.ax2.plot(np.cumsum(widths_potential), np.cumsum(fuel), color="#9E2A2B", linestyle=':', label="Energy potential",
+                 marker='x')
+
+        self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                      self.df.energy_consumption_kerosene[year] / 1e12, color='black',
+                    linewidth=1, linestyle='-.')
+        self.ax2.text(0, 3.75e2, 'Air transport alternative drop-in fuels use, 2050')
+
+        self.ax.grid(True, which="both", ls=':')
+        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
+        self.ax2.set_ylabel('Energy potential under current allocation (EJ)')
+        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+
+        self.ax.grid(True, which="both", ls=':')
+        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
+        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+
+
+        self.ax.text(np.cumsum(widths_potential)[0] + 10, heights[1] - 50, names[0])
+        self.ax.text(np.cumsum(widths_potential)[1] + 10, heights[2] + 18, names[1])
+        self.ax.text(np.cumsum(widths_potential)[2] + 10, heights[3] - 50, names[2])
+        self.ax.text(np.cumsum(widths_potential)[3] + 10, heights[4] - 50, names[3])
+        self.ax.text(np.cumsum(widths_potential)[4] + 10, heights[5] - 50, names[4])
+        self.ax.text(np.cumsum(widths_potential)[5] + 10, heights[6] - 50, names[5])
+
+        self.fig.legend(fancybox=True, shadow=True, loc='upper left')
+
+        # #
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        self.fig.canvas.layout.width = "auto"
+        self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, df_data):
+        self.create_plot()
+
