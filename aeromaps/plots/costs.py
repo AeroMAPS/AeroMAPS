@@ -265,6 +265,12 @@ class ScenarioEnergyExpensesPlot:
                 self.prospective_years, "transport_h2_total_cost"].fillna(0),
         )
 
+        self.ax.collections.clear()
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
 
 class ScenarioEnergyCarbonTaxPlot:
     def __init__(self, data):
@@ -370,6 +376,12 @@ class ScenarioEnergyCarbonTaxPlot:
             (self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"] +
              self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"])
         )
+
+        self.ax.collections.clear()
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
 
 
 class ScenarioEnergyUnitCostPlot:
@@ -816,6 +828,12 @@ class DiscountEffect():
             self.df.loc[self.prospective_years, "discounted_energy_expenses"]
         )
 
+        self.ax.collections.clear()
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
 
 class DropInMACC():
     # TODO do the same for LH2?
@@ -914,7 +932,8 @@ class DropInMACC():
         self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12 -
                       self.df.energy_consumption_kerosene[year] / 1e12, color='black',
                     linewidth=1, linestyle='-.')
-        self.ax2.text(0, 3.75e2, 'Air transport alternative drop-in fuels use, 2050')
+        self.ax2.text(0, self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                      self.df.energy_consumption_kerosene[year] / 1e12 + 2, 'Air transport alternative drop-in fuels use, 2050')
 
         self.ax.grid(True, which="both", ls=':')
         self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
@@ -943,5 +962,123 @@ class DropInMACC():
         self.fig.tight_layout()
 
     def update(self, df_data):
-        self.create_plot()
+        self.df = df_data["vector_outputs"]
+        self.float_outputs = df_data["float_outputs"]
+        self.years = df_data["years"]["full_years"]
+        self.historic_years = df_data["years"]["historic_years"]
+        self.prospective_years = df_data["years"]["prospective_years"]
+
+        # Select year at which the MACC is plotted
+        year = 2050
+
+        # create a dataframe for the various pathways
+        # (usage: sorting the values by increasing carbon abatement cost)
+
+        pathways = ["Bio - HEFA FOG",
+                    "Bio - HEFA Others",
+                    "Bio - Alcohol to Jet",
+                    "Bio - FT MSW",
+                    "Bio - FT Others",
+                    "Electrofuel"]
+
+        # Abatement potential in MtCO2e
+        abatement_potential = [elt / 1000000 for elt in
+                               [self.df.abatement_potential_hefa_fog[year],
+                                self.df.abatement_potential_hefa_others[year],
+                                self.df.abatement_potential_atj[year],
+                                self.df.abatement_potential_ft_msw[year],
+                                self.df.abatement_potential_ft_others[year],
+                                self.df.abatement_potential_electrofuel[year]]]
+
+        # Energy available in EJ
+        energy_avail = [elt / 1000000000000 for elt in [self.df.energy_avail_hefa_fog[year],
+                                                        self.df.energy_avail_hefa_others[year],
+                                                        self.df.energy_avail_atj[year],
+                                                        self.df.energy_avail_ft_msw[year],
+                                                        self.df.energy_avail_ft_others[year],
+                                                        self.df.energy_avail_electrofuel[year]]]
+
+        # carbon abatement cost in (€/tCO2e)
+        carbon_abatement_cost = [self.df.carbon_abatement_cost_hefa_fog[year],
+                                 self.df.carbon_abatement_cost_hefa_others[year],
+                                 self.df.carbon_abatement_cost_atj[year],
+                                 self.df.carbon_abatement_cost_ft_msw[year],
+                                 self.df.carbon_abatement_cost_ft_others[year],
+                                 self.df.electrofuel_abatement_cost[year]
+                                 ]
+
+        colors = ['#ee9b00', '#ffbf47',
+                  '#bb3e03', '#097223', '#0c9e30', '#828782']
+
+        macc_df = pd.DataFrame(data=[abatement_potential, energy_avail, carbon_abatement_cost, colors],
+                               columns=pathways, index=['abatement_potential', 'energy_avail',
+                                                        'carbon_abatement_cost', 'colors'])
+
+        macc_df = macc_df.transpose().sort_values(by='carbon_abatement_cost')
+
+        heights = macc_df['carbon_abatement_cost'].to_list()
+        names = macc_df.index.to_list()
+        heights.insert(0, 0)
+        heights.append(heights[-1])
+
+        # MAx potential MACC
+        widths_potential = macc_df['abatement_potential'].to_list()
+        widths_potential.insert(0, 0)
+        widths_potential.append(widths_potential[-1])
+
+        colors = macc_df['colors'].to_list()
+
+        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, 'g', where='post',
+                                       color="#335C67",
+                                       label="Marginal abatement cost", linewidth=1.5)
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0, (len(widths_potential) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon(
+                [(np.cumsum(widths_potential)[i], 0), (np.cumsum(widths_potential)[i], heights[i + 1]),
+                 (np.cumsum(widths_potential)[i + 1], heights[i + 1]),
+                 (np.cumsum(widths_potential)[i + 1], 0)],
+                closed=True, color=colors[i], alpha=0.5)
+            self.ax.add_patch(polygon)
+
+        fuel = macc_df.energy_avail.to_list()
+        fuel.insert(0, 0)
+        widths_potential.pop()
+        self.ax2 = self.ax.twinx()
+        self.ax2.plot(np.cumsum(widths_potential), np.cumsum(fuel), color="#9E2A2B", linestyle=':',
+                      label="Energy potential",
+                      marker='x')
+
+        self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                           self.df.energy_consumption_kerosene[year] / 1e12, color='black',
+                         linewidth=1, linestyle='-.')
+        self.ax2.text(0, self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                      self.df.energy_consumption_kerosene[year] / 1e12 + 2,
+                      'Air transport alternative drop-in fuels use, 2050')
+
+        self.ax.grid(True, which="both", ls=':')
+        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
+        self.ax2.set_ylabel('Energy potential under current allocation (EJ)')
+        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+
+        self.ax.grid(True, which="both", ls=':')
+        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
+        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+
+        self.ax.text(np.cumsum(widths_potential)[0] + 10, heights[1] - 50, names[0])
+        self.ax.text(np.cumsum(widths_potential)[1] + 10, heights[2] + 18, names[1])
+        self.ax.text(np.cumsum(widths_potential)[2] + 10, heights[3] - 50, names[2])
+        self.ax.text(np.cumsum(widths_potential)[3] + 10, heights[4] - 50, names[3])
+        self.ax.text(np.cumsum(widths_potential)[4] + 10, heights[5] - 50, names[4])
+        self.ax.text(np.cumsum(widths_potential)[5] + 10, heights[6] - 50, names[5])
+
+        self.ax.collections.clear()
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
+
 

@@ -254,10 +254,10 @@ class ImpactsParameters(object):
 
     # CO2 tax level (€/ton)
 
-    co2_tax_2020: float = 0
-    co2_tax_2030: float = 0
-    co2_tax_2040: float = 0
-    co2_tax_2050: float = 0
+    co2_tax_2020: float = 50
+    co2_tax_2030: float = 100
+    co2_tax_2040: float = 200
+    co2_tax_2050: float = 300
 
     ### Kerosene
 
