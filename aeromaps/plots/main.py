@@ -17,6 +17,14 @@ class AirTransportCO2EmissionsPlot:
         self.create_plot()
 
     def create_plot(self):
+        (self.line_co2_emissions_including_sobriety,) = self.ax.plot(
+            self.years,
+            self.df["co2_emissions_2019technology"],
+            color="black",
+            linestyle="--",
+            linewidth=1,
+        )
+
         (self.line_co2_emissions_including_technology,) = self.ax.plot(
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
@@ -62,21 +70,11 @@ class AirTransportCO2EmissionsPlot:
         (self.line_co2_emissions_no_action,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "co2_emissions_2019technology_baseline3"],
-            color="black",
-            linestyle="--",
-            label="Emissions at 2019 technological level - Baseline of 3% growth",
-            linewidth=2,
-            zorder=1,
-        )
-
-        (self.line_co2_emissions_including_sobriety,) = self.ax.plot(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions_2019technology"],
             color="red",
             linestyle="-",
-            label="Emissions at 2019 technological level - Projections",
+            label="Emissions at 2019 technological level with trend air traffic growth",
             linewidth=3,
-            zorder=2,
+            zorder=3,
         )
 
         (self.line_co2_emissions,) = self.ax.plot(
@@ -84,12 +82,21 @@ class AirTransportCO2EmissionsPlot:
             self.df.loc[self.prospective_years, "co2_emissions"],
             color="green",
             linestyle="-",
-            label="Emissions including all levers of action - Projections",
+            label="Projected emissions including all levers of action",
             linewidth=3,
             zorder=3,
         )
 
         # Fill between
+
+        self.ax.fill_between(
+            self.years,
+            self.df["co2_emissions_2019technology_baseline3"],
+            self.df["co2_emissions_2019technology"],
+            color="lightskyblue",
+            label="Demand/supply side management",
+        )
+
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_2019technology"],
@@ -101,32 +108,17 @@ class AirTransportCO2EmissionsPlot:
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
-            self.df["co2_emissions_including_operations"],
+            self.df["co2_emissions_including_load_factor"],
             color="orange",
-            label="Fleet operations",
-        )
-
-        self.ax.fill_between(
-            self.years,
-            self.df["co2_emissions_including_operations"],
-            self.df["co2_emissions_including_load_factor"],
-            color="grey",
-            label="Aircraft load factor",
+            label="Fleet operations and load factor",
         )
 
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_load_factor"],
-            self.df["co2_emissions_including_energy"],
+            self.df["co2_emissions"],
             color="yellowgreen",
             label="Aircraft energy",
-        )
-        self.ax.fill_between(
-            self.years,
-            self.df["co2_emissions_including_energy"],
-            self.df["co2_emissions"],
-            color="lightskyblue",
-            label="Other measures",
         )
 
         self.ax.grid()
@@ -150,6 +142,10 @@ class AirTransportCO2EmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
+        self.line_co2_emissions_including_sobriety.set_ydata(
+            self.df["co2_emissions_2019technology"]
+        )
+
         self.line_co2_emissions_including_technology.set_ydata(
             self.df["co2_emissions_including_aircraft_efficiency"]
         )
@@ -166,10 +162,6 @@ class AirTransportCO2EmissionsPlot:
             self.df["co2_emissions_including_energy"]
         )
 
-        self.line_co2_emissions_including_sobriety.set_ydata(
-            self.df.loc[self.prospective_years, "co2_emissions_2019technology"]
-        )
-
         self.line_co2_emissions.set_ydata(self.df.loc[self.prospective_years, "co2_emissions"])
 
         self.ax.collections.clear()
@@ -177,41 +169,34 @@ class AirTransportCO2EmissionsPlot:
         # Fill between
         self.ax.fill_between(
             self.years,
+            self.df["co2_emissions_2019technology_baseline3"],
+            self.df["co2_emissions_2019technology"],
+            color="lightskyblue",
+            label="Demand/supply side management",
+        )
+
+        self.ax.fill_between(
+            self.years,
             self.df["co2_emissions_2019technology"],
             self.df["co2_emissions_including_aircraft_efficiency"],
             color="gold",
-            label="Reduction of consumption",
+            label="Aircraft efficiency",
         )
 
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_aircraft_efficiency"],
-            self.df["co2_emissions_including_operations"],
+            self.df["co2_emissions_including_load_factor"],
             color="orange",
-            label="Flight and ground operations",
-        )
-
-        self.ax.fill_between(
-            self.years,
-            self.df["co2_emissions_including_operations"],
-            self.df["co2_emissions_including_load_factor"],
-            color="grey",
-            label="Aircraft load factor",
+            label="Fleet operations and load factor",
         )
 
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_load_factor"],
-            self.df["co2_emissions_including_energy"],
-            color="yellowgreen",
-            label="Energy",
-        )
-        self.ax.fill_between(
-            self.years,
-            self.df["co2_emissions_including_energy"],
             self.df["co2_emissions"],
-            color="lightskyblue",
-            label="Other measures",
+            color="yellowgreen",
+            label="Aircraft energy",
         )
 
         self.ax.relim()
