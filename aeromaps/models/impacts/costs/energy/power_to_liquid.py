@@ -24,7 +24,8 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_eis_capex: pd.Series = pd.Series(dtype="float64"),
             electrofuel_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
             electrofuel_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-            electrofuel_eis_specific_electricity: pd.Series = pd.Series(dtype="float64"),
+            electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
+            electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
             kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
             kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
             electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -62,7 +63,8 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_co2_cost = self.electrofuel_computation(electrofuel_eis_capex,
                                                                 electrofuel_eis_fixed_opex,
                                                                 electrofuel_eis_var_opex,
-                                                                electrofuel_eis_specific_electricity,
+                                                                electrolysis_efficiency,
+                                                                electrofuel_hydrogen_efficiency,
                                                                 electricity_market_price,
                                                                 energy_consumption_electrofuel,
                                                                 electricity_load_factor,
@@ -220,8 +222,6 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_opex_cost = electrofuel_opex_cost * scaling_factor
         electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
         electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
-
-        print(scaling_factor)
 
 
         return (

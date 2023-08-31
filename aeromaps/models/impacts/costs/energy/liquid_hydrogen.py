@@ -676,7 +676,6 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_opex_cost = h2_opex_cost * scaling_factor
         h2_elec_cost = h2_elec_cost * scaling_factor
 
-        print(scaling_factor)
 
         return (
             plant_building_scenario,
@@ -1038,7 +1037,6 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_opex_cost = h2_opex_cost * scaling_factor
         h2_elec_cost = h2_elec_cost * scaling_factor
 
-        print(scaling_factor)
 
         return (
             plant_building_scenario,

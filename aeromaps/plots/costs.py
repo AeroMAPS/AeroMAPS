@@ -898,6 +898,8 @@ class DropInMACC():
 
         macc_df = macc_df.transpose().sort_values(by='carbon_abatement_cost')
 
+        macc_df=macc_df[macc_df['abatement_potential']>0]
+
         heights = macc_df['carbon_abatement_cost'].to_list()
         names = macc_df.index.to_list()
         heights.insert(0, 0)
@@ -973,6 +975,9 @@ class DropInMACC():
         self.historic_years = df_data["years"]["historic_years"]
         self.prospective_years = df_data["years"]["prospective_years"]
 
+        self.ax.clear()
+        self.ax2.clear()
+
         # Select year at which the MACC is plotted
         year = 2050
 
@@ -1020,6 +1025,8 @@ class DropInMACC():
                                                         'carbon_abatement_cost', 'colors'])
 
         macc_df = macc_df.transpose().sort_values(by='carbon_abatement_cost')
+
+        macc_df = macc_df[macc_df['abatement_potential'] > 0]
 
         heights = macc_df['carbon_abatement_cost'].to_list()
         names = macc_df.index.to_list()
@@ -1082,10 +1089,11 @@ class DropInMACC():
         self.ax.text(np.cumsum(widths_potential)[4] + 10, heights[5] - 50, names[4])
         self.ax.text(np.cumsum(widths_potential)[5] + 10, heights[6] - 50, names[5])
 
-        self.ax.collections.clear()
 
         self.ax.relim()
         self.ax.autoscale_view()
+        self.ax2.relim()
+        self.ax2.autoscale_view()
         self.fig.canvas.draw()
 
 
