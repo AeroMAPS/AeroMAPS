@@ -435,6 +435,7 @@
     "liquefier_capex_2030": 1457.33,
     "liquefier_capex_2040": 1457.33,
     "liquefier_capex_2050": 1457.33,
+    "transport_cost_ratio": 0.1,
     "electrofuel_capex_2020": 2311,
     "electrofuel_capex_2030": 2311,
     "electrofuel_capex_2040": 2311,

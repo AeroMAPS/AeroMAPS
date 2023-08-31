@@ -92,7 +92,7 @@ from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCapex,
     ElectrofuelFixedOpex,
     ElectrofuelVarOpex,
-    ElectrofuelSpecificElectricity,
+    # ElectrofuelSpecificElectricity,
     ElectrofuelSpecificCo2
 )
 
@@ -207,7 +207,7 @@ models_simple = {
     "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
     "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
     "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
-    "electrofuel_specific_electricity": ElectrofuelSpecificElectricity("electrofuel_specific_electricity"),
+    # "electrofuel_specific_electricity": ElectrofuelSpecificElectricity("electrofuel_specific_electricity"),
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
@@ -309,7 +309,7 @@ models_complex = {
     "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
     "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
     "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
-    "electrofuel_specific_electricity": ElectrofuelSpecificElectricity("electrofuel_specific_electricity"),
+    # "electrofuel_specific_electricity": ElectrofuelSpecificElectricity("electrofuel_specific_electricity"),
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),

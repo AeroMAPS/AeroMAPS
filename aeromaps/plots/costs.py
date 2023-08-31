@@ -910,7 +910,7 @@ class DropInMACC():
 
         colors=macc_df['colors'].to_list()
 
-        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, 'g', where='post', color="#335C67",
+        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, where='post', color="#335C67",
                 label="Marginal abatement cost", linewidth=1.5)
 
         # Fill under the step plot with different colors for each step
@@ -932,8 +932,13 @@ class DropInMACC():
         self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12 -
                       self.df.energy_consumption_kerosene[year] / 1e12, color='black',
                     linewidth=1, linestyle='-.')
-        self.ax2.text(0, self.df.energy_consumption_dropin_fuel[year] / 1e12 -
-                      self.df.energy_consumption_kerosene[year] / 1e12 + 2, 'Air transport alternative drop-in fuels use, 2050')
+        self.ax2.text(0, 1.02*(self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                      self.df.energy_consumption_kerosene[year] / 1e12), 'Air transport sustainable drop-in fuels use, 2050')
+
+        self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12, color='black',
+                         linewidth=1, linestyle='-')
+        self.ax2.text(0, 1.02 * (self.df.energy_consumption_dropin_fuel[year] / 1e12),
+                      'Air transport total drop-in fuels use, 2050')
 
         self.ax.grid(True, which="both", ls=':')
         self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
@@ -1028,7 +1033,7 @@ class DropInMACC():
 
         colors = macc_df['colors'].to_list()
 
-        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, 'g', where='post',
+        self.macc_curve = self.ax.step(np.cumsum(widths_potential) - widths_potential, heights, where='post',
                                        color="#335C67",
                                        label="Marginal abatement cost", linewidth=1.5)
 
@@ -1051,11 +1056,15 @@ class DropInMACC():
                       marker='x')
 
         self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12 -
-                           self.df.energy_consumption_kerosene[year] / 1e12, color='black',
-                         linewidth=1, linestyle='-.')
-        self.ax2.text(0, self.df.energy_consumption_dropin_fuel[year] / 1e12 -
-                      self.df.energy_consumption_kerosene[year] / 1e12 + 2,
-                      'Air transport alternative drop-in fuels use, 2050')
+                      self.df.energy_consumption_kerosene[year] / 1e12, color='black',
+                    linewidth=1, linestyle='-.')
+        self.ax2.text(0, 1.02*(self.df.energy_consumption_dropin_fuel[year] / 1e12 -
+                      self.df.energy_consumption_kerosene[year] / 1e12), 'Air transport sustainable drop-in fuels use, 2050')
+
+        self.ax2.axhline(y=self.df.energy_consumption_dropin_fuel[year] / 1e12, color='black',
+                         linewidth=1, linestyle='-')
+        self.ax2.text(0, 1.02 * (self.df.energy_consumption_dropin_fuel[year] / 1e12),
+                      'Air transport total drop-in fuels use, 2050')
 
         self.ax.grid(True, which="both", ls=':')
         self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')

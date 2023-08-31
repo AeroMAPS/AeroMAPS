@@ -221,6 +221,8 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
         electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
 
+        print(scaling_factor)
+
 
         return (
             plant_building_scenario,
@@ -256,7 +258,6 @@ class ElectrofuelCost(AeromapsModel):
         Specific CO2 in kg/kg
         Electricity market price in €/kWh
         Electrofuel price returned in €/kg
-        TODO SWITCH to efficiency
         """
         operational_time = 30
         hydrogen_prices = {}

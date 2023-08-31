@@ -79,8 +79,8 @@ class ImpactsParameters(object):
     electrolyser_var_opex_2040: float = 0.18
     electrolyser_var_opex_2050: float = 0.18
 
+    # Deprecated since move to efficiency, might be reactivated
     # Electrolysis Specific Electricity (kWh/kg)
-    # TODO remove switch to efficicency
     # electrolyser_specific_electricity_2020: float = 51.0
     # electrolyser_specific_electricity_2030: float = 49.3
     # electrolyser_specific_electricity_2040: float = 48.5
@@ -180,10 +180,11 @@ class ImpactsParameters(object):
     liquefier_capex_2040: float = 1457.33
     liquefier_capex_2050: float = 1457.33
 
-    # TODO ADD H2 TRANSPORT COST RATIO INIT (IEA OR HOELZEN)
+    # Hydrogen transport cost ratio (Hoelzen et al.)
+    transport_cost_ratio: float = 0.1
 
+    # Deprecated since move to efficiency, might be reactivated
     # Liquefier sp. electricity (kWh/kg)
-    # TODO remove/switch to efficicency
     # liquefier_specific_electricity_2020: float = 7.54
     # liquefier_specific_electricity_2030: float = 7.54
     # liquefier_specific_electricity_2040: float = 7.54
@@ -207,12 +208,12 @@ class ImpactsParameters(object):
     electrofuel_var_opex_2040: float = 0.38
     electrofuel_var_opex_2050: float = 0.38
 
+    # Deprecated since move to efficiency, might be reactivated
     # Electrofuel plant specific electricity (kWh/kg)
-
-    electrofuel_specific_electricity_2020: float = 22.9
-    electrofuel_specific_electricity_2030: float = 22.9
-    electrofuel_specific_electricity_2040: float = 22.9
-    electrofuel_specific_electricity_2050: float = 22.9
+    # electrofuel_specific_electricity_2020: float = 22.9
+    # electrofuel_specific_electricity_2030: float = 22.9
+    # electrofuel_specific_electricity_2040: float = 22.9
+    # electrofuel_specific_electricity_2050: float = 22.9
 
     # Electrofuel plant specific co2 (kg/kg)
 

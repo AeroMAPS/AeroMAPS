@@ -669,12 +669,14 @@ class LiquidHydrogenCost(AeromapsModel):
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
         # Stranded asset literature could be valuable to model this better.
         # Proportional production scaling
+
         scaling_factor =  demand_scenario / hydrogen_production
         h2_total_cost = h2_total_cost * scaling_factor
         h2_capex_cost = h2_capex_cost * scaling_factor
         h2_opex_cost = h2_opex_cost * scaling_factor
         h2_elec_cost = h2_elec_cost * scaling_factor
 
+        print(scaling_factor)
 
         return (
             plant_building_scenario,
@@ -1035,6 +1037,8 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_capex_cost = h2_capex_cost * scaling_factor
         h2_opex_cost = h2_opex_cost * scaling_factor
         h2_elec_cost = h2_elec_cost * scaling_factor
+
+        print(scaling_factor)
 
         return (
             plant_building_scenario,
