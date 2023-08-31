@@ -33,14 +33,6 @@ class AirTransportCO2EmissionsPlot:
             linewidth=1,
         )
 
-        (self.line_co2_emissions_including_operations,) = self.ax.plot(
-            self.years,
-            self.df["co2_emissions_including_operations"],
-            color="black",
-            linestyle="--",
-            linewidth=1,
-        )
-
         (self.line_co2_emissions_including_load_factor,) = self.ax.plot(
             self.years,
             self.df["co2_emissions_including_load_factor"],
@@ -148,10 +140,6 @@ class AirTransportCO2EmissionsPlot:
 
         self.line_co2_emissions_including_technology.set_ydata(
             self.df["co2_emissions_including_aircraft_efficiency"]
-        )
-
-        self.line_co2_emissions_including_operations.set_ydata(
-            self.df["co2_emissions_including_operations"]
         )
 
         self.line_co2_emissions_including_load_factor.set_ydata(
