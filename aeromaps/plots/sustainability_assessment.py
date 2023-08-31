@@ -1040,7 +1040,7 @@ class MultidisciplinaryAssessmentPlot:
         self.ax.yaxis.set_major_formatter(mticker.FuncFormatter(percentage_formatter))
 
         self.ax.grid(axis='x')
-        self.ax.set_title('Impacts and budgets estimations\npresented in a % of world budgets', y=1.05)
+        self.ax.set_title('Impacts and budgets estimations\npresented as a % of world budgets', y=1.05)
 
         for tick in self.ax.xaxis.get_major_ticks():
             tick.set_pad(10)
@@ -1057,4 +1057,5 @@ class MultidisciplinaryAssessmentPlot:
         self.fig.tight_layout()
 
     def update(self, data):
+        # Todo => Pas de passage du nouveau df donc update fonctionne?
         self.create_plot()
