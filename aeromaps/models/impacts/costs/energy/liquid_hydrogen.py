@@ -840,7 +840,6 @@ class LiquidHydrogenCost(AeromapsModel):
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_life)
 
                 # Adding new plant production to future years
-                # TODO change to demand scenario for degrowing production scenarios...
                 for i in range(year + 1, end_bound + 1):
                     h2_total_cost[i] = h2_total_cost[i] + (
                             missing_production * hydrogen_cost[i][
@@ -1026,7 +1025,16 @@ class LiquidHydrogenCost(AeromapsModel):
                             missing_production * liquefaction_cost[i]['ELECTRICITY']) / 1000  # M€
                     hydrogen_production[i] = hydrogen_production[i] + missing_production
 
-        #         TODO scaling factor!!!!
+        # MOD -> Scaling down production for diminishing production scenarios.
+        # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
+        # Stranded asset literature could be valuable to model this better.
+        # Proportional production scaling
+
+        scaling_factor =  demand_scenario / hydrogen_production
+        h2_total_cost = h2_total_cost * scaling_factor
+        h2_capex_cost = h2_capex_cost * scaling_factor
+        h2_opex_cost = h2_opex_cost * scaling_factor
+        h2_elec_cost = h2_elec_cost * scaling_factor
 
         return (
             plant_building_scenario,

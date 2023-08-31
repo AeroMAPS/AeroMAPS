@@ -58,13 +58,13 @@ class BiofuelCost(AeromapsModel):
             biofuel_carbon_tax_hefa_fog, \
             biofuel_cost_premium_hefa_fog, \
             biofuel_mfsp_carbon_tax_supplement_hefa_fog = self.pathway_computation(biofuel_hefa_fog_emission_factor,
-                                                                     kerosene_emission_factor,
-                                                                     biofuel_hefa_fog_mfsp,
-                                                                     carbon_tax,
-                                                                     kerosene_market_price,
-                                                                     biofuel_hefa_fog_capex,
-                                                                     energy_consumption_biofuel,
-                                                                     biofuel_hefa_fog_share)
+                                                                                   kerosene_emission_factor,
+                                                                                   biofuel_hefa_fog_mfsp,
+                                                                                   carbon_tax,
+                                                                                   kerosene_market_price,
+                                                                                   biofuel_hefa_fog_capex,
+                                                                                   energy_consumption_biofuel,
+                                                                                   biofuel_hefa_fog_share)
 
         self.df.loc[:, 'plant_building_scenario_hefa_fog'] = plant_building_scenario_hefa_fog
         self.df.loc[:, 'plant_building_cost_hefa_fog'] = plant_building_cost_hefa_fog
@@ -83,14 +83,15 @@ class BiofuelCost(AeromapsModel):
             biofuel_cost_hefa_others, \
             biofuel_carbon_tax_hefa_others, \
             biofuel_cost_premium_hefa_others, \
-            biofuel_mfsp_carbon_tax_supplement_hefa_others = self.pathway_computation(biofuel_hefa_others_emission_factor,
-                                                                        kerosene_emission_factor,
-                                                                        biofuel_hefa_others_mfsp,
-                                                                        carbon_tax,
-                                                                        kerosene_market_price,
-                                                                        biofuel_hefa_others_capex,
-                                                                        energy_consumption_biofuel,
-                                                                        biofuel_hefa_others_share)
+            biofuel_mfsp_carbon_tax_supplement_hefa_others = self.pathway_computation(
+            biofuel_hefa_others_emission_factor,
+            kerosene_emission_factor,
+            biofuel_hefa_others_mfsp,
+            carbon_tax,
+            kerosene_market_price,
+            biofuel_hefa_others_capex,
+            energy_consumption_biofuel,
+            biofuel_hefa_others_share)
 
         self.df.loc[:, 'plant_building_scenario_hefa_others'] = plant_building_scenario_hefa_others
         self.df.loc[:, 'plant_building_cost_hefa_others'] = plant_building_cost_hefa_others
@@ -99,7 +100,8 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, 'biofuel_cost_hefa_others'] = biofuel_cost_hefa_others
         self.df.loc[:, 'biofuel_carbon_tax_hefa_others'] = biofuel_carbon_tax_hefa_others
         self.df.loc[:, 'biofuel_cost_premium_hefa_others'] = biofuel_cost_premium_hefa_others
-        self.df.loc[:, 'biofuel_mfsp_carbon_tax_supplement_hefa_others'] = biofuel_mfsp_carbon_tax_supplement_hefa_others
+        self.df.loc[:,
+        'biofuel_mfsp_carbon_tax_supplement_hefa_others'] = biofuel_mfsp_carbon_tax_supplement_hefa_others
 
         ### FT OTHERS
         plant_building_scenario_ft_others, \
@@ -110,13 +112,13 @@ class BiofuelCost(AeromapsModel):
             biofuel_carbon_tax_ft_others, \
             biofuel_cost_premium_ft_others, \
             biofuel_mfsp_carbon_tax_supplement_ft_others = self.pathway_computation(biofuel_ft_others_emission_factor,
-                                                                      kerosene_emission_factor,
-                                                                      biofuel_ft_others_mfsp,
-                                                                      carbon_tax,
-                                                                      kerosene_market_price,
-                                                                      biofuel_ft_others_capex,
-                                                                      energy_consumption_biofuel,
-                                                                      biofuel_ft_others_share)
+                                                                                    kerosene_emission_factor,
+                                                                                    biofuel_ft_others_mfsp,
+                                                                                    carbon_tax,
+                                                                                    kerosene_market_price,
+                                                                                    biofuel_ft_others_capex,
+                                                                                    energy_consumption_biofuel,
+                                                                                    biofuel_ft_others_share)
 
         self.df.loc[:, 'plant_building_scenario_ft_others'] = plant_building_scenario_ft_others
         self.df.loc[:, 'plant_building_cost_ft_others'] = plant_building_cost_ft_others
@@ -135,14 +137,14 @@ class BiofuelCost(AeromapsModel):
             biofuel_cost_ft_msw, \
             biofuel_carbon_tax_ft_msw, \
             biofuel_cost_premium_ft_msw, \
-            biofuel_mfsp_carbon_tax_supplement_ft_msw= self.pathway_computation(biofuel_ft_msw_emission_factor,
-                                                                   kerosene_emission_factor,
-                                                                   biofuel_ft_msw_mfsp,
-                                                                   carbon_tax,
-                                                                   kerosene_market_price,
-                                                                   biofuel_ft_msw_capex,
-                                                                   energy_consumption_biofuel,
-                                                                   biofuel_ft_msw_share)
+            biofuel_mfsp_carbon_tax_supplement_ft_msw = self.pathway_computation(biofuel_ft_msw_emission_factor,
+                                                                                 kerosene_emission_factor,
+                                                                                 biofuel_ft_msw_mfsp,
+                                                                                 carbon_tax,
+                                                                                 kerosene_market_price,
+                                                                                 biofuel_ft_msw_capex,
+                                                                                 energy_consumption_biofuel,
+                                                                                 biofuel_ft_msw_share)
 
         self.df.loc[:, 'plant_building_scenario_ft_msw'] = plant_building_scenario_ft_msw
         self.df.loc[:, 'plant_building_cost_ft_msw'] = plant_building_cost_ft_msw
@@ -162,13 +164,13 @@ class BiofuelCost(AeromapsModel):
             biofuel_carbon_tax_atj, \
             biofuel_cost_premium_atj, \
             biofuel_mfsp_carbon_tax_supplement_atj = self.pathway_computation(biofuel_atj_emission_factor,
-                                                                kerosene_emission_factor,
-                                                                biofuel_atj_mfsp,
-                                                                carbon_tax,
-                                                                kerosene_market_price,
-                                                                biofuel_atj_capex,
-                                                                energy_consumption_biofuel,
-                                                                biofuel_atj_share)
+                                                                              kerosene_emission_factor,
+                                                                              biofuel_atj_mfsp,
+                                                                              carbon_tax,
+                                                                              kerosene_market_price,
+                                                                              biofuel_atj_capex,
+                                                                              energy_consumption_biofuel,
+                                                                              biofuel_atj_share)
 
         self.df.loc[:, 'plant_building_scenario_atj'] = plant_building_scenario_atj
         self.df.loc[:, 'plant_building_cost_atj'] = plant_building_cost_atj
@@ -299,16 +301,17 @@ class BiofuelCost(AeromapsModel):
 
             # Compute the carbon tax (M€)
 
-            biofuel_carbon_tax_cost[year + 1] = carbon_tax[year + 1] * emission_factor_ton [year + 1] * demand_scenario[year + 1] / 1000000
+            biofuel_carbon_tax_cost[year + 1] = carbon_tax[year + 1] * emission_factor_ton[year + 1] * demand_scenario[
+                year + 1] / 1000000
 
-            mfsp_supplement_carbon_tax[year + 1] = carbon_tax[year + 1] * emission_factor_ton [year + 1] / 1000 * fuel_density
+            mfsp_supplement_carbon_tax[year + 1] = carbon_tax[year + 1] * emission_factor_ton[
+                year + 1] / 1000 * fuel_density
 
             # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
             carbon_abatement_cost[year + 1] = (mfsp_ton[year + 1] - kerosene_price_ton[year + 1]) / \
                                               avoided_emission_factor[
                                                   year + 1]
 
-        #         TODO scaling factor!!!!
         return (
             plant_building_scenario,
             plant_building_cost,
@@ -400,8 +403,6 @@ class BiofuelMfsp(AeromapsModel):
         biofuel_ft_msw_mfsp = self.df["biofuel_ft_msw_mfsp"]
         biofuel_atj_mfsp = self.df["biofuel_atj_mfsp"]
 
-
-
         # MEAN
         biofuel_mean_mfsp = (
                 biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100
@@ -412,7 +413,6 @@ class BiofuelMfsp(AeromapsModel):
         )
 
         self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
-
 
         # MARGINAL
 

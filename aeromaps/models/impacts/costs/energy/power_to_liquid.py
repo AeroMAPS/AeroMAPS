@@ -207,8 +207,19 @@ class ElectrofuelCost(AeromapsModel):
                             missing_production * electrofuel_cost[i]['CO2']) / 1000  # M€
                     electrofuel_production[i] = electrofuel_production[i] + missing_production
 
+        # MOD -> Scaling down production for diminishing production scenarios.
+        # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
+        # Stranded asset literature could be valuable to model this better.
+        # Proportional production scaling
 
-        #         TODO scaling factor!!!!
+        scaling_factor =  demand_scenario / electrofuel_production
+        electrofuel_total_cost = electrofuel_total_cost * scaling_factor
+        electrofuel_capex_cost = electrofuel_capex_cost * scaling_factor
+        electrofuel_opex_cost = electrofuel_opex_cost * scaling_factor
+        electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
+        electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
+
+
         return (
             plant_building_scenario,
             plant_building_cost,
