@@ -1211,9 +1211,10 @@ class ElectrolyserVarOpex(AeromapsModel):
             electrolyser_eis_var_opex
         )
 
-#
+########## Deprecated for the time being, might be reactivated. #####################
+
 # class ElectrolyserSpecificElectricity(AeromapsModel):
-#     # TODO delete due to switch to efficiency
+
 #     def __init__(self, name="electrolyser_specific_electricity", *args, **kwargs):
 #         super().__init__(name, *args, **kwargs)
 #
@@ -1248,7 +1249,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 #         return (
 #             electrolyser_eis_specific_electricity
 #         )
-
+####################################################################################
 
 class LiquefierCapex(AeromapsModel):
     def __init__(self, name="liquefier_capex", *args, **kwargs):
@@ -1286,9 +1287,10 @@ class LiquefierCapex(AeromapsModel):
             liquefier_eis_capex
         )
 
-#
+
+########## Deprecated for the time being, might be reactivated. ####################
+
 # class LiquefierSpecificElectricity(AeromapsModel):
-#     # TODO delete due to switch to efficiency
 #     def __init__(self, name="liquefier_specific_electricity", *args, **kwargs):
 #         super().__init__(name, *args, **kwargs)
 #
@@ -1323,7 +1325,7 @@ class LiquefierCapex(AeromapsModel):
 #         return (
 #             liquefier_eis_specific_electricity
 #         )
-
+####################################################################################
 
 class GasCcsCapex(AeromapsModel):
     def __init__(self, name="gas_ccs_capex", *args, **kwargs):

@@ -123,7 +123,9 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_eis_capex: pd.Series = pd.Series(dtype="float64"),
             electrofuel_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
             electrofuel_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-            electrofuel_eis_specific_energy: pd.Series = pd.Series(dtype="float64"),
+            # electrofuel_eis_specific_energy: pd.Series = pd.Series(dtype="float64"),
+            electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
+            electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
             electricity_market_price: pd.Series = pd.Series(dtype="float64"),
             energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
             electricity_load_factor: float = 0.0,
@@ -135,7 +137,7 @@ class ElectrofuelCost(AeromapsModel):
         Capex in €/ton/day
         Fixed opex in  €/ton/day
         Variable opex in € per kg
-        Specific electricity in kWh/kg
+        Specific electricity in kWh/kg --> Deprecated to harmonize with efficiency compytation, but might be reactivated later?
         Electricity market price in €/kWh
         Energy_consumption_hydrogen in MJ.
         Values returned are in M€ or t/day
@@ -172,7 +174,7 @@ class ElectrofuelCost(AeromapsModel):
                 electrofuel_cost = ElectrofuelCost.compute_electrofuel_year_lcop(
                     year,
                     electricity_market_price, co2_market_price, electricity_load_factor, electrofuel_eis_capex,
-                    electrofuel_eis_fixed_opex, electrofuel_eis_var_opex, electrofuel_eis_specific_energy,
+                    electrofuel_eis_fixed_opex, electrofuel_eis_var_opex, electrolysis_efficiency, electrofuel_hydrogen_efficiency,
                     electrofuel_eis_specific_co2
                 )
 
@@ -238,7 +240,9 @@ class ElectrofuelCost(AeromapsModel):
                                       electrofuel_capex,
                                       electrofuel_fixed_opex,
                                       electrofuel_var_opex,
-                                      electrofuel_specific_electricity,
+                                      # electrofuel_specific_electricity,
+                                      electrolysis_efficiency,
+                                      electrofuel_hydrogen_efficiency,
                                       electrofuel_specific_co2
                                       ):
         """
@@ -262,6 +266,15 @@ class ElectrofuelCost(AeromapsModel):
         load_fact = min(0.95, electricity_load_factor)
         real_year_days = 365.25 * load_fact
         real_var_opex = electrofuel_var_opex[base_year] * real_year_days
+
+        fuel_lhv = 35.3
+        # https://www.engineeringtoolbox.com/fuels-higher-calorific-values-d_169.html
+        # fuel density at 15 degrees
+        fuel_density = 0.804
+
+        dropin_specific_energy = fuel_lhv / fuel_density / 3.6  # kWh/kg
+
+        electrofuel_specific_electricity = dropin_specific_energy / (electrolysis_efficiency * electrofuel_hydrogen_efficiency)
 
         cap_cost_npv = 0
         fix_op_cost_npv = 0
@@ -409,45 +422,48 @@ class ElectrofuelVarOpex(AeromapsModel):
         )
 
 
-class ElectrofuelSpecificElectricity(AeromapsModel):
-
-    # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
-    # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
-    def __init__(self, name="electrofuel_specific_electricity", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
-
-    def compute(
-            self,
-            electrofuel_specific_electricity_2020: float = 0.0,
-            electrofuel_specific_electricity_2030: float = 0.0,
-            electrofuel_specific_electricity_2040: float = 0.0,
-            electrofuel_specific_electricity_2050: float = 0.0,
-    ) -> Tuple[pd.Series]:
-        """electrofuel efficiency at eis using interpolation functions"""
-        # FT MSW
-        reference_values_specific_electricity = [
-            electrofuel_specific_electricity_2020,
-            electrofuel_specific_electricity_2030,
-            electrofuel_specific_electricity_2040,
-            electrofuel_specific_electricity_2050
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        specific_electricity_function = interp1d(
-            reference_years, reference_values_specific_electricity, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "electrofuel_eis_specific_electricity"
-            ] = specific_electricity_function(k)
-
-        electrofuel_eis_specific_electricity = self.df.loc[:, "electrofuel_eis_specific_electricity"]
-
-        return (
-            electrofuel_eis_specific_electricity
-        )
-
+########## Deprecated for the time being, might be reactivated. ####################
+#
+# class ElectrofuelSpecificElectricity(AeromapsModel):
+#
+#     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
+#     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées
+#     #
+#     def __init__(self, name="electrofuel_specific_electricity", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#             self,
+#             electrofuel_specific_electricity_2020: float = 0.0,
+#             electrofuel_specific_electricity_2030: float = 0.0,
+#             electrofuel_specific_electricity_2040: float = 0.0,
+#             electrofuel_specific_electricity_2050: float = 0.0,
+#     ) -> Tuple[pd.Series]:
+#         """electrofuel efficiency at eis using interpolation functions"""
+#         # FT MSW
+#         reference_values_specific_electricity = [
+#             electrofuel_specific_electricity_2020,
+#             electrofuel_specific_electricity_2030,
+#             electrofuel_specific_electricity_2040,
+#             electrofuel_specific_electricity_2050
+#         ]
+#
+#         reference_years = [2020, 2030, 2040, 2050]
+#
+#         specific_electricity_function = interp1d(
+#             reference_years, reference_values_specific_electricity, kind="linear"
+#         )
+#         for k in range(self.prospection_start_year, self.end_year + 1):
+#             self.df.loc[
+#                 k, "electrofuel_eis_specific_electricity"
+#             ] = specific_electricity_function(k)
+#
+#         electrofuel_eis_specific_electricity = self.df.loc[:, "electrofuel_eis_specific_electricity"]
+#
+#         return (
+#             electrofuel_eis_specific_electricity
+#         )
+####################################################################################
 
 class ElectrofuelSpecificCo2(AeromapsModel):
 
