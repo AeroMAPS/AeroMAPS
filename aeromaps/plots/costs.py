@@ -88,13 +88,19 @@ class ScenarioEnergyCapitalPlot:
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
-    def update(self, df_data):
-        # TODO Bien tester le update qui est une création directe de chatgpt...
-        self.df = df_data["vector_outputs"]
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.ax.clear()
+
+        colors = ['#ee9b00', '#ffbf47',
+                  '#bb3e03', '#0c9e30', '#097223',
+                  '#828782', '#52F752', '#0ABAFF',
+                  '#8CAAB6', '#0ABAFF', '#8CAAB6', '#87AE87'
+                  ]
 
         columns = ['plant_building_cost_hefa_fog',
                    'plant_building_cost_hefa_others',
@@ -111,14 +117,32 @@ class ScenarioEnergyCapitalPlot:
                    ]
 
         data_to_plot = self.df.loc[self.prospective_years, columns]
+        bottom = None  # Initialize bottom positions for stacking
 
-        for bar, col in zip(self.bar_annual_investment, data_to_plot.columns):
-            bar.set_height(data_to_plot[col])
+        for col, color in zip(data_to_plot.columns, colors):
+            if bottom is None:
+                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color)
+                bottom = data_to_plot[col]
+            else:
+                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color,
+                                                         bottom=bottom)
+                bottom += data_to_plot[col]
 
-        self.ax.collections.clear()
+        tick_interval = 5
+        min_year = min(data_to_plot.index)
+        max_year = max(data_to_plot.index)
+        ticks = range(min_year, max_year + 1, tick_interval)
+        self.ax.set_xticks(ticks)
+        self.ax.set_xticklabels(ticks, rotation=45)
+        self.ax.grid(axis='y')
+        self.ax.set_title("Annual investment per pathway (w/o fossil)")
+        self.ax.set_xlabel("Year")
+        self.ax.set_xlim(2020, max(self.prospective_years))
+        self.ax.set_ylabel("Annual Capital Investment [M€]")
+        self.ax = plt.gca()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
+        # self.ax.relim()
+        # self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -227,16 +251,24 @@ class ScenarioEnergyExpensesPlot:
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
-        # TODO a tester
 
         self.df = df_data["vector_outputs"]
 
-        self.annual_energy_expenses.set_ydata(
+        self.ax.clear()
+
+        colors = ['#2A3438', '#2A3438', '#ee9b00', '#ee9b00', '#ffbf47', '#ffbf47',
+                  '#bb3e03', '#bb3e03', '#0c9e30', '#0c9e30', '#097223', '#097223',
+                  '#828782', '#828782', '#52F752', '#52F752', '#0ABAFF', '#0ABAFF',
+                  '#8CAAB6', '#8CAAB6', '#0ABAFF', '#0ABAFF', '#8CAAB6', '#8CAAB6',
+                  '#87AE87']
+
+        self.annual_energy_expenses = self.ax.stackplot(
+            self.prospective_years,
             self.df.loc[self.prospective_years, "kerosene_cost"].fillna(0),
             self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"].fillna(0),
             self.df.loc[self.prospective_years, "biofuel_cost_hefa_fog"].fillna(0),
@@ -263,12 +295,61 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0) + self.df.loc[
                 self.prospective_years, "transport_h2_total_cost"].fillna(0),
+
+            colors=colors,
         )
 
-        self.ax.collections.clear()
+        self.ax.grid(axis='y')
+        self.ax.set_title("Annual energy expenses per pathway")
+        self.ax.set_ylabel("Energy expenses [M€]")
+        self.ax = plt.gca()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
+        primary_legend_entries = [
+            'Fossil Kerosene',
+            '_nolegend_',
+            'Bio - HEFA FOG',
+            '_nolegend_',
+            'Bio - HEFA Others',
+            '_nolegend_',
+            'Bio - Alcohol to Jet',
+            '_nolegend_',
+            'Bio - FT Others',
+            '_nolegend_',
+            'Bio - FT Municipal Waste',
+            '_nolegend_',
+            'Electrofuel',
+            '_nolegend_',
+            'Electrolysis $H_2$ ',
+            '_nolegend_',
+            'Gas CCS $H_2$ ',
+            '_nolegend_',
+            'Gas $H_2$ ',
+            '_nolegend_',
+            'Coal CCS $H_2$ ',
+            '_nolegend_',
+            'Coal $H_2$ ',
+            '_nolegend_',
+            'Hydrogen Logistics*'
+
+        ]
+
+        stacks = self.annual_energy_expenses
+
+        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//",
+                   "", "//", "", "//", ""]
+        for stack, hatch in zip(stacks, hatches):
+            stack.set_hatch(hatch)
+
+        self.ax.set_xlim(2020, 2050)
+
+        primary_legend = self.ax.legend(primary_legend_entries, title='Pathways', loc='upper left')
+        self.ax.add_artist(primary_legend)
+
+        # Create hatch legend manually
+        hatch_patch = mpatches.Patch(facecolor='white', hatch='//', edgecolor='black')
+        self.ax.legend(handles=[hatch_patch], labels=['Carbon Tax'], loc='upper right')
+
+
         self.fig.canvas.draw()
 
 
@@ -947,25 +1028,21 @@ class DropInMACC():
         self.ax2.set_ylabel('Energy potential under current allocation (EJ)')
         self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
 
-        self.ax.grid(True, which="both", ls=':')
-        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
-        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+        for i in range(len(widths_potential)-1):
+            self.ax.text(np.cumsum(widths_potential)[i] + 10, heights[i+1] - 50, names[i])
+
+        self.ax.legend(fancybox=True, shadow=True, loc='lower left', bbox_to_anchor=[0.00, -0.2], prop = { "size": 8 } )
+        self.ax2.legend(fancybox=True, shadow=True, loc='lower right', bbox_to_anchor=[1, -0.2], prop = { "size": 8 } )
 
 
-        self.ax.text(np.cumsum(widths_potential)[0] + 10, heights[1] - 50, names[0])
-        self.ax.text(np.cumsum(widths_potential)[1] + 10, heights[2] + 18, names[1])
-        self.ax.text(np.cumsum(widths_potential)[2] + 10, heights[3] - 50, names[2])
-        self.ax.text(np.cumsum(widths_potential)[3] + 10, heights[4] - 50, names[3])
-        self.ax.text(np.cumsum(widths_potential)[4] + 10, heights[5] - 50, names[4])
-        self.ax.text(np.cumsum(widths_potential)[5] + 10, heights[6] - 50, names[5])
 
-        self.fig.legend(fancybox=True, shadow=True, loc='upper left')
+        self.ax.set_title('Marginal abatement cost curve for drop-in fuels')
 
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
@@ -975,8 +1052,8 @@ class DropInMACC():
         self.historic_years = df_data["years"]["historic_years"]
         self.prospective_years = df_data["years"]["prospective_years"]
 
-        self.ax.clear()
-        self.ax2.clear()
+        self.ax.cla()
+        self.ax2.cla()
 
         # Select year at which the MACC is plotted
         year = 2050
@@ -1057,7 +1134,7 @@ class DropInMACC():
         fuel = macc_df.energy_avail.to_list()
         fuel.insert(0, 0)
         widths_potential.pop()
-        self.ax2 = self.ax.twinx()
+
         self.ax2.plot(np.cumsum(widths_potential), np.cumsum(fuel), color="#9E2A2B", linestyle=':',
                       label="Energy potential",
                       marker='x')
@@ -1078,22 +1155,10 @@ class DropInMACC():
         self.ax2.set_ylabel('Energy potential under current allocation (EJ)')
         self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
 
-        self.ax.grid(True, which="both", ls=':')
-        self.ax.set_ylabel('Carbon Abatement Cost (€/t$\mathregular{CO_2}$)')
-        self.ax.set_xlabel('$\mathregular{CO_2}$ abatted (Mt)')
+        for i in range(len(widths_potential)-1):
+            self.ax.text(np.cumsum(widths_potential)[i] + 10, heights[i+1] - 50, names[i])
 
-        self.ax.text(np.cumsum(widths_potential)[0] + 10, heights[1] - 50, names[0])
-        self.ax.text(np.cumsum(widths_potential)[1] + 10, heights[2] + 18, names[1])
-        self.ax.text(np.cumsum(widths_potential)[2] + 10, heights[3] - 50, names[2])
-        self.ax.text(np.cumsum(widths_potential)[3] + 10, heights[4] - 50, names[3])
-        self.ax.text(np.cumsum(widths_potential)[4] + 10, heights[5] - 50, names[4])
-        self.ax.text(np.cumsum(widths_potential)[5] + 10, heights[6] - 50, names[5])
-
-
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.ax2.relim()
-        self.ax2.autoscale_view()
+        self.fig.tight_layout()
         self.fig.canvas.draw()
 
 

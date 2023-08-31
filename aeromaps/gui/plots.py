@@ -107,5 +107,5 @@ plot_3 = {
     "Evolution of pathways MFSP": ScenarioEnergyUnitCostPlot,
     "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "Effect of the discount rate on total energy costs": DiscountEffect,
-    "Marginal abatement cost curve fro drop in fuels": DropInMACC
+    "Marginal abatement cost curve from drop in fuels": DropInMACC
 }
