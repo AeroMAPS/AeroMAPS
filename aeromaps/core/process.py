@@ -50,6 +50,49 @@ class AeromapsProcess(object):
         if read_json:
             self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
 
+        self._initialize_years()
+
+        self._initialize_disciplines(fleet)
+
+        # Create GEMSEO process
+        self.process = create_mda(
+            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
+        )
+
+        self._initialize_data()
+
+        self._update_variables()
+
+    def _initialize_data(self):
+        # Inputs
+        self.data["float_inputs"] = {}
+        # TODO: explore the possibility of using a dataframe for vector inputs
+        self.data["vector_inputs"] = {}
+
+        # Outputs
+        self.data["float_outputs"] = {}
+        self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
+
+    def _initialize_disciplines(self, fleet):
+        for name, model in self.models.items():
+            # TODO: check how to avoid providing all parameters
+            model.parameters = self.parameters
+            model._initialize_df()
+            if hasattr(model, "compute"):
+                model = AeromapsModelWrapper(model=model)
+                self.disciplines.append(model)
+            else:
+                print(model.name)
+        if fleet:
+            self.fleet = Fleet()
+            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model.parameters = self.parameters
+            self.fleet_model._initialize_df()
+            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
+        else:
+            self.fleet = None
+
+    def _initialize_years(self):
         # Years
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
@@ -64,31 +107,6 @@ class AeromapsProcess(object):
         self.data["years"]["prospective_years"] = list(
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
-
-        for name, model in self.models.items():
-            # TODO: check how to avoid providing all parameters
-            model.parameters = self.parameters
-            model._initialize_df()
-            if hasattr(model, "compute"):
-                model = AeromapsModelWrapper(model=model)
-                self.disciplines.append(model)
-            else:
-                print(model.name)
-
-        if fleet:
-            self.fleet = Fleet()
-            self.fleet_model = FleetModel(fleet=self.fleet)
-            self.fleet_model.parameters = self.parameters
-            self.fleet_model._initialize_df()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-        else:
-            self.fleet = None
-
-        self.process = create_mda(
-            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
-        )
-
-        self._update_variables()
 
     def compute(self):
         if self.fleet is not None:
@@ -179,41 +197,40 @@ class AeromapsProcess(object):
         self._update_json_from_data()
 
     def _update_data_from_model(self):
+
         # Inputs
         all_inputs = self.process.get_input_data_names()
-        float_inputs = {}
-        vector_inputs = {}
 
         for name in all_inputs:
             try:
                 value = getattr(self.parameters, name)
                 if isinstance(value, (float, int)):
-                    float_inputs[name] = value
+                    self.data["float_inputs"][name] = value
                 else:
                     new_values = []
                     for val in value:
                         if not np.isnan(val):
                             new_values.append(val)
-                    vector_inputs[name] = new_values
+                    self.data["vector_inputs"][name] = new_values
             except:
                 pass
 
-        self.data["float_inputs"] = float_inputs
-        self.data["vector_inputs"] = vector_inputs
-
         # Outputs
-        # TODO: can this be more efficient?
-        float_outputs = {}
-        vector_outputs = pd.DataFrame(index=self.data["years"]["full_years"])
+        if self.data["vector_outputs"].columns.size == 0:
+            first_computation = True
+        else:
+            first_computation = False
 
         # TODO: better to use _local_data?
         for disc in self.disciplines:
-            if hasattr(disc.model, "df"):
-                vector_outputs = pd.concat([vector_outputs, disc.model.df], axis=1)
-            float_outputs.update(disc.model.float_outputs)
-
-        self.data["float_outputs"] = float_outputs
-        self.data["vector_outputs"] = vector_outputs
+            if hasattr(disc.model, "df") and disc.model.df.columns.size != 0:
+                if first_computation:
+                    self.data["vector_outputs"] = pd.concat(
+                        [self.data["vector_outputs"], disc.model.df], axis=1
+                    )
+                else:
+                    self.data["vector_outputs"].merge(disc.model.df)
+            self.data["float_outputs"].update(disc.model.float_outputs)
 
     def _update_dataframes_from_data(self):
 
@@ -225,15 +242,7 @@ class AeromapsProcess(object):
         self.float_inputs_df = pd.DataFrame(data=data)
 
         # Vector parameters
-        historic_years = list(
-            range(
-                self.parameters.historic_start_year,
-                self.parameters.prospection_start_year,
-            )
-        )
-
         self.vector_inputs_df = _dict_to_df(self.data["vector_inputs"], orient="columns")
-        # self.vector_inputs_df.index = historic_years
         self.vector_inputs_df.sort_index(axis=1, inplace=True)
 
         # Float outputs df
