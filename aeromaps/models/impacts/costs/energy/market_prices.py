@@ -223,8 +223,6 @@ class KerosenePrice(AeromapsModel):
                 k, "kerosene_market_price"
             ] = kerosene_price_function(k)
 
-        print('wtf')
-
         kerosene_market_price = self.df.loc[:, "kerosene_market_price"]
 
         return (

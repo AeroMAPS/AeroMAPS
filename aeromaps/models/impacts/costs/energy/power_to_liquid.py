@@ -207,6 +207,8 @@ class ElectrofuelCost(AeromapsModel):
                             missing_production * electrofuel_cost[i]['CO2']) / 1000  # M€
                     electrofuel_production[i] = electrofuel_production[i] + missing_production
 
+
+        #         TODO scaling factor!!!!
         return (
             plant_building_scenario,
             plant_building_cost,

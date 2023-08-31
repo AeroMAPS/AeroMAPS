@@ -1026,6 +1026,8 @@ class LiquidHydrogenCost(AeromapsModel):
                             missing_production * liquefaction_cost[i]['ELECTRICITY']) / 1000  # M€
                     hydrogen_production[i] = hydrogen_production[i] + missing_production
 
+        #         TODO scaling factor!!!!
+
         return (
             plant_building_scenario,
             plant_building_cost,
