@@ -32,44 +32,30 @@ class ScenarioEnergyCapitalPlot:
                   '#8CAAB6', '#0ABAFF', '#8CAAB6', '#87AE87'
                   ]
 
-        columns = ['plant_building_cost_hefa_fog',
-                   'plant_building_cost_hefa_others',
-                   'plant_building_cost_atj',
-                   'plant_building_cost_ft_others',
-                   'plant_building_cost_ft_msw',
-                   'electrofuel_plant_building_cost',
-                   'electrolysis_plant_building_cost',
-                   'gas_ccs_plant_building_cost',
-                   'gas_plant_building_cost',
-                   'coal_ccs_plant_building_cost',
-                   'coal_plant_building_cost',
-                   'liquefaction_plant_building_cost',
-                   ]
+        self.annual_energy_invest = self.ax.stackplot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "plant_building_cost_hefa_fog"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_hefa_others"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_atj"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_ft_others"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_ft_msw"].fillna(0),
+            self.df.loc[self.prospective_years, "electrofuel_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electrolysis_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_ccs_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_ccs_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "liquefaction_plant_building_cost"].fillna(0),
+            colors=colors, lw=0.5, edgecolor='black'
+        )
 
-        data_to_plot = self.df.loc[self.prospective_years, columns]
-        bottom = None  # Initialize bottom positions for stacking
-
-        for col, color in zip(data_to_plot.columns, colors):
-            if bottom is None:
-                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color)
-                bottom = data_to_plot[col]
-            else:
-                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color,
-                                                         bottom=bottom)
-                bottom += data_to_plot[col]
-
-        tick_interval = 5
-        min_year = min(data_to_plot.index)
-        max_year = max(data_to_plot.index)
-        ticks = range(min_year, max_year + 1, tick_interval)
-        self.ax.set_xticks(ticks)
-        self.ax.set_xticklabels(ticks, rotation=45)
         self.ax.grid(axis='y')
         self.ax.set_title("Annual investment per pathway (w/o fossil)")
         self.ax.set_xlabel("Year")
-        self.ax.set_xlim(2020, max(self.prospective_years))
+        self.ax.set_xlim(2020, max(self.prospective_years)-1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
-        self.ax = plt.gca()
+        # self.ax = plt.gca()
+
         legend = self.ax.legend([
             'Bio - HEFA FOG',
             'Bio - HEFA Others',
@@ -83,14 +69,15 @@ class ScenarioEnergyCapitalPlot:
             '$H_2$ - Coal + CCS',
             '$H_2$ - Coal',
             '(L-)$H_2$ (Liquefaction)'
-        ])
-        legend.set_title('Pathways', prop={'size': 12})
+        ], loc='upper left', prop={'size': 7})
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         # self.fig.canvas.layout.width = "auto"
         # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
+
+
 
     def update(self, data):
         self.df = data["vector_outputs"]
@@ -102,44 +89,43 @@ class ScenarioEnergyCapitalPlot:
                   '#8CAAB6', '#0ABAFF', '#8CAAB6', '#87AE87'
                   ]
 
-        columns = ['plant_building_cost_hefa_fog',
-                   'plant_building_cost_hefa_others',
-                   'plant_building_cost_atj',
-                   'plant_building_cost_ft_others',
-                   'plant_building_cost_ft_msw',
-                   'electrofuel_plant_building_cost',
-                   'electrolysis_plant_building_cost',
-                   'gas_ccs_plant_building_cost',
-                   'gas_plant_building_cost',
-                   'coal_ccs_plant_building_cost',
-                   'coal_plant_building_cost',
-                   'liquefaction_plant_building_cost',
-                   ]
+        self.annual_energy_invest = self.ax.stackplot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "plant_building_cost_hefa_fog"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_hefa_others"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_atj"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_ft_others"].fillna(0),
+            self.df.loc[self.prospective_years, "plant_building_cost_ft_msw"].fillna(0),
+            self.df.loc[self.prospective_years, "electrofuel_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electrolysis_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_ccs_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_ccs_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_plant_building_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "liquefaction_plant_building_cost"].fillna(0),
+            colors=colors, lw=0.5, edgecolor='black'
+        )
 
-        data_to_plot = self.df.loc[self.prospective_years, columns]
-        bottom = None  # Initialize bottom positions for stacking
-
-        for col, color in zip(data_to_plot.columns, colors):
-            if bottom is None:
-                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color)
-                bottom = data_to_plot[col]
-            else:
-                self.bar_annual_investment = self.ax.bar(data_to_plot.index, data_to_plot[col], label=col, color=color,
-                                                         bottom=bottom)
-                bottom += data_to_plot[col]
-
-        tick_interval = 5
-        min_year = min(data_to_plot.index)
-        max_year = max(data_to_plot.index)
-        ticks = range(min_year, max_year + 1, tick_interval)
-        self.ax.set_xticks(ticks)
-        self.ax.set_xticklabels(ticks, rotation=45)
         self.ax.grid(axis='y')
         self.ax.set_title("Annual investment per pathway (w/o fossil)")
         self.ax.set_xlabel("Year")
-        self.ax.set_xlim(2020, max(self.prospective_years))
+        self.ax.set_xlim(2020, max(self.prospective_years)-1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
-        self.ax = plt.gca()
+
+        legend = self.ax.legend([
+            'Bio - HEFA FOG',
+            'Bio - HEFA Others',
+            'Bio - Alcohol to Jet',
+            'Bio - FT Others',
+            'Bio - FT Municipal Waste',
+            'Electrofuel',
+            '$H_2$ - Electrolysis',
+            '$H_2$ - Gas + CCS',
+            '$H_2$ - Gas',
+            '$H_2$ - Coal + CCS',
+            '$H_2$ - Coal',
+            '(L-)$H_2$ (Liquefaction)'
+        ],loc='upper left', prop={'size': 7})
 
         # self.ax.relim()
         # self.ax.autoscale_view()
@@ -195,14 +181,12 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0) + self.df.loc[
                 self.prospective_years, "transport_h2_total_cost"].fillna(0),
-
-            colors=colors,
+            colors=colors, lw=0.5, edgecolor='black'
         )
 
         self.ax.grid(axis='y')
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
-        self.ax = plt.gca()
 
         primary_legend_entries = [
             'Fossil Kerosene',
@@ -235,19 +219,19 @@ class ScenarioEnergyExpensesPlot:
 
         stacks = self.annual_energy_expenses
 
-        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//",
-                   "", "//", "", "//", ""]
+        hatches = ["", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||",
+                   "", "||", "", "||", ""]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
         self.ax.set_xlim(2020, 2050)
 
-        primary_legend = self.ax.legend(primary_legend_entries, title='Pathways', loc='upper left')
+        primary_legend = self.ax.legend(primary_legend_entries, loc='upper left', prop={'size': 7})
         self.ax.add_artist(primary_legend)
 
         # Create hatch legend manually
-        hatch_patch = mpatches.Patch(facecolor='white', hatch='//', edgecolor='black')
-        self.ax.legend(handles=[hatch_patch], labels=['Carbon Tax'], loc='upper right')
+        hatch_patch = mpatches.Patch(facecolor='white', hatch='||', edgecolor='black')
+        self.ax.legend(handles=[hatch_patch], labels=['Carbon Tax'], loc='upper right', prop={'size': 7})
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -296,13 +280,12 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0) + self.df.loc[
                 self.prospective_years, "transport_h2_total_cost"].fillna(0),
 
-            colors=colors,
+            colors=colors, lw=0.5, edgecolor='black'
         )
 
         self.ax.grid(axis='y')
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
-        self.ax = plt.gca()
 
         primary_legend_entries = [
             'Fossil Kerosene',
@@ -335,19 +318,19 @@ class ScenarioEnergyExpensesPlot:
 
         stacks = self.annual_energy_expenses
 
-        hatches = ["", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//", "", "//",
-                   "", "//", "", "//", ""]
+        hatches = ["", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||", "", "||",
+                   "", "||", "", "||", ""]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
         self.ax.set_xlim(2020, 2050)
 
-        primary_legend = self.ax.legend(primary_legend_entries, title='Pathways', loc='upper left')
+        primary_legend = self.ax.legend(primary_legend_entries, title='Pathways', loc='upper left', prop={'size': 7})
         self.ax.add_artist(primary_legend)
 
         # Create hatch legend manually
-        hatch_patch = mpatches.Patch(facecolor='white', hatch='//', edgecolor='black')
-        self.ax.legend(handles=[hatch_patch], labels=['Carbon Tax'], loc='upper right')
+        hatch_patch = mpatches.Patch(facecolor='white', hatch='||', edgecolor='black')
+        self.ax.legend(handles=[hatch_patch], labels=['Carbon Tax'], loc='upper right', prop={'size': 7})
 
 
         self.fig.canvas.draw()
@@ -857,6 +840,7 @@ class DiscountEffect():
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -881,7 +865,7 @@ class DiscountEffect():
             self.df.loc[self.prospective_years, "discounted_energy_expenses"],
             color="red",
             linestyle="-",
-            label="Discounted expenses",
+            label="Discounted expenses at r={}%".format(self.float_inputs['social_discount_rate']),
             linewidth=2,
         )
 
