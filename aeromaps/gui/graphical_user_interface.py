@@ -508,7 +508,7 @@ class GraphicalUserInterface(widgets.VBox):
 
         self.w_biomass_allocation = widgets.SelectionSlider(
             options=["0%", "2.3%", "7.5%", "14.7%"],
-            value="7.5%",
+            value="2.3%",
             description="Biomass",
             description_tooltip="Share of the world biomass resources allocated to aviation\nThe term allocation here "
             "refers to the result of complex mechanisms of negotiation, \ncompetition, "
