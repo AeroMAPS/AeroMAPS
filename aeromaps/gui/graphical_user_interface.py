@@ -262,6 +262,13 @@ class GraphicalUserInterface(widgets.VBox):
         )
         self.w_growth_freight_percent.observe(self.update, "value")
 
+        self.w_grouped_market = widgets.Checkbox(
+            value=False,
+            description="Assuming similar market evolutions",
+            layout={"width": "max-content"},
+        )
+        self.w_grouped_market.observe(self.update, "value")
+
         self.w_short_range_reduction = widgets.Checkbox(
             value=False,
             description="Reduction of Short Range flights (modal shift, ban)",
@@ -553,6 +560,7 @@ class GraphicalUserInterface(widgets.VBox):
                 ),
                 widgets.VBox(
                     [
+                        self.w_grouped_market,
                         self.w_growth_short_range_percent,
                         self.w_growth_medium_range_percent,
                         self.w_growth_long_range_percent,
@@ -919,36 +927,77 @@ class GraphicalUserInterface(widgets.VBox):
         # DISCOVERY
 
         # Traffic
-        self.process.parameters.growth_rate_2020_2030_short_range = (
-            self.w_growth_short_range_percent.value
-        )
-        self.process.parameters.growth_rate_2030_2040_short_range = (
-            self.w_growth_short_range_percent.value
-        )
-        self.process.parameters.growth_rate_2040_2050_short_range = (
-            self.w_growth_short_range_percent.value
-        )
-        self.process.parameters.growth_rate_2020_2030_medium_range = (
-            self.w_growth_medium_range_percent.value
-        )
-        self.process.parameters.growth_rate_2030_2040_medium_range = (
-            self.w_growth_medium_range_percent.value
-        )
-        self.process.parameters.growth_rate_2040_2050_medium_range = (
-            self.w_growth_medium_range_percent.value
-        )
-        self.process.parameters.growth_rate_2020_2030_long_range = (
-            self.w_growth_long_range_percent.value
-        )
-        self.process.parameters.growth_rate_2030_2040_long_range = (
-            self.w_growth_long_range_percent.value
-        )
-        self.process.parameters.growth_rate_2040_2050_long_range = (
-            self.w_growth_long_range_percent.value
-        )
-        self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_freight_percent.value
-        self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_freight_percent.value
-        self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_freight_percent.value
+        if self.w_grouped_market.value == False:
+            self.process.parameters.growth_rate_2020_2030_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_medium_range = (
+                self.w_growth_medium_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_medium_range = (
+                self.w_growth_medium_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_medium_range = (
+                self.w_growth_medium_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_long_range = (
+                self.w_growth_long_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_long_range = (
+                self.w_growth_long_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_long_range = (
+                self.w_growth_long_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_freight_percent.value
+            self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_freight_percent.value
+            self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_freight_percent.value
+            self.w_growth_medium_range_percent.disabled = False
+            self.w_growth_long_range_percent.disabled = False
+            self.w_growth_freight_percent.disabled = False
+        else:
+            self.process.parameters.growth_rate_2020_2030_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_short_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_medium_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_medium_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_medium_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_long_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_long_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_long_range = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_short_range_percent.value
+            self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_short_range_percent.value
+            self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_short_range_percent.value
+            self.w_growth_medium_range_percent.disabled = True
+            self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
+            self.w_growth_long_range_percent.disabled = True
+            self.w_growth_long_range_percent.value = self.w_growth_short_range_percent.value
+            self.w_growth_freight_percent.disabled = True
+            self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
 
         if self.w_short_range_reduction.value == False and self.w_social_measure.value == False:
             self.process.parameters.rpk_short_range_measures_final_impact = 0.0
