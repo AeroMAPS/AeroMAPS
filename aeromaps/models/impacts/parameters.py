@@ -236,13 +236,14 @@ class ImpactsParameters(object):
     gas_cost_2040: float = 0.010
     gas_cost_2050: float = 0.009
 
-    # Electricity market price (€/kWh)
+    # Coal market price (€/kWh)
     coal_cost_2020: float = 0.006
     coal_cost_2030: float = 0.0057
     coal_cost_2040: float = 0.0054
     coal_cost_2050: float = 0.0052
 
     # Electricity load factor
+    # todo switch cases for ded renwb/grid
 
     electricity_load_factor: float = 0.95
 

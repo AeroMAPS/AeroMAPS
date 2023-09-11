@@ -460,3 +460,140 @@ prospective_evolution_rpk_short_range;Float;%;Evolution in percentage of Revenue
 prospective_evolution_rtk;Float;%;Evolution in percentage of Revenue Tonne Kilometer (RTK) for freight market between 2019 and 2050
 solid_waste_biomass;Float;EJ;Available biomass in the form of municipal solid waste in 2050
 sugarystarchy_crops_biomass;Float;EJ;Available biomass in the form of sugar and starch-based materials from energy crops in 2050
+electrolyser_capex_2020;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2020 in € per kg/day of nominal hydrogen production capacity
+electrolyser_capex_2030;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2030 in € per kg/day of nominal hydrogen production capacity
+electrolyser_capex_2040;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2040 in € per kg/day of nominal hydrogen production capacity
+electrolyser_capex_2050;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2050 in € per kg/day of nominal hydrogen production capacity
+electrolyser_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2020
+electrolyser_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2030
+electrolyser_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2040
+electrolyser_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2050
+electrolyser_var_opex_2020;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2020
+electrolyser_var_opex_2030;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2030
+electrolyser_var_opex_2040;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2040
+electrolyser_var_opex_2050;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2050
+gas_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
+gas_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
+coal_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
+coal_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
+gas_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
+coal_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
+gas_ccs_eis_capex_2020;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_capex_2030;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_capex_2040;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_capex_2050;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2020
+gas_ccs_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2030
+gas_ccs_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2040
+gas_ccs_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2050
+gas_ccs_efficiency_2020;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2020)
+gas_ccs_efficiency_2030;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2030)
+gas_ccs_efficiency_2040;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2040)
+gas_ccs_efficiency_2050;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2050)
+gas_eis_capex_2020;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
+gas_eis_capex_2030;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
+gas_eis_capex_2040;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
+gas_eis_capex_2050;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
+gas_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2020
+gas_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2030
+gas_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2040
+gas_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2050
+gas_efficiency_2020;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2020)
+gas_efficiency_2030;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2030)
+gas_efficiency_2040;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2040)
+gas_efficiency_2050;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2050)
+coal_ccs_eis_capex_2020;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
+coal_ccs_eis_capex_2030;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
+coal_ccs_eis_capex_2040;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
+coal_ccs_eis_capex_2050;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
+coal_ccs_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2020
+coal_ccs_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2030
+coal_ccs_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2040
+coal_ccs_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2050
+coal_ccs_efficiency_2020;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2020)
+coal_ccs_efficiency_2030;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2030)
+coal_ccs_efficiency_2040;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2040)
+coal_ccs_efficiency_2050;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2050)
+coal_eis_capex_2020;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
+coal_eis_capex_2030;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
+coal_eis_capex_2040;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
+coal_eis_capex_2050;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
+coal_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2020
+coal_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2030
+coal_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2040
+coal_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2050
+coal_efficiency_2020;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2020)
+coal_efficiency_2030;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2030)
+coal_efficiency_2040;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2040)
+coal_efficiency_2050;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2050)
+ccs_cost_2020;Float;€/kg;carbon capture and storage cost in 2020
+ccs_cost_2030;Float;€/kg;carbon capture and storage cost in 2030
+ccs_cost_2040;Float;€/kg;carbon capture and storage cost in 2040
+ccs_cost_2050;Float;€/kg;carbon capture and storage cost in 2050
+liquefier_capex_2020;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2020 in € per kg/day of nominal hydrogen production capacity
+liquefier_capex_2030;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2030 in € per kg/day of nominal hydrogen production capacity
+liquefier_capex_2040;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2040 in € per kg/day of nominal hydrogen production capacity
+liquefier_capex_2050;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2050 in € per kg/day of nominal hydrogen production capacity
+transport_cost_ratio;Float;%;Extra cost attributed to new hydrogen logistics
+electrofuel_capex_2020;Capital expenditures for electrofuel plant building in 2020 in € per kg/day of nominal hydrogen production capacity
+electrofuel_capex_2030;Capital expenditures for electrofuel plant building in 2030 in € per kg/day of nominal hydrogen production capacity
+electrofuel_capex_2040;Capital expenditures for electrofuel plant building in 2040 in € per kg/day of nominal hydrogen production capacity
+electrofuel_capex_2050;Capital expenditures for electrofuel plant building in 2050 in € per kg/day of nominal hydrogen production capacity
+electrofuel_fixed_opex_2020;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2020
+electrofuel_fixed_opex_2030;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2030
+electrofuel_fixed_opex_2040;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2040
+electrofuel_fixed_opex_2050;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2050
+electrofuel_var_opex_2020;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2020
+electrofuel_var_opex_2030;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2030
+electrofuel_var_opex_2040;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2040
+electrofuel_var_opex_2050;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2050
+electrofuel_specific_co2_2020;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2020
+electrofuel_specific_co2_2030;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2030
+electrofuel_specific_co2_2040;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2040
+electrofuel_specific_co2_2050;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2050
+electricity_cost_2020;Float;€/kWh;Industrial wholesale electricity market price in 2020
+electricity_cost_2030;Float;€/kWh;Industrial wholesale electricity market price in 2030
+electricity_cost_2040;Float;€/kWh;Industrial wholesale electricity market price in 2040
+electricity_cost_2050;Float;€/kWh;Industrial wholesale electricity market price in 2050
+electricity_load_factor;Float;%;Electricity input load factor
+co2_cost_2020;Float;€/kg;CO2 market price for e-fuel operations procurement in 2020
+co2_cost_2030;Float;€/kg;CO2 market price for e-fuel operations procurement in 2030
+co2_cost_2040;Float;€/kg;CO2 market price for e-fuel operations procurement in 2040
+co2_cost_2050;Float;€/kg;CO2 market price for e-fuel operations procurement in 2050
+co2_tax_2020;Float;€/ton;CO2 flat tax applied in 2020
+co2_tax_2030;Float;€/ton;CO2 flat tax applied in 2030
+co2_tax_2040;Float;€/ton;CO2 flat tax applied in 2040
+co2_tax_2050;Float;€/ton;CO2 flat tax applied in 2050
+gas_cost_2020;Float;€/kWh;Industrial wholesale gas market price in 2020
+gas_cost_2030;Float;€/kWh;Industrial wholesale gas market price in 2030
+gas_cost_2040;Float;€/kWh;Industrial wholesale gas market price in 2040
+gas_cost_2050;Float;€/kWh;Industrial wholesale gas market price in 2050
+coal_cost_2020;Float;€/kWh;Industrial wholesale coal market price in 2020
+coal_cost_2030;Float;€/kWh;Industrial wholesale coal market price in 2030
+coal_cost_2040;Float;€/kWh;Industrial wholesale coal market price in 2040
+coal_cost_2050;Float;€/kWh;Industrial wholesale coal market price in 2050
+kerosene_price_2020;Float;€/L;Kerosene (fossil) market price in 2020
+kerosene_price_2030;Float;€/L;Kerosene (fossil) market price in 2030
+kerosene_price_2040;Float;€/L;Kerosene (fossil) market price in 2040
+kerosene_price_2050;Float;€/L;Kerosene (fossil) market price in 2050
+biofuel_hefa_fog_mfsp_2020;Float;€/L;Biofuel (Hefa FOG) MFSP in 2020
+biofuel_hefa_fog_mfsp_2050;Float;€/L;Biofuel (Hefa FOG) MFSP in 2050
+biofuel_hefa_others_mfsp_2020;Float;€/L;Biofuel (Hefa Others) MFSP in 2020
+biofuel_hefa_others_mfsp_2050;Float;€/L;Biofuel (Hefa Others) MFSP in 2050
+biofuel_ft_others_mfsp_2020;Float;€/L;Biofuel (FT Others) MFSP in 2020
+biofuel_ft_others_mfsp_2050;Float;€/L;Biofuel (FT Others) MFSP in 2050
+biofuel_ft_msw_mfsp_2020;Float;€/L;Biofuel (FT MSW) MFSP in 2020
+biofuel_ft_msw_mfsp_2050;Float;€/L;Biofuel (FT MSW) MFSP in 2050
+biofuel_atj_mfsp_2020;Float;€/L;Biofuel (AtJ) MFSP in 2020
+biofuel_atj_mfsp_2050;Float;€/L;Biofuel (AtJ) MFSP in 2020
+biofuel_hefa_fog_capex_2020;Float;€/(kg/day);Biofuel (Hefa FOG) capex in 2020
+biofuel_hefa_fog_capex_2050;Float;€/(kg/day);Biofuel (Hefa FOG) capex in 2050
+biofuel_hefa_others_capex_2020;Float;€/(kg/day);Biofuel (Hefa Others) capex in 2020
+biofuel_hefa_others_capex_2050;Float;€/(kg/day);Biofuel (Hefa Others) capex in 2050
+biofuel_ft_others_capex_2020;Float;€/(kg/day);Biofuel (F/T Others) capex in 2050
+biofuel_ft_others_capex_2050;Float;€/(kg/day);Biofuel (F/T Others) capex in 2050
+biofuel_ft_msw_capex_2020;Float;€/(kg/day);Biofuel (FT MSW) capex in 2050
+biofuel_ft_msw_capex_2050;Float;€/(kg/day);Biofuel (FT MSW) capex in 2050
+biofuel_atj_capex_2020;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
+biofuel_atj_capex_2050;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
+social_discount_rate;Float;%;Social discount rate used for inter-temporal economic analyses
