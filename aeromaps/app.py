@@ -31,12 +31,12 @@ class Main:
                 "--port=8080 "
                 "--no-browser "
                 "--MappingKernelManager.cull_idle_timeout=7200 "
-                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
+                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf|json)']" """
             )
         else:
             command = (
                 "voila "
-                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
+                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf|json)']" """
             )
 
         os.system(command + str(MAIN_NOTEBOOK_NAME))
