@@ -31,7 +31,7 @@ class Main:
                 "--port=8080 "
                 "--no-browser "
                 "--MappingKernelManager.cull_idle_timeout=7200 "
-                """--VoilaConfiguration.file_whitelist "="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
+                """--VoilaConfiguration.file_whitelist="['.*\.(png|jpg|gif|xlsx|ico|pdf)']" """
             )
         else:
             command = (
