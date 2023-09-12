@@ -1597,6 +1597,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.fig3.update(self.process.data)
 
     def _download_results(self, change=None):
+        self.process.write_excel()
         if self.download_output:
             self.download_output.clear_output(wait=True)
         else:
