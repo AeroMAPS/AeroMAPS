@@ -87,7 +87,7 @@ class GraphicalUserInterface(widgets.VBox):
 
     def build_tab(self):
         self.tabs = widgets.Tab()
-        self.tabs.observe(self._create_dataframe_tabs)
+        self.tabs.observe(self._update_dataframe_tabs)
 
         self.tab1 = widgets.VBox([self.graphs, self.controls])
         self.tab1.layout = make_box_layout()
@@ -130,7 +130,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.children = [language, self.tabs]
 
     def _create_dataframe_tabs(self, change=None):
-
         # Data information
         datagrid = DataGrid(self.process.data_information_df, selection_mode="cell")
         datagrid.auto_fit_columns = True
@@ -171,6 +170,22 @@ class GraphicalUserInterface(widgets.VBox):
         self.df_tabs.set_title(2, "Float Inputs")
         self.df_tabs.set_title(3, "Vector Outputs")
         self.df_tabs.set_title(4, "Float Outputs")
+
+    def _update_dataframe_tabs(self, change=None):
+        # Data information
+        self.w_data_information_df.data = self.process.data_information_df
+
+        # Vector inputs
+        self.w_vector_inputs_df.data = self.process.vector_inputs_df
+
+        # Parameters
+        self.w_float_inputs_df.data = self.process.float_inputs_df
+
+        # Vector Outputs
+        self.w_vector_outputs_df.data = self.process.vector_outputs_df
+
+        # Float Outputs
+        self.w_float_outputs_df.data = self.process.float_outputs_df
 
     def _create_widgets(self):
         # TODO: Convert to french
@@ -1582,6 +1597,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.fig3.update(self.process.data)
 
     def _download_results(self, change=None):
+        self.process.write_excel()
         if self.download_output:
             self.download_output.clear_output(wait=True)
         else:

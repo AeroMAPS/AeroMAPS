@@ -121,10 +121,6 @@ class AeromapsProcess(object):
 
         self.write_json()
 
-    def write_data(self):
-        self.write_json()
-        self.write_excel()
-
     def write_json(self, file_name=OUTPUTS_JSON_DATA_FILE):
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
