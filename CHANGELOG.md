@@ -6,6 +6,16 @@
     - Fixed run server command. (#16)
     - Fixed data tab update (#17)
 
+## Version 0.3.0-beta
+
+- Changed:
+    - Added temperature increase due to CO2 and non-CO2 effects . (#10)
+    - Added a simplified widget for setting air traffic growth. (#13)
+    - Improved and added new figures. (#14)
+
+- Fixed:
+    - Fixed computation process to allow multiple run. (#12)
+
 ## Version 0.2.0-beta
 
 - Changed:
