@@ -147,10 +147,12 @@ class AeromapsProcess(object):
     def list_float_inputs(self):
         return self.data["float_inputs"]
 
-    def plot(self, name):
+    def plot(self, name, save=False):
 
         if name in available_plots:
             fig = available_plots[name](self.data)
+            if save:
+                fig.fig.savefig(f"{name}.pdf")
         else:
             raise NameError(
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys())}"
@@ -230,7 +232,6 @@ class AeromapsProcess(object):
 
                     # self.data["vector_outputs"] = self.data["vector_outputs"].merge(disc.model.df)
             self.data["float_outputs"].update(disc.model.float_outputs)
-
 
     def _update_dataframes_from_data(self):
 
