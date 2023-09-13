@@ -970,9 +970,15 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.growth_rate_2040_2050_long_range = (
                 self.w_growth_long_range_percent.value
             )
-            self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_freight_percent.value
-            self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_freight_percent.value
-            self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_freight_percent.value
+            self.process.parameters.growth_rate_2020_2030_freight = (
+                self.w_growth_freight_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_freight = (
+                self.w_growth_freight_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_freight = (
+                self.w_growth_freight_percent.value
+            )
             self.w_growth_medium_range_percent.disabled = False
             self.w_growth_long_range_percent.disabled = False
             self.w_growth_freight_percent.disabled = False
@@ -1004,9 +1010,15 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.growth_rate_2040_2050_long_range = (
                 self.w_growth_short_range_percent.value
             )
-            self.process.parameters.growth_rate_2020_2030_freight = self.w_growth_short_range_percent.value
-            self.process.parameters.growth_rate_2030_2040_freight = self.w_growth_short_range_percent.value
-            self.process.parameters.growth_rate_2040_2050_freight = self.w_growth_short_range_percent.value
+            self.process.parameters.growth_rate_2020_2030_freight = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2030_2040_freight = (
+                self.w_growth_short_range_percent.value
+            )
+            self.process.parameters.growth_rate_2040_2050_freight = (
+                self.w_growth_short_range_percent.value
+            )
             self.w_growth_medium_range_percent.disabled = True
             self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
             self.w_growth_long_range_percent.disabled = True

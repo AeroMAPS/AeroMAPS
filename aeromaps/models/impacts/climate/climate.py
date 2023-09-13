@@ -46,7 +46,7 @@ class Temperature(AeromapsModel):
                 + TCRE * cumulative_co2_emissions.loc[k]
             )
 
-        for k in reversed(range(self.historic_start_year, self.prospection_start_year-1)):
+        for k in reversed(range(self.historic_start_year, self.prospection_start_year - 1)):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[k + 1, "temperature_increase_from_co2_from_aviation"]
                 - TCRE * co2_emissions.loc[k] / 1000
