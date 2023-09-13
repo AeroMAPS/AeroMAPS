@@ -38,7 +38,7 @@ OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
 
 class AeromapsProcess(object):
     def __init__(
-        self, models=models_simple, parameters=all_parameters, read_json=False, fleet=False
+        self, models=models_simple, parameters=all_parameters, read_json=False, fleet=False, add_default_aircraft=True
     ):
         self.models = models
         self.parameters = parameters
@@ -52,7 +52,7 @@ class AeromapsProcess(object):
 
         self._initialize_years()
 
-        self._initialize_disciplines(fleet)
+        self._initialize_disciplines(fleet, add_default_aircraft=add_default_aircraft)
 
         # Create GEMSEO process
         self.process = create_mda(
@@ -73,7 +73,7 @@ class AeromapsProcess(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
 
-    def _initialize_disciplines(self, fleet):
+    def _initialize_disciplines(self, fleet, add_default_aircraft=True):
         for name, model in self.models.items():
             # TODO: check how to avoid providing all parameters
             model.parameters = self.parameters
@@ -84,7 +84,7 @@ class AeromapsProcess(object):
             else:
                 print(model.name)
         if fleet:
-            self.fleet = Fleet()
+            self.fleet = Fleet(add_default_aircraft=add_default_aircraft)
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
@@ -121,10 +121,6 @@ class AeromapsProcess(object):
 
         self.write_json()
 
-    def write_data(self):
-        self.write_json()
-        self.write_excel()
-
     def write_json(self, file_name=OUTPUTS_JSON_DATA_FILE):
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
@@ -151,10 +147,12 @@ class AeromapsProcess(object):
     def list_float_inputs(self):
         return self.data["float_inputs"]
 
-    def plot(self, name):
+    def plot(self, name, save=False):
 
         if name in available_plots:
             fig = available_plots[name](self.data)
+            if save:
+                fig.fig.savefig(f"{name}.pdf")
         else:
             raise NameError(
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys())}"
@@ -234,7 +232,6 @@ class AeromapsProcess(object):
 
                     # self.data["vector_outputs"] = self.data["vector_outputs"].merge(disc.model.df)
             self.data["float_outputs"].update(disc.model.float_outputs)
-
 
     def _update_dataframes_from_data(self):
 
