@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 from matplotlib.lines import Line2D
 import matplotlib.ticker as mticker
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 from .constants import plot_2_x, plot_2_y
 
@@ -902,6 +902,7 @@ class ElectricityResourceBudgetAssessmentPlot:
         self.fig.canvas.draw()
 
 
+
 class MultidisciplinaryAssessmentPlot:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
@@ -958,7 +959,7 @@ class MultidisciplinaryAssessmentPlot:
         ]
 
         consumptions = [
-            cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100,
+            np.max([cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
             electricity_consumption_end_year / available_electricity_total * 100,
@@ -1040,22 +1041,160 @@ class MultidisciplinaryAssessmentPlot:
         self.ax.yaxis.set_major_formatter(mticker.FuncFormatter(percentage_formatter))
 
         self.ax.grid(axis='x')
-        self.ax.set_title('Impacts and budgets estimations\npresented as a % of world budgets', y=1.05)
+        self.ax.set_title('Scenario impacts and allocated budgets\nPresented as a % of world budgets', y=1.05)
 
         for tick in self.ax.xaxis.get_major_ticks():
             tick.set_pad(10)
 
+        self.ax.legend(loc='lower center', bbox_to_anchor=[0.5, -0.15], ncol=2)
+
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         # Set the labels
-        self.ax.legend(loc='lower center', bbox_to_anchor=[0.5, -0.15])
         # self.fig.set_tight_layout(True)
-        self.ax.set_axisbelow(True)
 
         self.fig.tight_layout()
 
     def update(self, data):
-        # Todo => Pas de passage du nouveau df donc update fonctionne?
-        self.create_plot()
+        self.parameters = data["float_inputs"]
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.ax.clear()
+
+        gross_carbon_budget = float(self.float_outputs["gross_carbon_budget_2050"])
+        aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
+        cumulative_co2_emissions = float(self.df.loc[2050, "cumulative_co2_emissions"])
+
+        # Biomass
+        available_biomass_total = self.float_outputs["available_biomass_total"]
+        aviation_available_biomass = self.float_outputs["aviation_available_biomass"]
+        biomass_consumption_end_year = self.float_outputs["biomass_consumption_end_year"]
+
+        # Electricity
+        available_electricity_total = self.parameters["available_electricity"]
+        aviation_available_electricity = self.float_outputs["aviation_available_electricity"]
+        electricity_consumption_end_year = self.float_outputs["electricity_consumption_end_year"]
+
+        # Effective radiative forcing
+        equivalent_gross_carbon_budget = float(
+            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        )
+        aviation_equivalent_carbon_budget = float(
+            self.float_outputs["aviation_equivalent_carbon_budget"]
+        )
+        cumulative_total_equivalent_emissions = float(
+            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+        )
+
+        categories = [
+            "Climate\n(Total)",
+            "Climate\n(CO2)",
+            "Biomass",
+            "Electricity",
+        ]
+
+        budgets = [
+            aviation_equivalent_carbon_budget / equivalent_gross_carbon_budget * 100,
+            aviation_carbon_budget / gross_carbon_budget * 100,
+            aviation_available_biomass / available_biomass_total * 100,
+            aviation_available_electricity / available_electricity_total * 100,
+        ]
+
+        consumptions = [
+            np.max([cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100,0]),
+            cumulative_co2_emissions / gross_carbon_budget * 100,
+            biomass_consumption_end_year / available_biomass_total * 100,
+            electricity_consumption_end_year / available_electricity_total * 100,
+        ]
+
+
+        df_plot = pd.DataFrame(list(zip(categories, consumptions, budgets)),
+                               columns=['Category', 'Consumption share', 'Budget share'])
+
+        lowerLimit = 0
+
+        # Compute max and min in the dataset
+        max = df_plot[['Consumption share', 'Budget share']].max().max() + lowerLimit
+
+        # Let's compute heights: they are a conversion of each item value in those new coordinates
+        # In our example, 0 in the dataset will be converted to the lowerLimit (10)
+        # The maximum will be converted to the upperLimit (100)
+        slope = (max - lowerLimit) / max
+        heights_consumption = slope * df_plot['Consumption share'] + lowerLimit
+        heights_budget = slope * df_plot['Budget share'] + lowerLimit
+
+        # # Compute the width of each bar. In total we have 2*Pi = 360°
+        width = 2 * np.pi / len(df_plot.index) - 0.2
+        #
+        # # Compute the angle each bar is centered on:
+        angles = np.linspace(np.pi / 4, (2 + 1 / 4) * np.pi, len(df_plot), endpoint=False)
+        # Draw bars
+
+        self.multidisciplinary_bars_plot = self.ax.bar(
+            x=angles,
+            height=heights_consumption,
+            width=width,
+            bottom=lowerLimit,
+            linewidth=0,
+            color='orange',
+            edgecolor="none",
+            alpha=0.4, label='Impacts')
+
+        self.multidisciplinary_bars_plot = self.ax.bar(
+            x=angles,
+            height=heights_consumption,
+            width=width,
+            bottom=lowerLimit,
+            linewidth=2,
+            color='none',
+            edgecolor="orange",
+            alpha=1)
+
+        self.multidisciplinary_bars_plot = self.ax.bar(
+            x=angles,
+            height=heights_budget,
+            width=width,
+            bottom=lowerLimit,
+            linewidth=0,
+            color='green',
+            edgecolor="none",
+            alpha=0.4, label='Budgets')
+
+        self.multidisciplinary_bars_plot = self.ax.bar(
+            x=angles,
+            height=heights_budget,
+            width=width,
+            bottom=lowerLimit,
+            linewidth=2,
+            color='none',
+            edgecolor="green",
+            alpha=1)
+
+        self.ax.set_xticks(angles)
+        self.ax.set_xticklabels(df_plot['Category'], size=10, zorder=11)
+
+        def percentage_formatter(x, pos):
+            return f'{x:.0f}%'
+
+        self.ax.set_rlabel_position(90)
+
+        # Apply the custom tick formatter to the radial axis
+        self.ax.yaxis.set_major_formatter(mticker.FuncFormatter(percentage_formatter))
+
+        self.ax.grid(axis='x')
+        self.ax.set_title('Scenario impacts and allocated budgets\nPresented as a % of world budgets', y=1.05)
+
+        for tick in self.ax.xaxis.get_major_ticks():
+            tick.set_pad(10)
+
+        self.ax.legend(loc='lower center', bbox_to_anchor=[0.5, -0.15], ncol=2)
+
+        self.fig.canvas.draw()
+
+

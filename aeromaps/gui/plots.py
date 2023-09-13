@@ -63,11 +63,11 @@ plot_1 = {
 
 # Central plot
 plot_2 = {
+    "Multidisciplinary assessment": MultidisciplinaryAssessmentPlot,
     "Carbon budget assessment": CarbonBudgetAssessmentPlot,
     "Equivalent carbon budget assessment": EquivalentCarbonBudgetAssessmentPlot,
     "Biomass resource budget assessment": BiomassResourceBudgetAssessmentPlot,
     "Electricity resource budget assessment": ElectricityResourceBudgetAssessmentPlot,
-    # "Multidisciplinary assessment": MultidisciplinaryAssessmentPlot,
 }
 
 # Right plot

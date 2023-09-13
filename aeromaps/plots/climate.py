@@ -448,7 +448,7 @@ class TemperatureIncreaseFromAirTransportPlot:
             self.years,
             self.df["temperature_increase_from_aviation"] * 1000,
             self.df["temperature_increase_from_co2_from_aviation"] * 1000,
-            color="firebrick",
+            color="#FFBE85",
             label="Non-CO2",
         )
 
@@ -492,7 +492,7 @@ class TemperatureIncreaseFromAirTransportPlot:
             self.years,
             self.df["temperature_increase_from_aviation"] * 1000,
             self.df["temperature_increase_from_co2_from_aviation"] * 1000,
-            color="firebrick",
+            color="#FFBE85",
             label="Non-CO2",
         )
 
