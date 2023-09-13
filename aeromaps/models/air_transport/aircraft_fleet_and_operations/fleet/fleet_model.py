@@ -1122,12 +1122,14 @@ class Category(object):
 class Fleet(object):
     def __init__(
         self,
-        add_default_aircraft=True,
+        add_examples_aircraft_and_subcategory=True,
     ):
         self.categories = {}
 
         # Build default fleet
-        self._build_default_fleet(add_default_aircraft=add_default_aircraft)
+        self._build_default_fleet(
+            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+        )
 
         # Initialize
         self.ui = None
@@ -1211,7 +1213,7 @@ class Fleet(object):
                 self.selected_item.button_remove_row.on_click(self._update)
                 self.selected_item.datagrid.on_cell_change(self._update)
 
-    def _build_default_fleet(self, add_default_aircraft=True):
+    def _build_default_fleet(self, add_examples_aircraft_and_subcategory=True):
         # Short range narrow-body
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
@@ -1360,7 +1362,10 @@ class Fleet(object):
         )
 
         # Short range narrow-body
-        subcat_params = SubcategoryParameters(share=20.0)
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=20.0)
+        else:
+            subcat_params = SubcategoryParameters(share=100.0)
         sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
@@ -1377,22 +1382,24 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
 
-        if add_default_aircraft:
+        if add_examples_aircraft_and_subcategory:
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
 
         # Short range hydrogen aircraft
-        subcat_params = SubcategoryParameters(share=50.0)
-        sr_subcat_hydrogen = SubCategory(
-            "SR hydrogen conventional narrow-body", parameters=subcat_params
-        )
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=50.0)
+            sr_subcat_hydrogen = SubCategory(
+                "SR hydrogen conventional narrow-body", parameters=subcat_params
+            )
 
-        if add_default_aircraft:
+        if add_examples_aircraft_and_subcategory:
             sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
 
         # Short range regional turboprop
-        subcat_params = SubcategoryParameters(share=30.0)
-        sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=30.0)
+            sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
         # Reference aircraft
         # Old
         # sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1408,7 +1415,7 @@ class Fleet(object):
         # sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
         # sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
 
-        if add_default_aircraft:
+        if add_examples_aircraft_and_subcategory:
             sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
             sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
 
@@ -1437,8 +1444,9 @@ class Fleet(object):
         cat_params = CategoryParameters(life=25)
         sr_cat = Category("Short Range", parameters=cat_params)
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
-        sr_cat.add_subcategory(subcategory=sr_rp_cat)
-        sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
+        if add_examples_aircraft_and_subcategory:
+            sr_cat.add_subcategory(subcategory=sr_rp_cat)
+            sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
         # sr_cat.add_subcategory(subcategory=sr_tf_cat)
 
         # Medium range
@@ -1459,7 +1467,7 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
         mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
-        if add_default_aircraft:
+        if add_examples_aircraft_and_subcategory:
             mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
             mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
 
@@ -1485,7 +1493,7 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
         lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
-        if add_default_aircraft:
+        if add_examples_aircraft_and_subcategory:
             lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
             lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
