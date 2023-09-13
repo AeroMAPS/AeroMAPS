@@ -38,7 +38,7 @@ OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
 
 class AeromapsProcess(object):
     def __init__(
-        self, models=models_simple, parameters=all_parameters, read_json=False, fleet=False
+        self, models=models_simple, parameters=all_parameters, read_json=False, fleet=False, add_default_aircraft=True
     ):
         self.models = models
         self.parameters = parameters
@@ -52,7 +52,7 @@ class AeromapsProcess(object):
 
         self._initialize_years()
 
-        self._initialize_disciplines(fleet)
+        self._initialize_disciplines(fleet, add_default_aircraft=add_default_aircraft)
 
         # Create GEMSEO process
         self.process = create_mda(
@@ -73,7 +73,7 @@ class AeromapsProcess(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
 
-    def _initialize_disciplines(self, fleet):
+    def _initialize_disciplines(self, fleet, add_default_aircraft=True):
         for name, model in self.models.items():
             # TODO: check how to avoid providing all parameters
             model.parameters = self.parameters
@@ -84,7 +84,7 @@ class AeromapsProcess(object):
             else:
                 print(model.name)
         if fleet:
-            self.fleet = Fleet()
+            self.fleet = Fleet(add_default_aircraft=add_default_aircraft)
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
