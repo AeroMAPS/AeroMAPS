@@ -231,7 +231,6 @@ class AeromapsProcess(object):
                     # self.data["vector_outputs"] = self.data["vector_outputs"].merge(disc.model.df)
             self.data["float_outputs"].update(disc.model.float_outputs)
 
-
     def _update_dataframes_from_data(self):
 
         # Float parameters
