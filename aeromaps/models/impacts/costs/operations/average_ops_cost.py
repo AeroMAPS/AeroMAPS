@@ -378,6 +378,7 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         doc_carbon_tax_per_ask_long_range_dropin_fuel = (
             energy_per_ask_long_range_dropin_fuel * dropin_mfsp_carbon_tax_supplement / fuel_lhv
         ).fillna(0)
+
         doc_carbon_tax_per_ask_long_range_hydrogen = (
             energy_per_ask_long_range_hydrogen * h2_avg_carbon_tax_per_kg / hydrogen_specific_energy
         ).fillna(0)
@@ -423,17 +424,17 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
 
-        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_dropin_fuel"]=doc_carbon_tax_per_ask_long_range_dropin_fuel,
-        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_hydrogen"]=doc_carbon_tax_per_ask_long_range_hydrogen,
-        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_mean"]=doc_carbon_tax_per_ask_long_range_mean,
-        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_dropin_fuel"]=doc_carbon_tax_per_ask_medium_range_dropin_fuel,
-        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_hydrogen"]=doc_carbon_tax_per_ask_medium_range_hydrogen,
-        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_mean"]=doc_carbon_tax_per_ask_medium_range_mean,
-        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_dropin_fuel"]=doc_carbon_tax_per_ask_short_range_dropin_fuel,
-        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_hydrogen"]=doc_carbon_tax_per_ask_short_range_hydrogen,
-        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_mean"]=doc_carbon_tax_per_ask_short_range_mean,
-        self.df.loc[:, "doc_carbon_tax_per_ask_mean"]=doc_carbon_tax_per_ask_mean,
-        print('pollet')
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_dropin_fuel"]=doc_carbon_tax_per_ask_long_range_dropin_fuel
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_hydrogen"]=doc_carbon_tax_per_ask_long_range_hydrogen
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_mean"]=doc_carbon_tax_per_ask_long_range_mean
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_dropin_fuel"]=doc_carbon_tax_per_ask_medium_range_dropin_fuel
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_hydrogen"]=doc_carbon_tax_per_ask_medium_range_hydrogen
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_mean"]=doc_carbon_tax_per_ask_medium_range_mean
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_dropin_fuel"]=doc_carbon_tax_per_ask_short_range_dropin_fuel
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_hydrogen"]=doc_carbon_tax_per_ask_short_range_hydrogen
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_mean"]=doc_carbon_tax_per_ask_short_range_mean
+        self.df.loc[:, "doc_carbon_tax_per_ask_mean"]=doc_carbon_tax_per_ask_mean
+
         return (
             doc_carbon_tax_per_ask_long_range_dropin_fuel,
             doc_carbon_tax_per_ask_long_range_hydrogen,
