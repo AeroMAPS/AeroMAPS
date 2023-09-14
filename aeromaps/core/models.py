@@ -247,9 +247,9 @@ models_simple = {
     "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    # "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
-    #     "passenger_aircraft_doc_carbon_tax"
-    # ),
+    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
+        "passenger_aircraft_doc_carbon_tax"
+    ),
 }
 
 
@@ -358,7 +358,7 @@ models_complex = {
     "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    # "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
-    #     "passenger_aircraft_doc_carbon_tax"
-    # ),
+    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
+        "passenger_aircraft_doc_carbon_tax"
+    ),
 }

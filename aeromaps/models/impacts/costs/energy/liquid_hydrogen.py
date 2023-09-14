@@ -703,19 +703,18 @@ class LiquidHydrogenCost(AeromapsModel):
 
         h2_avg_carbon_tax_per_kg = (
             (
-                electrolysis_h2_carbon_tax
-                + gas_h2_carbon_tax
-                + gas_ccs_h2_carbon_tax
-                + coal_h2_carbon_tax
-                + coal_ccs_h2_carbon_tax
+                electrolysis_h2_carbon_tax.fillna(0)
+                + gas_h2_carbon_tax.fillna(0)
+                + gas_ccs_h2_carbon_tax.fillna(0)
+                + coal_h2_carbon_tax.fillna(0)
+                + coal_ccs_h2_carbon_tax.fillna(0)
             )
             / (energy_consumption_hydrogen / hydrogen_specific_energy)
             * 1000000
         )
         self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
         # €/kg
-
-        print("inside")
+        print(h2_avg_carbon_tax_per_kg)
 
         return (
             electrolysis_plant_building_scenario,

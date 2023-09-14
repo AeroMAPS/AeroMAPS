@@ -82,6 +82,7 @@ class BiofuelCost(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
     ]:
         ### HEFA FOG
         (
@@ -243,6 +244,18 @@ class BiofuelCost(AeromapsModel):
             :, "biofuel_mfsp_carbon_tax_supplement_atj"
         ] = biofuel_mfsp_carbon_tax_supplement_atj
 
+
+        # MEAN tax
+        biofuel_mean_carbon_tax_per_l = (
+            biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100
+            + biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100
+            + biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100
+            + biofuel_mfsp_carbon_tax_supplement_ft_msw * biofuel_ft_msw_share / 100
+            + biofuel_mfsp_carbon_tax_supplement_atj * biofuel_atj_share / 100
+        )
+        
+        self.df.loc[:, "biofuel_mean_carbon_tax"] = biofuel_mean_carbon_tax_per_l
+
         return (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
@@ -284,6 +297,7 @@ class BiofuelCost(AeromapsModel):
             biofuel_cost_premium_atj,
             biofuel_carbon_tax_atj,
             biofuel_mfsp_carbon_tax_supplement_atj,
+            biofuel_mean_carbon_tax_per_l
         )
 
     @staticmethod
@@ -425,13 +439,8 @@ class BiofuelMfsp(AeromapsModel):
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mfsp_carbon_tax_supplement_hefa_fog: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mfsp_carbon_tax_supplement_hefa_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mfsp_carbon_tax_supplement_ft_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mfsp_carbon_tax_supplement_ft_msw: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mfsp_carbon_tax_supplement_atj: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
-        pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series
+        pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series
     ]:
         """Biofuel MFSP (Minimal fuel selling price) computed using a compound annual growth rate based
         on the fuel initial and final MFSP"""
@@ -521,19 +530,6 @@ class BiofuelMfsp(AeromapsModel):
 
         self.df.loc[:, "biofuel_marginal_mfsp"] = biofuel_marginal_mfsp
 
-        # MEAN
-        biofuel_mean_carbon_tax_per_l = (
-            biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_ft_msw * biofuel_ft_msw_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_atj * biofuel_atj_share / 100
-        )
-
-        self.df.loc[:, "biofuel_mean_carbon_tax"] = biofuel_mean_carbon_tax_per_l
-
-        print("biofuel")
-
         return (
             biofuel_hefa_fog_mfsp,
             biofuel_hefa_others_mfsp,
@@ -542,7 +538,6 @@ class BiofuelMfsp(AeromapsModel):
             biofuel_atj_mfsp,
             biofuel_mean_mfsp,
             biofuel_marginal_mfsp,
-            biofuel_mean_carbon_tax_per_l,
         )
 
 
