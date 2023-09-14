@@ -95,7 +95,7 @@ class CarbonBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -112,7 +112,7 @@ class CarbonBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -224,7 +224,7 @@ class CarbonBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -241,7 +241,7 @@ class CarbonBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -459,7 +459,7 @@ class BiomassResourceBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -476,7 +476,7 @@ class BiomassResourceBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -591,7 +591,7 @@ class BiomassResourceBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -608,7 +608,7 @@ class BiomassResourceBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -726,7 +726,7 @@ class ElectricityResourceBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -743,7 +743,7 @@ class ElectricityResourceBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -860,7 +860,7 @@ class ElectricityResourceBudgetAssessmentPlot:
             xy=(x, y),
             xytext=(1.2 * np.sign(x), 1.1 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         p = wedges[1]
@@ -877,7 +877,7 @@ class ElectricityResourceBudgetAssessmentPlot:
             xy=(-x, y),
             xytext=(1.2 * np.sign(x), 2.0 * y),
             horizontalalignment=horizontalalignment,
-            **kw
+            **kw,
         )
 
         legend_elements = [
@@ -900,7 +900,6 @@ class ElectricityResourceBudgetAssessmentPlot:
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
 
         self.fig.canvas.draw()
-
 
 
 class MultidisciplinaryAssessmentPlot:
@@ -959,33 +958,36 @@ class MultidisciplinaryAssessmentPlot:
         ]
 
         consumptions = [
-            np.max([cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]),
+            np.max(
+                [cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]
+            ),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
             electricity_consumption_end_year / available_electricity_total * 100,
         ]
 
-        df_plot = pd.DataFrame(list(zip(categories, consumptions, budgets)),
-                               columns=['Category', 'Consumption share' , 'Budget share'])
+        df_plot = pd.DataFrame(
+            list(zip(categories, consumptions, budgets)),
+            columns=["Category", "Consumption share", "Budget share"],
+        )
 
         lowerLimit = 0
 
         # Compute max and min in the dataset
-        max = df_plot[['Consumption share', 'Budget share']].max().max() + lowerLimit
-
+        max = df_plot[["Consumption share", "Budget share"]].max().max() + lowerLimit
 
         # Let's compute heights: they are a conversion of each item value in those new coordinates
         # In our example, 0 in the dataset will be converted to the lowerLimit (10)
         # The maximum will be converted to the upperLimit (100)
         slope = (max - lowerLimit) / max
-        heights_consumption = slope * df_plot['Consumption share'] + lowerLimit
-        heights_budget = slope * df_plot['Budget share'] + lowerLimit
+        heights_consumption = slope * df_plot["Consumption share"] + lowerLimit
+        heights_budget = slope * df_plot["Budget share"] + lowerLimit
 
         # # Compute the width of each bar. In total we have 2*Pi = 360°
         width = 2 * np.pi / len(df_plot.index) - 0.2
         #
         # # Compute the angle each bar is centered on:
-        angles = np.linspace(np.pi/4, (2+1/4) * np.pi, len(df_plot), endpoint=False)
+        angles = np.linspace(np.pi / 4, (2 + 1 / 4) * np.pi, len(df_plot), endpoint=False)
         # Draw bars
 
         self.multidisciplinary_bars_plot = self.ax.bar(
@@ -994,9 +996,11 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=0,
-            color='orange',
+            color="orange",
             edgecolor="none",
-            alpha=0.4,label='Impacts')
+            alpha=0.4,
+            label="Impacts",
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1004,9 +1008,10 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=2,
-            color='none',
+            color="none",
             edgecolor="orange",
-            alpha=1)
+            alpha=1,
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1014,9 +1019,11 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=0,
-            color='green',
+            color="green",
             edgecolor="none",
-            alpha=0.4, label='Budgets')
+            alpha=0.4,
+            label="Budgets",
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1024,29 +1031,31 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=2,
-            color='none',
+            color="none",
             edgecolor="green",
-            alpha=1)
-
+            alpha=1,
+        )
 
         self.ax.set_xticks(angles)
-        self.ax.set_xticklabels(df_plot['Category'], size=10, zorder=11)
+        self.ax.set_xticklabels(df_plot["Category"], size=10, zorder=11)
 
         def percentage_formatter(x, pos):
-            return f'{x:.0f}%'
+            return f"{x:.0f}%"
 
         self.ax.set_rlabel_position(90)
 
         # Apply the custom tick formatter to the radial axis
         self.ax.yaxis.set_major_formatter(mticker.FuncFormatter(percentage_formatter))
 
-        self.ax.grid(axis='x')
-        self.ax.set_title('Scenario impacts and allocated budgets\nPresented as a % of world budgets', y=1.05)
+        self.ax.grid(axis="x")
+        self.ax.set_title(
+            "Scenario impacts and allocated budgets\nPresented as a % of world budgets", y=1.05
+        )
 
         for tick in self.ax.xaxis.get_major_ticks():
             tick.set_pad(10)
 
-        self.ax.legend(loc='lower center', bbox_to_anchor=[0.5, -0.15], ncol=2)
+        self.ax.legend(loc="lower center", bbox_to_anchor=[0.5, -0.15], ncol=2)
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -1107,27 +1116,30 @@ class MultidisciplinaryAssessmentPlot:
         ]
 
         consumptions = [
-            np.max([cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100,0]),
+            np.max(
+                [cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]
+            ),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
             electricity_consumption_end_year / available_electricity_total * 100,
         ]
 
-
-        df_plot = pd.DataFrame(list(zip(categories, consumptions, budgets)),
-                               columns=['Category', 'Consumption share', 'Budget share'])
+        df_plot = pd.DataFrame(
+            list(zip(categories, consumptions, budgets)),
+            columns=["Category", "Consumption share", "Budget share"],
+        )
 
         lowerLimit = 0
 
         # Compute max and min in the dataset
-        max = df_plot[['Consumption share', 'Budget share']].max().max() + lowerLimit
+        max = df_plot[["Consumption share", "Budget share"]].max().max() + lowerLimit
 
         # Let's compute heights: they are a conversion of each item value in those new coordinates
         # In our example, 0 in the dataset will be converted to the lowerLimit (10)
         # The maximum will be converted to the upperLimit (100)
         slope = (max - lowerLimit) / max
-        heights_consumption = slope * df_plot['Consumption share'] + lowerLimit
-        heights_budget = slope * df_plot['Budget share'] + lowerLimit
+        heights_consumption = slope * df_plot["Consumption share"] + lowerLimit
+        heights_budget = slope * df_plot["Budget share"] + lowerLimit
 
         # # Compute the width of each bar. In total we have 2*Pi = 360°
         width = 2 * np.pi / len(df_plot.index) - 0.2
@@ -1142,9 +1154,11 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=0,
-            color='orange',
+            color="orange",
             edgecolor="none",
-            alpha=0.4, label='Impacts')
+            alpha=0.4,
+            label="Impacts",
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1152,9 +1166,10 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=2,
-            color='none',
+            color="none",
             edgecolor="orange",
-            alpha=1)
+            alpha=1,
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1162,9 +1177,11 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=0,
-            color='green',
+            color="green",
             edgecolor="none",
-            alpha=0.4, label='Budgets')
+            alpha=0.4,
+            label="Budgets",
+        )
 
         self.multidisciplinary_bars_plot = self.ax.bar(
             x=angles,
@@ -1172,29 +1189,30 @@ class MultidisciplinaryAssessmentPlot:
             width=width,
             bottom=lowerLimit,
             linewidth=2,
-            color='none',
+            color="none",
             edgecolor="green",
-            alpha=1)
+            alpha=1,
+        )
 
         self.ax.set_xticks(angles)
-        self.ax.set_xticklabels(df_plot['Category'], size=10, zorder=11)
+        self.ax.set_xticklabels(df_plot["Category"], size=10, zorder=11)
 
         def percentage_formatter(x, pos):
-            return f'{x:.0f}%'
+            return f"{x:.0f}%"
 
         self.ax.set_rlabel_position(90)
 
         # Apply the custom tick formatter to the radial axis
         self.ax.yaxis.set_major_formatter(mticker.FuncFormatter(percentage_formatter))
 
-        self.ax.grid(axis='x')
-        self.ax.set_title('Scenario impacts and allocated budgets\nPresented as a % of world budgets', y=1.05)
+        self.ax.grid(axis="x")
+        self.ax.set_title(
+            "Scenario impacts and allocated budgets\nPresented as a % of world budgets", y=1.05
+        )
 
         for tick in self.ax.xaxis.get_major_ticks():
             tick.set_pad(10)
 
-        self.ax.legend(loc='lower center', bbox_to_anchor=[0.5, -0.15], ncol=2)
+        self.ax.legend(loc="lower center", bbox_to_anchor=[0.5, -0.15], ncol=2)
 
         self.fig.canvas.draw()
-
-

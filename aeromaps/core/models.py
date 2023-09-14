@@ -1,4 +1,8 @@
-from aeromaps.models.impacts.costs.operations.average_ops_cost import PassengerAircraftDocEnergy, DropInMeanMfsp
+from aeromaps.models.impacts.costs.operations.average_ops_cost import (
+    PassengerAircraftDocEnergy,
+    DropInMeanMfsp,
+    PassengerAircraftDocCarbonTax,
+)
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 from aeromaps.models.parameters import YearParameters
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -85,15 +89,23 @@ from aeromaps.models.impacts.others.comparison import (
 
 # COSTS
 from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
-from aeromaps.models.impacts.costs.energy.market_prices import ElectricityCost, Co2Cost, KeroseneCost, KerosenePrice, \
-    Co2Tax, KeroseneBAUCost, CoalCost, GasCost
+from aeromaps.models.impacts.costs.energy.market_prices import (
+    ElectricityCost,
+    Co2Cost,
+    KeroseneCost,
+    KerosenePrice,
+    Co2Tax,
+    KeroseneBAUCost,
+    CoalCost,
+    GasCost,
+)
 from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCost,
     ElectrofuelCapex,
     ElectrofuelFixedOpex,
     ElectrofuelVarOpex,
     # ElectrofuelSpecificElectricity,
-    ElectrofuelSpecificCo2
+    ElectrofuelSpecificCo2,
 )
 
 from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
@@ -102,12 +114,27 @@ from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
     ElectrolyserFixedOpex,
     ElectrolyserVarOpex,
     # ElectrolyserSpecificElectricity,
-    LiquefierCapex, CcsCost, CoalEfficiency, CoalFixedOpex, CoalCapex, CoalCcsEfficiency, CoalCcsFixedOpex,
-    CoalCcsCapex, GasEfficiency, GasFixedOpex, GasCapex, GasCcsEfficiency, GasCcsFixedOpex, GasCcsCapex,
+    LiquefierCapex,
+    CcsCost,
+    CoalEfficiency,
+    CoalFixedOpex,
+    CoalCapex,
+    CoalCcsEfficiency,
+    CoalCcsFixedOpex,
+    CoalCcsCapex,
+    GasEfficiency,
+    GasFixedOpex,
+    GasCapex,
+    GasCcsEfficiency,
+    GasCcsFixedOpex,
+    GasCcsCapex,
     # LiquefierSpecificElectricity,
 )
 
-from aeromaps.models.impacts.costs.scenario.scenario_cost import DicountedScenarioCost, NonDiscountedScenarioCost
+from aeromaps.models.impacts.costs.scenario.scenario_cost import (
+    DicountedScenarioCost,
+    NonDiscountedScenarioCost,
+)
 
 
 year_parameters = YearParameters(
@@ -131,14 +158,18 @@ models_simple = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple("passenger_aircraft_efficiency_simple"),
+    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
+        "passenger_aircraft_efficiency_simple"
+    ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "aircraft_energy": FuelDistribution("aircraft_energy"),
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
-    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency("electricity_based_fuel_efficiency"),
+    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency(
+        "electricity_based_fuel_efficiency"
+    ),
     "biofuel_emission_factor": BiofuelEmissionFactor("biofuel_emission_factor"),
     "electricity_emission_factor": ElectricityEmissionFactor("electricity_emission_factor"),
     "hydrogen_emission_factor": HydrogenEmissionFactor("hydrogen_emission_factor"),
@@ -154,7 +185,9 @@ models_simple = {
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
-    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions("detailed_cumulative_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
@@ -213,7 +246,10 @@ models_simple = {
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
     "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp")
+    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
+    # "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
+    #     "passenger_aircraft_doc_carbon_tax"
+    # ),
 }
 
 
@@ -234,14 +270,18 @@ models_complex = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex("passenger_aircraft_efficiency_complex"),
+    "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
+        "passenger_aircraft_efficiency_complex"
+    ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "aircraft_energy": FuelDistribution("aircraft_energy"),
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
-    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency("electricity_based_fuel_efficiency"),
+    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency(
+        "electricity_based_fuel_efficiency"
+    ),
     "biofuel_emission_factor": BiofuelEmissionFactor("biofuel_emission_factor"),
     "electricity_emission_factor": ElectricityEmissionFactor("electricity_emission_factor"),
     "hydrogen_emission_factor": HydrogenEmissionFactor("hydrogen_emission_factor"),
@@ -257,7 +297,9 @@ models_complex = {
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
-    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions("detailed_cumulative_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
@@ -315,5 +357,8 @@ models_complex = {
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
     "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp")
+    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
+    # "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
+    #     "passenger_aircraft_doc_carbon_tax"
+    # ),
 }
