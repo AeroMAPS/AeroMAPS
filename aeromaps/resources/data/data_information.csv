@@ -275,6 +275,7 @@ cumulative_co2_emissions_including_load_factor;Vector;GtCO2;Cumulative CO2 emiss
 cumulative_co2_emissions_smooth;Vector;GtCO2-we;Cumulative CO2 emissions from all commercial air transport smoothed over 5 years
 cumulative_non_co2_equivalent_emissions;Vector;GtCO2-we;Cumulative equivalent emissions for non-CO2 effects from all commercial air transport
 cumulative_total_equivalent_emissions;Vector;GtCO2-we;Cumulative equivalent emissions for all climate effects from all commercial air transport
+dropin_fuel_consumption_liter_per_pax_100km;Vector;L/PAX/100km;Drop-in fuel consumption in liter per passenger per 100 km
 electricity_consumption;Vector;EJ;Electricity consumption from electrofuel and hydrogen production
 electricity_electrofuel_consumption;Vector;EJ;Electricity consumption from electrofuel production
 electricity_emission_factor;Vector;gCO2/kWh;Electricity emission factor
