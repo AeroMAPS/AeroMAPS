@@ -82,7 +82,11 @@ from aeromaps.models.impacts.equivalent_co2_emissions.equivalent_co2_emissions i
     EquivalentCO2Emissions,
 )
 from aeromaps.models.impacts.climate.climate import Temperature
-from aeromaps.models.impacts.others.others import EmissionsPerRPK, EmissionsPerRTK
+from aeromaps.models.impacts.others.others import (
+    EmissionsPerRPK,
+    EmissionsPerRTK,
+    DropinFuelConsumptionLiterPerPax100km,
+)
 from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
     ResourcesConsumedShare,
@@ -197,6 +201,9 @@ models_simple = {
     "temperature": Temperature("temperature"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
+    "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
+        "dropin_fuel_consumption_liter_per_pax_100km"
+    ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
@@ -309,6 +316,9 @@ models_complex = {
     "temperature": Temperature("temperature"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
+    "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
+        "dropin_fuel_consumption_liter_per_pax_100km"
+    ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),

@@ -20,7 +20,7 @@ from aeromaps.plots.air_traffic import (
     TotalAircraftDistancePlot,
 )
 from aeromaps.plots.aircraft_fleet_and_operations import (
-    MeanFuelConsumptionLiterPerPAX100kmPlot,
+    DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
@@ -90,7 +90,7 @@ plot_3 = {
     "Aircraft load factor": MeanLoadFactorPlot,
     "Fuel consumption (energy consumption per ASK)": MeanEnergyPerASKPlot,
     "Fuel consumption (energy consumption per RTK)": MeanEnergyPerRTKPlot,
-    "Fuel consumption (fuel consumption per passenger per 100 km)": MeanFuelConsumptionLiterPerPAX100kmPlot,
+    "Fuel consumption (fuel consumption per passenger per 100 km)": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "Energy consumption of the aircraft fleet": EnergyConsumptionPlot,
     "Mean fuel emission factor (CO2 emissions per energy)": MeanFuelEmissionFactorPlot,
     "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelPlot,

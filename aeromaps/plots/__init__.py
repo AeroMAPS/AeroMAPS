@@ -20,7 +20,7 @@ from .air_traffic import (
     TotalAircraftDistancePlot,
 )
 from .aircraft_fleet_and_operations import (
-    MeanFuelConsumptionLiterPerPAX100kmPlot,
+    DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
@@ -82,7 +82,7 @@ available_plots = {
     "energy_per_ask": MeanEnergyPerASKPlot,
     "energy_per_rtk": MeanEnergyPerRTKPlot,
     "energy_consumption": EnergyConsumptionPlot,
-    "fuel_consumption_liter_per_pax_100km": MeanFuelConsumptionLiterPerPAX100kmPlot,
+    "fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "mean_fuel_emission_factor": MeanFuelEmissionFactorPlot,
     "emission_factor_per_fuel": EmissionFactorPerFuelPlot,
     "cumulative_co2_emissions": CumulativeCO2EmissionsPlot,
