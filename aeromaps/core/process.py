@@ -98,6 +98,7 @@ class AeromapsProcess(object):
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
             self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
+            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
         else:
             self.fleet = None
 

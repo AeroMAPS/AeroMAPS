@@ -20,7 +20,7 @@ from .air_traffic import (
     TotalAircraftDistancePlot,
 )
 from .aircraft_fleet_and_operations import (
-    MeanFuelConsumptionLiterPerPAX100kmPlot,
+    DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
@@ -47,6 +47,17 @@ from .climate import (
 )
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
+from aeromaps.plots.costs import (
+    ScenarioEnergyCapitalPlot,
+    ScenarioEnergyExpensesPlot,
+    ScenarioEnergyUnitCostPlot,
+    DiscountEffect,
+    ScenarioEnergyCarbonTaxPlot,
+    ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    DropInMACC,
+)
+
+
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
     "air_transport_climate_impacts": AirTransportClimateImpactsPlot,
@@ -71,7 +82,7 @@ available_plots = {
     "energy_per_ask": MeanEnergyPerASKPlot,
     "energy_per_rtk": MeanEnergyPerRTKPlot,
     "energy_consumption": EnergyConsumptionPlot,
-    "fuel_consumption_liter_per_pax_100km": MeanFuelConsumptionLiterPerPAX100kmPlot,
+    "fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "mean_fuel_emission_factor": MeanFuelEmissionFactorPlot,
     "emission_factor_per_fuel": EmissionFactorPerFuelPlot,
     "cumulative_co2_emissions": CumulativeCO2EmissionsPlot,
@@ -84,4 +95,11 @@ available_plots = {
     "equivalent_emissions_ratio": EquivalentEmissionsRatioPlot,
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
+    "energy_capex": ScenarioEnergyCapitalPlot,
+    "energy_expenses": ScenarioEnergyExpensesPlot,
+    "energy_mfsp": ScenarioEnergyUnitCostPlot,
+    "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    "energy_expenses_discounted": DiscountEffect,
+    "energy_expenses_with_carbon_tax": ScenarioEnergyCarbonTaxPlot,
+    "drop_in_macc_curve": DropInMACC,
 }

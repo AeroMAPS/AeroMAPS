@@ -3,7 +3,7 @@ import numpy as np
 from .constants import plot_3_x, plot_3_y
 
 
-class MeanFuelConsumptionLiterPerPAX100kmPlot:
+class DropinFuelConsumptionLiterPerPAX100kmPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -19,11 +19,7 @@ class MeanFuelConsumptionLiterPerPAX100kmPlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "energy_consumption_passenger_dropin_fuel"]
-            / 43.15  # LHV
-            / 0.79  # Density
-            * 100
-            / self.df.loc[self.historic_years, "rpk"],
+            self.df.loc[self.historic_years, "dropin_fuel_consumption_liter_per_pax_100km"],
             color="black",
             linestyle="-",
             label="History",
@@ -32,11 +28,7 @@ class MeanFuelConsumptionLiterPerPAX100kmPlot:
 
         (self.line_fuel_consumption_l100km,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "energy_consumption_passenger_dropin_fuel"]
-            / 43.15
-            / 0.79
-            * 100
-            / self.df.loc[self.prospective_years, "rpk"],
+            self.df.loc[self.prospective_years, "dropin_fuel_consumption_liter_per_pax_100km"],
             color="blue",
             linestyle="-",
             label="Projections",
@@ -67,11 +59,7 @@ class MeanFuelConsumptionLiterPerPAX100kmPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_fuel_consumption_l100km.set_ydata(
-            self.df.loc[self.prospective_years, "energy_consumption_passenger_dropin_fuel"]
-            / 43.15
-            / 0.79
-            * 100
-            / self.df.loc[self.prospective_years, "rpk"]
+            self.df.loc[self.prospective_years, "dropin_fuel_consumption_liter_per_pax_100km"]
         )
 
         self.ax.collections.clear()

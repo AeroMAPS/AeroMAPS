@@ -20,7 +20,7 @@ from aeromaps.plots.air_traffic import (
     TotalAircraftDistancePlot,
 )
 from aeromaps.plots.aircraft_fleet_and_operations import (
-    MeanFuelConsumptionLiterPerPAX100kmPlot,
+    DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
@@ -46,6 +46,17 @@ from aeromaps.plots.climate import (
     TemperatureIncreaseFromAirTransportPlot,
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+
+
+from aeromaps.plots.costs import (
+    ScenarioEnergyCapitalPlot,
+    ScenarioEnergyExpensesPlot,
+    ScenarioEnergyUnitCostPlot,
+    DiscountEffect,
+    ScenarioEnergyCarbonTaxPlot,
+    ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    DropInMACC,
+)
 
 # Left plot
 plot_1 = {
@@ -79,7 +90,7 @@ plot_3 = {
     "Aircraft load factor": MeanLoadFactorPlot,
     "Fuel consumption (energy consumption per ASK)": MeanEnergyPerASKPlot,
     "Fuel consumption (energy consumption per RTK)": MeanEnergyPerRTKPlot,
-    "Fuel consumption (fuel consumption per passenger per 100 km)": MeanFuelConsumptionLiterPerPAX100kmPlot,
+    "Fuel consumption (fuel consumption per passenger per 100 km)": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "Energy consumption of the aircraft fleet": EnergyConsumptionPlot,
     "Mean fuel emission factor (CO2 emissions per energy)": MeanFuelEmissionFactorPlot,
     "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelPlot,
@@ -93,4 +104,11 @@ plot_3 = {
     "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
+    "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
+    "Annual expenses for energy procurement": ScenarioEnergyExpensesPlot,
+    "Effect of a carbon tax on energy expenses": ScenarioEnergyCarbonTaxPlot,
+    "Evolution of pathways MFSP": ScenarioEnergyUnitCostPlot,
+    "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    "Effect of the discount rate on total energy costs": DiscountEffect,
+    "Marginal abatement cost curve from drop in fuels": DropInMACC,
 }
