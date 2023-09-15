@@ -13,7 +13,7 @@ from aeromaps.models.base import AeromapsModel
 AIRCRAFT_COLUMNS = [
     "Name",
     "EIS Year",
-    "Consumption gain [%]",
+    "Consumption evolution [%]",
     "NOx evolution [%]",
     "Soot evolution [%]",
     "Non-Energy DOC evolution [%]",
@@ -26,7 +26,7 @@ SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 @dataclass
 class AircraftParameters:
     entry_into_service_year: float = None
-    consumption_gain: float = None
+    consumption_evolution: float = None
     nox_evolution: float = None
     soot_evolution: float = None
     non_energy_doc_evolution: float = None
@@ -180,7 +180,7 @@ class FleetModel(AeromapsModel):
                                 k, category.name + ":" + subcategory.name + ":energy_consumption"
                             ] += (
                                 recent_reference_aircraft_energy_consumption
-                                * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                * (1 + float(aircraft.parameters.consumption_evolution) / 100)
                                 * self.df.loc[
                                     k,
                                     category.name
@@ -219,7 +219,7 @@ class FleetModel(AeromapsModel):
                                     + ":energy_consumption:dropin_fuel",
                                 ] += (
                                     recent_reference_aircraft_energy_consumption
-                                    * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                    * (1 + float(aircraft.parameters.consumption_evolution) / 100)
                                     * self.df.loc[
                                         k,
                                         category.name
@@ -258,7 +258,7 @@ class FleetModel(AeromapsModel):
                                     + ":energy_consumption:hydrogen",
                                 ] += (
                                     recent_reference_aircraft_energy_consumption
-                                    * (1 - float(aircraft.parameters.consumption_gain) / 100)
+                                    * (1 + float(aircraft.parameters.consumption_evolution) / 100)
                                     * self.df.loc[
                                         k,
                                         category.name
@@ -391,7 +391,7 @@ class FleetModel(AeromapsModel):
                                 k, category.name + ":" + subcategory.name + ":non_energy_doc"
                             ] += (
                                 recent_reference_aircraft_non_energy_doc
-                                * (1 - float(aircraft.parameters.non_energy_doc_evolution) / 100)
+                                * (1 + float(aircraft.parameters.non_energy_doc_evolution) / 100)
                                 * self.df.loc[
                                     k,
                                     category.name
@@ -430,7 +430,7 @@ class FleetModel(AeromapsModel):
                                     + ":non_energy_doc:dropin_fuel",
                                 ] += (
                                     recent_reference_aircraft_non_energy_doc
-                                    * (1 - float(aircraft.parameters.non_energy_doc_evolution) / 100)
+                                    * (1 + float(aircraft.parameters.non_energy_doc_evolution) / 100)
                                     * self.df.loc[
                                         k,
                                         category.name
@@ -469,7 +469,7 @@ class FleetModel(AeromapsModel):
                                     + ":non_energy_doc:hydrogen",
                                 ] += (
                                     recent_reference_aircraft_non_energy_doc
-                                    * (1 - float(aircraft.parameters.non_energy_doc_evolution) / 100)
+                                    * (1 + float(aircraft.parameters.non_energy_doc_evolution) / 100)
                                     * self.df.loc[
                                         k,
                                         category.name
@@ -1122,7 +1122,7 @@ class Aircraft(object):
     def from_dataframe_row(self, row):
         self.name = row[AIRCRAFT_COLUMNS[0]]
         self.parameters.entry_into_service_year = row[AIRCRAFT_COLUMNS[1]]
-        self.parameters.consumption_gain = row[AIRCRAFT_COLUMNS[2]]
+        self.parameters.consumption_evolution = row[AIRCRAFT_COLUMNS[2]]
         self.parameters.nox_evolution = row[AIRCRAFT_COLUMNS[3]]
         self.parameters.soot_evolution = row[AIRCRAFT_COLUMNS[4]]
         self.parameters.non_energy_doc_evolution = row[AIRCRAFT_COLUMNS[5]]
@@ -1165,7 +1165,7 @@ class SubCategory(object):
                 [
                     aircraft.name,
                     aircraft.parameters.entry_into_service_year,
-                    aircraft.parameters.consumption_gain,
+                    aircraft.parameters.consumption_evolution,
                     aircraft.parameters.nox_evolution,
                     aircraft.parameters.soot_evolution,
                     aircraft.parameters.non_energy_doc_evolution,
@@ -1495,9 +1495,9 @@ class Fleet(object):
         # Short range narrow-body
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
-            consumption_gain=15.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-15.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=12000.0,
         )
@@ -1508,9 +1508,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2045,
-            consumption_gain=30.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-30.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=12000.0,
         )
@@ -1522,9 +1522,9 @@ class Fleet(object):
         # Short range regional turboprop
         aircraft_params = AircraftParameters(
             entry_into_service_year=2030,
-            consumption_gain=20.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-20.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=6000.0,
         )
@@ -1537,9 +1537,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2045,
-            consumption_gain=35.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-35.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=6000.0,
         )
@@ -1553,9 +1553,9 @@ class Fleet(object):
         # Short range regional turbofan
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
-            consumption_gain=15.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-15.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution = 0.0,
             cruise_altitude=12000.0,
         )
@@ -1568,9 +1568,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2045,
-            consumption_gain=30.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-30.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution = 0.0,
             cruise_altitude=12000.0,
         )
@@ -1585,9 +1585,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
-            consumption_gain=-10.0,
+            consumption_evolution=10.0,
             nox_evolution=0.0,
-            soot_evolution=100.0,
+            soot_evolution=-100.0,
             non_energy_doc_evolution = 10.0,
             cruise_altitude=12000.0,
         )
@@ -1599,9 +1599,9 @@ class Fleet(object):
         # Medium range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
-            consumption_gain=15.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-15.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution = 0.0,
             cruise_altitude=12000.0,
         )
@@ -1612,9 +1612,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2045,
-            consumption_gain=30.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-30.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=12000.0,
         )
@@ -1626,9 +1626,9 @@ class Fleet(object):
         # Long range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
-            consumption_gain=15.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-15.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=12000.0,
         )
@@ -1639,9 +1639,9 @@ class Fleet(object):
 
         aircraft_params = AircraftParameters(
             entry_into_service_year=2045,
-            consumption_gain=30.0,
-            nox_evolution=30.0,
-            soot_evolution=30.0,
+            consumption_evolution=-30.0,
+            nox_evolution=0.0,
+            soot_evolution=0.0,
             non_energy_doc_evolution=0.0,
             cruise_altitude=12000.0,
         )
