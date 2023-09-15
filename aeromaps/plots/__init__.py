@@ -51,7 +51,10 @@ from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
     ScenarioEnergyExpensesPlot,
     ScenarioEnergyUnitCostPlot,
-    DiscountEffect, ScenarioEnergyCarbonTaxPlot, ScenarioEnergyUnitCostWithCarbonTaxPlot, DropInMACC
+    DiscountEffect,
+    ScenarioEnergyCarbonTaxPlot,
+    ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    DropInMACC,
 )
 
 
