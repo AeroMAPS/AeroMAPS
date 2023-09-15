@@ -714,7 +714,6 @@ class LiquidHydrogenCost(AeromapsModel):
         )
         self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
         # €/kg
-        print(h2_avg_carbon_tax_per_kg)
 
         return (
             electrolysis_plant_building_scenario,
