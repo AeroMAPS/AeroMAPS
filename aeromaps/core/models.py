@@ -4,7 +4,7 @@ from aeromaps.models.impacts.costs.operations.average_ops_cost import (
     PassengerAircraftDocCarbonTax,
 )
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
-from aeromaps.models.parameters import YearParameters
+
 from aeromaps.models.air_transport.air_traffic.rpk import (
     RPK,
     RPKReference,
@@ -54,7 +54,7 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
     BiomassAvailability,
     ElectricityAvailability,
 )
-from aeromaps.models.parameters import AllParameters
+
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
     ERF,
     DetailedERF,
@@ -136,10 +136,6 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedScenarioCost,
 )
 
-
-year_parameters = YearParameters(
-    historic_start_year=2000, prospection_start_year=2020, end_year=2050
-)
 
 models_simple = {
     "rpk_measures": RPKMeasures("rpk_measures"),

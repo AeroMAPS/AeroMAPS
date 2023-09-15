@@ -336,13 +336,13 @@ class FleetModel(AeromapsModel):
                         category.name + ":" + subcategory.name + ":non_energy_doc:hydrogen"
                     ] = 0.0
                     # Initial shares
-                    self.df[category.name + ":" + subcategory.name + ":share:total"] = (
-                        ref_old_aircraft_share + ref_recent_aircraft_share
-                    )
-                    self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = (
-                        ref_old_aircraft_share + ref_recent_aircraft_share
-                    )
-                    self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
+                    # self.df[category.name + ":" + subcategory.name + ":share:total"] = (
+                    #     ref_old_aircraft_share + ref_recent_aircraft_share
+                    # )
+                    # self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = (
+                    #     ref_old_aircraft_share + ref_recent_aircraft_share
+                    # )
+                    # self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
     
                 else:
                     self.df[category.name + ":" + subcategory.name + ":non_energy_doc"] = 0.0
@@ -354,9 +354,9 @@ class FleetModel(AeromapsModel):
                         category.name + ":" + subcategory.name + ":non_energy_doc:hydrogen"
                     ] = self.df[category.name + ":" + subcategory.name + ":non_energy_doc"]
                     # Initial shares
-                    self.df[category.name + ":" + subcategory.name + ":share:total"] = 0.0
-                    self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = 0.0
-                    self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
+                    # self.df[category.name + ":" + subcategory.name + ":share:total"] = 0.0
+                    # self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = 0.0
+                    # self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
     
                 for aircraft in subcategory.aircraft.values():
     
@@ -375,17 +375,17 @@ class FleetModel(AeromapsModel):
                             != 0.0
                         ):
     
-                            self.df.loc[
-                                k, category.name + ":" + subcategory.name + ":share:total"
-                            ] += self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                                + ":aircraft_share",
-                            ]
+                            # self.df.loc[
+                            #     k, category.name + ":" + subcategory.name + ":share:total"
+                            # ] += self.df.loc[
+                            #     k,
+                            #     category.name
+                            #     + ":"
+                            #     + subcategory.name
+                            #     + ":"
+                            #     + aircraft.name
+                            #     + ":aircraft_share",
+                            # ]
     
                             self.df.loc[
                                 k, category.name + ":" + subcategory.name + ":non_energy_doc"
@@ -405,23 +405,23 @@ class FleetModel(AeromapsModel):
                             )
     
                             if aircraft.energy_type == "DROP_IN_FUEL":
-                                self.df.loc[
-                                    k, category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                                ] += (
-                                    self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    # / self.df.loc[
-                                    #     k, category.name + ":" + subcategory.name + ":share:total"
-                                    # ]
-                                    # * 100
-                                )
+                                # self.df.loc[
+                                #     k, category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                                # ] += (
+                                #     self.df.loc[
+                                #         k,
+                                #         category.name
+                                #         + ":"
+                                #         + subcategory.name
+                                #         + ":"
+                                #         + aircraft.name
+                                #         + ":aircraft_share",
+                                #     ]
+                                #     # / self.df.loc[
+                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
+                                #     # ]
+                                #     # * 100
+                                # )
                                 self.df.loc[
                                     k,
                                     category.name
@@ -444,23 +444,23 @@ class FleetModel(AeromapsModel):
                                 )
     
                             if aircraft.energy_type == "HYDROGEN":
-                                self.df.loc[
-                                    k, category.name + ":" + subcategory.name + ":share:hydrogen"
-                                ] += (
-                                    self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    # / self.df.loc[
-                                    #     k, category.name + ":" + subcategory.name + ":share:total"
-                                    # ]
-                                    # * 100
-                                )
+                                # self.df.loc[
+                                #     k, category.name + ":" + subcategory.name + ":share:hydrogen"
+                                # ] += (
+                                #     self.df.loc[
+                                #         k,
+                                #         category.name
+                                #         + ":"
+                                #         + subcategory.name
+                                #         + ":"
+                                #         + aircraft.name
+                                #         + ":aircraft_share",
+                                #     ]
+                                #     # / self.df.loc[
+                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
+                                #     # ]
+                                #     # * 100
+                                # )
                                 self.df.loc[
                                     k,
                                     category.name
@@ -482,30 +482,30 @@ class FleetModel(AeromapsModel):
                                     / 100
                                 )
     
-                # Energy shares per category
-                var_name = category.name + ":share:dropin_fuel"
-                if var_name in self.df:
-                    # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] += self.df[
-                        category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                    ]
-                else:
-                    # Dropin
-                    self.df[category.name + ":share:dropin_fuel"] = self.df[
-                        category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                    ]
-    
-                var_name = category.name + ":share:hydrogen"
-                if var_name in self.df:
-                    # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] += self.df[
-                        category.name + ":" + subcategory.name + ":share:hydrogen"
-                    ]
-                else:
-                    # Hydrogen
-                    self.df[category.name + ":share:hydrogen"] = self.df[
-                        category.name + ":" + subcategory.name + ":share:hydrogen"
-                    ]
+                # # Energy shares per category
+                # var_name = category.name + ":share:dropin_fuel"
+                # if var_name in self.df:
+                #     # Dropin
+                #     self.df[category.name + ":share:dropin_fuel"] += self.df[
+                #         category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                #     ]
+                # else:
+                #     # Dropin
+                #     self.df[category.name + ":share:dropin_fuel"] = self.df[
+                #         category.name + ":" + subcategory.name + ":share:dropin_fuel"
+                #     ]
+                #
+                # var_name = category.name + ":share:hydrogen"
+                # if var_name in self.df:
+                #     # Hydrogen
+                #     self.df[category.name + ":share:hydrogen"] += self.df[
+                #         category.name + ":" + subcategory.name + ":share:hydrogen"
+                #     ]
+                # else:
+                #     # Hydrogen
+                #     self.df[category.name + ":share:hydrogen"] = self.df[
+                #         category.name + ":" + subcategory.name + ":share:hydrogen"
+                #     ]
 
     def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
         for category in self.fleet.categories.values():
@@ -1073,7 +1073,7 @@ class FleetModel(AeromapsModel):
                 x,
                 self.df.loc[
                     self.prospection_start_year : self.end_year,
-                    category.name + ":non_energy_doc",
+                    category.name + ":energy_consumption",
                 ],
             )
 
