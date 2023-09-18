@@ -63,13 +63,6 @@ class BiofuelAbatementPotential(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
     ]:
         """Maximal and effective abatement potential through biofuel usage under the allocated biomass hypothesis."""
 
@@ -262,15 +255,16 @@ class BiofuelAbatementPotential(AeromapsModel):
             / 1000000
         )
 
-        self.df.loc[:, "abatement_effective_atj"] = abatement_effective_atj
-        self.df.loc[:, "abatement_effective_hefa_fog"] = abatement_effective_hefa_fog
-        self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
-        self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
-        self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
-        self.df.loc[
-            :, "abatement_effective_hydrogen_electrolysis"
-        ] = abatement_effective_hydrogen_electrolysis
-        self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
+        # TODO delete?
+        # self.df.loc[:, "abatement_effective_atj"] = abatement_effective_atj
+        # self.df.loc[:, "abatement_effective_hefa_fog"] = abatement_effective_hefa_fog
+        # self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
+        # self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
+        # self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
+        # self.df.loc[
+        #     :, "abatement_effective_hydrogen_electrolysis"
+        # ] = abatement_effective_hydrogen_electrolysis
+        # self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
 
         return (
             abatement_potential_atj,
@@ -280,13 +274,13 @@ class BiofuelAbatementPotential(AeromapsModel):
             abatement_potential_ft_others,
             abatement_potential_hydrogen_electrolysis,
             abatement_potential_electrofuel,
-            abatement_effective_atj,
-            abatement_effective_hefa_fog,
-            abatement_effective_hefa_others,
-            abatement_effective_ft_msw,
-            abatement_effective_ft_others,
-            abatement_effective_hydrogen_electrolysis,
-            abatement_effective_electrofuel,
+            # abatement_effective_atj,
+            # abatement_effective_hefa_fog,
+            # abatement_effective_hefa_others,
+            # abatement_effective_ft_msw,
+            # abatement_effective_ft_others,
+            # abatement_effective_hydrogen_electrolysis,
+            # abatement_effective_electrofuel,
             energy_avail_atj,
             energy_avail_hefa_fog,
             energy_avail_hefa_others,
