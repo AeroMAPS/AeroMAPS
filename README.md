@@ -44,7 +44,6 @@ Citation
 If you use AeroMAPS in your work, please cite the following reference. Other references are available in the
 documentation.
 
-Planès, T., Delbecq, S., Pommier-Budinger, V., and Bénard, E. (2021).
-Simulation and evaluation of sustainable climate trajectories for aviation.
-Journal of Environmental Management, 295, 113079.
-https://doi.org/10.1016/j.jenvman.2021.113079/
+Planès, T., Delbecq, S., Salgas, A. (2023).
+AeroMAPS: a framework for performing multidisciplinary assessment of prospective scenarios for air transport.
+Submitted to Journal of Open Aviation Science.
