@@ -165,6 +165,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_joas_application.html">Application for the Journal of Open Aviation Science</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -353,7 +354,8 @@ document.write(`
 <p>First, the user has to load the framework and generate a process.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
 <span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_simple</span>
 </pre></div>
 </div>
@@ -8936,15 +8938,19 @@ Name: co2_emissions, dtype: float64
 <p>The user can thus display a figure of this list, for instance the CO<sub>2</sub> emissions of the simulated scenario.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x7f44f52a0820&gt;
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">18</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="ne">TypeError</span>: plot() got an unexpected keyword argument &#39;save&#39;
 </pre></div>
 </div>
-<img alt="../_images/4e6ce6fdcbd9a111d22e57f2bcc46f2bf924791bd603fa296967560e5e159f9a.png" src="../_images/4e6ce6fdcbd9a111d22e57f2bcc46f2bf924791bd603fa296967560e5e159f9a.png" />
 </div>
 </div>
 </section>
