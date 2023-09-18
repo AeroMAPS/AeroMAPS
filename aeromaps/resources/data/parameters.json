@@ -489,6 +489,14 @@
     "biofuel_ft_msw_capex_2050": 2056.0,
     "biofuel_atj_capex_2020": 1211.0,
     "biofuel_atj_capex_2050": 1212.0,
-    "social_discount_rate": 0.03
-    
+    "social_discount_rate": 0.03,
+    "doc_non_energy_per_ask_short_range_dropin_fuel_init": 0.045,
+    "doc_non_energy_per_ask_medium_range_dropin_fuel_init": 0.028,
+    "doc_non_energy_per_ask_long_range_dropin_fuel_init": 0.023,
+    "doc_non_energy_per_ask_short_range_dropin_fuel_gain": 0.0,
+    "doc_non_energy_per_ask_medium_range_dropin_fuel_gain": 0.0,
+    "doc_non_energy_per_ask_long_range_dropin_fuel_gain": 0.0,
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range": 1.1,
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range": 1.1,
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range": 1.1
 }

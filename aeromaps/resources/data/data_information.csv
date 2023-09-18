@@ -598,3 +598,219 @@ biofuel_ft_msw_capex_2050;Float;€/(kg/day);Biofuel (FT MSW) capex in 2050
 biofuel_atj_capex_2020;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
 biofuel_atj_capex_2050;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
 social_discount_rate;Float;%;Social discount rate used for inter-temporal economic analyses
+biofuel_atj_capex;Vector;€/(kg/day);Biofuel (AtJ) capex evolution
+biofuel_atj_mfsp;Vector;€/L;Biofuel (AtJ) MFSP evolution
+biofuel_carbon_tax_atj;Vector;M€;Biofuel (AtJ) total expense for carbon tax
+biofuel_carbon_tax_ft_msw;Vector;M€;Biofuel (FT-MSW) total expense for carbon tax
+biofuel_carbon_tax_ft_others;Vector;M€;Biofuel (FT-Others) total expense for carbon tax
+biofuel_carbon_tax_hefa_fog;Vector;M€;Biofuel (HEFA-FOG) total expense for carbon tax
+biofuel_carbon_tax_hefa_others;Vector;M€;Biofuel (HEFA-Others) total expense for carbon tax
+biofuel_cost_atj;Vector;M€;Biofuel (AtJ) total expenses (without carbon tax )
+biofuel_cost_ft_msw;Vector;M€;Biofuel (FT-MSW) total expenses (without carbon tax )
+biofuel_cost_ft_others;Vector;M€;Biofuel (FT-Others) total expenses (without carbon tax )
+biofuel_cost_hefa_fog;Vector;M€;Biofuel (HEFA-Fog) total expenses (without carbon tax )
+biofuel_cost_hefa_others;Vector;M€;Biofuel (HEFA-Others) total expenses (without carbon tax )
+biofuel_cost_premium_atj;Vector;M€;Biofuel (AtJ) cost premium over fossil kerosene (without carbon tax)
+biofuel_cost_premium_ft_msw;Vector;M€;Biofuel (FT-MSW) cost premium over fossil kerosene (without carbon tax)
+biofuel_cost_premium_ft_others;Vector;M€;Biofuel (FT-Others) cost premium over fossil kerosene (without carbon tax)
+biofuel_cost_premium_hefa_fog;Vector;M€;Biofuel (Hefa-Fog) cost premium over fossil kerosene (without carbon tax)
+biofuel_cost_premium_hefa_others;Vector;M€;Biofuel (Hefa-Others) cost premium over fossil kerosene (without carbon tax)
+biofuel_ft_msw_capex;Vector;€/(kg/day);Biofuel (FT-MSW) capex evolution
+biofuel_ft_msw_mfsp;Vector;€/L;Biofuel (FT-MSW) MFSP evolution
+biofuel_ft_others_capex;Vector;€/(kg/day);Biofuel (FT-Others) capex evolution
+biofuel_ft_others_mfsp;Vector;€/L;Biofuel (FT-Others) MFSP evolution
+biofuel_hefa_fog_capex;Vector;€/(kg/day);Biofuel (Hefa-Fog) capex evolution
+biofuel_hefa_fog_mfsp;Vector;€/L;Biofuel (Hefa-FOG) MFSP evolution
+biofuel_hefa_others_capex;Vector;€/(kg/day);Biofuel (Hefa-Others) capex evolution
+biofuel_hefa_others_mfsp;Vector;€/L;Biofuel (Hefa-Others) MFSP evolution
+biofuel_marginal_mfsp;Vector;€/L;Biofuel highest MFSP evolution
+biofuel_mean_capex;Vector;€/(kg/day);Biofuel average capex evolution
+biofuel_mean_carbon_tax_per_l;Vector;€/L;Biofuel average carbon tax per L evolution
+biofuel_mean_mfsp;Vector;€/L;Biofuel average MFSP evolution
+biofuel_mfsp_carbon_tax_supplement_atj;Vector;€/L;Biofuel (AtJ) carbon tax per L evolution
+biofuel_mfsp_carbon_tax_supplement_ft_msw;Vector;€/L;Biofuel (FT-MSW) carbon tax per L evolution
+biofuel_mfsp_carbon_tax_supplement_ft_others;Vector;€/L;Biofuel (FT-Others) carbon tax per L evolution
+biofuel_mfsp_carbon_tax_supplement_hefa_fog;Vector;€/L;Biofuel (HEFA-FOG) carbon tax per L evolution
+biofuel_mfsp_carbon_tax_supplement_hefa_others;Vector;€/L;Biofuel (HEFA-Others) carbon tax per L evolution
+carbon_abatement_cost_atj;Vector;€/tCO2e;Carbon abatement cost (ATJ) evolution
+carbon_abatement_cost_ft_msw;Vector;€/tCO2e;Carbon abatement cost (FT-MSW) evolution
+carbon_abatement_cost_ft_others;Vector;€/tCO2e;Carbon abatement cost (FT-Others) evolution
+carbon_abatement_cost_h2_coal;Vector;€/tCO2e;Carbon abatement cost (H2 Coal gasification without CCS) evolution
+carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Coal Gasification with CCS) evolution
+carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;Carbon abatement cost (H2 Electrolysis) evolution
+carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
+carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
+carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Carbon abatement cost (HEFA-FOG) evolution
+carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Carbon abatement cost (HEFA-Others) evolution
+carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution
+ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants
+abatement_potential_atj
+abatement_potential_electrofuel
+abatement_potential_ft_msw
+abatement_potential_ft_others
+abatement_potential_hefa_fog
+abatement_potential_hefa_others
+abatement_potential_hydrogen_electrolysis,
+co2_market_price,
+coal_ccs_efficiency
+coal_ccs_eis_capex
+coal_ccs_eis_fixed_opex
+coal_ccs_h2_capex_cost
+coal_ccs_h2_carbon_tax
+coal_ccs_h2_ccs_cost
+coal_ccs_h2_fuel_cost
+coal_ccs_h2_mfsp_carbon_tax_supplement
+coal_ccs_h2_opex_cost
+coal_ccs_h2_total_cost
+coal_ccs_plant_building_cost
+coal_ccs_plant_building_scenario
+coal_efficiency
+coal_eis_capex
+coal_eis_fixed_opex
+coal_h2_capex_cost
+coal_h2_carbon_tax
+coal_h2_fuel_cost
+coal_h2_mfsp_carbon_tax_supplement
+coal_h2_opex_cost
+coal_h2_total_cost
+coal_market_price
+coal_plant_building_cost
+coal_plant_building_scenario,
+discounted_energy_expenses
+doc_carbon_tax_per_ask_long_range_dropin_fuel
+doc_carbon_tax_per_ask_long_range_hydrogen
+doc_carbon_tax_per_ask_long_range_mean
+doc_carbon_tax_per_ask_mean
+doc_carbon_tax_per_ask_medium_range_dropin_fuel
+doc_carbon_tax_per_ask_medium_range_hydrogen
+doc_carbon_tax_per_ask_medium_range_mean
+doc_carbon_tax_per_ask_short_range_dropin_fuel
+doc_carbon_tax_per_ask_short_range_hydrogen
+doc_carbon_tax_per_ask_short_range_mean
+doc_energy_per_ask_long_range_dropin_fuel
+doc_energy_per_ask_long_range_hydrogen
+doc_energy_per_ask_long_range_mean
+doc_energy_per_ask_mean
+doc_energy_per_ask_medium_range_dropin_fuel
+doc_energy_per_ask_medium_range_hydrogen
+doc_energy_per_ask_medium_range_mean
+doc_energy_per_ask_short_range_dropin_fuel
+doc_energy_per_ask_short_range_hydrogen
+doc_energy_per_ask_short_range_mean
+doc_non_energy_per_ask_long_range_dropin_fuel
+doc_non_energy_per_ask_long_range_hydrogen
+doc_non_energy_per_ask_long_range_mean
+doc_non_energy_per_ask_mean
+doc_non_energy_per_ask_medium_range_dropin_fuel
+doc_non_energy_per_ask_medium_range_hydrogen
+doc_non_energy_per_ask_medium_range_mean
+doc_non_energy_per_ask_short_range_dropin_fuel
+doc_non_energy_per_ask_short_range_hydrogen
+doc_non_energy_per_ask_short_range_mean
+doc_total_per_ask_long_range_dropin_fuel
+doc_total_per_ask_long_range_hydrogen
+doc_total_per_ask_long_range_mean
+doc_total_per_ask_mean
+doc_total_per_ask_medium_range_dropin_fuel
+doc_total_per_ask_medium_range_hydrogen
+doc_total_per_ask_medium_range_mean
+doc_total_per_ask_short_range_dropin_fuel
+doc_total_per_ask_short_range_hydrogen
+doc_total_per_ask_short_range_mean
+dropin_mean_mfsp
+dropin_mfsp_carbon_tax_supplement
+electricity_market_price
+electrofuel_abatement_cost
+electrofuel_avg_cost_per_l
+electrofuel_capex_cost
+electrofuel_carbon_tax
+electrofuel_co2_cost
+electrofuel_cost_premium
+electrofuel_eis_capex
+electrofuel_eis_fixed_opex
+electrofuel_eis_specific_co2
+electrofuel_eis_var_opex
+electrofuel_elec_cost
+electrofuel_emission_factor
+electrofuel_hydrogen_efficiency
+electrofuel_mfsp_carbon_tax_supplement
+electrofuel_opex_cost
+electrofuel_plant_building_cost
+electrofuel_plant_building_scenario
+electrofuel_total_cost
+electrolysis_h2_capex_cost
+electrolysis_h2_carbon_tax
+electrolysis_h2_elec_cost
+electrolysis_h2_mfsp_carbon_tax_supplement
+electrolysis_h2_opex_cost
+electrolysis_h2_total_cost
+electrolysis_plant_building_cost
+electrolysis_plant_building_scenario
+gas_ccs_efficiency
+gas_ccs_eis_capex
+gas_ccs_eis_fixed_opex
+gas_ccs_h2_capex_cost
+gas_ccs_h2_carbon_tax
+gas_ccs_h2_ccs_cost
+gas_ccs_h2_fuel_cost
+gas_ccs_h2_mfsp_carbon_tax_supplement
+gas_ccs_h2_opex_cost
+gas_ccs_h2_total_cost
+gas_ccs_plant_building_cost
+gas_ccs_plant_building_scenario
+gas_efficiency
+gas_eis_capex
+gas_eis_fixed_opex
+gas_h2_capex_cost
+gas_h2_carbon_tax
+gas_h2_fuel_cost
+gas_h2_mfsp_carbon_tax_supplement
+gas_h2_opex_cost
+gas_h2_total_cost
+gas_market_price
+gas_plant_building_cost
+gas_plant_building_scenario
+h2_avg_carbon_tax_per_kg
+h2_avg_cost_per_kg
+h2_avg_cost_per_kg_coal
+h2_avg_cost_per_kg_coal_ccs
+h2_avg_cost_per_kg_electrolysis
+h2_avg_cost_per_kg_gas
+h2_avg_cost_per_kg_gas_ccs
+h2_cost_premium_coal
+h2_cost_premium_coal_ccs
+h2_cost_premium_electrolysis
+h2_cost_premium_gas
+h2_cost_premium_gas_ccs
+kerosene_carbon_tax_cost
+kerosene_cost
+kerosene_emission_factor
+kerosene_market_price
+kerosene_price_supplement_carbon_tax
+liquefaction_efficiency
+liquefaction_h2_capex_cost
+liquefaction_h2_elec_cost
+liquefaction_h2_opex_cost
+liquefaction_h2_total_cost
+liquefaction_plant_building_cost
+liquefaction_plant_building_scenario
+liquefier_eis_capex
+non_discounted_BAU_energy_expenses
+non_discounted_energy_cost_premium
+non_discounted_energy_expenses
+plant_building_cost_atj
+plant_building_cost_ft_msw
+plant_building_cost_ft_others
+plant_building_cost_hefa_fog
+plant_building_cost_hefa_others
+plant_building_scenario_atj
+plant_building_scenario_ft_msw
+plant_building_scenario_ft_others
+plant_building_scenario_hefa_fog
+plant_building_scenario_hefa_others
+electrolyser_eis_capex
+electrolyser_eis_fixed_opex
+electrolyser_eis_var_opex
+total_h2_capex
+total_hydrogen_supply_cost
+transport_h2_total_cost

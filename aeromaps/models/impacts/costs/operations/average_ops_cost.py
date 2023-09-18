@@ -589,7 +589,6 @@ class PassengerAircraftTotalDoc(AeromapsModel):
         pd.Series,
         pd.Series,
     ]:
-        print('in')
         # dropin
         doc_total_per_ask_short_range_dropin_fuel = (
             doc_non_energy_per_ask_short_range_dropin_fuel
@@ -706,7 +705,7 @@ class DropInMeanMfsp(AeromapsModel):
         kerosene_price_supplement_carbon_tax: pd.Series = pd.Series(dtype="float64"),
         kerosene_share: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series]:
-        print('on')
+
         dropin_mean_mfsp = (
             biofuel_mean_mfsp.fillna(0) * biofuel_share / 100
             + electrofuel_avg_cost_per_l.fillna(0) * electrofuel_share / 100

@@ -1366,9 +1366,9 @@ class ElectrolyserCapex(AeromapsModel):
 
         capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "plant_eis_capex"] = capex_function(k)
+            self.df.loc[k, "electrolyser_eis_capex"] = capex_function(k)
 
-        electrolyser_eis_capex = self.df.loc[:, "plant_eis_capex"]
+        electrolyser_eis_capex = self.df.loc[:, "electrolyser_eis_capex"]
 
         return electrolyser_eis_capex
 
@@ -1397,9 +1397,9 @@ class ElectrolyserFixedOpex(AeromapsModel):
 
         fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "plant_eis_fixed_opex"] = fixed_opex_function(k)
+            self.df.loc[k, "electrolyser_eis_fixed_opex"] = fixed_opex_function(k)
 
-        electrolyser_eis_fixed_opex = self.df.loc[:, "plant_eis_fixed_opex"]
+        electrolyser_eis_fixed_opex = self.df.loc[:, "electrolyser_eis_fixed_opex"]
 
         return electrolyser_eis_fixed_opex
 
@@ -1428,9 +1428,9 @@ class ElectrolyserVarOpex(AeromapsModel):
 
         var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "plant_eis_var_opex"] = var_opex_function(k)
+            self.df.loc[k, "electrolyser_eis_var_opex"] = var_opex_function(k)
 
-        electrolyser_eis_var_opex = self.df.loc[:, "plant_eis_var_opex"]
+        electrolyser_eis_var_opex = self.df.loc[:, "electrolyser_eis_var_opex"]
 
         return electrolyser_eis_var_opex
 
