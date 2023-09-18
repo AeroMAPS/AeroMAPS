@@ -299,3 +299,16 @@ class ImpactsParameters(object):
 
     # Economic analyses
     social_discount_rate: float = 0.03
+
+
+    # DOC simple initialisation
+
+    doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.045
+    doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.028
+    doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.023
+    doc_non_energy_per_ask_short_range_dropin_fuel_gain: float = 0.0
+    doc_non_energy_per_ask_medium_range_dropin_fuel_gain: float = 0.0
+    doc_non_energy_per_ask_long_range_dropin_fuel_gain: float = 0.0
+    relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range: float = 1.1
+    relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range: float = 1.1
+    relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range: float = 1.1

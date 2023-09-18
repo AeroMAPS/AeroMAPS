@@ -29,7 +29,7 @@ class AircraftParameters:
     consumption_evolution: float = None
     nox_evolution: float = None
     soot_evolution: float = None
-    non_energy_doc_evolution: float = None
+    doc_non_energy_evolution: float = None
     cruise_altitude: float = None
 
 
@@ -38,7 +38,7 @@ class ReferenceAircraftParameters:
     energy_per_ask: float = None
     emission_index_nox: float = None
     emission_index_soot: float = None
-    non_energy_doc_base: float = None
+    doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
 
@@ -75,13 +75,13 @@ class FleetModel(AeromapsModel):
         self._compute_energy_consumption_and_share_wrt_energy_type()
 
         # Compute non energy direct operating costs (DOC) and share per subcategory with respect to energy type
-        self._compute_non_energy_doc()
+        self._compute_doc_non_energy()
 
         # Compute mean energy consumption per category with respect to energy type
         self._compute_mean_energy_consumption_per_category_wrt_energy_type()
 
         # Compute mean non energy direct operating cost (DOC) per category with respect to energy type
-        self._compute_mean_non_energy_doc()
+        self._compute_mean_doc_non_energy()
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         # Energy consumption calculations for drop-in fuel and hydrogen
@@ -296,7 +296,7 @@ class FleetModel(AeromapsModel):
                         category.name + ":" + subcategory.name + ":share:hydrogen"
                     ]
 
-    def _compute_non_energy_doc(self):
+    def _compute_doc_non_energy(self):
         # Non-energy DOC calculations for drop-in fuel and hydrogen
         for category in self.fleet.categories.values():
             # Reference aircraft information
@@ -315,27 +315,27 @@ class FleetModel(AeromapsModel):
                 + "recent_reference:aircraft_share"
             ]
 
-            recent_reference_aircraft_non_energy_doc = category.subcategories[
+            recent_reference_aircraft_doc_non_energy = category.subcategories[
                 0
-            ].recent_reference_aircraft.non_energy_doc_base
+            ].recent_reference_aircraft.doc_non_energy_base
 
             for i, subcategory in category.subcategories.items():
                 # Initialization
                 if i == 0:
-                    self.df[category.name + ":" + subcategory.name + ":non_energy_doc"] = (
-                        subcategory.old_reference_aircraft.non_energy_doc_base
+                    self.df[category.name + ":" + subcategory.name + ":doc_non_energy"] = (
+                        subcategory.old_reference_aircraft.doc_non_energy_base
                         * ref_old_aircraft_share
                         / 100
-                        + subcategory.recent_reference_aircraft.non_energy_doc_base
+                        + subcategory.recent_reference_aircraft.doc_non_energy_base
                         * ref_recent_aircraft_share
                         / 100
                     )
                     # Initial energy consumption
                     self.df[
-                        category.name + ":" + subcategory.name + ":non_energy_doc:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":non_energy_doc"]
+                        category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel"
+                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
                     self.df[
-                        category.name + ":" + subcategory.name + ":non_energy_doc:hydrogen"
+                        category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen"
                     ] = 0.0
                     # Initial shares
                     # self.df[category.name + ":" + subcategory.name + ":share:total"] = (
@@ -347,14 +347,14 @@ class FleetModel(AeromapsModel):
                     # self.df[category.name + ":" + subcategory.name + ":share:hydrogen"] = 0.0
 
                 else:
-                    self.df[category.name + ":" + subcategory.name + ":non_energy_doc"] = 0.0
+                    self.df[category.name + ":" + subcategory.name + ":doc_non_energy"] = 0.0
                     # Initial energy consumption
                     self.df[
-                        category.name + ":" + subcategory.name + ":non_energy_doc:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":non_energy_doc"]
+                        category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel"
+                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
                     self.df[
-                        category.name + ":" + subcategory.name + ":non_energy_doc:hydrogen"
-                    ] = self.df[category.name + ":" + subcategory.name + ":non_energy_doc"]
+                        category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen"
+                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
                     # Initial shares
                     # self.df[category.name + ":" + subcategory.name + ":share:total"] = 0.0
                     # self.df[category.name + ":" + subcategory.name + ":share:dropin_fuel"] = 0.0
@@ -390,10 +390,10 @@ class FleetModel(AeromapsModel):
                             # ]
 
                             self.df.loc[
-                                k, category.name + ":" + subcategory.name + ":non_energy_doc"
+                                k, category.name + ":" + subcategory.name + ":doc_non_energy"
                             ] += (
-                                recent_reference_aircraft_non_energy_doc
-                                * (1 + float(aircraft.parameters.non_energy_doc_evolution) / 100)
+                                recent_reference_aircraft_doc_non_energy
+                                * (1 + float(aircraft.parameters.doc_non_energy_evolution) / 100)
                                 * self.df.loc[
                                     k,
                                     category.name
@@ -429,12 +429,12 @@ class FleetModel(AeromapsModel):
                                     category.name
                                     + ":"
                                     + subcategory.name
-                                    + ":non_energy_doc:dropin_fuel",
+                                    + ":doc_non_energy:dropin_fuel",
                                 ] += (
-                                    recent_reference_aircraft_non_energy_doc
+                                    recent_reference_aircraft_doc_non_energy
                                     * (
                                         1
-                                        + float(aircraft.parameters.non_energy_doc_evolution) / 100
+                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
                                     )
                                     * self.df.loc[
                                         k,
@@ -471,12 +471,12 @@ class FleetModel(AeromapsModel):
                                     category.name
                                     + ":"
                                     + subcategory.name
-                                    + ":non_energy_doc:hydrogen",
+                                    + ":doc_non_energy:hydrogen",
                                 ] += (
-                                    recent_reference_aircraft_non_energy_doc
+                                    recent_reference_aircraft_doc_non_energy
                                     * (
                                         1
-                                        + float(aircraft.parameters.non_energy_doc_evolution) / 100
+                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
                                     )
                                     * self.df.loc[
                                         k,
@@ -568,42 +568,42 @@ class FleetModel(AeromapsModel):
         # self.df[var_name] += self.df["Medium Range" + ":energy_consumption"] * 0.351
         # self.df[var_name] += self.df["Long Range" + ":energy_consumption"] * 0.377
 
-    def _compute_mean_non_energy_doc(self):
+    def _compute_mean_doc_non_energy(self):
         for category in self.fleet.categories.values():
             # Mean energy consumption per category
             # Initialization
-            self.df[category.name + ":non_energy_doc:dropin_fuel"] = 0.0
-            self.df[category.name + ":non_energy_doc:hydrogen"] = 0.0
+            self.df[category.name + ":doc_non_energy:dropin_fuel"] = 0.0
+            self.df[category.name + ":doc_non_energy:hydrogen"] = 0.0
             # Calculation
             for subcategory in category.subcategories.values():
                 # TODO: verify aircraft order
                 for k in self.df.index:
                     if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
                         self.df.loc[
-                            k, category.name + ":non_energy_doc:dropin_fuel"
+                            k, category.name + ":doc_non_energy:dropin_fuel"
                         ] += self.df.loc[
                             k,
-                            category.name + ":" + subcategory.name + ":non_energy_doc:dropin_fuel",
+                            category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel",
                         ] / (
                             self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
                         )
                     else:
-                        self.df.loc[k, category.name + ":non_energy_doc:dropin_fuel"] = 0.0
+                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] = 0.0
 
                     if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[k, category.name + ":non_energy_doc:hydrogen"] += self.df.loc[
+                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] += self.df.loc[
                             k,
-                            category.name + ":" + subcategory.name + ":non_energy_doc:hydrogen",
+                            category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen",
                         ] / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
                     else:
-                        self.df.loc[k, category.name + ":non_energy_doc:hydrogen"] = 0.0
+                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] = 0.0
 
             # Mean consumption
             for k in self.df.index:
-                self.df.loc[k, category.name + ":non_energy_doc"] = self.df.loc[
-                    k, category.name + ":non_energy_doc:dropin_fuel"
+                self.df.loc[k, category.name + ":doc_non_energy"] = self.df.loc[
+                    k, category.name + ":doc_non_energy:dropin_fuel"
                 ] * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100) + self.df.loc[
-                    k, category.name + ":non_energy_doc:hydrogen"
+                    k, category.name + ":doc_non_energy:hydrogen"
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
@@ -1126,7 +1126,7 @@ class Aircraft(object):
         self.parameters.consumption_evolution = row[AIRCRAFT_COLUMNS[2]]
         self.parameters.nox_evolution = row[AIRCRAFT_COLUMNS[3]]
         self.parameters.soot_evolution = row[AIRCRAFT_COLUMNS[4]]
-        self.parameters.non_energy_doc_evolution = row[AIRCRAFT_COLUMNS[5]]
+        self.parameters.doc_non_energy_evolution = row[AIRCRAFT_COLUMNS[5]]
         self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
         self.energy_type = row[AIRCRAFT_COLUMNS[7]]
 
@@ -1169,7 +1169,7 @@ class SubCategory(object):
                     aircraft.parameters.consumption_evolution,
                     aircraft.parameters.nox_evolution,
                     aircraft.parameters.soot_evolution,
-                    aircraft.parameters.non_energy_doc_evolution,
+                    aircraft.parameters.doc_non_energy_evolution,
                     aircraft.parameters.cruise_altitude,
                     aircraft.energy_type,
                 ]
@@ -1490,7 +1490,7 @@ class Fleet(object):
             consumption_evolution=-15.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1503,7 +1503,7 @@ class Fleet(object):
             consumption_evolution=-30.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1517,7 +1517,7 @@ class Fleet(object):
             consumption_evolution=-20.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
         )
 
@@ -1532,7 +1532,7 @@ class Fleet(object):
             consumption_evolution=-35.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
         )
 
@@ -1548,7 +1548,7 @@ class Fleet(object):
             consumption_evolution=-15.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1563,7 +1563,7 @@ class Fleet(object):
             consumption_evolution=-30.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1580,7 +1580,7 @@ class Fleet(object):
             consumption_evolution=10.0,
             nox_evolution=0.0,
             soot_evolution=-100.0,
-            non_energy_doc_evolution=10.0,
+            doc_non_energy_evolution=10.0,
             cruise_altitude=12000.0,
         )
 
@@ -1594,7 +1594,7 @@ class Fleet(object):
             consumption_evolution=-15.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1607,7 +1607,7 @@ class Fleet(object):
             consumption_evolution=-30.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1621,7 +1621,7 @@ class Fleet(object):
             consumption_evolution=-15.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1634,7 +1634,7 @@ class Fleet(object):
             consumption_evolution=-30.0,
             nox_evolution=0.0,
             soot_evolution=0.0,
-            non_energy_doc_evolution=0.0,
+            doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
         )
 
@@ -1654,7 +1654,7 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.old_reference_aircraft.non_energy_doc_base = 0.045
+        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
@@ -1662,7 +1662,7 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.energy_per_ask = 84.2 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.recent_reference_aircraft.non_energy_doc_base = 0.045
+        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         if add_examples_aircraft_and_subcategory:
@@ -1741,7 +1741,7 @@ class Fleet(object):
         mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.old_reference_aircraft.non_energy_doc_base = 0.028
+        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.028
         mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
@@ -1749,7 +1749,7 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.recent_reference_aircraft.non_energy_doc_base = 0.028
+        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.028
         mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         if add_examples_aircraft_and_subcategory:
@@ -1769,7 +1769,7 @@ class Fleet(object):
         lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.old_reference_aircraft.non_energy_doc_base = 0.023
+        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.023
         lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
 
         # Recent
@@ -1777,7 +1777,7 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.recent_reference_aircraft.non_energy_doc_base = 0.023
+        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.023
         lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
 
         if add_examples_aircraft_and_subcategory:
