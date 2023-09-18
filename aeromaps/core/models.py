@@ -3,7 +3,7 @@ from aeromaps.models.impacts.costs.operations.average_ops_cost import (
     DropInMeanMfsp,
     PassengerAircraftDocCarbonTax,
     PassengerAircraftDocNonEnergyComplex,
-    PassengerAircraftTotalDoc,
+    PassengerAircraftTotalDoc, PassengerAircraftDocNonEnergySimple,
 )
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 
@@ -251,6 +251,9 @@ models_simple = {
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
     "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
+    "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
+        "passenger_aircraft_doc_non_energy_simple"
+    ),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
