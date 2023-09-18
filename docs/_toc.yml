@@ -20,5 +20,6 @@ chapters:
   sections:
     - file: books/examples_basic
     - file: books/examples_fleet
+    - file: books/examples_joas_application
 - file: books/api
 
