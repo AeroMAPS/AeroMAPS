@@ -643,82 +643,81 @@ carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Stea
 carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Carbon abatement cost (HEFA-FOG) evolution
 carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Carbon abatement cost (HEFA-Others) evolution
 carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution
-ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants
-abatement_potential_atj
-abatement_potential_electrofuel
-abatement_potential_ft_msw
-abatement_potential_ft_others
-abatement_potential_hefa_fog
-abatement_potential_hefa_others
-abatement_potential_hydrogen_electrolysis,
-co2_market_price,
-coal_ccs_efficiency
-coal_ccs_eis_capex
-coal_ccs_eis_fixed_opex
-coal_ccs_h2_capex_cost
-coal_ccs_h2_carbon_tax
-coal_ccs_h2_ccs_cost
-coal_ccs_h2_fuel_cost
-coal_ccs_h2_mfsp_carbon_tax_supplement
-coal_ccs_h2_opex_cost
-coal_ccs_h2_total_cost
-coal_ccs_plant_building_cost
-coal_ccs_plant_building_scenario
-coal_efficiency
-coal_eis_capex
-coal_eis_fixed_opex
-coal_h2_capex_cost
-coal_h2_carbon_tax
-coal_h2_fuel_cost
-coal_h2_mfsp_carbon_tax_supplement
-coal_h2_opex_cost
-coal_h2_total_cost
-coal_market_price
-coal_plant_building_cost
-coal_plant_building_scenario,
-discounted_energy_expenses
-doc_carbon_tax_per_ask_long_range_dropin_fuel
-doc_carbon_tax_per_ask_long_range_hydrogen
-doc_carbon_tax_per_ask_long_range_mean
-doc_carbon_tax_per_ask_mean
-doc_carbon_tax_per_ask_medium_range_dropin_fuel
-doc_carbon_tax_per_ask_medium_range_hydrogen
-doc_carbon_tax_per_ask_medium_range_mean
-doc_carbon_tax_per_ask_short_range_dropin_fuel
-doc_carbon_tax_per_ask_short_range_hydrogen
-doc_carbon_tax_per_ask_short_range_mean
-doc_energy_per_ask_long_range_dropin_fuel
-doc_energy_per_ask_long_range_hydrogen
-doc_energy_per_ask_long_range_mean
-doc_energy_per_ask_mean
-doc_energy_per_ask_medium_range_dropin_fuel
-doc_energy_per_ask_medium_range_hydrogen
-doc_energy_per_ask_medium_range_mean
-doc_energy_per_ask_short_range_dropin_fuel
-doc_energy_per_ask_short_range_hydrogen
-doc_energy_per_ask_short_range_mean
-doc_non_energy_per_ask_long_range_dropin_fuel
-doc_non_energy_per_ask_long_range_hydrogen
-doc_non_energy_per_ask_long_range_mean
-doc_non_energy_per_ask_mean
-doc_non_energy_per_ask_medium_range_dropin_fuel
-doc_non_energy_per_ask_medium_range_hydrogen
-doc_non_energy_per_ask_medium_range_mean
-doc_non_energy_per_ask_short_range_dropin_fuel
-doc_non_energy_per_ask_short_range_hydrogen
-doc_non_energy_per_ask_short_range_mean
-doc_total_per_ask_long_range_dropin_fuel
-doc_total_per_ask_long_range_hydrogen
-doc_total_per_ask_long_range_mean
-doc_total_per_ask_mean
-doc_total_per_ask_medium_range_dropin_fuel
-doc_total_per_ask_medium_range_hydrogen
-doc_total_per_ask_medium_range_mean
-doc_total_per_ask_short_range_dropin_fuel
-doc_total_per_ask_short_range_hydrogen
-doc_total_per_ask_short_range_mean
-dropin_mean_mfsp
-dropin_mfsp_carbon_tax_supplement
+ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants (evolution)
+abatement_potential_atj;Vector;tCO2e;Total carbon abatement potential of ATJ if allocated resource is used to 100% (evolution)
+abatement_potential_electrofuel;Vector;tCO2e;Total carbon abatement potential of Electrofuel if allocated resource is used to 100% (evolution)
+abatement_potential_ft_msw;Vector;tCO2e;Total carbon abatement potential of FT-MSW if allocated resource is used to 100% (evolution)
+abatement_potential_ft_others;Vector;tCO2e;Total carbon abatement potential of FT-Others if allocated resource is used to 100% (evolution)
+abatement_potential_hefa_fog;Vector;tCO2e;Total carbon abatement potential of Hefa-FOG if allocated resource is used to 100% (evolution)
+abatement_potential_hefa_others;Vector;tCO2e;Total carbon abatement potential of Hefa-Others if allocated resource is used to 100% (evolution)
+abatement_potential_hydrogen_electrolysis;Vector;tCO2e;Total carbon abatement potential of hydrogen with electrolysis if allocated resource is used to 100% (evolution)
+co2_market_price;Vector;€/kgCO2e;CO2 market price is used as en input for electrofuel production, evolution (evolution)
+coal_ccs_efficiency;Vector;%;coal coal gasification (with CCS) energy conversion efficiency (evolution for EIS date)
+coal_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+coal_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant EIS date (evolution for EIS date)
+coal_ccs_h2_capex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex
+coal_ccs_h2_carbon_tax;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to carbon tax
+coal_ccs_h2_ccs_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS
+coal_ccs_h2_fuel_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement
+coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg evolution
+coal_ccs_h2_opex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex
+coal_ccs_h2_total_cost;Vector;M€;Annual Coal CCS Hydrogen production cost
+coal_ccs_plant_building_cost;Vector;M€;Annual expenses for Coal CCS plants built each year
+coal_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for Coal CCS plants built each year
+coal_efficiency;Vector;%;coal coal gasification (without CCS) energy conversion efficiency (evolution for EIS date)
+coal_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+coal_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant EIS date (evolution for EIS date)
+coal_h2_capex_cost;Vector;M€;Annual Coal  Hydrogen production cost attributable to Capex
+coal_h2_carbon_tax;Vector;M€;Annual Coal  Hydrogen production cost attributable to carbon tax
+coal_h2_fuel_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Coal procurement
+coal_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal carbon tax per kg evolution
+coal_h2_opex_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Opex
+coal_h2_total_cost;Vector;M€;Annual Coal Hydrogen production cost
+coal_plant_building_cost;Vector;M€;Annual expenses for Coal plants built each year
+coal_plant_building_scenario;Vector;t/day;Annual capacity built for Coal plants built each year
+discounted_energy_expenses;Vector;M€;Total annual expenses for energy, discounted
+doc_carbon_tax_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range drop-in fleet (evolution)
+doc_carbon_tax_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range hydrogen fleet (evolution)
+doc_carbon_tax_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range fleet (evolution)
+doc_carbon_tax_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, total fleet (evolution)
+doc_carbon_tax_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range drop-in fleet (evolution)
+doc_carbon_tax_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range hydrogen fleet (evolution)
+doc_carbon_tax_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range fleet (evolution)
+doc_carbon_tax_per_ask_short_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for short range drop-in fleet (evolution)
+doc_carbon_tax_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for short range hydrogen fleet (evolution)
+doc_carbon_tax_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for short range fleet (evolution)
+doc_energy_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to energy, for long range drop-in fleet (evolution)
+doc_energy_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to energy, for long range hydrogen fleet (evolution)
+doc_energy_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost attributable to energy, for long range fleet (evolution)
+doc_energy_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to energy, total fleet (evolution)
+doc_energy_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to energy, for medium range drop-in fleet (evolution)
+doc_energy_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to energy, for medium range hydrogen fleet (evolution)
+doc_energy_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost attributable to energy, for medium range fleet (evolution)
+doc_energy_per_ask_short_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to energy, for short range drop-in fleet (evolution)
+doc_energy_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to energy, for short range hydrogen fleet (evolution)
+doc_energy_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost attributable to energy, for short range fleet (evolution)
+doc_non_energy_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for long range drop-in fleet (evolution)
+doc_non_energy_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for long range hydrogen fleet (evolution)
+doc_non_energy_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for long range fleet (evolution)
+doc_non_energy_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, total fleet (evolution)
+doc_non_energy_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for medium range drop-in fleet (evolution)
+doc_non_energy_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for medium range hydrogen fleet (evolution)
+doc_non_energy_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for medium range fleet (evolution)
+doc_non_energy_per_ask_short_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for short range drop-in fleet (evolution)
+doc_non_energy_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for short range hydrogen fleet (evolution)
+doc_non_energy_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost attributable to non-energy expenses, for short range fleet (evolution)
+doc_total_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating cost for long range drop-in fleet (evolution)
+doc_total_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost for long range hydrogen fleet (evolution)
+doc_total_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost for long range fleet (evolution)
+doc_total_per_ask_mean;Vector;€/ASK;Direct operating cost for total fleet (evolution)
+doc_total_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost for medium range drop-in fleet (evolution)
+doc_total_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost for medium range hydrogen fleet (evolution)
+doc_total_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost for medium range fleet (evolution)
+doc_total_per_ask_short_range_dropin_fuel;Vector;€/ASK;Direct operating cost for short range drop-in fleet (evolution)
+doc_total_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost for short range hydrogen fleet (evolution)
+doc_total_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost for short range fleet (evolution)
+dropin_mean_mfsp;Vector;€/L;Drop-in fuel average MFSP evolution (market price for kerosene)
+dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L evolution
 electricity_market_price
 electrofuel_abatement_cost
 electrofuel_avg_cost_per_l
@@ -746,30 +745,29 @@ electrolysis_h2_opex_cost
 electrolysis_h2_total_cost
 electrolysis_plant_building_cost
 electrolysis_plant_building_scenario
-gas_ccs_efficiency
-gas_ccs_eis_capex
-gas_ccs_eis_fixed_opex
-gas_ccs_h2_capex_cost
-gas_ccs_h2_carbon_tax
-gas_ccs_h2_ccs_cost
-gas_ccs_h2_fuel_cost
-gas_ccs_h2_mfsp_carbon_tax_supplement
-gas_ccs_h2_opex_cost
-gas_ccs_h2_total_cost
-gas_ccs_plant_building_cost
-gas_ccs_plant_building_scenario
-gas_efficiency
-gas_eis_capex
-gas_eis_fixed_opex
-gas_h2_capex_cost
-gas_h2_carbon_tax
-gas_h2_fuel_cost
-gas_h2_mfsp_carbon_tax_supplement
-gas_h2_opex_cost
-gas_h2_total_cost
-gas_market_price
-gas_plant_building_cost
-gas_plant_building_scenario
+gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date)
+gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date)
+gas_ccs_h2_capex_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
+gas_ccs_h2_carbon_tax;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon tax
+gas_ccs_h2_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to CCS
+gas_ccs_h2_fuel_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to gas procurement
+gas_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas_ccs carbon tax per kg evolution
+gas_ccs_h2_opex_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to Opex
+gas_ccs_h2_total_cost;Vector;M€;Annual gas_ccs Hydrogen production cost
+gas_ccs_plant_building_cost;Vector;M€;Annual expenses for gas_ccs plants built each year
+gas_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for gas_ccs plants built each year
+gas_efficiency;Vector;%;gas steam methane reforming (without CCS) energy conversion efficiency (evolution for EIS date)
+gas_eis_capex;Vector;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+gas_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (without CCS) plant EIS date (evolution for EIS date)
+gas_h2_capex_cost;Vector;M€;Annual gas  Hydrogen production cost attributable to Capex
+gas_h2_carbon_tax;Vector;M€;Annual gas  Hydrogen production cost attributable to carbon tax
+gas_h2_fuel_cost;Vector;M€;Annual gas Hydrogen production cost attributable to gas procurement
+gas_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas carbon tax per kg evolution
+gas_h2_opex_cost;Vector;M€;Annual gas Hydrogen production cost attributable to Opex
+gas_h2_total_cost;Vector;M€;Annual gas Hydrogen production cost
+gas_plant_building_cost;Vector;M€;Annual expenses for gas plants built each year
+gas_plant_building_scenario;Vector;t/day;Annual capacity built for gas plants built each year
 h2_avg_carbon_tax_per_kg
 h2_avg_cost_per_kg
 h2_avg_cost_per_kg_coal
