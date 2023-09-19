@@ -2,6 +2,7 @@
 # @Author : a.salgas
 # @File : costs.py
 # @Software: PyCharm
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -251,7 +252,7 @@ class ScenarioEnergyExpensesPlot:
             "_nolegend_",
             "Bio - FT Others",
             "_nolegend_",
-            "Bio - FT Municipal Waste",
+            "Bio - FT MSW",
             "_nolegend_",
             "Electrofuel",
             "_nolegend_",
@@ -265,7 +266,7 @@ class ScenarioEnergyExpensesPlot:
             "_nolegend_",
             "Coal $H_2$ ",
             "_nolegend_",
-            "Hydrogen Logistics*",
+            "$H_2$ liq. & transport",
         ]
 
         stacks = self.annual_energy_expenses
@@ -302,8 +303,12 @@ class ScenarioEnergyExpensesPlot:
 
         self.ax.set_xlim(2020, 2050)
 
+        warnings.filterwarnings("ignore")
+
         primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
         self.ax.add_artist(primary_legend)
+
+        warnings.resetwarnings()
 
         # Create hatch legend manually
         hatch_patch = mpatches.Patch(facecolor="white", hatch="||", edgecolor="black")
@@ -399,7 +404,7 @@ class ScenarioEnergyExpensesPlot:
             "_nolegend_",
             "Bio - FT Others",
             "_nolegend_",
-            "Bio - FT Municipal Waste",
+            "Bio - FT MSW",
             "_nolegend_",
             "Electrofuel",
             "_nolegend_",
@@ -413,7 +418,7 @@ class ScenarioEnergyExpensesPlot:
             "_nolegend_",
             "Coal $H_2$ ",
             "_nolegend_",
-            "Hydrogen Logistics*",
+            "$H_2$ liq. & transport",
         ]
 
         stacks = self.annual_energy_expenses
@@ -450,10 +455,13 @@ class ScenarioEnergyExpensesPlot:
 
         self.ax.set_xlim(2020, 2050)
 
-        primary_legend = self.ax.legend(
-            primary_legend_entries, title="Pathways", loc="upper left", prop={"size": 7}
-        )
+
+        warnings.filterwarnings("ignore")
+
+        primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
         self.ax.add_artist(primary_legend)
+
+        warnings.resetwarnings()
 
         # Create hatch legend manually
         hatch_patch = mpatches.Patch(facecolor="white", hatch="||", edgecolor="black")
