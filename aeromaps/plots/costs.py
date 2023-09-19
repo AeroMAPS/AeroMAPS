@@ -1473,3 +1473,244 @@ class DropInMACC:
 
         self.fig.tight_layout()
         self.fig.canvas.draw()
+
+
+
+class DOCEvolutionBreakdown:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        self.ax.plot(
+            self.prospective_years,
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            linestyle="-",
+            linewidth=1,
+        )
+
+        (self.line_total,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
+            color="blue",
+            linestyle="-",
+            label="Total DOC",
+            linewidth=2,
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            label="Non-energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            color="cornflowerblue",
+            label="Energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            color="lightsteelblue",
+            label="Carbon tax",
+        )
+
+        self.ax.grid()
+        self.ax.set_title("Direct Operating Costs breakdown")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Direct Operating Costs [€/ASK]")
+        self.ax = plt.gca()
+        self.ax.legend()
+        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
+        # self.ax.set_ylim(0,)
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.ax.collections.clear()
+
+        self.line_total.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            label="Non-energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            color="cornflowerblue",
+            label="Energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"] + self.df.loc[self.prospective_years,
+                "doc_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            color="lightsteelblue",
+            label="Carbon tax",
+        )
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
+class DOCEvolutionCategory:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+
+
+        (self.line_srdi,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"],
+            linestyle="-",
+            label="Short range-D.in",
+            linewidth=2,
+        )
+
+        (self.line_mrdi,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_dropin_fuel"],
+            linestyle="-",
+            label="Medium range-D.in",
+            linewidth=2,
+        )
+
+        (self.line_lrdi,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_dropin_fuel"],
+            linestyle="-",
+            label="Long range-D.in",
+            linewidth=2,
+        )
+
+        (self.line_srh,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_hydrogen"],
+            linestyle="-",
+            label="Short range-H2",
+            linewidth=2,
+        )
+
+        (self.line_mrh,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_hydrogen"],
+            linestyle="-",
+            label="Medium range-H2",
+            linewidth=2,
+        )
+
+        (self.line_lrh,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_hydrogen"],
+            linestyle="-",
+            label="Long range-H2",
+            linewidth=2,
+        )
+
+        (self.line_tot,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
+            color="red",
+            linestyle="-",
+            label="Fleet average",
+            linewidth=2,
+        )
+
+        self.ax.grid(axis="y")
+        self.ax.set_title("Average direct operating cost by aircraft category")
+        self.ax.set_ylabel("€ / ASK")
+        self.ax = plt.gca()
+        self.ax.legend(title='Direct Operating Cost')
+        self.ax.set_xlim(2020, 2050)
+        # #
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        self.fig.canvas.layout.width = "auto"
+        self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, df_data):
+
+        self.ax.collections.clear()
+
+        self.df = df_data["vector_outputs"]
+
+        self.line_lrh.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_hydrogen"]
+        )
+
+        self.line_lrdi.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_dropin_fuel"]
+        )
+
+        self.line_mrh.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_hydrogen"]
+        )
+
+        self.line_mrdi.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_dropin_fuel"]
+        )
+
+        self.line_srh.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_hydrogen"]
+        )
+
+        self.line_srdi.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"]
+        )
+
+        self.line_tot.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+        )
+
+
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()

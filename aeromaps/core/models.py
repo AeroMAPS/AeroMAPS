@@ -254,6 +254,7 @@ models_simple = {
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
         "passenger_aircraft_doc_non_energy_simple"
     ),
+    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
