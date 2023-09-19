@@ -27,9 +27,9 @@ class LiquidHydrogenCost(AeromapsModel):
         hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-        electrolyser_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrolyser_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolyser_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_capex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
         gas_ccs_eis_capex: pd.Series = pd.Series(dtype="float64"),
         gas_ccs_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
@@ -147,9 +147,9 @@ class LiquidHydrogenCost(AeromapsModel):
             electrolysis_h2_opex_cost,
             electrolysis_h2_elec_cost,
         ) = self.electrolysis_computation(
-            electrolyser_eis_capex,
-            electrolyser_eis_fixed_opex,
-            electrolyser_eis_var_opex,
+            electrolysis_h2_eis_capex,
+            electrolysis_h2_eis_fixed_opex,
+            electrolysis_h2_eis_var_opex,
             electrolysis_efficiency,
             electricity_market_price,
             energy_consumption_hydrogen,
@@ -420,7 +420,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
         # €/kg
 
-        total_h2_capex = (
+        total_h2_building_cost = (
             electrolysis_plant_building_cost.fillna(0)
             + gas_ccs_plant_building_cost.fillna(0)
             + gas_plant_building_cost.fillna(0)
@@ -429,7 +429,7 @@ class LiquidHydrogenCost(AeromapsModel):
             + liquefaction_plant_building_cost.fillna(0)
         )
 
-        self.df.loc[:, "total_h2_capex"] = total_h2_capex
+        self.df.loc[:, "total_h2_building_cost"] = total_h2_building_cost
         # M€
 
         # Compute Cost premiums, abatements costs and carbon tax for each pathway
@@ -732,7 +732,7 @@ class LiquidHydrogenCost(AeromapsModel):
             h2_avg_cost_per_kg_electrolysis,
             total_hydrogen_supply_cost,
             h2_avg_cost_per_kg,
-            total_h2_capex,
+            total_h2_building_cost,
             h2_cost_premium_electrolysis,
             carbon_abatement_cost_h2_electrolysis,
             electrolysis_h2_carbon_tax,
@@ -788,9 +788,9 @@ class LiquidHydrogenCost(AeromapsModel):
 
     @staticmethod
     def electrolysis_computation(
-        electrolyser_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrolyser_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolyser_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_capex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
         electricity_market_price: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
@@ -836,9 +836,9 @@ class LiquidHydrogenCost(AeromapsModel):
                     year,
                     electricity_market_price,
                     electricity_load_factor,
-                    electrolyser_eis_capex,
-                    electrolyser_eis_fixed_opex,
-                    electrolyser_eis_var_opex,
+                    electrolysis_h2_eis_capex,
+                    electrolysis_h2_eis_fixed_opex,
+                    electrolysis_h2_eis_var_opex,
                     electrolysis_efficiency,
                 )
 
@@ -851,7 +851,7 @@ class LiquidHydrogenCost(AeromapsModel):
                 )  # capacity to build in t/day production, taking into account load_factor
 
                 electrolyser_capex_year = (
-                    electrolyser_capacity_to_build * electrolyser_eis_capex[year] / 1000
+                    electrolyser_capacity_to_build * electrolysis_h2_eis_capex[year] / 1000
                 )  # electrolyzer capex is in €/kg/day or m€/ton/day ==> M€/ton/day
                 plant_building_cost[year] = electrolyser_capex_year
                 plant_building_scenario[
@@ -1366,11 +1366,11 @@ class ElectrolyserCapex(AeromapsModel):
 
         capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolyser_eis_capex"] = capex_function(k)
+            self.df.loc[k, "electrolysis_h2_eis_capex"] = capex_function(k)
 
-        electrolyser_eis_capex = self.df.loc[:, "electrolyser_eis_capex"]
+        electrolysis_h2_eis_capex = self.df.loc[:, "electrolysis_h2_eis_capex"]
 
-        return electrolyser_eis_capex
+        return electrolysis_h2_eis_capex
 
 
 class ElectrolyserFixedOpex(AeromapsModel):
@@ -1397,11 +1397,11 @@ class ElectrolyserFixedOpex(AeromapsModel):
 
         fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolyser_eis_fixed_opex"] = fixed_opex_function(k)
+            self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = fixed_opex_function(k)
 
-        electrolyser_eis_fixed_opex = self.df.loc[:, "electrolyser_eis_fixed_opex"]
+        electrolysis_h2_eis_fixed_opex = self.df.loc[:, "electrolysis_h2_eis_fixed_opex"]
 
-        return electrolyser_eis_fixed_opex
+        return electrolysis_h2_eis_fixed_opex
 
 
 class ElectrolyserVarOpex(AeromapsModel):
@@ -1428,11 +1428,11 @@ class ElectrolyserVarOpex(AeromapsModel):
 
         var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolyser_eis_var_opex"] = var_opex_function(k)
+            self.df.loc[k, "electrolysis_h2_eis_var_opex"] = var_opex_function(k)
 
-        electrolyser_eis_var_opex = self.df.loc[:, "electrolyser_eis_var_opex"]
+        electrolysis_h2_eis_var_opex = self.df.loc[:, "electrolysis_h2_eis_var_opex"]
 
-        return electrolyser_eis_var_opex
+        return electrolysis_h2_eis_var_opex
 
 
 ########## Deprecated for the time being, might be reactivated. #####################

@@ -100,14 +100,14 @@ class ElectrofuelCost(AeromapsModel):
         self.df.loc[:, "electrofuel_avg_cost_per_l"] = electrofuel_avg_cost_per_l
 
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
-        electrofuel_abatement_cost = (
+        carbon_abatement_cost_electrofuel = (
             electrofuel_cost_premium
             * 1000000
             / energy_consumption_electrofuel
             / (kerosene_emission_factor - electrofuel_emission_factor)
             * 1000000
         )
-        self.df.loc[:, "electrofuel_abatement_cost"] = electrofuel_abatement_cost
+        self.df.loc[:, "carbon_abatement_cost_electrofuel"] = carbon_abatement_cost_electrofuel
 
         electrofuel_carbon_tax = (
             energy_consumption_electrofuel
@@ -137,7 +137,7 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_co2_cost,
             electrofuel_cost_premium,
             electrofuel_avg_cost_per_l,
-            electrofuel_abatement_cost,
+            carbon_abatement_cost_electrofuel,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
         )

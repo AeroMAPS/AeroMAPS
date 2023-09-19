@@ -83,21 +83,21 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
         doc_non_energy_per_ask_long_range_mean = (
             doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
             + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_medium_range_mean = (
             doc_non_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
             + doc_non_energy_per_ask_medium_range_dropin_fuel
             * ask_medium_range_dropin_fuel_share
             / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_short_range_mean = (
             doc_non_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
             + doc_non_energy_per_ask_short_range_dropin_fuel
             * ask_short_range_dropin_fuel_share
             / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_mean = (
             doc_non_energy_per_ask_long_range_mean * ask_long_range
@@ -243,21 +243,21 @@ class PassengerAircraftDocNonEnergySimple(AeromapsModel):
         doc_non_energy_per_ask_long_range_mean = (
                 doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
                 + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_medium_range_mean = (
                 doc_non_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
                 + doc_non_energy_per_ask_medium_range_dropin_fuel
                 * ask_medium_range_dropin_fuel_share
                 / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_short_range_mean = (
                 doc_non_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
                 + doc_non_energy_per_ask_short_range_dropin_fuel
                 * ask_short_range_dropin_fuel_share
                 / 100
-        ).fillna(0)
+        )
 
         doc_non_energy_per_ask_mean = (
                                               doc_non_energy_per_ask_long_range_mean * ask_long_range
@@ -333,38 +333,54 @@ class PassengerAircraftDocEnergy(AeromapsModel):
         # LH2 specific energy (MJ/kg)
         hydrogen_specific_energy = 119.93
 
-        doc_energy_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_mean_mfsp / fuel_lhv
-        ).fillna(0)
-        doc_energy_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * h2_avg_cost_per_kg / hydrogen_specific_energy
-        ).fillna(0)
+        doc_energy_per_ask_long_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year,self.end_year+1))
+        doc_energy_per_ask_long_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
+        doc_energy_per_ask_medium_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
+        doc_energy_per_ask_medium_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
+        doc_energy_per_ask_short_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
+        doc_energy_per_ask_short_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
+        for k in range(self.historic_start_year, self.end_year+1):
+            if ask_long_range_dropin_fuel_share[k]>0:
+                doc_energy_per_ask_long_range_dropin_fuel[k] = (
+                    energy_per_ask_long_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                )
+            if ask_long_range_hydrogen_share[k]>0:
+                doc_energy_per_ask_long_range_hydrogen[k] = (
+                    energy_per_ask_long_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                )
+            if ask_medium_range_dropin_fuel_share[k]>0:
+                doc_energy_per_ask_medium_range_dropin_fuel[k] = (
+                        energy_per_ask_medium_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                )
+            if ask_medium_range_hydrogen_share[k]>0:
+                doc_energy_per_ask_medium_range_hydrogen[k] = (
+                        energy_per_ask_medium_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                )
+            if ask_short_range_dropin_fuel_share[k]>0:
+                doc_energy_per_ask_short_range_dropin_fuel[k] = (
+                        energy_per_ask_short_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                )
+            if ask_short_range_hydrogen_share[k]>0:
+                doc_energy_per_ask_short_range_hydrogen[k] = (
+                        energy_per_ask_short_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                )
+
         doc_energy_per_ask_long_range_mean = (
-            doc_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
-            + doc_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
-        ).fillna(0)
+            doc_energy_per_ask_long_range_hydrogen.fillna(0) * ask_long_range_hydrogen_share / 100
+            + doc_energy_per_ask_long_range_dropin_fuel.fillna(0) * ask_long_range_dropin_fuel_share / 100
+        )
 
-        doc_energy_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_mean_mfsp / fuel_lhv
-        ).fillna(0)
-        doc_energy_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * h2_avg_cost_per_kg / hydrogen_specific_energy
-        ).fillna(0)
+
         doc_energy_per_ask_medium_range_mean = (
-            doc_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
-            + doc_energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel_share / 100
-        ).fillna(0)
+            doc_energy_per_ask_medium_range_hydrogen.fillna(0) * ask_medium_range_hydrogen_share / 100
+            + doc_energy_per_ask_medium_range_dropin_fuel.fillna(0) * ask_medium_range_dropin_fuel_share / 100
+        )
 
-        doc_energy_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_mean_mfsp / fuel_lhv
-        ).fillna(0)
-        doc_energy_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen * h2_avg_cost_per_kg / hydrogen_specific_energy
-        ).fillna(0)
+
         doc_energy_per_ask_short_range_mean = (
-            doc_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
-            + doc_energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel_share / 100
-        ).fillna(0)
+            doc_energy_per_ask_short_range_hydrogen.fillna(0) * ask_short_range_hydrogen_share / 100
+            + doc_energy_per_ask_short_range_dropin_fuel.fillna(0) * ask_short_range_dropin_fuel_share / 100
+        )
 
         doc_energy_per_ask_mean = (
             doc_energy_per_ask_long_range_mean * ask_long_range
@@ -450,47 +466,60 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         # LH2 specific energy (MJ/kg)
         hydrogen_specific_energy = 119.93
 
-        doc_carbon_tax_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_mfsp_carbon_tax_supplement / fuel_lhv
-        ).fillna(0)
+        doc_carbon_tax_per_ask_long_range_dropin_fuel = pd.Series(np.nan,
+                                                              range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_long_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_medium_range_dropin_fuel = pd.Series(np.nan,
+                                                                range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_medium_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_short_range_dropin_fuel = pd.Series(np.nan,
+                                                               range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_short_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
+        for k in range(self.historic_start_year, self.end_year + 1):
+            if ask_long_range_dropin_fuel_share[k] > 0:
+                doc_carbon_tax_per_ask_long_range_dropin_fuel[k] = (
+                        energy_per_ask_long_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                )
+            if ask_long_range_hydrogen_share[k] > 0:
+                doc_carbon_tax_per_ask_long_range_hydrogen[k] = (
+                        energy_per_ask_long_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                )
+            if ask_medium_range_dropin_fuel_share[k] > 0:
+                doc_carbon_tax_per_ask_medium_range_dropin_fuel[k] = (
+                        energy_per_ask_medium_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                )
+            if ask_medium_range_hydrogen_share[k] > 0:
+                doc_carbon_tax_per_ask_medium_range_hydrogen[k] = (
+                        energy_per_ask_medium_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                )
+            if ask_short_range_dropin_fuel_share[k] > 0:
+                doc_carbon_tax_per_ask_short_range_dropin_fuel[k] = (
+                        energy_per_ask_short_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                )
+            if ask_short_range_hydrogen_share[k] > 0:
+                doc_carbon_tax_per_ask_short_range_hydrogen[k] = (
+                        energy_per_ask_short_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                )
 
-        doc_carbon_tax_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * h2_avg_carbon_tax_per_kg / hydrogen_specific_energy
-        ).fillna(0)
         doc_carbon_tax_per_ask_long_range_mean = (
-            doc_carbon_tax_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
-            + doc_carbon_tax_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
-        ).fillna(0)
+            doc_carbon_tax_per_ask_long_range_hydrogen.fillna(0) * ask_long_range_hydrogen_share / 100
+            + doc_carbon_tax_per_ask_long_range_dropin_fuel.fillna(0) * ask_long_range_dropin_fuel_share / 100
+        )
 
-        doc_carbon_tax_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_mfsp_carbon_tax_supplement / fuel_lhv
-        ).fillna(0)
-        doc_carbon_tax_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen
-            * h2_avg_carbon_tax_per_kg
-            / hydrogen_specific_energy
-        ).fillna(0)
+
         doc_carbon_tax_per_ask_medium_range_mean = (
-            doc_carbon_tax_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
-            + doc_carbon_tax_per_ask_medium_range_dropin_fuel
+            doc_carbon_tax_per_ask_medium_range_hydrogen.fillna(0) * ask_medium_range_hydrogen_share / 100
+            + doc_carbon_tax_per_ask_medium_range_dropin_fuel.fillna(0)
             * ask_medium_range_dropin_fuel_share
             / 100
-        ).fillna(0)
+        )
 
-        doc_carbon_tax_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_mfsp_carbon_tax_supplement / fuel_lhv
-        ).fillna(0)
-        doc_carbon_tax_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen
-            * h2_avg_carbon_tax_per_kg
-            / hydrogen_specific_energy
-        ).fillna(0)
         doc_carbon_tax_per_ask_short_range_mean = (
-            doc_carbon_tax_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
-            + doc_carbon_tax_per_ask_short_range_dropin_fuel
+            doc_carbon_tax_per_ask_short_range_hydrogen.fillna(0) * ask_short_range_hydrogen_share / 100
+            + doc_carbon_tax_per_ask_short_range_dropin_fuel.fillna(0)
             * ask_short_range_dropin_fuel_share
             / 100
-        ).fillna(0)
+        )
 
         doc_carbon_tax_per_ask_mean = (
             doc_carbon_tax_per_ask_long_range_mean * ask_long_range

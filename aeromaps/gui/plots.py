@@ -55,7 +55,7 @@ from aeromaps.plots.costs import (
     DiscountEffect,
     ScenarioEnergyCarbonTaxPlot,
     ScenarioEnergyUnitCostWithCarbonTaxPlot,
-    DropInMACC,
+    DropInMACC, DOCEvolutionBreakdown, DOCEvolutionCategory,
 )
 
 # Left plot
@@ -111,4 +111,6 @@ plot_3 = {
     "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "Effect of the discount rate on total energy costs": DiscountEffect,
     "Marginal abatement cost curve from drop in fuels": DropInMACC,
+    "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
+    "Direct Operating Cost per aircraft category":DOCEvolutionCategory,
 }
