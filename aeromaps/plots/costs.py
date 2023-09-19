@@ -1185,7 +1185,7 @@ class DropInMACC:
             self.df.carbon_abatement_cost_atj[year],
             self.df.carbon_abatement_cost_ft_msw[year],
             self.df.carbon_abatement_cost_ft_others[year],
-            self.df.electrofuel_abatement_cost[year],
+            self.df.carbon_abatement_cost_electrofuel[year],
         ]
 
         colors = ["#ee9b00", "#ffbf47", "#bb3e03", "#097223", "#0c9e30", "#828782"]
@@ -1369,7 +1369,7 @@ class DropInMACC:
             self.df.carbon_abatement_cost_atj[year],
             self.df.carbon_abatement_cost_ft_msw[year],
             self.df.carbon_abatement_cost_ft_others[year],
-            self.df.electrofuel_abatement_cost[year],
+            self.df.carbon_abatement_cost_electrofuel[year],
         ]
 
         colors = ["#ee9b00", "#ffbf47", "#bb3e03", "#097223", "#0c9e30", "#828782"]

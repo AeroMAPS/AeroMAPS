@@ -536,10 +536,10 @@ liquefier_capex_2030;Float;€/(kg/day);Capital expenditures for liquefaction pl
 liquefier_capex_2040;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2040 in € per kg/day of nominal hydrogen production capacity
 liquefier_capex_2050;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2050 in € per kg/day of nominal hydrogen production capacity
 transport_cost_ratio;Float;%;Extra cost attributed to new hydrogen logistics
-electrofuel_capex_2020;Capital expenditures for electrofuel plant building in 2020 in € per kg/day of nominal hydrogen production capacity
-electrofuel_capex_2030;Capital expenditures for electrofuel plant building in 2030 in € per kg/day of nominal hydrogen production capacity
-electrofuel_capex_2040;Capital expenditures for electrofuel plant building in 2040 in € per kg/day of nominal hydrogen production capacity
-electrofuel_capex_2050;Capital expenditures for electrofuel plant building in 2050 in € per kg/day of nominal hydrogen production capacity
+electrofuel_capex_2020;Capital expenditures for electrofuel plant building in 2020 in € per kg/day of nominal efuel production capacity
+electrofuel_capex_2030;Capital expenditures for electrofuel plant building in 2030 in € per kg/day of nominal efuel production capacity
+electrofuel_capex_2040;Capital expenditures for electrofuel plant building in 2040 in € per kg/day of nominal efuel production capacity
+electrofuel_capex_2050;Capital expenditures for electrofuel plant building in 2050 in € per kg/day of nominal efuel production capacity
 electrofuel_fixed_opex_2020;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2020
 electrofuel_fixed_opex_2030;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2030
 electrofuel_fixed_opex_2040;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2040
@@ -659,7 +659,7 @@ coal_ccs_h2_capex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attr
 coal_ccs_h2_carbon_tax;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to carbon tax
 coal_ccs_h2_ccs_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS
 coal_ccs_h2_fuel_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement
-coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg evolution
+coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg of h2 (evolution)
 coal_ccs_h2_opex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex
 coal_ccs_h2_total_cost;Vector;M€;Annual Coal CCS Hydrogen production cost
 coal_ccs_plant_building_cost;Vector;M€;Annual expenses for Coal CCS plants built each year
@@ -670,7 +670,7 @@ coal_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expendit
 coal_h2_capex_cost;Vector;M€;Annual Coal  Hydrogen production cost attributable to Capex
 coal_h2_carbon_tax;Vector;M€;Annual Coal  Hydrogen production cost attributable to carbon tax
 coal_h2_fuel_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Coal procurement
-coal_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal carbon tax per kg evolution
+coal_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal carbon tax per kg of h2 (evolution)
 coal_h2_opex_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Opex
 coal_h2_total_cost;Vector;M€;Annual Coal Hydrogen production cost
 coal_plant_building_cost;Vector;M€;Annual expenses for Coal plants built each year
@@ -717,34 +717,32 @@ doc_total_per_ask_short_range_dropin_fuel;Vector;€/ASK;Direct operating cost f
 doc_total_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost for short range hydrogen fleet (evolution)
 doc_total_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost for short range fleet (evolution)
 dropin_mean_mfsp;Vector;€/L;Drop-in fuel average MFSP evolution (market price for kerosene)
-dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L evolution
-electricity_market_price
-electrofuel_abatement_cost
-electrofuel_avg_cost_per_l
-electrofuel_capex_cost
-electrofuel_carbon_tax
-electrofuel_co2_cost
-electrofuel_cost_premium
-electrofuel_eis_capex
-electrofuel_eis_fixed_opex
-electrofuel_eis_specific_co2
-electrofuel_eis_var_opex
-electrofuel_elec_cost
-electrofuel_emission_factor
-electrofuel_hydrogen_efficiency
-electrofuel_mfsp_carbon_tax_supplement
-electrofuel_opex_cost
-electrofuel_plant_building_cost
-electrofuel_plant_building_scenario
-electrofuel_total_cost
-electrolysis_h2_capex_cost
-electrolysis_h2_carbon_tax
-electrolysis_h2_elec_cost
-electrolysis_h2_mfsp_carbon_tax_supplement
-electrolysis_h2_opex_cost
-electrolysis_h2_total_cost
-electrolysis_plant_building_cost
-electrolysis_plant_building_scenario
+dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L (evolution)
+electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution)
+carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Carbon abatement cost for electrofuel (evolution)
+electrofuel_avg_cost_per_l;Vector;€/L;Average electrofuel production cost year by year (evolution)
+electrofuel_capex_cost;Vector;M€;Annual electrofuel production cost attributable to Capex
+electrofuel_carbon_tax;Vector;M€;Annual electrofuel production cost attributable to carbon tax
+electrofuel_co2_cost;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
+electrofuel_cost_premium;Vector;M€;Electrofuel cost premium over fossil kerosene (without carbon tax)
+electrofuel_eis_capex;Vector;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity (evolution for EIS date)
+electrofuel_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant EIS date (evolution for EIS date)
+electrofuel_eis_specific_co2;Vector;kgCO2/kgfuel;Specific CO2 consumption (evolution for EIS date)
+electrofuel_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrofuel plant EIS date (evolution for EIS date)
+electrofuel_elec_cost;Vector;M€;Annual electrofuel production cost attributable to electricity procurement
+electrofuel_mfsp_carbon_tax_supplement;Vector;€/L;Electrofuel carbon tax per L evolution
+electrofuel_opex_cost;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
+electrofuel_plant_building_cost;Vector;M€;Annual expenses for electrofuel plants built each year
+electrofuel_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year
+electrofuel_total_cost;Vector;M€;Annual electrofuel total production cost
+electrolysis_h2_capex_cost;Vector;M€;Annual H2 electrolysis production cost attributable to Capex
+electrolysis_h2_carbon_tax;Vector;M€;Annual H2 electrolysis production cost attributable to carbon tax
+electrolysis_h2_elec_cost;Vector;M€;Annual H2 electrolysis production cost attributable to electricity procurement
+electrolysis_h2_mfsp_carbon_tax_supplement;Vector;€/kg;H2 electrolysis carbon tax per kg evolution
+electrolysis_h2_opex_cost;Vector;M€;Annual H2 electrolysis production cost attributable to operational expenditures (other than electricity procurement)
+electrolysis_h2_total_cost;Vector;M€;Annual h2 electrolysis total production cost
+electrolysis_plant_building_cost;Vector;M€;Annual expenses for electrolysis plants built each year
+electrolysis_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year
 gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date)
 gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
 gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date)
@@ -752,7 +750,7 @@ gas_ccs_h2_capex_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attri
 gas_ccs_h2_carbon_tax;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon tax
 gas_ccs_h2_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to CCS
 gas_ccs_h2_fuel_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to gas procurement
-gas_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas_ccs carbon tax per kg evolution
+gas_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas_ccs hydrogen carbon tax per kg of h2 (evolution)
 gas_ccs_h2_opex_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to Opex
 gas_ccs_h2_total_cost;Vector;M€;Annual gas_ccs Hydrogen production cost
 gas_ccs_plant_building_cost;Vector;M€;Annual expenses for gas_ccs plants built each year
@@ -763,52 +761,50 @@ gas_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditu
 gas_h2_capex_cost;Vector;M€;Annual gas  Hydrogen production cost attributable to Capex
 gas_h2_carbon_tax;Vector;M€;Annual gas  Hydrogen production cost attributable to carbon tax
 gas_h2_fuel_cost;Vector;M€;Annual gas Hydrogen production cost attributable to gas procurement
-gas_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas carbon tax per kg evolution
+gas_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas hydrogen carbon tax per kg of h2 (evolution)
 gas_h2_opex_cost;Vector;M€;Annual gas Hydrogen production cost attributable to Opex
 gas_h2_total_cost;Vector;M€;Annual gas Hydrogen production cost
 gas_plant_building_cost;Vector;M€;Annual expenses for gas plants built each year
 gas_plant_building_scenario;Vector;t/day;Annual capacity built for gas plants built each year
-h2_avg_carbon_tax_per_kg
-h2_avg_cost_per_kg
-h2_avg_cost_per_kg_coal
-h2_avg_cost_per_kg_coal_ccs
-h2_avg_cost_per_kg_electrolysis
-h2_avg_cost_per_kg_gas
-h2_avg_cost_per_kg_gas_ccs
-h2_cost_premium_coal
-h2_cost_premium_coal_ccs
-h2_cost_premium_electrolysis
-h2_cost_premium_gas
-h2_cost_premium_gas_ccs
-kerosene_carbon_tax_cost
-kerosene_cost
-kerosene_emission_factor
-kerosene_market_price
-kerosene_price_supplement_carbon_tax
-liquefaction_efficiency
-liquefaction_h2_capex_cost
-liquefaction_h2_elec_cost
-liquefaction_h2_opex_cost
-liquefaction_h2_total_cost
-liquefaction_plant_building_cost
-liquefaction_plant_building_scenario
-liquefier_eis_capex
-non_discounted_BAU_energy_expenses
-non_discounted_energy_cost_premium
-non_discounted_energy_expenses
-plant_building_cost_atj
-plant_building_cost_ft_msw
-plant_building_cost_ft_others
-plant_building_cost_hefa_fog
-plant_building_cost_hefa_others
-plant_building_scenario_atj
-plant_building_scenario_ft_msw
-plant_building_scenario_ft_others
-plant_building_scenario_hefa_fog
-plant_building_scenario_hefa_others
-electrolyser_eis_capex
-electrolyser_eis_fixed_opex
-electrolyser_eis_var_opex
-total_h2_capex
-total_hydrogen_supply_cost
-transport_h2_total_cost
+h2_avg_carbon_tax_per_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
+h2_avg_cost_per_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
+h2_avg_cost_per_kg_coal;Vector;€/kg;Average coal gasification (without ccs) hydrogen MFSP, without carbon tax (evolution)
+h2_avg_cost_per_kg_coal_ccs;Vector;€/kg;Average coal gasification (with ccs) hydrogen MFSP, without carbon tax (evolution)
+h2_avg_cost_per_kg_electrolysis;Vector;€/kg;Average electrolysis hydrogen MFSP, without carbon tax (evolution)
+h2_avg_cost_per_kg_gas;Vector;€/kg;Average steam methane reforming (without ccs) hydrogen MFSP, without carbon tax (evolution)
+h2_avg_cost_per_kg_gas_ccs;Vector;€/kg;Average steam methane reforming (with ccs) hydrogen MFSP, without carbon tax (evolution)
+h2_cost_premium_coal;Vector;M€;H2 produced by coal gasification without CCS cost premium over fossil kerosene (without carbon tax)
+h2_cost_premium_coal_ccs;Vector;M€;H2 produced by coal gasification withCCS cost premium over fossil kerosene (without carbon tax)
+h2_cost_premium_electrolysis;Vector;M€;H2 produced by water electrolysis cost premium over fossil kerosene (without carbon tax)
+h2_cost_premium_gas;Vector;M€;H2 produced by steam methane reforming without CCS cost premium over fossil kerosene (without carbon tax)
+h2_cost_premium_gas_ccs;Vector;M€;H2 produced by steam methane reforming with CCS cost premium over fossil kerosene (without carbon tax)
+kerosene_carbon_tax_cost;Vector;M€;Annual kerosene cost attributable to carbon tax
+kerosene_cost;Vector;M€;Annual kerosene procurement cost without carbon tax
+kerosene_market_price;Vector;€/L;Kerosene (fossil) market price evolution
+kerosene_price_supplement_carbon_tax;Vector;€/L;Kerosene (fossil) supplement to market price due to carbon tax
+liquefaction_h2_capex_cost;Vector;M€;Annual liquefaction cost attributable to capex
+liquefaction_h2_elec_cost;Vector;M€;Annual liquefaction cost attributable to electricity procurement
+liquefaction_h2_opex_cost;Vector;M€;Annual liquefaction cost attributable to operational expenditures
+liquefaction_h2_total_cost;Vector;M€;Annual liquefaction total cost
+liquefaction_plant_building_cost;Vector;M€;Annual building expenses for liquefaction plants built each year
+liquefaction_plant_building_scenario;Vector;t/day;Annual capacity built for liquefaction plants built each year
+liquefier_eis_capex;Vector;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+non_discounted_BAU_energy_expenses;Vector;M€;Annual expenses for energy in a business as usual scenario that would only use kerosene
+non_discounted_energy_cost_premium;Vector;M€;Annual extra cost for energy in the actual scenario vs a business as usual scenario that would only use kerosene
+non_discounted_energy_expenses;Vector;M€;Annual expenses for energy in the actual scenario
+plant_building_cost_atj;Vector;M€;Annual building expenses for biofuel (ATJ) plants built each year
+plant_building_cost_ft_msw;Vector;M€;Annual building expenses for biofuel (FT-MSW) plants built each year
+plant_building_cost_ft_others;Vector;M€;Annual building expenses for biofuel (FT-Others) plants built each year
+plant_building_cost_hefa_fog;Vector;M€;Annual building expenses for biofuel (HEFA-FOG) plants built each year
+plant_building_cost_hefa_others;Vector;M€;Annual building expenses for biofuel (HEFA-Others) plants built each year
+plant_building_scenario_atj;Vector;t/day;Annual capacity built for biofuel (ATJ) plants added each year
+plant_building_scenario_ft_msw;Vector;t/day;Annual capacity built for biofuel (FT-MSW) plants added each year
+plant_building_scenario_ft_others;Vector;t/day;Annual capacity built for biofuel (FT-Others) plants added each year
+plant_building_scenario_hefa_fog;Vector;t/day;Annual capacity built for biofuel (HEFA-FOG) plants added each year
+plant_building_scenario_hefa_others;Vector;t/day;Annual capacity built for biofuel (HEFA-Others) plants added each year
+electrolysis_h2_eis_capex;Vector;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+electrolysis_h2_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant EIS date (evolution for EIS date)
+electrolysis_h2_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrolysis plant EIS date (evolution for EIS date)
+total_h2_building_cost;Vector;M€;Annual building expenses for hydrogen production plants and liquefaction plants built each year
+total_hydrogen_supply_cost;Vector;M€;Annual expenses for hydrogen production, liquefaction and transport
+transport_h2_total_cost;Vector;M€;Annual expenses for hydrogen transport
