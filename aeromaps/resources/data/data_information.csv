@@ -748,6 +748,7 @@ gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam met
 gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date)
 gas_ccs_h2_capex_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
 gas_ccs_h2_carbon_tax;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon tax
+gas_ccs_h2_ccs_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon capture
 gas_ccs_h2_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to CCS
 gas_ccs_h2_fuel_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to gas procurement
 gas_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas_ccs hydrogen carbon tax per kg of h2 (evolution)
@@ -779,6 +780,7 @@ h2_cost_premium_electrolysis;Vector;M€;H2 produced by water electrolysis cost 
 h2_cost_premium_gas;Vector;M€;H2 produced by steam methane reforming without CCS cost premium over fossil kerosene (without carbon tax)
 h2_cost_premium_gas_ccs;Vector;M€;H2 produced by steam methane reforming with CCS cost premium over fossil kerosene (without carbon tax)
 kerosene_carbon_tax_cost;Vector;M€;Annual kerosene cost attributable to carbon tax
+kerosene_carbon_tax_BAU;Vector;M€;Annual kerosene cost attributable to carbon tax in a full kerosene scenario
 kerosene_cost;Vector;M€;Annual kerosene procurement cost without carbon tax
 kerosene_market_price;Vector;€/L;Kerosene (fossil) market price evolution
 kerosene_price_supplement_carbon_tax;Vector;€/L;Kerosene (fossil) supplement to market price due to carbon tax
@@ -808,3 +810,24 @@ electrolysis_h2_eis_var_opex;Vector;€/kg;Variable operational expenditures for
 total_h2_building_cost;Vector;M€;Annual building expenses for hydrogen production plants and liquefaction plants built each year
 total_hydrogen_supply_cost;Vector;M€;Annual expenses for hydrogen production, liquefaction and transport
 transport_h2_total_cost;Vector;M€;Annual expenses for hydrogen transport
+full_years;Years;Years;Complete time span of the scenario, including historic and prospective periods
+historic_years;Years;Years;Historic time span of the scenario (before 2020)
+prospective_years;Years;Years;Prospective time span of the scenario (after 2020)
+doc_non_energy_per_ask_short_range_dropin_fuel_init;Float;€/ASK;Initial value for short range non-energy related direct operating cost
+doc_non_energy_per_ask_medium_range_dropin_fuel_init;Float;€/ASK;Initial value for medium range non-energy related direct operating cost
+doc_non_energy_per_ask_long_range_dropin_fuel_init;Float;€/ASK;Initial value for long range non-energy related direct operating cost
+doc_non_energy_per_ask_short_range_dropin_fuel_gain;Float;%;Annual gain value for short-range non-energy related direct operating cost
+doc_non_energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Annual gain value for medium-range non-energy related direct operating cost
+doc_non_energy_per_ask_long_range_dropin_fuel_gain;Float;%;Annual gain value for long-range non-energy related direct operating cost
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range;Float;%;Relative non-energy DOC of an hydrogen short range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range;Float;%;Relative non-energy DOC of an hydrogen medium range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range;Float;%;Relative non-energy DOC of an hydrogen long range aircraft compared to a drop-in aircraft
+coal_market_price;Vector;€/kWh;Industrial wholesale coal market price evolution
+gas_market_price;Vector;€/kWh;Industrial wholesale gas market price evolution
+energy_avail_atj;Vector;EJ;Available energy (converted) under current allocation (ATJ)
+energy_avail_electrofuel;Vector;EJ;Available energy (converted) under current allocation (Electrofuel)
+energy_avail_ft_msw;Vector;EJ;Available energy (converted) under current allocation (Ft-MSW)
+energy_avail_ft_others;Vector;EJ;Available energy (converted) under current allocation (FT-Others)
+energy_avail_hefa_fog;Vector;EJ;Available energy (converted) under current allocation (HEFA-Fog)
+energy_avail_hefa_others;Vector;EJ;Available energy (converted) under current allocation (HEFA-Others)
+
