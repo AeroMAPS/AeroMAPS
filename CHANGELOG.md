@@ -1,5 +1,17 @@
 # Changelog
 
+
+## Version 0.4.0-beta
+
+- Changed:
+    - Added fuel consumption in liter. (#19)
+    - Added cost models. (#20)
+    - Added notebooks and corrections for JOAS application. (#21 and #22)
+
+- Fixed:
+    - Fixed minor plots and data on cost models. (#23)
+    - Fixed release process. (#25)
+
 ## Version 0.3.1-beta
 
 - Fixed:
@@ -9,7 +21,7 @@
 ## Version 0.3.0-beta
 
 - Changed:
-    - Added temperature increase due to CO2 and non-CO2 effects . (#10)
+    - Added temperature increase due to CO2 and non-CO2 effects. (#10)
     - Added a simplified widget for setting air traffic growth. (#13)
     - Improved and added new figures. (#14)
 
