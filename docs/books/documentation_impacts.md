@@ -125,7 +125,7 @@ and adapted to AeroMAPS in {cite}`salgas2023regulations`.
 
 As mentioned in the air transport modelling section, three biofuel production pathways are modelled within AeroMAPS: Hydroprocessed Esters and Fatty Acids 
 (HEFA), Fischer-Tropsch (FT), and Alcohol-To-Jet (AtJ). Regarding their production costs, three main drivers are 
-identified by the literature {cite}`pavlenko_cost_2019`,`de_jong_green_2018`: the capital required to build a conversion plant (Capital Expenditures – CapEx), 
+identified by the literature {cite}`pavlenko_cost_2019, de_jong_green_2018`: the capital required to build a conversion plant (Capital Expenditures – CapEx), 
 and the operational expenditures, in which we can distinguish between the supply of energy to be converted, referred 
 to as feedstock in the following, and other expenses (personnel, various inputs, maintenance, etc.), referred to as OpEx.
 Despite large new scale-up plans for theses fuels like ReFuelEU, these are still niche 
@@ -140,7 +140,7 @@ see that MFSP is indeed the minimal constant price at which the fuel should be s
 
 $MFSP = \frac{\sum_{t=0}^{N-1}\frac{CAPEX_t}{(1+r)^t}+\frac{OPEX_t}{(1+r)^t}+\frac{FEED_t}{(1+r)^t}}{\sum_{t=0}^{N-1}\frac{P_t}{(1+r)^t}}$
 
-In AeroMAPS, the biofuel MFSP were directly taken from a literature review {cite}`irena_reaching_2021`,`pavlenko_cost_2019`,`de_jong_green_2018`, and the CapEx 
+In AeroMAPS, the biofuel MFSP were directly taken from a literature review {cite}`irena_reaching_2021, pavlenko_cost_2019, de_jong_green_2018`, and the CapEx 
 values were also taken or estimated by reversing teh previous under standard financial assumptions. It allows to estimate 
 the annual investment required in each production pathway besides computing the MFSP of the fuel used. Once this 
 MFSP is known, computing the extra cost for the airlines is straightforward by subtracting the cost incurred by 
@@ -159,7 +159,7 @@ production of a synthetic kerosene. In the latter case, it is combined with CO2 
 pathway to produce a drop-in fuel. The cost modelling follows a similar process as before, but the MFSP equation is this time 
 directly used as an explicit MFSP model. Besides, it is adapted to index the hydrogen price on the yearly 
 electricity price (equivalent of feedstock for biofuels). 
-Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021,pik_price_2022,international_energy_agency_global_2021`. When hydrogen is directly 
+Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021, pik_price_2022, international_energy_agency_global_2021`. When hydrogen is directly 
 used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in 
 aircraft could require its liquefaction, and the supply chain (transport, storage and refueling) would be modified as 
 well. Those costs are also modelled in the module. The carbon abatement cost is thus computed using the equation above as well. The economic modelling 
