@@ -147,7 +147,7 @@ MFSP is known, computing the extra cost for the airlines is straightforward by s
 purchasing a similar amount of fossil kerosene, assuming both fuels are perfect substitutes. 
 A last metric is used: the carbon abatement cost $CAC$. It combines the MFSP of a fuel with its environmental 
 benefit, which is modeled in the environmental impact module of the tool. For the biofuel 
-$i$, it is the ratio between the cost difference $\DeltaC$ to the fossil reference and the emission factor difference $\DeltaEF$ with the
+$i$, it is the ratio between the cost difference $\Delta_C$ to the fossil reference and the emission factor difference $\Delta_{EF}$ with the
 same fossil reference, as shown below. It is used with €/tCO2 as a unit and allows to evaluate the economic 
 efficiency of various alternative fuels. The concept can be generalized to any decarbonization measure.
 
@@ -159,13 +159,10 @@ production of a synthetic kerosene. In the latter case, it is combined with CO2 
 pathway to produce a drop-in fuel. The cost modelling follows a similar process as before, but the MFSP equation is this time 
 directly used as an explicit MFSP model. Besides, it is adapted to index the hydrogen price on the yearly 
 electricity price (equivalent of feedstock for biofuels). 
-Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021`,`pik_price_2022`,`international_energy_agency_global_2021`. When hydrogen is directly 
+Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021,pik_price_2022,international_energy_agency_global_2021`. When hydrogen is directly 
 used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in 
 aircraft could require its liquefaction, and the supply chain (transport, storage and refueling) would be modified as 
-well. Those costs are also modelled in the module. Finally, computing an additional cost for the airlines should 
-take into account that the aircraft efficiency could be modified when using hydrogen. Therefore, the total cost is given 
-by Eq. (4), where FC is the fuel consumption of hydrogen or the reference fuel for the same operations and C their 
-respective unitary costs. The carbon abatement cost is thus computed using the equation above as well. The economic modelling 
+well. Those costs are also modelled in the module. The carbon abatement cost is thus computed using the equation above as well. The economic modelling 
 of electrofuels is similar, though a last cost component should be accounted for: the CO2, whose direct air capture is a 
 major cost driver.
 
