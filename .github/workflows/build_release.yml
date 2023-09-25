@@ -7,35 +7,11 @@ on:
     types: [ published ]
 
 jobs:
-  move-tag:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Move tag
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              await github.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: "tags/latest-release",
-              })
-            } catch (e) {
-              console.log("Tag does not exist." + e)
-            }
-            await github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/latest-release",
-              sha: context.sha
-            })
-
   build-publish-package:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [ 3.8 ]
+        python-version: [ "3.9" ]
         os: [ ubuntu-latest ]
 
     steps:
@@ -47,22 +23,21 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install poetry==1.4.1
+          pipx install poetry==${{ vars.POETRY_VERSION }}
+          pipx inject poetry poetry-dynamic-versioning[plugin]
         shell: bash
 
       - name: Poetry path
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
         shell: bash
 
-      - name: Set version and build AeroMAPS
-        run: |
-          poetry version $( echo ${{ github.ref }} | sed 's%refs/tags/%%' )
-          poetry build
+      - name: Build AeroMAPS
+        run: poetry build
         shell: bash
 
-      - name: publish to PyPI
+      - name: publish AeroMAPS to PyPI
         env:
-          TOKEN: ${{ secrets.PyPI }} # do not use the secret directly in run command, it would write it plainly in the log
+          TOKEN: ${{ secrets.PYPI }} # do not use the secret directly in run command, it would write it plainly in the log
         run: |
           poetry config pypi-token.pypi "$TOKEN"
           poetry publish
