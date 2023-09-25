@@ -158,7 +158,7 @@ be either used directly, burned in a gas turbine or as a fuel of a redox reactio
 production of a synthetic kerosene. In the latter case, it is combined with CO2 in a Fischer-Tropsch (amongst others)
 pathway to produce a drop-in fuel. The cost modelling follows a similar process as before, but the MFSP equation is this time 
 directly used as an explicit MFSP model. Besides, it is adapted to index the hydrogen price on the yearly 
-electricity price (equivalent of feedstock for biofuels). 
+energy price (equivalent of feedstock for biofuels). For hydrogen production, electrolysis, steam methane reforming and coal gasification are modeled. Carbon Capture and Storage can be added to the fossil pathways.
 Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021, pik_price_2022, international_energy_agency_global_2021`. When hydrogen is directly 
 used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in 
 aircraft could require its liquefaction, and the supply chain (transport, storage and refueling) would be modified as 
