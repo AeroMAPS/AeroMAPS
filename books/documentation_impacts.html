@@ -340,7 +340,12 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-resources">Energy resources</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic">Economic</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic">Economic</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-energy-cost-model">Alternative energy cost model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-operating-cost-doc-model">Direct operating cost (DOC) model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#manufacturing-cost-model">Manufacturing cost model</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustainability-assessment">Sustainability assessment</a><ul class="nav section-nav flex-column">
@@ -516,7 +521,91 @@ the “real consumption” due to kerosene (which means that selectivity is not 
 </section>
 <section id="economic">
 <h3>Economic<a class="headerlink" href="#economic" title="Permalink to this heading">#</a></h3>
-<p>These models are under development.</p>
+<p>The current cost models implemented in AeroMAPS are described in this section. A recap of the energy cost
+models is first provided. Alternative energy cost models were presented in detail in <span id="id10">[<a class="reference internal" href="bibliography.html#id70" title="Antoine Salgas, Thomas Planès, Scott Delbecq, Florian Simatos, and Gilles Lafforgue. Cost estimation of the use of low-carbon fuels in prospective scenarios for air transport. In AIAA SCITECH 2023 Forum, 2328. 2023. doi:10.2514/6.2023-2328.">SPlanesD+23</a>]</span>, with a model taking as an
+input each fuel pathway annual energy consumption to derive annual energy expenses and the required investments
+chronology for the energy sector. A direct operating cost model adapted to AeroMAPS was recalibrated in <span id="id11">[<a class="reference internal" href="bibliography.html#id72" title="Antoine Salgas, Scott Delbecq, Thomas Planès, and Gilles Lafforgue. Top level aircraft requirements relaxation for a single-aisle aircraft: a case study on fleet-wide co2 emissions and economic impacts. In AIAA SCITECH 2023 Forum, 1357. 2023. doi:10.2514/6.2023-1357.">SDPlanesL23</a>]</span>
+and adapted to AeroMAPS in <span id="id12">[<a class="reference internal" href="bibliography.html#id71" title="Antoine Salgas, Scott Delbecq, Thomas Planès, Gilles Lafforgue, and Joël Jézégou. Modelling and simulation of new regulatory measures in prospective scenarios for air transport. In Aerospace Europe Conference. 2023.">SDPlanes+23</a>]</span>.</p>
+<section id="alternative-energy-cost-model">
+<h4>Alternative energy cost model<a class="headerlink" href="#alternative-energy-cost-model" title="Permalink to this heading">#</a></h4>
+<p>As mentioned in the air transport modelling section, three biofuel production pathways are modelled within AeroMAPS: Hydroprocessed Esters and Fatty Acids
+(HEFA), Fischer-Tropsch (FT), and Alcohol-To-Jet (AtJ). Regarding their production costs, three main drivers are
+identified by the literature <span id="id13">[<a class="reference internal" href="bibliography.html#id76">dJ18</a>, <a class="reference internal" href="bibliography.html#id75" title="Nikita Pavlenko. The cost of supporting alternative jet fuels in the European Union. Technical Report, ICCT, 2019.">Pav19</a>]</span>: the capital required to build a conversion plant (Capital Expenditures – CapEx),
+and the operational expenditures, in which we can distinguish between the supply of energy to be converted, referred
+to as feedstock in the following, and other expenses (personnel, various inputs, maintenance, etc.), referred to as OpEx.
+Despite large new scale-up plans for theses fuels like ReFuelEU, these are still niche
+markets, meaning that no mature price exists for the trade of these biofuels. A proxy metric used is the Minimal Fuel
+Selling Price (MFSP). It is the fuel selling price at which the fuel production project has a null Net Present Value
+(NPV). This value is the difference between the expenses and the revenues from a project during all its lifespan and
+considering the time value of money: a large investment immobilized in a project whose revenues occurs much latter
+represents an opportunity cost. It is considered by the discount rate r, which discounts future cash flows. Overall, the
+MFSP can be determined using the following equation, where <span class="math notranslate nohighlight">\(CAPEX_t\)</span> are the capital expenditures at year <span class="math notranslate nohighlight">\(t\)</span>, <span class="math notranslate nohighlight">\(OPEX_t\)</span> the operational
+expenditure on the same year, feedstock expenditures <span class="math notranslate nohighlight">\(FEED_t\)</span> excluded. <span class="math notranslate nohighlight">\(P_t\)</span> is the quantity of fuel produced. One can
+see that MFSP is indeed the minimal constant price at which the fuel should be sold to ensure the project profitability.</p>
+<p><span class="math notranslate nohighlight">\(MFSP = \frac{\sum_{t=0}^{N-1}\frac{CAPEX_t}{(1+r)^t}+\frac{OPEX_t}{(1+r)^t}+\frac{FEED_t}{(1+r)^t}}{\sum_{t=0}^{N-1}\frac{P_t}{(1+r)^t}}\)</span></p>
+<p>In AeroMAPS, the biofuel MFSP were directly taken from a literature review <span id="id14">[<a class="reference internal" href="bibliography.html#id76">dJ18</a>, <a class="reference internal" href="bibliography.html#id74" title="IRENA. Reaching zero with renewables: Biojet fuels. Technical Report, International Renewable Energy Agency, 2021.">IRE21</a>, <a class="reference internal" href="bibliography.html#id75" title="Nikita Pavlenko. The cost of supporting alternative jet fuels in the European Union. Technical Report, ICCT, 2019.">Pav19</a>]</span>, and the CapEx
+values were also taken or estimated by reversing the previous equation under standard financial assumptions. It allows to estimate
+the annual investment required in each production pathway besides computing the MFSP of the fuel used. Once this
+MFSP is known, computing the extra cost for the airlines is straightforward by subtracting the cost incurred by
+purchasing a similar amount of fossil kerosene, assuming both fuels are perfect substitutes.
+A last metric is used: the carbon abatement cost <span class="math notranslate nohighlight">\(CAC\)</span>. It combines the MFSP of a fuel with its environmental
+benefit, which is modeled in the environmental impact module of the tool. For the biofuel
+<span class="math notranslate nohighlight">\(i\)</span>, it is the ratio between the cost difference <span class="math notranslate nohighlight">\(\Delta_C\)</span> to the fossil reference and the emission factor difference <span class="math notranslate nohighlight">\(\Delta_{EF}\)</span> with the
+same fossil reference, as shown below. It is used with €/tCO2 as a unit and allows to evaluate the economic
+efficiency of various alternative fuels. The concept can be generalized to any decarbonization measure.</p>
+<p><span class="math notranslate nohighlight">\(CA_i =\frac{\Delta C}{\Delta EF}= \frac{C_i-C_{fossil}}{EF_{fossil} -EF_{i}}\)</span></p>
+<p>Both electrofuels and hydrogen are modelled in an equivalent way as biofuels. Schematically, hydrogen can
+be either used directly, burned in a gas turbine or as a fuel of a redox reaction in a fuel cell, or indirectly through the
+production of a synthetic kerosene. In the latter case, it is combined with CO2 in a Fischer-Tropsch (amongst others)
+pathway to produce a drop-in fuel. The cost modelling follows a similar process as before, but the MFSP equation is this time
+directly used as an explicit MFSP model. Besides, it is adapted to index the hydrogen price on the yearly
+energy price (equivalent of feedstock for biofuels). For hydrogen production, electrolysis, steam methane reforming and coal gasification are modeled. Carbon Capture and Storage can be added to the fossil pathways.
+Reference technological values on CapEx, OpEx and efficiencies are taken from <span id="id15">[<a class="reference internal" href="bibliography.html#id80" title="International Energy Agency. Global Hydrogen Review 2021: Assumptions. 2021. URL: https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf (visited on 2023-08-23).">Age21</a>, <a class="reference internal" href="bibliography.html#id79" title="Potsdam PIK. Price of Hydrogen: CAPEX Data. 2022. URL: https://h2.pik-potsdam.de/H2Dash/#section-visualisations (visited on 2022-11-23).">PIK22</a>, <a class="reference internal" href="bibliography.html#id73" title="Energy and industrial strategy UK department for Business. Hydrogen production costs 2021. Technical Report, UK Government, 2021.">UdfB21</a>]</span>. When hydrogen is directly
+used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in
+aircraft could require its liquefaction, and the supply chain (transport, storage and refuelling) would be modified as
+well. Those costs are also modelled in the module. The carbon abatement cost is thus computed using the equation above as well. The economic modelling
+of electrofuels is similar, though a last cost component should be accounted for: the CO2, whose direct air capture is a
+major cost driver.</p>
+<p>Lastly, the expenses for kerosene are also modelled according to its market price specified by the user.
+By default, it is set to its average historical price (0.41€/L). Note that alternative fuel market is not modelled.
+MFSPs are therefore a lower bound of their potential prices.
+Kerosene production CapEx (plant renewal and/or expansion) is not modelled so far.</p>
+<p>The user is also able to specify a uniform carbon tax, that is applied to all energies (fossil, biofuel, e-fuel and hydrogen) using their emission factors.
+Two metrics are computed: a supplement to the previous MFSP and the total expenses (or fiscal revenue) for each pathway using the associated consumption as well.
+By default, a fictional carbon tax implementing in full the French Value for Climate Action <span id="id16">[<a class="reference internal" href="bibliography.html#id78" title="Alain Quinet. What Value Do We Attach to Climate Action? Economie et Statistique / Economics and Statistics, pages 165–179, January 2020. doi:10.24187/ecostat.2019.510t.1995.">Qui20</a>]</span> is used.</p>
+</section>
+<section id="direct-operating-cost-doc-model">
+<h4>Direct operating cost (DOC) model<a class="headerlink" href="#direct-operating-cost-doc-model" title="Permalink to this heading">#</a></h4>
+<p>Airline costs can be split into two informal categories: the costs directly related to operating an aircraft and
+those related to general business operations named non-operating costs (administration, sales, …). For the former
+category, they can be further split between Direct Operating Cost (DOC) and indirect operating costs.
+Like non-operating costs, indirect operating costs are not directly linked to the aircraft operation but rather to passenger service.
+With a simplified approach, there are five main categories in the DOC: capital (owning an aircraft), crew, fuel,
+maintenance, and fees/taxes.
+In AeroMAPS, a further simplification is made by using three categories: fuel (or energy), non-energy and carbon taxes.</p>
+<p>Explicit direct operating cost models are presented in <span id="id17">[<a class="reference internal" href="bibliography.html#id77" title="Kristof Risse, Katharina Schäfer, Florian Schültke, and Eike Stumpf. Central Reference Aircraft data System (CeRAS) for research community. CEAS Aeronautical Journal, pages 121–133, March 2016. doi:10.1007/s13272-015-0177-9.">RSSS16</a>]</span>, on a per flight hour basis. These models depend
+directly on the aircraft characteristics. They were recalibrated using United States Bureau of Transportation Statistics
+data and adapted to a per flight basis in <span id="id18">[<a class="reference internal" href="bibliography.html#id72" title="Antoine Salgas, Scott Delbecq, Thomas Planès, and Gilles Lafforgue. Top level aircraft requirements relaxation for a single-aisle aircraft: a case study on fleet-wide co2 emissions and economic impacts. In AIAA SCITECH 2023 Forum, 1357. 2023. doi:10.2514/6.2023-1357.">SDPlanesL23</a>]</span>. Since AeroMAPS uses a global
+top-down approach to model flights by simulating the evolution of the Revenue Passengers Kilometres (RPK) for different
+markets rather than aggregating many flights, the direct use of these cost models would be of little interest. Therefore,
+average values for selected aircraft and distance categories were extracted from the results of <span id="id19">[<a class="reference internal" href="bibliography.html#id72" title="Antoine Salgas, Scott Delbecq, Thomas Planès, and Gilles Lafforgue. Top level aircraft requirements relaxation for a single-aisle aircraft: a case study on fleet-wide co2 emissions and economic impacts. In AIAA SCITECH 2023 Forum, 1357. 2023. doi:10.2514/6.2023-1357.">SDPlanesL23</a>]</span> based on the full
+simulation of a year (2019) of US airlines flight. Note that it introduces an obvious geographical bias, some costs being
+widely dependent on the country or the airline (crew, capital structure, age of the fleet, …). However, the lack of
+reliable detailed financial data to recalibrate the cost model made this limitation necessary.</p>
+<p>For non-energy DOC, average costs per aircraft type (regional jet, single-aisle aircraft on short and medium-range routes and long-range), per Available Seat Kilometre (ASK) are used as a starting point. Their evolution is modelled
+using two different possibilities, like aircraft efficiency.
+Either simple models implement an annual, category-wide evolution in non-energy DOCs,
+or bottom-up fleet renewal models are used with discrete DOC values for each aircraft introduced.</p>
+<p>Concerning the fuel DOC, it is directly linked to the energy cost module described before. Indeed, the fuel cost is simply obtained by
+multiplying each aircraft category energy consumption by the average fuel price from the energy cost module. For the moment, each
+aircraft type in the drop-in fleet is considered to use a blend of all the pathways of the scenario (for example, a situation
+in which a new generation aircraft uses 100% SAFs while the older generation uses only fossil kerosene is not
+considered).</p>
+</section>
+<section id="manufacturing-cost-model">
+<h4>Manufacturing cost model<a class="headerlink" href="#manufacturing-cost-model" title="Permalink to this heading">#</a></h4>
+<p>This model is under implementation, but a beta version is described in <span id="id20">[<a class="reference internal" href="bibliography.html#id71" title="Antoine Salgas, Scott Delbecq, Thomas Planès, Gilles Lafforgue, and Joël Jézégou. Modelling and simulation of new regulatory measures in prospective scenarios for air transport. In Aerospace Europe Conference. 2023.">SDPlanes+23</a>]</span>.</p>
+</section>
 </section>
 </section>
 <section id="sustainability-assessment">
@@ -524,7 +613,7 @@ the “real consumption” due to kerosene (which means that selectivity is not 
 <p>In the following, the methodologies used to assess the environmental sustainability of scenarios are presented,
 based on estimates of induced environmental impacts. Only climate and energy issues are considered. Indeed, these
 two environmental issues are the most impacting when considering air transport (see for instance
-<span id="id10">[<a class="reference internal" href="bibliography.html#id61" title="Thomas Planès. Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios prospectifs durables pour le transport aérien. PhD thesis, Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace, 2022. URL: https://www.theses.fr/2022ESAE0059.">Planes22</a>]</span>).</p>
+<span id="id21">[<a class="reference internal" href="bibliography.html#id61" title="Thomas Planès. Du dimensionnement de systèmes et d'architectures en conception avion à la simulation de scénarios prospectifs durables pour le transport aérien. PhD thesis, Université de Toulouse, Institut Supérieur de l’Aéronautique et de l’Espace, 2022. URL: https://www.theses.fr/2022ESAE0059.">Planes22</a>]</span>).</p>
 <section id="climate-sustainability">
 <h3>Climate sustainability<a class="headerlink" href="#climate-sustainability" title="Permalink to this heading">#</a></h3>
 <p>Climate sustainability assessment can be performed using various methodologies. For example, carbon
@@ -534,9 +623,9 @@ increase below a certain value (for example +1.5°C). For instance, Tab.3 summar
 different temperature targets. The emissions considered are net emissions: they are
 the difference between gross anthropogenic CO<sub>2</sub> emissions and anthropogenic carbon sinks. Cumulative
 CO<sub>2</sub> emissions and mean temperature increase are linked by a quasi-linear relationship, which facilitates
-the estimation of carbon budgets <span id="id11">[<a class="reference internal" href="bibliography.html#id62" title="H Damon Matthews, Nathan P Gillett, Peter A Stott, and Kirsten Zickfeld. The proportionality of global warming to cumulative carbon emissions. Nature, 459(7248):829–832, 2009. doi:10.1038/nature08047.">MGSZ09</a>]</span>. Therefore, the use of carbon budgets allows
+the estimation of carbon budgets <span id="id22">[<a class="reference internal" href="bibliography.html#id62" title="H Damon Matthews, Nathan P Gillett, Peter A Stott, and Kirsten Zickfeld. The proportionality of global warming to cumulative carbon emissions. Nature, 459(7248):829–832, 2009. doi:10.1038/nature08047.">MGSZ09</a>]</span>. Therefore, the use of carbon budgets allows
 for example to simply evaluate the relevance of transition scenarios to reach climate objectives based on their
-CO<sub>2</sub> emissions alone <span id="id12">[<a class="reference internal" href="bibliography.html#id63" title="Pierre Friedlingstein, Robbie M Andrew, Joeri Rogelj, Glen P Peters, Josep G Canadell, Reto Knutti, Gunnar Luderer, Michael R Raupach, Michiel Schaeffer, Detlef P van Vuuren, and others. Persistent growth of CO2 emissions and implications for reaching climate targets. Nature geoscience, 7(10):709–715, 2014. doi:10.1038/ngeo2248.">FAR+14</a>]</span>.</p>
+CO<sub>2</sub> emissions alone <span id="id23">[<a class="reference internal" href="bibliography.html#id63" title="Pierre Friedlingstein, Robbie M Andrew, Joeri Rogelj, Glen P Peters, Josep G Canadell, Reto Knutti, Gunnar Luderer, Michael R Raupach, Michiel Schaeffer, Detlef P van Vuuren, and others. Persistent growth of CO2 emissions and implications for reaching climate targets. Nature geoscience, 7(10):709–715, 2014. doi:10.1038/ngeo2248.">FAR+14</a>]</span>.</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Temperature [°C]</strong></p></th>
@@ -615,14 +704,14 @@ adjusted global gross carbon budget to 2050 <span class="math notranslate nohigh
 (by 2050) <span class="math notranslate nohighlight">\(GCB_A\)</span> is simply calculated using the following equation via an allocated share <span class="math notranslate nohighlight">\(F\)</span>.</p>
 <p><span class="math notranslate nohighlight">\(GCB_A = F~GCB_c\)</span></p>
 <p>The choice of the share allocated to the aviation sector is a political one and may involve multiple criteria
-(technical, economic, societal, etc.). Discussions on this allocation are proposed in <span id="id13">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.
+(technical, economic, societal, etc.). Discussions on this allocation are proposed in <span id="id24">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.
 An interesting reference value is the recent contribution of aviation to CO<sub>2</sub> emissions (also called
 grandfathering approach). For example, it is 2.6% on the perimeter of commercial aviation considering global
-CO<sub>2</sub> emissions <span id="id14">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>. This value can be interpreted as the share that would be allocated
+CO<sub>2</sub> emissions <span id="id25">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>. This value can be interpreted as the share that would be allocated
 to the aviation sector under a non-differentiated approach where all sectors reduce their emissions at the same rate.
 Allocations below or above this value can also be considered. However, allocating a larger share mechanically requires
 other sectors to reduce their emissions faster than the average to meet the global carbon budget. This type of
-trade-off may require multi-sectoral approaches, as for example proposed in <span id="id15">[<a class="reference internal" href="bibliography.html#id64" title="Science Based Targets Initiative. Sectoral Decarbonization Approach (SDA): A method for setting corporate emission reduction targets in line with climate science. Technical Report, SBTI, 2015.">ScienceBTInitiative15</a>]</span>. In this scenario,
+trade-off may require multi-sectoral approaches, as for example proposed in <span id="id26">[<a class="reference internal" href="bibliography.html#id64" title="Science Based Targets Initiative. Sectoral Decarbonization Approach (SDA): A method for setting corporate emission reduction targets in line with climate science. Technical Report, SBTI, 2015.">ScienceBTInitiative15</a>]</span>. In this scenario,
 cumulative direct CO<sub>2</sub> emissions from aviation would represent 3.4% of the considered carbon budget of
 1055 GtCO<sub>2</sub> over the period 2011–2050.</p>
 <p>Therefore, the climate sustainability of a scenario (regarding CO<sub>2</sub> emissions) can be assessed by comparing
@@ -633,18 +722,18 @@ are less than or equal to the carbon budget, the climate target is met.</p>
 <h4>CO<sub>2</sub> and non-CO<sub>2</sub> effects<a class="headerlink" href="#co-sub-2-sub-and-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h4>
 <p>For assessing the sustainability of aviation climate impact, a first solution is to directly compare the temperature
 increase from air transport to a climate objective (via an allocation or an absolute target) which is
-for instance performed in <span id="id16">[<a class="reference internal" href="bibliography.html#id24" title="Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. Nature Communications, 12(1):1–10, 2021. doi:10.1038/s41467-021-24091-y.">GGRGronstedt+21</a>, <a class="reference internal" href="bibliography.html#id35" title="Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. Environmental Research Letters, 16(10):104027, 2021. doi:10.1088/1748-9326/ac286e.">KlowerAL+21</a>]</span>.</p>
+for instance performed in <span id="id27">[<a class="reference internal" href="bibliography.html#id24" title="Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. Nature Communications, 12(1):1–10, 2021. doi:10.1038/s41467-021-24091-y.">GGRGronstedt+21</a>, <a class="reference internal" href="bibliography.html#id35" title="Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. Environmental Research Letters, 16(10):104027, 2021. doi:10.1088/1748-9326/ac286e.">KlowerAL+21</a>]</span>.</p>
 <p>Another solution is to extend the previous approach in order to maintain a methodology similar to that used for
 CO<sub>2</sub> emissions. So-called equivalent carbon budgets are then calculated.
 For this purpose, a global equivalent gross carbon budget <span class="math notranslate nohighlight">\(EGCB\)</span> is calculated via the following equation, which has
-been adapted from simplified models for estimating carbon budgets described in <span id="id17">[<a class="reference internal" href="bibliography.html#id66" title="Joeri Rogelj, Piers M Forster, Elmar Kriegler, Christopher J Smith, and Roland Séférian. Estimating and tracking the remaining carbon budget for stringent climate targets. Nature, 571(7765):335–342, 2019. doi:10.1038/s41586-019-1368-z.">RFK+19</a>]</span>. The
+been adapted from simplified models for estimating carbon budgets described in <span id="id28">[<a class="reference internal" href="bibliography.html#id66" title="Joeri Rogelj, Piers M Forster, Elmar Kriegler, Christopher J Smith, and Roland Séférian. Estimating and tracking the remaining carbon budget for stringent climate targets. Nature, 571(7765):335–342, 2019. doi:10.1038/s41586-019-1368-z.">RFK+19</a>]</span>. The
 <span class="math notranslate nohighlight">\(T_{non-CO_2}\)</span> term depends on the temperature objective considered: it is for example equal to 0.1°C for a +1.5°C
 target and to 0.2°C for +2°C.</p>
 <p><span class="math notranslate nohighlight">\(EGCB = GCB + \frac{T_{non-CO_2}}{TCRE}\)</span></p>
 <p>The same approach as for CO<sub>2</sub> emissions is then used to define an equivalent carbon budget for aviation.
 Allocation rules must also be defined. The reference value considered this time is 5.1%, on the perimeter of commercial
 aviation, over a recent period and including global CO<sub>2</sub> emissions and non-CO<sub>2</sub> effects
-<span id="id18">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.</p>
+<span id="id29">[<a class="reference internal" href="bibliography.html#id65" title="Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. Aviation and climate: a literature review. ISAE-SUPAERO, 2022. doi:10.34849/a66a-vv58.">DFG+22</a>]</span>.</p>
 <p>Therefore, as before, the climate sustainability of a scenario (for all effects) can be assessed by comparing the
 cumulative equivalent emissions with the equivalent carbon budget calculated for aviation. As introduced previously,
 the equivalent emissions are also calculated using the GWP<sup>*</sup> climate metric. The total cumulative equivalent
@@ -726,13 +815,13 @@ to exclude extreme values (outliers).</p>
 </tbody>
 </table>
 <p><em>Tab.4 Global biomass availability (in EJ) scenarios to 2050.</em></p>
-<p>The estimates in Tab.4 are refined using an analysis of the references <span id="id19">[<a class="reference internal" href="bibliography.html#id67" title="Mark D Staples, Robert Malina, and Steven RH Barrett. The limits of bioenergy for mitigating global life-cycle greenhouse gas emissions from fossil fuels. Nature Energy, 2(2):1–8, 2017. doi:10.1038/nenergy.2016.202.">SMB17</a>, <a class="reference internal" href="bibliography.html#id39" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>]</span>
+<p>The estimates in Tab.4 are refined using an analysis of the references <span id="id30">[<a class="reference internal" href="bibliography.html#id67" title="Mark D Staples, Robert Malina, and Steven RH Barrett. The limits of bioenergy for mitigating global life-cycle greenhouse gas emissions from fossil fuels. Nature Energy, 2(2):1–8, 2017. doi:10.1038/nenergy.2016.202.">SMB17</a>, <a class="reference internal" href="bibliography.html#id39" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>]</span>
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about
 1 EJ, the rest being municipal solid waste. Energy crops are divided into 63% lignocellulose, 9% vegetable oils and 28%
 sugar or starch-based materials.</p>
-<p>The results obtained are consistent with <span id="id20">[<a class="reference internal" href="bibliography.html#id68" title="Raphael Slade, Ausilio Bauen, and Robert Gross. Global bioenergy resources. Nature Climate Change, 4(2):99–105, 2014.">SBG14</a>]</span> which concludes that likely estimates are less than
+<p>The results obtained are consistent with <span id="id31">[<a class="reference internal" href="bibliography.html#id68" title="Raphael Slade, Ausilio Bauen, and Robert Gross. Global bioenergy resources. Nature Climate Change, 4(2):99–105, 2014.">SBG14</a>]</span> which concludes that likely estimates are less than
 300 EJ. Similarly, the results by resource type are of the same order of magnitude as those given in
-<span id="id21">[<a class="reference internal" href="bibliography.html#id45" title="Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.">OMalleyPS21</a>]</span>.</p>
+<span id="id32">[<a class="reference internal" href="bibliography.html#id45" title="Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.">OMalleyPS21</a>]</span>.</p>
 </section>
 <section id="electricity-availability">
 <h4>Electricity availability<a class="headerlink" href="#electricity-availability" title="Permalink to this heading">#</a></h4>
@@ -743,7 +832,7 @@ the electricity mix. It is interesting to note the reference point in 2019 and t
 Moreover, all the scenarios forecast an increase in electricity production and a decrease in the emission
 factor. For comparison, the emission factors at the global level for low-carbon production means are lower than
 50 gCO<sub>2</sub>-eq/kWh, with values of the order of 10 gCO<sub>2</sub>-eq/kWh for wind or nuclear power
-<span id="id22">[<a class="reference internal" href="bibliography.html#id69" title="T.F. Stocker, Dahe Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex, and P.M. Midgley. Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change. Cambridge University Press, 2013.">SQP+13</a>]</span>. In this work, the electricity energy resource budget is therefore based on these different estimates.</p>
+<span id="id33">[<a class="reference internal" href="bibliography.html#id69" title="T.F. Stocker, Dahe Qin, G.-K. Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex, and P.M. Midgley. Climate Change 2013: The Physical Science Basis. Contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change. Cambridge University Press, 2013.">SQP+13</a>]</span>. In this work, the electricity energy resource budget is therefore based on these different estimates.</p>
 <p><img alt="" src="../_images/electricity_2050.png" /></p>
 <p><em>Fig.1 Global electricity production scenarios to 2050.</em></p>
 </section>
@@ -826,7 +915,12 @@ factor. For comparison, the emission factors at the global level for low-carbon 
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-resources">Energy resources</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic">Economic</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic">Economic</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-energy-cost-model">Alternative energy cost model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-operating-cost-doc-model">Direct operating cost (DOC) model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#manufacturing-cost-model">Manufacturing cost model</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustainability-assessment">Sustainability assessment</a><ul class="nav section-nav flex-column">
