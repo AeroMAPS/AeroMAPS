@@ -115,11 +115,103 @@ the "real consumption" due to kerosene (which means that selectivity is not take
 
 ### Economic
 
-These models are under development. 
+The current cost models implemented in AeroMAPS are described in this section. A recap of the energy cost 
+models is first provided. Alternative energy cost models were presented in detail in {cite}`salgas2023cost`, with a model taking as an 
+input each fuel pathway annual energy consumption to derive annual energy expenses and the required investments 
+chronology for the energy sector. A direct operating cost model adapted to AeroMAPS was recalibrated in {cite}`salgas2023tlars`
+and adapted to AeroMAPS in {cite}`salgas2023regulations`.
+
+#### Alternative energy cost model
+
+As mentioned in the air transport modelling section, three biofuel production pathways are modelled within AeroMAPS: Hydroprocessed Esters and Fatty Acids 
+(HEFA), Fischer-Tropsch (FT), and Alcohol-To-Jet (AtJ). Regarding their production costs, three main drivers are 
+identified by the literature {cite}`pavlenko_cost_2019, de_jong_green_2018`: the capital required to build a conversion plant (Capital Expenditures – CapEx), 
+and the operational expenditures, in which we can distinguish between the supply of energy to be converted, referred 
+to as feedstock in the following, and other expenses (personnel, various inputs, maintenance, etc.), referred to as OpEx.
+Despite large new scale-up plans for theses fuels like ReFuelEU, these are still niche 
+markets, meaning that no mature price exists for the trade of these biofuels. A proxy metric used is the Minimal Fuel 
+Selling Price (MFSP). It is the fuel selling price at which the fuel production project has a null Net Present Value 
+(NPV). This value is the difference between the expenses and the revenues from a project during all its lifespan and
+considering the time value of money: a large investment immobilized in a project whose revenues occurs much latter 
+represents an opportunity cost. It is considered by the discount rate r, which discounts future cash flows. Overall, the
+MFSP can be determined using the following equation, where $CAPEX_t$ are the capital expenditures at year $t$, $OPEX_t$ the operational 
+expenditure on the same year, feedstock expenditures $FEED_t$ excluded. $P_t$ is the quantity of fuel produced. One can 
+see that MFSP is indeed the minimal constant price at which the fuel should be sold to ensure the project profitability.
+
+$MFSP = \frac{\sum_{t=0}^{N-1}\frac{CAPEX_t}{(1+r)^t}+\frac{OPEX_t}{(1+r)^t}+\frac{FEED_t}{(1+r)^t}}{\sum_{t=0}^{N-1}\frac{P_t}{(1+r)^t}}$
+
+In AeroMAPS, the biofuel MFSP were directly taken from a literature review {cite}`irena_reaching_2021, pavlenko_cost_2019, de_jong_green_2018`, and the CapEx 
+values were also taken or estimated by reversing the previous equation under standard financial assumptions. It allows to estimate 
+the annual investment required in each production pathway besides computing the MFSP of the fuel used. Once this 
+MFSP is known, computing the extra cost for the airlines is straightforward by subtracting the cost incurred by 
+purchasing a similar amount of fossil kerosene, assuming both fuels are perfect substitutes. 
+A last metric is used: the carbon abatement cost $CAC$. It combines the MFSP of a fuel with its environmental 
+benefit, which is modeled in the environmental impact module of the tool. For the biofuel 
+$i$, it is the ratio between the cost difference $\Delta_C$ to the fossil reference and the emission factor difference $\Delta_{EF}$ with the
+same fossil reference, as shown below. It is used with €/tCO2 as a unit and allows to evaluate the economic 
+efficiency of various alternative fuels. The concept can be generalized to any decarbonization measure.
+
+$CA_i =\frac{\Delta C}{\Delta EF}= \frac{C_i-C_{fossil}}{EF_{fossil} -EF_{i}}$
+
+Both electrofuels and hydrogen are modelled in an equivalent way as biofuels. Schematically, hydrogen can 
+be either used directly, burned in a gas turbine or as a fuel of a redox reaction in a fuel cell, or indirectly through the 
+production of a synthetic kerosene. In the latter case, it is combined with CO2 in a Fischer-Tropsch (amongst others)
+pathway to produce a drop-in fuel. The cost modelling follows a similar process as before, but the MFSP equation is this time 
+directly used as an explicit MFSP model. Besides, it is adapted to index the hydrogen price on the yearly 
+energy price (equivalent of feedstock for biofuels). For hydrogen production, electrolysis, steam methane reforming and coal gasification are modeled. Carbon Capture and Storage can be added to the fossil pathways.
+Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021, pik_price_2022, international_energy_agency_global_2021`. When hydrogen is directly 
+used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in 
+aircraft could require its liquefaction, and the supply chain (transport, storage and refuelling) would be modified as 
+well. Those costs are also modelled in the module. The carbon abatement cost is thus computed using the equation above as well. The economic modelling 
+of electrofuels is similar, though a last cost component should be accounted for: the CO2, whose direct air capture is a 
+major cost driver.
+
+Lastly, the expenses for kerosene are also modelled according to its market price specified by the user. 
+By default, it is set to its average historical price (0.41€/L). Note that alternative fuel market is not modelled. 
+MFSPs are therefore a lower bound of their potential prices. 
+Kerosene production CapEx (plant renewal and/or expansion) is not modelled so far.
+
+The user is also able to specify a uniform carbon tax, that is applied to all energies (fossil, biofuel, e-fuel and hydrogen) using their emission factors.
+Two metrics are computed: a supplement to the previous MFSP and the total expenses (or fiscal revenue) for each pathway using the associated consumption as well.
+By default, a fictional carbon tax implementing in full the French Value for Climate Action {cite}`quinet_what_2020` is used.
+
+#### Direct operating cost (DOC) model
+
+Airline costs can be split into two informal categories: the costs directly related to operating an aircraft and 
+those related to general business operations named non-operating costs (administration, sales, ...). For the former 
+category, they can be further split between Direct Operating Cost (DOC) and indirect operating costs. 
+Like non-operating costs, indirect operating costs are not directly linked to the aircraft operation but rather to passenger service.
+With a simplified approach, there are five main categories in the DOC: capital (owning an aircraft), crew, fuel, 
+maintenance, and fees/taxes. 
+In AeroMAPS, a further simplification is made by using three categories: fuel (or energy), non-energy and carbon taxes.
+
+Explicit direct operating cost models are presented in {cite}`risse_central_2016`, on a per flight hour basis. These models depend 
+directly on the aircraft characteristics. They were recalibrated using United States Bureau of Transportation Statistics
+data and adapted to a per flight basis in {cite}`salgas2023tlars`. Since AeroMAPS uses a global 
+top-down approach to model flights by simulating the evolution of the Revenue Passengers Kilometres (RPK) for different 
+markets rather than aggregating many flights, the direct use of these cost models would be of little interest. Therefore, 
+average values for selected aircraft and distance categories were extracted from the results of {cite}`salgas2023tlars` based on the full 
+simulation of a year (2019) of US airlines flight. Note that it introduces an obvious geographical bias, some costs being 
+widely dependent on the country or the airline (crew, capital structure, age of the fleet, …). However, the lack of 
+reliable detailed financial data to recalibrate the cost model made this limitation necessary. 
 
 
+For non-energy DOC, average costs per aircraft type (regional jet, single-aisle aircraft on short and medium-range routes and long-range), per Available Seat Kilometre (ASK) are used as a starting point. Their evolution is modelled
+using two different possibilities, like aircraft efficiency.
+Either simple models implement an annual, category-wide evolution in non-energy DOCs, 
+or bottom-up fleet renewal models are used with discrete DOC values for each aircraft introduced. 
 
 
+Concerning the fuel DOC, it is directly linked to the energy cost module described before. Indeed, the fuel cost is simply obtained by 
+multiplying each aircraft category energy consumption by the average fuel price from the energy cost module. For the moment, each 
+aircraft type in the drop-in fleet is considered to use a blend of all the pathways of the scenario (for example, a situation 
+in which a new generation aircraft uses 100% SAFs while the older generation uses only fossil kerosene is not 
+considered).
+
+
+#### Manufacturing cost model
+
+This model is under implementation, but a beta version is described in {cite}`salgas2023regulations`.
 
 
 ## Sustainability assessment

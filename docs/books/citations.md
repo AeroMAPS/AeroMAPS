@@ -84,13 +84,29 @@ https://doi.org/10.2514/6.2023-2328
 }
 ```
 
+- **Publication dedicated to direct operating cost model recalibration:** Salgas, A., Delbecq, S., Planès, T., Lafforgue, G. (2023).
+Top Level Aircraft Requirements relaxation for a single-aisle aircraft: a case study on fleet-wide CO2 emissions and economic impacts.
+In AIAA SCITECH 2023 Forum.
+https://doi.org/10.2514/6.2023-1357
+
+```
+@inproceedings{salgas2023tlars,
+    title={Top Level Aircraft Requirements relaxation for a single-aisle aircraft: a case study on fleet-wide CO2 emissions and economic impacts.},
+    author={Salgas, Antoine and Delbecq, Scott and Plan{\`e}s, Thomas and Lafforgue, Gilles},
+    booktitle={AIAA SCITECH 2023 Forum},
+    pages={1357},
+    year={2023},
+    doi={10.2514/6.2023-1357}
+}
+```
+
 - **Publication dedicated to other cost models:** Salgas, A., Delbecq, S., Planès, T., Lafforgue, G. and Jézégou, J. (2023).
 Modelling and simulation of new regulatory measures for prospective scenarios for air transport.
 In Aerospace Europe Conference.
 
 ```
-@inproceedings{salgas2023cost,
-    title={Cost estimation of the use of low-carbon fuels in prospective scenarios for air transport},
+@inproceedings{salgas2023regulations,
+    title={Modelling and simulation of new regulatory measures in prospective scenarios for air transport},
     author={Salgas, Antoine and Delbecq, Scott and Plan{\`e}s, Thomas and Lafforgue, Gilles and Jézégou, Joël},
     booktitle={Aerospace Europe Conference},
     year={2023},
