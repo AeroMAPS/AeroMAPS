@@ -141,7 +141,7 @@ see that MFSP is indeed the minimal constant price at which the fuel should be s
 $MFSP = \frac{\sum_{t=0}^{N-1}\frac{CAPEX_t}{(1+r)^t}+\frac{OPEX_t}{(1+r)^t}+\frac{FEED_t}{(1+r)^t}}{\sum_{t=0}^{N-1}\frac{P_t}{(1+r)^t}}$
 
 In AeroMAPS, the biofuel MFSP were directly taken from a literature review {cite}`irena_reaching_2021, pavlenko_cost_2019, de_jong_green_2018`, and the CapEx 
-values were also taken or estimated by reversing teh previous under standard financial assumptions. It allows to estimate 
+values were also taken or estimated by reversing the previous equation under standard financial assumptions. It allows to estimate 
 the annual investment required in each production pathway besides computing the MFSP of the fuel used. Once this 
 MFSP is known, computing the extra cost for the airlines is straightforward by subtracting the cost incurred by 
 purchasing a similar amount of fossil kerosene, assuming both fuels are perfect substitutes. 
