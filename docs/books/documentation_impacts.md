@@ -161,23 +161,23 @@ directly used as an explicit MFSP model. Besides, it is adapted to index the hyd
 energy price (equivalent of feedstock for biofuels). For hydrogen production, electrolysis, steam methane reforming and coal gasification are modeled. Carbon Capture and Storage can be added to the fossil pathways.
 Reference technological values on CapEx, OpEx and efficiencies are taken from {cite}`uk_department_for_business_energy_and_industrial_strategy_hydrogen_2021, pik_price_2022, international_energy_agency_global_2021`. When hydrogen is directly 
 used, the cost of other production steps has to be added to its total cost. For instance, for volume reasons, its use in 
-aircraft could require its liquefaction, and the supply chain (transport, storage and refueling) would be modified as 
+aircraft could require its liquefaction, and the supply chain (transport, storage and refuelling) would be modified as 
 well. Those costs are also modelled in the module. The carbon abatement cost is thus computed using the equation above as well. The economic modelling 
 of electrofuels is similar, though a last cost component should be accounted for: the CO2, whose direct air capture is a 
 major cost driver.
 
 Lastly, the expenses for kerosene are also modelled according to its market price specified by the user. 
 By default, it is set to its average historical price (0.41€/L). Note that alternative fuel market is not modelled. 
-MFSPs are therefor a lower bound of their potential prices. 
+MFSPs are therefore a lower bound of their potential prices. 
 Kerosene production CapEx (plant renewal and/or expansion) is not modelled so far.
 
 The user is also able to specify a uniform carbon tax, that is applied to all energies (fossil, biofuel, e-fuel and hydrogen) using their emission factors.
 Two metrics are computed: a supplement to the previous MFSP and the total expenses (or fiscal revenue) for each pathway using the associated consumption as well.
-By default, a fictional carbon tax implementing in full the French Value for Climate Action {cite}`quinet_what_2020`.
+By default, a fictional carbon tax implementing in full the French Value for Climate Action {cite}`quinet_what_2020` is used.
 
 #### Direct operating cost (DOC) model
 
-Airlines cost can be split into two informal categories: the costs directly related to operating an aircraft and 
+Airline costs can be split into two informal categories: the costs directly related to operating an aircraft and 
 those related to general business operations named non-operating costs (administration, sales, ...). For the former 
 category, they can be further split between Direct Operating Cost (DOC) and indirect operating costs. 
 Like non-operating costs, indirect operating costs are not directly linked to the aircraft operation but rather to passenger service.
@@ -196,8 +196,7 @@ widely dependent on the country or the airline (crew, capital structure, age of 
 reliable detailed financial data to recalibrate the cost model made this limitation necessary. 
 
 
-For non-energy DOC, average costs per aircraft type (regional jet, single aisle aircraft on short and medium 
-range routes and long-range), per Available Seat Kilometre (ASK) are used as a starting point. Their evolution is modelled
+For non-energy DOC, average costs per aircraft type (regional jet, single-aisle aircraft on short and medium-range routes and long-range), per Available Seat Kilometre (ASK) are used as a starting point. Their evolution is modelled
 using two different possibilities, like aircraft efficiency.
 Either simple models implement an annual, category-wide evolution in non-energy DOCs, 
 or bottom-up fleet renewal models are used with discrete DOC values for each aircraft introduced. 
