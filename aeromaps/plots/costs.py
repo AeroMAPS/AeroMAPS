@@ -156,8 +156,8 @@ class ScenarioEnergyCapitalPlot:
             prop={"size": 7},
         )
 
-        # self.ax.relim()
-        # self.ax.autoscale_view()
+        self.ax.relim()
+        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -469,6 +469,8 @@ class ScenarioEnergyExpensesPlot:
             handles=[hatch_patch], labels=["Carbon Tax"], loc="upper right", prop={"size": 7}
         )
 
+        self.ax.relim()
+        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -584,7 +586,6 @@ class ScenarioEnergyCarbonTaxPlot:
         )
 
         self.ax.collections.clear()
-
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
@@ -720,8 +721,8 @@ class ScenarioEnergyUnitCostPlot:
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
@@ -955,8 +956,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
@@ -1100,8 +1101,8 @@ class DiscountEffect:
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):
@@ -1671,8 +1672,8 @@ class DOCEvolutionCategory:
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.canvas.layout.width = "auto"
-        self.fig.canvas.layout.height = "auto"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
         self.fig.tight_layout()
 
     def update(self, df_data):

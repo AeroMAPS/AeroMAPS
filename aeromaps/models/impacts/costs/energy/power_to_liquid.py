@@ -256,11 +256,13 @@ class ElectrofuelCost(AeromapsModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / electrofuel_production
-        electrofuel_total_cost = electrofuel_total_cost * scaling_factor
-        electrofuel_capex_cost = electrofuel_capex_cost * scaling_factor
-        electrofuel_opex_cost = electrofuel_opex_cost * scaling_factor
-        electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
-        electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
+
+        if not all(scaling_factor.isna()):
+            electrofuel_total_cost = electrofuel_total_cost * scaling_factor
+            electrofuel_capex_cost = electrofuel_capex_cost * scaling_factor
+            electrofuel_opex_cost = electrofuel_opex_cost * scaling_factor
+            electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
+            electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
 
         return (
             plant_building_scenario,

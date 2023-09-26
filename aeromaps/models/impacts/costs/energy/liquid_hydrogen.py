@@ -886,10 +886,12 @@ class LiquidHydrogenCost(AeromapsModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / hydrogen_production
-        h2_total_cost = h2_total_cost * scaling_factor
-        h2_capex_cost = h2_capex_cost * scaling_factor
-        h2_opex_cost = h2_opex_cost * scaling_factor
-        h2_elec_cost = h2_elec_cost * scaling_factor
+
+        if not all(scaling_factor.isna()):
+            h2_total_cost = h2_total_cost * scaling_factor
+            h2_capex_cost = h2_capex_cost * scaling_factor
+            h2_opex_cost = h2_opex_cost * scaling_factor
+            h2_elec_cost = h2_elec_cost * scaling_factor
 
         return (
             plant_building_scenario,
@@ -1092,11 +1094,13 @@ class LiquidHydrogenCost(AeromapsModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / hydrogen_production
-        h2_total_cost = h2_total_cost * scaling_factor
-        h2_capex_cost = h2_capex_cost * scaling_factor
-        h2_opex_cost = h2_opex_cost * scaling_factor
-        h2_fuel_cost = h2_fuel_cost * scaling_factor
-        h2_ccs_cost = h2_ccs_cost * scaling_factor
+
+        if not all(scaling_factor.isna()):
+            h2_total_cost = h2_total_cost * scaling_factor
+            h2_capex_cost = h2_capex_cost * scaling_factor
+            h2_opex_cost = h2_opex_cost * scaling_factor
+            h2_fuel_cost = h2_fuel_cost * scaling_factor
+            h2_ccs_cost = h2_ccs_cost * scaling_factor
 
         return (
             plant_building_scenario,
@@ -1272,10 +1276,12 @@ class LiquidHydrogenCost(AeromapsModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / hydrogen_production
-        h2_total_cost = h2_total_cost * scaling_factor
-        h2_capex_cost = h2_capex_cost * scaling_factor
-        h2_opex_cost = h2_opex_cost * scaling_factor
-        h2_elec_cost = h2_elec_cost * scaling_factor
+
+        if not all(scaling_factor.isna()):
+            h2_total_cost = h2_total_cost * scaling_factor
+            h2_capex_cost = h2_capex_cost * scaling_factor
+            h2_opex_cost = h2_opex_cost * scaling_factor
+            h2_elec_cost = h2_elec_cost * scaling_factor
 
         return (
             plant_building_scenario,
