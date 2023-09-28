@@ -300,7 +300,6 @@ class ImpactsParameters(object):
     # Economic analyses
     social_discount_rate: float = 0.03
 
-
     # DOC simple initialisation
 
     doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.045
