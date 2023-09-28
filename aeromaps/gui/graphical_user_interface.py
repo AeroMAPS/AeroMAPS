@@ -1567,6 +1567,14 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         # Hydrogen
+        if self.w_hydrogen_aircraft.value == "Absence":
+            pass
+        elif self.w_hydrogen_aircraft.value == "Limited":
+            pass
+        elif self.w_hydrogen_aircraft.value == "Moderate":
+            pass
+        elif self.w_hydrogen_aircraft.value == "Ambitious":
+            pass
 
         # Load factor
         if self.w_load_factor.value == "Constant":
