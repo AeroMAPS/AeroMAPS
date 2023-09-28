@@ -706,15 +706,17 @@ class FleetModel(AeromapsModel):
                 + ":"
                 + "recent_reference:single_aircraft_share"
             ]
-
-            next_aircraft_single_share = self.df[
-                category.name
-                + ":"
-                + category.subcategories[0].name
-                + ":"
-                + subcategory.aircraft[0].name
-                + ":single_aircraft_share"
-            ]
+            if subcategory.aircraft:
+                next_aircraft_single_share = self.df[
+                    category.name
+                    + ":"
+                    + category.subcategories[0].name
+                    + ":"
+                    + subcategory.aircraft[0].name
+                    + ":single_aircraft_share"
+                ]
+            else:
+                next_aircraft_single_share = 0.0
             var_name = (
                 category.name
                 + ":"
