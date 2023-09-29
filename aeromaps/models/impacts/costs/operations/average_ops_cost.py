@@ -120,6 +120,8 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
 
         self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
 
+        print(doc_non_energy_per_ask_mean)
+
         return (
             doc_non_energy_per_ask_short_range_dropin_fuel,
             doc_non_energy_per_ask_medium_range_dropin_fuel,
