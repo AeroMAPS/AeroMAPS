@@ -1094,7 +1094,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop == False:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1197,7 +1197,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop == False:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1300,7 +1300,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop == False:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1403,7 +1403,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop == True:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == True:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1506,7 +1506,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop == True:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == True:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1516,6 +1516,7 @@ class GraphicalUserInterface(widgets.VBox):
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
             )
+            print(short_range_aircraft1_params)
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
                 parameters=short_range_aircraft1_params,
@@ -1609,7 +1610,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop == True:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == True:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1714,7 +1715,7 @@ class GraphicalUserInterface(widgets.VBox):
 
 
         # Hydrogen
-        if self.w_turboprop == False:
+        if self.w_turboprop.value == False:
             if self.w_hydrogen_aircraft.value == "Limited":
                 self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
@@ -1806,9 +1807,14 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
                     aircraft=medium_range_aircraft_hydrogen
                 )
-            elif self.w_turboprop == True:
+            elif self.w_turboprop.value == True:
                 if self.w_hydrogen_aircraft.value == "Limited":
-                    # Create and update subcategories
+                    self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                    sr_subcat_params = SubcategoryParameters(share=50.0)
+                    sr_subcat_hydrogen = SubCategory(
+                        "SR hydrogen", parameters=sr_subcat_params
+                    )
+                    self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                     short_range_aircraft_hydrogen_params = AircraftParameters(
                         entry_into_service_year=2040,
                         consumption_evolution=-15.0,
@@ -1826,7 +1832,12 @@ class GraphicalUserInterface(widgets.VBox):
                         aircraft=short_range_aircraft_hydrogen
                     )
                 elif self.w_hydrogen_aircraft.value == "Moderate":
-                    # Create and update subcategories
+                    self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                    sr_subcat_params = SubcategoryParameters(share=50.0)
+                    sr_subcat_hydrogen = SubCategory(
+                        "SR hydrogen", parameters=sr_subcat_params
+                    )
+                    self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                     short_range_aircraft_hydrogen_params = AircraftParameters(
                         entry_into_service_year=2035,
                         consumption_evolution=-15.0,
@@ -1844,7 +1855,12 @@ class GraphicalUserInterface(widgets.VBox):
                         aircraft=short_range_aircraft_hydrogen
                     )
                 elif self.w_hydrogen_aircraft.value == "Ambitious":
-                    # Create and update subcategories
+                    self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                    sr_subcat_params = SubcategoryParameters(share=50.0)
+                    sr_subcat_hydrogen = SubCategory(
+                        "SR hydrogen", parameters=sr_subcat_params
+                    )
+                    self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                     short_range_aircraft_hydrogen_params = AircraftParameters(
                         entry_into_service_year=2035,
                         consumption_evolution=-30.0,
@@ -1861,7 +1877,12 @@ class GraphicalUserInterface(widgets.VBox):
                     self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
                         aircraft=short_range_aircraft_hydrogen
                     )
-                    # Create and update subcategories
+                    self.process.fleet.categories["Medium Range"].subcategories[0].parameters.share = 50.0
+                    mr_subcat_params = SubcategoryParameters(share=50.0)
+                    mr_subcat_hydrogen = SubCategory(
+                        "SR hydrogen", parameters=mr_subcat_params
+                    )
+                    self.process.fleet.categories["Medium Range"].add_subcategory(subcategory=mr_subcat_hydrogen)
                     medium_range_aircraft_hydrogen_params = AircraftParameters(
                         entry_into_service_year=2035,
                         consumption_evolution=-30.0,
@@ -2138,18 +2159,6 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.electrofuel_share_2030 = 2
                 self.process.parameters.electrofuel_share_2040 = 13
                 self.process.parameters.electrofuel_share_2050 = 50
-                # self.process.parameters.net_carbon_budget = 850.0
-                # self.process.parameters.carbon_dioxyde_removal_2100 = 280.0
-                # self.process.parameters.waste_biomass = 12
-                # self.process.parameters.crops_biomass = 63
-                # self.process.parameters.forest_residues_biomass = 17
-                # self.process.parameters.agricultural_residues_biomass = 57
-                # self.process.parameters.algae_biomass = 15
-                # self.process.parameters.available_electricity = 250.0
-                # self.process.parameters.aviation_carbon_budget_allocated_share = 2.6
-                # self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 5.1
-                # self.process.parameters.aviation_biomass_allocated_share = 5.0
-                # self.process.parameters.aviation_electricity_allocated_share = 5.0
                 self.process.parameters.biofuel_hefa_fog_share_2020 = 0.7
                 self.process.parameters.biofuel_hefa_fog_share_2030 = 0.7
                 self.process.parameters.biofuel_hefa_fog_share_2040 = 0.7
