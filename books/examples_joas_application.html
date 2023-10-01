@@ -420,7 +420,6 @@ document.write(`
 
 <span class="c1">## Initialization</span>
 <span class="n">fleet</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">fleet</span>
-<span class="n">fleet_model</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">fleet_model</span>
 
 <span class="c1">## Short Range</span>
 <span class="n">short_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
@@ -428,7 +427,7 @@ document.write(`
     <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
     <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">non_energy_doc_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
     <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">short_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
@@ -442,11 +441,11 @@ document.write(`
     <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
     <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">non_energy_doc_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">medium_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
-    <span class="s2">&quot;New Medium-range Aircraft&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_params</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span>
+    <span class="s2">&quot;New Medium-range Aircraft&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_params</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span>
 <span class="p">)</span>
 <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft</span><span class="p">)</span>
 
@@ -456,7 +455,7 @@ document.write(`
     <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
     <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">non_energy_doc_evolution</span><span class="o">=</span><span class="mf">00.0</span><span class="p">,</span>
+    <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">long_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
@@ -468,19 +467,6 @@ document.write(`
 <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Long Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
-
-<span class="c1">## Compute</span>
-<span class="n">fleet_model</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Display</span>
-
-<span class="c1"># fleet.ui</span>
-<span class="c1"># fleet_model.plot()</span>
 </pre></div>
 </div>
 </div>
@@ -725,7 +711,7 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CO2 emissions in 2050: 404.0 MtCO2, i.e. an evolution of: -64.0 % compared to 2019
 CO2 emissions per RPK in 2050: 23.0 gCO2/RPK, i.e. an evolution of: -79.0 % compared to 2019
 Temperature increase due to aviation in 2050: 0.082 °C, i.e. an evolution of: 75.0 % compared to 2019
-Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. an evolution of: 101.0 % compared to 2019
+Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. an evolution of: 99.0 % compared to 2019
 Direct Operating Cost due to energy and carbon tax in 2050: 0.054 €/ASK, i.e. an evolution of: 207.0 % compared to 2019
 </pre></div>
 </div>
@@ -741,10 +727,10 @@ Direct Operating Cost due to energy and carbon tax in 2050: 0.054 €/ASK, i.e. 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x1aa3abb1e80&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x194543662e0&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "251a35798b834ba98e3be27fb41760f6", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "354c8425e4bc4a96ac6f9a348798ecc7", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -753,10 +739,10 @@ Direct Operating Cost due to energy and carbon tax in 2050: 0.054 €/ASK, i.e. 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.sustainability_assessment.MultidisciplinaryAssessmentPlot at 0x1aa3ce6ecd0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.sustainability_assessment.MultidisciplinaryAssessmentPlot at 0x19456615d00&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "512bc01e198648569a517b2c77aacb38", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1d19bdcb8aa045268297d7923103850c", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -765,10 +751,10 @@ Direct Operating Cost due to energy and carbon tax in 2050: 0.054 €/ASK, i.e. 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.costs.DropInMACC at 0x1aa3cefae20&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.costs.DropInMACC at 0x194566a3100&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1b9327e411d64d72851f99053a6a413d", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "25811f88073c4d7a9555642a58354f83", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
 </section>
