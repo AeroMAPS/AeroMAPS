@@ -16,6 +16,7 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
 
     def compute(
         self,
+        dummy_fleet_model_output: np.ndarray,
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
@@ -118,8 +119,6 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
         ] = doc_non_energy_per_ask_short_range_mean
 
         self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
-
-
 
         return (
             doc_non_energy_per_ask_short_range_dropin_fuel,
@@ -703,6 +702,8 @@ class PassengerAircraftTotalDoc(AeromapsModel):
         self.df.loc[:, "doc_total_per_ask_medium_range_mean"] = doc_total_per_ask_medium_range_mean
         self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean
         self.df.loc[:, "doc_total_per_ask_mean"] = doc_total_per_ask_mean
+
+        print(doc_total_per_ask_mean)
 
         return (
             doc_total_per_ask_short_range_dropin_fuel,
