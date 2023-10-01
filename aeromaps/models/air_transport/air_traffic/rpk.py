@@ -210,8 +210,6 @@ class RPK(AeromapsModel):
         ] = prospective_evolution_rpk_long_range
         self.float_outputs["prospective_evolution_rpk"] = prospective_evolution_rpk
 
-        print(rpk)
-
         return (
             rpk_short_range,
             rpk_medium_range,
