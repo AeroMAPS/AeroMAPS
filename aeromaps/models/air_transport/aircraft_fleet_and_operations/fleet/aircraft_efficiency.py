@@ -319,7 +319,7 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
             "Long Range:energy_consumption:hydrogen"
         ]
 
-        """Energy consumption per ASK (without operations) calculation using simple models."""
+        """Energy consumption per ASK (without operations) calculation using complex models."""
 
         # Drop-in - Initialization based on 2019 share - To check for consistency
         energy_consumption_per_ask_init = energy_consumption_init / ask
