@@ -1713,16 +1713,17 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-
         # Hydrogen
         if self.w_turboprop.value == False:
             if self.w_hydrogen_aircraft.value == "Limited":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=0.0,
@@ -1740,12 +1741,14 @@ class GraphicalUserInterface(widgets.VBox):
                     aircraft=short_range_aircraft_hydrogen
                 )
             elif self.w_hydrogen_aircraft.value == "Moderate":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=0.0,
@@ -1763,12 +1766,14 @@ class GraphicalUserInterface(widgets.VBox):
                     aircraft=short_range_aircraft_hydrogen
                 )
             elif self.w_hydrogen_aircraft.value == "Ambitious":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
@@ -1785,12 +1790,14 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
                     aircraft=short_range_aircraft_hydrogen
                 )
-                self.process.fleet.categories["Medium Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Medium Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 mr_subcat_params = SubcategoryParameters(share=50.0)
-                mr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=mr_subcat_params
+                mr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=mr_subcat_params)
+                self.process.fleet.categories["Medium Range"].add_subcategory(
+                    subcategory=mr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Medium Range"].add_subcategory(subcategory=mr_subcat_hydrogen)
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
@@ -1809,12 +1816,14 @@ class GraphicalUserInterface(widgets.VBox):
                 )
         elif self.w_turboprop.value == True:
             if self.w_hydrogen_aircraft.value == "Limited":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=-15.0,
@@ -1832,12 +1841,14 @@ class GraphicalUserInterface(widgets.VBox):
                     aircraft=short_range_aircraft_hydrogen
                 )
             elif self.w_hydrogen_aircraft.value == "Moderate":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
@@ -1855,12 +1866,14 @@ class GraphicalUserInterface(widgets.VBox):
                     aircraft=short_range_aircraft_hydrogen
                 )
             elif self.w_hydrogen_aircraft.value == "Ambitious":
-                self.process.fleet.categories["Short Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 sr_subcat_params = SubcategoryParameters(share=50.0)
-                sr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=sr_subcat_params
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat_hydrogen)
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-30.0,
@@ -1877,12 +1890,14 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
                     aircraft=short_range_aircraft_hydrogen
                 )
-                self.process.fleet.categories["Medium Range"].subcategories[0].parameters.share = 50.0
+                self.process.fleet.categories["Medium Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
                 mr_subcat_params = SubcategoryParameters(share=50.0)
-                mr_subcat_hydrogen = SubCategory(
-                    "SR hydrogen", parameters=mr_subcat_params
+                mr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=mr_subcat_params)
+                self.process.fleet.categories["Medium Range"].add_subcategory(
+                    subcategory=mr_subcat_hydrogen
                 )
-                self.process.fleet.categories["Medium Range"].add_subcategory(subcategory=mr_subcat_hydrogen)
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-30.0,
@@ -1899,7 +1914,6 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
                     aircraft=medium_range_aircraft_hydrogen
                 )
-
 
         # Load factor
         if self.w_load_factor.value == "Constant":
