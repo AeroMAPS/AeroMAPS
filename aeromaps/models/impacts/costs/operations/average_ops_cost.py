@@ -703,8 +703,6 @@ class PassengerAircraftTotalDoc(AeromapsModel):
         self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean
         self.df.loc[:, "doc_total_per_ask_mean"] = doc_total_per_ask_mean
 
-        print(doc_total_per_ask_mean)
-
         return (
             doc_total_per_ask_short_range_dropin_fuel,
             doc_total_per_ask_medium_range_dropin_fuel,
