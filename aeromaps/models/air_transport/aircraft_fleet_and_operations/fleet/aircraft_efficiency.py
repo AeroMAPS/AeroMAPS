@@ -260,6 +260,7 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
 
     def compute(
         self,
+        dummy_fleet_model_output: np.ndarray,
         energy_consumption_init: pd.Series = pd.Series(dtype="float64"),
         ask: pd.Series = pd.Series(dtype="float64"),
         short_range_energy_share_2019: float = 0.0,

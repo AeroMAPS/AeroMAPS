@@ -1,7 +1,6 @@
 import os.path as pth
 from json import dump
 from dataclasses import fields
-
 import numpy as np
 import pandas as pd
 
@@ -119,11 +118,17 @@ class AeromapsProcess(object):
         )
 
     def compute(self):
+
         if self.fleet is not None:
             self.fleet_model.compute()
             self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
+            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
+
+        if self.fleet is not None:
+            # This is needed since fleet model is particular discipline
+            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
 
         self.process.execute(input_data=input_data)
 
