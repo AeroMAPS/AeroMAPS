@@ -15,14 +15,18 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-process = AeromapsProcess(read_json=True, models=models_complex, fleet=True, add_examples_aircraft_and_subcategory=False)
+process = AeromapsProcess(
+    read_json=True, models=models_complex, fleet=True, add_examples_aircraft_and_subcategory=False
+)
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mTypeError[0m                                 Traceback (most recent call last)
 Cell [0;32mIn[2], line 1[0m
-[0;32m----> 1[0m process [38;5;241m=[39m [43mAeromapsProcess[49m[43m([49m[43mread_json[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m[43m [49m[43mmodels[49m[38;5;241;43m=[39;49m[43mmodels_complex[49m[43m,[49m[43m [49m[43mfleet[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m[43m [49m[43madd_examples_aircraft_and_subcategory[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m)[49m
+[0;32m----> 1[0m process [38;5;241m=[39m [43mAeromapsProcess[49m[43m([49m
+[1;32m      2[0m [43m    [49m[43mread_json[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m[43m [49m[43mmodels[49m[38;5;241;43m=[39;49m[43mmodels_complex[49m[43m,[49m[43m [49m[43mfleet[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m[43m [49m[43madd_examples_aircraft_and_subcategory[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m
+[1;32m      3[0m [43m)[49m
 
 [0;31mTypeError[0m: __init__() got an unexpected keyword argument 'add_examples_aircraft_and_subcategory'
 

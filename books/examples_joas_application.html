@@ -373,7 +373,9 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span><span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span>
+    <span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -381,7 +383,9 @@ document.write(`
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span><span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">read_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span> <span class="n">fleet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="p">)</span>
 
 <span class="ne">TypeError</span>: __init__() got an unexpected keyword argument &#39;add_examples_aircraft_and_subcategory&#39;
 </pre></div>
@@ -558,7 +562,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cost parameters</span>
 
-<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">co2_tax_2020</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># Differs from the value of Quinet (54 €/tCO2)</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">co2_tax_2020</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Differs from the value of Quinet (54 €/tCO2)</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">co2_tax_2030</span> <span class="o">=</span> <span class="mi">250</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">co2_tax_2040</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">co2_tax_2050</span> <span class="o">=</span> <span class="mi">775</span>
@@ -689,13 +693,21 @@ document.write(`
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="s2">&quot;Direct Operating Cost due to energy and carbon tax in 2050:&quot;</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="nb">round</span><span class="p">(</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">,</span>
+    <span class="p">),</span>
     <span class="s2">&quot;€/ASK, i.e. an evolution of:&quot;</span><span class="p">,</span>
     <span class="nb">round</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
-                <span class="o">/</span> <span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">])</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
+                <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_carbon_tax_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
+                    <span class="o">+</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;doc_energy_per_ask_mean&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span>
