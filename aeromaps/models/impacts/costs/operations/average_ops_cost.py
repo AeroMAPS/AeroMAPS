@@ -169,42 +169,34 @@ class PassengerAircraftDocNonEnergySimple(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
-
     ]:
         """DOC (without energy DOC) per ASK calculation using simple models."""
 
         # Initialization based on 2019 values
 
         for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "doc_non_energy_per_ask_short_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_short_range_dropin_fuel_init
-            )
-            self.df.loc[k, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_medium_range_dropin_fuel_init
-            )
-            self.df.loc[k, "doc_non_energy_per_ask_long_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_long_range_dropin_fuel_init
-            )
+            self.df.loc[
+                k, "doc_non_energy_per_ask_short_range_dropin_fuel"
+            ] = doc_non_energy_per_ask_short_range_dropin_fuel_init
+            self.df.loc[
+                k, "doc_non_energy_per_ask_medium_range_dropin_fuel"
+            ] = doc_non_energy_per_ask_medium_range_dropin_fuel_init
+            self.df.loc[
+                k, "doc_non_energy_per_ask_long_range_dropin_fuel"
+            ] = doc_non_energy_per_ask_long_range_dropin_fuel_init
 
         # Projections
 
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "doc_non_energy_per_ask_short_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "doc_non_energy_per_ask_short_range_dropin_fuel"] * (
-                1 - doc_non_energy_per_ask_short_range_dropin_fuel_gain / 100
-            )
-            self.df.loc[
-                k, "doc_non_energy_per_ask_medium_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "doc_non_energy_per_ask_medium_range_dropin_fuel"] * (
-                1 - doc_non_energy_per_ask_medium_range_dropin_fuel_gain / 100
-            )
-            self.df.loc[
-                k, "doc_non_energy_per_ask_long_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "doc_non_energy_per_ask_long_range_dropin_fuel"] * (
-                1 - doc_non_energy_per_ask_long_range_dropin_fuel_gain / 100
-            )
-
+            self.df.loc[k, "doc_non_energy_per_ask_short_range_dropin_fuel"] = self.df.loc[
+                k - 1, "doc_non_energy_per_ask_short_range_dropin_fuel"
+            ] * (1 - doc_non_energy_per_ask_short_range_dropin_fuel_gain / 100)
+            self.df.loc[k, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = self.df.loc[
+                k - 1, "doc_non_energy_per_ask_medium_range_dropin_fuel"
+            ] * (1 - doc_non_energy_per_ask_medium_range_dropin_fuel_gain / 100)
+            self.df.loc[k, "doc_non_energy_per_ask_long_range_dropin_fuel"] = self.df.loc[
+                k - 1, "doc_non_energy_per_ask_long_range_dropin_fuel"
+            ] * (1 - doc_non_energy_per_ask_long_range_dropin_fuel_gain / 100)
 
         doc_non_energy_per_ask_short_range_dropin_fuel = self.df[
             "doc_non_energy_per_ask_short_range_dropin_fuel"
@@ -240,40 +232,40 @@ class PassengerAircraftDocNonEnergySimple(AeromapsModel):
         ] = doc_non_energy_per_ask_long_range_hydrogen
 
         doc_non_energy_per_ask_long_range_mean = (
-                doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
-                + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
+            doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
+            + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
         )
 
         doc_non_energy_per_ask_medium_range_mean = (
-                doc_non_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
-                + doc_non_energy_per_ask_medium_range_dropin_fuel
-                * ask_medium_range_dropin_fuel_share
-                / 100
+            doc_non_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
+            + doc_non_energy_per_ask_medium_range_dropin_fuel
+            * ask_medium_range_dropin_fuel_share
+            / 100
         )
 
         doc_non_energy_per_ask_short_range_mean = (
-                doc_non_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
-                + doc_non_energy_per_ask_short_range_dropin_fuel
-                * ask_short_range_dropin_fuel_share
-                / 100
+            doc_non_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
+            + doc_non_energy_per_ask_short_range_dropin_fuel
+            * ask_short_range_dropin_fuel_share
+            / 100
         )
 
         doc_non_energy_per_ask_mean = (
-                                              doc_non_energy_per_ask_long_range_mean * ask_long_range
-                                              + doc_non_energy_per_ask_medium_range_mean * ask_medium_range
-                                              + doc_non_energy_per_ask_short_range_mean * ask_short_range
-                                      ) / (ask_long_range + ask_medium_range + ask_short_range)
+            doc_non_energy_per_ask_long_range_mean * ask_long_range
+            + doc_non_energy_per_ask_medium_range_mean * ask_medium_range
+            + doc_non_energy_per_ask_short_range_mean * ask_short_range
+        ) / (ask_long_range + ask_medium_range + ask_short_range)
 
         self.df.loc[
-        :, "doc_non_energy_per_ask_long_range_mean"
+            :, "doc_non_energy_per_ask_long_range_mean"
         ] = doc_non_energy_per_ask_long_range_mean
 
         self.df.loc[
-        :, "doc_non_energy_per_ask_medium_range_mean"
+            :, "doc_non_energy_per_ask_medium_range_mean"
         ] = doc_non_energy_per_ask_medium_range_mean
 
         self.df.loc[
-        :, "doc_non_energy_per_ask_short_range_mean"
+            :, "doc_non_energy_per_ask_short_range_mean"
         ] = doc_non_energy_per_ask_short_range_mean
 
         self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
@@ -332,53 +324,77 @@ class PassengerAircraftDocEnergy(AeromapsModel):
         # LH2 specific energy (MJ/kg)
         hydrogen_specific_energy = 119.93
 
-        doc_energy_per_ask_long_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year,self.end_year+1))
-        doc_energy_per_ask_long_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
-        doc_energy_per_ask_medium_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
-        doc_energy_per_ask_medium_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
-        doc_energy_per_ask_short_range_dropin_fuel = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
-        doc_energy_per_ask_short_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year+1))
-        for k in range(self.historic_start_year, self.end_year+1):
-            if ask_long_range_dropin_fuel_share[k]>0:
+        doc_energy_per_ask_long_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_energy_per_ask_long_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_energy_per_ask_medium_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_energy_per_ask_medium_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_energy_per_ask_short_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_energy_per_ask_short_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        for k in range(self.historic_start_year, self.end_year + 1):
+            if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_long_range_dropin_fuel[k] = (
                     energy_per_ask_long_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
                 )
-            if ask_long_range_hydrogen_share[k]>0:
+            if ask_long_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_long_range_hydrogen[k] = (
-                    energy_per_ask_long_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_long_range_hydrogen[k]
+                    * h2_avg_cost_per_kg[k]
+                    / hydrogen_specific_energy
                 )
-            if ask_medium_range_dropin_fuel_share[k]>0:
+            if ask_medium_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_medium_range_dropin_fuel[k] = (
-                        energy_per_ask_medium_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                    energy_per_ask_medium_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
                 )
-            if ask_medium_range_hydrogen_share[k]>0:
+            if ask_medium_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_medium_range_hydrogen[k] = (
-                        energy_per_ask_medium_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_medium_range_hydrogen[k]
+                    * h2_avg_cost_per_kg[k]
+                    / hydrogen_specific_energy
                 )
-            if ask_short_range_dropin_fuel_share[k]>0:
+            if ask_short_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_short_range_dropin_fuel[k] = (
-                        energy_per_ask_short_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                    energy_per_ask_short_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
                 )
-            if ask_short_range_hydrogen_share[k]>0:
+            if ask_short_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_short_range_hydrogen[k] = (
-                        energy_per_ask_short_range_hydrogen[k] * h2_avg_cost_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_short_range_hydrogen[k]
+                    * h2_avg_cost_per_kg[k]
+                    / hydrogen_specific_energy
                 )
 
         doc_energy_per_ask_long_range_mean = (
             doc_energy_per_ask_long_range_hydrogen.fillna(0) * ask_long_range_hydrogen_share / 100
-            + doc_energy_per_ask_long_range_dropin_fuel.fillna(0) * ask_long_range_dropin_fuel_share / 100
+            + doc_energy_per_ask_long_range_dropin_fuel.fillna(0)
+            * ask_long_range_dropin_fuel_share
+            / 100
         )
-
 
         doc_energy_per_ask_medium_range_mean = (
-            doc_energy_per_ask_medium_range_hydrogen.fillna(0) * ask_medium_range_hydrogen_share / 100
-            + doc_energy_per_ask_medium_range_dropin_fuel.fillna(0) * ask_medium_range_dropin_fuel_share / 100
+            doc_energy_per_ask_medium_range_hydrogen.fillna(0)
+            * ask_medium_range_hydrogen_share
+            / 100
+            + doc_energy_per_ask_medium_range_dropin_fuel.fillna(0)
+            * ask_medium_range_dropin_fuel_share
+            / 100
         )
-
 
         doc_energy_per_ask_short_range_mean = (
             doc_energy_per_ask_short_range_hydrogen.fillna(0) * ask_short_range_hydrogen_share / 100
-            + doc_energy_per_ask_short_range_dropin_fuel.fillna(0) * ask_short_range_dropin_fuel_share / 100
+            + doc_energy_per_ask_short_range_dropin_fuel.fillna(0)
+            * ask_short_range_dropin_fuel_share
+            / 100
         )
 
         doc_energy_per_ask_mean = (
@@ -465,56 +481,84 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         # LH2 specific energy (MJ/kg)
         hydrogen_specific_energy = 119.93
 
-        doc_carbon_tax_per_ask_long_range_dropin_fuel = pd.Series(np.nan,
-                                                              range(self.historic_start_year, self.end_year + 1))
-        doc_carbon_tax_per_ask_long_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
-        doc_carbon_tax_per_ask_medium_range_dropin_fuel = pd.Series(np.nan,
-                                                                range(self.historic_start_year, self.end_year + 1))
-        doc_carbon_tax_per_ask_medium_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
-        doc_carbon_tax_per_ask_short_range_dropin_fuel = pd.Series(np.nan,
-                                                               range(self.historic_start_year, self.end_year + 1))
-        doc_carbon_tax_per_ask_short_range_hydrogen = pd.Series(np.nan, range(self.historic_start_year, self.end_year + 1))
+        doc_carbon_tax_per_ask_long_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_carbon_tax_per_ask_long_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_carbon_tax_per_ask_medium_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_carbon_tax_per_ask_medium_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_carbon_tax_per_ask_short_range_dropin_fuel = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
+        doc_carbon_tax_per_ask_short_range_hydrogen = pd.Series(
+            np.nan, range(self.historic_start_year, self.end_year + 1)
+        )
         for k in range(self.historic_start_year, self.end_year + 1):
             if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_dropin_fuel[k] = (
-                        energy_per_ask_long_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                    energy_per_ask_long_range_dropin_fuel[k]
+                    * dropin_mfsp_carbon_tax_supplement[k]
+                    / fuel_lhv
                 )
             if ask_long_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_hydrogen[k] = (
-                        energy_per_ask_long_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_long_range_hydrogen[k]
+                    * h2_avg_carbon_tax_per_kg[k]
+                    / hydrogen_specific_energy
                 )
             if ask_medium_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_dropin_fuel[k] = (
-                        energy_per_ask_medium_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                    energy_per_ask_medium_range_dropin_fuel[k]
+                    * dropin_mfsp_carbon_tax_supplement[k]
+                    / fuel_lhv
                 )
             if ask_medium_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_hydrogen[k] = (
-                        energy_per_ask_medium_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_medium_range_hydrogen[k]
+                    * h2_avg_carbon_tax_per_kg[k]
+                    / hydrogen_specific_energy
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_dropin_fuel[k] = (
-                        energy_per_ask_short_range_dropin_fuel[k] * dropin_mfsp_carbon_tax_supplement[k] / fuel_lhv
+                    energy_per_ask_short_range_dropin_fuel[k]
+                    * dropin_mfsp_carbon_tax_supplement[k]
+                    / fuel_lhv
                 )
             if ask_short_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_hydrogen[k] = (
-                        energy_per_ask_short_range_hydrogen[k] * h2_avg_carbon_tax_per_kg[k] / hydrogen_specific_energy
+                    energy_per_ask_short_range_hydrogen[k]
+                    * h2_avg_carbon_tax_per_kg[k]
+                    / hydrogen_specific_energy
                 )
 
         doc_carbon_tax_per_ask_long_range_mean = (
-            doc_carbon_tax_per_ask_long_range_hydrogen.fillna(0) * ask_long_range_hydrogen_share / 100
-            + doc_carbon_tax_per_ask_long_range_dropin_fuel.fillna(0) * ask_long_range_dropin_fuel_share / 100
+            doc_carbon_tax_per_ask_long_range_hydrogen.fillna(0)
+            * ask_long_range_hydrogen_share
+            / 100
+            + doc_carbon_tax_per_ask_long_range_dropin_fuel.fillna(0)
+            * ask_long_range_dropin_fuel_share
+            / 100
         )
 
-
         doc_carbon_tax_per_ask_medium_range_mean = (
-            doc_carbon_tax_per_ask_medium_range_hydrogen.fillna(0) * ask_medium_range_hydrogen_share / 100
+            doc_carbon_tax_per_ask_medium_range_hydrogen.fillna(0)
+            * ask_medium_range_hydrogen_share
+            / 100
             + doc_carbon_tax_per_ask_medium_range_dropin_fuel.fillna(0)
             * ask_medium_range_dropin_fuel_share
             / 100
         )
 
         doc_carbon_tax_per_ask_short_range_mean = (
-            doc_carbon_tax_per_ask_short_range_hydrogen.fillna(0) * ask_short_range_hydrogen_share / 100
+            doc_carbon_tax_per_ask_short_range_hydrogen.fillna(0)
+            * ask_short_range_hydrogen_share
+            / 100
             + doc_carbon_tax_per_ask_short_range_dropin_fuel.fillna(0)
             * ask_short_range_dropin_fuel_share
             / 100

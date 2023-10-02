@@ -10,6 +10,12 @@ import pandas as pd
 from ipydatagrid import DataGrid
 
 from aeromaps.gui.plots import plot_1, plot_2, plot_3
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
+    AircraftParameters,
+    Aircraft,
+    SubcategoryParameters,
+    SubCategory,
+)
 
 # matplotlib.use("Agg")
 font = {"size": 8}
@@ -341,7 +347,7 @@ class GraphicalUserInterface(widgets.VBox):
 
         self.w_turboprop = widgets.Checkbox(
             value=False,
-            description="Turboprop for Short Range flights",
+            description="Turboprop for Short and Medium Range flights",
         )
         self.w_turboprop.observe(self.update, "value")
 
@@ -598,7 +604,7 @@ class GraphicalUserInterface(widgets.VBox):
                         self.w_aircraft_efficiency,
                         self.w_operations,
                         self.w_load_factor,
-                        # self.w_turboprop,
+                        self.w_turboprop,
                         self.w_contrails_avoidance,
                     ]
                 ),
@@ -935,6 +941,7 @@ class GraphicalUserInterface(widgets.VBox):
     def update(self, change):
         self._update_controls()
         self.process.compute()
+        self.process.compute()
         self._update_plots()
 
     def _update_controls(self):
@@ -1068,33 +1075,847 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.rpk_long_range_measures_duration = 5.0
 
         # Energy intensity
+
+        # Fleet renewal: sliders links
         if self.w_aircraft_efficiency.value == "Renewal":
-            self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 0.5
-            self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 0.5
-            self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 0.5
             self.w_hydrogen_aircraft.value = "Absence"
             self.w_hydrogen_aircraft.disabled = True
             self.w_turboprop.value = False
             self.w_turboprop.disabled = True
-        elif self.w_aircraft_efficiency.value == "Trend":
-            self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 1
-            self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 1
-            self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 1
-            self.w_hydrogen_aircraft.disabled = False
-            self.w_turboprop.disabled = False
-        elif self.w_aircraft_efficiency.value == "Accelerated":
-            self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 1.5
-            self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 1.5
-            self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 1.5
-            self.w_hydrogen_aircraft.disabled = False
-            self.w_turboprop.disabled = False
-        elif self.w_aircraft_efficiency.value == "Ambitious":
-            self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 2
-            self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 2
-            self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 2
+        else:
             self.w_hydrogen_aircraft.disabled = False
             self.w_turboprop.disabled = False
 
+        # Fleet renewal: sliders settings
+
+        if self.w_aircraft_efficiency.value == "Renewal":
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet.categories["Short Range"].parameters.life = 25
+            self.process.fleet.categories["Medium Range"].parameters.life = 25
+            self.process.fleet.categories["Long Range"].parameters.life = 25
+
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == False:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 25
+            self.process.fleet.categories["Medium Range"].parameters.life = 25
+            self.process.fleet.categories["Long Range"].parameters.life = 25
+
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == False:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 20
+            self.process.fleet.categories["Medium Range"].parameters.life = 20
+            self.process.fleet.categories["Long Range"].parameters.life = 20
+
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == False:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-15.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-40.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-15.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-40.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-15.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-40.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 20
+            self.process.fleet.categories["Medium Range"].parameters.life = 20
+            self.process.fleet.categories["Long Range"].parameters.life = 20
+
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == True:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-45.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-45.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 25
+            self.process.fleet.categories["Medium Range"].parameters.life = 25
+            self.process.fleet.categories["Long Range"].parameters.life = 25
+
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == True:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            print(short_range_aircraft1_params)
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-45.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-45.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2035,
+                consumption_evolution=-20.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2045,
+                consumption_evolution=-35.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 20
+            self.process.fleet.categories["Medium Range"].parameters.life = 20
+            self.process.fleet.categories["Long Range"].parameters.life = 20
+
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == True:
+            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            short_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-30.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            short_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=short_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft1
+            )
+            short_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-50.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            short_range_aircraft2 = Aircraft(
+                "New Short-range Aircraft 2",
+                parameters=short_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Short Range"].subcategories[0].add_aircraft(
+                aircraft=short_range_aircraft2
+            )
+            medium_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-30.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft1 = Aircraft(
+                "New Medium-range Aircraft 1",
+                parameters=medium_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft1
+            )
+            medium_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-50.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
+            )
+            medium_range_aircraft2 = Aircraft(
+                "New Medium-range Aircraft 2",
+                parameters=medium_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Medium Range"].subcategories[0].add_aircraft(
+                aircraft=medium_range_aircraft2
+            )
+            long_range_aircraft1_params = AircraftParameters(
+                entry_into_service_year=2030,
+                consumption_evolution=-15.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft1 = Aircraft(
+                "New Short-range Aircraft 1",
+                parameters=long_range_aircraft1_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft1
+            )
+            long_range_aircraft2_params = AircraftParameters(
+                entry_into_service_year=2040,
+                consumption_evolution=-40.0,
+                nox_evolution=0.0,
+                soot_evolution=0.0,
+                doc_non_energy_evolution=0.0,
+                cruise_altitude=12000.0,
+            )
+            long_range_aircraft2 = Aircraft(
+                "New Long-range Aircraft 2",
+                parameters=long_range_aircraft2_params,
+                energy_type="DROP_IN_FUEL",
+            )
+            self.process.fleet.categories["Long Range"].subcategories[0].add_aircraft(
+                aircraft=long_range_aircraft2
+            )
+
+            self.process.fleet.categories["Short Range"].parameters.life = 20
+            self.process.fleet.categories["Medium Range"].parameters.life = 20
+            self.process.fleet.categories["Long Range"].parameters.life = 20
+
+        # Hydrogen
+        if self.w_turboprop.value == False:
+            if self.w_hydrogen_aircraft.value == "Limited":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2040,
+                    consumption_evolution=0.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=10.0,
+                    cruise_altitude=12000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+            elif self.w_hydrogen_aircraft.value == "Moderate":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=0.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=10.0,
+                    cruise_altitude=12000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+            elif self.w_hydrogen_aircraft.value == "Ambitious":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=-15.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=10.0,
+                    cruise_altitude=12000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+                self.process.fleet.categories["Medium Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                mr_subcat_params = SubcategoryParameters(share=50.0)
+                mr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=mr_subcat_params)
+                self.process.fleet.categories["Medium Range"].add_subcategory(
+                    subcategory=mr_subcat_hydrogen
+                )
+                medium_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=-15.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=10.0,
+                    cruise_altitude=12000.0,
+                )
+                medium_range_aircraft_hydrogen = Aircraft(
+                    "New Medium-range Hydrogen Aircraft",
+                    parameters=medium_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
+                    aircraft=medium_range_aircraft_hydrogen
+                )
+        elif self.w_turboprop.value == True:
+            if self.w_hydrogen_aircraft.value == "Limited":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2040,
+                    consumption_evolution=-15.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=20.0,
+                    cruise_altitude=6000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+            elif self.w_hydrogen_aircraft.value == "Moderate":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=-15.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=20.0,
+                    cruise_altitude=6000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+            elif self.w_hydrogen_aircraft.value == "Ambitious":
+                self.process.fleet.categories["Short Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                sr_subcat_params = SubcategoryParameters(share=50.0)
+                sr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=sr_subcat_params)
+                self.process.fleet.categories["Short Range"].add_subcategory(
+                    subcategory=sr_subcat_hydrogen
+                )
+                short_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=-30.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=20.0,
+                    cruise_altitude=6000.0,
+                )
+                short_range_aircraft_hydrogen = Aircraft(
+                    "New Short-range Hydrogen Aircraft",
+                    parameters=short_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Short Range"].subcategories[1].add_aircraft(
+                    aircraft=short_range_aircraft_hydrogen
+                )
+                self.process.fleet.categories["Medium Range"].subcategories[
+                    0
+                ].parameters.share = 50.0
+                mr_subcat_params = SubcategoryParameters(share=50.0)
+                mr_subcat_hydrogen = SubCategory("SR hydrogen", parameters=mr_subcat_params)
+                self.process.fleet.categories["Medium Range"].add_subcategory(
+                    subcategory=mr_subcat_hydrogen
+                )
+                medium_range_aircraft_hydrogen_params = AircraftParameters(
+                    entry_into_service_year=2035,
+                    consumption_evolution=-30.0,
+                    nox_evolution=0.0,
+                    soot_evolution=-100.0,
+                    doc_non_energy_evolution=20.0,
+                    cruise_altitude=6000.0,
+                )
+                medium_range_aircraft_hydrogen = Aircraft(
+                    "New Medium-range Hydrogen Aircraft",
+                    parameters=medium_range_aircraft_hydrogen_params,
+                    energy_type="HYDROGEN",
+                )
+                self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
+                    aircraft=medium_range_aircraft_hydrogen
+                )
+
+        # Load factor
         if self.w_load_factor.value == "Constant":
             self.process.parameters.load_factor_end_year = 82.4
         elif self.w_load_factor.value == "Unambitious":
@@ -1167,55 +1988,6 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.electrofuel_share_2030 = 1.2
             self.process.parameters.electrofuel_share_2040 = 10.0
             self.process.parameters.electrofuel_share_2050 = 35.0
-
-        if self.w_hydrogen_aircraft.value == "Absence":
-            self.process.parameters.energy_per_ask_short_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_short_range = 0.0
-            self.process.parameters.hydrogen_introduction_year_short_range = 2051
-            self.process.parameters.energy_per_ask_medium_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_medium_range = 0.0
-            self.process.parameters.hydrogen_introduction_year_medium_range = 2051
-            self.process.parameters.fleet_renewal_duration = 20.0
-        elif self.w_hydrogen_aircraft.value == "Limited":
-            self.process.parameters.energy_per_ask_short_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_short_range = 50.0
-            self.process.parameters.hydrogen_introduction_year_short_range = 2040
-            self.process.parameters.energy_per_ask_medium_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_medium_range = 0.0
-            self.process.parameters.hydrogen_introduction_year_medium_range = 2051
-            self.process.parameters.fleet_renewal_duration = 20.0
-        elif self.w_hydrogen_aircraft.value == "Moderate":
-            self.process.parameters.energy_per_ask_short_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_short_range = 50.0
-            self.process.parameters.hydrogen_introduction_year_short_range = 2035
-            self.process.parameters.energy_per_ask_medium_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_medium_range = 0.0
-            self.process.parameters.hydrogen_introduction_year_medium_range = 2051
-            self.process.parameters.fleet_renewal_duration = 20.0
-        elif self.w_hydrogen_aircraft.value == "Ambitious":
-            self.process.parameters.energy_per_ask_short_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_short_range = 100.0
-            self.process.parameters.hydrogen_introduction_year_short_range = 2035
-            self.process.parameters.energy_per_ask_medium_range_hydrogen_gain = (
-                self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain
-            )
-            self.process.parameters.hydrogen_final_market_share_medium_range = 50.0
-            self.process.parameters.hydrogen_introduction_year_medium_range = 2040
-            self.process.parameters.fleet_renewal_duration = 20.0
 
         if self.w_biofuel_production.value == "Current":
             self.process.parameters.biofuel_hefa_fog_share_2020 = 100.0
@@ -1401,18 +2173,6 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.electrofuel_share_2030 = 2
                 self.process.parameters.electrofuel_share_2040 = 13
                 self.process.parameters.electrofuel_share_2050 = 50
-                # self.process.parameters.net_carbon_budget = 850.0
-                # self.process.parameters.carbon_dioxyde_removal_2100 = 280.0
-                # self.process.parameters.waste_biomass = 12
-                # self.process.parameters.crops_biomass = 63
-                # self.process.parameters.forest_residues_biomass = 17
-                # self.process.parameters.agricultural_residues_biomass = 57
-                # self.process.parameters.algae_biomass = 15
-                # self.process.parameters.available_electricity = 250.0
-                # self.process.parameters.aviation_carbon_budget_allocated_share = 2.6
-                # self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 5.1
-                # self.process.parameters.aviation_biomass_allocated_share = 5.0
-                # self.process.parameters.aviation_electricity_allocated_share = 5.0
                 self.process.parameters.biofuel_hefa_fog_share_2020 = 0.7
                 self.process.parameters.biofuel_hefa_fog_share_2030 = 0.7
                 self.process.parameters.biofuel_hefa_fog_share_2040 = 0.7

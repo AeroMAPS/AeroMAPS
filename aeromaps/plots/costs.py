@@ -455,7 +455,6 @@ class ScenarioEnergyExpensesPlot:
 
         self.ax.set_xlim(2020, 2050)
 
-
         warnings.filterwarnings("ignore")
 
         primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
@@ -1476,7 +1475,6 @@ class DropInMACC:
         self.fig.canvas.draw()
 
 
-
 class DOCEvolutionBreakdown:
     def __init__(self, data):
         self.df = data["vector_outputs"]
@@ -1518,7 +1516,8 @@ class DOCEvolutionBreakdown:
 
         self.ax.fill_between(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             color="cornflowerblue",
             label="Energy",
@@ -1526,8 +1525,11 @@ class DOCEvolutionBreakdown:
 
         self.ax.fill_between(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             color="lightsteelblue",
             label="Carbon tax",
         )
@@ -1556,9 +1558,7 @@ class DOCEvolutionBreakdown:
 
         self.ax.collections.clear()
 
-        self.line_total.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
-        )
+        self.line_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
         self.ax.fill_between(
             self.prospective_years,
@@ -1570,7 +1570,8 @@ class DOCEvolutionBreakdown:
 
         self.ax.fill_between(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             color="cornflowerblue",
             label="Energy",
@@ -1578,9 +1579,11 @@ class DOCEvolutionBreakdown:
 
         self.ax.fill_between(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"] + self.df.loc[self.prospective_years,
-                "doc_carbon_tax_per_ask_mean"],
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"] + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             color="lightsteelblue",
             label="Carbon tax",
         )
@@ -1604,7 +1607,6 @@ class DOCEvolutionCategory:
         self.create_plot()
 
     def create_plot(self):
-
 
         (self.line_srdi,) = self.ax.plot(
             self.prospective_years,
@@ -1667,7 +1669,7 @@ class DOCEvolutionCategory:
         self.ax.set_title("Average direct operating cost by aircraft category")
         self.ax.set_ylabel("€ / ASK")
         self.ax = plt.gca()
-        self.ax.legend(title='Direct Operating Cost')
+        self.ax.legend(title="Direct Operating Cost")
         self.ax.set_xlim(2020, 2050)
         # #
         self.fig.canvas.header_visible = False
@@ -1706,11 +1708,7 @@ class DOCEvolutionCategory:
             self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"]
         )
 
-        self.line_tot.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
-        )
-
-
+        self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
         self.ax.relim()
         self.ax.autoscale_view()
