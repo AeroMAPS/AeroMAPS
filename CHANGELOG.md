@@ -1,6 +1,18 @@
 # Changelog
 
 
+## Version 0.4.1-beta
+
+- Changed:
+    - Added cost model documentation. (#28)
+    - Added possibility to use the fleet model with no new aircraft. (#31)
+    - Updated the UI parameters to use fleet model. (#34)
+
+- Fixed:
+    - Fixed computation of hydrogen expenses. (#30)
+    - Fixed computation of disciplines dependent of fleet model. (#32)
+    - Corrected JOAS publication notebook. (#33)
+
 ## Version 0.4.0-beta
 
 - Changed:
