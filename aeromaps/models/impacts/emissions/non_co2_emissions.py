@@ -55,7 +55,7 @@ class NOxEmissionIndex(AeromapsModel):
 
 
 class SootEmissionIndex(AeromapsModel):
-    def __init__(self, name="nox_emission_index", *args, **kwargs):
+    def __init__(self, name="soot_emission_index", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
