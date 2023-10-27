@@ -68,7 +68,7 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     DetailedCo2Emissions,
     DetailedCumulativeCO2Emissions,
 )
-from aeromaps.models.impacts.emissions.non_co2_emissions import NOxEmissionIndex, NonCO2Emissions
+from aeromaps.models.impacts.emissions.non_co2_emissions import NOxEmissionIndex, SootEmissionIndex, NonCO2Emissions
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
     HydrogenConsumption,
@@ -191,6 +191,7 @@ models_simple = {
         "detailed_cumulative_co2_emissions"
     ),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
@@ -310,6 +311,7 @@ models_complex = {
         "detailed_cumulative_co2_emissions"
     ),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
