@@ -36,6 +36,7 @@ from .emissions import (
     DirectNOxEmissionsPlot,
     DirectSulfurEmissionsPlot,
     DirectSootEmissionsPlot,
+    CarbonOffsetPlot,
 )
 from .climate import (
     FinalEffectiveRadiativeForcingPlot,
@@ -93,6 +94,7 @@ available_plots = {
     "direct_nox_emissions": DirectNOxEmissionsPlot,
     "direct_sulfur_emissions": DirectSulfurEmissionsPlot,
     "direct_soot_emissions": DirectSootEmissionsPlot,
+    "carbon_offset": CarbonOffsetPlot,
     "equivalent_emissions": EquivalentEmissionsPlot,
     "cumulative_equivalent_emissions": CumulativeEquivalentEmissionsPlot,
     "equivalent_emissions_ratio": EquivalentEmissionsRatioPlot,

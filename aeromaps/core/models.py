@@ -401,6 +401,7 @@ models_complex = {
     ),
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
+    "carbon_offset": CarbonOffset("carbon_offset"),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
