@@ -8,7 +8,9 @@ from aeromaps.models.base import AeromapsModel
 
 
 class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
-    def __init__(self, name="passenger_aircraft_doc_non_energy_complex", fleet_model=None, *args, **kwargs):
+    def __init__(
+        self, name="passenger_aircraft_doc_non_energy_complex", fleet_model=None, *args, **kwargs
+    ):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
 

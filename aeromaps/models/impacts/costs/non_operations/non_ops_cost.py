@@ -40,9 +40,7 @@ class PassengerAircraftNocCarbonOffset(AeromapsModel):
 
         carbon_offset_price = self.df["carbon_offset_price"]
 
-        noc_carbon_offset_per_ask = (
-            carbon_offset * carbon_offset_price * 10**6 / ask
-        )
+        noc_carbon_offset_per_ask = carbon_offset * carbon_offset_price * 10**6 / ask
 
         self.df.loc[:, "noc_carbon_offset_per_ask"] = noc_carbon_offset_per_ask
 

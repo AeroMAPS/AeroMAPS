@@ -409,9 +409,7 @@ class CumulativeCarbonOffsetPlot:
         )
 
         self.ax.grid()
-        self.ax.set_title(
-            "Cumulative carbon offset from air transport"
-        )
+        self.ax.set_title("Cumulative carbon offset from air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Cumulative carbon offset [GtCO2]")
         self.ax.legend()
