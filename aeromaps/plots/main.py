@@ -79,6 +79,17 @@ class AirTransportCO2EmissionsPlot:
             zorder=3,
         )
 
+        (self.line_co2_emissions_offset,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "co2_emissions"]
+            - self.df.loc[self.prospective_years, "carbon_offset"],
+            color="grey",
+            linestyle="--",
+            label="Projected emissions including all levers of action and offsetting",
+            linewidth=2,
+            zorder=3,
+        )
+
         # Fill between
 
         self.ax.fill_between(
@@ -111,6 +122,17 @@ class AirTransportCO2EmissionsPlot:
             self.df["co2_emissions"],
             color="yellowgreen",
             label="Aircraft energy",
+        )
+
+        plt.rc('hatch', linewidth=3)
+        self.ax.fill_between(
+            self.years,
+            self.df["co2_emissions"],
+            self.df["co2_emissions"]-self.df["carbon_offset"],
+            color="white",
+            facecolor="silver",
+            hatch="//",
+            label="Carbon offset",
         )
 
         self.ax.grid()
@@ -152,6 +174,11 @@ class AirTransportCO2EmissionsPlot:
 
         self.line_co2_emissions.set_ydata(self.df.loc[self.prospective_years, "co2_emissions"])
 
+        self.line_co2_emissions.set_ydata(
+            self.df.loc[self.prospective_years, "co2_emissions"]
+            - self.df.loc[self.prospective_years, "carbon_offset"]
+        )
+
         self.ax.collections.clear()
 
         # Fill between
@@ -185,6 +212,17 @@ class AirTransportCO2EmissionsPlot:
             self.df["co2_emissions"],
             color="yellowgreen",
             label="Aircraft energy",
+        )
+
+        plt.rc('hatch', linewidth=3)
+        self.ax.fill_between(
+            self.years,
+            self.df["co2_emissions"],
+            self.df["co2_emissions"] - self.df["carbon_offset"],
+            color="white",
+            facecolor="silver",
+            hatch="//",
+            label="Carbon offset",
         )
 
         self.ax.relim()

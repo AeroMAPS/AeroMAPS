@@ -311,3 +311,10 @@ class ImpactsParameters(object):
     relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range: float = 1.1
     relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range: float = 1.1
     relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range: float = 1.1
+
+    # Carbon Offset
+    carbon_offset_baseline_level_vs_2019: float = 85.0
+    residual_carbon_offset_share_2020: float = 0.0
+    residual_carbon_offset_share_2030: float = 0.0
+    residual_carbon_offset_share_2040: float = 50.0
+    residual_carbon_offset_share_2050: float = 100.0

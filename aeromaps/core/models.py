@@ -69,7 +69,11 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     DetailedCo2Emissions,
     DetailedCumulativeCO2Emissions,
 )
-from aeromaps.models.impacts.emissions.non_co2_emissions import NOxEmissionIndex, SootEmissionIndex, NonCO2Emissions
+from aeromaps.models.impacts.emissions.non_co2_emissions import (
+    NOxEmissionIndex,
+    SootEmissionIndex,
+    NonCO2Emissions,
+)
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
     HydrogenConsumption,
@@ -91,6 +95,11 @@ from aeromaps.models.impacts.others.others import (
 from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
     ResourcesConsumedShare,
+)
+from aeromaps.models.impacts.emissions.carbon_offset import (
+    LevelCarbonOffset,
+    ResidualCarbonOffset,
+    CarbonOffset,
 )
 
 
@@ -261,6 +270,9 @@ models_simple = {
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
     ),
+    "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
+    "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
+    "carbon_offset": CarbonOffset("carbon_offset"),
 }
 
 
@@ -380,4 +392,7 @@ models_complex = {
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
     ),
+    "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
+    "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
+    "carbon_offset": CarbonOffset("carbon_offset"),
 }
