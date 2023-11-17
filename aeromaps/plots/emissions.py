@@ -346,7 +346,7 @@ class CarbonOffsetPlot:
             linewidth=2,
         )
 
-        (self.line_soot_emissions,) = self.ax.plot(
+        (self.line_carbon_offset,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "carbon_offset"],
             color="blue",
@@ -376,7 +376,64 @@ class CarbonOffsetPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_soot_emissions.set_ydata(self.df.loc[self.prospective_years, "carbon_offset"])
+        self.line_carbon_offset.set_ydata(self.df.loc[self.prospective_years, "carbon_offset"])
+
+        self.ax.collections.clear()
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
+class CumulativeCarbonOffsetPlot:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        (self.line_cumulative_carbon_offset,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "cumulative_carbon_offset"],
+            color="blue",
+            linestyle="-",
+            label="Cumulative carbon offset",
+            linewidth=2,
+        )
+
+        self.ax.grid()
+        self.ax.set_title(
+            "Cumulative carbon offset from air transport"
+        )
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Cumulative carbon offset [GtCO2]")
+        self.ax.legend()
+        self.ax = plt.gca()
+        self.ax.set_xlim(2019, 2050)
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.line_cumulative_carbon_offset.set_ydata(
+            self.df.loc[self.prospective_years, "cumulative_carbon_offset"]
+        )
 
         self.ax.collections.clear()
 

@@ -37,6 +37,7 @@ from aeromaps.plots.emissions import (
     DirectSulfurEmissionsPlot,
     DirectSootEmissionsPlot,
     CarbonOffsetPlot,
+    CumulativeCarbonOffsetPlot,
 )
 from aeromaps.plots.climate import (
     FinalEffectiveRadiativeForcingPlot,
@@ -104,6 +105,7 @@ plot_3 = {
     "Direct sulfur emissions": DirectSulfurEmissionsPlot,
     "Direct soot emissions": DirectSootEmissionsPlot,
     "Carbon offset": CarbonOffsetPlot,
+    "Cumulative carbon offset": CumulativeCarbonOffsetPlot,
     "Equivalent emissions": EquivalentEmissionsPlot,
     "Cumulative equivalent emissions": CumulativeEquivalentEmissionsPlot,
     "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,

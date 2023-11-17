@@ -100,6 +100,7 @@ from aeromaps.models.impacts.emissions.carbon_offset import (
     LevelCarbonOffset,
     ResidualCarbonOffset,
     CarbonOffset,
+    CumulativeCarbonOffset,
 )
 
 
@@ -277,6 +278,7 @@ models_simple = {
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
     "carbon_offset": CarbonOffset("carbon_offset"),
+    "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
@@ -402,6 +404,7 @@ models_complex = {
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
     "carbon_offset": CarbonOffset("carbon_offset"),
+    "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),

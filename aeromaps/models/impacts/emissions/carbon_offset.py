@@ -97,3 +97,23 @@ class CarbonOffset(AeromapsModel):
         self.df.loc[:, "carbon_offset"] = carbon_offset
 
         return carbon_offset
+
+
+class CumulativeCarbonOffset(AeromapsModel):
+    def __init__(self, name="cumulative_carbon_offset", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        carbon_offset: pd.Series = pd.Series(dtype="float64"),
+    ) -> Tuple[pd.Series]:
+
+        self.df.loc[self.prospection_start_year - 1, "cumulative_carbon_offset"] = 0.0
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "cumulative_carbon_offset"] = (
+                self.df.loc[k - 1, "cumulative_carbon_offset"] + carbon_offset.loc[k] / 1000
+            )
+
+        cumulative_carbon_offset = self.df["cumulative_carbon_offset"]
+
+        return cumulative_carbon_offset
