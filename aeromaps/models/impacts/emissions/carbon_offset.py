@@ -49,7 +49,7 @@ class ResidualCarbonOffset(AeromapsModel):
         residual_carbon_offset_share_2030: float = 0.0,
         residual_carbon_offset_share_2040: float = 0.0,
         residual_carbon_offset_share_2050: float = 0.0,
-    ) -> pd.Series:
+    ) -> Tuple[pd.Series, pd.Series]:
 
         reference_years = [2020, 2030, 2040, self.parameters.end_year]
         reference_values_residual_carbon_offset_share = [
@@ -68,6 +68,8 @@ class ResidualCarbonOffset(AeromapsModel):
                 k
             )
 
+        residual_carbon_offset_share = self.df["residual_carbon_offset_share"]
+
         for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "residual_carbon_offset"] = (
                 self.df.loc[k, "residual_carbon_offset_share"]
@@ -77,7 +79,7 @@ class ResidualCarbonOffset(AeromapsModel):
 
         residual_carbon_offset = self.df["residual_carbon_offset"]
 
-        return residual_carbon_offset
+        return (residual_carbon_offset_share, residual_carbon_offset)
 
 
 class CarbonOffset(AeromapsModel):

@@ -57,6 +57,7 @@ from aeromaps.plots.costs import (
     DropInMACC,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
+    AirfareEvolutionBreakdown,
 )
 
 
@@ -106,4 +107,5 @@ available_plots = {
     "drop_in_macc_curve": DropInMACC,
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
+    "airfare_fleet_breakdown": AirfareEvolutionBreakdown,
 }

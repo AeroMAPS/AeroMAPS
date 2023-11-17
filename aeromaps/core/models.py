@@ -152,6 +152,10 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedScenarioCost,
 )
 
+from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
+    PassengerAircraftNocCarbonOffset,
+)
+
 
 models_simple = {
     "rpk_measures": RPKMeasures("rpk_measures"),
@@ -273,6 +277,9 @@ models_simple = {
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
     "carbon_offset": CarbonOffset("carbon_offset"),
+    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
+        "passenger_aircraft_noc_carbon_offset"
+    ),
 }
 
 
@@ -394,5 +401,7 @@ models_complex = {
     ),
     "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
-    "carbon_offset": CarbonOffset("carbon_offset"),
+    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
+        "passenger_aircraft_noc_carbon_offset"
+    ),
 }

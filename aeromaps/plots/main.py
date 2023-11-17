@@ -124,11 +124,11 @@ class AirTransportCO2EmissionsPlot:
             label="Aircraft energy",
         )
 
-        plt.rc('hatch', linewidth=3)
+        plt.rc("hatch", linewidth=4)
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions"],
-            self.df["co2_emissions"]-self.df["carbon_offset"],
+            self.df["co2_emissions"] - self.df["carbon_offset"],
             color="white",
             facecolor="silver",
             hatch="//",
@@ -214,7 +214,7 @@ class AirTransportCO2EmissionsPlot:
             label="Aircraft energy",
         )
 
-        plt.rc('hatch', linewidth=3)
+        plt.rc("hatch", linewidth=4)
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions"],
