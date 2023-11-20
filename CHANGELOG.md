@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.4.2-beta
+
+- Changed:
+    - Updated JOAS publication notebook with reviewers feedback. (#37)
+    - Updated voilà minimum version. (#38)
+
+- Fixed:
+    - Corrected soot calculation. (#36)
 
 ## Version 0.4.1-beta
 
