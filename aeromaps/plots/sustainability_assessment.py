@@ -306,17 +306,23 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
     def create_plot(self):
         # Data to plot
-        aviation_equivalent_carbon_budget = float(self.float_outputs["aviation_equivalent_carbon_budget"])
+        aviation_equivalent_carbon_budget = float(
+            self.float_outputs["aviation_equivalent_carbon_budget"]
+        )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
-        global_cumulative_equivalent_emissions_2050 = float(self.df.loc[2050, "cumulative_total_equivalent_emissions"])
-        world_equivalent_carbon_budget = float(self.float_outputs["equivalent_gross_carbon_budget_2050"])
+        global_cumulative_equivalent_emissions_2050 = float(
+            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+        )
+        world_equivalent_carbon_budget = float(
+            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        )
         aviation_equivalent_carbon_budget_allocated_share = float(
             self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
         )
 
         # Plot
         size = 0.3
-        if global_cumulative_equivalent_emissions_2050>0:
+        if global_cumulative_equivalent_emissions_2050 > 0:
             outer_vals = [
                 global_cumulative_equivalent_emissions_2050,
                 world_equivalent_carbon_budget - global_cumulative_equivalent_emissions_2050,
@@ -324,19 +330,21 @@ class EquivalentCarbonBudgetAssessmentPlot:
         else:
             outer_vals = [
                 world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
-                - global_cumulative_equivalent_emissions_2050,
+                -global_cumulative_equivalent_emissions_2050,
             ]
         inner_vals = [
             aviation_equivalent_carbon_budget,
             cumulative_carbon_offset,
-            world_equivalent_carbon_budget - aviation_equivalent_carbon_budget - cumulative_carbon_offset,
+            world_equivalent_carbon_budget
+            - aviation_equivalent_carbon_budget
+            - cumulative_carbon_offset,
         ]
 
         color = "skyblue"
 
         if global_cumulative_equivalent_emissions_2050 <= aviation_equivalent_carbon_budget:
             color = "green"
-        if global_cumulative_equivalent_emissions_2050>0:
+        if global_cumulative_equivalent_emissions_2050 > 0:
             outer_colors = [color, "white"]
         else:
             outer_colors = ["white", color]
@@ -370,7 +378,14 @@ class EquivalentCarbonBudgetAssessmentPlot:
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
             + " GtCO2-we\ncorresponding to\n "
-            + str(round(global_cumulative_equivalent_emissions_2050 / world_equivalent_carbon_budget * 100, 1))
+            + str(
+                round(
+                    global_cumulative_equivalent_emissions_2050
+                    / world_equivalent_carbon_budget
+                    * 100,
+                    1,
+                )
+            )
             + "% of EWCB",
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
@@ -457,10 +472,16 @@ class EquivalentCarbonBudgetAssessmentPlot:
         self.ax.clear()
 
         # Data to plot
-        aviation_equivalent_carbon_budget = float(self.float_outputs["aviation_equivalent_carbon_budget"])
+        aviation_equivalent_carbon_budget = float(
+            self.float_outputs["aviation_equivalent_carbon_budget"]
+        )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
-        global_cumulative_equivalent_emissions_2050 = float(self.df.loc[2050, "cumulative_total_equivalent_emissions"])
-        world_equivalent_carbon_budget = float(self.float_outputs["equivalent_gross_carbon_budget_2050"])
+        global_cumulative_equivalent_emissions_2050 = float(
+            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+        )
+        world_equivalent_carbon_budget = float(
+            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        )
         aviation_equivalent_carbon_budget_allocated_share = float(
             self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
         )
@@ -475,12 +496,14 @@ class EquivalentCarbonBudgetAssessmentPlot:
         else:
             outer_vals = [
                 world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
-                - global_cumulative_equivalent_emissions_2050,
+                -global_cumulative_equivalent_emissions_2050,
             ]
         inner_vals = [
             aviation_equivalent_carbon_budget,
             cumulative_carbon_offset,
-            world_equivalent_carbon_budget - aviation_equivalent_carbon_budget - cumulative_carbon_offset,
+            world_equivalent_carbon_budget
+            - aviation_equivalent_carbon_budget
+            - cumulative_carbon_offset,
         ]
 
         color = "skyblue"
@@ -521,7 +544,14 @@ class EquivalentCarbonBudgetAssessmentPlot:
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
             + " GtCO2-we\ncorresponding to\n "
-            + str(round(global_cumulative_equivalent_emissions_2050 / world_equivalent_carbon_budget * 100, 1))
+            + str(
+                round(
+                    global_cumulative_equivalent_emissions_2050
+                    / world_equivalent_carbon_budget
+                    * 100,
+                    1,
+                )
+            )
             + "% of EWCB",
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
@@ -590,6 +620,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
 
         self.fig.canvas.draw()
+
 
 class EquivalentCarbonBudgetAssessmentPlotOld:
     def __init__(self, data):

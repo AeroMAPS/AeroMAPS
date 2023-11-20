@@ -1506,6 +1506,17 @@ class DOCEvolutionBreakdown:
             linewidth=2,
         )
 
+        (self.line_total_adjusted,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            color="blue",
+            linestyle="--",
+            label="Total DOC adjusted of offset",
+            linewidth=2,
+        )
+
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
@@ -1559,6 +1570,12 @@ class DOCEvolutionBreakdown:
         self.ax.collections.clear()
 
         self.line_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
+
+        self.line_total_adjusted.set_ydata(
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+        )
 
         self.ax.fill_between(
             self.prospective_years,
@@ -1737,13 +1754,15 @@ class AirfareEvolutionBreakdown:
             linewidth=1,
         )
 
-        (self.line_total,) = self.ax.plot(
+        (self.line_total_lowering_offset,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             color="grey",
             linestyle="-",
-            label="Total DOC & NOC",
+            label="Total adjusted DOC & NOC",
             linewidth=2,
         )
 
@@ -1752,7 +1771,7 @@ class AirfareEvolutionBreakdown:
             self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
             color="blue",
             linestyle="--",
-            label="Total DOC",
+            label="Total DOC without adjustment",
             linewidth=2,
         )
 
@@ -1777,22 +1796,22 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             color="lightsteelblue",
-            label="Carbon tax",
+            label="Carbon tax adjusted of offset",
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="silver",
             label="Carbon offset",
         )
@@ -1821,8 +1840,10 @@ class AirfareEvolutionBreakdown:
 
         self.ax.collections.clear()
 
-        self.line_total.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+        self.line_total_lowering_offset.set_ydata(
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
         )
 
@@ -1849,7 +1870,7 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             color="lightsteelblue",
@@ -1860,11 +1881,11 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="silver",
             label="Carbon offset",
         )

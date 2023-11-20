@@ -680,6 +680,7 @@ doc_carbon_tax_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating co
 doc_carbon_tax_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range hydrogen fleet (evolution)
 doc_carbon_tax_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range fleet (evolution)
 doc_carbon_tax_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, total fleet (evolution)
+doc_carbon_tax_lowering_offset_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax lowering carbon offset, total fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range drop-in fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range hydrogen fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range fleet (evolution)
