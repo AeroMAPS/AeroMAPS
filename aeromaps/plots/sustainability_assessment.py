@@ -24,6 +24,7 @@ class CarbonBudgetAssessmentPlot:
     def create_plot(self):
         # Data to plot
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
+        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_co2_emissions_2050 = float(self.df.loc[2050, "cumulative_co2_emissions"])
         world_carbon_budget = float(self.float_outputs["gross_carbon_budget_2050"])
         aviation_carbon_budget_allocated_share = float(
@@ -36,14 +37,18 @@ class CarbonBudgetAssessmentPlot:
             global_cumulative_co2_emissions_2050,
             world_carbon_budget - global_cumulative_co2_emissions_2050,
         ]
-        inner_vals = [aviation_carbon_budget, world_carbon_budget - aviation_carbon_budget]
+        inner_vals = [
+            aviation_carbon_budget,
+            cumulative_carbon_offset,
+            world_carbon_budget - aviation_carbon_budget - cumulative_carbon_offset,
+        ]
 
         color = "skyblue"
 
         if global_cumulative_co2_emissions_2050 <= aviation_carbon_budget:
             color = "green"
         outer_colors = [color, "white"]
-        inner_colors = ["grey", "white"]
+        inner_colors = ["grey", "silver", "white"]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -129,6 +134,13 @@ class CarbonBudgetAssessmentPlot:
                 color="grey",
                 lw=6,
                 label="Carbon budget 2050 allocated to aviation",
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="silver",
+                lw=6,
+                label="Cumulative aviation carbon offset",
             ),
         ]
 
@@ -153,6 +165,7 @@ class CarbonBudgetAssessmentPlot:
         self.ax.clear()
 
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
+        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_co2_emissions_2050 = float(self.df.loc[2050, "cumulative_co2_emissions"])
         world_carbon_budget = float(self.float_outputs["gross_carbon_budget_2050"])
         aviation_carbon_budget_allocated_share = float(
@@ -165,14 +178,18 @@ class CarbonBudgetAssessmentPlot:
             global_cumulative_co2_emissions_2050,
             world_carbon_budget - global_cumulative_co2_emissions_2050,
         ]
-        inner_vals = [aviation_carbon_budget, world_carbon_budget - aviation_carbon_budget]
+        inner_vals = [
+            aviation_carbon_budget,
+            cumulative_carbon_offset,
+            world_carbon_budget - aviation_carbon_budget - cumulative_carbon_offset,
+        ]
 
         color = "skyblue"
 
         if global_cumulative_co2_emissions_2050 <= aviation_carbon_budget:
             color = "green"
         outer_colors = [color, "white"]
-        inner_colors = ["grey", "white"]
+        inner_colors = ["grey", "silver", "white"]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -259,6 +276,13 @@ class CarbonBudgetAssessmentPlot:
                 lw=6,
                 label="Carbon budget 2050 allocated to aviation",
             ),
+            Line2D(
+                [0],
+                [0],
+                color="grey",
+                lw=6,
+                label="Cumulative aviation carbon offset",
+            ),
         ]
 
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
@@ -267,6 +291,338 @@ class CarbonBudgetAssessmentPlot:
 
 
 class EquivalentCarbonBudgetAssessmentPlot:
+    def __init__(self, data):
+        self.parameters = data["float_inputs"]
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_2_x, plot_2_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        # Data to plot
+        aviation_equivalent_carbon_budget = float(
+            self.float_outputs["aviation_equivalent_carbon_budget"]
+        )
+        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
+        global_cumulative_equivalent_emissions_2050 = float(
+            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+        )
+        world_equivalent_carbon_budget = float(
+            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        )
+        aviation_equivalent_carbon_budget_allocated_share = float(
+            self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
+        )
+
+        # Plot
+        size = 0.3
+        if global_cumulative_equivalent_emissions_2050 > 0:
+            outer_vals = [
+                global_cumulative_equivalent_emissions_2050,
+                world_equivalent_carbon_budget - global_cumulative_equivalent_emissions_2050,
+            ]
+        else:
+            outer_vals = [
+                world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
+                -global_cumulative_equivalent_emissions_2050,
+            ]
+        inner_vals = [
+            aviation_equivalent_carbon_budget,
+            cumulative_carbon_offset,
+            world_equivalent_carbon_budget
+            - aviation_equivalent_carbon_budget
+            - cumulative_carbon_offset,
+        ]
+
+        color = "skyblue"
+
+        if global_cumulative_equivalent_emissions_2050 <= aviation_equivalent_carbon_budget:
+            color = "green"
+        if global_cumulative_equivalent_emissions_2050 > 0:
+            outer_colors = [color, "white"]
+        else:
+            outer_colors = ["white", color]
+        inner_colors = ["grey", "silver", "white"]
+
+        self.wedges_out, _ = self.ax.pie(
+            outer_vals,
+            radius=1,
+            colors=outer_colors,
+            startangle=90,
+            wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+        )
+
+        self.wedges_in, _ = self.ax.pie(
+            inner_vals,
+            radius=1 - size,
+            colors=inner_colors,
+            startangle=90,
+            wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+        )
+
+        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
+        kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
+
+        self.ax.set(
+            aspect="equal",
+            title="Estimated climate impact of aviation until 2050\nPresented as a % of the equivalent world carbon\nbudget (EWCB) 2050",
+        )
+
+        wedges = [self.wedges_out[0], self.wedges_in[0]]
+        texts = [
+            str(round(global_cumulative_equivalent_emissions_2050, 1))
+            + " GtCO2-we\ncorresponding to\n "
+            + str(
+                round(
+                    global_cumulative_equivalent_emissions_2050
+                    / world_equivalent_carbon_budget
+                    * 100,
+                    1,
+                )
+            )
+            + "% of EWCB",
+            str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
+            + "% of EWCB\ni.e.\n"
+            + str(round(aviation_equivalent_carbon_budget, 1))
+            + " GtCO2-we",
+        ]
+
+        p = wedges[0]
+        text = texts[0]
+
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1
+        y = np.sin(np.deg2rad(ang))
+        x = np.cos(np.deg2rad(ang))
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+        kw["arrowprops"].update({"connectionstyle": connectionstyle})
+        self.ax.annotate(
+            text,
+            xy=(x, y),
+            xytext=(1.2 * np.sign(x), 1.1 * y),
+            horizontalalignment=horizontalalignment,
+            **kw,
+        )
+
+        p = wedges[1]
+        text = texts[1]
+
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1 - 45
+        y = np.sin(np.deg2rad(ang)) * 0.7
+        x = np.cos(np.deg2rad(ang)) * 0.00001
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+        kw["arrowprops"].update({"connectionstyle": connectionstyle, "facecolor": "black"})
+        self.ax.annotate(
+            text,
+            xy=(-x, y),
+            xytext=(1.2 * np.sign(x), 2.0 * y),
+            horizontalalignment=horizontalalignment,
+            **kw,
+        )
+
+        legend_elements = [
+            Line2D(
+                [0],
+                [0],
+                color=color,
+                lw=6,
+                label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="grey",
+                lw=6,
+                label="Equivalent carbon budget 2050 allocated\nto aviation",
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="silver",
+                lw=6,
+                label="Cumulative aviation carbon offset",
+            ),
+        ]
+
+        self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
+        # self.fig.set_tight_layout(True)
+
+        self.fig.tight_layout()
+
+    def update(self, data):
+        self.parameters = data["float_inputs"]
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.ax.clear()
+
+        # Data to plot
+        aviation_equivalent_carbon_budget = float(
+            self.float_outputs["aviation_equivalent_carbon_budget"]
+        )
+        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
+        global_cumulative_equivalent_emissions_2050 = float(
+            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+        )
+        world_equivalent_carbon_budget = float(
+            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        )
+        aviation_equivalent_carbon_budget_allocated_share = float(
+            self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
+        )
+
+        # Plot
+        size = 0.3
+        if global_cumulative_equivalent_emissions_2050 > 0:
+            outer_vals = [
+                global_cumulative_equivalent_emissions_2050,
+                world_equivalent_carbon_budget - global_cumulative_equivalent_emissions_2050,
+            ]
+        else:
+            outer_vals = [
+                world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
+                -global_cumulative_equivalent_emissions_2050,
+            ]
+        inner_vals = [
+            aviation_equivalent_carbon_budget,
+            cumulative_carbon_offset,
+            world_equivalent_carbon_budget
+            - aviation_equivalent_carbon_budget
+            - cumulative_carbon_offset,
+        ]
+
+        color = "skyblue"
+
+        if global_cumulative_equivalent_emissions_2050 <= aviation_equivalent_carbon_budget:
+            color = "green"
+        if global_cumulative_equivalent_emissions_2050 > 0:
+            outer_colors = [color, "white"]
+        else:
+            outer_colors = ["white", color]
+        inner_colors = ["grey", "silver", "white"]
+
+        self.wedges_out, _ = self.ax.pie(
+            outer_vals,
+            radius=1,
+            colors=outer_colors,
+            startangle=90,
+            wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+        )
+
+        self.wedges_in, _ = self.ax.pie(
+            inner_vals,
+            radius=1 - size,
+            colors=inner_colors,
+            startangle=90,
+            wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+        )
+
+        bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
+        kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
+
+        self.ax.set(
+            aspect="equal",
+            title="Estimated climate impact of aviation until 2050\nPresented as a % of the equivalent world carbon\nbudget (EWCB) 2050",
+        )
+
+        wedges = [self.wedges_out[0], self.wedges_in[0]]
+        texts = [
+            str(round(global_cumulative_equivalent_emissions_2050, 1))
+            + " GtCO2-we\ncorresponding to\n "
+            + str(
+                round(
+                    global_cumulative_equivalent_emissions_2050
+                    / world_equivalent_carbon_budget
+                    * 100,
+                    1,
+                )
+            )
+            + "% of EWCB",
+            str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
+            + "% of EWCB\ni.e.\n"
+            + str(round(aviation_equivalent_carbon_budget, 1))
+            + " GtCO2-we",
+        ]
+
+        p = wedges[0]
+        text = texts[0]
+
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1
+        y = np.sin(np.deg2rad(ang))
+        x = np.cos(np.deg2rad(ang))
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+        kw["arrowprops"].update({"connectionstyle": connectionstyle})
+        self.ax.annotate(
+            text,
+            xy=(x, y),
+            xytext=(1.2 * np.sign(x), 1.1 * y),
+            horizontalalignment=horizontalalignment,
+            **kw,
+        )
+
+        p = wedges[1]
+        text = texts[1]
+
+        ang = (p.theta2 - p.theta1) / 2.0 + p.theta1 - 45
+        y = np.sin(np.deg2rad(ang)) * 0.7
+        x = np.cos(np.deg2rad(ang)) * 0.00001
+        horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+        connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+        kw["arrowprops"].update({"connectionstyle": connectionstyle, "facecolor": "black"})
+        self.ax.annotate(
+            text,
+            xy=(-x, y),
+            xytext=(1.2 * np.sign(x), 2.0 * y),
+            horizontalalignment=horizontalalignment,
+            **kw,
+        )
+
+        legend_elements = [
+            Line2D(
+                [0],
+                [0],
+                color=color,
+                lw=6,
+                label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="grey",
+                lw=6,
+                label="Equivalent carbon budget 2050 allocated\nto aviation",
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="silver",
+                lw=6,
+                label="Cumulative aviation carbon offset",
+            ),
+        ]
+
+        self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
+
+        self.fig.canvas.draw()
+
+
+class EquivalentCarbonBudgetAssessmentPlotOld:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]

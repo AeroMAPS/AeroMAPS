@@ -69,7 +69,11 @@ from aeromaps.models.impacts.emissions.co2_emissions import (
     DetailedCo2Emissions,
     DetailedCumulativeCO2Emissions,
 )
-from aeromaps.models.impacts.emissions.non_co2_emissions import NOxEmissionIndex, SootEmissionIndex, NonCO2Emissions
+from aeromaps.models.impacts.emissions.non_co2_emissions import (
+    NOxEmissionIndex,
+    SootEmissionIndex,
+    NonCO2Emissions,
+)
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
     HydrogenConsumption,
@@ -91,6 +95,12 @@ from aeromaps.models.impacts.others.others import (
 from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
     ResourcesConsumedShare,
+)
+from aeromaps.models.impacts.emissions.carbon_offset import (
+    LevelCarbonOffset,
+    ResidualCarbonOffset,
+    CarbonOffset,
+    CumulativeCarbonOffset,
 )
 
 
@@ -141,6 +151,10 @@ from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedScenarioCost,
     NonDiscountedScenarioCost,
+)
+
+from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
+    PassengerAircraftNocCarbonOffset,
 )
 
 
@@ -261,6 +275,13 @@ models_simple = {
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
     ),
+    "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
+    "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
+    "carbon_offset": CarbonOffset("carbon_offset"),
+    "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
+    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
+        "passenger_aircraft_noc_carbon_offset"
+    ),
 }
 
 
@@ -379,5 +400,12 @@ models_complex = {
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
+    ),
+    "level_carbon_offset": LevelCarbonOffset("level_carbon_offset"),
+    "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
+    "carbon_offset": CarbonOffset("carbon_offset"),
+    "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
+    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
+        "passenger_aircraft_noc_carbon_offset"
     ),
 }

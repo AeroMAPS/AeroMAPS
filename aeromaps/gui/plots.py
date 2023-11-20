@@ -36,6 +36,8 @@ from aeromaps.plots.emissions import (
     DirectNOxEmissionsPlot,
     DirectSulfurEmissionsPlot,
     DirectSootEmissionsPlot,
+    CarbonOffsetPlot,
+    CumulativeCarbonOffsetPlot,
 )
 from aeromaps.plots.climate import (
     FinalEffectiveRadiativeForcingPlot,
@@ -58,6 +60,7 @@ from aeromaps.plots.costs import (
     DropInMACC,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
+    AirfareEvolutionBreakdown,
 )
 
 # Left plot
@@ -101,6 +104,8 @@ plot_3 = {
     "Direct NOx emissions": DirectNOxEmissionsPlot,
     "Direct sulfur emissions": DirectSulfurEmissionsPlot,
     "Direct soot emissions": DirectSootEmissionsPlot,
+    "Carbon offset": CarbonOffsetPlot,
+    "Cumulative carbon offset": CumulativeCarbonOffsetPlot,
     "Equivalent emissions": EquivalentEmissionsPlot,
     "Cumulative equivalent emissions": CumulativeEquivalentEmissionsPlot,
     "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,
@@ -115,4 +120,5 @@ plot_3 = {
     "Marginal abatement cost curve from drop in fuels": DropInMACC,
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,
+    "Direct and Non Operating Cost breakdown": AirfareEvolutionBreakdown,
 }

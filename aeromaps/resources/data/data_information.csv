@@ -680,6 +680,7 @@ doc_carbon_tax_per_ask_long_range_dropin_fuel;Vector;€/ASK;Direct operating co
 doc_carbon_tax_per_ask_long_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range hydrogen fleet (evolution)
 doc_carbon_tax_per_ask_long_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for long range fleet (evolution)
 doc_carbon_tax_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, total fleet (evolution)
+doc_carbon_tax_lowering_offset_per_ask_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax lowering carbon offset, total fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_dropin_fuel;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range drop-in fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_hydrogen;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range hydrogen fleet (evolution)
 doc_carbon_tax_per_ask_medium_range_mean;Vector;€/ASK;Direct operating cost attributable to Carbon Tax, for medium range fleet (evolution)
@@ -830,4 +831,19 @@ energy_avail_ft_msw;Vector;EJ;Available energy (converted) under current allocat
 energy_avail_ft_others;Vector;EJ;Available energy (converted) under current allocation (FT-Others)
 energy_avail_hefa_fog;Vector;EJ;Available energy (converted) under current allocation (HEFA-Fog)
 energy_avail_hefa_others;Vector;EJ;Available energy (converted) under current allocation (HEFA-Others)
-
+carbon_offset_baseline_level_vs_2019;Float;%;Level of CO2 emissions relative to 2019 from which higher emissions are offset
+residual_carbon_offset_share_2020;Float;%;Share of remaining CO2 emissions offset in 2020
+residual_carbon_offset_share_2030;Float;%;Share of remaining CO2 emissions offset in 2030
+residual_carbon_offset_share_2040;Float;%;Share of remaining CO2 emissions offset in 2040
+residual_carbon_offset_share_2050;Float;%;Share of remaining CO2 emissions offset in 2050
+carbon_offset_price_2020;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2020
+carbon_offset_price_2030;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2030
+carbon_offset_price_2040;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2040
+carbon_offset_price_2050;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2050
+residual_carbon_offset_share;Vector;%;Share of remaining CO2 emissions offset
+carbon_offset_price;Vector;€/tCO2e;Share of remaining CO2 emissions offset
+noc_carbon_offset_per_ask;Vector;€/ASK;Non-operating cost per ASK due to carbon offset
+level_carbon_offset;Vector;MtCO2;Annual carbon offset due to offsetting for a given level of emissions
+residual_carbon_offset;Vector;MtCO2;Annual carbon offset due to offsetting of a given share of the remaining emissions
+carbon_offset;Vector;MtCO2;Total annual carbon offset
+cumulative_carbon_offset;Vector;GtCO2;Cumulative carbon offset from air transport

@@ -464,7 +464,10 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_short_range: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions: pd.Series = pd.Series(dtype="float64"),
+        carbon_offset: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -570,6 +573,10 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
             + doc_carbon_tax_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
+        doc_carbon_tax_lowering_offset_per_ask_mean = (
+            doc_carbon_tax_per_ask_mean * (co2_emissions - carbon_offset) / co2_emissions
+        )
+
         self.df.loc[
             :, "doc_carbon_tax_per_ask_long_range_dropin_fuel"
         ] = doc_carbon_tax_per_ask_long_range_dropin_fuel
@@ -598,6 +605,9 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
             :, "doc_carbon_tax_per_ask_short_range_mean"
         ] = doc_carbon_tax_per_ask_short_range_mean
         self.df.loc[:, "doc_carbon_tax_per_ask_mean"] = doc_carbon_tax_per_ask_mean
+        self.df.loc[
+            :, "doc_carbon_tax_lowering_offset_per_ask_mean"
+        ] = doc_carbon_tax_lowering_offset_per_ask_mean
 
         return (
             doc_carbon_tax_per_ask_long_range_dropin_fuel,
@@ -610,6 +620,7 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
             doc_carbon_tax_per_ask_short_range_hydrogen,
             doc_carbon_tax_per_ask_short_range_mean,
             doc_carbon_tax_per_ask_mean,
+            doc_carbon_tax_lowering_offset_per_ask_mean,
         )
 
 

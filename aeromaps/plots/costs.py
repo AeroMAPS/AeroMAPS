@@ -1506,6 +1506,17 @@ class DOCEvolutionBreakdown:
             linewidth=2,
         )
 
+        (self.line_total_adjusted,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            color="blue",
+            linestyle="--",
+            label="Total DOC adjusted of offset",
+            linewidth=2,
+        )
+
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
@@ -1559,6 +1570,12 @@ class DOCEvolutionBreakdown:
         self.ax.collections.clear()
 
         self.line_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
+
+        self.line_total_adjusted.set_ydata(
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+        )
 
         self.ax.fill_between(
             self.prospective_years,
@@ -1709,6 +1726,169 @@ class DOCEvolutionCategory:
         )
 
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
+class AirfareEvolutionBreakdown:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        self.ax.plot(
+            self.prospective_years,
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            linestyle="-",
+            linewidth=1,
+        )
+
+        (self.line_total_lowering_offset,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
+            color="grey",
+            linestyle="-",
+            label="Total adjusted DOC & NOC",
+            linewidth=2,
+        )
+
+        (self.line_doc_total,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
+            color="blue",
+            linestyle="--",
+            label="Total DOC without adjustment",
+            linewidth=2,
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            label="Non-energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            color="cornflowerblue",
+            label="Energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            color="lightsteelblue",
+            label="Carbon tax adjusted of offset",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            color="silver",
+            label="Carbon offset",
+        )
+
+        self.ax.grid()
+        self.ax.set_title("Direct and Non Operating Costs breakdown")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Direct and Non Operating Costs [€/ASK]")
+        self.ax = plt.gca()
+        self.ax.legend()
+        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
+        # self.ax.set_ylim(0,)
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.ax.collections.clear()
+
+        self.line_total_lowering_offset.set_ydata(
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
+        )
+
+        self.line_doc_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="royalblue",
+            label="Non-energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
+            color="cornflowerblue",
+            label="Energy",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
+            color="lightsteelblue",
+            label="Carbon tax",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            color="silver",
+            label="Carbon offset",
+        )
 
         self.ax.relim()
         self.ax.autoscale_view()

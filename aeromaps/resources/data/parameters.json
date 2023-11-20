@@ -498,5 +498,14 @@
     "doc_non_energy_per_ask_long_range_dropin_fuel_gain": 0.0,
     "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range": 1.1,
     "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range": 1.1,
-    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range": 1.1
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range": 1.1,
+    "carbon_offset_baseline_level_vs_2019": 850000.0,
+    "residual_carbon_offset_share_2020": 0.0,
+    "residual_carbon_offset_share_2030": 0.0,
+    "residual_carbon_offset_share_2040": 0.0,
+    "residual_carbon_offset_share_2050": 0.0,
+    "carbon_offset_price_2020": 5.0,
+    "carbon_offset_price_2030": 5.0,
+    "carbon_offset_price_2040": 5.0,
+    "carbon_offset_price_2050": 5.0
 }
