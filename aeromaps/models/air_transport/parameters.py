@@ -215,6 +215,12 @@ class AirTransportParameters(object):
     electrofuel_hydrogen_efficiency_2020: float = 0.67
     electrofuel_hydrogen_efficiency_2050: float = 0.67
 
+    # Energy emissions - Kerosene
+    kerosene_emission_factor_2019: float = 87.5
+    kerosene_emission_factor_2030: float = 87.5
+    kerosene_emission_factor_2040: float = 87.5
+    kerosene_emission_factor_2050: float = 87.5
+
     # Energy emissions - Biofuel
     biofuel_hefa_fog_emission_factor_2020: float = 20.7
     biofuel_hefa_fog_emission_factor_2050: float = 20.7

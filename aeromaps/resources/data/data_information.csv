@@ -154,6 +154,9 @@ hydrogen_introduction_year_medium_range;Float;yr;Entry-Into-Service year of hydr
 hydrogen_introduction_year_short_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for short-range market
 hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production from HEFA pathway
 kerosene_emission_factor_2019;Float;gCO2/MJ;Emission factor of fossil kerosene in 2019
+kerosene_emission_factor_2030;Float;gCO2/MJ;Emission factor of fossil kerosene in 2030
+kerosene_emission_factor_2040;Float;gCO2/MJ;Emission factor of fossil kerosene in 2040
+kerosene_emission_factor_2050;Float;gCO2/MJ;Emission factor of fossil kerosene in 2050
 lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
 lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
 lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen

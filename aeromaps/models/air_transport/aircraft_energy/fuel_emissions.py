@@ -225,15 +225,27 @@ class KeroseneEmissionFactor(AeromapsModel):
     def compute(
         self,
         kerosene_emission_factor_2019: float = 0.0,
+        kerosene_emission_factor_2030: float = 0.0,
+        kerosene_emission_factor_2040: float = 0.0,
+        kerosene_emission_factor_2050: float = 0.0,
     ) -> pd.Series:
         """Kerosene CO2 emission factor calculation."""
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_2019
 
+        reference_years = [2019, 2030, 2040, self.parameters.end_year]
+        reference_values = [
+            kerosene_emission_factor_2019,
+            kerosene_emission_factor_2030,
+            kerosene_emission_factor_2040,
+            kerosene_emission_factor_2050,
+        ]
+        kerosene_emission_factor_function = interp1d(
+            reference_years, reference_values, kind="linear"
+        )
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_2019
-
+            self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_function(k)
         kerosene_emission_factor = self.df["kerosene_emission_factor"]
 
         return kerosene_emission_factor
