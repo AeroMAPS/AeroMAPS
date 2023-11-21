@@ -767,7 +767,47 @@ class FleetModel(AeromapsModel):
 
     def _compute_mean_doc_non_energy(self):
         for category in self.fleet.categories.values():
-            # Mean energy consumption per category
+            # Mean non energy DOC per category
+            # Initialization
+            self.df[category.name + ":doc_non_energy:dropin_fuel"] = 0.0
+            self.df[category.name + ":doc_non_energy:hydrogen"] = 0.0
+            # Calculation
+            for subcategory in category.subcategories.values():
+                # TODO: verify aircraft order
+                for k in self.df.index:
+                    if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
+                        self.df.loc[
+                            k, category.name + ":doc_non_energy:dropin_fuel"
+                        ] += self.df.loc[
+                            k,
+                            category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel",
+                        ] / (
+                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
+                        )
+                    else:
+                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] = 0.0
+
+                    if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
+                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] += self.df.loc[
+                            k,
+                            category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen",
+                        ] / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
+                    else:
+                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] = 0.0
+
+            # Mean non energy DOC
+            for k in self.df.index:
+                self.df.loc[k, category.name + ":doc_non_energy"] = self.df.loc[
+                    k, category.name + ":doc_non_energy:dropin_fuel"
+                ] * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100) + self.df.loc[
+                    k, category.name + ":doc_non_energy:hydrogen"
+                ] * (
+                    self.df.loc[k, category.name + ":share:hydrogen"] / 100
+                )
+
+    def _compute_mean_non_co2_emission_index(self):
+        for category in self.fleet.categories.values():
+            # Mean non-CO2 emission index per category
             # Initialization
             self.df[category.name + ":emission_index_nox:dropin_fuel"] = 0.0
             self.df[category.name + ":emission_index_nox:hydrogen"] = 0.0
@@ -841,46 +881,6 @@ class FleetModel(AeromapsModel):
                     k, category.name + ":emission_index_soot:dropin_fuel"
                 ] * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100) + self.df.loc[
                     k, category.name + ":emission_index_soot:hydrogen"
-                ] * (
-                    self.df.loc[k, category.name + ":share:hydrogen"] / 100
-                )
-
-    def _compute_mean_non_co2_emission_index(self):
-        for category in self.fleet.categories.values():
-            # Mean non-CO2 emission index per category
-            # Initialization
-            self.df[category.name + ":doc_non_energy:dropin_fuel"] = 0.0
-            self.df[category.name + ":doc_non_energy:hydrogen"] = 0.0
-            # Calculation
-            for subcategory in category.subcategories.values():
-                # TODO: verify aircraft order
-                for k in self.df.index:
-                    if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":doc_non_energy:dropin_fuel"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] = 0.0
-
-                    if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen",
-                        ] / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    else:
-                        self.df.loc[k, category.name + ":doc_non_energy:hydrogen"] = 0.0
-
-            # Mean consumption
-            for k in self.df.index:
-                self.df.loc[k, category.name + ":doc_non_energy"] = self.df.loc[
-                    k, category.name + ":doc_non_energy:dropin_fuel"
-                ] * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100) + self.df.loc[
-                    k, category.name + ":doc_non_energy:hydrogen"
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
