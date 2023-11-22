@@ -99,6 +99,7 @@ class AeromapsProcess(object):
             self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
             self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
             self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
+            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
         else:
             self.fleet = None
 
@@ -125,6 +126,7 @@ class AeromapsProcess(object):
             self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
             self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
             self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
+            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
