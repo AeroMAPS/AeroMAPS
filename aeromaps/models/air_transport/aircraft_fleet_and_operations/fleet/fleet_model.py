@@ -1,5 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
+import warnings
 
 import pandas as pd
 import ipydatagrid as dg
@@ -806,6 +807,8 @@ class FleetModel(AeromapsModel):
                 )
 
     def _compute_mean_non_co2_emission_index(self):
+        # TODO : correct warnings
+        warnings.filterwarnings("ignore")
         for category in self.fleet.categories.values():
             # Mean non-CO2 emission index per category
             # Initialization
@@ -884,6 +887,9 @@ class FleetModel(AeromapsModel):
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
+        warnings.resetwarnings()
+        warnings.simplefilter("ignore", DeprecationWarning)
+
 
     def _compute_aircraft_share(self):
         # Aircraft share computation
