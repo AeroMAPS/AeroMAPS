@@ -299,10 +299,12 @@ class SootEmissionIndexComplex(AeromapsModel):
                 ]
             else:
                 self.df.loc[k, "emission_index_soot_hydrogen"] = (
-                    emission_index_soot_short_range_hydrogen.loc[k] * ask_short_range_hydrogen.loc[k]
+                    emission_index_soot_short_range_hydrogen.loc[k]
+                    * ask_short_range_hydrogen.loc[k]
                     + emission_index_soot_medium_range_hydrogen.loc[k]
                     * ask_medium_range_hydrogen.loc[k]
-                    + emission_index_soot_long_range_hydrogen.loc[k] * ask_long_range_hydrogen.loc[k]
+                    + emission_index_soot_long_range_hydrogen.loc[k]
+                    * ask_long_range_hydrogen.loc[k]
                 ) / (
                     ask_short_range_hydrogen.loc[k]
                     + ask_medium_range_hydrogen.loc[k]
