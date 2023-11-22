@@ -16,7 +16,6 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
 
     def compute(
         self,
-        dummy_fleet_model_output: np.ndarray,
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),

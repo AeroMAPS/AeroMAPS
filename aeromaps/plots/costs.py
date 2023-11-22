@@ -303,12 +303,14 @@ class ScenarioEnergyExpensesPlot:
 
         self.ax.set_xlim(2020, 2050)
 
+        # TODO : correct warnings
         warnings.filterwarnings("ignore")
 
         primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
         self.ax.add_artist(primary_legend)
 
         warnings.resetwarnings()
+        warnings.simplefilter("ignore", DeprecationWarning)
 
         # Create hatch legend manually
         hatch_patch = mpatches.Patch(facecolor="white", hatch="||", edgecolor="black")
