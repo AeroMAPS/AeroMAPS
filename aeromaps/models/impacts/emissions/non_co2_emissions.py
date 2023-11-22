@@ -62,17 +62,10 @@ class NOxEmissionIndexComplex(AeromapsModel):
 
     def compute(
         self,
-        dummy_fleet_model_output: np.ndarray,
         emission_index_nox_biofuel_2019: float = 0.0,
         emission_index_nox_electrofuel_2019: float = 0.0,
         emission_index_nox_kerosene_2019: float = 0.0,
         emission_index_nox_hydrogen_2019: float = 0.0,
-        ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
