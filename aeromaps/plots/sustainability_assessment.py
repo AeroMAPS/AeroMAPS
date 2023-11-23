@@ -644,7 +644,7 @@ class EquivalentCarbonBudgetAssessmentPlotOld:
             self.float_outputs["aviation_equivalent_carbon_budget"],
         ]
         r = range(len(y1))
-        self.line_carbon_budget = self.ax.bar(r, y1, width=barWidth, color=["skyblue" for i in y1])
+        self.line_carbon_budget = self.ax.bar(r, y1, width=barWidth, color=["grey" for i in y1])
 
         i = 0
         for rect, h in zip(self.line_carbon_budget, y1):
