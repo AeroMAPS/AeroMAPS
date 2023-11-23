@@ -429,9 +429,8 @@ class LeversOfActionDistributionPlot:
                 "Sufficiency " + str(round(sizes[0], 1)) + "%",
                 "Efficiency " + str(round(sizes[1], 1)) + "%",
                 "Energy " + str(round(sizes[2], 1)) + "%",
-                "Others " + str(round(sizes[3], 1)) + "%",
             )
-            colors = "red", "gold", "yellowgreen", "lightskyblue"
+            colors = "red", "gold", "yellowgreen"
 
             self.line_part_reduction_CO2 = self.ax.pie(
                 sizes,
@@ -442,8 +441,8 @@ class LeversOfActionDistributionPlot:
             )
 
             self.ax.set_title(
-                "Impact of the levers of action\non the reduction of cumulative\nCO2 emissions compared to the"
-                "\nbaseline scenario"
+                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
+                " baseline scenario\nShare display depends on lever order convention"
             )
 
             self.ax.legend(labels, loc="best")
@@ -455,10 +454,10 @@ class LeversOfActionDistributionPlot:
             self.fig.tight_layout()
 
         else:
-            sizes = [1, 0, 0, 0]
+            sizes = [1, 0, 0]
 
             labels = ("", "Non-displayable graph           ", "    with these settings        ", "")
-            colors = "white", "white", "white", "white"
+            colors = "white", "white", "white"
 
             self.line_part_reduction_CO2 = self.ax.pie(
                 sizes,
@@ -469,8 +468,8 @@ class LeversOfActionDistributionPlot:
             )
 
             self.ax.set_title(
-                "Impact of the levers of action\non the reduction of cumulative\nCO2 emissions compared to the"
-                "\nbaseline scenario"
+                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
+                " baseline scenario\nShare display depends on lever order convention"
             )
 
             self.ax.legend(labels, loc="center")
@@ -540,7 +539,6 @@ class LeversOfActionDistributionPlot:
                 sizes = np.round(sizes, 3)
             else:
                 sizes = [
-                    0,
                     (
                         self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
                         - self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
@@ -577,9 +575,8 @@ class LeversOfActionDistributionPlot:
                 "Sufficiency " + str(round(sizes[0], 1)) + "%",
                 "Efficiency " + str(round(sizes[1], 1)) + "%",
                 "Energy " + str(round(sizes[2], 1)) + "%",
-                "Others " + str(round(sizes[3], 1)) + "%",
             )
-            colors = "red", "gold", "yellowgreen", "lightskyblue"
+            colors = "red", "gold", "yellowgreen"
 
             self.line_part_reduction_CO2 = self.ax.pie(
                 sizes,
@@ -590,8 +587,8 @@ class LeversOfActionDistributionPlot:
             )
 
             self.ax.set_title(
-                "Impact of the levers of action\non the reduction of cumulative\nCO2 emissions compared to the"
-                "\nbaseline scenario"
+                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
+                " baseline scenario\nShare display depends on lever order convention"
             )
 
             self.ax.legend(labels, loc="best")
@@ -603,12 +600,12 @@ class LeversOfActionDistributionPlot:
 
         else:
 
-            sizes = [1, 0, 0, 0]
+            sizes = [1, 0, 0]
 
             self.ax.clear()
 
             labels = ("", "Non-displayable graph           ", "    with these settings        ", "")
-            colors = "white", "white", "white", "white"
+            colors = "white", "white", "white"
 
             self.line_part_reduction_CO2 = self.ax.pie(
                 sizes,
@@ -619,8 +616,8 @@ class LeversOfActionDistributionPlot:
             )
 
             self.ax.set_title(
-                "Impact of the levers of action\non the reduction of cumulative\nCO2 emissions compared to the"
-                "\nbaseline scenario"
+                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
+                " baseline scenario\nShare display depends on lever order convention"
             )
 
             self.ax.legend(labels, loc="center")

@@ -99,12 +99,12 @@ class ElectricityConsumptionPlot:
         self.ax.legend()
         self.ax.set_xlim(2020, 2050)
 
-        self.ax_twin = self.ax.twinx()
-        self.ax_twin.set_ylabel("Electricity consumption [TWh]")
-        function_ej_to_twh = lambda elec: elec * 1000 / 3.6
-        ymin, ymax = self.ax.get_ylim()
-        self.ax_twin.set_ylim((function_ej_to_twh(ymin), function_ej_to_twh(ymax)))
-        self.ax_twin.plot([], [])
+        # self.ax_twin = self.ax.twinx()
+        # self.ax_twin.set_ylabel("Electricity consumption [TWh]")
+        # function_ej_to_twh = lambda elec: elec * 1000 / 3.6
+        # ymin, ymax = self.ax.get_ylim()
+        # self.ax_twin.set_ylim((function_ej_to_twh(ymin), function_ej_to_twh(ymax)))
+        # self.ax_twin.plot([], [])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -131,6 +131,6 @@ class ElectricityConsumptionPlot:
 
         self.ax.relim()
         self.ax.autoscale_view()
-        self.ax_twin.relim()
-        self.ax_twin.autoscale_view()
+        # self.ax_twin.relim()
+        # self.ax_twin.autoscale_view()
         self.fig.canvas.draw()

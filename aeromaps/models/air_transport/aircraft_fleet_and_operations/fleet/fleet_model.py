@@ -890,7 +890,6 @@ class FleetModel(AeromapsModel):
         warnings.resetwarnings()
         warnings.simplefilter("ignore", DeprecationWarning)
 
-
     def _compute_aircraft_share(self):
         # Aircraft share computation
         for category in self.fleet.categories.values():
