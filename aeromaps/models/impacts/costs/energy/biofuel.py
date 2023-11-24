@@ -427,7 +427,7 @@ class BiofuelMfsp(AeromapsModel):
         """Biofuel MFSP (Minimal fuel selling price) computed using a compound annual growth rate based
         on the fuel initial and final MFSP"""
 
-        reference_years = [2020, 2050]
+        reference_years = [2020, self.end_year]
 
         # HEFA FOG
 
@@ -548,7 +548,7 @@ class BiofuelCapex(AeromapsModel):
         """Biofuel capex (Minimal fuel selling price) computed using a compound annual growth rate based
         on the fuel initial and final capex"""
 
-        reference_years = [2020, 2050]
+        reference_years = [2020, self.end_year]
 
         # HEFA FOG
         # print(reference_years[1] - reference_years[0])

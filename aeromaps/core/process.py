@@ -46,7 +46,7 @@ class AeromapsProcess(object):
         self.models = models
 
         self.parameters = Parameters()
-        self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
+        self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
 
         self.setup(add_examples_aircraft_and_subcategory)
 
