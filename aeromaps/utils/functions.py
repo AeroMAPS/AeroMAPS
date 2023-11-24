@@ -7,7 +7,8 @@ def _dict_from_json(file_name="parameters.json") -> dict:
         parameters_dict = load(f)
 
     for key, value in parameters_dict.items():
-        if isinstance(value, list):
+        # TODO: generic handling of timetables
+        if isinstance(value, list) and len(value) > 18:
             parameters_dict[key] = pd.Series(value)
 
     return parameters_dict
