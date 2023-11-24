@@ -484,5 +484,19 @@
     "carbon_offset_price_2020": 5.0,
     "carbon_offset_price_2030": 5.0,
     "carbon_offset_price_2040": 5.0,
-    "carbon_offset_price_2050": 5.0
+    "carbon_offset_price_2050": 5.0,
+    "operations_contrails_duration": 15.0,
+    "operations_contrails_final_gain": 59.4,
+    "operations_contrails_final_overconsumption": 0.014,
+    "operations_contrails_start_year": 2051,
+    "rpk_long_range_measures_duration": 5,
+    "rpk_long_range_measures_final_impact": 0,
+    "rpk_long_range_measures_start_year": 2051,
+    "rpk_medium_range_measures_duration": 5,
+    "rpk_medium_range_measures_final_impact": 0,
+    "rpk_medium_range_measures_start_year": 2051,
+    "rpk_short_range_measures_duration": 5,
+    "rpk_short_range_measures_final_impact": 0,
+    "rpk_short_range_measures_start_year": 2051
+
 }
