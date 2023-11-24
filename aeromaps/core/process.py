@@ -41,9 +41,10 @@ class AeromapsProcess(object):
         models=models_simple,
         parameters=all_parameters,
         read_json=False,
-        fleet=False,
+        use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
+        self.use_fleet_model = use_fleet_model
         self.models = models
         self.parameters = parameters
         self.disciplines = []
@@ -54,19 +55,18 @@ class AeromapsProcess(object):
         if read_json:
             self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
 
+        self.setup(add_examples_aircraft_and_subcategory)
+
+    def setup(self, add_examples_aircraft_and_subcategory=True):
         self._initialize_years()
-
         self._initialize_disciplines(
-            fleet, add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
-
         # Create GEMSEO process
         self.process = create_mda(
             "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
-
         self._initialize_data()
-
         self._update_variables()
 
     def _initialize_data(self):
@@ -79,7 +79,7 @@ class AeromapsProcess(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
 
-    def _initialize_disciplines(self, fleet, add_examples_aircraft_and_subcategory=True):
+    def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         for name, model in self.models.items():
             # TODO: check how to avoid providing all parameters
             model.parameters = self.parameters
@@ -89,7 +89,7 @@ class AeromapsProcess(object):
                 self.disciplines.append(model)
             else:
                 print(model.name)
-        if fleet:
+        if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
             )
