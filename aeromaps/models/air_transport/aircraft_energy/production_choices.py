@@ -37,9 +37,7 @@ class BiofuelProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_fog_share"
-                ] = biofuel_hefa_fog_share_function(k)
+                self.df.loc[k, "biofuel_hefa_fog_share"] = biofuel_hefa_fog_share_function(k)
 
         # HEFA OTHERS
         if len(biofuel_hefa_others_share_reference_years) == 0:
@@ -54,9 +52,7 @@ class BiofuelProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_others_share"
-                ] = biofuel_hefa_others_share_function(k)
+                self.df.loc[k, "biofuel_hefa_others_share"] = biofuel_hefa_others_share_function(k)
 
         # FT OTHERS
         if len(biofuel_ft_others_share_reference_years) == 0:
@@ -71,16 +67,12 @@ class BiofuelProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_others_share"
-                ] = biofuel_ft_others_share_function(k)
+                self.df.loc[k, "biofuel_ft_others_share"] = biofuel_ft_others_share_function(k)
 
         # FT MSW
         if len(biofuel_ft_msw_share_reference_years) == 0:
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_msw_share"
-                ] = biofuel_ft_msw_share_reference_years_values
+                self.df.loc[k, "biofuel_ft_msw_share"] = biofuel_ft_msw_share_reference_years_values
         else:
             biofuel_ft_msw_share_function = interp1d(
                 biofuel_ft_msw_share_reference_years,
@@ -88,9 +80,7 @@ class BiofuelProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_msw_share"
-                ] = biofuel_ft_msw_share_function(k)
+                self.df.loc[k, "biofuel_ft_msw_share"] = biofuel_ft_msw_share_function(k)
 
         biofuel_hefa_fog_share = self.df["biofuel_hefa_fog_share"]
         biofuel_hefa_others_share = self.df["biofuel_hefa_others_share"]
@@ -163,9 +153,7 @@ class HydrogenProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "hydrogen_gas_ccs_share"
-                ] = hydrogen_gas_ccs_share_function(k)
+                self.df.loc[k, "hydrogen_gas_ccs_share"] = hydrogen_gas_ccs_share_function(k)
 
         # Coal CCS
         if len(hydrogen_coal_ccs_share_reference_years) == 0:
@@ -180,16 +168,12 @@ class HydrogenProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "hydrogen_coal_ccs_share"
-                ] = hydrogen_coal_ccs_share_function(k)
+                self.df.loc[k, "hydrogen_coal_ccs_share"] = hydrogen_coal_ccs_share_function(k)
 
         # Gas
         if len(hydrogen_gas_share_reference_years) == 0:
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "hydrogen_gas_share"
-                ] = hydrogen_gas_share_reference_years_values
+                self.df.loc[k, "hydrogen_gas_share"] = hydrogen_gas_share_reference_years_values
         else:
             hydrogen_gas_share_function = interp1d(
                 hydrogen_gas_share_reference_years,
@@ -197,9 +181,7 @@ class HydrogenProduction(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "hydrogen_gas_share"
-                ] = hydrogen_gas_share_function(k)
+                self.df.loc[k, "hydrogen_gas_share"] = hydrogen_gas_share_function(k)
 
         hydrogen_electrolysis_share = self.df["hydrogen_electrolysis_share"]
         hydrogen_gas_ccs_share = self.df["hydrogen_gas_ccs_share"]

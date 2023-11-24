@@ -17,26 +17,24 @@ class PassengerAircraftNocCarbonOffset(AeromapsModel):
         self,
         carbon_offset: pd.Series = pd.Series(dtype="float64"),
         ask: pd.Series = pd.Series(dtype="float64"),
-        carbon_offset_price_2020: float = 0.0,
-        carbon_offset_price_2030: float = 0.0,
-        carbon_offset_price_2040: float = 0.0,
-        carbon_offset_price_2050: float = 0.0,
+        carbon_offset_price_reference_years: list = [],
+        carbon_offset_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        reference_years = [2020, 2030, 2040, self.parameters.end_year]
-        reference_values_carbon_offset_price = [
-            carbon_offset_price_2020,
-            carbon_offset_price_2030,
-            carbon_offset_price_2040,
-            carbon_offset_price_2050,
-        ]
-        carbon_offset_price_function = interp1d(
-            reference_years, reference_values_carbon_offset_price, kind="linear"
-        )
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "carbon_offset_price"] = 0.0
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "carbon_offset_price"] = carbon_offset_price_function(k)
+
+        if len(carbon_offset_price_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "carbon_offset_price"] = carbon_offset_price_reference_years_values
+        else:
+            carbon_offset_price_function = interp1d(
+                carbon_offset_price_reference_years,
+                carbon_offset_price_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "carbon_offset_price"] = carbon_offset_price_function(k)
 
         carbon_offset_price = self.df["carbon_offset_price"]
 

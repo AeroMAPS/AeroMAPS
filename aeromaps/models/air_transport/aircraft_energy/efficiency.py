@@ -37,9 +37,7 @@ class BiofuelEfficiency(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_efficiency"
-                ] = biofuel_ft_efficiency_function(k)
+                self.df.loc[k, "biofuel_ft_efficiency"] = biofuel_ft_efficiency_function(k)
 
         # ATJ
         if len(biofuel_atj_efficiency_reference_years) == 0:
@@ -54,9 +52,7 @@ class BiofuelEfficiency(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_atj_efficiency"
-                ] = biofuel_atj_efficiency_function(k)
+                self.df.loc[k, "biofuel_atj_efficiency"] = biofuel_atj_efficiency_function(k)
 
         # HEFA OIL
         if len(biofuel_hefa_oil_efficiency_reference_years) == 0:
@@ -133,9 +129,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrolysis_efficiency"
-                ] = electrolysis_efficiency_function(k)
+                self.df.loc[k, "electrolysis_efficiency"] = electrolysis_efficiency_function(k)
 
         # Liquefaction
         if len(liquefaction_efficiency_reference_years) == 0:
@@ -150,9 +144,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "liquefaction_efficiency"
-                ] = liquefaction_efficiency_function(k)
+                self.df.loc[k, "liquefaction_efficiency"] = liquefaction_efficiency_function(k)
 
         # Electrofuel from hydrogen
         if len(electrofuel_hydrogen_efficiency_reference_years) == 0:

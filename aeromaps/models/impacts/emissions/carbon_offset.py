@@ -45,28 +45,28 @@ class ResidualCarbonOffset(AeromapsModel):
         self,
         co2_emissions: pd.Series = pd.Series(dtype="float64"),
         level_carbon_offset: pd.Series = pd.Series(dtype="float64"),
-        residual_carbon_offset_share_2020: float = 0.0,
-        residual_carbon_offset_share_2030: float = 0.0,
-        residual_carbon_offset_share_2040: float = 0.0,
-        residual_carbon_offset_share_2050: float = 0.0,
+        residual_carbon_offset_share_reference_years: list = [],
+        residual_carbon_offset_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        reference_years = [2020, 2030, 2040, self.parameters.end_year]
-        reference_values_residual_carbon_offset_share = [
-            residual_carbon_offset_share_2020,
-            residual_carbon_offset_share_2030,
-            residual_carbon_offset_share_2040,
-            residual_carbon_offset_share_2050,
-        ]
-        residual_carbon_offset_share_function = interp1d(
-            reference_years, reference_values_residual_carbon_offset_share, kind="linear"
-        )
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "residual_carbon_offset_share"] = 0.0
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "residual_carbon_offset_share"] = residual_carbon_offset_share_function(
-                k
+
+        if len(residual_carbon_offset_share_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "residual_carbon_offset_share"
+                ] = residual_carbon_offset_share_reference_years_values
+        else:
+            residual_carbon_offset_share_function = interp1d(
+                residual_carbon_offset_share_reference_years,
+                residual_carbon_offset_share_reference_years_values,
+                kind="linear",
             )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "residual_carbon_offset_share"
+                ] = residual_carbon_offset_share_function(k)
 
         residual_carbon_offset_share = self.df["residual_carbon_offset_share"]
 
