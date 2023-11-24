@@ -1,4 +1,5 @@
 import os.path as pth
+import copy
 from json import dump
 from dataclasses import fields
 import numpy as np
@@ -47,9 +48,6 @@ class AeromapsProcess(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
         self.parameters = parameters
-        self.disciplines = []
-        self.data = {}
-        self.json = {}
 
         # Read parameters
         if read_json:
@@ -58,7 +56,12 @@ class AeromapsProcess(object):
         self.setup(add_examples_aircraft_and_subcategory)
 
     def setup(self, add_examples_aircraft_and_subcategory=True):
+        self.disciplines = []
+        self.data = {}
+        self.json = {}
+
         self._initialize_years()
+
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )

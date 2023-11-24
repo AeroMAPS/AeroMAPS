@@ -2,6 +2,8 @@ import numpy as np
 from dataclasses import dataclass
 import warnings
 
+warnings.filterwarnings("ignore")
+
 import pandas as pd
 import ipydatagrid as dg
 from ipytree import Tree, Node
