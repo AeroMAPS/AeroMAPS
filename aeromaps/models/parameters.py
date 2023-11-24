@@ -3,8 +3,8 @@ import pandas as pd
 
 from aeromaps.utils.functions import _dict_from_json
 
-class Parameters:
 
+class Parameters:
     def to_dict(self):
         data = self.__dict__
 

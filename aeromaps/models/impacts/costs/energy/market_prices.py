@@ -134,9 +134,7 @@ class CarbonTax(AeromapsModel):
 
         if len(carbon_tax_reference_years) == 0:
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "carbon_tax"
-                ] = carbon_tax_reference_years_values
+                self.df.loc[k, "carbon_tax"] = carbon_tax_reference_years_values
         else:
             carbon_tax_function = interp1d(
                 carbon_tax_reference_years,
@@ -144,9 +142,7 @@ class CarbonTax(AeromapsModel):
                 kind="linear",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "carbon_tax"
-                ] = carbon_tax_function(k)
+                self.df.loc[k, "carbon_tax"] = carbon_tax_function(k)
 
         carbon_tax = self.df.loc[:, "carbon_tax"]
 
