@@ -4,13 +4,14 @@ import pandas as pd
 
 from aeromaps.utils.functions import _dict_from_json
 
+
 class Parameters:
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def __repr__(self):
-        attributes = ', '.join(f'{key}={getattr(self, key)}' for key in vars(self))
+        attributes = ", ".join(f"{key}={getattr(self, key)}" for key in vars(self))
         return f"Parameters({attributes})"
 
     def dict(self):
