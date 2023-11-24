@@ -13,64 +13,86 @@ class BiofuelEfficiency(AeromapsModel):
 
     def compute(
         self,
-        biofuel_ft_efficiency_2020: float = 0.0,
-        biofuel_ft_efficiency_2050: float = 0.0,
-        biofuel_atj_efficiency_2020: float = 0.0,
-        biofuel_atj_efficiency_2050: float = 0.0,
-        biofuel_hefa_oil_efficiency_2020: float = 0.0,
-        biofuel_hefa_oil_efficiency_2050: float = 0.0,
-        biofuel_hefa_fuel_efficiency_2020: float = 0.0,
-        biofuel_hefa_fuel_efficiency_2050: float = 0.0,
+        biofuel_ft_efficiency_reference_years: list = [],
+        biofuel_ft_efficiency_reference_years_values: list = [],
+        biofuel_atj_efficiency_reference_years: list = [],
+        biofuel_atj_efficiency_reference_years_values: list = [],
+        biofuel_hefa_oil_efficiency_reference_years: list = [],
+        biofuel_hefa_oil_efficiency_reference_years_values: list = [],
+        biofuel_hefa_fuel_efficiency_reference_years: list = [],
+        biofuel_hefa_fuel_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel production efficiency calculation using interpolation functions"""
 
         reference_years = [2020, self.end_year]
 
         # FT
-        reference_values_ft = [
-            biofuel_ft_efficiency_2020,
-            biofuel_ft_efficiency_2050,
-        ]
-        biofuel_ft_efficiency_function = interp1d(
-            reference_years, reference_values_ft, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_efficiency"] = biofuel_ft_efficiency_function(k)
+        if len(biofuel_ft_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_ft_efficiency"
+                ] = biofuel_ft_efficiency_reference_years_values
+        else:
+            biofuel_ft_efficiency_function = interp1d(
+                biofuel_ft_efficiency_reference_years,
+                biofuel_ft_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_ft_efficiency"
+                ] = biofuel_ft_efficiency_function(k)
 
         # ATJ
-        reference_values_atj = [
-            biofuel_atj_efficiency_2020,
-            biofuel_atj_efficiency_2050,
-        ]
-        biofuel_atj_efficiency_function = interp1d(
-            reference_years, reference_values_atj, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_atj_efficiency"] = biofuel_atj_efficiency_function(k)
+        if len(biofuel_atj_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_atj_efficiency"
+                ] = biofuel_atj_efficiency_reference_years_values
+        else:
+            biofuel_atj_efficiency_function = interp1d(
+                biofuel_atj_efficiency_reference_years,
+                biofuel_atj_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_atj_efficiency"
+                ] = biofuel_atj_efficiency_function(k)
 
         # HEFA OIL
-        reference_values_hefa_oil = [
-            biofuel_hefa_oil_efficiency_2020,
-            biofuel_hefa_oil_efficiency_2050,
-        ]
-        biofuel_hefa_oil_efficiency_function = interp1d(
-            reference_years, reference_values_hefa_oil, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_oil_efficiency"] = biofuel_hefa_oil_efficiency_function(k)
+        if len(biofuel_hefa_oil_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_hefa_oil_efficiency"
+                ] = biofuel_hefa_oil_efficiency_reference_years_values
+        else:
+            biofuel_hefa_oil_efficiency_function = interp1d(
+                biofuel_hefa_oil_efficiency_reference_years,
+                biofuel_hefa_oil_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_hefa_oil_efficiency"
+                ] = biofuel_hefa_oil_efficiency_function(k)
 
         # HEFA FUEL
-        reference_values_hefa_fuel = [
-            biofuel_hefa_fuel_efficiency_2020,
-            biofuel_hefa_fuel_efficiency_2050,
-        ]
-        biofuel_hefa_fuel_efficiency_function = interp1d(
-            reference_years, reference_values_hefa_fuel, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_fuel_efficiency"] = biofuel_hefa_fuel_efficiency_function(
-                k
+        if len(biofuel_hefa_fuel_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_hefa_fuel_efficiency"
+                ] = biofuel_hefa_fuel_efficiency_reference_years_values
+        else:
+            biofuel_hefa_fuel_efficiency_function = interp1d(
+                biofuel_hefa_fuel_efficiency_reference_years,
+                biofuel_hefa_fuel_efficiency_reference_years_values,
+                kind="linear",
             )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "biofuel_hefa_fuel_efficiency"
+                ] = biofuel_hefa_fuel_efficiency_function(k)
 
         biofuel_ft_efficiency = self.df["biofuel_ft_efficiency"]
         biofuel_atj_efficiency = self.df["biofuel_atj_efficiency"]
