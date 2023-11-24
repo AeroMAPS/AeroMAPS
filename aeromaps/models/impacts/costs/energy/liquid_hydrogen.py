@@ -1354,24 +1354,25 @@ class ElectrolyserCapex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_capex_reference_years: list = [],
-        electrolyser_capex_reference_years_values: list = [],
+        electrolyser_capex_2020: float = 0.0,
+        electrolyser_capex_2030: float = 0.0,
+        electrolyser_capex_2040: float = 0.0,
+        electrolyser_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
         """Electrolyser capital expenditures at eis using interpolation functions"""
+        # FT MSW
+        reference_values_capex = [
+            electrolyser_capex_2020,
+            electrolyser_capex_2030,
+            electrolyser_capex_2040,
+            electrolyser_capex_2050,
+        ]
 
-        if len(electrolyser_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrolysis_h2_eis_capex"
-                ] = electrolyser_capex_reference_years_values
-        else:
-            electrolyser_capex_function = interp1d(
-                electrolyser_capex_reference_years,
-                electrolyser_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_capex"] = electrolyser_capex_function(k)
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "electrolysis_h2_eis_capex"] = capex_function(k)
 
         electrolysis_h2_eis_capex = self.df.loc[:, "electrolysis_h2_eis_capex"]
 
@@ -1384,26 +1385,25 @@ class ElectrolyserFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_fixed_opex_reference_years: list = [],
-        electrolyser_fixed_opex_reference_years_values: list = [],
+        electrolyser_fixed_opex_2020: float = 0.0,
+        electrolyser_fixed_opex_2030: float = 0.0,
+        electrolyser_fixed_opex_2040: float = 0.0,
+        electrolyser_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
         """Electrolyser fixed operational expenditures at entry into service using interpolation functions"""
+        # FT MSW
+        reference_values_fixed_opex = [
+            electrolyser_fixed_opex_2020,
+            electrolyser_fixed_opex_2030,
+            electrolyser_fixed_opex_2040,
+            electrolyser_fixed_opex_2050,
+        ]
 
-        if len(electrolyser_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrolysis_h2_eis_fixed_opex"
-                ] = electrolyser_fixed_opex_reference_years_values
-        else:
-            electrolyser_fixed_opex_function = interp1d(
-                electrolyser_fixed_opex_reference_years,
-                electrolyser_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = electrolyser_fixed_opex_function(
-                    k
-                )
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = fixed_opex_function(k)
 
         electrolysis_h2_eis_fixed_opex = self.df.loc[:, "electrolysis_h2_eis_fixed_opex"]
 
@@ -1416,24 +1416,25 @@ class ElectrolyserVarOpex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_var_opex_reference_years: list = [],
-        electrolyser_var_opex_reference_years_values: list = [],
+        electrolyser_var_opex_2020: float = 0.0,
+        electrolyser_var_opex_2030: float = 0.0,
+        electrolyser_var_opex_2040: float = 0.0,
+        electrolyser_var_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
         """Electrolyser variable operational expenditures at entry into service using interpolation functions"""
+        # FT MSW
+        reference_values_var_opex = [
+            electrolyser_var_opex_2020,
+            electrolyser_var_opex_2030,
+            electrolyser_var_opex_2040,
+            electrolyser_var_opex_2050,
+        ]
 
-        if len(electrolyser_var_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrolysis_h2_eis_var_opex"
-                ] = electrolyser_var_opex_reference_years_values
-        else:
-            electrolyser_var_opex_function = interp1d(
-                electrolyser_var_opex_reference_years,
-                electrolyser_var_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_var_opex"] = electrolyser_var_opex_function(k)
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "electrolysis_h2_eis_var_opex"] = var_opex_function(k)
 
         electrolysis_h2_eis_var_opex = self.df.loc[:, "electrolysis_h2_eis_var_opex"]
 
@@ -1463,7 +1464,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 #             electrolyser_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -1487,22 +1488,25 @@ class LiquefierCapex(AeromapsModel):
 
     def compute(
         self,
-        liquefier_capex_reference_years: list = [],
-        liquefier_capex_reference_years_values: list = [],
+        liquefier_capex_2020: float = 0.0,
+        liquefier_capex_2030: float = 0.0,
+        liquefier_capex_2040: float = 0.0,
+        liquefier_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
-        """Liquefier capital expenditures at eis using interpolation functions"""
+        """liquefier capital expenditures at eis using interpolation functions"""
+        # FT MSW
+        reference_values_capex = [
+            liquefier_capex_2020,
+            liquefier_capex_2030,
+            liquefier_capex_2040,
+            liquefier_capex_2050,
+        ]
 
-        if len(liquefier_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "liquefier_eis_capex"] = liquefier_capex_reference_years_values
-        else:
-            liquefier_capex_function = interp1d(
-                liquefier_capex_reference_years,
-                liquefier_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "liquefier_eis_capex"] = liquefier_capex_function(k)
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "liquefier_eis_capex"] = capex_function(k)
 
         liquefier_eis_capex = self.df.loc[:, "liquefier_eis_capex"]
 
@@ -1531,7 +1535,7 @@ class LiquefierCapex(AeromapsModel):
 #             liquefier_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -1555,21 +1559,26 @@ class GasCcsCapex(AeromapsModel):
 
     def compute(
         self,
-        gas_ccs_eis_capex_reference_years: list = [],
-        gas_ccs_eis_capex_reference_years_values: list = [],
+        gas_ccs_eis_capex_2020: float = 0.0,
+        gas_ccs_eis_capex_2030: float = 0.0,
+        gas_ccs_eis_capex_2040: float = 0.0,
+        gas_ccs_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_ccs_eis_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_ccs_eis_capex"] = gas_ccs_eis_capex_reference_years_values
-        else:
-            gas_ccs_eis_capex_function = interp1d(
-                gas_ccs_eis_capex_reference_years,
-                gas_ccs_eis_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_ccs_eis_capex"] = gas_ccs_eis_capex_function(k)
+        reference_values_gas_ccs_capex = [
+            gas_ccs_eis_capex_2020,
+            gas_ccs_eis_capex_2030,
+            gas_ccs_eis_capex_2040,
+            gas_ccs_eis_capex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_ccs_capex_function = interp1d(
+            reference_years, reference_values_gas_ccs_capex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_ccs_eis_capex"] = gas_ccs_capex_function(k)
 
         gas_ccs_eis_capex = self.df.loc[:, "gas_ccs_eis_capex"]
 
@@ -1582,23 +1591,26 @@ class GasCcsFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        gas_ccs_eis_fixed_opex_reference_years: list = [],
-        gas_ccs_eis_fixed_opex_reference_years_values: list = [],
+        gas_ccs_eis_fixed_opex_2020: float = 0.0,
+        gas_ccs_eis_fixed_opex_2030: float = 0.0,
+        gas_ccs_eis_fixed_opex_2040: float = 0.0,
+        gas_ccs_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_ccs_eis_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "gas_ccs_eis_fixed_opex"
-                ] = gas_ccs_eis_fixed_opex_reference_years_values
-        else:
-            gas_ccs_eis_fixed_opex_function = interp1d(
-                gas_ccs_eis_fixed_opex_reference_years,
-                gas_ccs_eis_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_ccs_eis_fixed_opex"] = gas_ccs_eis_fixed_opex_function(k)
+        reference_values_gas_ccs_fixed_opex = [
+            gas_ccs_eis_fixed_opex_2020,
+            gas_ccs_eis_fixed_opex_2030,
+            gas_ccs_eis_fixed_opex_2040,
+            gas_ccs_eis_fixed_opex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_ccs_fixed_opex_function = interp1d(
+            reference_years, reference_values_gas_ccs_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_ccs_eis_fixed_opex"] = gas_ccs_fixed_opex_function(k)
 
         gas_ccs_eis_fixed_opex = self.df.loc[:, "gas_ccs_eis_fixed_opex"]
 
@@ -1606,26 +1618,31 @@ class GasCcsFixedOpex(AeromapsModel):
 
 
 class GasCcsEfficiency(AeromapsModel):
-    def __init__(self, name="gas_ccs_efficiency", *args, **kwargs):
+    def __init__(self, name="gas_ccs_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
-        gas_ccs_efficiency_reference_years: list = [],
-        gas_ccs_efficiency_reference_years_values: list = [],
+        gas_ccs_efficiency_2020: float = 0.0,
+        gas_ccs_efficiency_2030: float = 0.0,
+        gas_ccs_efficiency_2040: float = 0.0,
+        gas_ccs_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_ccs_efficiency_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_ccs_efficiency"] = gas_ccs_efficiency_reference_years_values
-        else:
-            gas_ccs_efficiency_function = interp1d(
-                gas_ccs_efficiency_reference_years,
-                gas_ccs_efficiency_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_ccs_efficiency"] = gas_ccs_efficiency_function(k)
+        reference_values_gas_ccs_efficiency = [
+            gas_ccs_efficiency_2020,
+            gas_ccs_efficiency_2030,
+            gas_ccs_efficiency_2040,
+            gas_ccs_efficiency_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_ccs_efficiency_function = interp1d(
+            reference_years, reference_values_gas_ccs_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_ccs_efficiency"] = gas_ccs_efficiency_function(k)
 
         gas_ccs_efficiency = self.df.loc[:, "gas_ccs_efficiency"]
 
@@ -1638,21 +1655,24 @@ class GasCapex(AeromapsModel):
 
     def compute(
         self,
-        gas_eis_capex_reference_years: list = [],
-        gas_eis_capex_reference_years_values: list = [],
+        gas_eis_capex_2020: float = 0.0,
+        gas_eis_capex_2030: float = 0.0,
+        gas_eis_capex_2040: float = 0.0,
+        gas_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_eis_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_eis_capex"] = gas_eis_capex_reference_years_values
-        else:
-            gas_eis_capex_function = interp1d(
-                gas_eis_capex_reference_years,
-                gas_eis_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_eis_capex"] = gas_eis_capex_function(k)
+        reference_values_gas_capex = [
+            gas_eis_capex_2020,
+            gas_eis_capex_2030,
+            gas_eis_capex_2040,
+            gas_eis_capex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_capex_function = interp1d(reference_years, reference_values_gas_capex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_eis_capex"] = gas_capex_function(k)
 
         gas_eis_capex = self.df.loc[:, "gas_eis_capex"]
 
@@ -1665,21 +1685,26 @@ class GasFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        gas_eis_fixed_opex_reference_years: list = [],
-        gas_eis_fixed_opex_reference_years_values: list = [],
+        gas_eis_fixed_opex_2020: float = 0.0,
+        gas_eis_fixed_opex_2030: float = 0.0,
+        gas_eis_fixed_opex_2040: float = 0.0,
+        gas_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_eis_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_eis_fixed_opex"] = gas_eis_fixed_opex_reference_years_values
-        else:
-            gas_eis_fixed_opex_function = interp1d(
-                gas_eis_fixed_opex_reference_years,
-                gas_eis_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_eis_fixed_opex"] = gas_eis_fixed_opex_function(k)
+        reference_values_gas_fixed_opex = [
+            gas_eis_fixed_opex_2020,
+            gas_eis_fixed_opex_2030,
+            gas_eis_fixed_opex_2040,
+            gas_eis_fixed_opex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_fixed_opex_function = interp1d(
+            reference_years, reference_values_gas_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_eis_fixed_opex"] = gas_fixed_opex_function(k)
 
         gas_eis_fixed_opex = self.df.loc[:, "gas_eis_fixed_opex"]
 
@@ -1692,21 +1717,26 @@ class GasEfficiency(AeromapsModel):
 
     def compute(
         self,
-        gas_efficiency_reference_years: list = [],
-        gas_efficiency_reference_years_values: list = [],
+        gas_efficiency_2020: float = 0.0,
+        gas_efficiency_2030: float = 0.0,
+        gas_efficiency_2040: float = 0.0,
+        gas_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(gas_efficiency_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_efficiency"] = gas_efficiency_reference_years_values
-        else:
-            gas_efficiency_function = interp1d(
-                gas_efficiency_reference_years,
-                gas_efficiency_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_efficiency"] = gas_efficiency_function(k)
+        reference_values_gas_efficiency = [
+            gas_efficiency_2020,
+            gas_efficiency_2030,
+            gas_efficiency_2040,
+            gas_efficiency_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        gas_efficiency_function = interp1d(
+            reference_years, reference_values_gas_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "gas_efficiency"] = gas_efficiency_function(k)
 
         gas_efficiency = self.df.loc[:, "gas_efficiency"]
 
@@ -1719,21 +1749,26 @@ class CoalCcsCapex(AeromapsModel):
 
     def compute(
         self,
-        coal_ccs_eis_capex_reference_years: list = [],
-        coal_ccs_eis_capex_reference_years_values: list = [],
+        coal_ccs_eis_capex_2020: float = 0.0,
+        coal_ccs_eis_capex_2030: float = 0.0,
+        coal_ccs_eis_capex_2040: float = 0.0,
+        coal_ccs_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_ccs_eis_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_ccs_eis_capex"] = coal_ccs_eis_capex_reference_years_values
-        else:
-            coal_ccs_eis_capex_function = interp1d(
-                coal_ccs_eis_capex_reference_years,
-                coal_ccs_eis_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_ccs_eis_capex"] = coal_ccs_eis_capex_function(k)
+        reference_values_coal_ccs_capex = [
+            coal_ccs_eis_capex_2020,
+            coal_ccs_eis_capex_2030,
+            coal_ccs_eis_capex_2040,
+            coal_ccs_eis_capex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_ccs_capex_function = interp1d(
+            reference_years, reference_values_coal_ccs_capex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_ccs_eis_capex"] = coal_ccs_capex_function(k)
 
         coal_ccs_eis_capex = self.df.loc[:, "coal_ccs_eis_capex"]
 
@@ -1746,23 +1781,26 @@ class CoalCcsFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        coal_ccs_eis_fixed_opex_reference_years: list = [],
-        coal_ccs_eis_fixed_opex_reference_years_values: list = [],
+        coal_ccs_eis_fixed_opex_2020: float = 0.0,
+        coal_ccs_eis_fixed_opex_2030: float = 0.0,
+        coal_ccs_eis_fixed_opex_2040: float = 0.0,
+        coal_ccs_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_ccs_eis_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "coal_ccs_eis_fixed_opex"
-                ] = coal_ccs_eis_fixed_opex_reference_years_values
-        else:
-            coal_ccs_eis_fixed_opex_function = interp1d(
-                coal_ccs_eis_fixed_opex_reference_years,
-                coal_ccs_eis_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_ccs_eis_fixed_opex"] = coal_ccs_eis_fixed_opex_function(k)
+        reference_values_coal_ccs_fixed_opex = [
+            coal_ccs_eis_fixed_opex_2020,
+            coal_ccs_eis_fixed_opex_2030,
+            coal_ccs_eis_fixed_opex_2040,
+            coal_ccs_eis_fixed_opex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_ccs_fixed_opex_function = interp1d(
+            reference_years, reference_values_coal_ccs_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_ccs_eis_fixed_opex"] = coal_ccs_fixed_opex_function(k)
 
         coal_ccs_eis_fixed_opex = self.df.loc[:, "coal_ccs_eis_fixed_opex"]
 
@@ -1770,26 +1808,31 @@ class CoalCcsFixedOpex(AeromapsModel):
 
 
 class CoalCcsEfficiency(AeromapsModel):
-    def __init__(self, name="coal_ccs_efficiency", *args, **kwargs):
+    def __init__(self, name="coal_ccs_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
-        coal_ccs_efficiency_reference_years: list = [],
-        coal_ccs_efficiency_reference_years_values: list = [],
+        coal_ccs_efficiency_2020: float = 0.0,
+        coal_ccs_efficiency_2030: float = 0.0,
+        coal_ccs_efficiency_2040: float = 0.0,
+        coal_ccs_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_ccs_efficiency_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_ccs_efficiency"] = coal_ccs_efficiency_reference_years_values
-        else:
-            coal_ccs_efficiency_function = interp1d(
-                coal_ccs_efficiency_reference_years,
-                coal_ccs_efficiency_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_ccs_efficiency"] = coal_ccs_efficiency_function(k)
+        reference_values_coal_ccs_efficiency = [
+            coal_ccs_efficiency_2020,
+            coal_ccs_efficiency_2030,
+            coal_ccs_efficiency_2040,
+            coal_ccs_efficiency_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_ccs_efficiency_function = interp1d(
+            reference_years, reference_values_coal_ccs_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_ccs_efficiency"] = coal_ccs_efficiency_function(k)
 
         coal_ccs_efficiency = self.df.loc[:, "coal_ccs_efficiency"]
 
@@ -1802,21 +1845,24 @@ class CoalCapex(AeromapsModel):
 
     def compute(
         self,
-        coal_eis_capex_reference_years: list = [],
-        coal_eis_capex_reference_years_values: list = [],
+        coal_eis_capex_2020: float = 0.0,
+        coal_eis_capex_2030: float = 0.0,
+        coal_eis_capex_2040: float = 0.0,
+        coal_eis_capex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_eis_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_eis_capex"] = coal_eis_capex_reference_years_values
-        else:
-            coal_eis_capex_function = interp1d(
-                coal_eis_capex_reference_years,
-                coal_eis_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_eis_capex"] = coal_eis_capex_function(k)
+        reference_values_coal_capex = [
+            coal_eis_capex_2020,
+            coal_eis_capex_2030,
+            coal_eis_capex_2040,
+            coal_eis_capex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_capex_function = interp1d(reference_years, reference_values_coal_capex, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_eis_capex"] = coal_capex_function(k)
 
         coal_eis_capex = self.df.loc[:, "coal_eis_capex"]
 
@@ -1829,21 +1875,26 @@ class CoalFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        coal_eis_fixed_opex_reference_years: list = [],
-        coal_eis_fixed_opex_reference_years_values: list = [],
+        coal_eis_fixed_opex_2020: float = 0.0,
+        coal_eis_fixed_opex_2030: float = 0.0,
+        coal_eis_fixed_opex_2040: float = 0.0,
+        coal_eis_fixed_opex_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_eis_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_eis_fixed_opex"] = coal_eis_fixed_opex_reference_years_values
-        else:
-            coal_eis_fixed_opex_function = interp1d(
-                coal_eis_fixed_opex_reference_years,
-                coal_eis_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_eis_fixed_opex"] = coal_eis_fixed_opex_function(k)
+        reference_values_coal_fixed_opex = [
+            coal_eis_fixed_opex_2020,
+            coal_eis_fixed_opex_2030,
+            coal_eis_fixed_opex_2040,
+            coal_eis_fixed_opex_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_fixed_opex_function = interp1d(
+            reference_years, reference_values_coal_fixed_opex, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_eis_fixed_opex"] = coal_fixed_opex_function(k)
 
         coal_eis_fixed_opex = self.df.loc[:, "coal_eis_fixed_opex"]
 
@@ -1856,21 +1907,26 @@ class CoalEfficiency(AeromapsModel):
 
     def compute(
         self,
-        coal_efficiency_reference_years: list = [],
-        coal_efficiency_reference_years_values: list = [],
+        coal_efficiency_2020: float = 0.0,
+        coal_efficiency_2030: float = 0.0,
+        coal_efficiency_2040: float = 0.0,
+        coal_efficiency_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(coal_efficiency_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_efficiency"] = coal_efficiency_reference_years_values
-        else:
-            coal_efficiency_function = interp1d(
-                coal_efficiency_reference_years,
-                coal_efficiency_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_efficiency"] = coal_efficiency_function(k)
+        reference_values_coal_efficiency = [
+            coal_efficiency_2020,
+            coal_efficiency_2030,
+            coal_efficiency_2040,
+            coal_efficiency_2050,
+        ]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        coal_efficiency_function = interp1d(
+            reference_years, reference_values_coal_efficiency, kind="linear"
+        )
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "coal_efficiency"] = coal_efficiency_function(k)
 
         coal_efficiency = self.df.loc[:, "coal_efficiency"]
 
@@ -1883,21 +1939,19 @@ class CcsCost(AeromapsModel):
 
     def compute(
         self,
-        ccs_cost_reference_years: list = [],
-        ccs_cost_reference_years_values: list = [],
+        ccs_cost_2020: float = 0.0,
+        ccs_cost_2030: float = 0.0,
+        ccs_cost_2040: float = 0.0,
+        ccs_cost_2050: float = 0.0,
     ) -> Tuple[pd.Series]:
 
-        if len(ccs_cost_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "ccs_cost"] = ccs_cost_reference_years_values
-        else:
-            ccs_cost_function = interp1d(
-                ccs_cost_reference_years,
-                ccs_cost_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "ccs_cost"] = ccs_cost_function(k)
+        reference_values_ccs_cost = [ccs_cost_2020, ccs_cost_2030, ccs_cost_2040, ccs_cost_2050]
+
+        reference_years = [2020, 2030, 2040, self.end_year]
+
+        ccs_cost_function = interp1d(reference_years, reference_values_ccs_cost, kind="linear")
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "ccs_cost"] = ccs_cost_function(k)
 
         ccs_cost = self.df.loc[:, "ccs_cost"]
 

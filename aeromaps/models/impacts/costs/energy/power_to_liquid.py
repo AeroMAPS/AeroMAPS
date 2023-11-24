@@ -380,7 +380,7 @@ class ElectrofuelCapex(AeromapsModel):
             electrofuel_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -411,7 +411,7 @@ class ElectrofuelFixedOpex(AeromapsModel):
             electrofuel_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -442,7 +442,7 @@ class ElectrofuelVarOpex(AeromapsModel):
             electrofuel_var_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -479,7 +479,7 @@ class ElectrofuelVarOpex(AeromapsModel):
 #             electrofuel_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -520,7 +520,7 @@ class ElectrofuelSpecificCo2(AeromapsModel):
             electrofuel_specific_co2_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         specific_co2_function = interp1d(
             reference_years, reference_values_specific_co2, kind="linear"
