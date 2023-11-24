@@ -24,8 +24,6 @@ class BiofuelEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel production efficiency calculation using interpolation functions"""
 
-        reference_years = [2020, self.end_year]
-
         # FT
         if len(biofuel_ft_efficiency_reference_years) == 0:
             for k in range(self.prospection_start_year, self.end_year + 1):
@@ -113,51 +111,65 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
 
     def compute(
         self,
-        electrolysis_efficiency_2020: float = 0.0,
-        electrolysis_efficiency_2050: float = 0.0,
-        liquefaction_efficiency_2020: float = 0.0,
-        liquefaction_efficiency_2050: float = 0.0,
-        electrofuel_hydrogen_efficiency_2020: float = 0.0,
-        electrofuel_hydrogen_efficiency_2050: float = 0.0,
+        electrolysis_efficiency_reference_years: list = [],
+        electrolysis_efficiency_reference_years_values: list = [],
+        liquefaction_efficiency_reference_years: list = [],
+        liquefaction_efficiency_reference_years_values: list = [],
+        electrofuel_hydrogen_efficiency_reference_years: list = [],
+        electrofuel_hydrogen_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Hydrogen and electrofuel production efficiency calculation using interpolation functions"""
 
-        reference_years = [2020, self.end_year]
-
         # Electrolysis
-        reference_values_electrolysis = [
-            electrolysis_efficiency_2020,
-            electrolysis_efficiency_2050,
-        ]
-        electrolysis_efficiency_function = interp1d(
-            reference_years, reference_values_electrolysis, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolysis_efficiency"] = electrolysis_efficiency_function(k)
+        if len(electrolysis_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrolysis_efficiency"
+                ] = electrolysis_efficiency_reference_years_values
+        else:
+            electrolysis_efficiency_function = interp1d(
+                electrolysis_efficiency_reference_years,
+                electrolysis_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrolysis_efficiency"
+                ] = electrolysis_efficiency_function(k)
 
         # Liquefaction
-        reference_values_liquefaction = [
-            liquefaction_efficiency_2020,
-            liquefaction_efficiency_2050,
-        ]
-        liquefaction_efficiency_function = interp1d(
-            reference_years, reference_values_liquefaction, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "liquefaction_efficiency"] = liquefaction_efficiency_function(k)
+        if len(liquefaction_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "liquefaction_efficiency"
+                ] = liquefaction_efficiency_reference_years_values
+        else:
+            liquefaction_efficiency_function = interp1d(
+                liquefaction_efficiency_reference_years,
+                liquefaction_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "liquefaction_efficiency"
+                ] = liquefaction_efficiency_function(k)
 
         # Electrofuel from hydrogen
-        reference_values_electrofuel_hydrogen = [
-            electrofuel_hydrogen_efficiency_2020,
-            electrofuel_hydrogen_efficiency_2050,
-        ]
-        electrofuel_hydrogen_efficiency_function = interp1d(
-            reference_years, reference_values_electrofuel_hydrogen, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "electrofuel_hydrogen_efficiency"
-            ] = electrofuel_hydrogen_efficiency_function(k)
+        if len(electrofuel_hydrogen_efficiency_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrofuel_hydrogen_efficiency"
+                ] = electrofuel_hydrogen_efficiency_reference_years_values
+        else:
+            electrofuel_hydrogen_efficiency_function = interp1d(
+                electrofuel_hydrogen_efficiency_reference_years,
+                electrofuel_hydrogen_efficiency_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrofuel_hydrogen_efficiency"
+                ] = electrofuel_hydrogen_efficiency_function(k)
 
         electrolysis_efficiency = self.df["electrolysis_efficiency"]
         liquefaction_efficiency = self.df["liquefaction_efficiency"]
