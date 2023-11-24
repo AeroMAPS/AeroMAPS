@@ -17,27 +17,22 @@ class ElectricityCost(AeromapsModel):
 
     def compute(
         self,
-        electricity_cost_2020: float = 0.0,
-        electricity_cost_2030: float = 0.0,
-        electricity_cost_2040: float = 0.0,
-        electricity_cost_2050: float = 0.0,
+        electricity_cost_reference_years: list = [],
+        electricity_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         """LCOE"""
 
-        reference_values_electricity = [
-            electricity_cost_2020,
-            electricity_cost_2030,
-            electricity_cost_2040,
-            electricity_cost_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        electricity_price_function = interp1d(
-            reference_years, reference_values_electricity, kind="quadratic"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electricity_market_price"] = electricity_price_function(k)
+        if len(electricity_cost_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electricity_market_price"] = electricity_cost_reference_years_values
+        else:
+            electricity_cost_function = interp1d(
+                electricity_cost_reference_years,
+                electricity_cost_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electricity_market_price"] = electricity_cost_function(k)
 
         electricity_market_price = self.df.loc[:, "electricity_market_price"]
 
@@ -50,19 +45,21 @@ class CoalCost(AeromapsModel):
 
     def compute(
         self,
-        coal_cost_2020: float = 0.0,
-        coal_cost_2030: float = 0.0,
-        coal_cost_2040: float = 0.0,
-        coal_cost_2050: float = 0.0,
+        coal_cost_reference_years: list = [],
+        coal_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal = [coal_cost_2020, coal_cost_2030, coal_cost_2040, coal_cost_2050]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_price_function = interp1d(reference_years, reference_values_coal, kind="quadratic")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_market_price"] = coal_price_function(k)
+        if len(coal_cost_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "coal_market_price"] = coal_cost_reference_years_values
+        else:
+            coal_cost_function = interp1d(
+                coal_cost_reference_years,
+                coal_cost_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
 
         coal_market_price = self.df.loc[:, "coal_market_price"]
 
@@ -75,19 +72,21 @@ class GasCost(AeromapsModel):
 
     def compute(
         self,
-        gas_cost_2020: float = 0.0,
-        gas_cost_2030: float = 0.0,
-        gas_cost_2040: float = 0.0,
-        gas_cost_2050: float = 0.0,
+        gas_cost_reference_years: list = [],
+        gas_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas = [gas_cost_2020, gas_cost_2030, gas_cost_2040, gas_cost_2050]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_price_function = interp1d(reference_years, reference_values_gas, kind="quadratic")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_market_price"] = gas_price_function(k)
+        if len(gas_cost_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "gas_market_price"] = gas_cost_reference_years_values
+        else:
+            gas_cost_function = interp1d(
+                gas_cost_reference_years,
+                gas_cost_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
 
         gas_market_price = self.df.loc[:, "gas_market_price"]
 
