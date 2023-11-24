@@ -366,25 +366,22 @@ class ElectrofuelCapex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_capex_2020: float = 0.0,
-        electrofuel_capex_2030: float = 0.0,
-        electrofuel_capex_2040: float = 0.0,
-        electrofuel_capex_2050: float = 0.0,
+        electrofuel_capex_reference_years: list = [],
+        electrofuel_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel capital expenditures at eis using interpolation functions"""
-        # FT MSW
-        reference_values_capex = [
-            electrofuel_capex_2020,
-            electrofuel_capex_2030,
-            electrofuel_capex_2040,
-            electrofuel_capex_2050,
-        ]
+        """Electrofuel capital expenditures at eis using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.end_year]
-
-        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_capex"] = capex_function(k)
+        if len(electrofuel_capex_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electrofuel_eis_capex"] = electrofuel_capex_reference_years_values
+        else:
+            electrofuel_capex_function = interp1d(
+                electrofuel_capex_reference_years,
+                electrofuel_capex_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electrofuel_eis_capex"] = electrofuel_capex_function(k)
 
         electrofuel_eis_capex = self.df.loc[:, "electrofuel_eis_capex"]
 
@@ -397,25 +394,24 @@ class ElectrofuelFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_fixed_opex_2020: float = 0.0,
-        electrofuel_fixed_opex_2030: float = 0.0,
-        electrofuel_fixed_opex_2040: float = 0.0,
-        electrofuel_fixed_opex_2050: float = 0.0,
+        electrofuel_fixed_opex_reference_years: list = [],
+        electrofuel_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel fixed operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_fixed_opex = [
-            electrofuel_fixed_opex_2020,
-            electrofuel_fixed_opex_2030,
-            electrofuel_fixed_opex_2040,
-            electrofuel_fixed_opex_2050,
-        ]
+        """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.end_year]
-
-        fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_fixed_opex"] = fixed_opex_function(k)
+        if len(electrofuel_fixed_opex_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrofuel_eis_fixed_opex"
+                ] = electrofuel_fixed_opex_reference_years_values
+        else:
+            electrofuel_fixed_opex_function = interp1d(
+                electrofuel_fixed_opex_reference_years,
+                electrofuel_fixed_opex_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electrofuel_eis_fixed_opex"] = electrofuel_fixed_opex_function(k)
 
         electrofuel_eis_fixed_opex = self.df.loc[:, "electrofuel_eis_fixed_opex"]
 
@@ -428,25 +424,24 @@ class ElectrofuelVarOpex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_var_opex_2020: float = 0.0,
-        electrofuel_var_opex_2030: float = 0.0,
-        electrofuel_var_opex_2040: float = 0.0,
-        electrofuel_var_opex_2050: float = 0.0,
+        electrofuel_var_opex_reference_years: list = [],
+        electrofuel_var_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel variable operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_var_opex = [
-            electrofuel_var_opex_2020,
-            electrofuel_var_opex_2030,
-            electrofuel_var_opex_2040,
-            electrofuel_var_opex_2050,
-        ]
+        """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.end_year]
-
-        var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_var_opex"] = var_opex_function(k)
+        if len(electrofuel_var_opex_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrofuel_eis_var_opex"
+                ] = electrofuel_var_opex_reference_years_values
+        else:
+            electrofuel_var_opex_function = interp1d(
+                electrofuel_var_opex_reference_years,
+                electrofuel_var_opex_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electrofuel_eis_var_opex"] = electrofuel_var_opex_function(k)
 
         electrofuel_eis_var_opex = self.df.loc[:, "electrofuel_eis_var_opex"]
 
@@ -506,27 +501,26 @@ class ElectrofuelSpecificCo2(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_specific_co2_2020: float = 0.0,
-        electrofuel_specific_co2_2030: float = 0.0,
-        electrofuel_specific_co2_2040: float = 0.0,
-        electrofuel_specific_co2_2050: float = 0.0,
+        electrofuel_specific_co2_reference_years: list = [],
+        electrofuel_specific_co2_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel efficiency at eis using interpolation functions"""
-        # FT MSW
-        reference_values_specific_co2 = [
-            electrofuel_specific_co2_2020,
-            electrofuel_specific_co2_2030,
-            electrofuel_specific_co2_2040,
-            electrofuel_specific_co2_2050,
-        ]
+        """Electrofuel efficiency at eis using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.end_year]
-
-        specific_co2_function = interp1d(
-            reference_years, reference_values_specific_co2, kind="linear"
-        )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_specific_co2"] = specific_co2_function(k)
+        if len(electrofuel_specific_co2_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "electrofuel_eis_specific_co2"
+                ] = electrofuel_specific_co2_reference_years_values
+        else:
+            electrofuel_specific_co2_function = interp1d(
+                electrofuel_specific_co2_reference_years,
+                electrofuel_specific_co2_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, "electrofuel_eis_specific_co2"] = electrofuel_specific_co2_function(
+                    k
+                )
 
         electrofuel_eis_specific_co2 = self.df.loc[:, "electrofuel_eis_specific_co2"]
 
