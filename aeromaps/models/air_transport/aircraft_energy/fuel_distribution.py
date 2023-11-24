@@ -28,7 +28,7 @@ class DropinFuelDistribution(AeromapsModel):
                 self.df.loc[k, "biofuel_share"] = biofuel_share_reference_years_values
         else:
             biofuel_share_function = interp1d(
-                biofuel_share_reference_years, biofuel_share_reference_years_values, kind="linear"
+                biofuel_share_reference_years, biofuel_share_reference_years_values, kind="quadratic"
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
                 if biofuel_share_function(k) <= 0:
@@ -47,7 +47,7 @@ class DropinFuelDistribution(AeromapsModel):
             electrofuel_share_function = interp1d(
                 electrofuel_share_reference_years,
                 electrofuel_share_reference_years_values,
-                kind="linear",
+                kind="quadratic",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
                 if electrofuel_share_function(k) <= 0:
