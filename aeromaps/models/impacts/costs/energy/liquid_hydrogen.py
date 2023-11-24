@@ -1368,7 +1368,7 @@ class ElectrolyserCapex(AeromapsModel):
             electrolyser_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1399,7 +1399,7 @@ class ElectrolyserFixedOpex(AeromapsModel):
             electrolyser_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1430,7 +1430,7 @@ class ElectrolyserVarOpex(AeromapsModel):
             electrolyser_var_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1464,7 +1464,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 #             electrolyser_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -1502,7 +1502,7 @@ class LiquefierCapex(AeromapsModel):
             liquefier_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1535,7 +1535,7 @@ class LiquefierCapex(AeromapsModel):
 #             liquefier_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -1572,7 +1572,7 @@ class GasCcsCapex(AeromapsModel):
             gas_ccs_eis_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_ccs_capex_function = interp1d(
             reference_years, reference_values_gas_ccs_capex, kind="linear"
@@ -1604,7 +1604,7 @@ class GasCcsFixedOpex(AeromapsModel):
             gas_ccs_eis_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_ccs_fixed_opex_function = interp1d(
             reference_years, reference_values_gas_ccs_fixed_opex, kind="linear"
@@ -1636,7 +1636,7 @@ class GasCcsEfficiency(AeromapsModel):
             gas_ccs_efficiency_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_ccs_efficiency_function = interp1d(
             reference_years, reference_values_gas_ccs_efficiency, kind="linear"
@@ -1668,7 +1668,7 @@ class GasCapex(AeromapsModel):
             gas_eis_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_capex_function = interp1d(reference_years, reference_values_gas_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1698,7 +1698,7 @@ class GasFixedOpex(AeromapsModel):
             gas_eis_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_fixed_opex_function = interp1d(
             reference_years, reference_values_gas_fixed_opex, kind="linear"
@@ -1730,7 +1730,7 @@ class GasEfficiency(AeromapsModel):
             gas_efficiency_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_efficiency_function = interp1d(
             reference_years, reference_values_gas_efficiency, kind="linear"
@@ -1762,7 +1762,7 @@ class CoalCcsCapex(AeromapsModel):
             coal_ccs_eis_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_ccs_capex_function = interp1d(
             reference_years, reference_values_coal_ccs_capex, kind="linear"
@@ -1794,7 +1794,7 @@ class CoalCcsFixedOpex(AeromapsModel):
             coal_ccs_eis_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_ccs_fixed_opex_function = interp1d(
             reference_years, reference_values_coal_ccs_fixed_opex, kind="linear"
@@ -1826,7 +1826,7 @@ class CoalCcsEfficiency(AeromapsModel):
             coal_ccs_efficiency_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_ccs_efficiency_function = interp1d(
             reference_years, reference_values_coal_ccs_efficiency, kind="linear"
@@ -1858,7 +1858,7 @@ class CoalCapex(AeromapsModel):
             coal_eis_capex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_capex_function = interp1d(reference_years, reference_values_coal_capex, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -1888,7 +1888,7 @@ class CoalFixedOpex(AeromapsModel):
             coal_eis_fixed_opex_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_fixed_opex_function = interp1d(
             reference_years, reference_values_coal_fixed_opex, kind="linear"
@@ -1920,7 +1920,7 @@ class CoalEfficiency(AeromapsModel):
             coal_efficiency_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_efficiency_function = interp1d(
             reference_years, reference_values_coal_efficiency, kind="linear"
@@ -1947,7 +1947,7 @@ class CcsCost(AeromapsModel):
 
         reference_values_ccs_cost = [ccs_cost_2020, ccs_cost_2030, ccs_cost_2040, ccs_cost_2050]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         ccs_cost_function = interp1d(reference_years, reference_values_ccs_cost, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):

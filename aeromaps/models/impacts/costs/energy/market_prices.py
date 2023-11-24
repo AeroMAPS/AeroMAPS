@@ -31,7 +31,7 @@ class ElectricityCost(AeromapsModel):
             electricity_cost_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         electricity_price_function = interp1d(
             reference_years, reference_values_electricity, kind="quadratic"
@@ -58,7 +58,7 @@ class CoalCost(AeromapsModel):
 
         reference_values_coal = [coal_cost_2020, coal_cost_2030, coal_cost_2040, coal_cost_2050]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         coal_price_function = interp1d(reference_years, reference_values_coal, kind="quadratic")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -83,7 +83,7 @@ class GasCost(AeromapsModel):
 
         reference_values_gas = [gas_cost_2020, gas_cost_2030, gas_cost_2040, gas_cost_2050]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         gas_price_function = interp1d(reference_years, reference_values_gas, kind="quadratic")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -108,7 +108,7 @@ class Co2Cost(AeromapsModel):
 
         reference_values_co2 = [co2_cost_2020, co2_cost_2030, co2_cost_2040, co2_cost_2050]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         co2_price_function = interp1d(reference_years, reference_values_co2, kind="linear")
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -168,7 +168,7 @@ class KerosenePrice(AeromapsModel):
             kerosene_price_2050,
         ]
 
-        reference_years = [2020, 2030, 2040, 2050]
+        reference_years = [2020, 2030, 2040, self.end_year]
 
         kerosene_price_function = interp1d(
             reference_years, reference_values_kerosene, kind="quadratic"
