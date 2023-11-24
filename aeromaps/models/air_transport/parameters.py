@@ -126,10 +126,14 @@ class AirTransportParameters(object):
     fleet_renewal_duration: float = 25.0
 
     # Fuel distribution
-    biofuel_share_2020: float = 0.0
-    biofuel_share_2030: float = 0.0
-    biofuel_share_2040: float = 0.0
-    biofuel_share_2050: float = 0.0
+    # biofuel_share = {
+    #     "years": [2020, 2030, 2040, 2050],
+    #     "values": [0.0, 0.0, 0.0, 0.0],
+    #     "method": "linear"
+    # }
+    biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+    biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
+
     electrofuel_share_2020: float = 0.0
     electrofuel_share_2030: float = 0.0
     electrofuel_share_2040: float = 0.0

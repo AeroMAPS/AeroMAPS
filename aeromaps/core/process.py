@@ -221,7 +221,7 @@ class AeromapsProcess(object):
         for name in all_inputs:
             try:
                 value = getattr(self.parameters, name)
-                if isinstance(value, (float, int)):
+                if isinstance(value, (float, int, list)):
                     self.data["float_inputs"][name] = value
                 else:
                     new_values = []
