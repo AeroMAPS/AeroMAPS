@@ -1,30 +1,20 @@
-from dataclasses import dataclass, asdict, field
-from json import dump, load
+from dataclasses import asdict
+from json import dump
 import pandas as pd
-
-from dacite import from_dict
 
 from aeromaps.utils.functions import _dict_from_json
 
-from aeromaps.models.sustainability_assessment.parameters import SustainabilityAssessmentParameters
-from aeromaps.models.impacts.parameters import ImpactsParameters
-from aeromaps.models.air_transport.parameters import AirTransportParameters
+class Parameters:
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
+    def __repr__(self):
+        attributes = ', '.join(f'{key}={getattr(self, key)}' for key in vars(self))
+        return f"Parameters({attributes})"
 
-@dataclass
-class YearParameters:
-    historic_start_year: int = 2000
-    prospection_start_year: int = 2020
-    end_year: int = 2050
-
-
-@dataclass
-class AllParameters(
-    YearParameters, SustainabilityAssessmentParameters, ImpactsParameters, AirTransportParameters
-):
-    @property
-    def __dict__(self):
-        parameters_dict = asdict(self)
+    def dict(self):
+        parameters_dict = self.__dict__
 
         for key, value in parameters_dict.items():
             if isinstance(value, pd.Series):
@@ -34,14 +24,11 @@ class AllParameters(
 
     def write_json(self, file_name="parameters.json"):
         with open(file_name, "w", encoding="utf-8") as f:
-            dump(self.__dict__, f, ignore_nan=True, ensure_ascii=False, indent=4)
+            dump(self.dict(), f, ignore_nan=True, ensure_ascii=False, indent=4)
 
-    @staticmethod
-    def read_json(file_name="parameters.json"):
+    @classmethod
+    def read_json(cls, file_name="parameters.json"):
 
-        parameters_dict = _dict_from_json(file_name=file_name)
+        data = _dict_from_json(file_name=file_name)
 
-        return from_dict(data_class=AllParameters, data=parameters_dict)
-
-
-all_parameters = AllParameters()
+        return cls(**data)

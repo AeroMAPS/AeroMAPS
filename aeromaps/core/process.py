@@ -1,5 +1,4 @@
 import os.path as pth
-import copy
 from json import dump
 from dataclasses import fields
 import numpy as np
@@ -16,7 +15,7 @@ from gemseo import generate_n2_plot, create_mda
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
 from aeromaps.core.models import models_simple
-from aeromaps.models.parameters import all_parameters
+from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
@@ -40,18 +39,14 @@ class AeromapsProcess(object):
     def __init__(
         self,
         models=models_simple,
-        parameters=all_parameters,
-        read_json=False,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
         self.use_fleet_model = use_fleet_model
         self.models = models
-        self.parameters = parameters
 
-        # Read parameters
-        if read_json:
-            self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
+        self.parameters = Parameters()
+        self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
 
         self.setup(add_examples_aircraft_and_subcategory)
 
@@ -195,10 +190,8 @@ class AeromapsProcess(object):
         return all_inputs
 
     def _format_input_vectors(self):
-        for field in fields(self.parameters):
-            field_name = field.name
-            field_value = getattr(self.parameters, field_name)
-            if not isinstance(field_value, (float, int)):
+        for field_name, field_value in self.parameters.__dict__.items():
+            if not isinstance(field_value, (float, int, list)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
