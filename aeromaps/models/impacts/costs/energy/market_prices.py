@@ -119,28 +119,34 @@ class Co2Cost(AeromapsModel):
         return co2_market_price
 
 
-class Co2Tax(AeromapsModel):
-    def __init__(self, name="co2_tax", *args, **kwargs):
+class CarbonTax(AeromapsModel):
+    def __init__(self, name="carbon_tax", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
-        co2_tax_2020: float = 0.0,
-        co2_tax_2030: float = 0.0,
-        co2_tax_2040: float = 0.0,
-        co2_tax_2050: float = 0.0,
+        carbon_tax_reference_years: list = [],
+        carbon_tax_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-
-        reference_values_co2 = [co2_tax_2020, co2_tax_2030, co2_tax_2040, co2_tax_2050]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        co2_price_function = interp1d(reference_years, reference_values_co2, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "carbon_tax"] = co2_price_function(k)
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "carbon_tax"] = 5.0
+
+        if len(carbon_tax_reference_years) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "carbon_tax"
+                ] = carbon_tax_reference_years_values
+        else:
+            carbon_tax_function = interp1d(
+                carbon_tax_reference_years,
+                carbon_tax_reference_years_values,
+                kind="linear",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "carbon_tax"
+                ] = carbon_tax_function(k)
 
         carbon_tax = self.df.loc[:, "carbon_tax"]
 
