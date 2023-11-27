@@ -586,7 +586,8 @@ class ScenarioEnergyCarbonTaxPlot:
             )
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
@@ -766,7 +767,8 @@ class ScenarioEnergyUnitCostPlot:
             (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal"]) / 119.93,
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -1053,7 +1055,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
             / 119.93,
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -1117,7 +1120,8 @@ class DiscountEffect:
             self.df.loc[self.prospective_years, "discounted_energy_expenses"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -1569,7 +1573,8 @@ class DOCEvolutionBreakdown:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.line_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
@@ -1699,7 +1704,8 @@ class DOCEvolutionCategory:
 
     def update(self, df_data):
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.df = df_data["vector_outputs"]
 
@@ -1840,7 +1846,8 @@ class AirfareEvolutionBreakdown:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.line_total_lowering_offset.set_ydata(
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]

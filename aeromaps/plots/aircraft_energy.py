@@ -62,7 +62,8 @@ class MeanFuelEmissionFactorPlot:
             self.df.loc[self.prospective_years, "co2_per_energy_mean"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -156,7 +157,8 @@ class EmissionFactorPerFuelPlot:
             self.df.loc[self.prospective_years, "kerosene_emission_factor"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -220,7 +222,8 @@ class EnergyConsumptionPlot:
             self.df.loc[self.prospective_years, "energy_consumption"] / 10**12
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()

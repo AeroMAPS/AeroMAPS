@@ -62,7 +62,8 @@ class MeanCO2PerRPKPlot:
             self.df.loc[self.prospective_years, "co2_emissions_per_rpk"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -128,7 +129,8 @@ class MeanCO2PerRTKPlot:
             self.df.loc[self.prospective_years, "co2_emissions_per_rtk"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -227,7 +229,8 @@ class PassengerKayaFactorsPlot:
             self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -322,7 +325,8 @@ class FreightKayaFactorsPlot:
             self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -593,7 +597,8 @@ class LeversOfActionDistributionPlot:
 
             self.ax.legend(labels, loc="best")
 
-            self.ax.collections.clear()
+            for collection in self.ax.collections:
+                collection.remove()
             self.ax.relim()
             self.ax.autoscale_view()
             self.fig.canvas.draw()
@@ -622,7 +627,8 @@ class LeversOfActionDistributionPlot:
 
             self.ax.legend(labels, loc="center")
 
-            self.ax.collections.clear()
+            for collection in self.ax.collections:
+                collection.remove()
             self.ax.relim()
             self.ax.autoscale_view()
             self.fig.canvas.draw()
