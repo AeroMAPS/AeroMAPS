@@ -66,7 +66,8 @@ class CumulativeCO2EmissionsPlot:
             np.ones(len(self.prospective_years)) * self.float_outputs["aviation_carbon_budget"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -128,7 +129,8 @@ class DirectH2OEmissionsPlot:
 
         self.line_h2o_emissions.set_ydata(self.df.loc[self.prospective_years, "h2o_emissions"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -190,7 +192,8 @@ class DirectNOxEmissionsPlot:
 
         self.line_nox_emissions.set_ydata(self.df.loc[self.prospective_years, "nox_emissions"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -254,7 +257,8 @@ class DirectSulfurEmissionsPlot:
             self.df.loc[self.prospective_years, "sulfur_emissions"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -316,7 +320,8 @@ class DirectSootEmissionsPlot:
 
         self.line_soot_emissions.set_ydata(self.df.loc[self.prospective_years, "soot_emissions"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -378,7 +383,8 @@ class CarbonOffsetPlot:
 
         self.line_carbon_offset.set_ydata(self.df.loc[self.prospective_years, "carbon_offset"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -433,7 +439,8 @@ class CumulativeCarbonOffsetPlot:
             self.df.loc[self.prospective_years, "cumulative_carbon_offset"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()

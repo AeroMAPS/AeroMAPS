@@ -72,7 +72,8 @@ class FinalEffectiveRadiativeForcingPlot:
         for rect, h in zip(self.line_composantes_RF, y1):
             rect.set_width(h)
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -173,7 +174,8 @@ class DistributionEffectiveRadiativeForcingPlot:
 
         self.line_aerosol_erf_share.set_ydata(self.df["aerosol_erf"] / self.df["total_erf"] * 100)
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -250,7 +252,8 @@ class EquivalentEmissionsPlot:
 
         self.line_total.set_ydata(self.df.loc[self.prospective_years, "total_equivalent_emissions"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -333,7 +336,8 @@ class CumulativeEquivalentEmissionsPlot:
             self.df.loc[self.prospective_years, "cumulative_total_equivalent_emissions"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -389,7 +393,8 @@ class EquivalentEmissionsRatioPlot:
             self.df.loc[self.prospective_years, "total_co2_equivalent_emissions_ratio"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -478,7 +483,8 @@ class TemperatureIncreaseFromAirTransportPlot:
             self.df.loc[self.prospective_years, "temperature_increase_from_aviation"] * 1000
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.fill_between(
             self.years,

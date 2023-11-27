@@ -57,7 +57,8 @@ class RevenuePassengerKilometerPlot:
 
         self.line_rpk.set_ydata(self.df.loc[self.prospective_years, "rpk"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -119,7 +120,8 @@ class RevenueTonneKilometerPlot:
 
         self.line_rtk.set_ydata(self.df.loc[self.prospective_years, "rtk"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -181,7 +183,8 @@ class AvailableSeatKilometerPlot:
 
         self.line_ask.set_ydata(self.df.loc[self.prospective_years, "ask"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -245,7 +248,8 @@ class TotalAircraftDistancePlot:
             self.df.loc[self.prospective_years, "total_aircraft_distance"] / 10**9
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
