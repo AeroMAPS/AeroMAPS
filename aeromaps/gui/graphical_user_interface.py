@@ -1974,12 +1974,22 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
             self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
             self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 25.0, 100.0]
+            self.process.parameters.electrofuel_share_reference_years_values = [
+                0.0,
+                0.0,
+                25.0,
+                100.0,
+            ]
         elif self.w_energy_mix.value == "ReFuelEU":
             self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
             self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.8, 24.0, 35.0]
             self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 1.2, 10.0, 35.0]
+            self.process.parameters.electrofuel_share_reference_years_values = [
+                0.0,
+                1.2,
+                10.0,
+                35.0,
+            ]
 
         if self.w_biofuel_production.value == "Current":
             self.process.parameters.biofuel_hefa_fog_share_reference_years = []
@@ -2030,16 +2040,36 @@ class GraphicalUserInterface(widgets.VBox):
         elif self.w_hydrogen_production.value == "Gas with CCS":
             self.process.parameters.hydrogen_electrolysis_share_reference_years = [2020, 2030, 2050]
             self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2, 0, 0]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
             self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 30, 70, 100]
             self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
             self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
             self.process.parameters.hydrogen_gas_share_reference_years = [2020, 2030, 2040, 2050]
             self.process.parameters.hydrogen_gas_share_reference_years_values = [71, 70, 30, 0]
         elif self.w_hydrogen_production.value == "Electrolysis":
-            self.process.parameters.hydrogen_electrolysis_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2, 30, 50, 100]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.hydrogen_electrolysis_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [
+                2,
+                30,
+                50,
+                100,
+            ]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
             self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 20, 30, 0]
             self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
             self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
@@ -2053,11 +2083,31 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.electricity_emission_factor_reference_years = []
             self.process.parameters.electricity_emission_factor_reference_years_values = [429.0]
         elif self.w_electricity_production.value == "Medium-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electricity_emission_factor_reference_years_values = [429, 300, 240, 240]
+            self.process.parameters.electricity_emission_factor_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.electricity_emission_factor_reference_years_values = [
+                429,
+                300,
+                240,
+                240,
+            ]
         elif self.w_electricity_production.value == "Low-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electricity_emission_factor_reference_years_values = [429, 200, 120, 70]
+            self.process.parameters.electricity_emission_factor_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.electricity_emission_factor_reference_years_values = [
+                429,
+                200,
+                120,
+                70,
+            ]
         elif self.w_electricity_production.value == "Dedicated low-carbon":
             self.process.parameters.electricity_emission_factor_reference_years = []
             self.process.parameters.electricity_emission_factor_reference_years_values = [20.0]
@@ -2110,9 +2160,19 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.operations_contrails_duration = 15.0
                 # Fuels
                 self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-                self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.0, 24.0, 35.0]
+                self.process.parameters.biofuel_share_reference_years_values = [
+                    0.0,
+                    4.0,
+                    24.0,
+                    35.0,
+                ]
                 self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-                self.process.parameters.electrofuel_share_reference_years_values = [0.0, 2, 13.0, 50.0]
+                self.process.parameters.electrofuel_share_reference_years_values = [
+                    0.0,
+                    2,
+                    13.0,
+                    50.0,
+                ]
                 self.process.parameters.biofuel_hefa_fog_share_reference_years = []
                 self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.7]
                 self.process.parameters.biofuel_hefa_others_share_reference_years = []
@@ -2121,8 +2181,18 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.biofuel_ft_others_share_reference_years_values = [76.3]
                 self.process.parameters.biofuel_ft_msw_share_reference_years = []
                 self.process.parameters.biofuel_ft_msw_share_reference_years_values = [7.4]
-                self.process.parameters.electricity_emission_factor_reference_years = [2020, 2030, 2040, 2050]
-                self.process.parameters.electricity_emission_factor_reference_years_values = [429.0, 160.0, 60.0, 20.0]
+                self.process.parameters.electricity_emission_factor_reference_years = [
+                    2020,
+                    2030,
+                    2040,
+                    2050,
+                ]
+                self.process.parameters.electricity_emission_factor_reference_years_values = [
+                    429.0,
+                    160.0,
+                    60.0,
+                    20.0,
+                ]
                 self.process.parameters.hydrogen_electrolysis_share_reference_years = []
                 self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [100]
                 self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
@@ -2131,7 +2201,6 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
                 self.process.parameters.hydrogen_gas_share_reference_years = []
                 self.process.parameters.hydrogen_gas_share_reference_years_values = [0]
-
 
         # DISCOVERY AND SCENARIOS
         # Environment
