@@ -950,82 +950,34 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Traffic
         if self.w_grouped_market.value == False:
-            self.process.parameters.growth_rate_2020_2030_short_range = (
+            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_short_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_short_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_medium_range = (
+            ]
+            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
                 self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_medium_range = (
-                self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_medium_range = (
-                self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_long_range = (
+            ]
+            self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
                 self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_long_range = (
-                self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_long_range = (
-                self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_freight = (
+            ]
+            self.process.parameters.cagr_freight_reference_periods_values = [
                 self.w_growth_freight_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_freight = (
-                self.w_growth_freight_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_freight = (
-                self.w_growth_freight_percent.value
-            )
+            ]
             self.w_growth_medium_range_percent.disabled = False
             self.w_growth_long_range_percent.disabled = False
             self.w_growth_freight_percent.disabled = False
         else:
-            self.process.parameters.growth_rate_2020_2030_short_range = (
+            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_short_range = (
+            ]
+            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_short_range = (
+            ]
+            self.process.parameters.cagr_passenger_long_range_reference_periods = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_medium_range = (
+            ]
+            self.process.parameters.cagr_freight_reference_periods = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_medium_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_medium_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_freight = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_freight = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_freight = (
-                self.w_growth_short_range_percent.value
-            )
+            ]
             self.w_growth_medium_range_percent.disabled = True
             self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
             self.w_growth_long_range_percent.disabled = True
@@ -2116,18 +2068,10 @@ class GraphicalUserInterface(widgets.VBox):
         if self.w_accordion.selected_index == 1:
             if self.w_action_scenarios.value == "Example scenario":
                 # Traffic
-                self.process.parameters.growth_rate_2020_2030_short_range = 3
-                self.process.parameters.growth_rate_2030_2040_short_range = 3
-                self.process.parameters.growth_rate_2040_2050_short_range = 3
-                self.process.parameters.growth_rate_2020_2030_medium_range = 3
-                self.process.parameters.growth_rate_2030_2040_medium_range = 3
-                self.process.parameters.growth_rate_2040_2050_medium_range = 3
-                self.process.parameters.growth_rate_2020_2030_long_range = 3
-                self.process.parameters.growth_rate_2030_2040_long_range = 3
-                self.process.parameters.growth_rate_2040_2050_long_range = 3
-                self.process.parameters.growth_rate_2020_2030_freight = 3
-                self.process.parameters.growth_rate_2030_2040_freight = 3
-                self.process.parameters.growth_rate_2040_2050_freight = 3
+                self.process.parameters.cagr_passenger_short_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_passenger_long_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_freight_reference_periods_values = [3.0]
                 #  RPK measures
                 self.process.parameters.rpk_short_range_measures_final_impact = 0.0
                 self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
