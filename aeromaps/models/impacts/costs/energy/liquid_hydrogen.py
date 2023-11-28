@@ -8,7 +8,6 @@ from typing import Tuple, Union, Any
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 
 from aeromaps.models.base import AeromapsModel
 
@@ -1370,8 +1369,18 @@ class ElectrolyserCapex(AeromapsModel):
                 electrolyser_capex_reference_years_values,
                 kind="linear",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_capex"] = electrolyser_capex_function(k)
+            if electrolyser_capex_reference_years[-1] >= self.end_year:
+                for k in range(self.prospection_start_year, self.end_year + 1):
+                    self.df.loc[k, "electrolysis_h2_eis_capex"] = electrolyser_capex_function(k)
+            else:
+                for k in range(
+                    self.prospection_start_year, electrolyser_capex_reference_years[-1] + 1
+                ):
+                    self.df.loc[k, "electrolysis_h2_eis_capex"] = electrolyser_capex_function(k)
+                for k in range(electrolyser_capex_reference_years[-1] + 1, self.end_year + 1):
+                    self.df.loc[k, "electrolysis_h2_eis_capex"] = self.df.loc[
+                        k - 1, "electrolysis_h2_eis_capex"
+                    ]
 
         electrolysis_h2_eis_capex = self.df.loc[:, "electrolysis_h2_eis_capex"]
 
@@ -1400,10 +1409,22 @@ class ElectrolyserFixedOpex(AeromapsModel):
                 electrolyser_fixed_opex_reference_years_values,
                 kind="linear",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = electrolyser_fixed_opex_function(
-                    k
-                )
+            if electrolyser_fixed_opex_reference_years[-1] >= self.end_year:
+                for k in range(self.prospection_start_year, self.end_year + 1):
+                    self.df.loc[
+                        k, "electrolysis_h2_eis_fixed_opex"
+                    ] = electrolyser_fixed_opex_function(k)
+            else:
+                for k in range(
+                    self.prospection_start_year, electrolyser_fixed_opex_reference_years[-1] + 1
+                ):
+                    self.df.loc[
+                        k, "electrolysis_h2_eis_fixed_opex"
+                    ] = electrolyser_fixed_opex_function(k)
+                for k in range(electrolyser_fixed_opex_reference_years[-1] + 1, self.end_year + 1):
+                    self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = self.df.loc[
+                        k - 1, "electrolysis_h2_eis_fixed_opex"
+                    ]
 
         electrolysis_h2_eis_fixed_opex = self.df.loc[:, "electrolysis_h2_eis_fixed_opex"]
 
@@ -1432,8 +1453,22 @@ class ElectrolyserVarOpex(AeromapsModel):
                 electrolyser_var_opex_reference_years_values,
                 kind="linear",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrolysis_h2_eis_var_opex"] = electrolyser_var_opex_function(k)
+            if electrolyser_var_opex_reference_years[-1] >= self.end_year:
+                for k in range(self.prospection_start_year, self.end_year + 1):
+                    self.df.loc[k, "electrolysis_h2_eis_var_opex"] = electrolyser_var_opex_function(
+                        k
+                    )
+            else:
+                for k in range(
+                    self.prospection_start_year, electrolyser_var_opex_reference_years[-1] + 1
+                ):
+                    self.df.loc[k, "electrolysis_h2_eis_var_opex"] = electrolyser_var_opex_function(
+                        k
+                    )
+                for k in range(electrolyser_var_opex_reference_years[-1] + 1, self.end_year + 1):
+                    self.df.loc[k, "electrolysis_h2_eis_var_opex"] = self.df.loc[
+                        k - 1, "electrolysis_h2_eis_var_opex"
+                    ]
 
         electrolysis_h2_eis_var_opex = self.df.loc[:, "electrolysis_h2_eis_var_opex"]
 

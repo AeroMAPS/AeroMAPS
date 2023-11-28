@@ -58,8 +58,14 @@ class CoalCost(AeromapsModel):
                 coal_cost_reference_years_values,
                 kind="linear",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
+            if coal_cost_reference_years[-1] >= self.end_year:
+                for k in range(self.prospection_start_year, self.end_year + 1):
+                    self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
+            else:
+                for k in range(self.prospection_start_year, coal_cost_reference_years[-1] + 1):
+                    self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
+                for k in range(coal_cost_reference_years[-1] + 1, self.end_year + 1):
+                    self.df.loc[k, "coal_market_price"] = self.df.loc[k - 1, "coal_market_price"]
 
         coal_market_price = self.df.loc[:, "coal_market_price"]
 
@@ -85,8 +91,14 @@ class GasCost(AeromapsModel):
                 gas_cost_reference_years_values,
                 kind="linear",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
+            if gas_cost_reference_years[-1] >= self.end_year:
+                for k in range(self.prospection_start_year, self.end_year + 1):
+                    self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
+            else:
+                for k in range(self.prospection_start_year, gas_cost_reference_years[-1] + 1):
+                    self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
+                for k in range(gas_cost_reference_years[-1] + 1, self.end_year + 1):
+                    self.df.loc[k, "gas_market_price"] = self.df.loc[k - 1, "gas_market_price"]
 
         gas_market_price = self.df.loc[:, "gas_market_price"]
 

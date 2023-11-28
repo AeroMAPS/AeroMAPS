@@ -26,6 +26,11 @@ class ShortRangeDistribution(AeromapsModel):
 
         reference_years = [2019, 2030, 2040, self.end_year]
 
+        # Reference
+        # "short_range_basicturbofan_share_2019": 88.4,
+        # "short_range_regionalturboprop_share_2019": 2.5,
+        # "short_range_regionalturbofan_share_2019": 9.1,
+
         # Basic Turbofan
         reference_values_basicturbofan = [
             short_range_basicturbofan_share_2019,
