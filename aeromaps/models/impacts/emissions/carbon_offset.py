@@ -14,8 +14,26 @@ class LevelCarbonOffset(AeromapsModel):
     def compute(
         self,
         co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        carbon_offset_baseline_level_vs_2019: float = 0.0,
-    ) -> pd.Series:
+        carbon_offset_baseline_level_vs_2019_reference_periods: list = [],
+        carbon_offset_baseline_level_vs_2019_reference_periods_values: list = [],
+    ) -> Tuple[pd.Series, pd.Series]:
+
+        if len(carbon_offset_baseline_level_vs_2019_reference_periods) == 0:
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[
+                    k, "carbon_offset_baseline_level_vs_2019"
+                ] = carbon_offset_baseline_level_vs_2019_reference_periods_values
+        else:
+            for i in range(0, len(carbon_offset_baseline_level_vs_2019_reference_periods) - 1):
+                for k in range(
+                    carbon_offset_baseline_level_vs_2019_reference_periods[i],
+                    carbon_offset_baseline_level_vs_2019_reference_periods[i + 1] + 1,
+                ):
+                    self.df.loc[
+                        k, "carbon_offset_baseline_level_vs_2019"
+                    ] = carbon_offset_baseline_level_vs_2019_reference_periods_values[i]
+
+        carbon_offset_baseline_level_vs_2019 = self.df["carbon_offset_baseline_level_vs_2019"]
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "level_carbon_offset"] = 0.0
@@ -23,18 +41,22 @@ class LevelCarbonOffset(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             if (
                 co2_emissions.loc[k]
-                > co2_emissions.loc[2019] * carbon_offset_baseline_level_vs_2019 / 100
+                > co2_emissions.loc[2019]
+                * self.df.loc[k, "carbon_offset_baseline_level_vs_2019"]
+                / 100
             ):
                 self.df.loc[k, "level_carbon_offset"] = (
                     co2_emissions.loc[k]
-                    - co2_emissions.loc[2019] * carbon_offset_baseline_level_vs_2019 / 100
+                    - co2_emissions.loc[2019]
+                    * self.df.loc[k, "carbon_offset_baseline_level_vs_2019"]
+                    / 100
                 )
             else:
                 self.df.loc[k, "level_carbon_offset"] = 0.0
 
         level_carbon_offset = self.df["level_carbon_offset"]
 
-        return level_carbon_offset
+        return (carbon_offset_baseline_level_vs_2019, level_carbon_offset)
 
 
 class ResidualCarbonOffset(AeromapsModel):
