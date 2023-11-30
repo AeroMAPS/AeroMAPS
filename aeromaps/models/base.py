@@ -63,7 +63,7 @@ def InterpolationAeromapsFunction(
                 "Warning Message: "
                 + str(reference_years)
                 + " - Warning on InterpolationAeromapsFunction:"
-                + " The last reference year for the interpolation is lower than end_year, the last reference year value is therefore used as a constant for the upper years.",
+                + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
             )
             for k in range(self.prospection_start_year, reference_years[-1] + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
@@ -109,7 +109,7 @@ def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
                 "Warning Message: "
                 + str(reference_periods)
                 + " - Warning on LevelingAeromapsFunction:"
-                + " The last reference year for the leveling is lower than end_year, the last reference period value is therefore used as a constant for the upper years.",
+                + " The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.",
             )
             for i in range(0, len(reference_periods) - 1):
                 for k in range(reference_periods[i], reference_periods[i + 1] + 1):
