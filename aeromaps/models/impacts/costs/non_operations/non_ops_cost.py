@@ -6,9 +6,7 @@ from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 
 class PassengerAircraftNocCarbonOffset(AeromapsModel):
-    def __init__(
-        self, name="passenger_aircraft_noc_carbon_offset", *args, **kwargs
-    ):
+    def __init__(self, name="passenger_aircraft_noc_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(

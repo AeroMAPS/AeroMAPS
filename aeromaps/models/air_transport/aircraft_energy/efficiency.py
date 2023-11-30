@@ -24,25 +24,33 @@ class BiofuelEfficiency(AeromapsModel):
 
         # FT
         biofuel_ft_efficiency = InterpolationAeromapsFunction(
-            self, biofuel_ft_efficiency_reference_years, biofuel_ft_efficiency_reference_years_values
+            self,
+            biofuel_ft_efficiency_reference_years,
+            biofuel_ft_efficiency_reference_years_values,
         )
         self.df.loc[:, "biofuel_ft_efficiency"] = biofuel_ft_efficiency
 
         # ATJ
         biofuel_atj_efficiency = InterpolationAeromapsFunction(
-            self, biofuel_atj_efficiency_reference_years, biofuel_atj_efficiency_reference_years_values
+            self,
+            biofuel_atj_efficiency_reference_years,
+            biofuel_atj_efficiency_reference_years_values,
         )
         self.df.loc[:, "biofuel_atj_efficiency"] = biofuel_atj_efficiency
 
         # HEFA OIL
         biofuel_hefa_oil_efficiency = InterpolationAeromapsFunction(
-            self, biofuel_hefa_oil_efficiency_reference_years, biofuel_hefa_oil_efficiency_reference_years_values
+            self,
+            biofuel_hefa_oil_efficiency_reference_years,
+            biofuel_hefa_oil_efficiency_reference_years_values,
         )
         self.df.loc[:, "biofuel_hefa_oil_efficiency"] = biofuel_hefa_oil_efficiency
 
         # HEFA FUEL
         biofuel_hefa_fuel_efficiency = InterpolationAeromapsFunction(
-            self, biofuel_hefa_fuel_efficiency_reference_years, biofuel_hefa_fuel_efficiency_reference_years_values
+            self,
+            biofuel_hefa_fuel_efficiency_reference_years,
+            biofuel_hefa_fuel_efficiency_reference_years_values,
         )
         self.df.loc[:, "biofuel_hefa_fuel_efficiency"] = biofuel_hefa_fuel_efficiency
 
@@ -71,19 +79,25 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
 
         # Electrolysis
         electrolysis_efficiency = InterpolationAeromapsFunction(
-            self, electrolysis_efficiency_reference_years, electrolysis_efficiency_reference_years_values
+            self,
+            electrolysis_efficiency_reference_years,
+            electrolysis_efficiency_reference_years_values,
         )
         self.df.loc[:, "electrolysis_efficiency"] = electrolysis_efficiency
 
         # Liquefaction
         liquefaction_efficiency = InterpolationAeromapsFunction(
-            self, liquefaction_efficiency_reference_years, liquefaction_efficiency_reference_years_values
+            self,
+            liquefaction_efficiency_reference_years,
+            liquefaction_efficiency_reference_years_values,
         )
         self.df.loc[:, "liquefaction_efficiency"] = liquefaction_efficiency
 
         # Electrofuel from hydrogen
         electrofuel_hydrogen_efficiency = InterpolationAeromapsFunction(
-            self, electrofuel_hydrogen_efficiency_reference_years, electrofuel_hydrogen_efficiency_reference_years_values
+            self,
+            electrofuel_hydrogen_efficiency_reference_years,
+            electrofuel_hydrogen_efficiency_reference_years_values,
         )
         self.df.loc[:, "electrofuel_hydrogen_efficiency"] = electrofuel_hydrogen_efficiency
 
