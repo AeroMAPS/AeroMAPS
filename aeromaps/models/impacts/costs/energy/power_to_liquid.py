@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 from scipy.interpolate import interp1d
 
@@ -371,19 +371,10 @@ class ElectrofuelCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel capital expenditures at eis using interpolation functions"""
 
-        if len(electrofuel_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrofuel_eis_capex"] = electrofuel_capex_reference_years_values
-        else:
-            electrofuel_capex_function = interp1d(
-                electrofuel_capex_reference_years,
-                electrofuel_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrofuel_eis_capex"] = electrofuel_capex_function(k)
-
-        electrofuel_eis_capex = self.df.loc[:, "electrofuel_eis_capex"]
+        electrofuel_eis_capex = InterpolationAeromapsFunction(
+            self, electrofuel_capex_reference_years, electrofuel_capex_reference_years_values
+        )
+        self.df.loc[:, "electrofuel_eis_capex"] = electrofuel_eis_capex
 
         return electrofuel_eis_capex
 
@@ -399,21 +390,10 @@ class ElectrofuelFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
-        if len(electrofuel_fixed_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrofuel_eis_fixed_opex"
-                ] = electrofuel_fixed_opex_reference_years_values
-        else:
-            electrofuel_fixed_opex_function = interp1d(
-                electrofuel_fixed_opex_reference_years,
-                electrofuel_fixed_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrofuel_eis_fixed_opex"] = electrofuel_fixed_opex_function(k)
-
-        electrofuel_eis_fixed_opex = self.df.loc[:, "electrofuel_eis_fixed_opex"]
+        electrofuel_eis_fixed_opex = InterpolationAeromapsFunction(
+            self, electrofuel_fixed_opex_reference_years, electrofuel_fixed_opex_reference_years_values
+        )
+        self.df.loc[:, "electrofuel_eis_fixed_opex"] = electrofuel_eis_fixed_opex
 
         return electrofuel_eis_fixed_opex
 
@@ -429,21 +409,10 @@ class ElectrofuelVarOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
-        if len(electrofuel_var_opex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrofuel_eis_var_opex"
-                ] = electrofuel_var_opex_reference_years_values
-        else:
-            electrofuel_var_opex_function = interp1d(
-                electrofuel_var_opex_reference_years,
-                electrofuel_var_opex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrofuel_eis_var_opex"] = electrofuel_var_opex_function(k)
-
-        electrofuel_eis_var_opex = self.df.loc[:, "electrofuel_eis_var_opex"]
+        electrofuel_eis_var_opex = InterpolationAeromapsFunction(
+            self, electrofuel_var_opex_reference_years, electrofuel_var_opex_reference_years_values
+        )
+        self.df.loc[:, "electrofuel_eis_var_opex"] = electrofuel_eis_var_opex
 
         return electrofuel_eis_var_opex
 
@@ -506,22 +475,9 @@ class ElectrofuelSpecificCo2(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel efficiency at eis using interpolation functions"""
 
-        if len(electrofuel_specific_co2_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electrofuel_eis_specific_co2"
-                ] = electrofuel_specific_co2_reference_years_values
-        else:
-            electrofuel_specific_co2_function = interp1d(
-                electrofuel_specific_co2_reference_years,
-                electrofuel_specific_co2_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electrofuel_eis_specific_co2"] = electrofuel_specific_co2_function(
-                    k
-                )
-
-        electrofuel_eis_specific_co2 = self.df.loc[:, "electrofuel_eis_specific_co2"]
+        electrofuel_eis_specific_co2 = InterpolationAeromapsFunction(
+            self, electrofuel_specific_co2_reference_years, electrofuel_specific_co2_reference_years_values
+        )
+        self.df.loc[:, "electrofuel_eis_specific_co2"] = electrofuel_eis_specific_co2
 
         return electrofuel_eis_specific_co2
