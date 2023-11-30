@@ -8,8 +8,6 @@ from typing import Tuple
 import pandas as pd
 from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
-from scipy.interpolate import interp1d
-
 
 class ElectricityCost(AeromapsModel):
     def __init__(self, name="electricity_cost", *args, **kwargs):
