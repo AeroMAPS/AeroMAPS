@@ -24,7 +24,7 @@ class DropinFuelDistribution(AeromapsModel):
             biofuel_share_reference_years,
             biofuel_share_reference_years_values,
             method="quadratic",
-            positive_constraint=True
+            positive_constraint=True,
         )
         self.df.loc[:, "biofuel_share"] = biofuel_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -39,7 +39,7 @@ class DropinFuelDistribution(AeromapsModel):
             electrofuel_share_reference_years,
             electrofuel_share_reference_years_values,
             method="quadratic",
-            positive_constraint=True
+            positive_constraint=True,
         )
         self.df.loc[:, "electrofuel_share"] = electrofuel_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
