@@ -113,10 +113,17 @@ class KerosenePrice(AeromapsModel):
         kerosene_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        kerosene_market_price = InterpolationAeromapsFunction(
-            self, kerosene_price_reference_years, kerosene_price_reference_years_values
+        kerosene_market_price_prospective = InterpolationAeromapsFunction(
+            self,
+            kerosene_price_reference_years,
+            kerosene_price_reference_years_values,
         )
-        self.df.loc[:, "kerosene_market_price"] = kerosene_market_price
+        self.df.loc[:, "kerosene_market_price"] = kerosene_market_price_prospective
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "kerosene_market_price"] = self.df.loc[
+                self.prospection_start_year, "kerosene_market_price"
+            ]
+        kerosene_market_price = self.df["kerosene_market_price"]
 
         return kerosene_market_price
 
