@@ -11,8 +11,6 @@ import pandas as pd
 
 from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
-from scipy.interpolate import interp1d
-
 
 class LiquidHydrogenCost(AeromapsModel):
     def __init__(self, name="liquid_hydrogen_cost", *args, **kwargs):

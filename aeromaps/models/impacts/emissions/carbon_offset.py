@@ -1,10 +1,8 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 
 class LevelCarbonOffset(AeromapsModel):
@@ -71,25 +69,14 @@ class ResidualCarbonOffset(AeromapsModel):
         residual_carbon_offset_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
+        residual_carbon_offset_share_prospective = InterpolationAeromapsFunction(
+            self,
+            residual_carbon_offset_share_reference_years,
+            residual_carbon_offset_share_reference_years_values,
+        )
+        self.df.loc[:, "residual_carbon_offset_share"] = residual_carbon_offset_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "residual_carbon_offset_share"] = 0.0
-
-        if len(residual_carbon_offset_share_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "residual_carbon_offset_share"
-                ] = residual_carbon_offset_share_reference_years_values
-        else:
-            residual_carbon_offset_share_function = interp1d(
-                residual_carbon_offset_share_reference_years,
-                residual_carbon_offset_share_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "residual_carbon_offset_share"
-                ] = residual_carbon_offset_share_function(k)
-
         residual_carbon_offset_share = self.df["residual_carbon_offset_share"]
 
         for k in range(self.historic_start_year, self.end_year + 1):
