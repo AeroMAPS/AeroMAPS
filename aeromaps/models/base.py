@@ -27,7 +27,7 @@ class AeromapsModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
-def InterpolationAeromapsFunction(self, reference_years, reference_years_values, method='linear'):
+def InterpolationAeromapsFunction(self, reference_years, reference_years_values, method="linear"):
 
     # Main
     if len(reference_years) == 0:

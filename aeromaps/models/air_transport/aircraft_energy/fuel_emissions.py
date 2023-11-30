@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 
 class BiofuelEmissionFactor(AeromapsModel):
@@ -251,28 +251,16 @@ class KeroseneEmissionFactor(AeromapsModel):
     ) -> pd.Series:
         """Kerosene CO2 emission factor calculation."""
 
-        if len(kerosene_emission_factor_reference_years) == 0:
-            for k in range(self.historic_start_year, self.prospection_start_year):
-                self.df.loc[
-                    k, "kerosene_emission_factor"
-                ] = kerosene_emission_factor_reference_years_values
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "kerosene_emission_factor"
-                ] = kerosene_emission_factor_reference_years_values
-        else:
-            kerosene_emission_factor_function = interp1d(
-                kerosene_emission_factor_reference_years,
-                kerosene_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.historic_start_year, self.prospection_start_year):
-                self.df.loc[
-                    k, "kerosene_emission_factor"
-                ] = kerosene_emission_factor_reference_years_values[0]
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_function(k)
-
+        kerosene_emission_factor_prospective = InterpolationAeromapsFunction(
+            self,
+            kerosene_emission_factor_reference_years,
+            kerosene_emission_factor_reference_years_values,
+        )
+        self.df.loc[:, "kerosene_emission_factor"] = kerosene_emission_factor_prospective
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "kerosene_emission_factor"] = self.df.loc[
+                self.prospection_start_year, "kerosene_emission_factor"
+            ]
         kerosene_emission_factor = self.df["kerosene_emission_factor"]
 
         return kerosene_emission_factor
