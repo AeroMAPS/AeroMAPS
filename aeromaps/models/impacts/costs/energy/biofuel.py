@@ -6,9 +6,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeromapsModel
-
-from scipy.interpolate import interp1d
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 
 class BiofuelCost(AeromapsModel):
@@ -427,81 +425,34 @@ class BiofuelMfsp(AeromapsModel):
         """Biofuel MFSP (Minimal fuel selling price) estimates"""
 
         # HEFA FOG
-        if len(biofuel_hefa_fog_mfsp_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_fog_mfsp"
-                ] = biofuel_hefa_fog_mfsp_reference_years_values
-        else:
-            biofuel_hefa_fog_mfsp_function = interp1d(
-                biofuel_hefa_fog_mfsp_reference_years,
-                biofuel_hefa_fog_mfsp_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp_function(k)
+        biofuel_hefa_fog_mfsp = InterpolationAeromapsFunction(
+            self, biofuel_hefa_fog_mfsp_reference_years, biofuel_hefa_fog_mfsp_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
 
         # HEFA OTHERS
-        if len(biofuel_hefa_others_mfsp_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_others_mfsp"
-                ] = biofuel_hefa_others_mfsp_reference_years_values
-        else:
-            biofuel_hefa_others_mfsp_function = interp1d(
-                biofuel_hefa_others_mfsp_reference_years,
-                biofuel_hefa_others_mfsp_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp_function(k)
+        biofuel_hefa_others_mfsp = InterpolationAeromapsFunction(
+            self, biofuel_hefa_others_mfsp_reference_years, biofuel_hefa_others_mfsp_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
 
         # FT OTHERS
-        if len(biofuel_ft_others_mfsp_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_others_mfsp"
-                ] = biofuel_ft_others_mfsp_reference_years_values
-        else:
-            biofuel_ft_others_mfsp_function = interp1d(
-                biofuel_ft_others_mfsp_reference_years,
-                biofuel_ft_others_mfsp_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp_function(k)
+        biofuel_ft_others_mfsp = InterpolationAeromapsFunction(
+            self, biofuel_ft_others_mfsp_reference_years, biofuel_ft_others_mfsp_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
 
         # FT MSW
-        if len(biofuel_ft_msw_mfsp_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp_reference_years_values
-        else:
-            biofuel_ft_msw_mfsp_function = interp1d(
-                biofuel_ft_msw_mfsp_reference_years,
-                biofuel_ft_msw_mfsp_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp_function(k)
+        biofuel_ft_msw_mfsp = InterpolationAeromapsFunction(
+            self, biofuel_ft_msw_mfsp_reference_years, biofuel_ft_msw_mfsp_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
 
         # ATJ
-        if len(biofuel_atj_mfsp_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_atj_mfsp"] = biofuel_atj_mfsp_reference_years_values
-        else:
-            biofuel_atj_mfsp_function = interp1d(
-                biofuel_atj_mfsp_reference_years,
-                biofuel_atj_mfsp_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_atj_mfsp"] = biofuel_atj_mfsp_function(k)
-
-        biofuel_hefa_fog_mfsp = self.df["biofuel_hefa_fog_mfsp"]
-        biofuel_hefa_others_mfsp = self.df["biofuel_hefa_others_mfsp"]
-        biofuel_ft_others_mfsp = self.df["biofuel_ft_others_mfsp"]
-        biofuel_ft_msw_mfsp = self.df["biofuel_ft_msw_mfsp"]
-        biofuel_atj_mfsp = self.df["biofuel_atj_mfsp"]
+        biofuel_atj_mfsp = InterpolationAeromapsFunction(
+            self, biofuel_atj_mfsp_reference_years, biofuel_atj_mfsp_reference_years_values
+        )
+        self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
 
         # MEAN
         biofuel_mean_mfsp = (
@@ -565,81 +516,34 @@ class BiofuelCapex(AeromapsModel):
         """Biofuel CAPEX (CApital EXPenditures) estimates"""
 
         # HEFA FOG
-        if len(biofuel_hefa_fog_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_fog_capex"
-                ] = biofuel_hefa_fog_capex_reference_years_values
-        else:
-            biofuel_hefa_fog_capex_function = interp1d(
-                biofuel_hefa_fog_capex_reference_years,
-                biofuel_hefa_fog_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex_function(k)
+        biofuel_hefa_fog_capex = InterpolationAeromapsFunction(
+            self, biofuel_hefa_fog_capex_reference_years, biofuel_hefa_fog_capex_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex
 
         # HEFA OTHERS
-        if len(biofuel_hefa_others_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_others_capex"
-                ] = biofuel_hefa_others_capex_reference_years_values
-        else:
-            biofuel_hefa_others_capex_function = interp1d(
-                biofuel_hefa_others_capex_reference_years,
-                biofuel_hefa_others_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex_function(k)
+        biofuel_hefa_others_capex = InterpolationAeromapsFunction(
+            self, biofuel_hefa_others_capex_reference_years, biofuel_hefa_others_capex_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex
 
         # FT OTHERS
-        if len(biofuel_ft_others_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_others_capex"
-                ] = biofuel_ft_others_capex_reference_years_values
-        else:
-            biofuel_ft_others_capex_function = interp1d(
-                biofuel_ft_others_capex_reference_years,
-                biofuel_ft_others_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_others_capex"] = biofuel_ft_others_capex_function(k)
+        biofuel_ft_others_capex = InterpolationAeromapsFunction(
+            self, biofuel_ft_others_capex_reference_years, biofuel_ft_others_capex_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_others_capex"] = biofuel_ft_others_capex
 
         # FT MSW
-        if len(biofuel_ft_msw_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex_reference_years_values
-        else:
-            biofuel_ft_msw_capex_function = interp1d(
-                biofuel_ft_msw_capex_reference_years,
-                biofuel_ft_msw_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex_function(k)
+        biofuel_ft_msw_capex = InterpolationAeromapsFunction(
+            self, biofuel_ft_msw_capex_reference_years, biofuel_ft_msw_capex_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex
 
         # ATJ
-        if len(biofuel_atj_capex_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_atj_capex"] = biofuel_atj_capex_reference_years_values
-        else:
-            biofuel_atj_capex_function = interp1d(
-                biofuel_atj_capex_reference_years,
-                biofuel_atj_capex_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "biofuel_atj_capex"] = biofuel_atj_capex_function(k)
-
-        biofuel_hefa_fog_capex = self.df["biofuel_hefa_fog_capex"]
-        biofuel_hefa_others_capex = self.df["biofuel_hefa_others_capex"]
-        biofuel_ft_others_capex = self.df["biofuel_ft_others_capex"]
-        biofuel_ft_msw_capex = self.df["biofuel_ft_msw_capex"]
-        biofuel_atj_capex = self.df["biofuel_atj_capex"]
+        biofuel_atj_capex = InterpolationAeromapsFunction(
+            self, biofuel_atj_capex_reference_years, biofuel_atj_capex_reference_years_values
+        )
+        self.df.loc[:, "biofuel_atj_capex"] = biofuel_atj_capex
 
         # MEAN
         biofuel_mean_capex = (
