@@ -2,8 +2,6 @@ import numpy as np
 from dataclasses import dataclass
 import warnings
 
-warnings.filterwarnings("ignore")
-
 import pandas as pd
 import ipydatagrid as dg
 from ipytree import Tree, Node
@@ -895,7 +893,6 @@ class FleetModel(AeromapsModel):
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
-
 
     def _compute_aircraft_share(self):
         # Aircraft share computation
