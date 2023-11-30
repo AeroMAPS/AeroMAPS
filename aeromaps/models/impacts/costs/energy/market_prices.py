@@ -6,7 +6,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
 
 from scipy.interpolate import interp1d
 
@@ -49,25 +49,10 @@ class CoalCost(AeromapsModel):
         coal_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        if len(coal_cost_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "coal_market_price"] = coal_cost_reference_years_values
-        else:
-            coal_cost_function = interp1d(
-                coal_cost_reference_years,
-                coal_cost_reference_years_values,
-                kind="linear",
-            )
-            if coal_cost_reference_years[-1] >= self.end_year:
-                for k in range(self.prospection_start_year, self.end_year + 1):
-                    self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
-            else:
-                for k in range(self.prospection_start_year, coal_cost_reference_years[-1] + 1):
-                    self.df.loc[k, "coal_market_price"] = coal_cost_function(k)
-                for k in range(coal_cost_reference_years[-1] + 1, self.end_year + 1):
-                    self.df.loc[k, "coal_market_price"] = self.df.loc[k - 1, "coal_market_price"]
-
-        coal_market_price = self.df.loc[:, "coal_market_price"]
+        coal_market_price = InterpolationAeromapsFunction(
+            self, coal_cost_reference_years, coal_cost_reference_years_values
+        )
+        self.df.loc[:, "coal_market_price"] = coal_market_price
 
         return coal_market_price
 
@@ -82,25 +67,10 @@ class GasCost(AeromapsModel):
         gas_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        if len(gas_cost_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "gas_market_price"] = gas_cost_reference_years_values
-        else:
-            gas_cost_function = interp1d(
-                gas_cost_reference_years,
-                gas_cost_reference_years_values,
-                kind="linear",
-            )
-            if gas_cost_reference_years[-1] >= self.end_year:
-                for k in range(self.prospection_start_year, self.end_year + 1):
-                    self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
-            else:
-                for k in range(self.prospection_start_year, gas_cost_reference_years[-1] + 1):
-                    self.df.loc[k, "gas_market_price"] = gas_cost_function(k)
-                for k in range(gas_cost_reference_years[-1] + 1, self.end_year + 1):
-                    self.df.loc[k, "gas_market_price"] = self.df.loc[k - 1, "gas_market_price"]
-
-        gas_market_price = self.df.loc[:, "gas_market_price"]
+        gas_market_price = InterpolationAeromapsFunction(
+            self, gas_cost_reference_years, gas_cost_reference_years_values
+        )
+        self.df.loc[:, "gas_market_price"] = gas_market_price
 
         return gas_market_price
 
