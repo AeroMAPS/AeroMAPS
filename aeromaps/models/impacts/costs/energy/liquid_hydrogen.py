@@ -1376,7 +1376,9 @@ class ElectrolyserFixedOpex(AeromapsModel):
         """Electrolyser fixed operational expenditures at entry into service using interpolation functions"""
 
         electrolysis_h2_eis_fixed_opex = InterpolationAeromapsFunction(
-            self, electrolyser_fixed_opex_reference_years, electrolyser_fixed_opex_reference_years_values
+            self,
+            electrolyser_fixed_opex_reference_years,
+            electrolyser_fixed_opex_reference_years_values,
         )
         self.df.loc[:, "electrolysis_h2_eis_fixed_opex"] = electrolysis_h2_eis_fixed_opex
 
@@ -1395,7 +1397,9 @@ class ElectrolyserVarOpex(AeromapsModel):
         """Electrolyser variable operational expenditures at entry into service using interpolation functions"""
 
         electrolysis_h2_eis_var_opex = InterpolationAeromapsFunction(
-            self, electrolyser_var_opex_reference_years, electrolyser_var_opex_reference_years_values
+            self,
+            electrolyser_var_opex_reference_years,
+            electrolyser_var_opex_reference_years_values,
         )
         self.df.loc[:, "electrolysis_h2_eis_var_opex"] = electrolysis_h2_eis_var_opex
 
@@ -1531,7 +1535,9 @@ class GasCcsFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_ccs_eis_fixed_opex = InterpolationAeromapsFunction(
-            self, gas_ccs_eis_fixed_opex_reference_years, gas_ccs_eis_fixed_opex_reference_years_values
+            self,
+            gas_ccs_eis_fixed_opex_reference_years,
+            gas_ccs_eis_fixed_opex_reference_years_values,
         )
         self.df.loc[:, "gas_ccs_eis_fixed_opex"] = gas_ccs_eis_fixed_opex
 
@@ -1639,7 +1645,9 @@ class CoalCcsFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_ccs_eis_fixed_opex = InterpolationAeromapsFunction(
-            self, coal_ccs_eis_fixed_opex_reference_years, coal_ccs_eis_fixed_opex_reference_years_values
+            self,
+            coal_ccs_eis_fixed_opex_reference_years,
+            coal_ccs_eis_fixed_opex_reference_years_values,
         )
         self.df.loc[:, "coal_ccs_eis_fixed_opex"] = coal_ccs_eis_fixed_opex
 
