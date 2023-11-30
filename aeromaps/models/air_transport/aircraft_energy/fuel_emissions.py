@@ -32,95 +32,38 @@ class BiofuelEmissionFactor(AeromapsModel):
         """Biofuel CO2 emission factor calculation using interpolation functions"""
 
         # HEFA FOG
-        if len(biofuel_hefa_fog_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_fog_emission_factor"
-                ] = biofuel_hefa_fog_emission_factor_reference_years_values
-        else:
-            biofuel_hefa_fog_emission_factor_function = interp1d(
-                biofuel_hefa_fog_emission_factor_reference_years,
-                biofuel_hefa_fog_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_fog_emission_factor"
-                ] = biofuel_hefa_fog_emission_factor_function(k)
+        biofuel_hefa_fog_emission_factor = InterpolationAeromapsFunction(
+            self, biofuel_hefa_fog_emission_factor_reference_years, biofuel_hefa_fog_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_fog_emission_factor"] = biofuel_hefa_fog_emission_factor
 
         # HEFA OTHERS
-        if len(biofuel_hefa_others_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_others_emission_factor"
-                ] = biofuel_hefa_others_emission_factor_reference_years_values
-        else:
-            biofuel_hefa_others_emission_factor_function = interp1d(
-                biofuel_hefa_others_emission_factor_reference_years,
-                biofuel_hefa_others_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_hefa_others_emission_factor"
-                ] = biofuel_hefa_others_emission_factor_function(k)
+        biofuel_hefa_others_emission_factor = InterpolationAeromapsFunction(
+            self, biofuel_hefa_others_emission_factor_reference_years,
+            biofuel_hefa_others_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "biofuel_hefa_others_emission_factor"] = biofuel_hefa_others_emission_factor
 
         # FT OTHERS
-        if len(biofuel_ft_others_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_others_emission_factor"
-                ] = biofuel_ft_others_emission_factor_reference_years_values
-        else:
-            biofuel_ft_others_emission_factor_function = interp1d(
-                biofuel_ft_others_emission_factor_reference_years,
-                biofuel_ft_others_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_others_emission_factor"
-                ] = biofuel_ft_others_emission_factor_function(k)
+        biofuel_ft_others_emission_factor = InterpolationAeromapsFunction(
+            self, biofuel_ft_others_emission_factor_reference_years,
+            biofuel_ft_others_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_others_emission_factor"] = biofuel_ft_others_emission_factor
 
         # FT MSW
-        if len(biofuel_ft_msw_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_msw_emission_factor"
-                ] = biofuel_ft_msw_emission_factor_reference_years_values
-        else:
-            biofuel_ft_msw_emission_factor_function = interp1d(
-                biofuel_ft_msw_emission_factor_reference_years,
-                biofuel_ft_msw_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_ft_msw_emission_factor"
-                ] = biofuel_ft_msw_emission_factor_function(k)
+        biofuel_ft_msw_emission_factor = InterpolationAeromapsFunction(
+            self, biofuel_ft_msw_emission_factor_reference_years,
+            biofuel_ft_msw_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "biofuel_ft_msw_emission_factor"] = biofuel_ft_msw_emission_factor
 
         # ATJ
-        if len(biofuel_atj_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_atj_emission_factor"
-                ] = biofuel_atj_emission_factor_reference_years_values
-        else:
-            biofuel_atj_emission_factor_function = interp1d(
-                biofuel_atj_emission_factor_reference_years,
-                biofuel_atj_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "biofuel_atj_emission_factor"
-                ] = biofuel_atj_emission_factor_function(k)
-
-        biofuel_hefa_fog_emission_factor = self.df["biofuel_hefa_fog_emission_factor"]
-        biofuel_hefa_others_emission_factor = self.df["biofuel_hefa_others_emission_factor"]
-        biofuel_ft_others_emission_factor = self.df["biofuel_ft_others_emission_factor"]
-        biofuel_ft_msw_emission_factor = self.df["biofuel_ft_msw_emission_factor"]
-        biofuel_atj_emission_factor = self.df["biofuel_atj_emission_factor"]
+        biofuel_atj_emission_factor = InterpolationAeromapsFunction(
+            self, biofuel_atj_emission_factor_reference_years,
+            biofuel_atj_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "biofuel_atj_emission_factor"] = biofuel_atj_emission_factor
 
         # MEAN
         biofuel_mean_emission_factor = (
@@ -154,23 +97,11 @@ class ElectricityEmissionFactor(AeromapsModel):
     ) -> pd.Series:
         """Electricity CO2 emission factor calculation using interpolation function."""
 
-        if len(electricity_emission_factor_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electricity_emission_factor"
-                ] = electricity_emission_factor_reference_years_values
-        else:
-            electricity_emission_factor_function = interp1d(
-                electricity_emission_factor_reference_years,
-                electricity_emission_factor_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "electricity_emission_factor"
-                ] = electricity_emission_factor_function(k)
-
-        electricity_emission_factor = self.df["electricity_emission_factor"]
+        electricity_emission_factor = InterpolationAeromapsFunction(
+            self, electricity_emission_factor_reference_years,
+            electricity_emission_factor_reference_years_values
+        )
+        self.df.loc[:, "electricity_emission_factor"] = electricity_emission_factor
 
         return electricity_emission_factor
 
