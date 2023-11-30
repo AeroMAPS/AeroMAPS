@@ -22,19 +22,10 @@ class ElectricityCost(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """LCOE"""
 
-        if len(electricity_cost_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electricity_market_price"] = electricity_cost_reference_years_values
-        else:
-            electricity_cost_function = interp1d(
-                electricity_cost_reference_years,
-                electricity_cost_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "electricity_market_price"] = electricity_cost_function(k)
-
-        electricity_market_price = self.df.loc[:, "electricity_market_price"]
+        electricity_market_price = InterpolationAeromapsFunction(
+            self, electricity_cost_reference_years, electricity_cost_reference_years_values
+        )
+        self.df.loc[:, "electricity_market_price"] = electricity_market_price
 
         return electricity_market_price
 
@@ -85,19 +76,10 @@ class Co2Cost(AeromapsModel):
         co2_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        if len(co2_cost_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "co2_market_price"] = co2_cost_reference_years_values
-        else:
-            co2_cost_function = interp1d(
-                co2_cost_reference_years,
-                co2_cost_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "co2_market_price"] = co2_cost_function(k)
-
-        co2_market_price = self.df.loc[:, "co2_market_price"]
+        co2_market_price = InterpolationAeromapsFunction(
+            self, co2_cost_reference_years, co2_cost_reference_years_values
+        )
+        self.df.loc[:, "co2_market_price"] = co2_market_price
 
         return co2_market_price
 
@@ -112,22 +94,13 @@ class CarbonTax(AeromapsModel):
         carbon_tax_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
+        carbon_tax_prospective = InterpolationAeromapsFunction(
+            self, carbon_tax_reference_years, carbon_tax_reference_years_values
+        )
+        self.df.loc[:, "carbon_tax"] = carbon_tax_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "carbon_tax"] = 5.0
-
-        if len(carbon_tax_reference_years) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "carbon_tax"] = carbon_tax_reference_years_values
-        else:
-            carbon_tax_function = interp1d(
-                carbon_tax_reference_years,
-                carbon_tax_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "carbon_tax"] = carbon_tax_function(k)
-
-        carbon_tax = self.df.loc[:, "carbon_tax"]
+        carbon_tax = self.df["carbon_tax"]
 
         return carbon_tax
 
@@ -142,23 +115,10 @@ class KerosenePrice(AeromapsModel):
         kerosene_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        if len(kerosene_price_reference_years) == 0:
-            for k in range(self.historic_start_year, self.prospection_start_year):
-                self.df.loc[k, "kerosene_market_price"] = kerosene_price_reference_years_values
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "kerosene_market_price"] = kerosene_price_reference_years_values
-        else:
-            kerosene_price_function = interp1d(
-                kerosene_price_reference_years,
-                kerosene_price_reference_years_values,
-                kind="linear",
-            )
-            for k in range(self.historic_start_year, self.prospection_start_year):
-                self.df.loc[k, "kerosene_market_price"] = kerosene_price_reference_years_values[0]
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "kerosene_market_price"] = kerosene_price_function(k)
-
-        kerosene_market_price = self.df.loc[:, "kerosene_market_price"]
+        kerosene_market_price = InterpolationAeromapsFunction(
+            self, kerosene_price_reference_years, kerosene_price_reference_years_values
+        )
+        self.df.loc[:, "kerosene_market_price"] = kerosene_market_price
 
         return kerosene_market_price
 
