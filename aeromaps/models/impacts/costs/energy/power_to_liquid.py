@@ -3,15 +3,12 @@
 # @File : power_to_liquid.py
 # @Software: PyCharm
 
-from typing import Tuple, Union, Any
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 
 from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
-
-from scipy.interpolate import interp1d
 
 
 class ElectrofuelCost(AeromapsModel):

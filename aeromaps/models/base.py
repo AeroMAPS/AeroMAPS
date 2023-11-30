@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 
-from aeromaps.models.constants import ModelType
-
 
 class AeromapsModel(object):
     def __init__(
