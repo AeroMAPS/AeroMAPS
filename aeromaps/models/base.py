@@ -29,10 +29,6 @@ class AeromapsModel(object):
 
 def InterpolationAeromapsFunction(self, reference_years, reference_years_values, method='linear'):
 
-    # Init
-    for k in range(self.prospection_start_year, self.end_year + 1):
-        self.df.loc[k, "interpolation_function_values"] = 0.0
-
     # Main
     if len(reference_years) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -55,5 +51,8 @@ def InterpolationAeromapsFunction(self, reference_years, reference_years_values,
                 ]
 
     interpolation_function_values = self.df.loc[:, "interpolation_function_values"]
+
+    # Delete intermediate df column
+    self.df.pop("interpolation_function_values")
 
     return interpolation_function_values
