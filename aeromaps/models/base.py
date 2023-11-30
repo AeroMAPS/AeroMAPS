@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
+import warnings
 
 
 class AeromapsModel(object):
@@ -25,7 +26,9 @@ class AeromapsModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
-def InterpolationAeromapsFunction(self, reference_years, reference_years_values, method="linear"):
+def InterpolationAeromapsFunction(
+    self, reference_years, reference_years_values, method="linear", positive_constraint=False
+):
 
     # Main
     if len(reference_years) == 0:
@@ -37,12 +40,36 @@ def InterpolationAeromapsFunction(self, reference_years, reference_years_values,
             reference_years_values,
             kind=method,
         )
-        if reference_years[-1] >= self.end_year:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
-        else:
+        if reference_years[-1] == self.end_year:
             for k in range(self.prospection_start_year, reference_years[-1] + 1):
-                self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+        elif reference_years[-1] > self.end_year:
+            warnings.warn(
+                "Warning Message: "
+                + str(reference_years)
+                + " - Warning on InterpolationAeromapsFunction:"
+                + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
+            )
+            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+        else:
+            warnings.warn(
+                "Warning Message: "
+                + str(reference_years)
+                + " - Warning on InterpolationAeromapsFunction:"
+                + " The last reference year for the interpolation is lower than end_year, the last reference year value is therefore used as a constant for the upper years.",
+            )
+            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
             for k in range(reference_years[-1] + 1, self.end_year + 1):
                 self.df.loc[k, "interpolation_function_values"] = self.df.loc[
                     k - 1, "interpolation_function_values"
@@ -63,11 +90,27 @@ def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "leveling_function_values"] = reference_periods_values
     else:
-        if reference_periods[-1] >= self.end_year:
+        if reference_periods[-1] == self.end_year:
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+        elif reference_periods[-1] > self.end_year:
+            warnings.warn(
+                "Warning Message: "
+                + str(reference_periods)
+                + " - Warning on LevelingAeromapsFunction:"
+                + " The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.",
+            )
             for i in range(0, len(reference_periods) - 1):
                 for k in range(reference_periods[i], reference_periods[i + 1] + 1):
                     self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
         else:
+            warnings.warn(
+                "Warning Message: "
+                + str(reference_periods)
+                + " - Warning on LevelingAeromapsFunction:"
+                + " The last reference year for the leveling is lower than end_year, the last reference period value is therefore used as a constant for the upper years.",
+            )
             for i in range(0, len(reference_periods) - 1):
                 for k in range(reference_periods[i], reference_periods[i + 1] + 1):
                     self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
