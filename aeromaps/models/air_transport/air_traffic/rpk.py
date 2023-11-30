@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, LevelingAeromapsFunction
 
 
 class RPK(AeromapsModel):
@@ -66,50 +66,32 @@ class RPK(AeromapsModel):
 
         # CAGR function
         ## Short range
-        if len(cagr_passenger_short_range_reference_periods) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "annual_growth_rate_passenger_short_range"
-                ] = cagr_passenger_short_range_reference_periods_values
-        else:
-            for i in range(0, len(cagr_passenger_short_range_reference_periods) - 1):
-                for k in range(
-                    cagr_passenger_short_range_reference_periods[i],
-                    cagr_passenger_short_range_reference_periods[i + 1] + 1,
-                ):
-                    self.df.loc[
-                        k, "annual_growth_rate_passenger_short_range"
-                    ] = cagr_passenger_short_range_reference_periods_values[i]
+        annual_growth_rate_passenger_short_range_prospective = LevelingAeromapsFunction(
+            self,
+            cagr_passenger_short_range_reference_periods,
+            cagr_passenger_short_range_reference_periods_values,
+        )
+        self.df.loc[
+            :, "annual_growth_rate_passenger_short_range"
+        ] = annual_growth_rate_passenger_short_range_prospective
         ## Medium range
-        if len(cagr_passenger_medium_range_reference_periods) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "annual_growth_rate_passenger_medium_range"
-                ] = cagr_passenger_medium_range_reference_periods_values
-        else:
-            for i in range(0, len(cagr_passenger_medium_range_reference_periods) - 1):
-                for k in range(
-                    cagr_passenger_medium_range_reference_periods[i],
-                    cagr_passenger_medium_range_reference_periods[i + 1] + 1,
-                ):
-                    self.df.loc[
-                        k, "annual_growth_rate_passenger_medium_range"
-                    ] = cagr_passenger_medium_range_reference_periods_values[i]
+        annual_growth_rate_passenger_medium_range_prospective = LevelingAeromapsFunction(
+            self,
+            cagr_passenger_medium_range_reference_periods,
+            cagr_passenger_medium_range_reference_periods_values,
+        )
+        self.df.loc[
+            :, "annual_growth_rate_passenger_medium_range"
+        ] = annual_growth_rate_passenger_medium_range_prospective
         ## Long range
-        if len(cagr_passenger_long_range_reference_periods) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "annual_growth_rate_passenger_long_range"
-                ] = cagr_passenger_long_range_reference_periods_values
-        else:
-            for i in range(0, len(cagr_passenger_long_range_reference_periods) - 1):
-                for k in range(
-                    cagr_passenger_long_range_reference_periods[i],
-                    cagr_passenger_long_range_reference_periods[i + 1] + 1,
-                ):
-                    self.df.loc[
-                        k, "annual_growth_rate_passenger_long_range"
-                    ] = cagr_passenger_long_range_reference_periods_values[i]
+        annual_growth_rate_passenger_long_range_prospective = LevelingAeromapsFunction(
+            self,
+            cagr_passenger_long_range_reference_periods,
+            cagr_passenger_long_range_reference_periods_values,
+        )
+        self.df.loc[
+            :, "annual_growth_rate_passenger_long_range"
+        ] = annual_growth_rate_passenger_long_range_prospective
 
         # Short range
         for k in range(covid_start_year, covid_end_year + 1):
@@ -316,20 +298,14 @@ class RPKReference(AeromapsModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        if len(reference_cagr_aviation_reference_periods) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "reference_annual_growth_rate_aviation"
-                ] = reference_cagr_aviation_reference_periods_values
-        else:
-            for i in range(0, len(reference_cagr_aviation_reference_periods) - 1):
-                for k in range(
-                    reference_cagr_aviation_reference_periods[i],
-                    reference_cagr_aviation_reference_periods[i + 1] + 1,
-                ):
-                    self.df.loc[
-                        k, "reference_annual_growth_rate_aviation"
-                    ] = reference_cagr_aviation_reference_periods_values[i]
+        reference_annual_growth_rate_aviation = LevelingAeromapsFunction(
+            self,
+            reference_cagr_aviation_reference_periods,
+            reference_cagr_aviation_reference_periods_values,
+        )
+        self.df.loc[
+            :, "reference_annual_growth_rate_aviation"
+        ] = reference_annual_growth_rate_aviation
 
         # Main
         for k in range(covid_start_year, covid_end_year + 1):
@@ -342,7 +318,6 @@ class RPKReference(AeromapsModel):
             )
 
         rpk_reference = self.df["rpk_reference"]
-        reference_annual_growth_rate_aviation = self.df["reference_annual_growth_rate_aviation"]
 
         return (rpk_reference, reference_annual_growth_rate_aviation)
 

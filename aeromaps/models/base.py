@@ -54,3 +54,31 @@ def InterpolationAeromapsFunction(self, reference_years, reference_years_values,
     self.df.pop("interpolation_function_values")
 
     return interpolation_function_values
+
+
+def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
+
+    # Main
+    if len(reference_periods) == 0:
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "leveling_function_values"] = reference_periods_values
+    else:
+        if reference_periods[-1] >= self.end_year:
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+        else:
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+            for k in range(reference_periods[-1] + 1, self.end_year + 1):
+                self.df.loc[k, "leveling_function_values"] = self.df.loc[
+                    k - 1, "leveling_function_values"
+                ]
+
+    leveling_function_values = self.df.loc[:, "leveling_function_values"]
+
+    # Delete intermediate df column
+    self.df.pop("leveling_function_values")
+
+    return leveling_function_values
