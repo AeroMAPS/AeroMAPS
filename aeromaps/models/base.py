@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import warnings
+import inspect
 
 
 class AeromapsModel(object):
@@ -26,8 +27,8 @@ class AeromapsModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
-def InterpolationAeromapsFunction(
-    self, reference_years, reference_years_values, method="linear", positive_constraint=False
+def AeromapsInterpolationFunction(
+    self, reference_years, reference_years_values, method="linear", positive_constraint=False, model_name="Not provided"
 ):
 
     # Main
@@ -48,9 +49,10 @@ def InterpolationAeromapsFunction(
                     self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
         elif reference_years[-1] > self.end_year:
             warnings.warn(
-                "Warning Message: "
-                + str(reference_years)
-                + " - Warning on InterpolationAeromapsFunction:"
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsInterpolationFunction:"
                 + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
             )
             for k in range(self.prospection_start_year, reference_years[-1] + 1):
@@ -60,9 +62,10 @@ def InterpolationAeromapsFunction(
                     self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
         else:
             warnings.warn(
-                "Warning Message: "
-                + str(reference_years)
-                + " - Warning on InterpolationAeromapsFunction:"
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsInterpolationFunction:"
                 + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
             )
             for k in range(self.prospection_start_year, reference_years[-1] + 1):
@@ -83,7 +86,7 @@ def InterpolationAeromapsFunction(
     return interpolation_function_values
 
 
-def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
+def AeromapsLevelingFunction(self, reference_periods, reference_periods_values, model_name="Not provided"):
 
     # Main
     if len(reference_periods) == 0:
@@ -96,9 +99,10 @@ def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
                     self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
         elif reference_periods[-1] > self.end_year:
             warnings.warn(
-                "Warning Message: "
-                + str(reference_periods)
-                + " - Warning on LevelingAeromapsFunction:"
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsLevelingFunction:"
                 + " The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.",
             )
             for i in range(0, len(reference_periods) - 1):
@@ -106,9 +110,10 @@ def LevelingAeromapsFunction(self, reference_periods, reference_periods_values):
                     self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
         else:
             warnings.warn(
-                "Warning Message: "
-                + str(reference_periods)
-                + " - Warning on LevelingAeromapsFunction:"
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsLevelingFunction:"
                 + " The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.",
             )
             for i in range(0, len(reference_periods) - 1):
