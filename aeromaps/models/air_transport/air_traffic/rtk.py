@@ -3,7 +3,7 @@ from typing import Tuple
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel, LevelingAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsLevelingFunction
 
 
 class RTK(AeromapsModel):
@@ -36,8 +36,8 @@ class RTK(AeromapsModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        annual_growth_rate_freight_prospective = LevelingAeromapsFunction(
-            self, cagr_freight_reference_periods, cagr_freight_reference_periods_values
+        annual_growth_rate_freight_prospective = AeromapsLevelingFunction(
+            self, cagr_freight_reference_periods, cagr_freight_reference_periods_values, model_name=self.name
         )
         self.df.loc[:, "annual_growth_rate_freight"] = annual_growth_rate_freight_prospective
 
