@@ -369,7 +369,10 @@ class ElectrofuelCapex(AeromapsModel):
         """Electrofuel capital expenditures at eis using interpolation functions"""
 
         electrofuel_eis_capex = AeromapsInterpolationFunction(
-            self, electrofuel_capex_reference_years, electrofuel_capex_reference_years_values, model_name=self.name
+            self,
+            electrofuel_capex_reference_years,
+            electrofuel_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "electrofuel_eis_capex"] = electrofuel_eis_capex
 
@@ -391,7 +394,7 @@ class ElectrofuelFixedOpex(AeromapsModel):
             self,
             electrofuel_fixed_opex_reference_years,
             electrofuel_fixed_opex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrofuel_eis_fixed_opex"] = electrofuel_eis_fixed_opex
 
@@ -410,7 +413,10 @@ class ElectrofuelVarOpex(AeromapsModel):
         """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
         electrofuel_eis_var_opex = AeromapsInterpolationFunction(
-            self, electrofuel_var_opex_reference_years, electrofuel_var_opex_reference_years_values, model_name=self.name
+            self,
+            electrofuel_var_opex_reference_years,
+            electrofuel_var_opex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "electrofuel_eis_var_opex"] = electrofuel_eis_var_opex
 
@@ -479,7 +485,7 @@ class ElectrofuelSpecificCo2(AeromapsModel):
             self,
             electrofuel_specific_co2_reference_years,
             electrofuel_specific_co2_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrofuel_eis_specific_co2"] = electrofuel_eis_specific_co2
 

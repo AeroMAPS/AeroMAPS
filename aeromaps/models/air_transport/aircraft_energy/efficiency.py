@@ -27,7 +27,7 @@ class BiofuelEfficiency(AeromapsModel):
             self,
             biofuel_ft_efficiency_reference_years,
             biofuel_ft_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_efficiency"] = biofuel_ft_efficiency
 
@@ -36,7 +36,7 @@ class BiofuelEfficiency(AeromapsModel):
             self,
             biofuel_atj_efficiency_reference_years,
             biofuel_atj_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_atj_efficiency"] = biofuel_atj_efficiency
 
@@ -45,7 +45,7 @@ class BiofuelEfficiency(AeromapsModel):
             self,
             biofuel_hefa_oil_efficiency_reference_years,
             biofuel_hefa_oil_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_oil_efficiency"] = biofuel_hefa_oil_efficiency
 
@@ -54,7 +54,7 @@ class BiofuelEfficiency(AeromapsModel):
             self,
             biofuel_hefa_fuel_efficiency_reference_years,
             biofuel_hefa_fuel_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fuel_efficiency"] = biofuel_hefa_fuel_efficiency
 
@@ -86,7 +86,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
             self,
             electrolysis_efficiency_reference_years,
             electrolysis_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrolysis_efficiency"] = electrolysis_efficiency
 
@@ -95,7 +95,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
             self,
             liquefaction_efficiency_reference_years,
             liquefaction_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "liquefaction_efficiency"] = liquefaction_efficiency
 
@@ -104,7 +104,7 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
             self,
             electrofuel_hydrogen_efficiency_reference_years,
             electrofuel_hydrogen_efficiency_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrofuel_hydrogen_efficiency"] = electrofuel_hydrogen_efficiency
 

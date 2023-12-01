@@ -21,7 +21,7 @@ class PassengerAircraftNocCarbonOffset(AeromapsModel):
             self,
             carbon_offset_price_reference_years,
             carbon_offset_price_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "carbon_offset_price"] = carbon_offset_price_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):

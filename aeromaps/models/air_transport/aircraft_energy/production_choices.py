@@ -27,7 +27,7 @@ class BiofuelProduction(AeromapsModel):
             self,
             biofuel_hefa_fog_share_reference_years,
             biofuel_hefa_fog_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_share"] = biofuel_hefa_fog_share
 
@@ -36,7 +36,7 @@ class BiofuelProduction(AeromapsModel):
             self,
             biofuel_hefa_others_share_reference_years,
             biofuel_hefa_others_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_others_share"] = biofuel_hefa_others_share
 
@@ -45,13 +45,16 @@ class BiofuelProduction(AeromapsModel):
             self,
             biofuel_ft_others_share_reference_years,
             biofuel_ft_others_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_others_share"] = biofuel_ft_others_share
 
         # FT MSW
         biofuel_ft_msw_share = AeromapsInterpolationFunction(
-            self, biofuel_ft_msw_share_reference_years, biofuel_ft_msw_share_reference_years_values, model_name=self.name
+            self,
+            biofuel_ft_msw_share_reference_years,
+            biofuel_ft_msw_share_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_msw_share"] = biofuel_ft_msw_share
 
@@ -96,7 +99,7 @@ class HydrogenProduction(AeromapsModel):
             self,
             hydrogen_electrolysis_share_reference_years,
             hydrogen_electrolysis_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "hydrogen_electrolysis_share"] = hydrogen_electrolysis_share
 
@@ -105,7 +108,7 @@ class HydrogenProduction(AeromapsModel):
             self,
             hydrogen_gas_ccs_share_reference_years,
             hydrogen_gas_ccs_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "hydrogen_gas_ccs_share"] = hydrogen_gas_ccs_share
 
@@ -114,13 +117,16 @@ class HydrogenProduction(AeromapsModel):
             self,
             hydrogen_coal_ccs_share_reference_years,
             hydrogen_coal_ccs_share_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "hydrogen_coal_ccs_share"] = hydrogen_coal_ccs_share
 
         # Gas
         hydrogen_gas_share = AeromapsInterpolationFunction(
-            self, hydrogen_gas_share_reference_years, hydrogen_gas_share_reference_years_values, model_name=self.name
+            self,
+            hydrogen_gas_share_reference_years,
+            hydrogen_gas_share_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "hydrogen_gas_share"] = hydrogen_gas_share
 

@@ -805,6 +805,7 @@ class LiquidHydrogenCost(AeromapsModel):
         Values returned are in M€ or t/day
         """
         # Convert hydrogen demand from MJ to tons.
+
         demand_scenario = energy_consumption_hydrogen / 119.93 / 1000 * pathway_share / 100
         plant_life = 30
 
@@ -827,7 +828,9 @@ class LiquidHydrogenCost(AeromapsModel):
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index)[:-1]:
             # Production missing in year n+1 must be supplied by plant build in year n
+
             if hydrogen_production[year + 1] < demand_scenario[year + 1]:
+
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
                 hydrogen_cost = LiquidHydrogenCost.compute_electrolyser_year_lcoh(
                     year,
@@ -1357,7 +1360,10 @@ class ElectrolyserCapex(AeromapsModel):
         """Electrolyser capital expenditures at eis using interpolation functions"""
 
         electrolysis_h2_eis_capex = AeromapsInterpolationFunction(
-            self, electrolyser_capex_reference_years, electrolyser_capex_reference_years_values, model_name=self.name
+            self,
+            electrolyser_capex_reference_years,
+            electrolyser_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "electrolysis_h2_eis_capex"] = electrolysis_h2_eis_capex
 
@@ -1379,7 +1385,7 @@ class ElectrolyserFixedOpex(AeromapsModel):
             self,
             electrolyser_fixed_opex_reference_years,
             electrolyser_fixed_opex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrolysis_h2_eis_fixed_opex"] = electrolysis_h2_eis_fixed_opex
 
@@ -1401,7 +1407,7 @@ class ElectrolyserVarOpex(AeromapsModel):
             self,
             electrolyser_var_opex_reference_years,
             electrolyser_var_opex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electrolysis_h2_eis_var_opex"] = electrolysis_h2_eis_var_opex
 
@@ -1461,7 +1467,10 @@ class LiquefierCapex(AeromapsModel):
         """Liquefier capital expenditures at eis using interpolation functions"""
 
         liquefier_eis_capex = AeromapsInterpolationFunction(
-            self, liquefier_capex_reference_years, liquefier_capex_reference_years_values, model_name=self.name
+            self,
+            liquefier_capex_reference_years,
+            liquefier_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "liquefier_eis_capex"] = liquefier_eis_capex
 
@@ -1519,7 +1528,10 @@ class GasCcsCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_ccs_eis_capex = AeromapsInterpolationFunction(
-            self, gas_ccs_eis_capex_reference_years, gas_ccs_eis_capex_reference_years_values, model_name=self.name
+            self,
+            gas_ccs_eis_capex_reference_years,
+            gas_ccs_eis_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "gas_ccs_eis_capex"] = gas_ccs_eis_capex
 
@@ -1540,7 +1552,7 @@ class GasCcsFixedOpex(AeromapsModel):
             self,
             gas_ccs_eis_fixed_opex_reference_years,
             gas_ccs_eis_fixed_opex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "gas_ccs_eis_fixed_opex"] = gas_ccs_eis_fixed_opex
 
@@ -1558,7 +1570,10 @@ class GasCcsEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_ccs_efficiency = AeromapsInterpolationFunction(
-            self, gas_ccs_efficiency_reference_years, gas_ccs_efficiency_reference_years_values, model_name=self.name
+            self,
+            gas_ccs_efficiency_reference_years,
+            gas_ccs_efficiency_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "gas_ccs_efficiency"] = gas_ccs_efficiency
 
@@ -1576,7 +1591,10 @@ class GasCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_eis_capex = AeromapsInterpolationFunction(
-            self, gas_eis_capex_reference_years, gas_eis_capex_reference_years_values, model_name=self.name
+            self,
+            gas_eis_capex_reference_years,
+            gas_eis_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "gas_eis_capex"] = gas_eis_capex
 
@@ -1594,7 +1612,10 @@ class GasFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_eis_fixed_opex = AeromapsInterpolationFunction(
-            self, gas_eis_fixed_opex_reference_years, gas_eis_fixed_opex_reference_years_values, model_name=self.name
+            self,
+            gas_eis_fixed_opex_reference_years,
+            gas_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "gas_eis_fixed_opex"] = gas_eis_fixed_opex
 
@@ -1612,7 +1633,10 @@ class GasEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         gas_efficiency = AeromapsInterpolationFunction(
-            self, gas_efficiency_reference_years, gas_efficiency_reference_years_values, model_name=self.name
+            self,
+            gas_efficiency_reference_years,
+            gas_efficiency_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "gas_efficiency"] = gas_efficiency
 
@@ -1630,7 +1654,10 @@ class CoalCcsCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_ccs_eis_capex = AeromapsInterpolationFunction(
-            self, coal_ccs_eis_capex_reference_years, coal_ccs_eis_capex_reference_years_values, model_name=self.name
+            self,
+            coal_ccs_eis_capex_reference_years,
+            coal_ccs_eis_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "coal_ccs_eis_capex"] = coal_ccs_eis_capex
 
@@ -1651,7 +1678,7 @@ class CoalCcsFixedOpex(AeromapsModel):
             self,
             coal_ccs_eis_fixed_opex_reference_years,
             coal_ccs_eis_fixed_opex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "coal_ccs_eis_fixed_opex"] = coal_ccs_eis_fixed_opex
 
@@ -1669,7 +1696,10 @@ class CoalCcsEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_ccs_efficiency = AeromapsInterpolationFunction(
-            self, coal_ccs_efficiency_reference_years, coal_ccs_efficiency_reference_years_values, model_name=self.name
+            self,
+            coal_ccs_efficiency_reference_years,
+            coal_ccs_efficiency_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "coal_ccs_efficiency"] = coal_ccs_efficiency
 
@@ -1687,7 +1717,10 @@ class CoalCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_eis_capex = AeromapsInterpolationFunction(
-            self, coal_eis_capex_reference_years, coal_eis_capex_reference_years_values, model_name=self.name
+            self,
+            coal_eis_capex_reference_years,
+            coal_eis_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "coal_eis_capex"] = coal_eis_capex
 
@@ -1705,7 +1738,10 @@ class CoalFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_eis_fixed_opex = AeromapsInterpolationFunction(
-            self, coal_eis_fixed_opex_reference_years, coal_eis_fixed_opex_reference_years_values, model_name=self.name
+            self,
+            coal_eis_fixed_opex_reference_years,
+            coal_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "coal_eis_fixed_opex"] = coal_eis_fixed_opex
 
@@ -1723,7 +1759,10 @@ class CoalEfficiency(AeromapsModel):
     ) -> Tuple[pd.Series]:
 
         coal_efficiency = AeromapsInterpolationFunction(
-            self, coal_efficiency_reference_years, coal_efficiency_reference_years_values, model_name=self.name
+            self,
+            coal_efficiency_reference_years,
+            coal_efficiency_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "coal_efficiency"] = coal_efficiency
 
