@@ -14,47 +14,37 @@ aviation_biomass_allocated_share;Float;%;Share of the biomass resource allocated
 aviation_carbon_budget_allocated_share;Float;%;Share of the carbon budget allocated to aviation over 2020-2050
 aviation_electricity_allocated_share;Float;%;Share of the electricity resource allocated to aviation in 2050
 aviation_equivalentcarbonbudget_allocated_share;Float;%;Share of the equivalent carbon budget allocated to aviation over 2020-2050
-biofuel_atj_efficiency_2020;Float;-;Conversion efficiency of the AtJ pathway for producing biofuel in 2020
-biofuel_atj_efficiency_2050;Float;-;Conversion efficiency of the AtJ pathway for producing biofuel in 2050
-biofuel_atj_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from AtJ pathway in 2020
-biofuel_atj_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from AtJ pathway in 2050
+biofuel_atj_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the AtJ pathway for producing biofuel
+biofuel_atj_efficiency_reference_years_values;List;-;Conversion efficiency of the AtJ pathway for producing biofuel for the reference years
+biofuel_atj_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from AtJ pathway
+biofuel_atj_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from AtJ pathway for the reference years
 biofuel_atj_selectivity;Float;-;Selectivity of biofuel from AtJ pathway
-biofuel_ft_efficiency_2020;Float;-;Conversion efficiency of the FT pathway for producing biofuel in 2020
-biofuel_ft_efficiency_2050;Float;-;Conversion efficiency of the FT pathway for producing biofuel in 2050
-biofuel_ft_msw_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) in 2020
-biofuel_ft_msw_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) in 2050
-biofuel_ft_msw_share_2020;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2020
-biofuel_ft_msw_share_2030;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2030
-biofuel_ft_msw_share_2040;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2040
-biofuel_ft_msw_share_2050;Float;%;Share of biofuel production from FT pathway (from municipal solid waste) in 2050
-biofuel_ft_others_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) in 2020
-biofuel_ft_others_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) in 2050
-biofuel_ft_others_share_2020;Float;%;Share of biofuel production from FT pathway (from others) in 2020
-biofuel_ft_others_share_2030;Float;%;Share of biofuel production from FT pathway (from others) in 2030
-biofuel_ft_others_share_2040;Float;%;Share of biofuel production from FT pathway (from others) in 2040
-biofuel_ft_others_share_2050;Float;%;Share of biofuel production from FT pathway (from others) in 2050
+biofuel_ft_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the FT pathway for producing biofuel
+biofuel_ft_efficiency_reference_years_values;List;-;Conversion efficiency of the FT pathway for producing biofuel for the reference years
+biofuel_ft_msw_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from municipal solid waste)
+biofuel_ft_msw_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) for the reference years
+biofuel_ft_msw_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from municipal solid waste)
+biofuel_ft_msw_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from municipal solid waste) for the reference years
+biofuel_ft_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from others)
+biofuel_ft_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) for the reference years
+biofuel_ft_others_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from others)
+biofuel_ft_others_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from others) for the reference years
 biofuel_ft_selectivity;Float;-;Selectivity of biofuel from FT pathway
-biofuel_hefa_fog_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) in 2020
-biofuel_hefa_fog_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) in 2050
-biofuel_hefa_fog_share_2020;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2020
-biofuel_hefa_fog_share_2030;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2030
-biofuel_hefa_fog_share_2040;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2040
-biofuel_hefa_fog_share_2050;Float;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) in 2050
-biofuel_hefa_fuel_efficiency_2020;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2020 (oil to fuel)
-biofuel_hefa_fuel_efficiency_2050;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2050 (oil to fuel)
-biofuel_hefa_oil_efficiency_2020;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2020 (biomass to oil)
-biofuel_hefa_oil_efficiency_2050;Float;-;Conversion efficiency of the HEFA pathway for producing biofuel in 2050 (biomass to oil)
-biofuel_hefa_others_emission_factor_2020;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) in 2020
-biofuel_hefa_others_emission_factor_2050;Float;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) in 2050
-biofuel_hefa_others_share_2020;Float;%;Share of biofuel production from HEFA pathway (from others) in 2020
-biofuel_hefa_others_share_2030;Float;%;Share of biofuel production from HEFA pathway (from others) in 2030
-biofuel_hefa_others_share_2040;Float;%;Share of biofuel production from HEFA pathway (from others) in 2040
-biofuel_hefa_others_share_2050;Float;%;Share of biofuel production from HEFA pathway (from others) in 2050
+biofuel_hefa_fog_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from fats, oils and grease)
+biofuel_hefa_fog_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) for the reference years
+biofuel_hefa_fog_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from fats, oils and grease)
+biofuel_hefa_fog_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) for the reference years
+biofuel_hefa_fuel_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel(oil to fuel)
+biofuel_hefa_fuel_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (oil to fuel) for the reference years
+biofuel_hefa_oil_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil)
+biofuel_hefa_oil_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil) for the reference years
+biofuel_hefa_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from others)
+biofuel_hefa_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) for the reference years
+biofuel_hefa_others_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from others)
+biofuel_hefa_others_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from others) for the reference years
 biofuel_hefa_selectivity;Float;-;Selectivity of biofuel from HEFA pathway
-biofuel_share_2020;Float;%;Share of biofuel in drop-in fuel in 2020
-biofuel_share_2030;Float;%;Share of biofuel in drop-in fuel in 2030
-biofuel_share_2040;Float;%;Share of biofuel in drop-in fuel in 2040
-biofuel_share_2050;Float;%;Share of biofuel in drop-in fuel in 2050
+biofuel_share_reference_years;List;yr;Reference years for the share of biofuel in drop-in fuel
+biofuel_share_reference_years_values;List;%;Share of biofuel in drop-in fuel for the reference years
 carbon_dioxyde_removal_2100;Float;GtCO2;Cumulative Carbon Dioxide Removal (CDR) over 2020-2100
 commercial_aviation_coefficient;Float;-;Coefficient to only include commercial aviation (passenger and freight) and exclude private and military aviation
 covid_end_year;Float;yr;Covid-19 end year
@@ -65,18 +55,14 @@ covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year
 covid_start_year;Float;yr;Covid-19 start year
 crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050
 direct_co2_erf_2018_reference;Float;mW/m²;Effective radiative due to direct CO2 emissions from commercial aviation in 2018
-electricity_emission_factor_2020;Float;gCO2/kWh;Electricity emission factor in 2020
-electricity_emission_factor_2030;Float;gCO2/kWh;Electricity emission factor in 2030
-electricity_emission_factor_2040;Float;gCO2/kWh;Electricity emission factor in 2040
-electricity_emission_factor_2050;Float;gCO2/kWh;Electricity emission factor in 2050
-electrofuel_hydrogen_efficiency_2020;Float;-;Conversion efficiency for producing electrofuel from hydrogen in 2020
-electrofuel_hydrogen_efficiency_2050;Float;-;Conversion efficiency for producing electrofuel from hydrogen in 2050
-electrofuel_share_2020;Float;%;Share of electrofuel in drop-in fuel in 2020
-electrofuel_share_2030;Float;%;Share of electrofuel in drop-in fuel in 2030
-electrofuel_share_2040;Float;%;Share of electrofuel in drop-in fuel in 2040
-electrofuel_share_2050;Float;%;Share of electrofuel in drop-in fuel in 2050
-electrolysis_efficiency_2020;Float;-;Conversion efficiency of the electrolysis pathway for producing hydrogen in 2020
-electrolysis_efficiency_2050;Float;-;Conversion efficiency of the electrolysis pathway for producing hydrogen in 2050
+electricity_emission_factor_reference_years;List;yr;Reference years for the electricity emission factor
+electricity_emission_factor_reference_years_values;List;gCO2/kWh;Electricity emission factor for the reference years
+electrofuel_hydrogen_efficiency_reference_years;List;yr;Reference years for the conversion efficiency for producing electrofuel from hydrogen
+electrofuel_hydrogen_efficiency_reference_years_values;List;-;Conversion efficiency for producing electrofuel from hydrogen for the reference years
+electrofuel_share_reference_years;List;yr;Reference years for the share of electrofuel in drop-in fuel
+electrofuel_share_reference_years_values;List;%;Share of electrofuel in drop-in fuel for the reference years
+electrolysis_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the electrolysis pathway for producing hydrogen
+electrolysis_efficiency_reference_years_values;List;-;Conversion efficiency of the electrolysis pathway for producing hydrogen for the reference years
 emission_index_h2o_biofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for biofuel combustion
 emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for electrofuel combustion
 emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion
@@ -110,60 +96,45 @@ fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet
 fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050
 forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050
 freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019
-growth_rate_2020_2030_long_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger long-range market
-growth_rate_2020_2030_medium_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger medium-range market
-growth_rate_2020_2030_reference;Float;%;Reference air traffic compound annual growth rate over 2020-2030 for passenger and freight markets
-growth_rate_2020_2030_freight;Float;%;Air traffic compound annual growth rate over 2020-2030 for freight market
-growth_rate_2020_2030_short_range;Float;%;Air traffic compound annual growth rate over 2020-2030 for passenger short-range market
-growth_rate_2030_2040_long_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger long-range market
-growth_rate_2030_2040_medium_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger medium-range market
-growth_rate_2030_2040_reference;Float;%;Reference air traffic compound annual growth rate over 2030-2040 for passenger and freight markets
-growth_rate_2030_2040_freight;Float;%;Air traffic compound annual growth rate over 2030-2040 for freight market
-growth_rate_2030_2040_short_range;Float;%;Air traffic compound annual growth rate over 2030-2040 for passenger short-range market
-growth_rate_2040_2050_long_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger long-range market
-growth_rate_2040_2050_medium_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger medium-range market
-growth_rate_2040_2050_reference;Float;%;Reference air traffic compound annual growth rate over 2040-2050 for passenger and freight markets
-growth_rate_2040_2050_freight;Float;%;Air traffic compound annual growth rate over 2040-2050 for freight market
-growth_rate_2040_2050_short_range;Float;%;Air traffic compound annual growth rate over 2040-2050 for passenger short-range market
+cagr_passenger_short_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger short-range market
+cagr_passenger_short_range_reference_periods_values;List;%;Compound annual growth rate for passenger short-range market for the reference periods
+cagr_passenger_medium_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger medium-range market
+cagr_passenger_medium_range_reference_periods_values;List;%;Compound annual growth rate for passenger medium-range market for the reference periods
+cagr_passenger_long_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger long-range market
+cagr_passenger_long_range_reference_periods_values;List;%;Compound annual growth rate for passenger long-range market for the reference periods
+cagr_freight_reference_periods;List;yr;Reference periods for the compound annual growth rate for freight market
+cagr_freight_reference_periods_values;List;%;Compound annual growth rate for freight market for the reference periods
+reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
+reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
 historic_start_year;Float;yr;Historic start year for the data
 hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage
-hydrogen_coal_ccs_share_2020;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2020
-hydrogen_coal_ccs_share_2030;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2030
-hydrogen_coal_ccs_share_2040;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2040
-hydrogen_coal_ccs_share_2050;Float;%;Share of hydrogen production from coal pathway with carbon capture and storage in 2050
+hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
+hydrogen_coal_ccs_share_reference_years_values;List;%;Share of hydrogen production from coal pathway with carbon capture and storage for the reference years
 hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage
-hydrogen_electrolysis_share_2020;Float;%;Share of hydrogen production from electrolysis pathway in 2020
-hydrogen_electrolysis_share_2030;Float;%;Share of hydrogen production from electrolysis pathway in 2030
-hydrogen_electrolysis_share_2040;Float;%;Share of hydrogen production from electrolysis pathway in 2040
-hydrogen_electrolysis_share_2050;Float;%;Share of hydrogen production from electrolysis pathway in 2050
+hydrogen_electrolysis_share_reference_years;List;yr;Reference years for the share of hydrogen production from electrolysis pathway
+hydrogen_electrolysis_share_reference_years_values;List;%;Share of hydrogen production from electrolysis pathway for the reference years
 hydrogen_final_market_share_long_range;Float;%;Share of hydrogen aircraft in the passenger long-range market
 hydrogen_final_market_share_medium_range;Float;%;Share of hydrogen aircraft in the passenger medium-range market
 hydrogen_final_market_share_short_range;Float;%;Share of hydrogen aircraft in the passenger short-range market
 hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage
-hydrogen_gas_ccs_share_2020;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2020
-hydrogen_gas_ccs_share_2030;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2030
-hydrogen_gas_ccs_share_2040;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2040
-hydrogen_gas_ccs_share_2050;Float;%;Share of hydrogen production from gas pathway with carbon capture and storage in 2050
+hydrogen_gas_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway with carbon capture and storage
+hydrogen_gas_ccs_share_reference_years_values;List;%;Share of hydrogen production from gas pathway with carbon capture and storage for the reference years
 hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage
-hydrogen_gas_share_2020;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2020
-hydrogen_gas_share_2030;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2030
-hydrogen_gas_share_2040;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2040
-hydrogen_gas_share_2050;Float;%;Share of hydrogen production from gas pathway without carbon capture and storage in 2050
+hydrogen_gas_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway without carbon capture and storage
+hydrogen_gas_share_reference_years_values;List;%;Share of hydrogen production from gas pathway without carbon capture and storage for the reference years
 hydrogen_introduction_year_long_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for long-range market
 hydrogen_introduction_year_medium_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for medium-range market
 hydrogen_introduction_year_short_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for short-range market
 hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production from HEFA pathway
-kerosene_emission_factor_2019;Float;gCO2/MJ;Emission factor of fossil kerosene in 2019
-kerosene_emission_factor_2030;Float;gCO2/MJ;Emission factor of fossil kerosene in 2030
-kerosene_emission_factor_2040;Float;gCO2/MJ;Emission factor of fossil kerosene in 2040
-kerosene_emission_factor_2050;Float;gCO2/MJ;Emission factor of fossil kerosene in 2050
+kerosene_emission_factor_reference_years;List;yr;Reference years for the emission factor of fossil kerosene
+kerosene_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of fossil kerosene for the reference years
 lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
 lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
 lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen
 lhv_kerosene;Float;MJ/kg;Lower Heating Value of kerosene
 lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose
-liquefaction_efficiency_2020;Float;-;Liquefaction efficiency for hydrogen in 2020
-liquefaction_efficiency_2050;Float;-;Liquefaction efficiency for hydrogen in 2050
+liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen
+liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years
 load_factor_end_year;Float;%;Value of mean aircraft load factor in the considered end year
 long_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger long-range market in 2019
 long_range_rpk_share_2019;Float;%;Share of RPK from long-range market in 2019
@@ -464,142 +435,89 @@ prospective_evolution_rpk_short_range;Float;%;Evolution in percentage of Revenue
 prospective_evolution_rtk;Float;%;Evolution in percentage of Revenue Tonne Kilometer (RTK) for freight market between 2019 and 2050
 solid_waste_biomass;Float;EJ;Available biomass in the form of municipal solid waste in 2050
 sugarystarchy_crops_biomass;Float;EJ;Available biomass in the form of sugar and starch-based materials from energy crops in 2050
-electrolyser_capex_2020;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2020 in € per kg/day of nominal hydrogen production capacity
-electrolyser_capex_2030;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2030 in € per kg/day of nominal hydrogen production capacity
-electrolyser_capex_2040;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2040 in € per kg/day of nominal hydrogen production capacity
-electrolyser_capex_2050;Float;€/(kg/day);Capital expenditures for electrolysis plant building in 2050 in € per kg/day of nominal hydrogen production capacity
-electrolyser_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2020
-electrolyser_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2030
-electrolyser_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2040
-electrolyser_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built in 2050
-electrolyser_var_opex_2020;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2020
-electrolyser_var_opex_2030;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2030
-electrolyser_var_opex_2040;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2040
-electrolyser_var_opex_2050;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2050
+
+electrolyser_capex_reference_years;List;yr;Reference years for the Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity
+electrolyser_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity for the reference years
+electrolyser_fixed_opex_reference_years;List;yr;Reference years for teh annual operational (fixed) expenditures for electrolysis plant built
+electrolyser_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built for the reference years
+electrolyser_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
+electrolyser_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years
 gas_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
 gas_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
 coal_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
 coal_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
 gas_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
 coal_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
-gas_ccs_eis_capex_2020;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
-gas_ccs_eis_capex_2030;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
-gas_ccs_eis_capex_2040;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
-gas_ccs_eis_capex_2050;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
-gas_ccs_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2020
-gas_ccs_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2030
-gas_ccs_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2040
-gas_ccs_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) plant built in 2050
-gas_ccs_efficiency_2020;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2020)
-gas_ccs_efficiency_2030;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2030)
-gas_ccs_efficiency_2040;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2040)
-gas_ccs_efficiency_2050;Float;%;Gas steam methane reforming (with CCS) energy conversion efficiency (plant built in 2050)
-gas_eis_capex_2020;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
-gas_eis_capex_2030;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
-gas_eis_capex_2040;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
-gas_eis_capex_2050;Float;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
-gas_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2020
-gas_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2030
-gas_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2040
-gas_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) plant built in 2050
-gas_efficiency_2020;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2020)
-gas_efficiency_2030;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2030)
-gas_efficiency_2040;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2040)
-gas_efficiency_2050;Float;%;Gas steam methane reforming (without CCS) energy conversion efficiency (plant built in 2050)
-coal_ccs_eis_capex_2020;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
-coal_ccs_eis_capex_2030;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
-coal_ccs_eis_capex_2040;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
-coal_ccs_eis_capex_2050;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
-coal_ccs_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2020
-coal_ccs_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2030
-coal_ccs_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2040
-coal_ccs_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant built in 2050
-coal_ccs_efficiency_2020;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2020)
-coal_ccs_efficiency_2030;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2030)
-coal_ccs_efficiency_2040;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2040)
-coal_ccs_efficiency_2050;Float;%;coal coal gasification (with CCS) energy conversion efficiency (plant built in 2050)
-coal_eis_capex_2020;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2020 in € per kg/day of nominal hydrogen production capacity
-coal_eis_capex_2030;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2030 in € per kg/day of nominal hydrogen production capacity
-coal_eis_capex_2040;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2040 in € per kg/day of nominal hydrogen production capacity
-coal_eis_capex_2050;Float;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in 2050 in € per kg/day of nominal hydrogen production capacity
-coal_eis_fixed_opex_2020;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2020
-coal_eis_fixed_opex_2030;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2030
-coal_eis_fixed_opex_2040;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2040
-coal_eis_fixed_opex_2050;Float;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant built in 2050
-coal_efficiency_2020;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2020)
-coal_efficiency_2030;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2030)
-coal_efficiency_2040;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2040)
-coal_efficiency_2050;Float;%;coal coal gasification (without CCS) energy conversion efficiency (plant built in 2050)
-ccs_cost_2020;Float;€/kg;carbon capture and storage cost in 2020
-ccs_cost_2030;Float;€/kg;carbon capture and storage cost in 2030
-ccs_cost_2040;Float;€/kg;carbon capture and storage cost in 2040
-ccs_cost_2050;Float;€/kg;carbon capture and storage cost in 2050
-liquefier_capex_2020;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2020 in € per kg/day of nominal hydrogen production capacity
-liquefier_capex_2030;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2030 in € per kg/day of nominal hydrogen production capacity
-liquefier_capex_2040;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2040 in € per kg/day of nominal hydrogen production capacity
-liquefier_capex_2050;Float;€/(kg/day);Capital expenditures for liquefaction plant building in 2050 in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for gas steam methane reforming plant (with CCS) in € per kg/day of nominal hydrogen production capacity
+gas_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+gas_ccs_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS)
+gas_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) for the reference years
+gas_ccs_efficiency_reference_years;List;yr;Reference years for the gas steam methane reforming (with CCS) energy conversion efficiency
+gas_ccs_efficiency_reference_years_values;List;%;Gas steam methane reforming (with CCS) energy conversion efficiency for the reference years
+gas_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for gas steam methane reforming plant (without CCS) in € per kg/day of nominal hydrogen production capacity
+gas_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+gas_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS)
+gas_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) for the reference years
+gas_efficiency_reference_years;List;yr;Reference years for the gas steam methane reforming (without CCS) energy conversion efficiency
+gas_efficiency_reference_years_values;List;%;Gas steam methane reforming (without CCS) energy conversion efficiency for the reference years
+coal_ccs_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for coal gasification plant (with CCS) in € per kg/day of nominal hydrogen production capacity
+coal_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+coal_ccs_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for coal gasification plant (with CCS)
+coal_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (with CCS) for the reference years
+coal_ccs_efficiency_reference_years;List;yr;Reference years for the coal gasification (with CCS) energy conversion efficiency
+coal_ccs_efficiency_reference_years_values;List;%;Coal gasification (with CCS) energy conversion efficiency for the reference years
+coal_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for coal gasification plant (without CCS) in € per kg/day of nominal hydrogen production capacity
+coal_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+coal_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for coal gasification plant (without CCS)
+coal_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (without CCS) for the reference years
+coal_efficiency_reference_years;List;yr;Reference years for the coal gasification (without CCS) energy conversion efficiency
+coal_efficiency_reference_years_values;List;%;Coal gasification (without CCS) energy conversion efficiency for the reference years
+ccs_cost_reference_years;List;yr;Reference years for the carbon capture and storage cost
+ccs_cost_reference_years_values;List;€/kg;Carbon capture and storage cost for the reference years
+liquefier_capex_reference_years;List;yr;Reference years for the Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity
+liquefier_capex_reference_years_values;List;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity for the reference years
 transport_cost_ratio;Float;%;Extra cost attributed to new hydrogen logistics
-electrofuel_capex_2020;Capital expenditures for electrofuel plant building in 2020 in € per kg/day of nominal efuel production capacity
-electrofuel_capex_2030;Capital expenditures for electrofuel plant building in 2030 in € per kg/day of nominal efuel production capacity
-electrofuel_capex_2040;Capital expenditures for electrofuel plant building in 2040 in € per kg/day of nominal efuel production capacity
-electrofuel_capex_2050;Capital expenditures for electrofuel plant building in 2050 in € per kg/day of nominal efuel production capacity
-electrofuel_fixed_opex_2020;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2020
-electrofuel_fixed_opex_2030;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2030
-electrofuel_fixed_opex_2040;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2040
-electrofuel_fixed_opex_2050;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built in 2050
-electrofuel_var_opex_2020;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2020
-electrofuel_var_opex_2030;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2030
-electrofuel_var_opex_2040;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2040
-electrofuel_var_opex_2050;Float;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built in 2050
-electrofuel_specific_co2_2020;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2020
-electrofuel_specific_co2_2030;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2030
-electrofuel_specific_co2_2040;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2040
-electrofuel_specific_co2_2050;Float;kg/kg;CO2 required per kg of of e-fuel produced for plant built in 2050
-electricity_cost_2020;Float;€/kWh;Industrial wholesale electricity market price in 2020
-electricity_cost_2030;Float;€/kWh;Industrial wholesale electricity market price in 2030
-electricity_cost_2040;Float;€/kWh;Industrial wholesale electricity market price in 2040
-electricity_cost_2050;Float;€/kWh;Industrial wholesale electricity market price in 2050
+electrofuel_capex_reference_years;List;yr;Reference years for the Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity
+electrofuel_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity for the reference years
+electrofuel_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for electrofuel plant built
+electrofuel_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built for the reference years
+electrofuel_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
+electrofuel_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years
+electrofuel_specific_co2_reference_years;List;yr;Reference years for the CO2 required per kg of of e-fuel produced for plant built
+electrofuel_specific_co2_reference_years_values;List;kg/kg;CO2 required per kg of of e-fuel produced for plant built for the reference years
+electricity_cost_reference_years;List;yr;Reference years for the industrial wholesale electricity market price
+electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years
 electricity_load_factor;Float;%;Electricity input load factor
-co2_cost_2020;Float;€/kg;CO2 market price for e-fuel operations procurement in 2020
-co2_cost_2030;Float;€/kg;CO2 market price for e-fuel operations procurement in 2030
-co2_cost_2040;Float;€/kg;CO2 market price for e-fuel operations procurement in 2040
-co2_cost_2050;Float;€/kg;CO2 market price for e-fuel operations procurement in 2050
-co2_tax_2020;Float;€/ton;CO2 flat tax applied in 2020
-co2_tax_2030;Float;€/ton;CO2 flat tax applied in 2030
-co2_tax_2040;Float;€/ton;CO2 flat tax applied in 2040
-co2_tax_2050;Float;€/ton;CO2 flat tax applied in 2050
-gas_cost_2020;Float;€/kWh;Industrial wholesale gas market price in 2020
-gas_cost_2030;Float;€/kWh;Industrial wholesale gas market price in 2030
-gas_cost_2040;Float;€/kWh;Industrial wholesale gas market price in 2040
-gas_cost_2050;Float;€/kWh;Industrial wholesale gas market price in 2050
-coal_cost_2020;Float;€/kWh;Industrial wholesale coal market price in 2020
-coal_cost_2030;Float;€/kWh;Industrial wholesale coal market price in 2030
-coal_cost_2040;Float;€/kWh;Industrial wholesale coal market price in 2040
-coal_cost_2050;Float;€/kWh;Industrial wholesale coal market price in 2050
-kerosene_price_2020;Float;€/L;Kerosene (fossil) market price in 2020
-kerosene_price_2030;Float;€/L;Kerosene (fossil) market price in 2030
-kerosene_price_2040;Float;€/L;Kerosene (fossil) market price in 2040
-kerosene_price_2050;Float;€/L;Kerosene (fossil) market price in 2050
-biofuel_hefa_fog_mfsp_2020;Float;€/L;Biofuel (Hefa FOG) MFSP in 2020
-biofuel_hefa_fog_mfsp_2050;Float;€/L;Biofuel (Hefa FOG) MFSP in 2050
-biofuel_hefa_others_mfsp_2020;Float;€/L;Biofuel (Hefa Others) MFSP in 2020
-biofuel_hefa_others_mfsp_2050;Float;€/L;Biofuel (Hefa Others) MFSP in 2050
-biofuel_ft_others_mfsp_2020;Float;€/L;Biofuel (FT Others) MFSP in 2020
-biofuel_ft_others_mfsp_2050;Float;€/L;Biofuel (FT Others) MFSP in 2050
-biofuel_ft_msw_mfsp_2020;Float;€/L;Biofuel (FT MSW) MFSP in 2020
-biofuel_ft_msw_mfsp_2050;Float;€/L;Biofuel (FT MSW) MFSP in 2050
-biofuel_atj_mfsp_2020;Float;€/L;Biofuel (AtJ) MFSP in 2020
-biofuel_atj_mfsp_2050;Float;€/L;Biofuel (AtJ) MFSP in 2020
-biofuel_hefa_fog_capex_2020;Float;€/(kg/day);Biofuel (Hefa FOG) capex in 2020
-biofuel_hefa_fog_capex_2050;Float;€/(kg/day);Biofuel (Hefa FOG) capex in 2050
-biofuel_hefa_others_capex_2020;Float;€/(kg/day);Biofuel (Hefa Others) capex in 2020
-biofuel_hefa_others_capex_2050;Float;€/(kg/day);Biofuel (Hefa Others) capex in 2050
-biofuel_ft_others_capex_2020;Float;€/(kg/day);Biofuel (F/T Others) capex in 2050
-biofuel_ft_others_capex_2050;Float;€/(kg/day);Biofuel (F/T Others) capex in 2050
-biofuel_ft_msw_capex_2020;Float;€/(kg/day);Biofuel (FT MSW) capex in 2050
-biofuel_ft_msw_capex_2050;Float;€/(kg/day);Biofuel (FT MSW) capex in 2050
-biofuel_atj_capex_2020;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
-biofuel_atj_capex_2050;Float;€/(kg/day);Biofuel (AtJ) capex in 2050
+co2_cost_reference_years;List;yr;Reference years for the CO2 market price for e-fuel operations procurement
+co2_cost_reference_years_values;List;€/kg;CO2 market price for e-fuel operations procurement for the reference years
+carbon_tax_reference_years;List;yr;Reference years for the carbon flat tax applied
+carbon_tax_reference_years_values;List;€/ton;Carbon flat tax applied for the reference years
+gas_cost_reference_years;List;yr;Reference years for the industrial wholesale gas market price
+gas_cost_reference_years_values;List;€/kWh;Industrial wholesale gas market price for the reference years
+coal_cost_reference_years;List;yr;Reference years for the industrial wholesale coal market price
+coal_cost_reference_years_values;List;€/kWh;Industrial wholesale coal market price for the reference years
+kerosene_price_reference_years;List;yr;Reference years for the kerosene (fossil) market price
+kerosene_price_reference_years_values;List;€/L;Kerosene (fossil) market price for the reference years
+biofuel_hefa_fog_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP
+biofuel_hefa_fog_mfsp_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years
+biofuel_hefa_others_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP
+biofuel_hefa_others_mfsp_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years
+biofuel_ft_others_mfsp_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP
+biofuel_ft_others_mfsp_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years
+biofuel_ft_msw_mfsp_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP
+biofuel_ft_msw_mfsp_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years
+biofuel_atj_mfsp_reference_years;List;yr;Reference years for the biofuel (AtJ) MFSP
+biofuel_atj_mfsp_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years
+biofuel_hefa_fog_capex_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) capex
+biofuel_hefa_fog_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa FOG) capex for the reference years
+biofuel_hefa_others_capex_reference_years;List;yr;Reference years for the biofuel (Hefa Others) capex
+biofuel_hefa_others_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa Others) capex for the reference years
+biofuel_ft_others_capex_reference_years;List;yr;Reference years for the biofuel (F/T Others) capex
+biofuel_ft_others_capex_reference_years_values;List;€/(kg/day);Biofuel (F/T Others) capex for the reference years
+biofuel_ft_msw_capex_reference_years;List;yr;Reference years for the biofuel (FT MSW) capex
+biofuel_ft_msw_capex_reference_years_values;List;€/(kg/day);Biofuel (FT MSW) capex for the reference years
+biofuel_atj_capex_reference_years;List;yr;Reference years for the biofuel (AtJ) capex
+biofuel_atj_capex_reference_years_values;List;€/(kg/day);Biofuel (AtJ) capex for the reference years
 social_discount_rate;Float;%;Social discount rate used for inter-temporal economic analyses
 biofuel_atj_capex;Vector;€/(kg/day);Biofuel (AtJ) capex evolution
 biofuel_atj_mfsp;Vector;€/L;Biofuel (AtJ) MFSP evolution
@@ -834,15 +752,12 @@ energy_avail_ft_msw;Vector;EJ;Available energy (converted) under current allocat
 energy_avail_ft_others;Vector;EJ;Available energy (converted) under current allocation (FT-Others)
 energy_avail_hefa_fog;Vector;EJ;Available energy (converted) under current allocation (HEFA-Fog)
 energy_avail_hefa_others;Vector;EJ;Available energy (converted) under current allocation (HEFA-Others)
-carbon_offset_baseline_level_vs_2019;Float;%;Level of CO2 emissions relative to 2019 from which higher emissions are offset
-residual_carbon_offset_share_2020;Float;%;Share of remaining CO2 emissions offset in 2020
-residual_carbon_offset_share_2030;Float;%;Share of remaining CO2 emissions offset in 2030
-residual_carbon_offset_share_2040;Float;%;Share of remaining CO2 emissions offset in 2040
-residual_carbon_offset_share_2050;Float;%;Share of remaining CO2 emissions offset in 2050
-carbon_offset_price_2020;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2020
-carbon_offset_price_2030;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2030
-carbon_offset_price_2040;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2040
-carbon_offset_price_2050;Float;€/tCO2e;Share of remaining CO2 emissions offset in 2050
+carbon_offset_baseline_level_vs_2019_reference_periods;List;yr;Reference periods for the level of CO2 emissions relative to 2019 from which higher emissions are offset
+carbon_offset_baseline_level_vs_2019_reference_periods_values;List;%;Level of CO2 emissions relative to 2019 from which higher emissions are offset for the reference periods
+residual_carbon_offset_share_reference_years;List;yr;Reference years for the share of remaining CO2 emissions offset
+residual_carbon_offset_share_reference_years_values;List;%;Share of remaining CO2 emissions offset for the reference years
+carbon_offset_price_reference_years;List;yr;Reference years for the share of remaining CO2 emissions offset
+carbon_offset_price_reference_years_values;List;€/tCO2e;Share of remaining CO2 emissions offset for the reference years
 residual_carbon_offset_share;Vector;%;Share of remaining CO2 emissions offset
 carbon_offset_price;Vector;€/tCO2e;Share of remaining CO2 emissions offset
 noc_carbon_offset_per_ask;Vector;€/ASK;Non-operating cost per ASK due to carbon offset
