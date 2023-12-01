@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class PassengerAircraftNocCarbonOffset(AeromapsModel):
@@ -17,10 +17,11 @@ class PassengerAircraftNocCarbonOffset(AeromapsModel):
         carbon_offset_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        carbon_offset_price_prospective = InterpolationAeromapsFunction(
+        carbon_offset_price_prospective = AeromapsInterpolationFunction(
             self,
             carbon_offset_price_reference_years,
             carbon_offset_price_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "carbon_offset_price"] = carbon_offset_price_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):

@@ -6,7 +6,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class ElectricityCost(AeromapsModel):
@@ -20,8 +20,8 @@ class ElectricityCost(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """LCOE"""
 
-        electricity_market_price = InterpolationAeromapsFunction(
-            self, electricity_cost_reference_years, electricity_cost_reference_years_values
+        electricity_market_price = AeromapsInterpolationFunction(
+            self, electricity_cost_reference_years, electricity_cost_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "electricity_market_price"] = electricity_market_price
 
@@ -38,8 +38,8 @@ class CoalCost(AeromapsModel):
         coal_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        coal_market_price = InterpolationAeromapsFunction(
-            self, coal_cost_reference_years, coal_cost_reference_years_values
+        coal_market_price = AeromapsInterpolationFunction(
+            self, coal_cost_reference_years, coal_cost_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "coal_market_price"] = coal_market_price
 
@@ -56,8 +56,8 @@ class GasCost(AeromapsModel):
         gas_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        gas_market_price = InterpolationAeromapsFunction(
-            self, gas_cost_reference_years, gas_cost_reference_years_values
+        gas_market_price = AeromapsInterpolationFunction(
+            self, gas_cost_reference_years, gas_cost_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "gas_market_price"] = gas_market_price
 
@@ -74,8 +74,8 @@ class Co2Cost(AeromapsModel):
         co2_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        co2_market_price = InterpolationAeromapsFunction(
-            self, co2_cost_reference_years, co2_cost_reference_years_values
+        co2_market_price = AeromapsInterpolationFunction(
+            self, co2_cost_reference_years, co2_cost_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "co2_market_price"] = co2_market_price
 
@@ -92,8 +92,8 @@ class CarbonTax(AeromapsModel):
         carbon_tax_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        carbon_tax_prospective = InterpolationAeromapsFunction(
-            self, carbon_tax_reference_years, carbon_tax_reference_years_values
+        carbon_tax_prospective = AeromapsInterpolationFunction(
+            self, carbon_tax_reference_years, carbon_tax_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "carbon_tax"] = carbon_tax_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -113,10 +113,11 @@ class KerosenePrice(AeromapsModel):
         kerosene_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        kerosene_market_price_prospective = InterpolationAeromapsFunction(
+        kerosene_market_price_prospective = AeromapsInterpolationFunction(
             self,
             kerosene_price_reference_years,
             kerosene_price_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "kerosene_market_price"] = kerosene_market_price_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):

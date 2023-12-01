@@ -8,7 +8,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class ElectrofuelCost(AeromapsModel):
@@ -368,8 +368,8 @@ class ElectrofuelCapex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel capital expenditures at eis using interpolation functions"""
 
-        electrofuel_eis_capex = InterpolationAeromapsFunction(
-            self, electrofuel_capex_reference_years, electrofuel_capex_reference_years_values
+        electrofuel_eis_capex = AeromapsInterpolationFunction(
+            self, electrofuel_capex_reference_years, electrofuel_capex_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "electrofuel_eis_capex"] = electrofuel_eis_capex
 
@@ -387,10 +387,11 @@ class ElectrofuelFixedOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
-        electrofuel_eis_fixed_opex = InterpolationAeromapsFunction(
+        electrofuel_eis_fixed_opex = AeromapsInterpolationFunction(
             self,
             electrofuel_fixed_opex_reference_years,
             electrofuel_fixed_opex_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "electrofuel_eis_fixed_opex"] = electrofuel_eis_fixed_opex
 
@@ -408,8 +409,8 @@ class ElectrofuelVarOpex(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
-        electrofuel_eis_var_opex = InterpolationAeromapsFunction(
-            self, electrofuel_var_opex_reference_years, electrofuel_var_opex_reference_years_values
+        electrofuel_eis_var_opex = AeromapsInterpolationFunction(
+            self, electrofuel_var_opex_reference_years, electrofuel_var_opex_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "electrofuel_eis_var_opex"] = electrofuel_eis_var_opex
 
@@ -474,10 +475,11 @@ class ElectrofuelSpecificCo2(AeromapsModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel efficiency at eis using interpolation functions"""
 
-        electrofuel_eis_specific_co2 = InterpolationAeromapsFunction(
+        electrofuel_eis_specific_co2 = AeromapsInterpolationFunction(
             self,
             electrofuel_specific_co2_reference_years,
             electrofuel_specific_co2_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "electrofuel_eis_specific_co2"] = electrofuel_eis_specific_co2
 
