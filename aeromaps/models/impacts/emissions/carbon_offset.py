@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction, LevelingAeromapsFunction
 
 
 class LevelCarbonOffset(AeromapsModel):
@@ -16,22 +16,10 @@ class LevelCarbonOffset(AeromapsModel):
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        if len(carbon_offset_baseline_level_vs_2019_reference_periods) == 0:
-            for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[
-                    k, "carbon_offset_baseline_level_vs_2019"
-                ] = carbon_offset_baseline_level_vs_2019_reference_periods_values
-        else:
-            for i in range(0, len(carbon_offset_baseline_level_vs_2019_reference_periods) - 1):
-                for k in range(
-                    carbon_offset_baseline_level_vs_2019_reference_periods[i],
-                    carbon_offset_baseline_level_vs_2019_reference_periods[i + 1] + 1,
-                ):
-                    self.df.loc[
-                        k, "carbon_offset_baseline_level_vs_2019"
-                    ] = carbon_offset_baseline_level_vs_2019_reference_periods_values[i]
-
-        carbon_offset_baseline_level_vs_2019 = self.df["carbon_offset_baseline_level_vs_2019"]
+        carbon_offset_baseline_level_vs_2019 = LevelingAeromapsFunction(
+            self, carbon_offset_baseline_level_vs_2019_reference_periods, carbon_offset_baseline_level_vs_2019_reference_periods_values
+        )
+        self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = carbon_offset_baseline_level_vs_2019
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "level_carbon_offset"] = 0.0
