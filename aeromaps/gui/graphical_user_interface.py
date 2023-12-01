@@ -950,82 +950,34 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Traffic
         if self.w_grouped_market.value == False:
-            self.process.parameters.growth_rate_2020_2030_short_range = (
+            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_short_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_short_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_medium_range = (
+            ]
+            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
                 self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_medium_range = (
-                self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_medium_range = (
-                self.w_growth_medium_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_long_range = (
+            ]
+            self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
                 self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_long_range = (
-                self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_long_range = (
-                self.w_growth_long_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_freight = (
+            ]
+            self.process.parameters.cagr_freight_reference_periods_values = [
                 self.w_growth_freight_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_freight = (
-                self.w_growth_freight_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_freight = (
-                self.w_growth_freight_percent.value
-            )
+            ]
             self.w_growth_medium_range_percent.disabled = False
             self.w_growth_long_range_percent.disabled = False
             self.w_growth_freight_percent.disabled = False
         else:
-            self.process.parameters.growth_rate_2020_2030_short_range = (
+            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_short_range = (
+            ]
+            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_short_range = (
+            ]
+            self.process.parameters.cagr_passenger_long_range_reference_periods = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_medium_range = (
+            ]
+            self.process.parameters.cagr_freight_reference_periods = [
                 self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_medium_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_medium_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_long_range = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2020_2030_freight = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2030_2040_freight = (
-                self.w_growth_short_range_percent.value
-            )
-            self.process.parameters.growth_rate_2040_2050_freight = (
-                self.w_growth_short_range_percent.value
-            )
+            ]
             self.w_growth_medium_range_percent.disabled = True
             self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
             self.w_growth_long_range_percent.disabled = True
@@ -1961,181 +1913,165 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Carbon intensity
         if self.w_energy_mix.value == "Kerosene":
-            self.process.parameters.biofuel_share_2030 = 0.0
-            self.process.parameters.biofuel_share_2040 = 0.0
-            self.process.parameters.biofuel_share_2050 = 0.0
-            self.process.parameters.electrofuel_share_2030 = 0.0
-            self.process.parameters.electrofuel_share_2040 = 0.0
-            self.process.parameters.electrofuel_share_2050 = 0.0
+            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
+            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
         elif self.w_energy_mix.value == "Biofuel":
-            self.process.parameters.biofuel_share_2030 = 4.0
-            self.process.parameters.biofuel_share_2040 = 30.0
-            self.process.parameters.biofuel_share_2050 = 100.0
-            self.process.parameters.electrofuel_share_2030 = 0.0
-            self.process.parameters.electrofuel_share_2040 = 0.0
-            self.process.parameters.electrofuel_share_2050 = 0.0
+            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.0, 30.0, 100.0]
+            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
         elif self.w_energy_mix.value == "Electrofuel":
-            self.process.parameters.biofuel_share_2030 = 0.0
-            self.process.parameters.biofuel_share_2040 = 0.0
-            self.process.parameters.biofuel_share_2050 = 0.0
-            self.process.parameters.electrofuel_share_2030 = 0.0
-            self.process.parameters.electrofuel_share_2040 = 25.0
-            self.process.parameters.electrofuel_share_2050 = 100.0
+            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
+            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.electrofuel_share_reference_years_values = [
+                0.0,
+                0.0,
+                25.0,
+                100.0,
+            ]
         elif self.w_energy_mix.value == "ReFuelEU":
-            self.process.parameters.biofuel_share_2030 = 4.8
-            self.process.parameters.biofuel_share_2040 = 24.0
-            self.process.parameters.biofuel_share_2050 = 35.0
-            self.process.parameters.electrofuel_share_2030 = 1.2
-            self.process.parameters.electrofuel_share_2040 = 10.0
-            self.process.parameters.electrofuel_share_2050 = 35.0
+            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.8, 24.0, 35.0]
+            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.electrofuel_share_reference_years_values = [
+                0.0,
+                1.2,
+                10.0,
+                35.0,
+            ]
 
         if self.w_biofuel_production.value == "Current":
-            self.process.parameters.biofuel_hefa_fog_share_2020 = 100.0
-            self.process.parameters.biofuel_hefa_fog_share_2030 = 100.0
-            self.process.parameters.biofuel_hefa_fog_share_2040 = 100.0
-            self.process.parameters.biofuel_hefa_fog_share_2050 = 100.0
-            self.process.parameters.biofuel_hefa_others_share_2020 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2030 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2040 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2050 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2020 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2030 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2040 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2050 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2020 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2030 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2040 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2050 = 0.0
+            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
+            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [100]
+            self.process.parameters.biofuel_hefa_others_share_reference_years = []
+            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_ft_others_share_reference_years = []
+            self.process.parameters.biofuel_ft_others_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_ft_msw_share_reference_years = []
+            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
         elif self.w_biofuel_production.value == "High-carbon":
-            self.process.parameters.biofuel_hefa_fog_share_2020 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2030 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2040 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2050 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2020 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2030 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2040 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2050 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2020 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2030 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2040 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2050 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2020 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2030 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2040 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2050 = 0.0
+            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
+            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_hefa_others_share_reference_years = []
+            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_ft_others_share_reference_years = []
+            self.process.parameters.biofuel_ft_others_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_ft_msw_share_reference_years = []
+            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
         elif self.w_biofuel_production.value == "Low-carbon":
-            self.process.parameters.biofuel_hefa_fog_share_2020 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2030 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2040 = 0.0
-            self.process.parameters.biofuel_hefa_fog_share_2050 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2020 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2030 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2040 = 0.0
-            self.process.parameters.biofuel_hefa_others_share_2050 = 0.0
-            self.process.parameters.biofuel_ft_others_share_2020 = 100.0
-            self.process.parameters.biofuel_ft_others_share_2030 = 100.0
-            self.process.parameters.biofuel_ft_others_share_2040 = 100.0
-            self.process.parameters.biofuel_ft_others_share_2050 = 100.0
-            self.process.parameters.biofuel_ft_msw_share_2020 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2030 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2040 = 0.0
-            self.process.parameters.biofuel_ft_msw_share_2050 = 0.0
+            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
+            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_hefa_others_share_reference_years = []
+            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
+            self.process.parameters.biofuel_ft_others_share_reference_years = []
+            self.process.parameters.biofuel_ft_others_share_reference_years_values = [100.0]
+            self.process.parameters.biofuel_ft_msw_share_reference_years = []
+            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
 
         if self.w_hydrogen_production.value == "Current":
-            self.process.parameters.hydrogen_electrolysis_share_2030 = 2
-            self.process.parameters.hydrogen_electrolysis_share_2040 = 2
-            self.process.parameters.hydrogen_electrolysis_share_2050 = 2
-            self.process.parameters.hydrogen_gas_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_gas_share_2030 = 71
-            self.process.parameters.hydrogen_gas_share_2040 = 71
-            self.process.parameters.hydrogen_gas_share_2050 = 71
+            self.process.parameters.hydrogen_electrolysis_share_reference_years = []
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_gas_share_reference_years = []
+            self.process.parameters.hydrogen_gas_share_reference_years_values = [71]
         elif self.w_hydrogen_production.value == "Gas without CCS":
-            self.process.parameters.hydrogen_electrolysis_share_2030 = 0
-            self.process.parameters.hydrogen_electrolysis_share_2040 = 0
-            self.process.parameters.hydrogen_electrolysis_share_2050 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_gas_share_2030 = 100
-            self.process.parameters.hydrogen_gas_share_2040 = 100
-            self.process.parameters.hydrogen_gas_share_2050 = 100
+            self.process.parameters.hydrogen_electrolysis_share_reference_years = []
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = []
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_gas_share_reference_years = []
+            self.process.parameters.hydrogen_gas_share_reference_years_values = [100]
         elif self.w_hydrogen_production.value == "Gas with CCS":
-            self.process.parameters.hydrogen_electrolysis_share_2030 = 0
-            self.process.parameters.hydrogen_electrolysis_share_2040 = 0
-            self.process.parameters.hydrogen_electrolysis_share_2050 = 0
-            self.process.parameters.hydrogen_gas_ccs_share_2030 = 30
-            self.process.parameters.hydrogen_gas_ccs_share_2040 = 70
-            self.process.parameters.hydrogen_gas_ccs_share_2050 = 100
-            self.process.parameters.hydrogen_coal_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_gas_share_2030 = 70
-            self.process.parameters.hydrogen_gas_share_2040 = 30
-            self.process.parameters.hydrogen_gas_share_2050 = 0
+            self.process.parameters.hydrogen_electrolysis_share_reference_years = [2020, 2030, 2050]
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2, 0, 0]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 30, 70, 100]
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_gas_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.hydrogen_gas_share_reference_years_values = [71, 70, 30, 0]
         elif self.w_hydrogen_production.value == "Electrolysis":
-            self.process.parameters.hydrogen_electrolysis_share_2030 = 30
-            self.process.parameters.hydrogen_electrolysis_share_2040 = 50
-            self.process.parameters.hydrogen_electrolysis_share_2050 = 100
-            self.process.parameters.hydrogen_gas_ccs_share_2030 = 20
-            self.process.parameters.hydrogen_gas_ccs_share_2040 = 30
-            self.process.parameters.hydrogen_gas_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2030 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2040 = 0
-            self.process.parameters.hydrogen_coal_ccs_share_2050 = 0
-            self.process.parameters.hydrogen_gas_share_2030 = 50
-            self.process.parameters.hydrogen_gas_share_2040 = 20
-            self.process.parameters.hydrogen_gas_share_2050 = 0
+            self.process.parameters.hydrogen_electrolysis_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [
+                2,
+                30,
+                50,
+                100,
+            ]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 20, 30, 0]
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
+            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
+            self.process.parameters.hydrogen_gas_share_reference_years = [2020, 2030, 2040, 2050]
+            self.process.parameters.hydrogen_gas_share_reference_years_values = [71, 50, 20, 0]
 
         if self.w_electricity_production.value == "High-carbon":
-            self.process.parameters.electricity_emission_factor_2020 = 1100
-            self.process.parameters.electricity_emission_factor_2030 = 1100
-            self.process.parameters.electricity_emission_factor_2040 = 1100
-            self.process.parameters.electricity_emission_factor_2050 = 1100
+            self.process.parameters.electricity_emission_factor_reference_years = []
+            self.process.parameters.electricity_emission_factor_reference_years_values = [1100.0]
         elif self.w_electricity_production.value == "Current":
-            self.process.parameters.electricity_emission_factor_2020 = 429
-            self.process.parameters.electricity_emission_factor_2030 = 429
-            self.process.parameters.electricity_emission_factor_2040 = 429
-            self.process.parameters.electricity_emission_factor_2050 = 429
+            self.process.parameters.electricity_emission_factor_reference_years = []
+            self.process.parameters.electricity_emission_factor_reference_years_values = [429.0]
         elif self.w_electricity_production.value == "Medium-carbon":
-            self.process.parameters.electricity_emission_factor_2020 = 429
-            self.process.parameters.electricity_emission_factor_2030 = 300
-            self.process.parameters.electricity_emission_factor_2040 = 240
-            self.process.parameters.electricity_emission_factor_2050 = 240
+            self.process.parameters.electricity_emission_factor_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.electricity_emission_factor_reference_years_values = [
+                429,
+                300,
+                240,
+                240,
+            ]
         elif self.w_electricity_production.value == "Low-carbon":
-            self.process.parameters.electricity_emission_factor_2020 = 429
-            self.process.parameters.electricity_emission_factor_2030 = 200
-            self.process.parameters.electricity_emission_factor_2040 = 120
-            self.process.parameters.electricity_emission_factor_2050 = 70
+            self.process.parameters.electricity_emission_factor_reference_years = [
+                2020,
+                2030,
+                2040,
+                2050,
+            ]
+            self.process.parameters.electricity_emission_factor_reference_years_values = [
+                429,
+                200,
+                120,
+                70,
+            ]
         elif self.w_electricity_production.value == "Dedicated low-carbon":
-            self.process.parameters.electricity_emission_factor_2020 = 20
-            self.process.parameters.electricity_emission_factor_2030 = 20
-            self.process.parameters.electricity_emission_factor_2040 = 20
-            self.process.parameters.electricity_emission_factor_2050 = 20
+            self.process.parameters.electricity_emission_factor_reference_years = []
+            self.process.parameters.electricity_emission_factor_reference_years_values = [20.0]
 
         # SCENARIOS
         if self.w_accordion.selected_index == 1:
             if self.w_action_scenarios.value == "Example scenario":
                 # Traffic
-                self.process.parameters.growth_rate_2020_2030_short_range = 3
-                self.process.parameters.growth_rate_2030_2040_short_range = 3
-                self.process.parameters.growth_rate_2040_2050_short_range = 3
-                self.process.parameters.growth_rate_2020_2030_medium_range = 3
-                self.process.parameters.growth_rate_2030_2040_medium_range = 3
-                self.process.parameters.growth_rate_2040_2050_medium_range = 3
-                self.process.parameters.growth_rate_2020_2030_long_range = 3
-                self.process.parameters.growth_rate_2030_2040_long_range = 3
-                self.process.parameters.growth_rate_2040_2050_long_range = 3
-                self.process.parameters.growth_rate_2020_2030_freight = 3
-                self.process.parameters.growth_rate_2030_2040_freight = 3
-                self.process.parameters.growth_rate_2040_2050_freight = 3
+                self.process.parameters.cagr_passenger_short_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_passenger_long_range_reference_periods_values = [3.0]
+                self.process.parameters.cagr_freight_reference_periods_values = [3.0]
                 #  RPK measures
                 self.process.parameters.rpk_short_range_measures_final_impact = 0.0
                 self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
@@ -2167,44 +2103,48 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.operations_contrails_start_year = 2051
                 self.process.parameters.operations_contrails_duration = 15.0
                 # Fuels
-                self.process.parameters.biofuel_share_2030 = 6 - 2
-                self.process.parameters.biofuel_share_2040 = 37 - 13
-                self.process.parameters.biofuel_share_2050 = 85 - 50
-                self.process.parameters.electrofuel_share_2030 = 2
-                self.process.parameters.electrofuel_share_2040 = 13
-                self.process.parameters.electrofuel_share_2050 = 50
-                self.process.parameters.biofuel_hefa_fog_share_2020 = 0.7
-                self.process.parameters.biofuel_hefa_fog_share_2030 = 0.7
-                self.process.parameters.biofuel_hefa_fog_share_2040 = 0.7
-                self.process.parameters.biofuel_hefa_fog_share_2050 = 0.7
-                self.process.parameters.biofuel_hefa_others_share_2020 = 3.8
-                self.process.parameters.biofuel_hefa_others_share_2030 = 3.8
-                self.process.parameters.biofuel_hefa_others_share_2040 = 3.8
-                self.process.parameters.biofuel_hefa_others_share_2050 = 3.8
-                self.process.parameters.biofuel_ft_others_share_2020 = 76.3
-                self.process.parameters.biofuel_ft_others_share_2030 = 76.3
-                self.process.parameters.biofuel_ft_others_share_2040 = 76.3
-                self.process.parameters.biofuel_ft_others_share_2050 = 76.3
-                self.process.parameters.biofuel_ft_msw_share_2020 = 7.4
-                self.process.parameters.biofuel_ft_msw_share_2030 = 7.4
-                self.process.parameters.biofuel_ft_msw_share_2040 = 7.4
-                self.process.parameters.biofuel_ft_msw_share_2050 = 7.4
-                self.process.parameters.electricity_emission_factor_2020 = 429
-                self.process.parameters.electricity_emission_factor_2030 = 160
-                self.process.parameters.electricity_emission_factor_2040 = 60
-                self.process.parameters.electricity_emission_factor_2050 = 20
-                self.process.parameters.hydrogen_electrolysis_share_2030: float = 100
-                self.process.parameters.hydrogen_electrolysis_share_2040: float = 100
-                self.process.parameters.hydrogen_electrolysis_share_2050: float = 100
-                self.process.parameters.hydrogen_gas_ccs_share_2030: float = 0
-                self.process.parameters.hydrogen_gas_ccs_share_2040: float = 0
-                self.process.parameters.hydrogen_gas_ccs_share_2050: float = 0
-                self.process.parameters.hydrogen_coal_ccs_share_2030: float = 0
-                self.process.parameters.hydrogen_coal_ccs_share_2040: float = 0
-                self.process.parameters.hydrogen_coal_ccs_share_2050: float = 0
-                self.process.parameters.hydrogen_gas_share_2030: float = 0
-                self.process.parameters.hydrogen_gas_share_2040: float = 0
-                self.process.parameters.hydrogen_gas_share_2050: float = 0
+                self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.biofuel_share_reference_years_values = [
+                    0.0,
+                    4.0,
+                    24.0,
+                    35.0,
+                ]
+                self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.electrofuel_share_reference_years_values = [
+                    0.0,
+                    2,
+                    13.0,
+                    50.0,
+                ]
+                self.process.parameters.biofuel_hefa_fog_share_reference_years = []
+                self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.7]
+                self.process.parameters.biofuel_hefa_others_share_reference_years = []
+                self.process.parameters.biofuel_hefa_others_share_reference_years_values = [3.8]
+                self.process.parameters.biofuel_ft_others_share_reference_years = []
+                self.process.parameters.biofuel_ft_others_share_reference_years_values = [76.3]
+                self.process.parameters.biofuel_ft_msw_share_reference_years = []
+                self.process.parameters.biofuel_ft_msw_share_reference_years_values = [7.4]
+                self.process.parameters.electricity_emission_factor_reference_years = [
+                    2020,
+                    2030,
+                    2040,
+                    2050,
+                ]
+                self.process.parameters.electricity_emission_factor_reference_years_values = [
+                    429.0,
+                    160.0,
+                    60.0,
+                    20.0,
+                ]
+                self.process.parameters.hydrogen_electrolysis_share_reference_years = []
+                self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [100]
+                self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
+                self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
+                self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
+                self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
+                self.process.parameters.hydrogen_gas_share_reference_years = []
+                self.process.parameters.hydrogen_gas_share_reference_years_values = [0]
 
         # DISCOVERY AND SCENARIOS
         # Environment

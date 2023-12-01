@@ -33,7 +33,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
 )
-from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import FuelDistribution
+from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import DropinFuelDistribution
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
@@ -113,7 +113,7 @@ from aeromaps.models.impacts.costs.energy.market_prices import (
     Co2Cost,
     KeroseneCost,
     KerosenePrice,
-    Co2Tax,
+    CarbonTax,
     KeroseneBAUCost,
     CoalCost,
     GasCost,
@@ -182,7 +182,7 @@ models_simple = {
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
-    "aircraft_energy": FuelDistribution("aircraft_energy"),
+    "dropin_fuel_distribution": DropinFuelDistribution("dropin_fuel_distribution"),
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
@@ -231,7 +231,7 @@ models_simple = {
     "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "co2_cost": Co2Cost("co2_cost"),
-    "co2_tax": Co2Tax("co2_tax"),
+    "carbon_tax": CarbonTax("carbon_tax"),
     "electricity_cost": ElectricityCost("electricity_cost"),
     "coal_cost": CoalCost("coal_cost"),
     "gas_cost": GasCost("coal_cost"),
@@ -309,7 +309,7 @@ models_complex = {
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
-    "aircraft_energy": FuelDistribution("aircraft_energy"),
+    "dropin_fuel_distribution": DropinFuelDistribution("dropin_fuel_distribution"),
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
@@ -357,7 +357,7 @@ models_complex = {
     "kerosene_cost": KeroseneCost("kerosene_cost"),
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "co2_cost": Co2Cost("co2_cost"),
-    "co2_tax": Co2Tax("co2_tax"),
+    "carbon_tax": CarbonTax("carbon_tax"),
     "electricity_cost": ElectricityCost("electricity_cost"),
     "coal_cost": CoalCost("coal_cost"),
     "gas_cost": GasCost("coal_cost"),

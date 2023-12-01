@@ -1,10 +1,8 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class BiofuelProduction(AeromapsModel):
@@ -13,83 +11,52 @@ class BiofuelProduction(AeromapsModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_share_2020: float,
-        biofuel_hefa_fog_share_2030: float,
-        biofuel_hefa_fog_share_2040: float,
-        biofuel_hefa_fog_share_2050: float,
-        biofuel_hefa_others_share_2020: float,
-        biofuel_hefa_others_share_2030: float,
-        biofuel_hefa_others_share_2040: float,
-        biofuel_hefa_others_share_2050: float,
-        biofuel_ft_others_share_2020: float,
-        biofuel_ft_others_share_2030: float,
-        biofuel_ft_others_share_2040: float,
-        biofuel_ft_others_share_2050: float,
-        biofuel_ft_msw_share_2020: float,
-        biofuel_ft_msw_share_2030: float,
-        biofuel_ft_msw_share_2040: float,
-        biofuel_ft_msw_share_2050: float,
+        biofuel_hefa_fog_share_reference_years: list = [],
+        biofuel_hefa_fog_share_reference_years_values: list = [],
+        biofuel_hefa_others_share_reference_years: list = [],
+        biofuel_hefa_others_share_reference_years_values: list = [],
+        biofuel_ft_others_share_reference_years: list = [],
+        biofuel_ft_others_share_reference_years_values: list = [],
+        biofuel_ft_msw_share_reference_years: list = [],
+        biofuel_ft_msw_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biomass production calculation using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.parameters.end_year]
-
         # HEFA FOG
-        reference_values_hefa_fog = [
-            biofuel_hefa_fog_share_2020,
-            biofuel_hefa_fog_share_2030,
-            biofuel_hefa_fog_share_2040,
-            biofuel_hefa_fog_share_2050,
-        ]
-        biofuel_hefa_fog_share_function = interp1d(
-            reference_years, reference_values_hefa_fog, kind="linear"
+        biofuel_hefa_fog_share = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_fog_share_reference_years,
+            biofuel_hefa_fog_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_fog_share"] = biofuel_hefa_fog_share_function(k)
+        self.df.loc[:, "biofuel_hefa_fog_share"] = biofuel_hefa_fog_share
 
         # HEFA OTHERS
-        reference_values_hefa_others = [
-            biofuel_hefa_others_share_2020,
-            biofuel_hefa_others_share_2030,
-            biofuel_hefa_others_share_2040,
-            biofuel_hefa_others_share_2050,
-        ]
-        biofuel_hefa_others_share_function = interp1d(
-            reference_years, reference_values_hefa_others, kind="linear"
+        biofuel_hefa_others_share = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_others_share_reference_years,
+            biofuel_hefa_others_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_others_share"] = biofuel_hefa_others_share_function(k)
+        self.df.loc[:, "biofuel_hefa_others_share"] = biofuel_hefa_others_share
 
         # FT OTHERS
-        reference_values_ft_others = [
-            biofuel_ft_others_share_2020,
-            biofuel_ft_others_share_2030,
-            biofuel_ft_others_share_2040,
-            biofuel_ft_others_share_2050,
-        ]
-        biofuel_ft_others_share_function = interp1d(
-            reference_years, reference_values_ft_others, kind="linear"
+        biofuel_ft_others_share = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_others_share_reference_years,
+            biofuel_ft_others_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_others_share"] = biofuel_ft_others_share_function(k)
+        self.df.loc[:, "biofuel_ft_others_share"] = biofuel_ft_others_share
 
         # FT MSW
-        reference_values_ft_msw = [
-            biofuel_ft_msw_share_2020,
-            biofuel_ft_msw_share_2030,
-            biofuel_ft_msw_share_2040,
-            biofuel_ft_msw_share_2050,
-        ]
-        biofuel_ft_msw_share_function = interp1d(
-            reference_years, reference_values_ft_msw, kind="linear"
+        biofuel_ft_msw_share = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_msw_share_reference_years,
+            biofuel_ft_msw_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_msw_share"] = biofuel_ft_msw_share_function(k)
-
-        biofuel_hefa_fog_share = self.df["biofuel_hefa_fog_share"]
-        biofuel_hefa_others_share = self.df["biofuel_hefa_others_share"]
-        biofuel_ft_others_share = self.df["biofuel_ft_others_share"]
-        biofuel_ft_msw_share = self.df["biofuel_ft_msw_share"]
+        self.df.loc[:, "biofuel_ft_msw_share"] = biofuel_ft_msw_share
 
         # ATJ
         biofuel_atj_share = (
@@ -116,81 +83,52 @@ class HydrogenProduction(AeromapsModel):
 
     def compute(
         self,
-        hydrogen_electrolysis_share_2020: float = 0.0,
-        hydrogen_electrolysis_share_2030: float = 0.0,
-        hydrogen_electrolysis_share_2040: float = 0.0,
-        hydrogen_electrolysis_share_2050: float = 0.0,
-        hydrogen_gas_ccs_share_2020: float = 0.0,
-        hydrogen_gas_ccs_share_2030: float = 0.0,
-        hydrogen_gas_ccs_share_2040: float = 0.0,
-        hydrogen_gas_ccs_share_2050: float = 0.0,
-        hydrogen_coal_ccs_share_2020: float = 0.0,
-        hydrogen_coal_ccs_share_2030: float = 0.0,
-        hydrogen_coal_ccs_share_2040: float = 0.0,
-        hydrogen_coal_ccs_share_2050: float = 0.0,
-        hydrogen_gas_share_2020: float = 0.0,
-        hydrogen_gas_share_2030: float = 0.0,
-        hydrogen_gas_share_2040: float = 0.0,
-        hydrogen_gas_share_2050: float = 0.0,
+        hydrogen_electrolysis_share_reference_years: list = [],
+        hydrogen_electrolysis_share_reference_years_values: list = [],
+        hydrogen_gas_ccs_share_reference_years: list = [],
+        hydrogen_gas_ccs_share_reference_years_values: list = [],
+        hydrogen_coal_ccs_share_reference_years: list = [],
+        hydrogen_coal_ccs_share_reference_years_values: list = [],
+        hydrogen_gas_share_reference_years: list = [],
+        hydrogen_gas_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen production calculation using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, self.parameters.end_year]
-
         # Electrolysis
-        reference_values_electrolysis = [
-            hydrogen_electrolysis_share_2020,
-            hydrogen_electrolysis_share_2030,
-            hydrogen_electrolysis_share_2040,
-            hydrogen_electrolysis_share_2050,
-        ]
-        hydrogen_electrolysis_share_function = interp1d(
-            reference_years, reference_values_electrolysis, kind="linear"
+        hydrogen_electrolysis_share = AeromapsInterpolationFunction(
+            self,
+            hydrogen_electrolysis_share_reference_years,
+            hydrogen_electrolysis_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "hydrogen_electrolysis_share"] = hydrogen_electrolysis_share_function(k)
+        self.df.loc[:, "hydrogen_electrolysis_share"] = hydrogen_electrolysis_share
 
         # Gas CCS
-        reference_values_gas_ccs = [
-            hydrogen_gas_ccs_share_2020,
-            hydrogen_gas_ccs_share_2030,
-            hydrogen_gas_ccs_share_2040,
-            hydrogen_gas_ccs_share_2050,
-        ]
-        hydrogen_gas_ccs_share_function = interp1d(
-            reference_years, reference_values_gas_ccs, kind="linear"
+        hydrogen_gas_ccs_share = AeromapsInterpolationFunction(
+            self,
+            hydrogen_gas_ccs_share_reference_years,
+            hydrogen_gas_ccs_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "hydrogen_gas_ccs_share"] = hydrogen_gas_ccs_share_function(k)
+        self.df.loc[:, "hydrogen_gas_ccs_share"] = hydrogen_gas_ccs_share
 
         # Coal CCS
-        reference_values_coal_ccs = [
-            hydrogen_coal_ccs_share_2020,
-            hydrogen_coal_ccs_share_2030,
-            hydrogen_coal_ccs_share_2040,
-            hydrogen_coal_ccs_share_2050,
-        ]
-        hydrogen_coal_ccs_share_function = interp1d(
-            reference_years, reference_values_coal_ccs, kind="linear"
+        hydrogen_coal_ccs_share = AeromapsInterpolationFunction(
+            self,
+            hydrogen_coal_ccs_share_reference_years,
+            hydrogen_coal_ccs_share_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "hydrogen_coal_ccs_share"] = hydrogen_coal_ccs_share_function(k)
+        self.df.loc[:, "hydrogen_coal_ccs_share"] = hydrogen_coal_ccs_share
 
         # Gas
-        reference_values_gas = [
-            hydrogen_gas_share_2020,
-            hydrogen_gas_share_2030,
-            hydrogen_gas_share_2040,
-            hydrogen_gas_share_2050,
-        ]
-        hydrogen_gas_share_function = interp1d(reference_years, reference_values_gas, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "hydrogen_gas_share"] = hydrogen_gas_share_function(k)
-
-        hydrogen_electrolysis_share = self.df["hydrogen_electrolysis_share"]
-        hydrogen_gas_ccs_share = self.df["hydrogen_gas_ccs_share"]
-        hydrogen_coal_ccs_share = self.df["hydrogen_coal_ccs_share"]
-        hydrogen_gas_share = self.df["hydrogen_gas_share"]
+        hydrogen_gas_share = AeromapsInterpolationFunction(
+            self,
+            hydrogen_gas_share_reference_years,
+            hydrogen_gas_share_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "hydrogen_gas_share"] = hydrogen_gas_share
 
         # Coal
         hydrogen_coal_share = (

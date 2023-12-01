@@ -3,15 +3,12 @@
 # @File : power_to_liquid.py
 # @Software: PyCharm
 
-from typing import Tuple, Union, Any
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 
-from aeromaps.models.base import AeromapsModel
-
-from scipy.interpolate import interp1d
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class ElectrofuelCost(AeromapsModel):
@@ -366,27 +363,18 @@ class ElectrofuelCapex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_capex_2020: float = 0.0,
-        electrofuel_capex_2030: float = 0.0,
-        electrofuel_capex_2040: float = 0.0,
-        electrofuel_capex_2050: float = 0.0,
+        electrofuel_capex_reference_years: list = [],
+        electrofuel_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel capital expenditures at eis using interpolation functions"""
-        # FT MSW
-        reference_values_capex = [
-            electrofuel_capex_2020,
-            electrofuel_capex_2030,
-            electrofuel_capex_2040,
-            electrofuel_capex_2050,
-        ]
+        """Electrofuel capital expenditures at eis using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_capex"] = capex_function(k)
-
-        electrofuel_eis_capex = self.df.loc[:, "electrofuel_eis_capex"]
+        electrofuel_eis_capex = AeromapsInterpolationFunction(
+            self,
+            electrofuel_capex_reference_years,
+            electrofuel_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrofuel_eis_capex"] = electrofuel_eis_capex
 
         return electrofuel_eis_capex
 
@@ -397,27 +385,18 @@ class ElectrofuelFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_fixed_opex_2020: float = 0.0,
-        electrofuel_fixed_opex_2030: float = 0.0,
-        electrofuel_fixed_opex_2040: float = 0.0,
-        electrofuel_fixed_opex_2050: float = 0.0,
+        electrofuel_fixed_opex_reference_years: list = [],
+        electrofuel_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel fixed operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_fixed_opex = [
-            electrofuel_fixed_opex_2020,
-            electrofuel_fixed_opex_2030,
-            electrofuel_fixed_opex_2040,
-            electrofuel_fixed_opex_2050,
-        ]
+        """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_fixed_opex"] = fixed_opex_function(k)
-
-        electrofuel_eis_fixed_opex = self.df.loc[:, "electrofuel_eis_fixed_opex"]
+        electrofuel_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            electrofuel_fixed_opex_reference_years,
+            electrofuel_fixed_opex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrofuel_eis_fixed_opex"] = electrofuel_eis_fixed_opex
 
         return electrofuel_eis_fixed_opex
 
@@ -428,27 +407,18 @@ class ElectrofuelVarOpex(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_var_opex_2020: float = 0.0,
-        electrofuel_var_opex_2030: float = 0.0,
-        electrofuel_var_opex_2040: float = 0.0,
-        electrofuel_var_opex_2050: float = 0.0,
+        electrofuel_var_opex_reference_years: list = [],
+        electrofuel_var_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel variable operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_var_opex = [
-            electrofuel_var_opex_2020,
-            electrofuel_var_opex_2030,
-            electrofuel_var_opex_2040,
-            electrofuel_var_opex_2050,
-        ]
+        """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_var_opex"] = var_opex_function(k)
-
-        electrofuel_eis_var_opex = self.df.loc[:, "electrofuel_eis_var_opex"]
+        electrofuel_eis_var_opex = AeromapsInterpolationFunction(
+            self,
+            electrofuel_var_opex_reference_years,
+            electrofuel_var_opex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrofuel_eis_var_opex"] = electrofuel_eis_var_opex
 
         return electrofuel_eis_var_opex
 
@@ -479,7 +449,7 @@ class ElectrofuelVarOpex(AeromapsModel):
 #             electrofuel_specific_electricity_2050
 #         ]
 #
-#         reference_years = [2020, 2030, 2040, 2050]
+#         reference_years = [2020, 2030, 2040, self.end_year]
 #
 #         specific_electricity_function = interp1d(
 #             reference_years, reference_values_specific_electricity, kind="linear"
@@ -506,28 +476,17 @@ class ElectrofuelSpecificCo2(AeromapsModel):
 
     def compute(
         self,
-        electrofuel_specific_co2_2020: float = 0.0,
-        electrofuel_specific_co2_2030: float = 0.0,
-        electrofuel_specific_co2_2040: float = 0.0,
-        electrofuel_specific_co2_2050: float = 0.0,
+        electrofuel_specific_co2_reference_years: list = [],
+        electrofuel_specific_co2_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """electrofuel efficiency at eis using interpolation functions"""
-        # FT MSW
-        reference_values_specific_co2 = [
-            electrofuel_specific_co2_2020,
-            electrofuel_specific_co2_2030,
-            electrofuel_specific_co2_2040,
-            electrofuel_specific_co2_2050,
-        ]
+        """Electrofuel efficiency at eis using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        specific_co2_function = interp1d(
-            reference_years, reference_values_specific_co2, kind="linear"
+        electrofuel_eis_specific_co2 = AeromapsInterpolationFunction(
+            self,
+            electrofuel_specific_co2_reference_years,
+            electrofuel_specific_co2_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrofuel_eis_specific_co2"] = specific_co2_function(k)
-
-        electrofuel_eis_specific_co2 = self.df.loc[:, "electrofuel_eis_specific_co2"]
+        self.df.loc[:, "electrofuel_eis_specific_co2"] = electrofuel_eis_specific_co2
 
         return electrofuel_eis_specific_co2

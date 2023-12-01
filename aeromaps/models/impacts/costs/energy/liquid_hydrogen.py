@@ -8,11 +8,8 @@ from typing import Tuple, Union, Any
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 
-from aeromaps.models.base import AeromapsModel
-
-from scipy.interpolate import interp1d
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class LiquidHydrogenCost(AeromapsModel):
@@ -808,6 +805,7 @@ class LiquidHydrogenCost(AeromapsModel):
         Values returned are in M€ or t/day
         """
         # Convert hydrogen demand from MJ to tons.
+
         demand_scenario = energy_consumption_hydrogen / 119.93 / 1000 * pathway_share / 100
         plant_life = 30
 
@@ -830,7 +828,9 @@ class LiquidHydrogenCost(AeromapsModel):
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index)[:-1]:
             # Production missing in year n+1 must be supplied by plant build in year n
+
             if hydrogen_production[year + 1] < demand_scenario[year + 1]:
+
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
                 hydrogen_cost = LiquidHydrogenCost.compute_electrolyser_year_lcoh(
                     year,
@@ -1354,27 +1354,18 @@ class ElectrolyserCapex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_capex_2020: float = 0.0,
-        electrolyser_capex_2030: float = 0.0,
-        electrolyser_capex_2040: float = 0.0,
-        electrolyser_capex_2050: float = 0.0,
+        electrolyser_capex_reference_years: list = [],
+        electrolyser_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         """Electrolyser capital expenditures at eis using interpolation functions"""
-        # FT MSW
-        reference_values_capex = [
-            electrolyser_capex_2020,
-            electrolyser_capex_2030,
-            electrolyser_capex_2040,
-            electrolyser_capex_2050,
-        ]
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolysis_h2_eis_capex"] = capex_function(k)
-
-        electrolysis_h2_eis_capex = self.df.loc[:, "electrolysis_h2_eis_capex"]
+        electrolysis_h2_eis_capex = AeromapsInterpolationFunction(
+            self,
+            electrolyser_capex_reference_years,
+            electrolyser_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrolysis_h2_eis_capex"] = electrolysis_h2_eis_capex
 
         return electrolysis_h2_eis_capex
 
@@ -1385,27 +1376,18 @@ class ElectrolyserFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_fixed_opex_2020: float = 0.0,
-        electrolyser_fixed_opex_2030: float = 0.0,
-        electrolyser_fixed_opex_2040: float = 0.0,
-        electrolyser_fixed_opex_2050: float = 0.0,
+        electrolyser_fixed_opex_reference_years: list = [],
+        electrolyser_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         """Electrolyser fixed operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_fixed_opex = [
-            electrolyser_fixed_opex_2020,
-            electrolyser_fixed_opex_2030,
-            electrolyser_fixed_opex_2040,
-            electrolyser_fixed_opex_2050,
-        ]
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        fixed_opex_function = interp1d(reference_years, reference_values_fixed_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolysis_h2_eis_fixed_opex"] = fixed_opex_function(k)
-
-        electrolysis_h2_eis_fixed_opex = self.df.loc[:, "electrolysis_h2_eis_fixed_opex"]
+        electrolysis_h2_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            electrolyser_fixed_opex_reference_years,
+            electrolyser_fixed_opex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrolysis_h2_eis_fixed_opex"] = electrolysis_h2_eis_fixed_opex
 
         return electrolysis_h2_eis_fixed_opex
 
@@ -1416,27 +1398,18 @@ class ElectrolyserVarOpex(AeromapsModel):
 
     def compute(
         self,
-        electrolyser_var_opex_2020: float = 0.0,
-        electrolyser_var_opex_2030: float = 0.0,
-        electrolyser_var_opex_2040: float = 0.0,
-        electrolyser_var_opex_2050: float = 0.0,
+        electrolyser_var_opex_reference_years: list = [],
+        electrolyser_var_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         """Electrolyser variable operational expenditures at entry into service using interpolation functions"""
-        # FT MSW
-        reference_values_var_opex = [
-            electrolyser_var_opex_2020,
-            electrolyser_var_opex_2030,
-            electrolyser_var_opex_2040,
-            electrolyser_var_opex_2050,
-        ]
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        var_opex_function = interp1d(reference_years, reference_values_var_opex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electrolysis_h2_eis_var_opex"] = var_opex_function(k)
-
-        electrolysis_h2_eis_var_opex = self.df.loc[:, "electrolysis_h2_eis_var_opex"]
+        electrolysis_h2_eis_var_opex = AeromapsInterpolationFunction(
+            self,
+            electrolyser_var_opex_reference_years,
+            electrolyser_var_opex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electrolysis_h2_eis_var_opex"] = electrolysis_h2_eis_var_opex
 
         return electrolysis_h2_eis_var_opex
 
@@ -1488,27 +1461,18 @@ class LiquefierCapex(AeromapsModel):
 
     def compute(
         self,
-        liquefier_capex_2020: float = 0.0,
-        liquefier_capex_2030: float = 0.0,
-        liquefier_capex_2040: float = 0.0,
-        liquefier_capex_2050: float = 0.0,
+        liquefier_capex_reference_years: list = [],
+        liquefier_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        """liquefier capital expenditures at eis using interpolation functions"""
-        # FT MSW
-        reference_values_capex = [
-            liquefier_capex_2020,
-            liquefier_capex_2030,
-            liquefier_capex_2040,
-            liquefier_capex_2050,
-        ]
+        """Liquefier capital expenditures at eis using interpolation functions"""
 
-        reference_years = [2020, 2030, 2040, 2050]
-
-        capex_function = interp1d(reference_years, reference_values_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "liquefier_eis_capex"] = capex_function(k)
-
-        liquefier_eis_capex = self.df.loc[:, "liquefier_eis_capex"]
+        liquefier_eis_capex = AeromapsInterpolationFunction(
+            self,
+            liquefier_capex_reference_years,
+            liquefier_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "liquefier_eis_capex"] = liquefier_eis_capex
 
         return liquefier_eis_capex
 
@@ -1559,28 +1523,17 @@ class GasCcsCapex(AeromapsModel):
 
     def compute(
         self,
-        gas_ccs_eis_capex_2020: float = 0.0,
-        gas_ccs_eis_capex_2030: float = 0.0,
-        gas_ccs_eis_capex_2040: float = 0.0,
-        gas_ccs_eis_capex_2050: float = 0.0,
+        gas_ccs_eis_capex_reference_years: list = [],
+        gas_ccs_eis_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_ccs_capex = [
-            gas_ccs_eis_capex_2020,
-            gas_ccs_eis_capex_2030,
-            gas_ccs_eis_capex_2040,
-            gas_ccs_eis_capex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_ccs_capex_function = interp1d(
-            reference_years, reference_values_gas_ccs_capex, kind="linear"
+        gas_ccs_eis_capex = AeromapsInterpolationFunction(
+            self,
+            gas_ccs_eis_capex_reference_years,
+            gas_ccs_eis_capex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_ccs_eis_capex"] = gas_ccs_capex_function(k)
-
-        gas_ccs_eis_capex = self.df.loc[:, "gas_ccs_eis_capex"]
+        self.df.loc[:, "gas_ccs_eis_capex"] = gas_ccs_eis_capex
 
         return gas_ccs_eis_capex
 
@@ -1591,60 +1544,38 @@ class GasCcsFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        gas_ccs_eis_fixed_opex_2020: float = 0.0,
-        gas_ccs_eis_fixed_opex_2030: float = 0.0,
-        gas_ccs_eis_fixed_opex_2040: float = 0.0,
-        gas_ccs_eis_fixed_opex_2050: float = 0.0,
+        gas_ccs_eis_fixed_opex_reference_years: list = [],
+        gas_ccs_eis_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_ccs_fixed_opex = [
-            gas_ccs_eis_fixed_opex_2020,
-            gas_ccs_eis_fixed_opex_2030,
-            gas_ccs_eis_fixed_opex_2040,
-            gas_ccs_eis_fixed_opex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_ccs_fixed_opex_function = interp1d(
-            reference_years, reference_values_gas_ccs_fixed_opex, kind="linear"
+        gas_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            gas_ccs_eis_fixed_opex_reference_years,
+            gas_ccs_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_ccs_eis_fixed_opex"] = gas_ccs_fixed_opex_function(k)
-
-        gas_ccs_eis_fixed_opex = self.df.loc[:, "gas_ccs_eis_fixed_opex"]
+        self.df.loc[:, "gas_ccs_eis_fixed_opex"] = gas_ccs_eis_fixed_opex
 
         return gas_ccs_eis_fixed_opex
 
 
 class GasCcsEfficiency(AeromapsModel):
-    def __init__(self, name="gas_ccs_fixed_opex", *args, **kwargs):
+    def __init__(self, name="gas_ccs_efficiency", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
-        gas_ccs_efficiency_2020: float = 0.0,
-        gas_ccs_efficiency_2030: float = 0.0,
-        gas_ccs_efficiency_2040: float = 0.0,
-        gas_ccs_efficiency_2050: float = 0.0,
+        gas_ccs_efficiency_reference_years: list = [],
+        gas_ccs_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_ccs_efficiency = [
-            gas_ccs_efficiency_2020,
-            gas_ccs_efficiency_2030,
-            gas_ccs_efficiency_2040,
-            gas_ccs_efficiency_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_ccs_efficiency_function = interp1d(
-            reference_years, reference_values_gas_ccs_efficiency, kind="linear"
+        gas_ccs_efficiency = AeromapsInterpolationFunction(
+            self,
+            gas_ccs_efficiency_reference_years,
+            gas_ccs_efficiency_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_ccs_efficiency"] = gas_ccs_efficiency_function(k)
-
-        gas_ccs_efficiency = self.df.loc[:, "gas_ccs_efficiency"]
+        self.df.loc[:, "gas_ccs_efficiency"] = gas_ccs_efficiency
 
         return gas_ccs_efficiency
 
@@ -1655,26 +1586,17 @@ class GasCapex(AeromapsModel):
 
     def compute(
         self,
-        gas_eis_capex_2020: float = 0.0,
-        gas_eis_capex_2030: float = 0.0,
-        gas_eis_capex_2040: float = 0.0,
-        gas_eis_capex_2050: float = 0.0,
+        gas_eis_capex_reference_years: list = [],
+        gas_eis_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_capex = [
-            gas_eis_capex_2020,
-            gas_eis_capex_2030,
-            gas_eis_capex_2040,
-            gas_eis_capex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_capex_function = interp1d(reference_years, reference_values_gas_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_eis_capex"] = gas_capex_function(k)
-
-        gas_eis_capex = self.df.loc[:, "gas_eis_capex"]
+        gas_eis_capex = AeromapsInterpolationFunction(
+            self,
+            gas_eis_capex_reference_years,
+            gas_eis_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "gas_eis_capex"] = gas_eis_capex
 
         return gas_eis_capex
 
@@ -1685,28 +1607,17 @@ class GasFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        gas_eis_fixed_opex_2020: float = 0.0,
-        gas_eis_fixed_opex_2030: float = 0.0,
-        gas_eis_fixed_opex_2040: float = 0.0,
-        gas_eis_fixed_opex_2050: float = 0.0,
+        gas_eis_fixed_opex_reference_years: list = [],
+        gas_eis_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_fixed_opex = [
-            gas_eis_fixed_opex_2020,
-            gas_eis_fixed_opex_2030,
-            gas_eis_fixed_opex_2040,
-            gas_eis_fixed_opex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_fixed_opex_function = interp1d(
-            reference_years, reference_values_gas_fixed_opex, kind="linear"
+        gas_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            gas_eis_fixed_opex_reference_years,
+            gas_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_eis_fixed_opex"] = gas_fixed_opex_function(k)
-
-        gas_eis_fixed_opex = self.df.loc[:, "gas_eis_fixed_opex"]
+        self.df.loc[:, "gas_eis_fixed_opex"] = gas_eis_fixed_opex
 
         return gas_eis_fixed_opex
 
@@ -1717,28 +1628,17 @@ class GasEfficiency(AeromapsModel):
 
     def compute(
         self,
-        gas_efficiency_2020: float = 0.0,
-        gas_efficiency_2030: float = 0.0,
-        gas_efficiency_2040: float = 0.0,
-        gas_efficiency_2050: float = 0.0,
+        gas_efficiency_reference_years: list = [],
+        gas_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_gas_efficiency = [
-            gas_efficiency_2020,
-            gas_efficiency_2030,
-            gas_efficiency_2040,
-            gas_efficiency_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        gas_efficiency_function = interp1d(
-            reference_years, reference_values_gas_efficiency, kind="linear"
+        gas_efficiency = AeromapsInterpolationFunction(
+            self,
+            gas_efficiency_reference_years,
+            gas_efficiency_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "gas_efficiency"] = gas_efficiency_function(k)
-
-        gas_efficiency = self.df.loc[:, "gas_efficiency"]
+        self.df.loc[:, "gas_efficiency"] = gas_efficiency
 
         return gas_efficiency
 
@@ -1749,28 +1649,17 @@ class CoalCcsCapex(AeromapsModel):
 
     def compute(
         self,
-        coal_ccs_eis_capex_2020: float = 0.0,
-        coal_ccs_eis_capex_2030: float = 0.0,
-        coal_ccs_eis_capex_2040: float = 0.0,
-        coal_ccs_eis_capex_2050: float = 0.0,
+        coal_ccs_eis_capex_reference_years: list = [],
+        coal_ccs_eis_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_ccs_capex = [
-            coal_ccs_eis_capex_2020,
-            coal_ccs_eis_capex_2030,
-            coal_ccs_eis_capex_2040,
-            coal_ccs_eis_capex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_ccs_capex_function = interp1d(
-            reference_years, reference_values_coal_ccs_capex, kind="linear"
+        coal_ccs_eis_capex = AeromapsInterpolationFunction(
+            self,
+            coal_ccs_eis_capex_reference_years,
+            coal_ccs_eis_capex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_ccs_eis_capex"] = coal_ccs_capex_function(k)
-
-        coal_ccs_eis_capex = self.df.loc[:, "coal_ccs_eis_capex"]
+        self.df.loc[:, "coal_ccs_eis_capex"] = coal_ccs_eis_capex
 
         return coal_ccs_eis_capex
 
@@ -1781,60 +1670,38 @@ class CoalCcsFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        coal_ccs_eis_fixed_opex_2020: float = 0.0,
-        coal_ccs_eis_fixed_opex_2030: float = 0.0,
-        coal_ccs_eis_fixed_opex_2040: float = 0.0,
-        coal_ccs_eis_fixed_opex_2050: float = 0.0,
+        coal_ccs_eis_fixed_opex_reference_years: list = [],
+        coal_ccs_eis_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_ccs_fixed_opex = [
-            coal_ccs_eis_fixed_opex_2020,
-            coal_ccs_eis_fixed_opex_2030,
-            coal_ccs_eis_fixed_opex_2040,
-            coal_ccs_eis_fixed_opex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_ccs_fixed_opex_function = interp1d(
-            reference_years, reference_values_coal_ccs_fixed_opex, kind="linear"
+        coal_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            coal_ccs_eis_fixed_opex_reference_years,
+            coal_ccs_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_ccs_eis_fixed_opex"] = coal_ccs_fixed_opex_function(k)
-
-        coal_ccs_eis_fixed_opex = self.df.loc[:, "coal_ccs_eis_fixed_opex"]
+        self.df.loc[:, "coal_ccs_eis_fixed_opex"] = coal_ccs_eis_fixed_opex
 
         return coal_ccs_eis_fixed_opex
 
 
 class CoalCcsEfficiency(AeromapsModel):
-    def __init__(self, name="coal_ccs_fixed_opex", *args, **kwargs):
+    def __init__(self, name="coal_ccs_efficiency", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
-        coal_ccs_efficiency_2020: float = 0.0,
-        coal_ccs_efficiency_2030: float = 0.0,
-        coal_ccs_efficiency_2040: float = 0.0,
-        coal_ccs_efficiency_2050: float = 0.0,
+        coal_ccs_efficiency_reference_years: list = [],
+        coal_ccs_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_ccs_efficiency = [
-            coal_ccs_efficiency_2020,
-            coal_ccs_efficiency_2030,
-            coal_ccs_efficiency_2040,
-            coal_ccs_efficiency_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_ccs_efficiency_function = interp1d(
-            reference_years, reference_values_coal_ccs_efficiency, kind="linear"
+        coal_ccs_efficiency = AeromapsInterpolationFunction(
+            self,
+            coal_ccs_efficiency_reference_years,
+            coal_ccs_efficiency_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_ccs_efficiency"] = coal_ccs_efficiency_function(k)
-
-        coal_ccs_efficiency = self.df.loc[:, "coal_ccs_efficiency"]
+        self.df.loc[:, "coal_ccs_efficiency"] = coal_ccs_efficiency
 
         return coal_ccs_efficiency
 
@@ -1845,26 +1712,17 @@ class CoalCapex(AeromapsModel):
 
     def compute(
         self,
-        coal_eis_capex_2020: float = 0.0,
-        coal_eis_capex_2030: float = 0.0,
-        coal_eis_capex_2040: float = 0.0,
-        coal_eis_capex_2050: float = 0.0,
+        coal_eis_capex_reference_years: list = [],
+        coal_eis_capex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_capex = [
-            coal_eis_capex_2020,
-            coal_eis_capex_2030,
-            coal_eis_capex_2040,
-            coal_eis_capex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_capex_function = interp1d(reference_years, reference_values_coal_capex, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_eis_capex"] = coal_capex_function(k)
-
-        coal_eis_capex = self.df.loc[:, "coal_eis_capex"]
+        coal_eis_capex = AeromapsInterpolationFunction(
+            self,
+            coal_eis_capex_reference_years,
+            coal_eis_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "coal_eis_capex"] = coal_eis_capex
 
         return coal_eis_capex
 
@@ -1875,28 +1733,17 @@ class CoalFixedOpex(AeromapsModel):
 
     def compute(
         self,
-        coal_eis_fixed_opex_2020: float = 0.0,
-        coal_eis_fixed_opex_2030: float = 0.0,
-        coal_eis_fixed_opex_2040: float = 0.0,
-        coal_eis_fixed_opex_2050: float = 0.0,
+        coal_eis_fixed_opex_reference_years: list = [],
+        coal_eis_fixed_opex_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_fixed_opex = [
-            coal_eis_fixed_opex_2020,
-            coal_eis_fixed_opex_2030,
-            coal_eis_fixed_opex_2040,
-            coal_eis_fixed_opex_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_fixed_opex_function = interp1d(
-            reference_years, reference_values_coal_fixed_opex, kind="linear"
+        coal_eis_fixed_opex = AeromapsInterpolationFunction(
+            self,
+            coal_eis_fixed_opex_reference_years,
+            coal_eis_fixed_opex_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_eis_fixed_opex"] = coal_fixed_opex_function(k)
-
-        coal_eis_fixed_opex = self.df.loc[:, "coal_eis_fixed_opex"]
+        self.df.loc[:, "coal_eis_fixed_opex"] = coal_eis_fixed_opex
 
         return coal_eis_fixed_opex
 
@@ -1907,28 +1754,17 @@ class CoalEfficiency(AeromapsModel):
 
     def compute(
         self,
-        coal_efficiency_2020: float = 0.0,
-        coal_efficiency_2030: float = 0.0,
-        coal_efficiency_2040: float = 0.0,
-        coal_efficiency_2050: float = 0.0,
+        coal_efficiency_reference_years: list = [],
+        coal_efficiency_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_coal_efficiency = [
-            coal_efficiency_2020,
-            coal_efficiency_2030,
-            coal_efficiency_2040,
-            coal_efficiency_2050,
-        ]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        coal_efficiency_function = interp1d(
-            reference_years, reference_values_coal_efficiency, kind="linear"
+        coal_efficiency = AeromapsInterpolationFunction(
+            self,
+            coal_efficiency_reference_years,
+            coal_efficiency_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "coal_efficiency"] = coal_efficiency_function(k)
-
-        coal_efficiency = self.df.loc[:, "coal_efficiency"]
+        self.df.loc[:, "coal_efficiency"] = coal_efficiency
 
         return coal_efficiency
 
@@ -1939,20 +1775,13 @@ class CcsCost(AeromapsModel):
 
     def compute(
         self,
-        ccs_cost_2020: float = 0.0,
-        ccs_cost_2030: float = 0.0,
-        ccs_cost_2040: float = 0.0,
-        ccs_cost_2050: float = 0.0,
+        ccs_cost_reference_years: list = [],
+        ccs_cost_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
 
-        reference_values_ccs_cost = [ccs_cost_2020, ccs_cost_2030, ccs_cost_2040, ccs_cost_2050]
-
-        reference_years = [2020, 2030, 2040, 2050]
-
-        ccs_cost_function = interp1d(reference_years, reference_values_ccs_cost, kind="linear")
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "ccs_cost"] = ccs_cost_function(k)
-
-        ccs_cost = self.df.loc[:, "ccs_cost"]
+        ccs_cost = AeromapsInterpolationFunction(
+            self, ccs_cost_reference_years, ccs_cost_reference_years_values, model_name=self.name
+        )
+        self.df.loc[:, "ccs_cost"] = ccs_cost
 
         return ccs_cost

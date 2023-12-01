@@ -6,9 +6,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeromapsModel
-
-from scipy.interpolate import interp1d
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class BiofuelCost(AeromapsModel):
@@ -408,83 +406,68 @@ class BiofuelMfsp(AeromapsModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_mfsp_2020: float = np.nan,
-        biofuel_hefa_fog_mfsp_2050: float = np.nan,
-        biofuel_hefa_others_mfsp_2020: float = np.nan,
-        biofuel_hefa_others_mfsp_2050: float = np.nan,
-        biofuel_ft_others_mfsp_2020: float = np.nan,
-        biofuel_ft_others_mfsp_2050: float = np.nan,
-        biofuel_ft_msw_mfsp_2020: float = np.nan,
-        biofuel_ft_msw_mfsp_2050: float = np.nan,
-        biofuel_atj_mfsp_2020: float = np.nan,
-        biofuel_atj_mfsp_2050: float = np.nan,
+        biofuel_hefa_fog_mfsp_reference_years: list = [],
+        biofuel_hefa_fog_mfsp_reference_years_values: list = [],
+        biofuel_hefa_others_mfsp_reference_years: list = [],
+        biofuel_hefa_others_mfsp_reference_years_values: list = [],
+        biofuel_ft_others_mfsp_reference_years: list = [],
+        biofuel_ft_others_mfsp_reference_years_values: list = [],
+        biofuel_ft_msw_mfsp_reference_years: list = [],
+        biofuel_ft_msw_mfsp_reference_years_values: list = [],
+        biofuel_atj_mfsp_reference_years: list = [],
+        biofuel_atj_mfsp_reference_years_values: list = [],
         biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
-        """Biofuel MFSP (Minimal fuel selling price) computed using a compound annual growth rate based
-        on the fuel initial and final MFSP"""
-
-        reference_years = [2020, 2050]
+        """Biofuel MFSP (Minimal fuel selling price) estimates"""
 
         # HEFA FOG
-
-        cagr_hefa_fog = (biofuel_hefa_fog_mfsp_2050 / biofuel_hefa_fog_mfsp_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp_2020 * (
-                1 + cagr_hefa_fog
-            ) ** (k - reference_years[0])
+        biofuel_hefa_fog_mfsp = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_fog_mfsp_reference_years,
+            biofuel_hefa_fog_mfsp_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
 
         # HEFA OTHERS
-        cagr_hefa_others = (biofuel_hefa_others_mfsp_2050 / biofuel_hefa_others_mfsp_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp_2020 * (
-                1 + cagr_hefa_others
-            ) ** (k - reference_years[0])
+        biofuel_hefa_others_mfsp = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_others_mfsp_reference_years,
+            biofuel_hefa_others_mfsp_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
 
         # FT OTHERS
-        cagr_ft_others = (biofuel_ft_others_mfsp_2050 / biofuel_ft_others_mfsp_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp_2020 * (
-                1 + cagr_ft_others
-            ) ** (k - reference_years[0])
+        biofuel_ft_others_mfsp = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_others_mfsp_reference_years,
+            biofuel_ft_others_mfsp_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
 
         # FT MSW
-        cagr_ft_msw = (biofuel_ft_msw_mfsp_2050 / biofuel_ft_msw_mfsp_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp_2020 * (
-                1 + cagr_ft_msw
-            ) ** (k - reference_years[0])
+        biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_msw_mfsp_reference_years,
+            biofuel_ft_msw_mfsp_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
 
         # ATJ
-        cagr_atj = (biofuel_atj_mfsp_2050 / biofuel_atj_mfsp_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_atj_mfsp"] = biofuel_atj_mfsp_2020 * (1 + cagr_atj) ** (
-                k - reference_years[0]
-            )
-
-        biofuel_hefa_fog_mfsp = self.df["biofuel_hefa_fog_mfsp"]
-        biofuel_hefa_others_mfsp = self.df["biofuel_hefa_others_mfsp"]
-        biofuel_ft_others_mfsp = self.df["biofuel_ft_others_mfsp"]
-        biofuel_ft_msw_mfsp = self.df["biofuel_ft_msw_mfsp"]
-        biofuel_atj_mfsp = self.df["biofuel_atj_mfsp"]
+        biofuel_atj_mfsp = AeromapsInterpolationFunction(
+            self,
+            biofuel_atj_mfsp_reference_years,
+            biofuel_atj_mfsp_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
 
         # MEAN
         biofuel_mean_mfsp = (
@@ -529,84 +512,68 @@ class BiofuelCapex(AeromapsModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_capex_2020: float = 0.0,
-        biofuel_hefa_fog_capex_2050: float = 0.0,
-        biofuel_hefa_others_capex_2020: float = 0.0,
-        biofuel_hefa_others_capex_2050: float = 0.0,
-        biofuel_ft_others_capex_2020: float = 0.0,
-        biofuel_ft_others_capex_2050: float = 0.0,
-        biofuel_ft_msw_capex_2020: float = 0.0,
-        biofuel_ft_msw_capex_2050: float = 0.0,
-        biofuel_atj_capex_2020: float = 0.0,
-        biofuel_atj_capex_2050: float = 0.0,
+        biofuel_hefa_fog_capex_reference_years: list = [],
+        biofuel_hefa_fog_capex_reference_years_values: list = [],
+        biofuel_hefa_others_capex_reference_years: list = [],
+        biofuel_hefa_others_capex_reference_years_values: list = [],
+        biofuel_ft_others_capex_reference_years: list = [],
+        biofuel_ft_others_capex_reference_years_values: list = [],
+        biofuel_ft_msw_capex_reference_years: list = [],
+        biofuel_ft_msw_capex_reference_years_values: list = [],
+        biofuel_atj_capex_reference_years: list = [],
+        biofuel_atj_capex_reference_years_values: list = [],
         biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
-        """Biofuel capex (Minimal fuel selling price) computed using a compound annual growth rate based
-        on the fuel initial and final capex"""
-
-        reference_years = [2020, 2050]
+        """Biofuel CAPEX (CApital EXPenditures) estimates"""
 
         # HEFA FOG
-        # print(reference_years[1] - reference_years[0])
-
-        cagr_hefa_fog = (biofuel_hefa_fog_capex_2050 / biofuel_hefa_fog_capex_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex_2020 * (
-                1 + cagr_hefa_fog
-            ) ** (k - reference_years[0])
+        biofuel_hefa_fog_capex = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_fog_capex_reference_years,
+            biofuel_hefa_fog_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex
 
         # HEFA OTHERS
-        cagr_hefa_others = (biofuel_hefa_others_capex_2050 / biofuel_hefa_others_capex_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex_2020 * (
-                1 + cagr_hefa_others
-            ) ** (k - reference_years[0])
+        biofuel_hefa_others_capex = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_others_capex_reference_years,
+            biofuel_hefa_others_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex
 
         # FT OTHERS
-        cagr_ft_others = (biofuel_ft_others_capex_2050 / biofuel_ft_others_capex_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_others_capex"] = biofuel_ft_others_capex_2020 * (
-                1 + cagr_ft_others
-            ) ** (k - reference_years[0])
+        biofuel_ft_others_capex = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_others_capex_reference_years,
+            biofuel_ft_others_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_ft_others_capex"] = biofuel_ft_others_capex
 
         # FT MSW
-        cagr_ft_msw = (biofuel_ft_msw_capex_2050 / biofuel_ft_msw_capex_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex_2020 * (
-                1 + cagr_ft_msw
-            ) ** (k - reference_years[0])
+        biofuel_ft_msw_capex = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_msw_capex_reference_years,
+            biofuel_ft_msw_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex
 
         # ATJ
-        cagr_atj = (biofuel_atj_capex_2050 / biofuel_atj_capex_2020) ** (
-            1 / (reference_years[1] - reference_years[0])
-        ) - 1
-
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_atj_capex"] = biofuel_atj_capex_2020 * (1 + cagr_atj) ** (
-                k - reference_years[0]
-            )
-
-        biofuel_hefa_fog_capex = self.df["biofuel_hefa_fog_capex"]
-        biofuel_hefa_others_capex = self.df["biofuel_hefa_others_capex"]
-        biofuel_ft_others_capex = self.df["biofuel_ft_others_capex"]
-        biofuel_ft_msw_capex = self.df["biofuel_ft_msw_capex"]
-        biofuel_atj_capex = self.df["biofuel_atj_capex"]
+        biofuel_atj_capex = AeromapsInterpolationFunction(
+            self,
+            biofuel_atj_capex_reference_years,
+            biofuel_atj_capex_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "biofuel_atj_capex"] = biofuel_atj_capex
 
         # MEAN
         biofuel_mean_capex = (

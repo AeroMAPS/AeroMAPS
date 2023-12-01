@@ -63,6 +63,10 @@ class FleetModel(AeromapsModel):
     def compute(
         self,
     ):
+
+        # TODO : correct warnings
+        warnings.filterwarnings("ignore")
+
         # Start from empty dataframe
         self.df = self.df.filter([])
 
@@ -89,6 +93,9 @@ class FleetModel(AeromapsModel):
 
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
+
+        warnings.resetwarnings()
+        warnings.simplefilter("ignore", DeprecationWarning)
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         # Energy consumption calculations for drop-in fuel and hydrogen
@@ -807,8 +814,7 @@ class FleetModel(AeromapsModel):
                 )
 
     def _compute_mean_non_co2_emission_index(self):
-        # TODO : correct warnings
-        warnings.filterwarnings("ignore")
+
         for category in self.fleet.categories.values():
             # Mean non-CO2 emission index per category
             # Initialization
@@ -887,8 +893,6 @@ class FleetModel(AeromapsModel):
                 ] * (
                     self.df.loc[k, category.name + ":share:hydrogen"] / 100
                 )
-        warnings.resetwarnings()
-        warnings.simplefilter("ignore", DeprecationWarning)
 
     def _compute_aircraft_share(self):
         # Aircraft share computation

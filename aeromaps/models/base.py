@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
-
-from aeromaps.models.constants import ModelType
+import warnings
 
 
 class AeromapsModel(object):
@@ -27,77 +26,116 @@ class AeromapsModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
-class LogisticFunctionYearSeries(AeromapsModel):
-    def __init__(self, maximum_value=None, growth_rate=None, midpoint_year=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.maximum_value = maximum_value
-        self.growth_rate = growth_rate
-        self.midpoint_year = midpoint_year
+def AeromapsInterpolationFunction(
+    self,
+    reference_years,
+    reference_years_values,
+    method="linear",
+    positive_constraint=False,
+    model_name="Not provided",
+):
 
-    def _compute(self, maximum_value=None, growth_rate=None, midpoint_year=None):
-        if not maximum_value:
-            maximum_value = self.maximum_value
-        if not growth_rate:
-            growth_rate = self.growth_rate
-        if not midpoint_year:
-            midpoint_year = self.midpoint_year
-        x = np.linspace(self.prospection_start_year, self.end_year, len(self.df.index))
-        y = maximum_value / (1 + np.exp(-growth_rate * (x - midpoint_year)))
-        self.df[self.name] = y
-        return y
+    # Main
+    if len(reference_years) == 0:
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "interpolation_function_values"] = reference_years_values
+    else:
+        interpolation_function = interp1d(
+            reference_years,
+            reference_years_values,
+            kind=method,
+        )
+        if reference_years[-1] == self.end_year:
+            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+        elif reference_years[-1] > self.end_year:
+            warnings.warn(
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsInterpolationFunction:"
+                + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
+            )
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+        else:
+            warnings.warn(
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsInterpolationFunction:"
+                + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
+            )
+            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+                if positive_constraint and interpolation_function(k) <= 0.0:
+                    self.df.loc[k, "interpolation_function_values"] = 0.0
+                else:
+                    self.df.loc[k, "interpolation_function_values"] = interpolation_function(k)
+            for k in range(reference_years[-1] + 1, self.end_year + 1):
+                self.df.loc[k, "interpolation_function_values"] = self.df.loc[
+                    k - 1, "interpolation_function_values"
+                ]
+
+    interpolation_function_values = self.df.loc[:, "interpolation_function_values"]
+
+    # Delete intermediate df column
+    self.df.pop("interpolation_function_values")
+
+    return interpolation_function_values
 
 
-class ExponentialGrowthYearSeries(AeromapsModel):
-    def __init__(
-        self, initial_value=0.0, growth_rates={2030: 3.1, 2040: 3.0, 2050: 2.9}, *args, **kwargs
-    ):
-        super().__init__(*args, **kwargs)
-        self.initial_value = initial_value
-        self.growth_rates = growth_rates
+def AeromapsLevelingFunction(
+    self, reference_periods, reference_periods_values, model_name="Not provided"
+):
 
-    def _compute(self, initial_value=None, growth_rates=None):
-        if not initial_value:
-            initial_value = self.initial_value
-        if not growth_rates:
-            growth_rates = self.growth_rates
-        x = self.df.index
-        y = np.ones(len(x))
-        self.df[self.name] = y
-        self.df.loc[self.start_year, self.name] = initial_value
-        for year in x:
-            if year != self.start_year:
-                self.df.loc[year, self.name] = self.df.loc[year - 1, self.name] * (
-                    1 + self._get_growth_rate(year, growth_rates=growth_rates) / 100
-                )
+    # Main
+    if len(reference_periods) == 0:
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df.loc[k, "leveling_function_values"] = reference_periods_values
+    else:
+        if reference_periods[-1] == self.end_year:
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+        elif reference_periods[-1] > self.end_year:
+            warnings.warn(
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsLevelingFunction:"
+                + " The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.",
+            )
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    if k <= self.end_year:
+                        self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+                    else:
+                        pass
+        else:
+            warnings.warn(
+                "Warning Message - "
+                + "Model name: "
+                + model_name
+                + " - Warning on AeromapsLevelingFunction:"
+                + " The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.",
+            )
+            for i in range(0, len(reference_periods) - 1):
+                for k in range(reference_periods[i], reference_periods[i + 1] + 1):
+                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+            for k in range(reference_periods[-1] + 1, self.end_year + 1):
+                self.df.loc[k, "leveling_function_values"] = self.df.loc[
+                    k - 1, "leveling_function_values"
+                ]
 
-        return y
+    leveling_function_values = self.df.loc[:, "leveling_function_values"]
 
-    def _get_growth_rate(self, year, growth_rates=None):
-        if not growth_rates:
-            growth_rates = self.growth_rates
-        for key, growth_rate in growth_rates.items():
-            if year <= key:
-                actual_growth_rate = growth_rate
+    # Delete intermediate df column
+    self.df.pop("leveling_function_values")
 
-        return actual_growth_rate
-
-
-class InterpAeromapsModel(AeromapsModel):
-    def __init__(
-        self,
-        year_values={2020: 100.0, 2030: 80.0, 2040: 50.0, 2050: 20.0},
-        model_type=ModelType.LINEAR,
-        *args,
-        **kwargs
-    ):
-        super().__init__(*args, **kwargs)
-        self.year_values = year_values
-        self.model_type = model_type
-
-    def _compute(self):
-        reference_years, reference_values = self.year_values.items()
-        interpolation = interp1d(reference_years, reference_values, kind=self.model_type)
-
-        values = interpolation(self.years)
-
-        return values
+    return leveling_function_values

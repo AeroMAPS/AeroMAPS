@@ -1,10 +1,8 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class BiofuelEmissionFactor(AeromapsModel):
@@ -13,16 +11,16 @@ class BiofuelEmissionFactor(AeromapsModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_emission_factor_2020: float = 0.0,
-        biofuel_hefa_fog_emission_factor_2050: float = 0.0,
-        biofuel_hefa_others_emission_factor_2020: float = 0.0,
-        biofuel_hefa_others_emission_factor_2050: float = 0.0,
-        biofuel_ft_others_emission_factor_2020: float = 0.0,
-        biofuel_ft_others_emission_factor_2050: float = 0.0,
-        biofuel_ft_msw_emission_factor_2020: float = 0.0,
-        biofuel_ft_msw_emission_factor_2050: float = 0.0,
-        biofuel_atj_emission_factor_2020: float = 0.0,
-        biofuel_atj_emission_factor_2050: float = 0.0,
+        biofuel_hefa_fog_emission_factor_reference_years: list = [],
+        biofuel_hefa_fog_emission_factor_reference_years_values: list = [],
+        biofuel_hefa_others_emission_factor_reference_years: list = [],
+        biofuel_hefa_others_emission_factor_reference_years_values: list = [],
+        biofuel_ft_others_emission_factor_reference_years: list = [],
+        biofuel_ft_others_emission_factor_reference_years_values: list = [],
+        biofuel_ft_msw_emission_factor_reference_years: list = [],
+        biofuel_ft_msw_emission_factor_reference_years_values: list = [],
+        biofuel_atj_emission_factor_reference_years: list = [],
+        biofuel_atj_emission_factor_reference_years_values: list = [],
         biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
@@ -31,76 +29,50 @@ class BiofuelEmissionFactor(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel CO2 emission factor calculation using interpolation functions"""
 
-        reference_years = [2020, self.end_year]
-
         # HEFA FOG
-        reference_values_hefa_fog = [
-            biofuel_hefa_fog_emission_factor_2020,
-            biofuel_hefa_fog_emission_factor_2050,
-        ]
-        biofuel_hefa_fog_emission_factor_function = interp1d(
-            reference_years, reference_values_hefa_fog, kind="linear"
+        biofuel_hefa_fog_emission_factor = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_fog_emission_factor_reference_years,
+            biofuel_hefa_fog_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "biofuel_hefa_fog_emission_factor"
-            ] = biofuel_hefa_fog_emission_factor_function(k)
+        self.df.loc[:, "biofuel_hefa_fog_emission_factor"] = biofuel_hefa_fog_emission_factor
 
         # HEFA OTHERS
-        reference_values_hefa_others = [
-            biofuel_hefa_others_emission_factor_2020,
-            biofuel_hefa_others_emission_factor_2050,
-        ]
-        biofuel_hefa_others_emission_factor_function = interp1d(
-            reference_years, reference_values_hefa_others, kind="linear"
+        biofuel_hefa_others_emission_factor = AeromapsInterpolationFunction(
+            self,
+            biofuel_hefa_others_emission_factor_reference_years,
+            biofuel_hefa_others_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "biofuel_hefa_others_emission_factor"
-            ] = biofuel_hefa_others_emission_factor_function(k)
+        self.df.loc[:, "biofuel_hefa_others_emission_factor"] = biofuel_hefa_others_emission_factor
 
         # FT OTHERS
-        reference_values_ft_others = [
-            biofuel_ft_others_emission_factor_2020,
-            biofuel_ft_others_emission_factor_2050,
-        ]
-        biofuel_ft_others_emission_factor_function = interp1d(
-            reference_years, reference_values_ft_others, kind="linear"
+        biofuel_ft_others_emission_factor = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_others_emission_factor_reference_years,
+            biofuel_ft_others_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "biofuel_ft_others_emission_factor"
-            ] = biofuel_ft_others_emission_factor_function(k)
+        self.df.loc[:, "biofuel_ft_others_emission_factor"] = biofuel_ft_others_emission_factor
 
         # FT MSW
-        reference_values_ft_msw = [
-            biofuel_ft_msw_emission_factor_2020,
-            biofuel_ft_msw_emission_factor_2050,
-        ]
-        biofuel_ft_msw_emission_factor_function = interp1d(
-            reference_years, reference_values_ft_msw, kind="linear"
+        biofuel_ft_msw_emission_factor = AeromapsInterpolationFunction(
+            self,
+            biofuel_ft_msw_emission_factor_reference_years,
+            biofuel_ft_msw_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "biofuel_ft_msw_emission_factor"
-            ] = biofuel_ft_msw_emission_factor_function(k)
+        self.df.loc[:, "biofuel_ft_msw_emission_factor"] = biofuel_ft_msw_emission_factor
 
         # ATJ
-        reference_values_atj = [
-            biofuel_atj_emission_factor_2020,
-            biofuel_atj_emission_factor_2050,
-        ]
-        biofuel_atj_emission_factor_function = interp1d(
-            reference_years, reference_values_atj, kind="linear"
+        biofuel_atj_emission_factor = AeromapsInterpolationFunction(
+            self,
+            biofuel_atj_emission_factor_reference_years,
+            biofuel_atj_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "biofuel_atj_emission_factor"] = biofuel_atj_emission_factor_function(k)
-
-        biofuel_hefa_fog_emission_factor = self.df["biofuel_hefa_fog_emission_factor"]
-        biofuel_hefa_others_emission_factor = self.df["biofuel_hefa_others_emission_factor"]
-        biofuel_ft_others_emission_factor = self.df["biofuel_ft_others_emission_factor"]
-        biofuel_ft_msw_emission_factor = self.df["biofuel_ft_msw_emission_factor"]
-        biofuel_atj_emission_factor = self.df["biofuel_atj_emission_factor"]
+        self.df.loc[:, "biofuel_atj_emission_factor"] = biofuel_atj_emission_factor
 
         # MEAN
         biofuel_mean_emission_factor = (
@@ -129,26 +101,18 @@ class ElectricityEmissionFactor(AeromapsModel):
 
     def compute(
         self,
-        electricity_emission_factor_2020: float = 0.0,
-        electricity_emission_factor_2030: float = 0.0,
-        electricity_emission_factor_2040: float = 0.0,
-        electricity_emission_factor_2050: float = 0.0,
+        electricity_emission_factor_reference_years: list = [],
+        electricity_emission_factor_reference_years_values: list = [],
     ) -> pd.Series:
         """Electricity CO2 emission factor calculation using interpolation function."""
 
-        reference_years = [2020, 2030, 2040, self.parameters.end_year]
-        reference_values = [
-            electricity_emission_factor_2020,
-            electricity_emission_factor_2030,
-            electricity_emission_factor_2040,
-            electricity_emission_factor_2050,
-        ]
-        electricity_emission_factor_function = interp1d(
-            reference_years, reference_values, kind="quadratic"
+        electricity_emission_factor = AeromapsInterpolationFunction(
+            self,
+            electricity_emission_factor_reference_years,
+            electricity_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "electricity_emission_factor"] = electricity_emission_factor_function(k)
-        electricity_emission_factor = self.df["electricity_emission_factor"]
+        self.df.loc[:, "electricity_emission_factor"] = electricity_emission_factor
 
         return electricity_emission_factor
 
@@ -224,28 +188,22 @@ class KeroseneEmissionFactor(AeromapsModel):
 
     def compute(
         self,
-        kerosene_emission_factor_2019: float = 0.0,
-        kerosene_emission_factor_2030: float = 0.0,
-        kerosene_emission_factor_2040: float = 0.0,
-        kerosene_emission_factor_2050: float = 0.0,
+        kerosene_emission_factor_reference_years: list = [],
+        kerosene_emission_factor_reference_years_values: list = [],
     ) -> pd.Series:
         """Kerosene CO2 emission factor calculation."""
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_2019
-
-        reference_years = [2019, 2030, 2040, self.parameters.end_year]
-        reference_values = [
-            kerosene_emission_factor_2019,
-            kerosene_emission_factor_2030,
-            kerosene_emission_factor_2040,
-            kerosene_emission_factor_2050,
-        ]
-        kerosene_emission_factor_function = interp1d(
-            reference_years, reference_values, kind="linear"
+        kerosene_emission_factor_prospective = AeromapsInterpolationFunction(
+            self,
+            kerosene_emission_factor_reference_years,
+            kerosene_emission_factor_reference_years_values,
+            model_name=self.name,
         )
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "kerosene_emission_factor"] = kerosene_emission_factor_function(k)
+        self.df.loc[:, "kerosene_emission_factor"] = kerosene_emission_factor_prospective
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "kerosene_emission_factor"] = self.df.loc[
+                self.prospection_start_year, "kerosene_emission_factor"
+            ]
         kerosene_emission_factor = self.df["kerosene_emission_factor"]
 
         return kerosene_emission_factor

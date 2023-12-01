@@ -15,7 +15,7 @@ from gemseo import generate_n2_plot, create_mda
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
 from aeromaps.core.models import models_simple
-from aeromaps.models.parameters import all_parameters
+from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
@@ -39,34 +39,32 @@ class AeromapsProcess(object):
     def __init__(
         self,
         models=models_simple,
-        parameters=all_parameters,
-        read_json=False,
-        fleet=False,
+        use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
+        self.use_fleet_model = use_fleet_model
         self.models = models
-        self.parameters = parameters
+
+        self.parameters = Parameters()
+        self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
+
+        self.setup(add_examples_aircraft_and_subcategory)
+
+    def setup(self, add_examples_aircraft_and_subcategory=True):
         self.disciplines = []
         self.data = {}
         self.json = {}
 
-        # Read parameters
-        if read_json:
-            self.parameters = self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
-
         self._initialize_years()
 
         self._initialize_disciplines(
-            fleet, add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
-
         # Create GEMSEO process
         self.process = create_mda(
             "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
-
         self._initialize_data()
-
         self._update_variables()
 
     def _initialize_data(self):
@@ -79,7 +77,7 @@ class AeromapsProcess(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
 
-    def _initialize_disciplines(self, fleet, add_examples_aircraft_and_subcategory=True):
+    def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         for name, model in self.models.items():
             # TODO: check how to avoid providing all parameters
             model.parameters = self.parameters
@@ -89,7 +87,7 @@ class AeromapsProcess(object):
                 self.disciplines.append(model)
             else:
                 print(model.name)
-        if fleet:
+        if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
             )
@@ -192,10 +190,8 @@ class AeromapsProcess(object):
         return all_inputs
 
     def _format_input_vectors(self):
-        for field in fields(self.parameters):
-            field_name = field.name
-            field_value = getattr(self.parameters, field_name)
-            if not isinstance(field_value, (float, int)):
+        for field_name, field_value in self.parameters.__dict__.items():
+            if not isinstance(field_value, (float, int, list)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
@@ -221,7 +217,7 @@ class AeromapsProcess(object):
         for name in all_inputs:
             try:
                 value = getattr(self.parameters, name)
-                if isinstance(value, (float, int)):
+                if isinstance(value, (float, int, list)):
                     self.data["float_inputs"][name] = value
                 else:
                     new_values = []

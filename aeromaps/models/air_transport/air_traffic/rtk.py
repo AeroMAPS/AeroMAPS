@@ -1,10 +1,9 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, AeromapsLevelingFunction
 
 
 class RTK(AeromapsModel):
@@ -18,10 +17,9 @@ class RTK(AeromapsModel):
         covid_rpk_drop_start_year: float = 0.0,
         covid_end_year: int = 0,
         covid_end_year_reference_rpk_ratio: float = 0.0,
-        growth_rate_2020_2030_freight: float = 0.0,
-        growth_rate_2030_2040_freight: float = 0.0,
-        growth_rate_2040_2050_freight: float = 0.0,
-    ) -> Tuple[pd.Series, float, float,]:
+        cagr_freight_reference_periods: list = [],
+        cagr_freight_reference_periods_values: list = [],
+    ) -> Tuple[pd.Series, pd.Series, float, float]:
         """RTK calculation."""
 
         # Initialization
@@ -37,25 +35,32 @@ class RTK(AeromapsModel):
         ]
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
+        # CAGR function
+        annual_growth_rate_freight_prospective = AeromapsLevelingFunction(
+            self,
+            cagr_freight_reference_periods,
+            cagr_freight_reference_periods_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "annual_growth_rate_freight"] = annual_growth_rate_freight_prospective
+
         # Main
         for k in range(covid_start_year, covid_end_year + 1):
             self.df.loc[k, "rtk"] = self.df.loc[covid_start_year - 1, "rtk"] * covid_function(k)
-        for k in range(covid_end_year + 1, 2031):
+        for k in range(covid_end_year + 1, self.end_year + 1):
             self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2020_2030_freight / 100
-            )
-        for k in range(2031, 2041):
-            self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2030_2040_freight / 100
-            )
-        for k in range(2041, self.end_year + 1):
-            self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
-                1 + growth_rate_2040_2050_freight / 100
+                1 + self.df.loc[k, "annual_growth_rate_freight"] / 100
             )
 
+        # Historic values
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk"] = rtk_init.loc[k]
+        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+            self.df.loc[k, "annual_growth_rate_freight"] = (
+                self.df.loc[k, "rtk"] / self.df.loc[k - 1, "rtk"] - 1
+            ) * 100
         rtk = self.df["rtk"]
+        annual_growth_rate_freight = self.df["annual_growth_rate_freight"]
 
         # Compound Annual Growth Rate (CAGR)
         cagr_rtk = 100 * (
@@ -78,6 +83,7 @@ class RTK(AeromapsModel):
 
         return (
             rtk,
+            annual_growth_rate_freight,
             cagr_rtk,
             prospective_evolution_rtk,
         )
@@ -90,9 +96,7 @@ class RTKReference(AeromapsModel):
     def compute(
         self,
         rtk: pd.Series = pd.Series(dtype="float64"),
-        growth_rate_2020_2030_reference: float = 0.0,
-        growth_rate_2030_2040_reference: float = 0.0,
-        growth_rate_2040_2050_reference: float = 0.0,
+        reference_annual_growth_rate_aviation: pd.Series = pd.Series(dtype="float64"),
         covid_start_year: int = 0,
         covid_rpk_drop_start_year: int = 0,
         covid_end_year: int = 0,
@@ -122,17 +126,9 @@ class RTKReference(AeromapsModel):
             self.df.loc[k, "rtk_reference"] = self.df.loc[
                 covid_start_year - 1, "rtk_reference"
             ] * covid_function(k)
-        for k in range(covid_end_year + 1, 2031):
+        for k in range(covid_end_year + 1, self.end_year + 1):
             self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
-                1 + growth_rate_2020_2030_reference / 100
-            )
-        for k in range(2031, 2041):
-            self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
-                1 + growth_rate_2030_2040_reference / 100
-            )
-        for k in range(2041, self.end_year + 1):
-            self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
-                1 + growth_rate_2040_2050_reference / 100
+                1 + reference_annual_growth_rate_aviation.loc[k] / 100
             )
 
         rtk_reference = self.df["rtk_reference"]
