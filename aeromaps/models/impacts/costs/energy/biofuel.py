@@ -429,7 +429,7 @@ class BiofuelMfsp(AeromapsModel):
             self,
             biofuel_hefa_fog_mfsp_reference_years,
             biofuel_hefa_fog_mfsp_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
 
@@ -438,7 +438,7 @@ class BiofuelMfsp(AeromapsModel):
             self,
             biofuel_hefa_others_mfsp_reference_years,
             biofuel_hefa_others_mfsp_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
 
@@ -447,19 +447,25 @@ class BiofuelMfsp(AeromapsModel):
             self,
             biofuel_ft_others_mfsp_reference_years,
             biofuel_ft_others_mfsp_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
 
         # FT MSW
         biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
-            self, biofuel_ft_msw_mfsp_reference_years, biofuel_ft_msw_mfsp_reference_years_values, model_name=self.name
+            self,
+            biofuel_ft_msw_mfsp_reference_years,
+            biofuel_ft_msw_mfsp_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
 
         # ATJ
         biofuel_atj_mfsp = AeromapsInterpolationFunction(
-            self, biofuel_atj_mfsp_reference_years, biofuel_atj_mfsp_reference_years_values, model_name=self.name
+            self,
+            biofuel_atj_mfsp_reference_years,
+            biofuel_atj_mfsp_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
 
@@ -529,7 +535,7 @@ class BiofuelCapex(AeromapsModel):
             self,
             biofuel_hefa_fog_capex_reference_years,
             biofuel_hefa_fog_capex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex
 
@@ -538,7 +544,7 @@ class BiofuelCapex(AeromapsModel):
             self,
             biofuel_hefa_others_capex_reference_years,
             biofuel_hefa_others_capex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex
 
@@ -547,19 +553,25 @@ class BiofuelCapex(AeromapsModel):
             self,
             biofuel_ft_others_capex_reference_years,
             biofuel_ft_others_capex_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_others_capex"] = biofuel_ft_others_capex
 
         # FT MSW
         biofuel_ft_msw_capex = AeromapsInterpolationFunction(
-            self, biofuel_ft_msw_capex_reference_years, biofuel_ft_msw_capex_reference_years_values, model_name=self.name
+            self,
+            biofuel_ft_msw_capex_reference_years,
+            biofuel_ft_msw_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex
 
         # ATJ
         biofuel_atj_capex = AeromapsInterpolationFunction(
-            self, biofuel_atj_capex_reference_years, biofuel_atj_capex_reference_years_values, model_name=self.name
+            self,
+            biofuel_atj_capex_reference_years,
+            biofuel_atj_capex_reference_years_values,
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_atj_capex"] = biofuel_atj_capex
 

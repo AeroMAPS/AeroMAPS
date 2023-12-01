@@ -70,7 +70,7 @@ class RPK(AeromapsModel):
             self,
             cagr_passenger_short_range_reference_periods,
             cagr_passenger_short_range_reference_periods_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[
             :, "annual_growth_rate_passenger_short_range"
@@ -80,7 +80,7 @@ class RPK(AeromapsModel):
             self,
             cagr_passenger_medium_range_reference_periods,
             cagr_passenger_medium_range_reference_periods_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[
             :, "annual_growth_rate_passenger_medium_range"
@@ -90,7 +90,7 @@ class RPK(AeromapsModel):
             self,
             cagr_passenger_long_range_reference_periods,
             cagr_passenger_long_range_reference_periods_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[
             :, "annual_growth_rate_passenger_long_range"
@@ -305,7 +305,7 @@ class RPKReference(AeromapsModel):
             self,
             reference_cagr_aviation_reference_periods,
             reference_cagr_aviation_reference_periods_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[
             :, "reference_annual_growth_rate_aviation"

@@ -34,7 +34,7 @@ class BiofuelEmissionFactor(AeromapsModel):
             self,
             biofuel_hefa_fog_emission_factor_reference_years,
             biofuel_hefa_fog_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_emission_factor"] = biofuel_hefa_fog_emission_factor
 
@@ -43,7 +43,7 @@ class BiofuelEmissionFactor(AeromapsModel):
             self,
             biofuel_hefa_others_emission_factor_reference_years,
             biofuel_hefa_others_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_others_emission_factor"] = biofuel_hefa_others_emission_factor
 
@@ -52,7 +52,7 @@ class BiofuelEmissionFactor(AeromapsModel):
             self,
             biofuel_ft_others_emission_factor_reference_years,
             biofuel_ft_others_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_others_emission_factor"] = biofuel_ft_others_emission_factor
 
@@ -61,7 +61,7 @@ class BiofuelEmissionFactor(AeromapsModel):
             self,
             biofuel_ft_msw_emission_factor_reference_years,
             biofuel_ft_msw_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_msw_emission_factor"] = biofuel_ft_msw_emission_factor
 
@@ -70,7 +70,7 @@ class BiofuelEmissionFactor(AeromapsModel):
             self,
             biofuel_atj_emission_factor_reference_years,
             biofuel_atj_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "biofuel_atj_emission_factor"] = biofuel_atj_emission_factor
 
@@ -110,7 +110,7 @@ class ElectricityEmissionFactor(AeromapsModel):
             self,
             electricity_emission_factor_reference_years,
             electricity_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "electricity_emission_factor"] = electricity_emission_factor
 
@@ -197,7 +197,7 @@ class KeroseneEmissionFactor(AeromapsModel):
             self,
             kerosene_emission_factor_reference_years,
             kerosene_emission_factor_reference_years_values,
-            model_name=self.name
+            model_name=self.name,
         )
         self.df.loc[:, "kerosene_emission_factor"] = kerosene_emission_factor_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):

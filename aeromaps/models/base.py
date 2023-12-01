@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import warnings
-import inspect
 
 
 class AeromapsModel(object):
@@ -28,7 +27,12 @@ class AeromapsModel(object):
 
 
 def AeromapsInterpolationFunction(
-    self, reference_years, reference_years_values, method="linear", positive_constraint=False, model_name="Not provided"
+    self,
+    reference_years,
+    reference_years_values,
+    method="linear",
+    positive_constraint=False,
+    model_name="Not provided",
 ):
 
     # Main
@@ -55,7 +59,7 @@ def AeromapsInterpolationFunction(
                 + " - Warning on AeromapsInterpolationFunction:"
                 + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
             )
-            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+            for k in range(self.prospection_start_year, self.end_year + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -86,7 +90,9 @@ def AeromapsInterpolationFunction(
     return interpolation_function_values
 
 
-def AeromapsLevelingFunction(self, reference_periods, reference_periods_values, model_name="Not provided"):
+def AeromapsLevelingFunction(
+    self, reference_periods, reference_periods_values, model_name="Not provided"
+):
 
     # Main
     if len(reference_periods) == 0:
@@ -107,7 +113,10 @@ def AeromapsLevelingFunction(self, reference_periods, reference_periods_values, 
             )
             for i in range(0, len(reference_periods) - 1):
                 for k in range(reference_periods[i], reference_periods[i + 1] + 1):
-                    self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+                    if k <= self.end_year:
+                        self.df.loc[k, "leveling_function_values"] = reference_periods_values[i]
+                    else:
+                        pass
         else:
             warnings.warn(
                 "Warning Message - "

@@ -37,7 +37,10 @@ class RTK(AeromapsModel):
 
         # CAGR function
         annual_growth_rate_freight_prospective = AeromapsLevelingFunction(
-            self, cagr_freight_reference_periods, cagr_freight_reference_periods_values, model_name=self.name
+            self,
+            cagr_freight_reference_periods,
+            cagr_freight_reference_periods_values,
+            model_name=self.name,
         )
         self.df.loc[:, "annual_growth_rate_freight"] = annual_growth_rate_freight_prospective
 
