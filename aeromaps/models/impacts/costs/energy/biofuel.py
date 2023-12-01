@@ -6,7 +6,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class BiofuelCost(AeromapsModel):
@@ -425,38 +425,41 @@ class BiofuelMfsp(AeromapsModel):
         """Biofuel MFSP (Minimal fuel selling price) estimates"""
 
         # HEFA FOG
-        biofuel_hefa_fog_mfsp = InterpolationAeromapsFunction(
+        biofuel_hefa_fog_mfsp = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_fog_mfsp_reference_years,
             biofuel_hefa_fog_mfsp_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
 
         # HEFA OTHERS
-        biofuel_hefa_others_mfsp = InterpolationAeromapsFunction(
+        biofuel_hefa_others_mfsp = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_others_mfsp_reference_years,
             biofuel_hefa_others_mfsp_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
 
         # FT OTHERS
-        biofuel_ft_others_mfsp = InterpolationAeromapsFunction(
+        biofuel_ft_others_mfsp = AeromapsInterpolationFunction(
             self,
             biofuel_ft_others_mfsp_reference_years,
             biofuel_ft_others_mfsp_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
 
         # FT MSW
-        biofuel_ft_msw_mfsp = InterpolationAeromapsFunction(
-            self, biofuel_ft_msw_mfsp_reference_years, biofuel_ft_msw_mfsp_reference_years_values
+        biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
+            self, biofuel_ft_msw_mfsp_reference_years, biofuel_ft_msw_mfsp_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
 
         # ATJ
-        biofuel_atj_mfsp = InterpolationAeromapsFunction(
-            self, biofuel_atj_mfsp_reference_years, biofuel_atj_mfsp_reference_years_values
+        biofuel_atj_mfsp = AeromapsInterpolationFunction(
+            self, biofuel_atj_mfsp_reference_years, biofuel_atj_mfsp_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
 
@@ -522,38 +525,41 @@ class BiofuelCapex(AeromapsModel):
         """Biofuel CAPEX (CApital EXPenditures) estimates"""
 
         # HEFA FOG
-        biofuel_hefa_fog_capex = InterpolationAeromapsFunction(
+        biofuel_hefa_fog_capex = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_fog_capex_reference_years,
             biofuel_hefa_fog_capex_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_fog_capex"] = biofuel_hefa_fog_capex
 
         # HEFA OTHERS
-        biofuel_hefa_others_capex = InterpolationAeromapsFunction(
+        biofuel_hefa_others_capex = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_others_capex_reference_years,
             biofuel_hefa_others_capex_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_others_capex"] = biofuel_hefa_others_capex
 
         # FT OTHERS
-        biofuel_ft_others_capex = InterpolationAeromapsFunction(
+        biofuel_ft_others_capex = AeromapsInterpolationFunction(
             self,
             biofuel_ft_others_capex_reference_years,
             biofuel_ft_others_capex_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_ft_others_capex"] = biofuel_ft_others_capex
 
         # FT MSW
-        biofuel_ft_msw_capex = InterpolationAeromapsFunction(
-            self, biofuel_ft_msw_capex_reference_years, biofuel_ft_msw_capex_reference_years_values
+        biofuel_ft_msw_capex = AeromapsInterpolationFunction(
+            self, biofuel_ft_msw_capex_reference_years, biofuel_ft_msw_capex_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "biofuel_ft_msw_capex"] = biofuel_ft_msw_capex
 
         # ATJ
-        biofuel_atj_capex = InterpolationAeromapsFunction(
-            self, biofuel_atj_capex_reference_years, biofuel_atj_capex_reference_years_values
+        biofuel_atj_capex = AeromapsInterpolationFunction(
+            self, biofuel_atj_capex_reference_years, biofuel_atj_capex_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "biofuel_atj_capex"] = biofuel_atj_capex
 

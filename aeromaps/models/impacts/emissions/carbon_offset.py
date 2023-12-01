@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction, LevelingAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction, AeromapsLevelingFunction
 
 
 class LevelCarbonOffset(AeromapsModel):
@@ -16,8 +16,8 @@ class LevelCarbonOffset(AeromapsModel):
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        carbon_offset_baseline_level_vs_2019 = LevelingAeromapsFunction(
-            self, carbon_offset_baseline_level_vs_2019_reference_periods, carbon_offset_baseline_level_vs_2019_reference_periods_values
+        carbon_offset_baseline_level_vs_2019 = AeromapsLevelingFunction(
+            self, carbon_offset_baseline_level_vs_2019_reference_periods, carbon_offset_baseline_level_vs_2019_reference_periods_values, model_name=self.name
         )
         self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = carbon_offset_baseline_level_vs_2019
 
@@ -57,10 +57,11 @@ class ResidualCarbonOffset(AeromapsModel):
         residual_carbon_offset_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
 
-        residual_carbon_offset_share_prospective = InterpolationAeromapsFunction(
+        residual_carbon_offset_share_prospective = AeromapsInterpolationFunction(
             self,
             residual_carbon_offset_share_reference_years,
             residual_carbon_offset_share_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "residual_carbon_offset_share"] = residual_carbon_offset_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):

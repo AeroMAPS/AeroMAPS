@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, InterpolationAeromapsFunction
+from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
 class BiofuelEfficiency(AeromapsModel):
@@ -23,34 +23,38 @@ class BiofuelEfficiency(AeromapsModel):
         """Biofuel production efficiency calculation using interpolation functions"""
 
         # FT
-        biofuel_ft_efficiency = InterpolationAeromapsFunction(
+        biofuel_ft_efficiency = AeromapsInterpolationFunction(
             self,
             biofuel_ft_efficiency_reference_years,
             biofuel_ft_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_ft_efficiency"] = biofuel_ft_efficiency
 
         # ATJ
-        biofuel_atj_efficiency = InterpolationAeromapsFunction(
+        biofuel_atj_efficiency = AeromapsInterpolationFunction(
             self,
             biofuel_atj_efficiency_reference_years,
             biofuel_atj_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_atj_efficiency"] = biofuel_atj_efficiency
 
         # HEFA OIL
-        biofuel_hefa_oil_efficiency = InterpolationAeromapsFunction(
+        biofuel_hefa_oil_efficiency = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_oil_efficiency_reference_years,
             biofuel_hefa_oil_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_oil_efficiency"] = biofuel_hefa_oil_efficiency
 
         # HEFA FUEL
-        biofuel_hefa_fuel_efficiency = InterpolationAeromapsFunction(
+        biofuel_hefa_fuel_efficiency = AeromapsInterpolationFunction(
             self,
             biofuel_hefa_fuel_efficiency_reference_years,
             biofuel_hefa_fuel_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "biofuel_hefa_fuel_efficiency"] = biofuel_hefa_fuel_efficiency
 
@@ -78,26 +82,29 @@ class ElectricityBasedFuelEfficiency(AeromapsModel):
         """Hydrogen and electrofuel production efficiency calculation using interpolation functions"""
 
         # Electrolysis
-        electrolysis_efficiency = InterpolationAeromapsFunction(
+        electrolysis_efficiency = AeromapsInterpolationFunction(
             self,
             electrolysis_efficiency_reference_years,
             electrolysis_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "electrolysis_efficiency"] = electrolysis_efficiency
 
         # Liquefaction
-        liquefaction_efficiency = InterpolationAeromapsFunction(
+        liquefaction_efficiency = AeromapsInterpolationFunction(
             self,
             liquefaction_efficiency_reference_years,
             liquefaction_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "liquefaction_efficiency"] = liquefaction_efficiency
 
         # Electrofuel from hydrogen
-        electrofuel_hydrogen_efficiency = InterpolationAeromapsFunction(
+        electrofuel_hydrogen_efficiency = AeromapsInterpolationFunction(
             self,
             electrofuel_hydrogen_efficiency_reference_years,
             electrofuel_hydrogen_efficiency_reference_years_values,
+            model_name=self.name
         )
         self.df.loc[:, "electrofuel_hydrogen_efficiency"] = electrofuel_hydrogen_efficiency
 
