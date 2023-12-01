@@ -51,7 +51,8 @@ class BiomassConsumptionPlot:
             self.df.loc[self.prospective_years, "biomass_consumption"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -127,7 +128,8 @@ class ElectricityConsumptionPlot:
             np.ones(len(self.prospective_years)) * 537.7 * 3.6 / 1000
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()

@@ -62,7 +62,8 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot:
             self.df.loc[self.prospective_years, "dropin_fuel_consumption_liter_per_pax_100km"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -124,7 +125,8 @@ class MeanLoadFactorPlot:
 
         self.line_load_factor.set_ydata(self.df.loc[self.prospective_years, "load_factor"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -190,7 +192,8 @@ class MeanEnergyPerASKPlot:
             self.df.loc[self.prospective_years, "energy_per_ask_mean"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -256,7 +259,8 @@ class MeanEnergyPerRTKPlot:
             self.df.loc[self.prospective_years, "energy_per_rtk_mean"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         self.ax.relim()
         self.ax.autoscale_view()

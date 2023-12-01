@@ -179,7 +179,8 @@ class AirTransportCO2EmissionsPlot:
             - self.df.loc[self.prospective_years, "carbon_offset"]
         )
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         # Fill between
         self.ax.fill_between(
@@ -373,7 +374,8 @@ class AirTransportClimateImpactsPlot:
 
         self.line_total_erf.set_ydata(self.df.loc[self.prospective_years, "total_erf"])
 
-        self.ax.collections.clear()
+        for collection in self.ax.collections:
+            collection.remove()
 
         # Fill between
         self.ax.fill_between(
