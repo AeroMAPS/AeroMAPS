@@ -6,7 +6,7 @@
     - Added carbon offsetting for MBM. (#40)
     - Added possibility to modify kerosene emission factor evolution. (#41)
     - Improved the way to handle non-CO2 emission index in fleet renewal models. (#43)
-    - Updated dependencies (matplotlib 3.7 + Python 3.10). (#45)
+    - Updated dependencies (min. matplotlib 3.7 + allow Python 3.10). (#45)
     - Added a simpler way to modify end_year and allowed custom settings for interpolation and levelling. (#47)
 
 - Fixed:
