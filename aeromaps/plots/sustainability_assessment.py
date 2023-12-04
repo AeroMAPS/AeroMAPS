@@ -64,7 +64,7 @@ class CarbonBudgetAssessmentPlot:
             colors=inner_colors,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
-            hatch=inner_hatches
+            hatch=inner_hatches,
         )
 
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
@@ -132,7 +132,7 @@ class CarbonBudgetAssessmentPlot:
             ),
             Patch(
                 facecolor="silver",
-                hatch='/',
+                hatch="/",
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -199,7 +199,7 @@ class CarbonBudgetAssessmentPlot:
             colors=inner_colors,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
-            hatch=inner_hatches
+            hatch=inner_hatches,
         )
 
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
@@ -267,7 +267,7 @@ class CarbonBudgetAssessmentPlot:
             ),
             Patch(
                 facecolor="silver",
-                hatch='/',
+                hatch="/",
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -427,7 +427,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             ),
             Patch(
                 facecolor="silver",
-                hatch='/',
+                hatch="/",
                 label="Cumulative aviation carbon offset",
             ),
         ]
