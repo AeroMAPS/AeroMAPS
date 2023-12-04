@@ -231,6 +231,10 @@
     "erf_coefficient_contrails": 1.058e-09,
     "erf_coefficient_h2o": 0.0052,
     "erf_coefficient_nox": 3.5152194000000003,
+    "erf_coefficient_nox_short_term_o3_increase": 34.4,
+    "erf_coefficient_nox_long_term_o3_decrease": -9.3,
+    "erf_coefficient_nox_ch4_decrease": -18.7,
+    "erf_coefficient_nox_stratospheric_water_vapor_decrease": -2.8,
     "erf_coefficient_sulfur": -19.9,
     "direct_co2_erf_2018_reference": 30.184,
     "temperature_increase_from_aviation_init": [
