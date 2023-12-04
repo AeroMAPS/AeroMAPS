@@ -1728,7 +1728,7 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-15.0,
+                    consumption_evolution=0.0,
                     nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
@@ -1752,7 +1752,7 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-15.0,
+                    consumption_evolution=0.0,
                     nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
@@ -1828,7 +1828,7 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-30.0,
+                    consumption_evolution=-15.0,
                     nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
@@ -1852,7 +1852,7 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-30.0,
+                    consumption_evolution=-15.0,
                     nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
@@ -1982,7 +1982,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.hydrogen_gas_share_reference_years_values = [71]
         elif self.w_hydrogen_production.value == "Gas without CCS":
             self.process.parameters.hydrogen_electrolysis_share_reference_years = []
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = []
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [0]
             self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
             self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
             self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
