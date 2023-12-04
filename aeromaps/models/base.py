@@ -139,3 +139,32 @@ def AeromapsLevelingFunction(
     self.df.pop("leveling_function_values")
 
     return leveling_function_values
+
+
+def AeromapsEquivalentEmissionsFunction(
+    self, emissions_erf, gwpstar_variation_duration, alpha_coefficient, erf_coefficient_co2
+):
+
+    # Global
+    climate_time_frame = 100
+    co2_absolute_global_warming_potential = erf_coefficient_co2 * 100 / 1000
+
+    # Main
+    for k in range(self.prospection_start_year, self.end_year + 1):
+        self.df.loc[k, "emissions_erf_variation"] = (
+            emissions_erf.loc[k] - emissions_erf.loc[k - gwpstar_variation_duration]
+        ) / gwpstar_variation_duration
+    for k in range(self.prospection_start_year, self.end_year + 1):
+        self.df.loc[k, "emissions_equivalent_emissions"] = (
+            (1 - alpha_coefficient)
+            * climate_time_frame
+            / co2_absolute_global_warming_potential
+            * self.df.loc[k, "emissions_erf_variation"]
+        ) + alpha_coefficient / co2_absolute_global_warming_potential * emissions_erf.loc[k]
+    emissions_equivalent_emissions = self.df.loc[:, "emissions_equivalent_emissions"]
+
+    # Delete intermediate df column
+    self.df.pop("emissions_erf_variation")
+    self.df.pop("emissions_equivalent_emissions")
+
+    return emissions_equivalent_emissions
