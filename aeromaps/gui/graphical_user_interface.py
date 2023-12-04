@@ -1679,7 +1679,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=0.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1704,7 +1704,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=0.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1729,7 +1729,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1753,7 +1753,7 @@ class GraphicalUserInterface(widgets.VBox):
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1779,7 +1779,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1804,7 +1804,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1829,7 +1829,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-30.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1853,7 +1853,7 @@ class GraphicalUserInterface(widgets.VBox):
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-30.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1913,10 +1913,10 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Carbon intensity
         if self.w_energy_mix.value == "Kerosene":
-            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
-            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
+            self.process.parameters.biofuel_share_reference_years = []
+            self.process.parameters.biofuel_share_reference_years_values = [0.0]
+            self.process.parameters.electrofuel_share_reference_years = []
+            self.process.parameters.electrofuel_share_reference_years_values = [0.0]
         elif self.w_energy_mix.value == "Biofuel":
             self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
             self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.0, 30.0, 100.0]
