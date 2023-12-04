@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 from .constants import plot_2_x, plot_2_y
 
 
@@ -49,6 +48,7 @@ class CarbonBudgetAssessmentPlot:
             color = "green"
         outer_colors = [color, "white"]
         inner_colors = ["grey", "silver", "white"]
+        inner_hatches = [None, "/", None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -64,6 +64,7 @@ class CarbonBudgetAssessmentPlot:
             colors=inner_colors,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+            hatch=inner_hatches
         )
 
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
@@ -121,25 +122,17 @@ class CarbonBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
-                color=color,
-                lw=6,
+            Patch(
+                facecolor=color,
                 label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Carbon budget 2050 allocated to aviation",
             ),
-            Line2D(
-                [0],
-                [0],
-                color="silver",
-                lw=6,
+            Patch(
+                facecolor="silver",
+                hatch='/',
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -190,6 +183,7 @@ class CarbonBudgetAssessmentPlot:
             color = "green"
         outer_colors = [color, "white"]
         inner_colors = ["grey", "silver", "white"]
+        inner_hatches = [None, "/", None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -205,6 +199,7 @@ class CarbonBudgetAssessmentPlot:
             colors=inner_colors,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
+            hatch=inner_hatches
         )
 
         bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
@@ -262,25 +257,17 @@ class CarbonBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Carbon budget 2050 allocated to aviation",
             ),
-            Line2D(
-                [0],
-                [0],
-                color="grey",
-                lw=6,
+            Patch(
+                facecolor="silver",
+                hatch='/',
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -349,6 +336,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         else:
             outer_colors = ["white", color]
         inner_colors = ["grey", "silver", "white"]
+        inner_hatches = [None, "/", None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -362,6 +350,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             inner_vals,
             radius=1 - size,
             colors=inner_colors,
+            hatch=inner_hatches,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
         )
@@ -428,25 +417,17 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Equivalent carbon budget 2050 allocated\nto aviation",
             ),
-            Line2D(
-                [0],
-                [0],
-                color="silver",
-                lw=6,
+            Patch(
+                facecolor="silver",
+                hatch='/',
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -515,6 +496,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         else:
             outer_colors = ["white", color]
         inner_colors = ["grey", "silver", "white"]
+        inner_hatches = [None, "/", None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -528,6 +510,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             inner_vals,
             radius=1 - size,
             colors=inner_colors,
+            hatch=inner_hatches,
             startangle=90,
             wedgeprops=dict(width=size, edgecolor="k", alpha=0.8),
         )
@@ -594,25 +577,17 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Equivalent carbon budget 2050 allocated\nto aviation",
             ),
-            Line2D(
-                [0],
-                [0],
-                color="silver",
-                lw=6,
+            Patch(
+                facecolor="silver",
+                hatch="/",
                 label="Cumulative aviation carbon offset",
             ),
         ]
@@ -836,18 +811,12 @@ class BiomassResourceBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Biomass consumption of aviation in 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Biomass resources allocated to aviation",
             ),
         ]
@@ -968,18 +937,12 @@ class BiomassResourceBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Biomass consumption of aviation in 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Biomass resources allocated to aviation",
             ),
         ]
@@ -1103,18 +1066,12 @@ class ElectricityResourceBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Electricity consumption of aviation in 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Electricity resources allocated to aviation",
             ),
         ]
@@ -1237,18 +1194,12 @@ class ElectricityResourceBudgetAssessmentPlot:
         )
 
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color=color,
-                lw=6,
                 label="Electricity consumption of aviation in 2050",
             ),
-            Line2D(
-                [0],
-                [0],
+            Patch(
                 color="grey",
-                lw=6,
                 label="Electricity resources allocated to aviation",
             ),
         ]
