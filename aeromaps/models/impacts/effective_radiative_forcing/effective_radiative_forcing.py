@@ -39,6 +39,10 @@ class ERF(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         """ERF calculation for the different climate impacts of aviation."""
 
@@ -140,9 +144,13 @@ class ERF(AeromapsModel):
             annual_co2_erf,
             co2_erf,
             contrails_erf,
+            nox_short_term_o3_increase_erf,
+            nox_long_term_o3_decrease_erf,
+            nox_ch4_decrease_erf,
+            nox_stratospheric_water_vapor_decrease_erf,
+            nox_erf,
             soot_erf,
             h2o_erf,
-            nox_erf,
             sulfur_erf,
             aerosol_erf,
             total_erf,
