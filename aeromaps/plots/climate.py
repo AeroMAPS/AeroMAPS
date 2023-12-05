@@ -18,7 +18,7 @@ class FinalEffectiveRadiativeForcingPlot:
 
     def create_plot(self):
         barWidth = 0.6
-        chosen_year = 2050
+        chosen_year = self.years[-1]
         y1 = [
             self.df.loc[chosen_year, "total_erf"],
             self.df.loc[chosen_year, "contrails_erf"],
@@ -28,12 +28,17 @@ class FinalEffectiveRadiativeForcingPlot:
             self.df.loc[chosen_year, "co2_erf"],
         ]
 
+        if self.df.loc[chosen_year, "aerosol_erf"] < 0:
+            aerosol_color = "deepskyblue"
+        else:
+            aerosol_color = "red"
+
         r = range(len(y1))
         self.line_composantes_RF = self.ax.barh(
             r,
             y1,
             height=barWidth,
-            color=["red", "red", "deepskyblue", "red", "red"],
+            color=["red", "red", aerosol_color, "red", "red"],
             edgecolor="black",
             # xerr=[xerr1, xerr2],
             capsize=5,
@@ -42,7 +47,7 @@ class FinalEffectiveRadiativeForcingPlot:
         self.ax.set_yticklabels(
             ["Total", "Contrails", "Aerosols", "Water vapour", "NOx", "$CO_2$"],
         )
-        self.ax.set_title("Components of effective radiative forcing\nfrom air transport in 2050")
+        self.ax.set_title("Components of effective radiative forcing\nfrom air transport for the final year")
         self.ax.grid()
         self.ax.set_xlabel("Effective radiative forcing [$mW/m^2$]")
 
@@ -59,7 +64,7 @@ class FinalEffectiveRadiativeForcingPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        chosen_year = 2050
+        chosen_year = self.years[-1]
         y1 = [
             self.df.loc[chosen_year, "total_erf"],
             self.df.loc[chosen_year, "contrails_erf"],
@@ -147,7 +152,7 @@ class DistributionEffectiveRadiativeForcingPlot:
         self.ax.set_ylabel("Share in %")
         self.ax.legend(loc=0)
         ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -198,10 +203,10 @@ class EquivalentEmissionsPlot:
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions_smooth"],
+            self.df.loc[self.prospective_years, "co2_emissions"],
             color="red",
             linestyle="-",
-            label="CO2 emissions (smooth)",
+            label="CO2 emissions",
             linewidth=2,
         )
 
@@ -229,7 +234,7 @@ class EquivalentEmissionsPlot:
         self.ax.set_ylabel("Annual equivalent emissions [MtCO2-we]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -244,7 +249,7 @@ class EquivalentEmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_co2.set_ydata(self.df.loc[self.prospective_years, "co2_emissions_smooth"])
+        self.line_co2.set_ydata(self.df.loc[self.prospective_years, "co2_emissions"])
 
         self.line_nonco2.set_ydata(
             self.df.loc[self.prospective_years, "non_co2_equivalent_emissions"]
@@ -276,7 +281,7 @@ class CumulativeEquivalentEmissionsPlot:
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "cumulative_co2_emissions_smooth"],
+            self.df.loc[self.prospective_years, "cumulative_co2_emissions"],
             color="red",
             linestyle="-",
             label="Cumulative CO2 emissions",
@@ -305,11 +310,12 @@ class CumulativeEquivalentEmissionsPlot:
         self.ax.set_title(
             "Evolution of cumulative equivalent\nemissions from air transport (from 2019)"
         )
+        print(self.years)
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Cumulative equivalent emissions [GtCO2-we]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2019, 2050)
+        self.ax.set_xlim(2019, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -325,7 +331,7 @@ class CumulativeEquivalentEmissionsPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2.set_ydata(
-            self.df.loc[self.prospective_years, "cumulative_co2_emissions_smooth"]
+            self.df.loc[self.prospective_years, "cumulative_co2_emissions"]
         )
 
         self.line_nonco2.set_ydata(
@@ -374,7 +380,7 @@ class EquivalentEmissionsRatioPlot:
         self.ax.set_ylabel("Coefficient Total/CO2 [-]")
         self.ax = plt.gca()
         # self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

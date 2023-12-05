@@ -43,7 +43,7 @@ class CumulativeCO2EmissionsPlot:
         self.ax.set_ylabel("Cumulative CO2 emissions [GtCO2]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2019, 2050)
+        self.ax.set_xlim(2019, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -112,7 +112,7 @@ class DirectH2OEmissionsPlot:
         self.ax.set_ylabel("Direct H2O emissions [MtH2O]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -175,7 +175,7 @@ class DirectNOxEmissionsPlot:
         self.ax.set_ylabel("Direct NOx emissions [MtNOx]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -238,7 +238,7 @@ class DirectSulfurEmissionsPlot:
         self.ax.set_ylabel("Direct sulfur emissions [MtSO2]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -303,7 +303,7 @@ class DirectSootEmissionsPlot:
         self.ax.set_ylabel("Direct soot emissions [MtBC]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -366,7 +366,7 @@ class CarbonOffsetPlot:
         self.ax.set_ylabel("Carbon offset [MtCO2]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -420,7 +420,7 @@ class CumulativeCarbonOffsetPlot:
         self.ax.set_ylabel("Cumulative carbon offset [GtCO2]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2019, 2050)
+        self.ax.set_xlim(2019, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

@@ -32,7 +32,7 @@ class BiomassConsumptionPlot:
         self.ax.set_ylabel("Biomass consumption [EJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -98,7 +98,7 @@ class ElectricityConsumptionPlot:
         self.ax.set_ylabel("Electricity consumption [EJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
 
         # self.ax_twin = self.ax.twinx()
         # self.ax_twin.set_ylabel("Electricity consumption [TWh]")

@@ -40,7 +40,7 @@ class MeanCO2PerRPKPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("CO2 emissions per RPK [gCO2/RPK]")
         self.ax.legend(loc=0, fontsize=10)
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_ylim(
             0,
         )
@@ -107,7 +107,7 @@ class MeanCO2PerRTKPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("CO2 emissions per RTK [gCO2/RTK]")
         self.ax.legend(loc=0, fontsize=10)
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_ylim(
             0,
         )
@@ -153,7 +153,7 @@ class PassengerKayaFactorsPlot:
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
             self.years,
-            self.df["co2_emissions_passenger"] / self.df.loc[2000, "co2_emissions_passenger"],
+            self.df["co2_emissions_passenger"] / self.df.loc[self.years[0], "co2_emissions_passenger"],
             color="blue",
             linestyle="-",
             label="CO2",
@@ -162,7 +162,7 @@ class PassengerKayaFactorsPlot:
 
         (self.line_rpk,) = self.ax.plot(
             self.years,
-            self.df["rpk"] / self.df.loc[2000, "rpk"],
+            self.df["rpk"] / self.df.loc[self.years[0], "rpk"],
             color="red",
             linestyle="--",
             label="RPK",
@@ -173,7 +173,7 @@ class PassengerKayaFactorsPlot:
             self.years,
             self.df["energy_per_ask_mean"]
             / self.df["load_factor"]
-            / (self.df.loc[2000, "energy_per_ask_mean"] / self.df.loc[2000, "load_factor"]),
+            / (self.df.loc[self.years[0], "energy_per_ask_mean"] / self.df.loc[self.years[0], "load_factor"]),
             color="gold",
             linestyle="--",
             label="E/ASK",
@@ -182,7 +182,7 @@ class PassengerKayaFactorsPlot:
 
         (self.line_co2_per_energy,) = self.ax.plot(
             self.years,
-            self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"],
+            self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"],
             color="green",
             linestyle="--",
             label="CO2/E",
@@ -197,7 +197,7 @@ class PassengerKayaFactorsPlot:
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
         ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
         self.fig.canvas.header_visible = False
@@ -214,19 +214,19 @@ class PassengerKayaFactorsPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2.set_ydata(
-            self.df["co2_emissions_passenger"] / self.df.loc[2000, "co2_emissions_passenger"]
+            self.df["co2_emissions_passenger"] / self.df.loc[self.years[0], "co2_emissions_passenger"]
         )
 
-        self.line_rpk.set_ydata(self.df["rpk"] / self.df.loc[2000, "rpk"])
+        self.line_rpk.set_ydata(self.df["rpk"] / self.df.loc[self.years[0], "rpk"])
 
         self.line_energy_per_rpk.set_ydata(
             self.df["energy_per_ask_mean"]
             / self.df["load_factor"]
-            / (self.df.loc[2000, "energy_per_ask_mean"] / self.df.loc[2000, "load_factor"])
+            / (self.df.loc[self.years[0], "energy_per_ask_mean"] / self.df.loc[self.years[0], "load_factor"])
         )
 
         self.line_co2_per_energy.set_ydata(
-            self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"]
+            self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"]
         )
 
         for collection in self.ax.collections:
@@ -253,7 +253,7 @@ class FreightKayaFactorsPlot:
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
             self.years,
-            self.df["co2_emissions_freight"] / self.df.loc[2000, "co2_emissions_freight"],
+            self.df["co2_emissions_freight"] / self.df.loc[self.years[0], "co2_emissions_freight"],
             color="blue",
             linestyle="-",
             label="CO2",
@@ -262,7 +262,7 @@ class FreightKayaFactorsPlot:
 
         (self.line_rtk,) = self.ax.plot(
             self.years,
-            self.df["rtk"] / self.df.loc[2000, "rtk"],
+            self.df["rtk"] / self.df.loc[self.years[0], "rtk"],
             color="red",
             linestyle="--",
             label="RTK",
@@ -271,7 +271,7 @@ class FreightKayaFactorsPlot:
 
         (self.line_energy_per_rtk,) = self.ax.plot(
             self.years,
-            self.df["energy_per_rtk_mean"] / self.df.loc[2000, "energy_per_rtk_mean"],
+            self.df["energy_per_rtk_mean"] / self.df.loc[self.years[0], "energy_per_rtk_mean"],
             color="gold",
             linestyle="--",
             label="E/RTK",
@@ -280,7 +280,7 @@ class FreightKayaFactorsPlot:
 
         (self.line_co2_per_energy,) = self.ax.plot(
             self.years,
-            self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"],
+            self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"],
             color="green",
             linestyle="--",
             label="CO2/E",
@@ -295,7 +295,7 @@ class FreightKayaFactorsPlot:
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
         ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
         self.fig.canvas.header_visible = False
@@ -312,17 +312,17 @@ class FreightKayaFactorsPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_co2.set_ydata(
-            self.df["co2_emissions_freight"] / self.df.loc[2000, "co2_emissions_freight"]
+            self.df["co2_emissions_freight"] / self.df.loc[self.years[0], "co2_emissions_freight"]
         )
 
-        self.line_rtk.set_ydata(self.df["rtk"] / self.df.loc[2000, "rtk"])
+        self.line_rtk.set_ydata(self.df["rtk"] / self.df.loc[self.years[0], "rtk"])
 
         self.line_energy_per_rtk.set_ydata(
-            self.df["energy_per_rtk_mean"] / self.df.loc[2000, "energy_per_rtk_mean"]
+            self.df["energy_per_rtk_mean"] / self.df.loc[self.years[0], "energy_per_rtk_mean"]
         )
 
         self.line_co2_per_energy.set_ydata(
-            self.df["co2_per_energy_mean"] / self.df.loc[2000, "co2_per_energy_mean"]
+            self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"]
         )
 
         for collection in self.ax.collections:
@@ -348,50 +348,50 @@ class LeversOfActionDistributionPlot:
 
     def create_plot(self):
         if (
-            self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-            - self.df.loc[2050, "cumulative_co2_emissions"]
+            self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+            - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
             > 0
         ):
             if (
-                self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                - self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
+                self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
                 >= 0
             ):
                 sizes = [
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                 ]
@@ -400,30 +400,30 @@ class LeversOfActionDistributionPlot:
                 sizes = [
                     0,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                 ]
@@ -492,51 +492,51 @@ class LeversOfActionDistributionPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         if (
-            self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-            - self.df.loc[2050, "cumulative_co2_emissions"]
+            self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+            - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
             > 0
         ):
 
             if (
-                self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                - self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
+                self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
                 >= 0
             ):
                 sizes = [
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology_baseline3"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                 ]
@@ -544,30 +544,30 @@ class LeversOfActionDistributionPlot:
             else:
                 sizes = [
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_load_factor"]
-                        - self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_load_factor"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                     (
-                        self.df.loc[2050, "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     / (
-                        self.df.loc[2050, "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[2050, "cumulative_co2_emissions"]
+                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
+                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
                     )
                     * 100,
                 ]

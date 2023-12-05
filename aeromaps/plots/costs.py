@@ -301,7 +301,7 @@ class ScenarioEnergyExpensesPlot:
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
 
         # TODO : correct warnings
         warnings.filterwarnings("ignore")
@@ -455,7 +455,7 @@ class ScenarioEnergyExpensesPlot:
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
 
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
 
         warnings.filterwarnings("ignore")
 
@@ -542,7 +542,7 @@ class ScenarioEnergyCarbonTaxPlot:
         self.ax.set_ylabel("Energy expenses [M€]")
         self.ax = plt.gca()
 
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -719,7 +719,7 @@ class ScenarioEnergyUnitCostPlot:
         self.ax.set_ylabel("MFSP [€/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -955,7 +955,7 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         self.ax.set_ylabel("MFSP [€/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -1101,7 +1101,7 @@ class DiscountEffect:
         self.ax.set_ylabel("M€ / year")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -1144,7 +1144,7 @@ class DropInMACC:
 
     def create_plot(self):
         # Select year at which the MACC is plotted
-        year = 2050
+        year = self.years[-1]
 
         # create a dataframe for the various pathways
         # (usage: sorting the values by increasing carbon abatement cost)
@@ -1270,7 +1270,7 @@ class DropInMACC:
                 self.df.energy_consumption_dropin_fuel[year] / 1e12
                 - self.df.energy_consumption_kerosene[year] / 1e12
             ),
-            "Air transport sustainable drop-in fuels use, 2050",
+            "Air transport sustainable drop-in fuels use, final year",
         )
 
         self.ax2.axhline(
@@ -1282,7 +1282,7 @@ class DropInMACC:
         self.ax2.text(
             0,
             1.02 * (self.df.energy_consumption_dropin_fuel[year] / 1e12),
-            "Air transport total drop-in fuels use, 2050",
+            "Air transport total drop-in fuels use, final year",
         )
 
         self.ax.grid(True, which="both", ls=":")
@@ -1328,7 +1328,7 @@ class DropInMACC:
         self.ax2.cla()
 
         # Select year at which the MACC is plotted
-        year = 2050
+        year = self.years[-1]
 
         # create a dataframe for the various pathways
         # (usage: sorting the values by increasing carbon abatement cost)
@@ -1454,7 +1454,7 @@ class DropInMACC:
                 self.df.energy_consumption_dropin_fuel[year] / 1e12
                 - self.df.energy_consumption_kerosene[year] / 1e12
             ),
-            "Air transport sustainable drop-in fuels use, 2050",
+            "Air transport sustainable drop-in fuels use, final year",
         )
 
         self.ax2.axhline(
@@ -1466,7 +1466,7 @@ class DropInMACC:
         self.ax2.text(
             0,
             1.02 * (self.df.energy_consumption_dropin_fuel[year] / 1e12),
-            "Air transport total drop-in fuels use, 2050",
+            "Air transport total drop-in fuels use, final year",
         )
 
         self.ax.grid(True, which="both", ls=":")
@@ -1694,7 +1694,7 @@ class DOCEvolutionCategory:
         self.ax.set_ylabel("€ / ASK")
         self.ax = plt.gca()
         self.ax.legend(title="Direct Operating Cost")
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(2020, self.years[-1])
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
