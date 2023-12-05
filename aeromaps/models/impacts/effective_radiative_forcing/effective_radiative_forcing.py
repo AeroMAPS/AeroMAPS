@@ -79,36 +79,30 @@ class ERF(AeromapsModel):
 
         # NOx
         n_emissions = nox_emissions * 14 / 46  # Molar masses of N and NOx
-        efficacy_short_term_o3 = 1.37
-        efficacy_ch4 = 1.18
         transcient_ch4_correction_factor = 0.79
         correction_factor = (
-            0.8 * 0.9
+            1.35 * 0.88
         )  # Difference with Lee values and impact of non-commercial aviation
         self.df["nox_short_term_o3_increase_erf"] = (
             n_emissions
             * erf_coefficient_nox_short_term_o3_increase
-            * efficacy_short_term_o3
             * correction_factor
         )
         self.df["nox_long_term_o3_decrease_erf"] = (
             n_emissions
             * erf_coefficient_nox_long_term_o3_decrease
-            * efficacy_ch4
             * transcient_ch4_correction_factor
             * correction_factor
         )
         self.df["nox_ch4_decrease_erf"] = (
             n_emissions
             * erf_coefficient_nox_ch4_decrease
-            * efficacy_ch4
             * transcient_ch4_correction_factor
             * correction_factor
         )
         self.df["nox_stratospheric_water_vapor_decrease_erf"] = (
             n_emissions
             * erf_coefficient_nox_stratospheric_water_vapor_decrease
-            * efficacy_ch4
             * transcient_ch4_correction_factor
             * correction_factor
         )

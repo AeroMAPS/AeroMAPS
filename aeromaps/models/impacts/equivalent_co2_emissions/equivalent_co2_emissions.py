@@ -80,7 +80,7 @@ class EquivalentCO2Emissions(AeromapsModel):
             self,
             emissions_erf=nox_ch4_decrease_erf,
             gwpstar_variation_duration=20.0,
-            alpha_coefficient=0.25,
+            alpha_coefficient=0.0,
             erf_coefficient_co2=erf_coefficient_co2,
         )
         self.df["nox_ch4_decrease_equivalent_emissions"] = nox_ch4_decrease_equivalent_emissions
@@ -103,7 +103,7 @@ class EquivalentCO2Emissions(AeromapsModel):
         soot_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
             self,
             emissions_erf=soot_erf,
-            gwpstar_variation_duration=20.0,
+            gwpstar_variation_duration=1.0,
             alpha_coefficient=0.0,
             erf_coefficient_co2=erf_coefficient_co2,
         )
@@ -123,7 +123,7 @@ class EquivalentCO2Emissions(AeromapsModel):
         sulfur_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
             self,
             emissions_erf=sulfur_erf,
-            gwpstar_variation_duration=20.0,
+            gwpstar_variation_duration=1.0,
             alpha_coefficient=0.0,
             erf_coefficient_co2=erf_coefficient_co2,
         )
@@ -161,10 +161,6 @@ class EquivalentCO2Emissions(AeromapsModel):
         cumulative_non_co2_equivalent_emissions = self.df["cumulative_non_co2_equivalent_emissions"]
         cumulative_total_equivalent_emissions = self.df["cumulative_total_equivalent_emissions"]
 
-        # self.cumulative_total_equivalent_emissions_end_year = self.df.loc[
-        #     self.end_year, "cumulative_total_equivalent_emissions"
-        # ]
-
         # Share CO2/non-CO2
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "total_co2_equivalent_emissions_ratio"] = (
@@ -178,7 +174,7 @@ class EquivalentCO2Emissions(AeromapsModel):
         return (
             contrails_equivalent_emissions,
             nox_short_term_o3_increase_equivalent_emissions,
-            nox_short_term_o3_increase_equivalent_emissions,
+            nox_long_term_o3_decrease_equivalent_emissions,
             nox_ch4_decrease_equivalent_emissions,
             nox_stratospheric_water_vapor_decrease_equivalent_emissions,
             soot_equivalent_emissions,
