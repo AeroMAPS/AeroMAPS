@@ -1,0 +1,64 @@
+{% set name = "aeromaps" %}
+{% set version = "0.5.0b0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/aeromaps-{{ version }}.tar.gz
+  sha256: 2b91de26655f8203a09bd51e8101f347384608ee4ee013b84122c5f1573e4d32
+
+build:
+  entry_points:
+    - aeromaps = aeromaps.app:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8,<3.11
+    - poetry-core >=1.0.0
+    - poetry-dynamic-versioning
+    - pip
+  run:
+    - python >=3.8.0,<4.0.0,<3.11
+    - numpy >=1.20.3,<2.0.0
+    - scipy >=1.4.1,<2.0.0
+    - pandas >=1.1.0,<2.0.0
+    - xlrd 1.2.0
+    - openpyxl >=3.1.2,<4.0.0
+    - voila >=0.5.0,<0.6.0
+    - jupyterlab >=3.3.0,<4.0.0
+    - matplotlib-base >=3.7.0,<4.0.0
+    - ipywidgets >=8.0.6,<9.0.0
+    - ipysheet >=0.5.0,<1
+    - plotly >=5.0.0,<6.0.0
+    - markdown >=3.4.3,<4.0.0
+    - ipympl >=0.9.3,<0.10.0
+    - gemseo >=5.0.0,<6.0.0
+    - aenum >=3.1.12,<4.0.0
+    - ipydatagrid >=1.1.14,<2.0.0
+    - ipytree >=0.2.2,<0.3.0
+    - docstring-inheritance >=1.0.0,<2.0.0
+    - dacite >=1.8.0,<2.0.0
+
+test:
+  imports:
+    - aeromaps
+  commands:
+    - pip check
+    - aeromaps --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/AeroMAPS/AeroMAPS
+  summary: 'AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport'
+  license: GPL-3.0-only
+  license_file: PLEASE_ADD_LICENSE_FILE
+
+extra:
+  recipe-maintainers:
+    - ScottDelbecq
