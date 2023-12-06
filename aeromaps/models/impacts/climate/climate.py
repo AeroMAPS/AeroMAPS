@@ -1,7 +1,11 @@
 from typing import Tuple
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsEquivalentEmissionsFunction
+from aeromaps.models.base import (
+    AeromapsModel,
+    GWPStarEquivalentEmissionsFunction,
+    AbsoluteGlobalWarmingPotentialCO2Function,
+)
 
 
 class TemperatureGWPStar(AeromapsModel):
@@ -48,7 +52,7 @@ class TemperatureGWPStar(AeromapsModel):
         # EQUIVALENT EMISSIONS
 
         ## Contrails
-        contrails_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        contrails_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=contrails_erf,
             gwpstar_variation_duration=1.0,
@@ -57,7 +61,7 @@ class TemperatureGWPStar(AeromapsModel):
         self.df["contrails_equivalent_emissions"] = contrails_equivalent_emissions
 
         ## NOx short-term O3 increase
-        nox_short_term_o3_increase_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        nox_short_term_o3_increase_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_short_term_o3_increase_erf,
             gwpstar_variation_duration=1.0,
@@ -68,7 +72,7 @@ class TemperatureGWPStar(AeromapsModel):
         ] = nox_short_term_o3_increase_equivalent_emissions
 
         ## NOx long-term O3 decrease
-        nox_long_term_o3_decrease_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        nox_long_term_o3_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_long_term_o3_decrease_erf,
             gwpstar_variation_duration=20.0,
@@ -79,17 +83,17 @@ class TemperatureGWPStar(AeromapsModel):
         ] = nox_long_term_o3_decrease_equivalent_emissions
 
         ## NOx CH4 decrease
-        nox_ch4_decrease_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        nox_ch4_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_ch4_decrease_erf,
             gwpstar_variation_duration=20.0,
-            alpha_coefficient=0.0,
+            alpha_coefficient=0.25,
         )
         self.df["nox_ch4_decrease_equivalent_emissions"] = nox_ch4_decrease_equivalent_emissions
 
         ## NOx stratospheric water vapor decrease
         nox_stratospheric_water_vapor_decrease_equivalent_emissions = (
-            AeromapsEquivalentEmissionsFunction(
+            GWPStarEquivalentEmissionsFunction(
                 self,
                 emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
                 gwpstar_variation_duration=20.0,
@@ -101,7 +105,7 @@ class TemperatureGWPStar(AeromapsModel):
         ] = nox_stratospheric_water_vapor_decrease_equivalent_emissions
 
         ## Soot
-        soot_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        soot_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=soot_erf,
             gwpstar_variation_duration=1.0,
@@ -110,7 +114,7 @@ class TemperatureGWPStar(AeromapsModel):
         self.df["soot_equivalent_emissions"] = soot_equivalent_emissions
 
         ## H2O
-        h2o_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        h2o_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=h2o_erf,
             gwpstar_variation_duration=20.0,
@@ -119,7 +123,7 @@ class TemperatureGWPStar(AeromapsModel):
         self.df["h2o_equivalent_emissions"] = h2o_equivalent_emissions
 
         ## Sulfur
-        sulfur_equivalent_emissions = AeromapsEquivalentEmissionsFunction(
+        sulfur_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=sulfur_erf,
             gwpstar_variation_duration=1.0,
@@ -240,7 +244,6 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         total_erf: pd.Series = pd.Series(dtype="float64"),
         co2_erf: pd.Series = pd.Series(dtype="float64"),
         co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        erf_coefficient_co2: float = 0.0,
         TCRE: float = 0.0,
         temperature_increase_from_aviation_init: pd.Series = pd.Series(dtype="float64"),
         cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
@@ -321,14 +324,14 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         non_co2_erf_smooth = self.df["non_co2_erf_smooth"]
         non_co2_erf_smooth_variation = self.df["non_co2_erf_smooth_variation"]
 
+        # Global
+        climate_time_horizon = 100
+        co2_agwp_h = AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon)
+
         # Non-CO2 equivalent emissions (Mtwe)
-        climate_time_frame = 100
-        co2_absolute_global_warming_potential = erf_coefficient_co2 * 100 / 1000
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "non_co2_equivalent_emissions"] = (
-                self.df.loc[k, "non_co2_erf_smooth_variation"]
-                * climate_time_frame
-                / co2_absolute_global_warming_potential
+                self.df.loc[k, "non_co2_erf_smooth_variation"] * climate_time_horizon / co2_agwp_h
             )
         non_co2_equivalent_emissions = self.df["non_co2_equivalent_emissions"]
 
@@ -443,7 +446,7 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         )
 
 
-class TemperatureFAIR(AeromapsModel):
+class TemperatureFaIR(AeromapsModel):
     def __init__(self, name="temperature_fair", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

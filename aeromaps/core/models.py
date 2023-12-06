@@ -85,7 +85,11 @@ from aeromaps.models.impacts.energy_resources.resources_consumption import (
     BiomassConsumption,
     ElectricityConsumption,
 )
-from aeromaps.models.impacts.climate.climate import TemperatureGWPStar, TemperatureSimpleGWPStar, TemperatureFAIR
+from aeromaps.models.impacts.climate.climate import (
+    TemperatureGWPStar,
+    TemperatureSimpleGWPStar,
+    TemperatureFaIR,
+)
 from aeromaps.models.impacts.others.others import (
     EmissionsPerRPK,
     EmissionsPerRTK,
@@ -212,7 +216,7 @@ models_simple = {
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
-    "temperature_simple_gwpstar": TemperatureSimpleGWPStar("temperature_simple_gwpstar"),
+    "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
@@ -338,7 +342,7 @@ models_complex = {
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
-    "temperature_simple_gwpstar": TemperatureSimpleGWPStar("temperature_simple_gwpstar"),
+    "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(

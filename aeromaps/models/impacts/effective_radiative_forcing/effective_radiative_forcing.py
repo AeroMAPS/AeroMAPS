@@ -2,7 +2,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
 
 
 class ERF(AeromapsModel):
@@ -18,7 +18,6 @@ class ERF(AeromapsModel):
         sulfur_emissions: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         direct_co2_erf_2018_reference: float = 0.0,
-        erf_coefficient_co2: float = 0.0,
         erf_coefficient_contrails: float = 0.0,
         erf_coefficient_nox_short_term_o3_increase: float = 0.0,
         erf_coefficient_nox_long_term_o3_decrease: float = 0.0,
@@ -47,7 +46,8 @@ class ERF(AeromapsModel):
         """ERF calculation for the different climate impacts of aviation."""
 
         # CO2
-        self.df["annual_co2_erf"] = co2_emissions * erf_coefficient_co2 / 1000
+        h = 100  # Climate time horizon
+        self.df["annual_co2_erf"] = co2_emissions * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
 
         # To improve
         reference_year = 2018
@@ -79,32 +79,17 @@ class ERF(AeromapsModel):
 
         # NOx
         n_emissions = nox_emissions * 14 / 46  # Molar masses of N and NOx
-        transcient_ch4_correction_factor = 0.79
-        correction_factor = (
-            1.35 * 0.88
-        )  # Difference with Lee values and impact of non-commercial aviation
+        # transcient_ch4_correction_factor = 0.79
+        # correction_factor = (1.35 * 0.88) - Difference with Lee values and impact of non-commercial aviation
         self.df["nox_short_term_o3_increase_erf"] = (
-            n_emissions
-            * erf_coefficient_nox_short_term_o3_increase
-            * correction_factor
+            n_emissions * erf_coefficient_nox_short_term_o3_increase
         )
         self.df["nox_long_term_o3_decrease_erf"] = (
-            n_emissions
-            * erf_coefficient_nox_long_term_o3_decrease
-            * transcient_ch4_correction_factor
-            * correction_factor
+            n_emissions * erf_coefficient_nox_long_term_o3_decrease
         )
-        self.df["nox_ch4_decrease_erf"] = (
-            n_emissions
-            * erf_coefficient_nox_ch4_decrease
-            * transcient_ch4_correction_factor
-            * correction_factor
-        )
+        self.df["nox_ch4_decrease_erf"] = n_emissions * erf_coefficient_nox_ch4_decrease
         self.df["nox_stratospheric_water_vapor_decrease_erf"] = (
-            n_emissions
-            * erf_coefficient_nox_stratospheric_water_vapor_decrease
-            * transcient_ch4_correction_factor
-            * correction_factor
+            n_emissions * erf_coefficient_nox_stratospheric_water_vapor_decrease
         )
         nox_short_term_o3_increase_erf = self.df["nox_short_term_o3_increase_erf"]
         nox_long_term_o3_decrease_erf = self.df["nox_long_term_o3_decrease_erf"]
@@ -165,7 +150,6 @@ class ERFSimplifiedNox(AeromapsModel):
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         direct_co2_erf_2018_reference: float = 0.0,
         erf_coefficient_soot: float = 0.0,
-        erf_coefficient_co2: float = 0.0,
         erf_coefficient_contrails: float = 0.0,
         erf_coefficient_h2o: float = 0.0,
         erf_coefficient_nox: float = 0.0,
@@ -186,7 +170,8 @@ class ERFSimplifiedNox(AeromapsModel):
         """ERF calculation for the different climate impacts of aviation."""
 
         # CO2
-        self.df["annual_co2_erf"] = co2_emissions * erf_coefficient_co2 / 1000
+        h = 100  # Climate time horizon
+        self.df["annual_co2_erf"] = co2_emissions * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
 
         # To improve
         reference_year = 2018

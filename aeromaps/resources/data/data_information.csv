@@ -86,7 +86,6 @@ end_year;Float;yr;End year for the calculation
 energy_per_ask_long_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
 energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
 energy_per_ask_short_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
-erf_coefficient_co2;Float;mW/m²/GtCO2;Coefficient for estimating the effective radiative forcing of cumulative CO2 emissions from aviation
 erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation
 erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation
 erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation
