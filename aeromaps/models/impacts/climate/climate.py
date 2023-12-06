@@ -25,7 +25,7 @@ class TemperatureGWPStar(AeromapsModel):
         co2_erf: pd.Series = pd.Series(dtype="float64"),
         total_erf: pd.Series = pd.Series(dtype="float64"),
         co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        TCRE: float = 0.0,
+        tcre_coefficient: float = 0.0,
         temperature_increase_from_aviation_init: pd.Series = pd.Series(dtype="float64"),
         cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
@@ -184,7 +184,7 @@ class TemperatureGWPStar(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_aviation"] = (
                 temperature_increase_from_aviation_init.loc[2019]
-                + TCRE * cumulative_total_equivalent_emissions.loc[k]
+                + tcre_coefficient * cumulative_total_equivalent_emissions.loc[k]
             )
         temperature_increase_from_aviation = self.df["temperature_increase_from_aviation"]
 
@@ -195,12 +195,12 @@ class TemperatureGWPStar(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[2019, "temperature_increase_from_co2_from_aviation"]
-                + TCRE * cumulative_co2_emissions.loc[k]
+                + tcre_coefficient * cumulative_co2_emissions.loc[k]
             )
         for k in reversed(range(self.historic_start_year, self.prospection_start_year - 1)):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[k + 1, "temperature_increase_from_co2_from_aviation"]
-                - TCRE * co2_emissions.loc[k] / 1000
+                - tcre_coefficient * co2_emissions.loc[k] / 1000
             )
         temperature_increase_from_co2_from_aviation = self.df[
             "temperature_increase_from_co2_from_aviation"
@@ -244,7 +244,7 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         total_erf: pd.Series = pd.Series(dtype="float64"),
         co2_erf: pd.Series = pd.Series(dtype="float64"),
         co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        TCRE: float = 0.0,
+        tcre_coefficient: float = 0.0,
         temperature_increase_from_aviation_init: pd.Series = pd.Series(dtype="float64"),
         cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
@@ -390,7 +390,7 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_aviation"] = (
                 temperature_increase_from_aviation_init.loc[2019]
-                + TCRE * cumulative_total_equivalent_emissions.loc[k]
+                + tcre_coefficient * cumulative_total_equivalent_emissions.loc[k]
             )
 
         temperature_increase_from_aviation = self.df["temperature_increase_from_aviation"]
@@ -404,13 +404,13 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[2019, "temperature_increase_from_co2_from_aviation"]
-                + TCRE * cumulative_co2_emissions.loc[k]
+                + tcre_coefficient * cumulative_co2_emissions.loc[k]
             )
 
         for k in reversed(range(self.historic_start_year, self.prospection_start_year - 1)):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[k + 1, "temperature_increase_from_co2_from_aviation"]
-                - TCRE * co2_emissions.loc[k] / 1000
+                - tcre_coefficient * co2_emissions.loc[k] / 1000
             )
 
         temperature_increase_from_co2_from_aviation = self.df[
@@ -452,7 +452,7 @@ class TemperatureFaIR(AeromapsModel):
 
     def compute(
         self,
-        TCRE: float = 0.0,
+        tcre_coefficient: float = 0.0,
         temperature_increase_from_aviation_init: pd.Series = pd.Series(dtype="float64"),
         cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
         cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
@@ -470,7 +470,7 @@ class TemperatureFaIR(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_aviation"] = (
                 temperature_increase_from_aviation_init.loc[2019]
-                + TCRE * cumulative_total_equivalent_emissions.loc[k]
+                + tcre_coefficient * cumulative_total_equivalent_emissions.loc[k]
             )
 
         temperature_increase_from_aviation = self.df["temperature_increase_from_aviation"]
@@ -484,13 +484,13 @@ class TemperatureFaIR(AeromapsModel):
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[2019, "temperature_increase_from_co2_from_aviation"]
-                + TCRE * cumulative_co2_emissions.loc[k]
+                + tcre_coefficient * cumulative_co2_emissions.loc[k]
             )
 
         for k in reversed(range(self.historic_start_year, self.prospection_start_year - 1)):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 self.df.loc[k + 1, "temperature_increase_from_co2_from_aviation"]
-                - TCRE * co2_emissions.loc[k] / 1000
+                - tcre_coefficient * co2_emissions.loc[k] / 1000
             )
 
         temperature_increase_from_co2_from_aviation = self.df[

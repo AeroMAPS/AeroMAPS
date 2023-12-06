@@ -258,7 +258,7 @@
         0.0451,
         0.0469
     ],
-    "TCRE": 0.00045,
+    "tcre_coefficient": 0.00045,
     "net_carbon_budget": 900,
     "T_nonCO2": 0.2,
     "carbon_dioxyde_removal_2100": 100,
