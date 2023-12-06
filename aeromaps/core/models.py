@@ -60,6 +60,7 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
 
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
     ERF,
+    ERFSimplifiedNox,
     DetailedERF,
 )
 from aeromaps.models.impacts.emissions.co2_emissions import (
