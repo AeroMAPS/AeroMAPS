@@ -26,10 +26,12 @@ class LoadFactor(AeromapsModel):
         load_factor_2019 = self.df.loc[2019, "load_factor"]
 
         # Parameters for the model
-        a, b = self.parameters_load_factor_model(self.end_year, load_factor_2019, load_factor_end_year)
+        a, b = self.parameters_load_factor_model(
+            self.end_year, load_factor_2019, load_factor_end_year
+        )
 
         for k in range(self.prospection_start_year, self.end_year + 1):
-                self.df.loc[k, "load_factor"] = a * (k - 2019) ** 2 + b * (k - 2019) + load_factor_2019
+            self.df.loc[k, "load_factor"] = a * (k - 2019) ** 2 + b * (k - 2019) + load_factor_2019
 
         # Covid-19 : à refaire proprement
         self.df.loc[2020, "load_factor"] = covid_load_factor_2020
@@ -42,6 +44,9 @@ class LoadFactor(AeromapsModel):
     def parameters_load_factor_model(end_year, load_factor_2019, load_factor_end_year):
         # Calculate via derivative : 2ax+b
         derivative = 2 * (-5.62003082e-05) * 31 + 3.59670410e-03
-        a = -(load_factor_end_year - load_factor_2019 - derivative * (end_year - 2019)) / (end_year - 2019) ** 2
+        a = (
+            -(load_factor_end_year - load_factor_2019 - derivative * (end_year - 2019))
+            / (end_year - 2019) ** 2
+        )
         b = derivative - 2 * a * (end_year - 2019)
         return [a, b]

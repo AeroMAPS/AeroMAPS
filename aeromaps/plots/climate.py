@@ -47,7 +47,9 @@ class FinalEffectiveRadiativeForcingPlot:
         self.ax.set_yticklabels(
             ["Total", "Contrails", "Aerosols", "Water vapour", "NOx", "$CO_2$"],
         )
-        self.ax.set_title("Components of effective radiative forcing\nfrom air transport for the final year")
+        self.ax.set_title(
+            "Components of effective radiative forcing\nfrom air transport for the final year"
+        )
         self.ax.grid()
         self.ax.set_xlabel("Effective radiative forcing [$mW/m^2$]")
 
@@ -330,9 +332,7 @@ class CumulativeEquivalentEmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_co2.set_ydata(
-            self.df.loc[self.prospective_years, "cumulative_co2_emissions"]
-        )
+        self.line_co2.set_ydata(self.df.loc[self.prospective_years, "cumulative_co2_emissions"])
 
         self.line_nonco2.set_ydata(
             self.df.loc[self.prospective_years, "cumulative_non_co2_equivalent_emissions"]
