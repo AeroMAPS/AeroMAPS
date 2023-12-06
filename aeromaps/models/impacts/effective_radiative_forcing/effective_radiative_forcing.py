@@ -1,5 +1,4 @@
 from typing import Tuple
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
