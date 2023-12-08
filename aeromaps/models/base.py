@@ -173,7 +173,7 @@ def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
 
 
 def GWPStarEquivalentEmissionsFunction(
-    self, emissions_erf, gwpstar_variation_duration, alpha_coefficient
+    self, emissions_erf, historical_emissions_erf, gwpstar_variation_duration, alpha_coefficient
 ):
 
     # Reference: Smith et al. (2021), https://doi.org/10.1038/s41612-021-00169-8
@@ -190,18 +190,25 @@ def GWPStarEquivalentEmissionsFunction(
         ) / alpha_coefficient
 
     # Main
-    for k in range(self.prospection_start_year, self.end_year + 1):
-        self.df.loc[k, "emissions_erf_variation"] = (
-            emissions_erf.loc[k] - emissions_erf.loc[k - gwpstar_variation_duration]
-        ) / gwpstar_variation_duration
-    for k in range(self.prospection_start_year, self.end_year + 1):
+    for k in range(self.historic_start_year, self.end_year + 1):
+        if k-self.historic_start_year < gwpstar_variation_duration:
+            count = -1 - (k - self.historic_start_year) - gwpstar_variation_duration
+            self.df.loc[k, "emissions_erf_variation"] = (
+                emissions_erf.loc[k] - historical_emissions_erf[int(count)]
+            ) / gwpstar_variation_duration
+        else:
+            self.df.loc[k, "emissions_erf_variation"] = (
+                emissions_erf.loc[k] - emissions_erf.loc[k - gwpstar_variation_duration]
+            ) / gwpstar_variation_duration
+
+    for k in range(self.historic_start_year, self.end_year + 1):
         self.df.loc[k, "emissions_equivalent_emissions"] = (
-            g_coefficient
-            * (1 - alpha_coefficient)
-            * climate_time_horizon
-            / co2_agwp_h
-            * self.df.loc[k, "emissions_erf_variation"]
-        ) + g_coefficient * alpha_coefficient / co2_agwp_h * emissions_erf.loc[k]
+                g_coefficient
+                * (1 - alpha_coefficient)
+                * climate_time_horizon
+                / co2_agwp_h
+                * self.df.loc[k, "emissions_erf_variation"]
+            ) + g_coefficient * alpha_coefficient / co2_agwp_h * emissions_erf.loc[k]
     emissions_equivalent_emissions = self.df.loc[:, "emissions_equivalent_emissions"]
 
     # Delete intermediate df column
@@ -236,7 +243,7 @@ def GWPStarEquivalentEmissionsArrayFunction(
                 emissions_erf[k] - emissions_erf[k - int(gwpstar_variation_duration)]
             ) / gwpstar_variation_duration
         else:
-            emissions_erf_variation[k] = emissions_erf[k]
+            emissions_erf_variation[k] = emissions_erf[k] / gwpstar_variation_duration
     emissions_equivalent_emissions = np.zeros(len(emissions_erf))
     for k in range(0, len(emissions_erf)):
         emissions_equivalent_emissions[k] = (

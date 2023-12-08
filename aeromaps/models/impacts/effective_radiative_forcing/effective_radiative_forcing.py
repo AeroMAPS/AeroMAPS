@@ -1,12 +1,20 @@
 from typing import Tuple
 import pandas as pd
+import numpy as np
+from pandas import read_csv
+import os.path as pth
 
 from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
+from aeromaps.resources import data
 
 
 class ERF(AeromapsModel):
     def __init__(self, name="effective_radiative_forcing", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
+        # Load dataset
+        historical_dataset_path = pth.join(data.__path__[0], "temperature_historical_dataset.csv")
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
+        self.historical_dataset = historical_dataset_df.values
 
     def compute(
         self,
@@ -15,8 +23,6 @@ class ERF(AeromapsModel):
         h2o_emissions: pd.Series = pd.Series(dtype="float64"),
         nox_emissions: pd.Series = pd.Series(dtype="float64"),
         sulfur_emissions: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        direct_co2_erf_2018_reference: float = 0.0,
         erf_coefficient_contrails: float = 0.0,
         erf_coefficient_nox_short_term_o3_increase: float = 0.0,
         erf_coefficient_nox_long_term_o3_decrease: float = 0.0,
@@ -28,6 +34,18 @@ class ERF(AeromapsModel):
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -44,23 +62,120 @@ class ERF(AeromapsModel):
     ]:
         """ERF calculation for the different climate impacts of aviation."""
 
-        # CO2
+        # GLOBAL
         h = 100  # Climate time horizon
-        self.df["annual_co2_erf"] = co2_emissions * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
 
-        # To improve
-        reference_year = 2018
-        co2_erf_2018_reference = (
-            direct_co2_erf_2018_reference * kerosene_emission_factor.loc[reference_year] / 73.2
+        # HISTORICAL ERF BEFORE 2000
+
+        ## Initialization
+        historical_years_for_temperature = self.historical_dataset[:, 0]
+        historical_co2_emissions_for_temperature = self.historical_dataset[:, 1]
+        historical_nox_emissions_for_temperature = self.historical_dataset[:, 2]
+        historical_h2o_emissions_for_temperature = self.historical_dataset[:, 3]
+        historical_soot_emissions_for_temperature = self.historical_dataset[:, 4]
+        historical_sulfur_emissions_for_temperature = self.historical_dataset[:, 5]
+        historical_distance_for_temperature = self.historical_dataset[:, 6]
+
+        ## CO2 ERF
+        historical_annual_co2_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_annual_co2_erf_for_temperature[k] = (
+                historical_co2_emissions_for_temperature[k]
+                * AbsoluteGlobalWarmingPotentialCO2Function(h)
+                / h
+            )
+        historical_co2_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_co2_erf_for_temperature[0] = historical_annual_co2_erf_for_temperature[0]
+        for k in range(1, len(historical_years_for_temperature)):
+            historical_co2_erf_for_temperature[k] = (
+                historical_co2_erf_for_temperature[k - 1]
+                + historical_annual_co2_erf_for_temperature[k]
+            )
+
+        ## Contrails ERF
+        historical_contrails_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_contrails_erf_for_temperature[k] = (
+                historical_distance_for_temperature[k] * erf_coefficient_contrails
+            )
+
+        ## NOx ERF
+        historical_n_emissions_for_temperature = (
+            historical_nox_emissions_for_temperature * 14 / 46
+        )  # Molar masses of N and NOx
+        historical_nox_short_term_o3_increase_erf_for_temperature = np.zeros(
+            len(historical_years_for_temperature)
+        )
+        historical_nox_long_term_o3_decrease_erf_for_temperature = np.zeros(
+            len(historical_years_for_temperature)
+        )
+        historical_nox_ch4_decrease_erf_for_temperature = np.zeros(
+            len(historical_years_for_temperature)
+        )
+        historical_nox_stratospheric_water_vapor_decrease_erf_for_temperature = np.zeros(
+            len(historical_years_for_temperature)
+        )
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_nox_short_term_o3_increase_erf_for_temperature[k] = (
+                historical_n_emissions_for_temperature[k]
+                * erf_coefficient_nox_short_term_o3_increase
+            )
+            historical_nox_long_term_o3_decrease_erf_for_temperature[k] = (
+                historical_n_emissions_for_temperature[k]
+                * erf_coefficient_nox_long_term_o3_decrease
+            )
+            historical_nox_ch4_decrease_erf_for_temperature[k] = (
+                historical_n_emissions_for_temperature[k] * erf_coefficient_nox_ch4_decrease
+            )
+            historical_nox_stratospheric_water_vapor_decrease_erf_for_temperature[k] = (
+                historical_n_emissions_for_temperature[k]
+                * erf_coefficient_nox_stratospheric_water_vapor_decrease
+            )
+        historical_nox_erf_for_temperature = (
+            historical_nox_short_term_o3_increase_erf_for_temperature
+            + historical_nox_long_term_o3_decrease_erf_for_temperature
+            + historical_nox_ch4_decrease_erf_for_temperature
+            + historical_nox_stratospheric_water_vapor_decrease_erf_for_temperature
         )
 
-        self.df.loc[reference_year, "co2_erf"] = co2_erf_2018_reference
-        for k in range(self.historic_start_year, reference_year):
-            self.df.loc[self.historic_start_year + reference_year - 1 - k, "co2_erf"] = (
-                self.df.loc[self.historic_start_year + reference_year - k, "co2_erf"]
-                - self.df.loc[self.historic_start_year + reference_year - 1 - k, "annual_co2_erf"]
+        ## Other ERF
+        historical_h2o_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_soot_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_sulfur_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_h2o_erf_for_temperature[k] = (
+                historical_h2o_emissions_for_temperature[k] * erf_coefficient_h2o
             )
-        for k in range(reference_year + 1, self.end_year + 1):
+            historical_soot_erf_for_temperature[k] = (
+                historical_soot_emissions_for_temperature[k] * erf_coefficient_soot
+            )
+            historical_sulfur_erf_for_temperature[k] = (
+                historical_sulfur_emissions_for_temperature[k] * erf_coefficient_sulfur
+            )
+
+        ## Total ERF
+        historical_aerosol_erf_for_temperature = (
+            historical_soot_erf_for_temperature + historical_sulfur_erf_for_temperature
+        )
+        historical_total_erf_for_temperature = (
+            historical_co2_erf_for_temperature
+            + historical_contrails_erf_for_temperature
+            + historical_nox_erf_for_temperature
+            + historical_h2o_erf_for_temperature
+            + historical_aerosol_erf_for_temperature
+        )
+        self.historical_total_erf_for_temperature = historical_total_erf_for_temperature
+
+        ## HISTORICAL ERF AFTER 2020 AND PROSPECTIVE
+
+        # CO2
+        self.df["annual_co2_erf"] = co2_emissions * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
+
+        self.df.loc[self.historic_start_year, "co2_erf"] = (
+            historical_co2_erf_for_temperature[len(historical_years_for_temperature) - 2]
+            + self.df.loc[self.historic_start_year, "annual_co2_erf"]
+        )
+        for k in range(self.historic_start_year + 1, self.end_year + 1):
             self.df.loc[k, "co2_erf"] = (
                 self.df.loc[k - 1, "co2_erf"] + self.df.loc[k, "annual_co2_erf"]
             )
@@ -119,6 +234,18 @@ class ERF(AeromapsModel):
         total_erf = self.df["total_erf"]
 
         return (
+            historical_co2_emissions_for_temperature,
+            historical_annual_co2_erf_for_temperature,
+            historical_co2_erf_for_temperature,
+            historical_contrails_erf_for_temperature,
+            historical_nox_short_term_o3_increase_erf_for_temperature,
+            historical_nox_long_term_o3_decrease_erf_for_temperature,
+            historical_nox_ch4_decrease_erf_for_temperature,
+            historical_nox_stratospheric_water_vapor_decrease_erf_for_temperature,
+            historical_nox_erf_for_temperature,
+            historical_soot_erf_for_temperature,
+            historical_h2o_erf_for_temperature,
+            historical_sulfur_erf_for_temperature,
             annual_co2_erf,
             co2_erf,
             contrails_erf,
@@ -138,6 +265,10 @@ class ERF(AeromapsModel):
 class ERFSimplifiedNox(AeromapsModel):
     def __init__(self, name="effective_radiative_forcing_simplified_nox", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
+        # Load dataset
+        historical_dataset_path = pth.join(data.__path__[0], "temperature_historical_dataset.csv")
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
+        self.historical_dataset = historical_dataset_df.values
 
     def compute(
         self,
@@ -146,8 +277,6 @@ class ERFSimplifiedNox(AeromapsModel):
         h2o_emissions: pd.Series = pd.Series(dtype="float64"),
         nox_emissions: pd.Series = pd.Series(dtype="float64"),
         sulfur_emissions: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        direct_co2_erf_2018_reference: float = 0.0,
         erf_coefficient_soot: float = 0.0,
         erf_coefficient_contrails: float = 0.0,
         erf_coefficient_h2o: float = 0.0,
@@ -156,6 +285,14 @@ class ERFSimplifiedNox(AeromapsModel):
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -168,23 +305,91 @@ class ERFSimplifiedNox(AeromapsModel):
     ]:
         """ERF calculation for the different climate impacts of aviation."""
 
-        # CO2
+        # GLOBAL
         h = 100  # Climate time horizon
+
+        # HISTORICAL ERF BEFORE 2000
+
+        ## Initialization
+        historical_years_for_temperature = self.historical_dataset[:, 0]
+        historical_co2_emissions_for_temperature = self.historical_dataset[:, 1]
+        historical_nox_emissions_for_temperature = self.historical_dataset[:, 2]
+        historical_h2o_emissions_for_temperature = self.historical_dataset[:, 3]
+        historical_soot_emissions_for_temperature = self.historical_dataset[:, 4]
+        historical_sulfur_emissions_for_temperature = self.historical_dataset[:, 5]
+        historical_distance_for_temperature = self.historical_dataset[:, 6]
+
+        ## CO2 ERF
+        historical_annual_co2_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_annual_co2_erf_for_temperature[k] = (
+                historical_co2_emissions_for_temperature[k]
+                * AbsoluteGlobalWarmingPotentialCO2Function(h)
+                / h
+            )
+        historical_co2_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_co2_erf_for_temperature[0] = historical_annual_co2_erf_for_temperature[0]
+        for k in range(1, len(historical_years_for_temperature)):
+            historical_co2_erf_for_temperature[k] = (
+                historical_co2_erf_for_temperature[k - 1]
+                + historical_annual_co2_erf_for_temperature[k]
+            )
+
+        ## Contrails ERF
+        historical_contrails_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_contrails_erf_for_temperature[k] = (
+                historical_distance_for_temperature[k] * erf_coefficient_contrails
+            )
+
+        ## NOx ERF
+        historical_n_emissions_for_temperature = (
+            historical_nox_emissions_for_temperature * 14 / 46
+        )  # Molar masses of N and NOx
+        historical_nox_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_nox_erf_for_temperature[k] = (
+                historical_n_emissions_for_temperature[k] * erf_coefficient_nox
+            )
+
+        ## Other ERF
+        historical_h2o_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_soot_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        historical_sulfur_erf_for_temperature = np.zeros(len(historical_years_for_temperature))
+        for k in range(0, len(historical_years_for_temperature)):
+            historical_h2o_erf_for_temperature[k] = (
+                historical_h2o_emissions_for_temperature[k] * erf_coefficient_h2o
+            )
+            historical_soot_erf_for_temperature[k] = (
+                historical_soot_emissions_for_temperature[k] * erf_coefficient_soot
+            )
+            historical_sulfur_erf_for_temperature[k] = (
+                historical_sulfur_emissions_for_temperature[k] * erf_coefficient_sulfur
+            )
+
+        ## Total ERF
+        historical_aerosol_erf_for_temperature = (
+            historical_soot_erf_for_temperature + historical_sulfur_erf_for_temperature
+        )
+        historical_total_erf_for_temperature = (
+            historical_co2_erf_for_temperature
+            + historical_contrails_erf_for_temperature
+            + historical_nox_erf_for_temperature
+            + historical_h2o_erf_for_temperature
+            + historical_aerosol_erf_for_temperature
+        )
+        self.historical_total_erf_for_temperature = historical_total_erf_for_temperature
+
+        ## HISTORICAL ERF AFTER 2020 AND PROSPECTIVE
+
+        # CO2
         self.df["annual_co2_erf"] = co2_emissions * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
 
-        # To improve
-        reference_year = 2018
-        co2_erf_2018_reference = (
-            direct_co2_erf_2018_reference * kerosene_emission_factor.loc[reference_year] / 73.2
+        self.df.loc[self.historic_start_year, "co2_erf"] = (
+            historical_co2_erf_for_temperature[len(historical_years_for_temperature) - 2]
+            + self.df.loc[self.historic_start_year, "annual_co2_erf"]
         )
-
-        self.df.loc[reference_year, "co2_erf"] = co2_erf_2018_reference
-        for k in range(self.historic_start_year, reference_year):
-            self.df.loc[self.historic_start_year + reference_year - 1 - k, "co2_erf"] = (
-                self.df.loc[self.historic_start_year + reference_year - k, "co2_erf"]
-                - self.df.loc[self.historic_start_year + reference_year - 1 - k, "annual_co2_erf"]
-            )
-        for k in range(reference_year + 1, self.end_year + 1):
+        for k in range(self.historic_start_year + 1, self.end_year + 1):
             self.df.loc[k, "co2_erf"] = (
                 self.df.loc[k - 1, "co2_erf"] + self.df.loc[k, "annual_co2_erf"]
             )
@@ -219,6 +424,14 @@ class ERFSimplifiedNox(AeromapsModel):
         total_erf = self.df["total_erf"]
 
         return (
+            historical_co2_emissions_for_temperature,
+            historical_annual_co2_erf_for_temperature,
+            historical_co2_erf_for_temperature,
+            historical_contrails_erf_for_temperature,
+            historical_nox_erf_for_temperature,
+            historical_soot_erf_for_temperature,
+            historical_h2o_erf_for_temperature,
+            historical_sulfur_erf_for_temperature,
             annual_co2_erf,
             co2_erf,
             contrails_erf,
