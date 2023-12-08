@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from numpy import genfromtxt
 from scipy.interpolate import interp1d
 import warnings
 
@@ -206,5 +207,44 @@ def GWPStarEquivalentEmissionsFunction(
     # Delete intermediate df column
     self.df.pop("emissions_erf_variation")
     self.df.pop("emissions_equivalent_emissions")
+
+    return emissions_equivalent_emissions
+
+
+def GWPStarEquivalentEmissionsArrayFunction(
+    self, emissions_erf, gwpstar_variation_duration, alpha_coefficient
+):
+
+    # Reference: Smith et al. (2021), https://doi.org/10.1038/s41612-021-00169-8
+    # Global
+    climate_time_horizon = 100
+    co2_agwp_h = AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon)
+
+    # g coefficient for GWP*
+    if alpha_coefficient == 0:
+        g_coefficient = 1
+    else:
+        g_coefficient = (
+            1 - np.exp(-alpha_coefficient / (1 - alpha_coefficient))
+        ) / alpha_coefficient
+
+    # Main
+    emissions_erf_variation = np.zeros(len(emissions_erf))
+    for k in range(0, len(emissions_erf)):
+        if k >= gwpstar_variation_duration:
+            emissions_erf_variation[k] = (
+                emissions_erf[k] - emissions_erf[k - int(gwpstar_variation_duration)]
+            ) / gwpstar_variation_duration
+        else:
+            emissions_erf_variation[k] = emissions_erf[k]
+    emissions_equivalent_emissions = np.zeros(len(emissions_erf))
+    for k in range(0, len(emissions_erf)):
+        emissions_equivalent_emissions[k] = (
+            g_coefficient
+            * (1 - alpha_coefficient)
+            * climate_time_horizon
+            / co2_agwp_h
+            * emissions_erf_variation[k]
+        ) + g_coefficient * alpha_coefficient / co2_agwp_h * emissions_erf[k]
 
     return emissions_equivalent_emissions
