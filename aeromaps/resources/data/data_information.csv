@@ -394,7 +394,7 @@ sulfur_emissions;Vector;MtSOx;Sulfur emissions from all commercial air transport
 sulfur_erf;Vector;mW/m²;Effective radiative forcing due to sulfur emissions
 temperature_increase_from_aviation;Vector;°C;Temperature increase from air transport
 temperature_increase_from_co2_from_aviation;Vector;°C;Temperature increase due to CO2 emissions from air transport
-temperature_increase_from_nonco2_from_aviation;Vector;°C;Temperature increase due to non-CO2 effects from air transport
+temperature_increase_from_non_co2_from_aviation;Vector;°C;Temperature increase due to non-CO2 effects from air transport
 total_aircraft_distance;Vector;km;Total distance travelled by aircraft (based on RPK traffic)
 total_co2_equivalent_emissions_ratio;Vector;-;Percentage ratio between total equivalent emissions and CO2 emissions from aviation
 total_equivalent_emissions;Vector;MtCO2-we;Total equivalent emissions from all commercial air transport

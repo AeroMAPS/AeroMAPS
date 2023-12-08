@@ -326,7 +326,9 @@ models_complex = {
     "hydrogen_production": HydrogenProduction("hydrogen_production"),
     "biomass_availability": BiomassAvailability("biomass_availability"),
     "electricity_availability": ElectricityAvailability("electricity_availability"),
-    "effective_radiative_forcing_simplified_nox": ERFSimplifiedNox("effective_radiative_forcing_simplified_nox"),
+    "effective_radiative_forcing_simplified_nox": ERFSimplifiedNox(
+        "effective_radiative_forcing_simplified_nox"
+    ),
     "detailed_erf": DetailedERF("detailed_erf"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
