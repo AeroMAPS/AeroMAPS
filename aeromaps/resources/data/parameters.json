@@ -135,7 +135,7 @@
         12711124800000.0
     ],
     "total_aircraft_distance_init": [
-        259820000000.0,
+        25982000000.0,
         26157000000.0,
         25507000000.0,
         26560000000.0,
@@ -235,7 +235,6 @@
     "erf_coefficient_nox_stratospheric_water_vapor_decrease": -2.6,
     "erf_coefficient_soot": 100.7,
     "erf_coefficient_sulfur": -19.9,
-    "direct_co2_erf_2018_reference": 30.184,
     "temperature_increase_from_aviation_init": [
         0.0238,
         0.0246,
