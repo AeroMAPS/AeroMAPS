@@ -355,7 +355,7 @@ class TemperatureGWPStar(AeromapsModel):
         historical_temperature_increase_from_non_co2_from_aviation = np.zeros(
             len(historical_cumulative_non_co2_equivalent_emissions_for_temperature)
         )
-        for k in range(1, len(historical_temperature_increase_from_co2_from_aviation)):
+        for k in range(0, len(historical_temperature_increase_from_co2_from_aviation)):
             historical_temperature_increase_from_co2_from_aviation[k] = (
                 tcre_coefficient * historical_cumulative_co2_emissions_for_temperature[k]
             )
@@ -387,14 +387,10 @@ class TemperatureGWPStar(AeromapsModel):
         ] = historical_temperature_increase_from_non_co2_from_aviation[-1]
         for k in range(self.historic_start_year + 1, self.end_year + 1):
             self.df.loc[k, "temperature_increase_from_co2_from_aviation"] = (
-                self.df.loc[self.historic_start_year, "temperature_increase_from_co2_from_aviation"]
-                + tcre_coefficient * historical_cumulative_co2_emissions.loc[k]
+                tcre_coefficient * historical_cumulative_co2_emissions.loc[k]
             )
             self.df.loc[k, "temperature_increase_from_non_co2_from_aviation"] = (
-                self.df.loc[
-                    self.historic_start_year, "temperature_increase_from_non_co2_from_aviation"
-                ]
-                + tcre_coefficient * historical_cumulative_non_co2_equivalent_emissions.loc[k]
+                tcre_coefficient * historical_cumulative_non_co2_equivalent_emissions.loc[k]
             )
         temperature_increase_from_co2_from_aviation = self.df[
             "temperature_increase_from_co2_from_aviation"

@@ -191,7 +191,7 @@ def GWPStarEquivalentEmissionsFunction(
 
     # Main
     for k in range(self.historic_start_year, self.end_year + 1):
-        if k-self.historic_start_year < gwpstar_variation_duration:
+        if k - self.historic_start_year < gwpstar_variation_duration:
             count = -1 - (k - self.historic_start_year) - gwpstar_variation_duration
             self.df.loc[k, "emissions_erf_variation"] = (
                 emissions_erf.loc[k] - historical_emissions_erf[int(count)]
@@ -203,12 +203,12 @@ def GWPStarEquivalentEmissionsFunction(
 
     for k in range(self.historic_start_year, self.end_year + 1):
         self.df.loc[k, "emissions_equivalent_emissions"] = (
-                g_coefficient
-                * (1 - alpha_coefficient)
-                * climate_time_horizon
-                / co2_agwp_h
-                * self.df.loc[k, "emissions_erf_variation"]
-            ) + g_coefficient * alpha_coefficient / co2_agwp_h * emissions_erf.loc[k]
+            g_coefficient
+            * (1 - alpha_coefficient)
+            * climate_time_horizon
+            / co2_agwp_h
+            * self.df.loc[k, "emissions_erf_variation"]
+        ) + g_coefficient * alpha_coefficient / co2_agwp_h * emissions_erf.loc[k]
     emissions_equivalent_emissions = self.df.loc[:, "emissions_equivalent_emissions"]
 
     # Delete intermediate df column
