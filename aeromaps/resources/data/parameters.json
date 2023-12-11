@@ -1,4 +1,5 @@
 {
+    "climate_historic_start_year": 1940,
     "historic_start_year": 2000,
     "prospection_start_year": 2020,
     "end_year": 2050,

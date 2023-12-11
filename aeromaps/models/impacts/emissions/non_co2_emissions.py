@@ -1,8 +1,10 @@
-import numpy as np
 from typing import Tuple
 import pandas as pd
+from pandas import read_csv
+import os.path as pth
 
 from aeromaps.models.base import AeromapsModel
+from aeromaps.resources import data
 
 
 class NOxEmissionIndex(AeromapsModel):
@@ -327,6 +329,10 @@ class SootEmissionIndexComplex(AeromapsModel):
 class NonCO2Emissions(AeromapsModel):
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        # Load dataset
+        historical_dataset_path = pth.join(data.__path__[0], "temperature_historical_dataset.csv")
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
+        self.historical_dataset = historical_dataset_df.values
 
     def compute(
         self,
@@ -334,10 +340,10 @@ class NonCO2Emissions(AeromapsModel):
         emission_index_nox_electrofuel: pd.Series = pd.Series(dtype="float64"),
         emission_index_nox_kerosene: pd.Series = pd.Series(dtype="float64"),
         emission_index_nox_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        emission_index_soot_biofuel: float = 0.0,
-        emission_index_soot_electrofuel: float = 0.0,
-        emission_index_soot_kerosene: float = 0.0,
-        emission_index_soot_hydrogen: float = 0.0,
+        emission_index_soot_biofuel: pd.Series = pd.Series(dtype="float64"),
+        emission_index_soot_electrofuel: pd.Series = pd.Series(dtype="float64"),
+        emission_index_soot_kerosene: pd.Series = pd.Series(dtype="float64"),
+        emission_index_soot_hydrogen: pd.Series = pd.Series(dtype="float64"),
         emission_index_h2o_biofuel: float = 0.0,
         emission_index_h2o_electrofuel: float = 0.0,
         emission_index_h2o_kerosene: float = 0.0,
@@ -357,46 +363,104 @@ class NonCO2Emissions(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Non-CO2 emissions calculation."""
 
-        self.df["soot_emissions"] = (
-            emission_index_soot_biofuel / 10**9 * energy_consumption_biofuel / lhv_biofuel
-            + emission_index_soot_electrofuel
-            / 10**9
-            * energy_consumption_electrofuel
-            / lhv_electrofuel
-            + emission_index_soot_kerosene / 10**9 * energy_consumption_kerosene / lhv_kerosene
-            + emission_index_soot_hydrogen / 10**9 * energy_consumption_hydrogen / lhv_hydrogen
-        )
-        self.df["h2o_emissions"] = (
-            emission_index_h2o_biofuel / 10**9 * energy_consumption_biofuel / lhv_biofuel
-            + emission_index_h2o_electrofuel
-            / 10**9
-            * energy_consumption_electrofuel
-            / lhv_electrofuel
-            + emission_index_h2o_kerosene / 10**9 * energy_consumption_kerosene / lhv_kerosene
-            + emission_index_h2o_hydrogen / 10**9 * energy_consumption_hydrogen / lhv_hydrogen
-        )
-        self.df["nox_emissions"] = (
-            emission_index_nox_biofuel / 10**9 * energy_consumption_biofuel / lhv_biofuel
-            + emission_index_nox_electrofuel
-            / 10**9
-            * energy_consumption_electrofuel
-            / lhv_electrofuel
-            + emission_index_nox_kerosene / 10**9 * energy_consumption_kerosene / lhv_kerosene
-            + emission_index_nox_hydrogen / 10**9 * energy_consumption_hydrogen / lhv_hydrogen
-        )
-        self.df["sulfur_emissions"] = (
-            emission_index_sulfur_biofuel / 10**9 * energy_consumption_biofuel / lhv_biofuel
-            + emission_index_sulfur_electrofuel
-            / 10**9
-            * energy_consumption_electrofuel
-            / lhv_electrofuel
-            + emission_index_sulfur_kerosene / 10**9 * energy_consumption_kerosene / lhv_kerosene
-            + emission_index_sulfur_hydrogen / 10**9 * energy_consumption_hydrogen / lhv_hydrogen
-        )
+        ## Initialization
+        historical_nox_emissions_for_temperature = self.historical_dataset[:, 2]
+        historical_h2o_emissions_for_temperature = self.historical_dataset[:, 3]
+        historical_soot_emissions_for_temperature = self.historical_dataset[:, 4]
+        historical_sulfur_emissions_for_temperature = self.historical_dataset[:, 5]
 
-        soot_emissions = self.df["soot_emissions"]
-        h2o_emissions = self.df["h2o_emissions"]
-        nox_emissions = self.df["nox_emissions"]
-        sulfur_emissions = self.df["sulfur_emissions"]
+        # Calculation
+        for k in range(self.climate_historic_start_year, self.historic_start_year):
+            self.df_climate.loc[k, "soot_emissions"] = historical_soot_emissions_for_temperature[
+                k - self.climate_historic_start_year
+            ]
+            self.df_climate.loc[k, "h2o_emissions"] = historical_h2o_emissions_for_temperature[
+                k - self.climate_historic_start_year
+            ]
+            self.df_climate.loc[k, "nox_emissions"] = historical_nox_emissions_for_temperature[
+                k - self.climate_historic_start_year
+            ]
+            self.df_climate.loc[
+                k, "sulfur_emissions"
+            ] = historical_sulfur_emissions_for_temperature[k - self.climate_historic_start_year]
+
+        for k in range(self.historic_start_year, self.end_year + 1):
+            self.df_climate.loc[k, "soot_emissions"] = (
+                emission_index_soot_biofuel.loc[k]
+                / 10**9
+                * energy_consumption_biofuel.loc[k]
+                / lhv_biofuel
+                + emission_index_soot_electrofuel.loc[k]
+                / 10**9
+                * energy_consumption_electrofuel.loc[k]
+                / lhv_electrofuel
+                + emission_index_soot_kerosene.loc[k]
+                / 10**9
+                * energy_consumption_kerosene.loc[k]
+                / lhv_kerosene
+                + emission_index_soot_hydrogen.loc[k]
+                / 10**9
+                * energy_consumption_hydrogen.loc[k]
+                / lhv_hydrogen
+            )
+            self.df_climate["h2o_emissions"] = (
+                emission_index_h2o_biofuel
+                / 10**9
+                * energy_consumption_biofuel.loc[k]
+                / lhv_biofuel
+                + emission_index_h2o_electrofuel
+                / 10**9
+                * energy_consumption_electrofuel.loc[k]
+                / lhv_electrofuel
+                + emission_index_h2o_kerosene
+                / 10**9
+                * energy_consumption_kerosene.loc[k]
+                / lhv_kerosene
+                + emission_index_h2o_hydrogen
+                / 10**9
+                * energy_consumption_hydrogen.loc[k]
+                / lhv_hydrogen
+            )
+            self.df_climate["nox_emissions"] = (
+                emission_index_nox_biofuel.loc[k]
+                / 10**9
+                * energy_consumption_biofuel.loc[k]
+                / lhv_biofuel
+                + emission_index_nox_electrofuel.loc[k]
+                / 10**9
+                * energy_consumption_electrofuel.loc[k]
+                / lhv_electrofuel
+                + emission_index_nox_kerosene.loc[k]
+                / 10**9
+                * energy_consumption_kerosene.loc[k]
+                / lhv_kerosene
+                + emission_index_nox_hydrogen.loc[k]
+                / 10**9
+                * energy_consumption_hydrogen.loc[k]
+                / lhv_hydrogen
+            )
+            self.df_climate["sulfur_emissions"] = (
+                emission_index_sulfur_biofuel
+                / 10**9
+                * energy_consumption_biofuel.loc[k]
+                / lhv_biofuel
+                + emission_index_sulfur_electrofuel
+                / 10**9
+                * energy_consumption_electrofuel.loc[k]
+                / lhv_electrofuel
+                + emission_index_sulfur_kerosene
+                / 10**9
+                * energy_consumption_kerosene.loc[k]
+                / lhv_kerosene
+                + emission_index_sulfur_hydrogen
+                / 10**9
+                * energy_consumption_hydrogen.loc[k]
+                / lhv_hydrogen
+            )
+
+        soot_emissions = self.df_climate.loc[:, "soot_emissions"]
+        h2o_emissions = self.df_climate["h2o_emissions"]
+        nox_emissions = self.df_climate["nox_emissions"]
+        sulfur_emissions = self.df_climate["sulfur_emissions"]
 
         return soot_emissions, h2o_emissions, nox_emissions, sulfur_emissions
