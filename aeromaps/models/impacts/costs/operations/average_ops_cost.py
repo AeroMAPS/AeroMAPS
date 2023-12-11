@@ -607,7 +607,7 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         ] = doc_carbon_tax_per_ask_short_range_mean
         self.df.loc[:, "doc_carbon_tax_per_ask_mean"] = doc_carbon_tax_per_ask_mean
 
-        doc_carbon_tax_lowering_offset_per_ask_mean = self.df.loc[
+        doc_carbon_tax_lowering_offset_per_ask_mean = self.df[
             "doc_carbon_tax_lowering_offset_per_ask_mean"
         ]
 
