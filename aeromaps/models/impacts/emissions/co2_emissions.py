@@ -5,7 +5,7 @@ from pandas import read_csv
 import os.path as pth
 
 from aeromaps.models.base import AeromapsModel
-from aeromaps.resources import data
+from aeromaps.resources import climate_data
 
 
 class KayaFactors(AeromapsModel):
@@ -133,7 +133,7 @@ class CO2Emissions(AeromapsModel):
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset
-        historical_dataset_path = pth.join(data.__path__[0], "temperature_historical_dataset.csv")
+        historical_dataset_path = pth.join(climate_data.__path__[0], "temperature_historical_dataset.csv")
         historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
         self.historical_dataset = historical_dataset_df.values
 
@@ -344,6 +344,8 @@ class CO2Emissions(AeromapsModel):
         co2_emissions_freight = self.df["co2_emissions_freight"]
         co2_emissions_passenger = self.df["co2_emissions_passenger"]
         co2_emissions = self.df_climate["co2_emissions"]
+
+        print(co2_emissions.loc[2019])
 
         return (
             co2_emissions_short_range,

@@ -3,14 +3,14 @@ from pandas import read_csv
 import os.path as pth
 
 from aeromaps.models.base import AeromapsModel
-from aeromaps.resources import data
+from aeromaps.resources import climate_data
 
 
 class TotalAircraftDistance(AeromapsModel):
     def __init__(self, name="total_aircraft_distance", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset
-        historical_dataset_path = pth.join(data.__path__[0], "temperature_historical_dataset.csv")
+        historical_dataset_path = pth.join(climate_data.__path__[0], "temperature_historical_dataset.csv")
         historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
         self.historical_dataset = historical_dataset_df.values
 
