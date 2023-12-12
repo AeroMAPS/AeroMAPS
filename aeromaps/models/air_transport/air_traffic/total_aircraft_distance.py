@@ -23,7 +23,7 @@ class TotalAircraftDistance(AeromapsModel):
 
         historical_distance_for_temperature = self.historical_dataset[:, 6]
 
-        for k in range(self.climate_historic_start_year, self.historical_dataset):
+        for k in range(self.climate_historic_start_year, self.historic_start_year):
             self.df_climate.loc[k, "total_aircraft_distance"] = historical_distance_for_temperature[
                 k - self.climate_historic_start_year
             ]
