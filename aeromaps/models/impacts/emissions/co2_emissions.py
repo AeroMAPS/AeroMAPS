@@ -345,8 +345,6 @@ class CO2Emissions(AeromapsModel):
         co2_emissions_passenger = self.df["co2_emissions_passenger"]
         co2_emissions = self.df_climate["co2_emissions"]
 
-        print(co2_emissions.loc[2019])
-
         return (
             co2_emissions_short_range,
             co2_emissions_medium_range,

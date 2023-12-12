@@ -114,7 +114,6 @@ class ERF(AeromapsModel):
         )
         aerosol_erf = self.df_climate["aerosol_erf"]
         total_erf = self.df_climate["total_erf"]
-        print(self.df_climate)
 
         return (
             annual_co2_erf,
