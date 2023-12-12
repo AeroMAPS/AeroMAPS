@@ -153,7 +153,7 @@ class TemperatureGWPStar(AeromapsModel):
             self.climate_historic_start_year, "historical_cumulative_co2_emissions"
         ] = (co2_emissions.loc[self.climate_historic_start_year] / 1000)
         self.df_climate.loc[
-            self.historic_start_year, "historical_cumulative_non_co2_equivalent_emissions"
+            self.climate_historic_start_year, "historical_cumulative_non_co2_equivalent_emissions"
         ] = non_co2_equivalent_emissions[self.climate_historic_start_year]
         for k in range(self.climate_historic_start_year + 1, self.end_year + 1):
             self.df_climate.loc[k, "historical_cumulative_co2_emissions"] = (
