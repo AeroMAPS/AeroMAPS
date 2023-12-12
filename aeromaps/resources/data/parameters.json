@@ -206,7 +206,7 @@
     "electrofuel_share_reference_years": [],
     "electrofuel_share_reference_years_values": [0.0],
     "kerosene_emission_factor_reference_years": [],
-    "kerosene_emission_factor_reference_years_values": [87.5],
+    "kerosene_emission_factor_reference_years_values": [88.7],
     "emission_index_nox_biofuel_2019": 0.01514,
     "emission_index_nox_electrofuel_2019": 0.01514,
     "emission_index_nox_kerosene_2019": 0.01514,
