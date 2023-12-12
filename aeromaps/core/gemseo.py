@@ -225,7 +225,7 @@ class AutoPyDiscipline(MDODiscipline):
             if issubclass(self._get_input_types()[name], pd.Series):
                 if len(val) == len(self.model.df.index):
                     input_vals[name] = pd.Series(val, index=self.model.df.index)
-                #TODO: make this more generic with module approach
+                # TODO: make this more generic with module approach
                 elif len(val) == len(self.model.df_climate.index):
                     input_vals[name] = pd.Series(val, index=self.model.df_climate.index)
                 else:
