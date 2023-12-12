@@ -1,4 +1,5 @@
-﻿Name;Type;Unit;Description;Reference for default value
+﻿Name;Type;Unit;Description;Reference (if applicable)
+climate_historic_start_year;Float;yr;Historic start year for the calculation of climate models
 ask_init;Vector;ASK;Historical number of Available Seat Kilometer (ASK) over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
 energy_consumption_init;Vector;MJ;Historical energy consumption of aviation over 2000-2019;IEA Sankey tool
 freight_init;Vector;ton;Historical freight quantity in mass over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
@@ -6,62 +7,61 @@ pax_init;Vector;PAX;Historical number of passengers (PAX) over 2000-2019;ICAO An
 rpk_init;Vector;RPK;Historical number of Revenue Passenger Kilometer (RPK) over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
 rtk_init;Vector;RTK;Historical number of Revenue Tonne Kilometer (RTK) over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
 total_aircraft_distance_init;Vector;km;Historical total distance travelled by aircraft over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
-agricultural_residues_biomass;Float;EJ;Available biomass in the form of agricultural residues in 2050
-algae_biomass;Float;EJ;Available biomass in the form of algae in 2050
+agricultural_residues_biomass;Float;EJ;Available biomass in the form of agricultural residues in 2050;Statistical analysis of a literature review (see resources/energy_data)
+algae_biomass;Float;EJ;Available biomass in the form of algae in 2050;Statistical analysis of a literature review (see resources/energy_data)
 available_electricity;Float;EJ;Available electricity in 2050
-aviation_biomass_allocated_share;Float;%;Share of the biomass resource allocated to aviation in 2050
-aviation_carbon_budget_allocated_share;Float;%;Share of the carbon budget allocated to aviation over 2020-2050
-aviation_electricity_allocated_share;Float;%;Share of the electricity resource allocated to aviation in 2050
-aviation_equivalentcarbonbudget_allocated_share;Float;%;Share of the equivalent carbon budget allocated to aviation over 2020-2050
-biofuel_atj_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the AtJ pathway for producing biofuel
-biofuel_atj_efficiency_reference_years_values;List;-;Conversion efficiency of the AtJ pathway for producing biofuel for the reference years
-biofuel_atj_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from AtJ pathway
-biofuel_atj_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from AtJ pathway for the reference years
-biofuel_atj_selectivity;Float;-;Selectivity of biofuel from AtJ pathway
-biofuel_ft_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the FT pathway for producing biofuel
-biofuel_ft_efficiency_reference_years_values;List;-;Conversion efficiency of the FT pathway for producing biofuel for the reference years
-biofuel_ft_msw_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from municipal solid waste)
-biofuel_ft_msw_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) for the reference years
-biofuel_ft_msw_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from municipal solid waste)
-biofuel_ft_msw_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from municipal solid waste) for the reference years
-biofuel_ft_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from others)
-biofuel_ft_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) for the reference years
-biofuel_ft_others_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from others)
-biofuel_ft_others_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from others) for the reference years
-biofuel_ft_selectivity;Float;-;Selectivity of biofuel from FT pathway
-biofuel_hefa_fog_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from fats, oils and grease)
-biofuel_hefa_fog_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) for the reference years
-biofuel_hefa_fog_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from fats, oils and grease)
-biofuel_hefa_fog_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) for the reference years
-biofuel_hefa_fuel_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel(oil to fuel)
-biofuel_hefa_fuel_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (oil to fuel) for the reference years
-biofuel_hefa_oil_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil)
-biofuel_hefa_oil_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil) for the reference years
-biofuel_hefa_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from others)
-biofuel_hefa_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) for the reference years
-biofuel_hefa_others_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from others)
-biofuel_hefa_others_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from others) for the reference years
-biofuel_hefa_selectivity;Float;-;Selectivity of biofuel from HEFA pathway
+aviation_biomass_allocated_share;Float;%;Share of the biomass resource allocated to aviation in 2050;Grandfathering approach (aviation 2019 share of energy consumption)
+aviation_carbon_budget_allocated_share;Float;%;Share of the carbon budget allocated to aviation over 2020-2050;Grandfathering approach (aviation 2019 share of CO2 emissions)
+aviation_electricity_allocated_share;Float;%;Share of the electricity resource allocated to aviation in 2050;Grandfathering approach (aviation 2019 share of energy consumption)
+aviation_equivalentcarbonbudget_allocated_share;Float;%;Share of the equivalent carbon budget allocated to aviation over 2020-2050;Grandfathering approach (aviation 2000-2018 share of ERF)
+biofuel_atj_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the AtJ pathway for producing biofuel;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_atj_efficiency_reference_years_values;List;-;Conversion efficiency of the AtJ pathway for producing biofuel for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_atj_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from AtJ pathway;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_atj_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from AtJ pathway for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_atj_selectivity;Float;-;Selectivity of biofuel from AtJ pathway;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the FT pathway for producing biofuel;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_efficiency_reference_years_values;List;-;Conversion efficiency of the FT pathway for producing biofuel for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_msw_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from municipal solid waste);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_msw_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from municipal solid waste) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_msw_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from municipal solid waste);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_msw_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from municipal solid waste) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from FT pathway (from others);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from FT pathway (from others) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_others_share_reference_years;List;yr;Reference years for the share of biofuel production from FT pathway (from others);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_others_share_reference_years_values;List;%;Share of biofuel production from FT pathway (from others) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_ft_selectivity;Float;-;Selectivity of biofuel from FT pathway;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fog_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from fats, oils and grease);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fog_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from fats, oils and grease) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fog_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from fats, oils and grease);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fog_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from fats, oils and grease) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fuel_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel(oil to fuel);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_fuel_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (oil to fuel) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_oil_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_oil_efficiency_reference_years_values;List;-;Conversion efficiency of the HEFA pathway for producing biofuel (biomass to oil) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_others_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from HEFA pathway (from others);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_others_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of biofuel from HEFA pathway (from others) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_others_share_reference_years;List;yr;Reference years for the share of biofuel production from HEFA pathway (from others);Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_others_share_reference_years_values;List;%;Share of biofuel production from HEFA pathway (from others) for the reference years;Statistical analysis of a literature review (see resources/energy_data)
+biofuel_hefa_selectivity;Float;-;Selectivity of biofuel from HEFA pathway;Statistical analysis of a literature review (see resources/energy_data)
 biofuel_share_reference_years;List;yr;Reference years for the share of biofuel in drop-in fuel
 biofuel_share_reference_years_values;List;%;Share of biofuel in drop-in fuel for the reference years
 carbon_dioxyde_removal_2100;Float;GtCO2;Cumulative Carbon Dioxide Removal (CDR) over 2020-2100
-commercial_aviation_coefficient;Float;-;Coefficient to only include commercial aviation (passenger and freight) and exclude private and military aviation
-covid_end_year;Float;yr;Covid-19 end year
-covid_end_year_reference_rpk_ratio;Float;%;Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year
-covid_energy_intensity_per_ask_increase_2020;Float;%;Increase in energy intensity per ASK due to Covid-19 for the start year
-covid_load_factor_2020;Float;%;Load factor due to Covid-19 for the start_year
-covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year
-covid_start_year;Float;yr;Covid-19 start year
-crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050
-direct_co2_erf_2018_reference;Float;mW/m²;Effective radiative due to direct CO2 emissions from commercial aviation in 2018
+commercial_aviation_coefficient;Float;-;Coefficient to only include commercial aviation (passenger and freight) and exclude private and military aviation;S. Gössling and A. Humpe - https://doi.org/10.1016/j.gloenvcha.2020.102194
+covid_end_year;Float;yr;Covid-19 end year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+covid_end_year_reference_rpk_ratio;Float;%;Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+covid_energy_intensity_per_ask_increase_2020;Float;%;Increase in energy intensity per ASK due to Covid-19 for the start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+covid_load_factor_2020;Float;%;Load factor due to Covid-19 for the start_year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+covid_start_year;Float;yr;Covid-19 start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
+crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050;Statistical analysis of a literature review (see resources/energy_data)
 electricity_emission_factor_reference_years;List;yr;Reference years for the electricity emission factor
 electricity_emission_factor_reference_years_values;List;gCO2/kWh;Electricity emission factor for the reference years
-electrofuel_hydrogen_efficiency_reference_years;List;yr;Reference years for the conversion efficiency for producing electrofuel from hydrogen
-electrofuel_hydrogen_efficiency_reference_years_values;List;-;Conversion efficiency for producing electrofuel from hydrogen for the reference years
+electrofuel_hydrogen_efficiency_reference_years;List;yr;Reference years for the conversion efficiency for producing electrofuel from hydrogen;Statistical analysis of a literature review (see resources/energy_data)
+electrofuel_hydrogen_efficiency_reference_years_values;List;-;Conversion efficiency for producing electrofuel from hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 electrofuel_share_reference_years;List;yr;Reference years for the share of electrofuel in drop-in fuel
 electrofuel_share_reference_years_values;List;%;Share of electrofuel in drop-in fuel for the reference years
-electrolysis_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the electrolysis pathway for producing hydrogen
-electrolysis_efficiency_reference_years_values;List;-;Conversion efficiency of the electrolysis pathway for producing hydrogen for the reference years
+electrolysis_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the electrolysis pathway for producing hydrogen;Statistical analysis of a literature review (see resources/energy_data)
+electrolysis_efficiency_reference_years_values;List;-;Conversion efficiency of the electrolysis pathway for producing hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 emission_index_h2o_biofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for biofuel combustion
 emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for electrofuel combustion
 emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion
@@ -69,31 +69,31 @@ emission_index_h2o_kerosene;Float;kg_H2O/kg_fuel;Emission index of water vapor f
 emission_index_nox_biofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion in 2019
 emission_index_nox_dropin_fuel_evolution;Float;%;Annual evolution of NOx emission index for drop-in fuel combustion due to engine evolution
 emission_index_nox_electrofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion in 209
-emission_index_nox_hydrogen_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion in 2019
+emission_index_nox_hydrogen_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion in 2019;Calculation based on Anwar Khan et al. - https://doi.org/10.3390/atmos13101660
 emission_index_nox_hydrogen_evolution;Float;%;Annual evolution of NOx emission index for hydrogen fuel combustion due to engine evolution
-emission_index_nox_kerosene_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion in 2019
+emission_index_nox_kerosene_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion in 2019;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 emission_index_soot_biofuel;Float;kg_BC/kg_fuel;Emission index of soot for biofuel combustion
 emission_index_soot_dropin_fuel_evolution;Float;%;Annual evolution of soot emission index for drop-in fuel combustion due to engine evolution
 emission_index_soot_electrofuel;Float;kg_BC/kg_fuel;Emission index of soot for electrofuel combustion
 emission_index_soot_hydrogen;Float;kg_BC/kg_fuel;Emission index of soot for hydrogen combustion
-emission_index_soot_kerosene;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion
+emission_index_soot_kerosene;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 emission_index_sulfur_biofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for biofuel combustion
 emission_index_sulfur_electrofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for electrofuel combustion
 emission_index_sulfur_hydrogen;Float;kg_SOx/kg_fuel;Emission index of sulfur for hydrogen combustion
-emission_index_sulfur_kerosene;Float;kg_SOx/kg_fuel;Emission index of sulfur for kerosene combustion
+emission_index_sulfur_kerosene;Float;kg_SOx/kg_fuel;Emission index of sulfur for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 end_year;Float;yr;End year for the calculation
 energy_per_ask_long_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
 energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
 energy_per_ask_short_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
-erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation
-erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation
-erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation
-erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation
-erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation
+erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet
-fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050
-forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050
-freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019
+fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050;Statistical analysis of a literature review (see resources/energy_data)
+forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050;Statistical analysis of a literature review (see resources/energy_data)
+freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019;ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 cagr_passenger_short_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger short-range market
 cagr_passenger_short_range_reference_periods_values;List;%;Compound annual growth rate for passenger short-range market for the reference periods
 cagr_passenger_medium_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger medium-range market
@@ -105,41 +105,41 @@ cagr_freight_reference_periods_values;List;%;Compound annual growth rate for fre
 reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
 reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
 historic_start_year;Float;yr;Historic start year for the data
-hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage
+hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_ccs_share_reference_years_values;List;%;Share of hydrogen production from coal pathway with carbon capture and storage for the reference years
-hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage
+hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_electrolysis_share_reference_years;List;yr;Reference years for the share of hydrogen production from electrolysis pathway
 hydrogen_electrolysis_share_reference_years_values;List;%;Share of hydrogen production from electrolysis pathway for the reference years
 hydrogen_final_market_share_long_range;Float;%;Share of hydrogen aircraft in the passenger long-range market
 hydrogen_final_market_share_medium_range;Float;%;Share of hydrogen aircraft in the passenger medium-range market
 hydrogen_final_market_share_short_range;Float;%;Share of hydrogen aircraft in the passenger short-range market
-hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage
+hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway with carbon capture and storage
 hydrogen_gas_ccs_share_reference_years_values;List;%;Share of hydrogen production from gas pathway with carbon capture and storage for the reference years
-hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage
+hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway without carbon capture and storage
 hydrogen_gas_share_reference_years_values;List;%;Share of hydrogen production from gas pathway without carbon capture and storage for the reference years
 hydrogen_introduction_year_long_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for long-range market
 hydrogen_introduction_year_medium_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for medium-range market
 hydrogen_introduction_year_short_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for short-range market
-hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production from HEFA pathway
+hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production from HEFA pathway;Statistical analysis of a literature review (see resources/energy_data)
 kerosene_emission_factor_reference_years;List;yr;Reference years for the emission factor of fossil kerosene
 kerosene_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of fossil kerosene for the reference years
 lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
 lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
 lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen
 lhv_kerosene;Float;MJ/kg;Lower Heating Value of kerosene
-lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose
-liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen
-liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years
+lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose;Statistical analysis of a literature review (see resources/energy_data)
+liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen;Statistical analysis of a literature review (see resources/energy_data)
+liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 load_factor_end_year;Float;%;Value of mean aircraft load factor in the considered end year
 long_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger long-range market in 2019
 long_range_rpk_share_2019;Float;%;Share of RPK from long-range market in 2019
 medium_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger medium-range market in 2019
 medium_range_rpk_share_2019;Float;%;Share of RPK from medium-range market in 2019
 net_carbon_budget;Float;GtCO2;Considered (net) carbon budget 
-oil_crops_biomass_share;Float;%;Share of energy crops biomass from vegetable oils
+oil_crops_biomass_share;Float;%;Share of energy crops biomass from vegetable oils;Statistical analysis of a literature review (see resources/energy_data)
 operations_contrails_duration;Float;yr;Duration for implementing 98% of contrail operational improvements to reduce contrail climate impacts
 operations_contrails_final_gain;Float;%;Final impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
 operations_contrails_final_overconsumption;Float;%;Final impact of contrail operational improvements in terms of percentage increase in fuel consumption
@@ -171,10 +171,10 @@ short_range_regionalturboprop_share_2030;Float;%;Share of regional turboprop arc
 short_range_regionalturboprop_share_2040;Float;%;Share of regional turboprop architectures in passenger short-range market in 2040
 short_range_regionalturboprop_share_2050;Float;%;Share of regional turboprop architectures in passenger short-range market in 2050
 short_range_rpk_share_2019;Float;%;Share of RPK from short-range market in 2019
-sugarystarchy_crops_biomass_share;Float;%;Share of energy crops biomass from sugar and starch-based materials
+sugarystarchy_crops_biomass_share;Float;%;Share of energy crops biomass from sugar and starch-based materials;Statistical analysis of a literature review (see resources/energy_data)
 T_nonCO2;Float;°C;Characteristic temperature for integrating non-CO2 effects into gross carbon budget calculation
 TCRE;Float;°C/GtCO2;Transient Climate Response to cumulative Emissions of carbon dioxide coefficient
-waste_biomass;Float;EJ;Available biomass in the form of waste in 2050
+waste_biomass;Float;EJ;Available biomass in the form of waste in 2050;Statistical analysis of a literature review (see resources/energy_data)
 world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019
 world_ghg_emissions_2019;Float;GtCO2-eq;World greenhouse gas emissions in 2019
 aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
