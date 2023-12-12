@@ -5,7 +5,6 @@ freight_init;Vector;ton;Historical freight quantity in mass over 2000-2019
 pax_init;Vector;PAX;Historical number of passengers (PAX) over 2000-2019
 rpk_init;Vector;RPK;Historical number of Revenue Passenger Kilometer (RPK) over 2000-2019
 rtk_init;Vector;RTK;Historical number of Revenue Tonne Kilometer (RTK) over 2000-2019
-temperature_increase_from_aviation_init;Vector;°C;Historical temperature increase from air transport over 2000-2019
 total_aircraft_distance_init;Vector;km;Historical total distance travelled by aircraft over 2000-2019
 agricultural_residues_biomass;Float;EJ;Available biomass in the form of agricultural residues in 2050
 algae_biomass;Float;EJ;Available biomass in the form of algae in 2050
