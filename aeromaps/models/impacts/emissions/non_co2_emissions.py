@@ -330,8 +330,10 @@ class NonCO2Emissions(AeromapsModel):
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset
-        historical_dataset_path = pth.join(climate_data.__path__[0], "temperature_historical_dataset.csv")
-        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
+        historical_dataset_path = pth.join(
+            climate_data.__path__[0], "temperature_historical_dataset.csv"
+        )
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
         self.historical_dataset = historical_dataset_df.values
 
     def compute(
@@ -368,6 +370,8 @@ class NonCO2Emissions(AeromapsModel):
         historical_h2o_emissions_for_temperature = self.historical_dataset[:, 3]
         historical_soot_emissions_for_temperature = self.historical_dataset[:, 4]
         historical_sulfur_emissions_for_temperature = self.historical_dataset[:, 5]
+
+        print(self.historical_dataset)
 
         # Calculation
         for k in range(self.climate_historic_start_year, self.historic_start_year):
@@ -459,8 +463,8 @@ class NonCO2Emissions(AeromapsModel):
             )
 
         soot_emissions = self.df_climate.loc[:, "soot_emissions"]
-        h2o_emissions = self.df_climate["h2o_emissions"]
-        nox_emissions = self.df_climate["nox_emissions"]
-        sulfur_emissions = self.df_climate["sulfur_emissions"]
+        h2o_emissions = self.df_climate.loc[:, "h2o_emissions"]
+        nox_emissions = self.df_climate.loc[:, "nox_emissions"]
+        sulfur_emissions = self.df_climate.loc[:, "sulfur_emissions"]
 
         return soot_emissions, h2o_emissions, nox_emissions, sulfur_emissions

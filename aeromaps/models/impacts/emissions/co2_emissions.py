@@ -133,8 +133,10 @@ class CO2Emissions(AeromapsModel):
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset
-        historical_dataset_path = pth.join(climate_data.__path__[0], "temperature_historical_dataset.csv")
-        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";")
+        historical_dataset_path = pth.join(
+            climate_data.__path__[0], "temperature_historical_dataset.csv"
+        )
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
         self.historical_dataset = historical_dataset_df.values
 
     def compute(
