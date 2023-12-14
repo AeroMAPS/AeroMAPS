@@ -107,9 +107,18 @@ class AeromapsProcess(object):
         self.data["years"]["full_years"] = list(
             range(self.parameters.historic_start_year, self.parameters.end_year + 1)
         )
+        self.data["years"]["climate_full_years"] = list(
+            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
+        )
         self.data["years"]["historic_years"] = list(
             range(
                 self.parameters.historic_start_year,
+                self.parameters.prospection_start_year,
+            )
+        )
+        self.data["years"]["climate_historic_years"] = list(
+            range(
+                self.parameters.climate_historic_start_year,
                 self.parameters.prospection_start_year,
             )
         )
