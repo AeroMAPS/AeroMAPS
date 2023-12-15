@@ -257,7 +257,7 @@ class AeromapsProcess(object):
             if hasattr(disc.model, "df_climate") and disc.model.df_climate.columns.size != 0:
                 if first_computation:
                     self.data["climate_outputs"] = pd.concat(
-                        [self.data["climate_outputs"], disc.model.df], axis=1
+                        [self.data["climate_outputs"], disc.model.df_climate], axis=1
                     )
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
