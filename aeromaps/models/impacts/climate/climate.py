@@ -14,6 +14,22 @@ class TemperatureGWPStar(AeromapsModel):
 
     def compute(
         self,
+        contrails_gwpstar_variation_duration: float = 0.0,
+        contrails_gwpstar_alpha_coefficient: float = 0.0,
+        nox_short_term_o3_increase_gwpstar_variation_duration: float = 0.0,
+        nox_short_term_o3_increase_gwpstar_alpha_coefficient: float = 0.0,
+        nox_long_term_o3_decrease_gwpstar_variation_duration: float = 0.0,
+        nox_long_term_o3_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_ch4_decrease_gwpstar_variation_duration: float = 0.0,
+        nox_ch4_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration: float = 0.0,
+        nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        soot_gwpstar_variation_duration: float = 0.0,
+        soot_gwpstar_alpha_coefficient: float = 0.0,
+        h2o_gwpstar_variation_duration: float = 0.0,
+        h2o_gwpstar_alpha_coefficient: float = 0.0,
+        sulfur_gwpstar_variation_duration: float = 0.0,
+        sulfur_gwpstar_alpha_coefficient: float = 0.0,
         contrails_erf: pd.Series = pd.Series(dtype="float64"),
         nox_short_term_o3_increase_erf: pd.Series = pd.Series(dtype="float64"),
         nox_long_term_o3_decrease_erf: pd.Series = pd.Series(dtype="float64"),
@@ -53,8 +69,8 @@ class TemperatureGWPStar(AeromapsModel):
         contrails_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=contrails_erf,
-            gwpstar_variation_duration=1.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=contrails_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=contrails_gwpstar_alpha_coefficient,
         )
         self.df_climate["contrails_equivalent_emissions"] = contrails_equivalent_emissions
 
@@ -62,8 +78,8 @@ class TemperatureGWPStar(AeromapsModel):
         nox_short_term_o3_increase_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_short_term_o3_increase_erf,
-            gwpstar_variation_duration=1.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=nox_short_term_o3_increase_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=nox_short_term_o3_increase_gwpstar_alpha_coefficient,
         )
         self.df_climate[
             "nox_short_term_o3_increase_equivalent_emissions"
@@ -73,8 +89,8 @@ class TemperatureGWPStar(AeromapsModel):
         nox_long_term_o3_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_long_term_o3_decrease_erf,
-            gwpstar_variation_duration=20.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=nox_long_term_o3_decrease_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=nox_long_term_o3_decrease_gwpstar_alpha_coefficient,
         )
         self.df_climate[
             "nox_long_term_o3_decrease_equivalent_emissions"
@@ -84,8 +100,8 @@ class TemperatureGWPStar(AeromapsModel):
         nox_ch4_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_ch4_decrease_erf,
-            gwpstar_variation_duration=20.0,
-            alpha_coefficient=0.25,
+            gwpstar_variation_duration=nox_ch4_decrease_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=nox_ch4_decrease_gwpstar_alpha_coefficient,
         )
         self.df_climate[
             "nox_ch4_decrease_equivalent_emissions"
@@ -96,8 +112,8 @@ class TemperatureGWPStar(AeromapsModel):
             GWPStarEquivalentEmissionsFunction(
                 self,
                 emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
-                gwpstar_variation_duration=20.0,
-                alpha_coefficient=0.0,
+                gwpstar_variation_duration=nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration,
+                gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
             )
         )
         self.df_climate[
@@ -108,8 +124,8 @@ class TemperatureGWPStar(AeromapsModel):
         soot_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=soot_erf,
-            gwpstar_variation_duration=1.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=soot_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=soot_gwpstar_alpha_coefficient,
         )
         self.df_climate["soot_equivalent_emissions"] = soot_equivalent_emissions
 
@@ -117,8 +133,8 @@ class TemperatureGWPStar(AeromapsModel):
         h2o_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=h2o_erf,
-            gwpstar_variation_duration=20.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=h2o_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=h2o_gwpstar_alpha_coefficient,
         )
         self.df_climate["h2o_equivalent_emissions"] = h2o_equivalent_emissions
 
@@ -126,8 +142,8 @@ class TemperatureGWPStar(AeromapsModel):
         sulfur_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=sulfur_erf,
-            gwpstar_variation_duration=1.0,
-            alpha_coefficient=0.0,
+            gwpstar_variation_duration=sulfur_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=sulfur_gwpstar_alpha_coefficient,
         )
         self.df_climate["sulfur_equivalent_emissions"] = sulfur_equivalent_emissions
 
