@@ -281,6 +281,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -298,7 +299,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_equivalent_emissions_2050 = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
         world_equivalent_carbon_budget = float(
             self.float_outputs["equivalent_gross_carbon_budget_2050"]
@@ -445,6 +446,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
     def update(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -458,7 +460,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_equivalent_emissions_2050 = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
         world_equivalent_carbon_budget = float(
             self.float_outputs["equivalent_gross_carbon_budget_2050"]
@@ -1213,6 +1215,7 @@ class MultidisciplinaryAssessmentPlot:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -1247,7 +1250,7 @@ class MultidisciplinaryAssessmentPlot:
             self.float_outputs["aviation_equivalent_carbon_budget"]
         )
         cumulative_total_equivalent_emissions = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
 
         categories = [
@@ -1376,6 +1379,7 @@ class MultidisciplinaryAssessmentPlot:
     def update(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -1405,7 +1409,7 @@ class MultidisciplinaryAssessmentPlot:
             self.float_outputs["aviation_equivalent_carbon_budget"]
         )
         cumulative_total_equivalent_emissions = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
 
         categories = [

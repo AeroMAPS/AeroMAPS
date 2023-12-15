@@ -238,12 +238,12 @@ class DetailedERF(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """ERF calculation for helping plot display."""
 
-        self.df["co2_h2o_erf"] = co2_erf + h2o_erf
-        self.df["co2_h2o_nox_erf"] = co2_erf + h2o_erf + nox_erf
-        self.df["co2_h2o_nox_contrails_erf"] = co2_erf + h2o_erf + nox_erf + contrails_erf
+        self.df_climate["co2_h2o_erf"] = co2_erf + h2o_erf
+        self.df_climate["co2_h2o_nox_erf"] = co2_erf + h2o_erf + nox_erf
+        self.df_climate["co2_h2o_nox_contrails_erf"] = co2_erf + h2o_erf + nox_erf + contrails_erf
 
-        co2_h2o_erf = self.df["co2_h2o_erf"]
-        co2_h2o_nox_erf = self.df["co2_h2o_nox_erf"]
-        co2_h2o_nox_contrails_erf = self.df["co2_h2o_nox_contrails_erf"]
+        co2_h2o_erf = self.df_climate["co2_h2o_erf"]
+        co2_h2o_nox_erf = self.df_climate["co2_h2o_nox_erf"]
+        co2_h2o_nox_contrails_erf = self.df_climate["co2_h2o_nox_contrails_erf"]
 
         return co2_h2o_erf, co2_h2o_nox_erf, co2_h2o_nox_contrails_erf
