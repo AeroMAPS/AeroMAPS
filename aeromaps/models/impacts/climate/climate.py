@@ -108,13 +108,11 @@ class TemperatureGWPStar(AeromapsModel):
         ] = nox_ch4_decrease_equivalent_emissions
 
         ## NOx stratospheric water vapor decrease
-        nox_stratospheric_water_vapor_decrease_equivalent_emissions = (
-            GWPStarEquivalentEmissionsFunction(
-                self,
-                emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
-                gwpstar_variation_duration=nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration,
-                gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
-            )
+        nox_stratospheric_water_vapor_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
+            self,
+            emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
+            gwpstar_variation_duration=nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration,
+            gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
         )
         self.df_climate[
             "nox_stratospheric_water_vapor_decrease_equivalent_emissions"

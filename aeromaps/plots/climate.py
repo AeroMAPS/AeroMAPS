@@ -103,7 +103,9 @@ class DistributionEffectiveRadiativeForcingPlot:
     def create_plot(self):
         (self.line_co2_erf_share,) = self.ax.plot(
             self.years,
-            self.df_climate.loc[self.years, "co2_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100,
+            self.df_climate.loc[self.years, "co2_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100,
             color="red",
             linestyle="-",
             label="CO2",
@@ -112,7 +114,9 @@ class DistributionEffectiveRadiativeForcingPlot:
 
         (self.line_h2o_erf_share,) = self.ax.plot(
             self.years,
-            self.df_climate.loc[self.years, "h2o_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100,
+            self.df_climate.loc[self.years, "h2o_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100,
             color="lightskyblue",
             linestyle="-",
             label="Water vapour",
@@ -121,7 +125,9 @@ class DistributionEffectiveRadiativeForcingPlot:
 
         (self.line_nox_erf_share,) = self.ax.plot(
             self.years,
-            self.df_climate.loc[self.years, "nox_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100,
+            self.df_climate.loc[self.years, "nox_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100,
             color="yellowgreen",
             linestyle="-",
             label="NOx",
@@ -130,7 +136,9 @@ class DistributionEffectiveRadiativeForcingPlot:
 
         (self.line_contrails_erf_share,) = self.ax.plot(
             self.years,
-            self.df_climate.loc[self.years, "contrails_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100,
+            self.df_climate.loc[self.years, "contrails_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100,
             color="gold",
             linestyle="-",
             label="Contrails",
@@ -139,7 +147,9 @@ class DistributionEffectiveRadiativeForcingPlot:
 
         (self.line_aerosol_erf_share,) = self.ax.plot(
             self.years,
-            self.df_climate.loc[self.years, "aerosol_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100,
+            self.df_climate.loc[self.years, "aerosol_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100,
             color="darkblue",
             linestyle="-",
             label="Aerosols",
@@ -169,17 +179,35 @@ class DistributionEffectiveRadiativeForcingPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_co2_erf_share.set_ydata(self.df_climate.loc[self.years, "co2_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100)
-
-        self.line_h2o_erf_share.set_ydata(self.df_climate.loc[self.years, "h2o_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100)
-
-        self.line_nox_erf_share.set_ydata(self.df_climate.loc[self.years, "nox_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100)
-
-        self.line_contrails_erf_share.set_ydata(
-            self.df_climate.loc[self.years, "contrails_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100
+        self.line_co2_erf_share.set_ydata(
+            self.df_climate.loc[self.years, "co2_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100
         )
 
-        self.line_aerosol_erf_share.set_ydata(self.df_climate.loc[self.years, "aerosol_erf"] / self.df_climate.loc[self.years, "total_erf"] * 100)
+        self.line_h2o_erf_share.set_ydata(
+            self.df_climate.loc[self.years, "h2o_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100
+        )
+
+        self.line_nox_erf_share.set_ydata(
+            self.df_climate.loc[self.years, "nox_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100
+        )
+
+        self.line_contrails_erf_share.set_ydata(
+            self.df_climate.loc[self.years, "contrails_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100
+        )
+
+        self.line_aerosol_erf_share.set_ydata(
+            self.df_climate.loc[self.years, "aerosol_erf"]
+            / self.df_climate.loc[self.years, "total_erf"]
+            * 100
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -257,7 +285,9 @@ class EquivalentEmissionsPlot:
             self.df_climate.loc[self.prospective_years, "non_co2_equivalent_emissions"]
         )
 
-        self.line_total.set_ydata(self.df_climate.loc[self.prospective_years, "total_equivalent_emissions"])
+        self.line_total.set_ydata(
+            self.df_climate.loc[self.prospective_years, "total_equivalent_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -442,7 +472,8 @@ class TemperatureIncreaseFromAirTransportPlot:
 
         (self.line_temperature,) = self.ax.plot(
             self.prospective_years,
-            self.df_climate.loc[self.prospective_years, "temperature_increase_from_aviation"] * 1000,
+            self.df_climate.loc[self.prospective_years, "temperature_increase_from_aviation"]
+            * 1000,
             color="blue",
             linestyle="-",
             label="Projections",

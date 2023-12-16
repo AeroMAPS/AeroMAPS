@@ -174,7 +174,9 @@ class AirTransportCO2EmissionsPlot:
             self.df["co2_emissions_including_energy"]
         )
 
-        self.line_co2_emissions.set_ydata(self.df_climate.loc[self.prospective_years, "co2_emissions"])
+        self.line_co2_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
+        )
 
         self.line_co2_emissions_offset.set_ydata(
             self.df_climate.loc[self.prospective_years, "co2_emissions"]
@@ -370,7 +372,9 @@ class AirTransportClimateImpactsPlot:
 
         self.line_co2_h2o_nox_erf.set_ydata(self.df_climate.loc[self.years, "co2_h2o_nox_erf"])
 
-        self.line_co2_h2o_nox_contrails_erf.set_ydata(self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"])
+        self.line_co2_h2o_nox_contrails_erf.set_ydata(
+            self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"]
+        )
 
         self.line_aerosol_erf.set_ydata(self.df_climate.loc[self.years, "aerosol_erf"])
 

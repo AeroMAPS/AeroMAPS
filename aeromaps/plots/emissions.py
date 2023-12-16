@@ -127,7 +127,9 @@ class DirectH2OEmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_h2o_emissions.set_ydata(self.df_climate.loc[self.prospective_years, "h2o_emissions"])
+        self.line_h2o_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "h2o_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -190,7 +192,9 @@ class DirectNOxEmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_nox_emissions.set_ydata(self.df_climate.loc[self.prospective_years, "nox_emissions"])
+        self.line_nox_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "nox_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -318,7 +322,9 @@ class DirectSootEmissionsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_soot_emissions.set_ydata(self.df_climate.loc[self.prospective_years, "soot_emissions"])
+        self.line_soot_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "soot_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
