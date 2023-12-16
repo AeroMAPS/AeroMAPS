@@ -78,13 +78,13 @@ class CarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_co2_emissions_2050, 1))
-            + " GtCO2\ncorresponding to\n "
+            + " GtCO₂\ncorresponding to\n "
             + str(round(global_cumulative_co2_emissions_2050 / world_carbon_budget * 100, 1))
             + "% of WCB",
             str(round(aviation_carbon_budget_allocated_share, 1))
             + "% of WCB\ni.e.\n"
             + str(round(aviation_carbon_budget, 1))
-            + " GtCO2",
+            + " GtCO₂",
         ]
 
         p = wedges[0]
@@ -124,7 +124,7 @@ class CarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 facecolor=color,
-                label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
+                label="Cumulative CO₂ emissions of aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
@@ -213,13 +213,13 @@ class CarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_co2_emissions_2050, 1))
-            + " GtCO2\ncorresponding to\n "
+            + " GtCO₂\ncorresponding to\n "
             + str(round(global_cumulative_co2_emissions_2050 / world_carbon_budget * 100, 1))
             + "% of WCB",
             str(round(aviation_carbon_budget_allocated_share, 1))
             + "% of WCB\ni.e.\n"
             + str(round(aviation_carbon_budget, 1))
-            + " GtCO2",
+            + " GtCO₂",
         ]
 
         p = wedges[0]
@@ -259,7 +259,7 @@ class CarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 color=color,
-                label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
+                label="Cumulative CO₂ emissions of aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
@@ -367,7 +367,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO2-we\ncorresponding to\n "
+            + " GtCO₂-we\ncorresponding to\n "
             + str(
                 round(
                     global_cumulative_equivalent_emissions_2050
@@ -380,7 +380,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
             + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO2-we",
+            + " GtCO₂-we",
         ]
 
         p = wedges[0]
@@ -528,7 +528,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO2-we\ncorresponding to\n "
+            + " GtCO₂-we\ncorresponding to\n "
             + str(
                 round(
                     global_cumulative_equivalent_emissions_2050
@@ -541,7 +541,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
             + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO2-we",
+            + " GtCO₂-we",
         ]
 
         p = wedges[0]
@@ -1255,7 +1255,7 @@ class MultidisciplinaryAssessmentPlot:
 
         categories = [
             "Climate\n(Total)",
-            "Climate\n(CO2)",
+            "Climate\n(CO₂)",
             "Biomass",
             "Electricity",
         ]
@@ -1414,7 +1414,7 @@ class MultidisciplinaryAssessmentPlot:
 
         categories = [
             "Climate\n(Total)",
-            "Climate\n(CO2)",
+            "Climate\n(CO₂)",
             "Biomass",
             "Electricity",
         ]
