@@ -435,87 +435,87 @@ solid_waste_biomass;Float;EJ;Available biomass in the form of municipal solid wa
 sugarystarchy_crops_biomass;Float;EJ;Available biomass in the form of sugar and starch-based materials from energy crops in 2050
 
 electrolyser_capex_reference_years;List;yr;Reference years for the Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity
-electrolyser_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity for the reference years
+electrolyser_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrolyser_fixed_opex_reference_years;List;yr;Reference years for teh annual operational (fixed) expenditures for electrolysis plant built
-electrolyser_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built for the reference years
+electrolyser_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrolyser_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
-electrolyser_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years
-gas_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
-gas_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
-coal_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
-coal_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use)
-gas_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
-coal_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system)
+electrolyser_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+gas_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
+gas_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
+coal_ccs_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
+coal_load_factor;Float;%;Plant operational load factor (actual use/theoretical maximal use);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
+gas_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
+coal_ccs_ccs_efficiency;Float;%;Carbon capture rate (carbon captured/carbon emitted without capture system);After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_ccs_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for gas steam methane reforming plant (with CCS) in € per kg/day of nominal hydrogen production capacity
-gas_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+gas_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_ccs_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS)
-gas_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) for the reference years
+gas_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (with CCS) for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_ccs_efficiency_reference_years;List;yr;Reference years for the gas steam methane reforming (with CCS) energy conversion efficiency
-gas_ccs_efficiency_reference_years_values;List;%;Gas steam methane reforming (with CCS) energy conversion efficiency for the reference years
+gas_ccs_efficiency_reference_years_values;List;%;Gas steam methane reforming (with CCS) energy conversion efficiency for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for gas steam methane reforming plant (without CCS) in € per kg/day of nominal hydrogen production capacity
-gas_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+gas_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS)
-gas_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) for the reference years
+gas_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for gas steam methane reforming plant (without CCS) for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 gas_efficiency_reference_years;List;yr;Reference years for the gas steam methane reforming (without CCS) energy conversion efficiency
-gas_efficiency_reference_years_values;List;%;Gas steam methane reforming (without CCS) energy conversion efficiency for the reference years
+gas_efficiency_reference_years_values;List;%;Gas steam methane reforming (without CCS) energy conversion efficiency for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_ccs_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for coal gasification plant (with CCS) in € per kg/day of nominal hydrogen production capacity
-coal_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+coal_ccs_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (with CCS) in € per kg/day of nominal hydrogen production capacity for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_ccs_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for coal gasification plant (with CCS)
-coal_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (with CCS) for the reference years
+coal_ccs_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (with CCS) for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_ccs_efficiency_reference_years;List;yr;Reference years for the coal gasification (with CCS) energy conversion efficiency
-coal_ccs_efficiency_reference_years_values;List;%;Coal gasification (with CCS) energy conversion efficiency for the reference years
+coal_ccs_efficiency_reference_years_values;List;%;Coal gasification (with CCS) energy conversion efficiency for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_eis_capex_reference_years;List;yr;Reference years for the Capital expenditures for coal gasification plant (without CCS) in € per kg/day of nominal hydrogen production capacity
-coal_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years
+coal_eis_capex_reference_years_values;List;€/(kg/day);Capital expenditures for coal gasification plant (without CCS) in € per kg/day of nominal hydrogen production capacity for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_eis_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for coal gasification plant (without CCS)
-coal_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (without CCS) for the reference years
+coal_eis_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for coal gasification plant (without CCS) for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_efficiency_reference_years;List;yr;Reference years for the coal gasification (without CCS) energy conversion efficiency
-coal_efficiency_reference_years_values;List;%;Coal gasification (without CCS) energy conversion efficiency for the reference years
+coal_efficiency_reference_years_values;List;%;Coal gasification (without CCS) energy conversion efficiency for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 ccs_cost_reference_years;List;yr;Reference years for the carbon capture and storage cost
-ccs_cost_reference_years_values;List;€/kg;Carbon capture and storage cost for the reference years
+ccs_cost_reference_years_values;List;€/kg;Carbon capture and storage cost for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 liquefier_capex_reference_years;List;yr;Reference years for the Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity
-liquefier_capex_reference_years_values;List;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity for the reference years
-transport_cost_ratio;Float;%;Extra cost attributed to new hydrogen logistics
+liquefier_capex_reference_years_values;List;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+transport_cost_ratio;Float;%;Extra cost attributed to new hydrogen logistics;After https://www.sciencedirect.com/science/article/pii/S0360319921043184
 electrofuel_capex_reference_years;List;yr;Reference years for the Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity
-electrofuel_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity for the reference years
+electrofuel_capex_reference_years_values;List;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for electrofuel plant built
-electrofuel_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built for the reference years
+electrofuel_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
-electrofuel_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years
+electrofuel_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_specific_co2_reference_years;List;yr;Reference years for the CO2 required per kg of of e-fuel produced for plant built
-electrofuel_specific_co2_reference_years_values;List;kg/kg;CO2 required per kg of of e-fuel produced for plant built for the reference years
+electrofuel_specific_co2_reference_years_values;List;kg/kg;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_cost_reference_years;List;yr;Reference years for the industrial wholesale electricity market price
-electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years
+electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_load_factor;Float;%;Electricity input load factor
 co2_cost_reference_years;List;yr;Reference years for the CO2 market price for e-fuel operations procurement
-co2_cost_reference_years_values;List;€/kg;CO2 market price for e-fuel operations procurement for the reference years
+co2_cost_reference_years_values;List;€/kg;CO2 market price for e-fuel operations procurement for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 carbon_tax_reference_years;List;yr;Reference years for the carbon flat tax applied
-carbon_tax_reference_years_values;List;€/ton;Carbon flat tax applied for the reference years
+carbon_tax_reference_years_values;List;€/ton;Carbon flat tax applied for the reference years;After  doi:10.24187/ecostat.2019.510t.1995
 gas_cost_reference_years;List;yr;Reference years for the industrial wholesale gas market price
-gas_cost_reference_years_values;List;€/kWh;Industrial wholesale gas market price for the reference years
+gas_cost_reference_years_values;List;€/kWh;Industrial wholesale gas market price for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 coal_cost_reference_years;List;yr;Reference years for the industrial wholesale coal market price
-coal_cost_reference_years_values;List;€/kWh;Industrial wholesale coal market price for the reference years
+coal_cost_reference_years_values;List;€/kWh;Industrial wholesale coal market price for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 kerosene_price_reference_years;List;yr;Reference years for the kerosene (fossil) market price
-kerosene_price_reference_years_values;List;€/L;Kerosene (fossil) market price for the reference years
+kerosene_price_reference_years_values;List;€/L;Kerosene (fossil) market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_fog_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP
-biofuel_hefa_fog_mfsp_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years
+biofuel_hefa_fog_mfsp_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_others_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP
-biofuel_hefa_others_mfsp_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years
+biofuel_hefa_others_mfsp_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_ft_others_mfsp_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP
-biofuel_ft_others_mfsp_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years
+biofuel_ft_others_mfsp_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_ft_msw_mfsp_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP
-biofuel_ft_msw_mfsp_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years
+biofuel_ft_msw_mfsp_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_atj_mfsp_reference_years;List;yr;Reference years for the biofuel (AtJ) MFSP
-biofuel_atj_mfsp_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years
+biofuel_atj_mfsp_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_fog_capex_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) capex
-biofuel_hefa_fog_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa FOG) capex for the reference years
+biofuel_hefa_fog_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa FOG) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_others_capex_reference_years;List;yr;Reference years for the biofuel (Hefa Others) capex
-biofuel_hefa_others_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa Others) capex for the reference years
+biofuel_hefa_others_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa Others) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_ft_others_capex_reference_years;List;yr;Reference years for the biofuel (F/T Others) capex
-biofuel_ft_others_capex_reference_years_values;List;€/(kg/day);Biofuel (F/T Others) capex for the reference years
+biofuel_ft_others_capex_reference_years_values;List;€/(kg/day);Biofuel (F/T Others) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_ft_msw_capex_reference_years;List;yr;Reference years for the biofuel (FT MSW) capex
-biofuel_ft_msw_capex_reference_years_values;List;€/(kg/day);Biofuel (FT MSW) capex for the reference years
+biofuel_ft_msw_capex_reference_years_values;List;€/(kg/day);Biofuel (FT MSW) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_atj_capex_reference_years;List;yr;Reference years for the biofuel (AtJ) capex
-biofuel_atj_capex_reference_years_values;List;€/(kg/day);Biofuel (AtJ) capex for the reference years
+biofuel_atj_capex_reference_years_values;List;€/(kg/day);Biofuel (AtJ) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 social_discount_rate;Float;%;Social discount rate used for inter-temporal economic analyses
 biofuel_atj_capex;Vector;€/(kg/day);Biofuel (AtJ) capex evolution
 biofuel_atj_mfsp;Vector;€/L;Biofuel (AtJ) MFSP evolution
@@ -561,8 +561,8 @@ carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Me
 carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
 carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Carbon abatement cost (HEFA-FOG) evolution
 carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Carbon abatement cost (HEFA-Others) evolution
-carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution
-ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants (evolution)
+carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution;
+ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants (evolution);
 abatement_potential_atj;Vector;tCO2e;Total carbon abatement potential of ATJ if allocated resource is used to 100% (evolution)
 abatement_potential_electrofuel;Vector;tCO2e;Total carbon abatement potential of Electrofuel if allocated resource is used to 100% (evolution)
 abatement_potential_ft_msw;Vector;tCO2e;Total carbon abatement potential of FT-MSW if allocated resource is used to 100% (evolution)
@@ -570,22 +570,22 @@ abatement_potential_ft_others;Vector;tCO2e;Total carbon abatement potential of F
 abatement_potential_hefa_fog;Vector;tCO2e;Total carbon abatement potential of Hefa-FOG if allocated resource is used to 100% (evolution)
 abatement_potential_hefa_others;Vector;tCO2e;Total carbon abatement potential of Hefa-Others if allocated resource is used to 100% (evolution)
 abatement_potential_hydrogen_electrolysis;Vector;tCO2e;Total carbon abatement potential of hydrogen with electrolysis if allocated resource is used to 100% (evolution)
-co2_market_price;Vector;€/kgCO2e;CO2 market price is used as en input for electrofuel production, evolution (evolution)
-coal_ccs_efficiency;Vector;%;coal coal gasification (with CCS) energy conversion efficiency (evolution for EIS date)
-coal_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
-coal_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant EIS date (evolution for EIS date)
-coal_ccs_h2_capex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex
-coal_ccs_h2_carbon_tax;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to carbon tax
-coal_ccs_h2_ccs_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS
-coal_ccs_h2_fuel_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement
-coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg of h2 (evolution)
-coal_ccs_h2_opex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex
-coal_ccs_h2_total_cost;Vector;M€;Annual Coal CCS Hydrogen production cost
-coal_ccs_plant_building_cost;Vector;M€;Annual expenses for Coal CCS plants built each year
-coal_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for Coal CCS plants built each year
-coal_efficiency;Vector;%;coal coal gasification (without CCS) energy conversion efficiency (evolution for EIS date)
-coal_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
-coal_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant EIS date (evolution for EIS date)
+co2_market_price;Vector;€/kgCO2e;CO2 market price is used as en input for electrofuel production, evolution (evolution);
+coal_ccs_efficiency;Vector;%;coal coal gasification (with CCS) energy conversion efficiency (evolution for EIS date);
+coal_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
+coal_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant EIS date (evolution for EIS date);
+coal_ccs_h2_capex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex;
+coal_ccs_h2_carbon_tax;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to carbon tax;
+coal_ccs_h2_ccs_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS;
+coal_ccs_h2_fuel_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement;
+coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg of h2 (evolution);
+coal_ccs_h2_opex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex;
+coal_ccs_h2_total_cost;Vector;M€;Annual Coal CCS Hydrogen production cost;
+coal_ccs_plant_building_cost;Vector;M€;Annual expenses for Coal CCS plants built each year;
+coal_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for Coal CCS plants built each year;
+coal_efficiency;Vector;%;coal coal gasification (without CCS) energy conversion efficiency (evolution for EIS date);
+coal_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
+coal_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant EIS date (evolution for EIS date);
 coal_h2_capex_cost;Vector;M€;Annual Coal  Hydrogen production cost attributable to Capex
 coal_h2_carbon_tax;Vector;M€;Annual Coal  Hydrogen production cost attributable to carbon tax
 coal_h2_fuel_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Coal procurement
@@ -638,18 +638,18 @@ doc_total_per_ask_short_range_hydrogen;Vector;€/ASK;Direct operating cost for 
 doc_total_per_ask_short_range_mean;Vector;€/ASK;Direct operating cost for short range fleet (evolution)
 dropin_mean_mfsp;Vector;€/L;Drop-in fuel average MFSP evolution (market price for kerosene)
 dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L (evolution)
-electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution)
+electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution);
 carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Carbon abatement cost for electrofuel (evolution)
 electrofuel_avg_cost_per_l;Vector;€/L;Average electrofuel production cost year by year (evolution)
 electrofuel_capex_cost;Vector;M€;Annual electrofuel production cost attributable to Capex
 electrofuel_carbon_tax;Vector;M€;Annual electrofuel production cost attributable to carbon tax
 electrofuel_co2_cost;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
-electrofuel_cost_premium;Vector;M€;Electrofuel cost premium over fossil kerosene (without carbon tax)
-electrofuel_eis_capex;Vector;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity (evolution for EIS date)
-electrofuel_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant EIS date (evolution for EIS date)
-electrofuel_eis_specific_co2;Vector;kgCO2/kgfuel;Specific CO2 consumption (evolution for EIS date)
-electrofuel_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrofuel plant EIS date (evolution for EIS date)
-electrofuel_elec_cost;Vector;M€;Annual electrofuel production cost attributable to electricity procurement
+electrofuel_cost_premium;Vector;M€;Electrofuel cost premium over fossil kerosene (without carbon tax);
+electrofuel_eis_capex;Vector;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity (evolution for EIS date);
+electrofuel_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant EIS date (evolution for EIS date);
+electrofuel_eis_specific_co2;Vector;kgCO2/kgfuel;Specific CO2 consumption (evolution for EIS date);
+electrofuel_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrofuel plant EIS date (evolution for EIS date);
+electrofuel_elec_cost;Vector;M€;Annual electrofuel production cost attributable to electricity procurement;
 electrofuel_mfsp_carbon_tax_supplement;Vector;€/L;Electrofuel carbon tax per L evolution
 electrofuel_opex_cost;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
 electrofuel_plant_building_cost;Vector;M€;Annual expenses for electrofuel plants built each year
@@ -662,10 +662,10 @@ electrolysis_h2_mfsp_carbon_tax_supplement;Vector;€/kg;H2 electrolysis carbon 
 electrolysis_h2_opex_cost;Vector;M€;Annual H2 electrolysis production cost attributable to operational expenditures (other than electricity procurement)
 electrolysis_h2_total_cost;Vector;M€;Annual h2 electrolysis total production cost
 electrolysis_plant_building_cost;Vector;M€;Annual expenses for electrolysis plants built each year
-electrolysis_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year
-gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date)
-gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
-gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date)
+electrolysis_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year;
+gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date);
+gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
+gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date);
 gas_ccs_h2_capex_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
 gas_ccs_h2_carbon_tax;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon tax
 gas_ccs_h2_ccs_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon capture
@@ -676,9 +676,9 @@ gas_ccs_h2_opex_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attribu
 gas_ccs_h2_total_cost;Vector;M€;Annual gas_ccs Hydrogen production cost
 gas_ccs_plant_building_cost;Vector;M€;Annual expenses for gas_ccs plants built each year
 gas_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for gas_ccs plants built each year
-gas_efficiency;Vector;%;gas steam methane reforming (without CCS) energy conversion efficiency (evolution for EIS date)
-gas_eis_capex;Vector;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
-gas_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (without CCS) plant EIS date (evolution for EIS date)
+gas_efficiency;Vector;%;gas steam methane reforming (without CCS) energy conversion efficiency (evolution for EIS date);
+gas_eis_capex;Vector;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
+gas_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (without CCS) plant EIS date (evolution for EIS date);
 gas_h2_capex_cost;Vector;M€;Annual gas  Hydrogen production cost attributable to Capex
 gas_h2_carbon_tax;Vector;M€;Annual gas  Hydrogen production cost attributable to carbon tax
 gas_h2_fuel_cost;Vector;M€;Annual gas Hydrogen production cost attributable to gas procurement
@@ -710,7 +710,7 @@ liquefaction_h2_opex_cost;Vector;M€;Annual liquefaction cost attributable to o
 liquefaction_h2_total_cost;Vector;M€;Annual liquefaction total cost
 liquefaction_plant_building_cost;Vector;M€;Annual building expenses for liquefaction plants built each year
 liquefaction_plant_building_scenario;Vector;t/day;Annual capacity built for liquefaction plants built each year
-liquefier_eis_capex;Vector;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
+liquefier_eis_capex;Vector;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 non_discounted_BAU_energy_expenses;Vector;M€;Annual expenses for energy in a business as usual scenario that would only use kerosene
 non_discounted_energy_cost_premium;Vector;M€;Annual extra cost for energy in the actual scenario vs a business as usual scenario that would only use kerosene
 non_discounted_energy_expenses;Vector;M€;Annual expenses for energy in the actual scenario
@@ -724,18 +724,18 @@ plant_building_scenario_ft_msw;Vector;t/day;Annual capacity built for biofuel (F
 plant_building_scenario_ft_others;Vector;t/day;Annual capacity built for biofuel (FT-Others) plants added each year
 plant_building_scenario_hefa_fog;Vector;t/day;Annual capacity built for biofuel (HEFA-FOG) plants added each year
 plant_building_scenario_hefa_others;Vector;t/day;Annual capacity built for biofuel (HEFA-Others) plants added each year
-electrolysis_h2_eis_capex;Vector;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date)
-electrolysis_h2_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant EIS date (evolution for EIS date)
-electrolysis_h2_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrolysis plant EIS date (evolution for EIS date)
+electrolysis_h2_eis_capex;Vector;€/(kg/day);Capital expenditures for electrolysis plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
+electrolysis_h2_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrolysis plant EIS date (evolution for EIS date);
+electrolysis_h2_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrolysis plant EIS date (evolution for EIS date);
 total_h2_building_cost;Vector;M€;Annual building expenses for hydrogen production plants and liquefaction plants built each year
 total_hydrogen_supply_cost;Vector;M€;Annual expenses for hydrogen production, liquefaction and transport
 transport_h2_total_cost;Vector;M€;Annual expenses for hydrogen transport
 full_years;Years;Years;Complete time span of the scenario, including historic and prospective periods
 historic_years;Years;Years;Historic time span of the scenario (before 2020)
 prospective_years;Years;Years;Prospective time span of the scenario (after 2020)
-doc_non_energy_per_ask_short_range_dropin_fuel_init;Float;€/ASK;Initial value for short range non-energy related direct operating cost
-doc_non_energy_per_ask_medium_range_dropin_fuel_init;Float;€/ASK;Initial value for medium range non-energy related direct operating cost
-doc_non_energy_per_ask_long_range_dropin_fuel_init;Float;€/ASK;Initial value for long range non-energy related direct operating cost
+doc_non_energy_per_ask_short_range_dropin_fuel_init;Float;€/ASK;Initial value for short range non-energy related direct operating cost;After https://www.eucass.eu/component/docindexer/?task=download&id=6969
+doc_non_energy_per_ask_medium_range_dropin_fuel_init;Float;€/ASK;Initial value for medium range non-energy related direct operating cost;After https://www.eucass.eu/component/docindexer/?task=download&id=6969
+doc_non_energy_per_ask_long_range_dropin_fuel_init;Float;€/ASK;Initial value for long range non-energy related direct operating cost;After https://www.eucass.eu/component/docindexer/?task=download&id=6969
 doc_non_energy_per_ask_short_range_dropin_fuel_gain;Float;%;Annual gain value for short-range non-energy related direct operating cost
 doc_non_energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Annual gain value for medium-range non-energy related direct operating cost
 doc_non_energy_per_ask_long_range_dropin_fuel_gain;Float;%;Annual gain value for long-range non-energy related direct operating cost
