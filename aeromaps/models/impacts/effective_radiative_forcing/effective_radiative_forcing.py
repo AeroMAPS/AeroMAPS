@@ -45,7 +45,7 @@ class ERF(AeromapsModel):
         # CO2
         h = 100  # Climate time horizon
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            self.df_climate["annual_co2_erf"] = (
+            self.df_climate.loc[k, "annual_co2_erf"] = (
                 co2_emissions.loc[k] * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
             )
         self.df_climate.loc[self.climate_historic_start_year, "co2_erf"] = self.df_climate.loc[
@@ -166,7 +166,7 @@ class ERFSimplifiedNox(AeromapsModel):
         # CO2
         h = 100  # Climate time horizon
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            self.df_climate["annual_co2_erf"] = (
+            self.df_climate.loc[k, "annual_co2_erf"] = (
                 co2_emissions.loc[k] * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
             )
         self.df_climate.loc[self.climate_historic_start_year, "co2_erf"] = self.df_climate.loc[
