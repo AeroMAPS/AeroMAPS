@@ -40,7 +40,7 @@ class RevenuePassengerKilometerPlot:
         self.ax.set_ylabel("Revenue Passenger Kilometer [RPK]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -103,7 +103,7 @@ class RevenueTonneKilometerPlot:
         self.ax.set_ylabel("Revenue Tonne Kilometer [RTK]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -166,7 +166,7 @@ class AvailableSeatKilometerPlot:
         self.ax.set_ylabel("Available Seat Kilometer [ASK]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -229,7 +229,7 @@ class TotalAircraftDistancePlot:
         self.ax.set_ylabel("Total distance travelled by aircraft [in billions of km]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

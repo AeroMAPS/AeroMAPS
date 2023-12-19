@@ -78,13 +78,13 @@ class CarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_co2_emissions_2050, 1))
-            + " GtCO2\ncorresponding to\n "
+            + " GtCO₂\ncorresponding to\n "
             + str(round(global_cumulative_co2_emissions_2050 / world_carbon_budget * 100, 1))
             + "% of WCB",
             str(round(aviation_carbon_budget_allocated_share, 1))
             + "% of WCB\ni.e.\n"
             + str(round(aviation_carbon_budget, 1))
-            + " GtCO2",
+            + " GtCO₂",
         ]
 
         p = wedges[0]
@@ -124,7 +124,7 @@ class CarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 facecolor=color,
-                label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
+                label="Cumulative CO₂ emissions of aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
@@ -213,13 +213,13 @@ class CarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_co2_emissions_2050, 1))
-            + " GtCO2\ncorresponding to\n "
+            + " GtCO₂\ncorresponding to\n "
             + str(round(global_cumulative_co2_emissions_2050 / world_carbon_budget * 100, 1))
             + "% of WCB",
             str(round(aviation_carbon_budget_allocated_share, 1))
             + "% of WCB\ni.e.\n"
             + str(round(aviation_carbon_budget, 1))
-            + " GtCO2",
+            + " GtCO₂",
         ]
 
         p = wedges[0]
@@ -259,7 +259,7 @@ class CarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 color=color,
-                label="Cumulative CO2 emissions of aviation\nbetween 2020 and 2050",
+                label="Cumulative CO₂ emissions of aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
@@ -281,6 +281,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -298,7 +299,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_equivalent_emissions_2050 = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
         world_equivalent_carbon_budget = float(
             self.float_outputs["equivalent_gross_carbon_budget_2050"]
@@ -366,7 +367,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO2-we\ncorresponding to\n "
+            + " GtCO₂-we\ncorresponding to\n "
             + str(
                 round(
                     global_cumulative_equivalent_emissions_2050
@@ -379,7 +380,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
             + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO2-we",
+            + " GtCO₂-we",
         ]
 
         p = wedges[0]
@@ -445,6 +446,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
     def update(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -458,7 +460,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         )
         cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
         global_cumulative_equivalent_emissions_2050 = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
         world_equivalent_carbon_budget = float(
             self.float_outputs["equivalent_gross_carbon_budget_2050"]
@@ -526,7 +528,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
             str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO2-we\ncorresponding to\n "
+            + " GtCO₂-we\ncorresponding to\n "
             + str(
                 round(
                     global_cumulative_equivalent_emissions_2050
@@ -539,7 +541,7 @@ class EquivalentCarbonBudgetAssessmentPlot:
             str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
             + "% of EWCB\ni.e.\n"
             + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO2-we",
+            + " GtCO₂-we",
         ]
 
         p = wedges[0]
@@ -1213,6 +1215,7 @@ class MultidisciplinaryAssessmentPlot:
     def __init__(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -1247,12 +1250,12 @@ class MultidisciplinaryAssessmentPlot:
             self.float_outputs["aviation_equivalent_carbon_budget"]
         )
         cumulative_total_equivalent_emissions = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
 
         categories = [
             "Climate\n(Total)",
-            "Climate\n(CO2)",
+            "Climate\n(CO₂)",
             "Biomass",
             "Electricity",
         ]
@@ -1376,6 +1379,7 @@ class MultidisciplinaryAssessmentPlot:
     def update(self, data):
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -1405,12 +1409,12 @@ class MultidisciplinaryAssessmentPlot:
             self.float_outputs["aviation_equivalent_carbon_budget"]
         )
         cumulative_total_equivalent_emissions = float(
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"]
+            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
         )
 
         categories = [
             "Climate\n(Total)",
-            "Climate\n(CO2)",
+            "Climate\n(CO₂)",
             "Biomass",
             "Electricity",
         ]

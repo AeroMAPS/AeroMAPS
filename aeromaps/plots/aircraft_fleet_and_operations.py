@@ -43,7 +43,7 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot:
         self.ax.set_ylabel("Fuel consumption per passenger [L/100km]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -108,7 +108,7 @@ class MeanLoadFactorPlot:
         self.ax.set_ylabel("Aircraft load factor [%]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -173,7 +173,7 @@ class MeanEnergyPerASKPlot:
         self.ax.set_ylabel("Energy per Available Seat Kilometer [MJ/ASK]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -240,7 +240,7 @@ class MeanEnergyPerRTKPlot:
         self.ax.set_ylabel("Energy per Revenue Tonne Kilometer [MJ/RTK]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

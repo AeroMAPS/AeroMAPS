@@ -6,6 +6,7 @@ from .constants import plot_1_x, plot_1_y
 class AirTransportCO2EmissionsPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -51,7 +52,7 @@ class AirTransportCO2EmissionsPlot:
 
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "co2_emissions"],
+            self.df_climate.loc[self.historic_years, "co2_emissions"],
             color="black",
             linestyle="-",
             label="Historical emissions",
@@ -71,7 +72,7 @@ class AirTransportCO2EmissionsPlot:
 
         (self.line_co2_emissions,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions"],
+            self.df_climate.loc[self.prospective_years, "co2_emissions"],
             color="green",
             linestyle="-",
             label="Projected emissions including all levers of action",
@@ -81,7 +82,7 @@ class AirTransportCO2EmissionsPlot:
 
         (self.line_co2_emissions_offset,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "co2_emissions"]
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
             - self.df.loc[self.prospective_years, "carbon_offset"],
             color="grey",
             linestyle="--",
@@ -119,7 +120,7 @@ class AirTransportCO2EmissionsPlot:
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_load_factor"],
-            self.df["co2_emissions"],
+            self.df_climate.loc[self.years, "co2_emissions"],
             color="yellowgreen",
             label="Aircraft energy",
         )
@@ -127,8 +128,8 @@ class AirTransportCO2EmissionsPlot:
         plt.rc("hatch", linewidth=4)
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions"],
-            self.df["co2_emissions"] - self.df["carbon_offset"],
+            self.df_climate.loc[self.years, "co2_emissions"],
+            self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
             facecolor="silver",
             hatch="//",
@@ -136,9 +137,9 @@ class AirTransportCO2EmissionsPlot:
         )
 
         self.ax.grid()
-        self.ax.set_title("Evolution of annual CO2 emissions from air transport")
+        self.ax.set_title("Evolution of annual CO₂ emissions from air transport")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Annual CO2 emissions [MtCO2]")
+        self.ax.set_ylabel("Annual CO₂ emissions [MtCO₂]")
         ax = plt.gca()
         self.ax.legend(loc=2)
         self.ax.set_xlim(self.years[0], self.years[-1])
@@ -151,6 +152,7 @@ class AirTransportCO2EmissionsPlot:
 
     def update(self, data):
         self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -172,10 +174,12 @@ class AirTransportCO2EmissionsPlot:
             self.df["co2_emissions_including_energy"]
         )
 
-        self.line_co2_emissions.set_ydata(self.df.loc[self.prospective_years, "co2_emissions"])
+        self.line_co2_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
+        )
 
         self.line_co2_emissions_offset.set_ydata(
-            self.df.loc[self.prospective_years, "co2_emissions"]
+            self.df_climate.loc[self.prospective_years, "co2_emissions"]
             - self.df.loc[self.prospective_years, "carbon_offset"]
         )
 
@@ -210,7 +214,7 @@ class AirTransportCO2EmissionsPlot:
         self.ax.fill_between(
             self.years,
             self.df["co2_emissions_including_load_factor"],
-            self.df["co2_emissions"],
+            self.df_climate.loc[self.years, "co2_emissions"],
             color="yellowgreen",
             label="Aircraft energy",
         )
@@ -218,8 +222,8 @@ class AirTransportCO2EmissionsPlot:
         plt.rc("hatch", linewidth=4)
         self.ax.fill_between(
             self.years,
-            self.df["co2_emissions"],
-            self.df["co2_emissions"] - self.df["carbon_offset"],
+            self.df_climate.loc[self.years, "co2_emissions"],
+            self.df_climate.loc[self.years, "co2_emissions"] - self.df["carbon_offset"],
             color="white",
             facecolor="silver",
             hatch="//",
@@ -233,7 +237,7 @@ class AirTransportCO2EmissionsPlot:
 
 class AirTransportClimateImpactsPlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -247,7 +251,7 @@ class AirTransportClimateImpactsPlot:
     def create_plot(self):
         (self.line_co2_erf,) = self.ax.plot(
             self.years,
-            self.df["co2_erf"],
+            self.df_climate.loc[self.years, "co2_erf"],
             color="black",
             linestyle="--",
             linewidth=1,
@@ -255,7 +259,7 @@ class AirTransportClimateImpactsPlot:
 
         (self.line_co2_h2o_erf,) = self.ax.plot(
             self.years,
-            self.df["co2_h2o_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_erf"],
             color="black",
             linestyle="--",
             linewidth=1,
@@ -263,7 +267,7 @@ class AirTransportClimateImpactsPlot:
 
         (self.line_co2_h2o_nox_erf,) = self.ax.plot(
             self.years,
-            self.df["co2_h2o_nox_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_erf"],
             color="black",
             linestyle="--",
             linewidth=1,
@@ -271,19 +275,19 @@ class AirTransportClimateImpactsPlot:
 
         (self.line_co2_h2o_nox_contrails_erf,) = self.ax.plot(
             self.years,
-            self.df["co2_h2o_nox_contrails_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"],
             linestyle="None",
         )
 
         (self.line_aerosol_erf,) = self.ax.plot(
             self.years,
-            self.df["aerosol_erf"],
+            self.df_climate.loc[self.years, "aerosol_erf"],
             linestyle="None",
         )
 
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "total_erf"],
+            self.df_climate.loc[self.historic_years, "total_erf"],
             color="black",
             linestyle="-",
             label="Net ERF - History",
@@ -292,7 +296,7 @@ class AirTransportClimateImpactsPlot:
 
         (self.line_total_erf,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "total_erf"],
+            self.df_climate.loc[self.prospective_years, "total_erf"],
             color="green",
             linestyle="-",
             label="Net ERF - Projections",
@@ -303,31 +307,31 @@ class AirTransportClimateImpactsPlot:
         self.ax.fill_between(
             self.years,
             np.zeros(len(self.years)),
-            self.df["co2_erf"],
+            self.df_climate.loc[self.years, "co2_erf"],
             color="tomato",
             label="CO2",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_erf"],
-            self.df["co2_h2o_erf"],
+            self.df_climate.loc[self.years, "co2_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_erf"],
             color="lightskyblue",
             label="H2O",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_h2o_erf"],
-            self.df["co2_h2o_nox_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_erf"],
             color="yellowgreen",
             label="NOx",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_h2o_nox_erf"],
-            self.df["co2_h2o_nox_contrails_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"],
             color="gold",
             label="Contrails",
         )
@@ -335,7 +339,7 @@ class AirTransportClimateImpactsPlot:
         self.ax.fill_between(
             self.years,
             np.zeros(len(self.years)),
-            self.df["aerosol_erf"],
+            self.df_climate.loc[self.years, "aerosol_erf"],
             color="darkblue",
             label="Aerosols",
         )
@@ -362,17 +366,19 @@ class AirTransportClimateImpactsPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_co2_erf.set_ydata(self.df["co2_erf"])
+        self.line_co2_erf.set_ydata(self.df_climate.loc[self.years, "co2_erf"])
 
-        self.line_co2_h2o_erf.set_ydata(self.df["co2_h2o_erf"])
+        self.line_co2_h2o_erf.set_ydata(self.df_climate.loc[self.years, "co2_h2o_erf"])
 
-        self.line_co2_h2o_nox_erf.set_ydata(self.df["co2_h2o_nox_erf"])
+        self.line_co2_h2o_nox_erf.set_ydata(self.df_climate.loc[self.years, "co2_h2o_nox_erf"])
 
-        self.line_co2_h2o_nox_contrails_erf.set_ydata(self.df["co2_h2o_nox_contrails_erf"])
+        self.line_co2_h2o_nox_contrails_erf.set_ydata(
+            self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"]
+        )
 
-        self.line_aerosol_erf.set_ydata(self.df["aerosol_erf"])
+        self.line_aerosol_erf.set_ydata(self.df_climate.loc[self.years, "aerosol_erf"])
 
-        self.line_total_erf.set_ydata(self.df.loc[self.prospective_years, "total_erf"])
+        self.line_total_erf.set_ydata(self.df_climate.loc[self.prospective_years, "total_erf"])
 
         for collection in self.ax.collections:
             collection.remove()
@@ -381,31 +387,31 @@ class AirTransportClimateImpactsPlot:
         self.ax.fill_between(
             self.years,
             np.zeros(len(self.years)),
-            self.df["co2_erf"],
+            self.df_climate.loc[self.years, "co2_erf"],
             color="tomato",
             label="CO2",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_erf"],
-            self.df["co2_h2o_erf"],
+            self.df_climate.loc[self.years, "co2_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_erf"],
             color="lightskyblue",
             label="H2O",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_h2o_erf"],
-            self.df["co2_h2o_nox_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_erf"],
             color="yellowgreen",
             label="NOx",
         )
 
         self.ax.fill_between(
             self.years,
-            self.df["co2_h2o_nox_erf"],
-            self.df["co2_h2o_nox_contrails_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_erf"],
+            self.df_climate.loc[self.years, "co2_h2o_nox_contrails_erf"],
             color="gold",
             label="Contrails",
         )
@@ -413,7 +419,7 @@ class AirTransportClimateImpactsPlot:
         self.ax.fill_between(
             self.years,
             np.zeros(len(self.years)),
-            self.df["aerosol_erf"],
+            self.df_climate.loc[self.years, "aerosol_erf"],
             color="darkblue",
             label="Aerosols",
         )

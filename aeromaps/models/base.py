@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from numpy import genfromtxt
 from scipy.interpolate import interp1d
 import warnings
 
@@ -17,11 +18,15 @@ class AeromapsModel(object):
             self._initialize_df()
 
     def _initialize_df(self):
+        self.climate_historic_start_year = self.parameters.climate_historic_start_year
         self.historic_start_year = self.parameters.historic_start_year
         self.prospection_start_year = self.parameters.prospection_start_year
         self.end_year = self.parameters.end_year
         self.df: pd.DataFrame = pd.DataFrame(
             index=range(self.historic_start_year, self.end_year + 1)
+        )
+        self.df_climate: pd.DataFrame = pd.DataFrame(
+            index=range(self.climate_historic_start_year, self.end_year + 1)
         )
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
@@ -139,3 +144,78 @@ def AeromapsLevelingFunction(
     self.df.pop("leveling_function_values")
 
     return leveling_function_values
+
+
+def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
+
+    # Reference: IPCC AR5 - https://www.ipcc.ch/site/assets/uploads/2018/07/WGI_AR5.Chap_.8_SM.pdf
+
+    # Parameter: climate time horizon
+    h = climate_time_horizon
+
+    co2_molar_mass = 44.01 * 1e-3  # [kg/mol]
+    air_molar_mass = 28.97e-3  # [kg/mol]
+    atmosphere_total_mass = 5.1352e18  # [kg]
+
+    radiative_efficiency = 1.37e-2 * 1e9  # radiative efficiency [mW/m^2]
+
+    # RF per unit mass increase in atmospheric abundance of CO2 [W/m^2/kg]
+    A_CO2 = radiative_efficiency * air_molar_mass / (co2_molar_mass * atmosphere_total_mass) * 1e-3
+
+    # Coefficients for the model
+    a = [0.2173, 0.2240, 0.2824, 0.2763]
+    tau = [0, 394.4, 36.54, 4.304]  # CO2 lifetime [yrs]
+
+    co2_agwp_h = A_CO2 * a[0] * h
+    for i in [1, 2, 3]:
+        co2_agwp_h += A_CO2 * a[i] * tau[i] * (1 - np.exp(-h / tau[i]))
+
+    # From W/m^2/kg.yr to mW/m^2/Mt.yr
+    co2_agwp_h = co2_agwp_h * 1e3 * 1e9
+
+    return co2_agwp_h
+
+
+def GWPStarEquivalentEmissionsFunction(
+    self, emissions_erf, gwpstar_variation_duration, gwpstar_alpha_coefficient
+):
+
+    # Reference: Smith et al. (2021), https://doi.org/10.1038/s41612-021-00169-8
+    # Global
+    climate_time_horizon = 100
+    co2_agwp_h = AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon)
+
+    # g coefficient for GWP*
+    if gwpstar_alpha_coefficient == 0:
+        g_coefficient = 1
+    else:
+        g_coefficient = (
+            1 - np.exp(-gwpstar_alpha_coefficient / (1 - gwpstar_alpha_coefficient))
+        ) / gwpstar_alpha_coefficient
+
+    # Main
+    for k in range(self.climate_historic_start_year, self.end_year + 1):
+        if k - self.climate_historic_start_year >= gwpstar_variation_duration:
+            self.df_climate.loc[k, "emissions_erf_variation"] = (
+                emissions_erf.loc[k] - emissions_erf.loc[k - gwpstar_variation_duration]
+            ) / gwpstar_variation_duration
+        else:
+            self.df_climate.loc[k, "emissions_erf_variation"] = (
+                emissions_erf.loc[k] / gwpstar_variation_duration
+            )
+
+    for k in range(self.climate_historic_start_year, self.end_year + 1):
+        self.df_climate.loc[k, "emissions_equivalent_emissions"] = (
+            g_coefficient
+            * (1 - gwpstar_alpha_coefficient)
+            * climate_time_horizon
+            / co2_agwp_h
+            * self.df_climate.loc[k, "emissions_erf_variation"]
+        ) + g_coefficient * gwpstar_alpha_coefficient / co2_agwp_h * emissions_erf.loc[k]
+    emissions_equivalent_emissions = self.df_climate.loc[:, "emissions_equivalent_emissions"]
+
+    # Delete intermediate df column
+    self.df_climate.pop("emissions_erf_variation")
+    self.df_climate.pop("emissions_equivalent_emissions")
+
+    return emissions_equivalent_emissions

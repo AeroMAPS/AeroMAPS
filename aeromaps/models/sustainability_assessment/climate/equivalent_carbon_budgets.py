@@ -13,13 +13,13 @@ class EquivalentGrossCarbonBudget(AeromapsModel):
         self,
         gross_carbon_budget: float = 0.0,
         T_nonCO2: float = 0.0,
-        TCRE: float = 0.0,
+        tcre_coefficient: float = 0.0,
         world_ghg_emissions_2019: float = 0.0,
         aviation_equivalentcarbonbudget_allocated_share: float = 0.0,
     ) -> Tuple[float, float, float]:
         """Gross equivalent carbon budget."""
 
-        equivalent_gross_carbon_budget = gross_carbon_budget + T_nonCO2 / TCRE
+        equivalent_gross_carbon_budget = gross_carbon_budget + T_nonCO2 / tcre_coefficient
 
         data = [equivalent_gross_carbon_budget, world_ghg_emissions_2019]
 

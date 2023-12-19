@@ -1,6 +1,5 @@
 import os.path as pth
 from json import dump
-from dataclasses import fields
 import numpy as np
 import pandas as pd
 
@@ -35,7 +34,7 @@ PARAMETERS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "parameters.json")
 OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
 
 
-class AeromapsProcess(object):
+class create_process(object):
     def __init__(
         self,
         models=models_simple,
@@ -76,6 +75,7 @@ class AeromapsProcess(object):
         # Outputs
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
+        self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         for name, model in self.models.items():
@@ -107,9 +107,18 @@ class AeromapsProcess(object):
         self.data["years"]["full_years"] = list(
             range(self.parameters.historic_start_year, self.parameters.end_year + 1)
         )
+        self.data["years"]["climate_full_years"] = list(
+            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
+        )
         self.data["years"]["historic_years"] = list(
             range(
                 self.parameters.historic_start_year,
+                self.parameters.prospection_start_year,
+            )
+        )
+        self.data["years"]["climate_historic_years"] = list(
+            range(
+                self.parameters.climate_historic_start_year,
                 self.parameters.prospection_start_year,
             )
         )
@@ -150,6 +159,7 @@ class AeromapsProcess(object):
             self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
+            self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
@@ -244,8 +254,14 @@ class AeromapsProcess(object):
                 else:
 
                     self.data["vector_outputs"].update(disc.model.df)
+            if hasattr(disc.model, "df_climate") and disc.model.df_climate.columns.size != 0:
+                if first_computation:
+                    self.data["climate_outputs"] = pd.concat(
+                        [self.data["climate_outputs"], disc.model.df_climate], axis=1
+                    )
+                else:
+                    self.data["climate_outputs"].update(disc.model.df_climate)
 
-                    # self.data["vector_outputs"] = self.data["vector_outputs"].merge(disc.model.df)
             self.data["float_outputs"].update(disc.model.float_outputs)
 
     def _update_dataframes_from_data(self):
@@ -272,6 +288,10 @@ class AeromapsProcess(object):
         self.vector_outputs_df = self.data["vector_outputs"]
         self.vector_outputs_df.sort_index(axis=1, inplace=True)
 
+        # Vector climate dataframe
+        self.climate_outputs_df = self.data["climate_outputs"]
+        self.climate_outputs_df.sort_index(axis=1, inplace=True)
+
         # Variable information
         self._read_data_information()
 
@@ -294,6 +314,11 @@ class AeromapsProcess(object):
         # Vector outputs
         self.json["vector_outputs"] = convert_values_from_array_to_list(
             self.data["vector_outputs"].to_dict("list")
+        )
+
+        # Climate outputs
+        self.json["climate_outputs"] = convert_values_from_array_to_list(
+            self.data["climate_outputs"].to_dict("list")
         )
 
     def _read_data_information(self):

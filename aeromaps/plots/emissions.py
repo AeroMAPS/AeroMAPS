@@ -22,7 +22,7 @@ class CumulativeCO2EmissionsPlot:
             self.df.loc[self.prospective_years, "cumulative_co2_emissions"],
             color="blue",
             linestyle="-",
-            label="Cumulative CO2 emissions",
+            label="Cumulative CO₂ emissions",
             linewidth=2,
         )
 
@@ -37,13 +37,13 @@ class CumulativeCO2EmissionsPlot:
 
         self.ax.grid()
         self.ax.set_title(
-            "Comparison of cumulative CO2 emissions from air transport\nwith allocated carbon budget (from 2019)"
+            "Comparison of cumulative CO₂ emissions from air transport\nwith allocated carbon budget (from 2019)"
         )
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Cumulative CO2 emissions [GtCO2]")
+        self.ax.set_ylabel("Cumulative CO₂ emissions [GtCO₂]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2019, 2050)
+        self.ax.set_xlim(2019, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -76,7 +76,7 @@ class CumulativeCO2EmissionsPlot:
 
 class DirectH2OEmissionsPlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -90,7 +90,7 @@ class DirectH2OEmissionsPlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "h2o_emissions"],
+            self.df_climate.loc[self.historic_years, "h2o_emissions"],
             color="black",
             linestyle="-",
             label="History",
@@ -99,7 +99,7 @@ class DirectH2OEmissionsPlot:
 
         (self.line_h2o_emissions,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2o_emissions"],
+            self.df_climate.loc[self.prospective_years, "h2o_emissions"],
             color="blue",
             linestyle="-",
             label="Projections",
@@ -107,12 +107,12 @@ class DirectH2OEmissionsPlot:
         )
 
         self.ax.grid()
-        self.ax.set_title("Evolution of direct H2O emissions\nfrom air transport")
+        self.ax.set_title("Evolution of direct H₂O emissions\nfrom air transport")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Direct H2O emissions [MtH2O]")
+        self.ax.set_ylabel("Direct H₂O emissions [MtH₂O]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -121,13 +121,15 @@ class DirectH2OEmissionsPlot:
         self.fig.tight_layout()
 
     def update(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_h2o_emissions.set_ydata(self.df.loc[self.prospective_years, "h2o_emissions"])
+        self.line_h2o_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "h2o_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -139,7 +141,7 @@ class DirectH2OEmissionsPlot:
 
 class DirectNOxEmissionsPlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -153,7 +155,7 @@ class DirectNOxEmissionsPlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "nox_emissions"],
+            self.df_climate.loc[self.historic_years, "nox_emissions"],
             color="black",
             linestyle="-",
             label="History",
@@ -162,7 +164,7 @@ class DirectNOxEmissionsPlot:
 
         (self.line_nox_emissions,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "nox_emissions"],
+            self.df_climate.loc[self.prospective_years, "nox_emissions"],
             color="blue",
             linestyle="-",
             label="Projections",
@@ -175,7 +177,7 @@ class DirectNOxEmissionsPlot:
         self.ax.set_ylabel("Direct NOx emissions [MtNOx]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -184,13 +186,15 @@ class DirectNOxEmissionsPlot:
         self.fig.tight_layout()
 
     def update(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_nox_emissions.set_ydata(self.df.loc[self.prospective_years, "nox_emissions"])
+        self.line_nox_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "nox_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -202,7 +206,7 @@ class DirectNOxEmissionsPlot:
 
 class DirectSulfurEmissionsPlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -216,7 +220,7 @@ class DirectSulfurEmissionsPlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "sulfur_emissions"],
+            self.df_climate.loc[self.historic_years, "sulfur_emissions"],
             color="black",
             linestyle="-",
             label="History",
@@ -225,7 +229,7 @@ class DirectSulfurEmissionsPlot:
 
         (self.line_sulfur_emissions,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "sulfur_emissions"],
+            self.df_climate.loc[self.prospective_years, "sulfur_emissions"],
             color="blue",
             linestyle="-",
             label="Projections",
@@ -238,7 +242,7 @@ class DirectSulfurEmissionsPlot:
         self.ax.set_ylabel("Direct sulfur emissions [MtSO2]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -247,14 +251,14 @@ class DirectSulfurEmissionsPlot:
         self.fig.tight_layout()
 
     def update(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_sulfur_emissions.set_ydata(
-            self.df.loc[self.prospective_years, "sulfur_emissions"]
+            self.df_climate.loc[self.prospective_years, "sulfur_emissions"]
         )
 
         for collection in self.ax.collections:
@@ -267,7 +271,7 @@ class DirectSulfurEmissionsPlot:
 
 class DirectSootEmissionsPlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -281,7 +285,7 @@ class DirectSootEmissionsPlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "soot_emissions"],
+            self.df_climate.loc[self.historic_years, "soot_emissions"],
             color="black",
             linestyle="-",
             label="History",
@@ -290,7 +294,7 @@ class DirectSootEmissionsPlot:
 
         (self.line_soot_emissions,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "soot_emissions"],
+            self.df_climate.loc[self.prospective_years, "soot_emissions"],
             color="blue",
             linestyle="-",
             label="Projections",
@@ -303,7 +307,7 @@ class DirectSootEmissionsPlot:
         self.ax.set_ylabel("Direct soot emissions [MtBC]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -312,13 +316,15 @@ class DirectSootEmissionsPlot:
         self.fig.tight_layout()
 
     def update(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_soot_emissions.set_ydata(self.df.loc[self.prospective_years, "soot_emissions"])
+        self.line_soot_emissions.set_ydata(
+            self.df_climate.loc[self.prospective_years, "soot_emissions"]
+        )
 
         for collection in self.ax.collections:
             collection.remove()
@@ -363,10 +369,10 @@ class CarbonOffsetPlot:
         self.ax.grid()
         self.ax.set_title("Evolution of carbon offset\nfrom air transport")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Carbon offset [MtCO2]")
+        self.ax.set_ylabel("Carbon offset [MtCO₂]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -417,10 +423,10 @@ class CumulativeCarbonOffsetPlot:
         self.ax.grid()
         self.ax.set_title("Cumulative carbon offset from air transport")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Cumulative carbon offset [GtCO2]")
+        self.ax.set_ylabel("Cumulative carbon offset [GtCO₂]")
         self.ax.legend()
         self.ax = plt.gca()
-        self.ax.set_xlim(2019, 2050)
+        self.ax.set_xlim(2019, self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

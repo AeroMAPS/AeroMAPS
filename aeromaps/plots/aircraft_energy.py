@@ -43,7 +43,7 @@ class MeanFuelEmissionFactorPlot:
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -126,7 +126,7 @@ class EmissionFactorPerFuelPlot:
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2020, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -203,7 +203,7 @@ class EnergyConsumptionPlot:
         self.ax.set_ylabel("Energy consumption [EJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(2000, 2050)
+        self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

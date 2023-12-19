@@ -48,6 +48,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.w_float_inputs_df = None
         self.w_vector_outputs_df = None
         self.w_float_outputs_df = None
+        self.w_climate_outputs_df = None
 
         self.w_figure_output = widgets.Button(
             description="Download figures",
@@ -161,6 +162,11 @@ class GraphicalUserInterface(widgets.VBox):
         datagrid.auto_fit_columns = True
         self.w_float_outputs_df = datagrid
 
+        # Climate Outputs
+        datagrid = DataGrid(self.process.climate_outputs_df, selection_mode="cell")
+        datagrid.auto_fit_columns = True
+        self.w_climate_outputs_df = datagrid
+
         # All tabs
         self.df_tabs = widgets.Tab()
         self.df_tabs.children = [
@@ -169,6 +175,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.w_float_inputs_df,
             self.w_vector_outputs_df,
             self.w_float_outputs_df,
+            self.w_climate_outputs_df,
         ]
 
         self.df_tabs.set_title(0, "Data Information")
@@ -176,6 +183,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.df_tabs.set_title(2, "Float Inputs")
         self.df_tabs.set_title(3, "Vector Outputs")
         self.df_tabs.set_title(4, "Float Outputs")
+        self.df_tabs.set_title(5, "Climate Outputs")
 
     def _update_dataframe_tabs(self, change=None):
         # Data information
@@ -192,6 +200,9 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Float Outputs
         self.w_float_outputs_df.data = self.process.float_outputs_df
+
+        # Climate Outputs
+        self.w_climate_outputs_df.data = self.process.climate_outputs_df
 
     def _create_widgets(self):
         # TODO: Convert to french
@@ -1679,7 +1690,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=0.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1704,7 +1715,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=0.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1728,8 +1739,8 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    consumption_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1752,8 +1763,8 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    consumption_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
@@ -1779,7 +1790,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2040,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1804,7 +1815,7 @@ class GraphicalUserInterface(widgets.VBox):
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
                     consumption_evolution=-15.0,
-                    nox_evolution=0.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1828,8 +1839,8 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 short_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-30.0,
-                    nox_evolution=0.0,
+                    consumption_evolution=-15.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1852,8 +1863,8 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-30.0,
-                    nox_evolution=0.0,
+                    consumption_evolution=-15.0,
+                    nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
@@ -1913,10 +1924,10 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Carbon intensity
         if self.w_energy_mix.value == "Kerosene":
-            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
-            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
+            self.process.parameters.biofuel_share_reference_years = []
+            self.process.parameters.biofuel_share_reference_years_values = [0.0]
+            self.process.parameters.electrofuel_share_reference_years = []
+            self.process.parameters.electrofuel_share_reference_years_values = [0.0]
         elif self.w_energy_mix.value == "Biofuel":
             self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
             self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.0, 30.0, 100.0]
@@ -1982,7 +1993,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.hydrogen_gas_share_reference_years_values = [71]
         elif self.w_hydrogen_production.value == "Gas without CCS":
             self.process.parameters.hydrogen_electrolysis_share_reference_years = []
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = []
+            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [0]
             self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
             self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
             self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
@@ -2338,9 +2349,13 @@ class GraphicalUserInterface(widgets.VBox):
         float_outputs_df = pd.read_excel(
             file_path, sheet_name="Float Outputs", index_col=0, engine="openpyxl"
         )
+        climate_outputs_df = pd.read_excel(
+            file_path, sheet_name="Climate Outputs", index_col=0, engine="openpyxl"
+        )
         data = {
             "Vector Outputs": vector_outputs_df,
             "Float Outputs": float_outputs_df,
+            "Climate Outputs": climate_outputs_df,
         }
 
         self._data_files[filename] = data

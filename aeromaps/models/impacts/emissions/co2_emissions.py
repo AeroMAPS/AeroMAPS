@@ -1,9 +1,11 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
+from pandas import read_csv
+import os.path as pth
 
 from aeromaps.models.base import AeromapsModel
+from aeromaps.resources import climate_data
 
 
 class KayaFactors(AeromapsModel):
@@ -130,10 +132,15 @@ class KayaFactors(AeromapsModel):
 class CO2Emissions(AeromapsModel):
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        # Load dataset
+        historical_dataset_path = pth.join(
+            climate_data.__path__[0], "temperature_historical_dataset.csv"
+        )
+        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
+        self.historical_dataset = historical_dataset_df.values
 
     def compute(
         self,
-        rpk: pd.Series = pd.Series(dtype="float64"),
         rpk_short_range: pd.Series = pd.Series(dtype="float64"),
         rpk_medium_range: pd.Series = pd.Series(dtype="float64"),
         rpk_long_range: pd.Series = pd.Series(dtype="float64"),
@@ -314,14 +321,22 @@ class CO2Emissions(AeromapsModel):
                 * 10 ** (-12)
             )
 
-        # Passenger and total
+        # Passenger
         for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "co2_emissions_passenger"] = (
                 self.df.loc[k, "co2_emissions_short_range"]
                 + self.df.loc[k, "co2_emissions_medium_range"]
                 + self.df.loc[k, "co2_emissions_long_range"]
             )
-            self.df.loc[k, "co2_emissions"] = (
+
+        # Total
+        historical_co2_emissions_for_temperature = self.historical_dataset[:, 1]
+        for k in range(self.climate_historic_start_year, self.historic_start_year):
+            self.df_climate.loc[k, "co2_emissions"] = historical_co2_emissions_for_temperature[
+                k - self.climate_historic_start_year
+            ]
+        for k in range(self.historic_start_year, self.end_year + 1):
+            self.df_climate.loc[k, "co2_emissions"] = (
                 self.df.loc[k, "co2_emissions_passenger"] + self.df.loc[k, "co2_emissions_freight"]
             )
 
@@ -330,7 +345,7 @@ class CO2Emissions(AeromapsModel):
         co2_emissions_long_range = self.df["co2_emissions_long_range"]
         co2_emissions_freight = self.df["co2_emissions_freight"]
         co2_emissions_passenger = self.df["co2_emissions_passenger"]
-        co2_emissions = self.df["co2_emissions"]
+        co2_emissions = self.df_climate["co2_emissions"]
 
         return (
             co2_emissions_short_range,
