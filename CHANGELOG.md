@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.6.0-beta
+
+Changed:
+- Improve climate models based on GWP*. (#53) 
+- Add detailed Excel file for references. (#53)
+
+Fixed:
+- Add hatches for carbon offset for sustainability assessment. (#52)
+
 ## Version 0.5.0-beta
 
 - Changed:
