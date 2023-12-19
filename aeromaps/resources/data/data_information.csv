@@ -1,4 +1,4 @@
-﻿Name;Type;Unit;Description;Reference (if applicable)
+﻿Name;Type;Unit;Description;Reference for default input value (if applicable)
 climate_historic_start_year;Float;yr;Historic start year for the calculation of climate models
 ask_init;Vector;ASK;Historical number of Available Seat Kilometer (ASK) over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
 energy_consumption_init;Vector;MJ;Historical energy consumption of aviation over 2000-2019;IEA Sankey tool
@@ -55,31 +55,31 @@ covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year
 covid_start_year;Float;yr;Covid-19 start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
 crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050;Statistical analysis of a literature review (see resources/energy_data)
 electricity_emission_factor_reference_years;List;yr;Reference years for the electricity emission factor
-electricity_emission_factor_reference_years_values;List;gCO2/kWh;Electricity emission factor for the reference years
+electricity_emission_factor_reference_years_values;List;gCO2/kWh;Electricity emission factor for the reference years; 2019 value
 electrofuel_hydrogen_efficiency_reference_years;List;yr;Reference years for the conversion efficiency for producing electrofuel from hydrogen;
 electrofuel_hydrogen_efficiency_reference_years_values;List;-;Conversion efficiency for producing electrofuel from hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 electrofuel_share_reference_years;List;yr;Reference years for the share of electrofuel in drop-in fuel
 electrofuel_share_reference_years_values;List;%;Share of electrofuel in drop-in fuel for the reference years
 electrolysis_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the electrolysis pathway for producing hydrogen;
 electrolysis_efficiency_reference_years_values;List;-;Conversion efficiency of the electrolysis pathway for producing hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
-emission_index_h2o_biofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for biofuel combustion
-emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for electrofuel combustion
-emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion
-emission_index_h2o_kerosene;Float;kg_H2O/kg_fuel;Emission index of water vapor for kerosene combustion
-emission_index_nox_biofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion in 2019
+emission_index_h2o_biofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for biofuel combustion;Calculation based on combustion equation
+emission_index_h2o_electrofuel;Float;kg_H2O/kg_fuel;Emission index of water vapor for electrofuel combustion;Calculation based on combustion equation
+emission_index_h2o_hydrogen;Float;kg_H2O/kg_fuel;Emission index of water vapor for hydrogen combustion;Calculation based on combustion equation
+emission_index_h2o_kerosene;Float;kg_H2O/kg_fuel;Emission index of water vapor for kerosene combustion;Calculation based on combustion equation
+emission_index_nox_biofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for biofuel combustion in 2019;Assuming a similar value than kerosene
 emission_index_nox_dropin_fuel_evolution;Float;%;Annual evolution of NOx emission index for drop-in fuel combustion due to engine evolution
-emission_index_nox_electrofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion in 209
+emission_index_nox_electrofuel_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for electrofuel combustion in 2019;Assuming a similar value than kerosene
 emission_index_nox_hydrogen_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for hydrogen combustion in 2019;Calculation based on Anwar Khan et al. - https://doi.org/10.3390/atmos13101660
 emission_index_nox_hydrogen_evolution;Float;%;Annual evolution of NOx emission index for hydrogen fuel combustion due to engine evolution
 emission_index_nox_kerosene_2019;Float;kg_NOx/kg_fuel;Emission index of NOx for kerosene combustion in 2019;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-emission_index_soot_biofuel;Float;kg_BC/kg_fuel;Emission index of soot for biofuel combustion
+emission_index_soot_biofuel_2019;Float;kg_BC/kg_fuel;Emission index of soot for biofuel combustion;Assuming a reduction of 80% in comparison to kerosene
 emission_index_soot_dropin_fuel_evolution;Float;%;Annual evolution of soot emission index for drop-in fuel combustion due to engine evolution
-emission_index_soot_electrofuel;Float;kg_BC/kg_fuel;Emission index of soot for electrofuel combustion
-emission_index_soot_hydrogen;Float;kg_BC/kg_fuel;Emission index of soot for hydrogen combustion
-emission_index_soot_kerosene;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-emission_index_sulfur_biofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for biofuel combustion
-emission_index_sulfur_electrofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for electrofuel combustion
-emission_index_sulfur_hydrogen;Float;kg_SOx/kg_fuel;Emission index of sulfur for hydrogen combustion
+emission_index_soot_electrofuel_2019;Float;kg_BC/kg_fuel;Emission index of soot for electrofuel combustion;Assuming a reduction of 80% in comparison to kerosene
+emission_index_soot_hydrogen_2019;Float;kg_BC/kg_fuel;Emission index of soot for hydrogen combustion;Assuming the absence of soot emissions
+emission_index_soot_kerosene_2019;Float;kg_BC/kg_fuel;Emission index of soot for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+emission_index_sulfur_biofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for biofuel combustion;Assuming the absence of sulfur
+emission_index_sulfur_electrofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur for electrofuel combustion;Assuming the absence of sulfur
+emission_index_sulfur_hydrogen;Float;kg_SOx/kg_fuel;Emission index of sulfur for hydrogen combustion;Assuming the absence of sulfur
 emission_index_sulfur_kerosene;Float;kg_SOx/kg_fuel;Emission index of sulfur for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 end_year;Float;yr;End year for the calculation
 energy_per_ask_long_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
@@ -90,10 +90,10 @@ erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective 
 erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet
+fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet;Assuming the default value for calibrating the fleet renewal models
 fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050;Statistical analysis of a literature review (see resources/energy_data)
 forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050;Statistical analysis of a literature review (see resources/energy_data)
-freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019;ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+freight_energy_share_2019;Float;%;Share of aviation energy consumed by freight market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 cagr_passenger_short_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger short-range market
 cagr_passenger_short_range_reference_periods_values;List;%;Compound annual growth rate for passenger short-range market for the reference periods
 cagr_passenger_medium_range_reference_periods;List;yr;Reference periods for the compound annual growth rate for passenger medium-range market
@@ -134,11 +134,11 @@ lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from l
 liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen;
 liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 load_factor_end_year;Float;%;Value of mean aircraft load factor in the considered end year
-long_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger long-range market in 2019
-long_range_rpk_share_2019;Float;%;Share of RPK from long-range market in 2019
-medium_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger medium-range market in 2019
-medium_range_rpk_share_2019;Float;%;Share of RPK from medium-range market in 2019
-net_carbon_budget;Float;GtCO2;Considered (net) carbon budget 
+long_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger long-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+long_range_rpk_share_2019;Float;%;Share of RPK from long-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+medium_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger medium-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+medium_range_rpk_share_2019;Float;%;Share of RPK from medium-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+net_carbon_budget;Float;GtCO2;Considered (net) carbon budget;Default values (in the graphical user interface) are based on IPCC AR6
 oil_crops_biomass_share;Float;%;Share of energy crops biomass from vegetable oils;Statistical analysis of a literature review (see resources/energy_data)
 operations_contrails_duration;Float;yr;Duration for implementing 98% of contrail operational improvements to reduce contrail climate impacts
 operations_contrails_final_gain;Float;%;Final impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
@@ -160,23 +160,23 @@ rpk_medium_range_measures_start_year;Float;yr;Start year for implementing specif
 rpk_short_range_measures_duration;Float;yr;Duration for implementing 98% of specific measures to reduce RPK on short-range market
 rpk_short_range_measures_final_impact;Float;%;Final impact of specific measures in terms of percentage reduction in RPK for short-range market
 rpk_short_range_measures_start_year;Float;yr;Start year for implementing specific measures to reduce RPK on short-range market
-short_range_basicturbofan_share_2019;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2019
+short_range_basicturbofan_share_2019;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 short_range_basicturbofan_share_2030;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2030
 short_range_basicturbofan_share_2040;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2040
 short_range_basicturbofan_share_2050;Float;%;Share of narrow-body turbofan architectures in passenger short-range market in 2050
-short_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger short-range market in 2019
-short_range_regionalturbofan_share_2019;Float;%;Share of regional turbofan architectures in passenger short-range market in 2019
-short_range_regionalturboprop_share_2019;Float;%;Share of regional turboprop architectures in passenger short-range market in 2019
+short_range_energy_share_2019;Float;%;Share of aviation energy consumed by passenger short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+short_range_regionalturbofan_share_2019;Float;%;Share of regional turbofan architectures in passenger short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
+short_range_regionalturboprop_share_2019;Float;%;Share of regional turboprop architectures in passenger short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 short_range_regionalturboprop_share_2030;Float;%;Share of regional turboprop architectures in passenger short-range market in 2030
 short_range_regionalturboprop_share_2040;Float;%;Share of regional turboprop architectures in passenger short-range market in 2040
 short_range_regionalturboprop_share_2050;Float;%;Share of regional turboprop architectures in passenger short-range market in 2050
-short_range_rpk_share_2019;Float;%;Share of RPK from short-range market in 2019
+short_range_rpk_share_2019;Float;%;Share of RPK from short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 sugarystarchy_crops_biomass_share;Float;%;Share of energy crops biomass from sugar and starch-based materials;Statistical analysis of a literature review (see resources/energy_data)
-T_nonCO2;Float;°C;Characteristic temperature for integrating non-CO2 effects into gross carbon budget calculation
-TCRE;Float;°C/GtCO2;Transient Climate Response to cumulative Emissions of carbon dioxide coefficient
+T_nonCO2;Float;°C;Characteristic temperature for integrating non-CO2 effects into gross carbon budget calculation;Adapted (use 0.1°C for +1.5°C, 0.2°C for +2°C) from Rogelj et al. - https://doi.org/10.1038/s41586-019-1368-z
+tcre_coefficient;Float;°C/GtCO2;Transient Climate Response to cumulative Emissions of carbon dioxide coefficient;Median value from Rogelj et al. - https://doi.org/10.1038/s41586-019-1368-z
 waste_biomass;Float;EJ;Available biomass in the form of waste in 2050;Statistical analysis of a literature review (see resources/energy_data)
-world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019
-world_ghg_emissions_2019;Float;GtCO2-eq;World greenhouse gas emissions in 2019
+world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019;Global Carbon Project - https://www.globalcarbonproject.org/
+world_ghg_emissions_2019;Float;GtCO2-eq;World greenhouse gas emissions in 2019;ONU Emissions Gap Report 2020 - https://www.unenvironment.org/emissions-gap-report-2020
 aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
 annual_co2_erf;Vector;mW/m²;Effective radiative forcing due to CO2 emissions over a year without considering past emissions
 ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
