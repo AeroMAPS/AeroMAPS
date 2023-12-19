@@ -48,6 +48,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.w_float_inputs_df = None
         self.w_vector_outputs_df = None
         self.w_float_outputs_df = None
+        self.w_climate_outputs_df = None
 
         self.w_figure_output = widgets.Button(
             description="Download figures",
@@ -161,6 +162,11 @@ class GraphicalUserInterface(widgets.VBox):
         datagrid.auto_fit_columns = True
         self.w_float_outputs_df = datagrid
 
+        # Climate Outputs
+        datagrid = DataGrid(self.process.climate_outputs_df, selection_mode="cell")
+        datagrid.auto_fit_columns = True
+        self.w_climate_outputs_df = datagrid
+
         # All tabs
         self.df_tabs = widgets.Tab()
         self.df_tabs.children = [
@@ -169,6 +175,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.w_float_inputs_df,
             self.w_vector_outputs_df,
             self.w_float_outputs_df,
+            self.w_climate_outputs_df,
         ]
 
         self.df_tabs.set_title(0, "Data Information")
@@ -176,6 +183,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.df_tabs.set_title(2, "Float Inputs")
         self.df_tabs.set_title(3, "Vector Outputs")
         self.df_tabs.set_title(4, "Float Outputs")
+        self.df_tabs.set_title(5, "Climate Outputs")
 
     def _update_dataframe_tabs(self, change=None):
         # Data information
@@ -192,6 +200,9 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Float Outputs
         self.w_float_outputs_df.data = self.process.float_outputs_df
+
+        # Climate Outputs
+        self.w_climate_outputs_df.data = self.process.climate_outputs_df
 
     def _create_widgets(self):
         # TODO: Convert to french
@@ -2338,9 +2349,13 @@ class GraphicalUserInterface(widgets.VBox):
         float_outputs_df = pd.read_excel(
             file_path, sheet_name="Float Outputs", index_col=0, engine="openpyxl"
         )
+        climate_outputs_df = pd.read_excel(
+            file_path, sheet_name="Climate Outputs", index_col=0, engine="openpyxl"
+        )
         data = {
             "Vector Outputs": vector_outputs_df,
             "Float Outputs": float_outputs_df,
+            "Climate Outputs": climate_outputs_df,
         }
 
         self._data_files[filename] = data
