@@ -180,7 +180,7 @@ class AirTransportCO2EmissionsPlot:
 
         self.line_co2_emissions_offset.set_ydata(
             self.df_climate.loc[self.prospective_years, "co2_emissions"]
-            - self.df_climate.loc[self.prospective_years, "carbon_offset"]
+            - self.df.loc[self.prospective_years, "carbon_offset"]
         )
 
         for collection in self.ax.collections:
