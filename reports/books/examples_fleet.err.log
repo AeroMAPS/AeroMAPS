@@ -3,7 +3,7 @@ Traceback (most recent call last):
     executenb(
   File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 173, in wrapped
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 172, in wrapped
     return loop.run_until_complete(inner)
   File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
     return future.result()
@@ -15,22 +15,18 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-process = AeromapsProcess(
-    models=models_complex,
-    use_fleet_model=True,
-    add_examples_aircraft_and_subcategory=True,
-)
+%matplotlib widget
+from aeromaps.core.process import create_process
+from aeromaps.core.models import models_complex
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mTypeError[0m                                 Traceback (most recent call last)
-Cell [0;32mIn[2], line 1[0m
-[0;32m----> 1[0m process [38;5;241m=[39m [43mAeromapsProcess[49m[43m([49m
-[1;32m      2[0m [43m    [49m[43mmodels[49m[38;5;241;43m=[39;49m[43mmodels_complex[49m[43m,[49m
-[1;32m      3[0m [43m    [49m[43muse_fleet_model[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m
-[1;32m      4[0m [43m    [49m[43madd_examples_aircraft_and_subcategory[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m
-[1;32m      5[0m [43m)[49m
+[0;31mImportError[0m                               Traceback (most recent call last)
+Cell [0;32mIn[1], line 2[0m
+[1;32m      1[0m get_ipython()[38;5;241m.[39mrun_line_magic([38;5;124m'[39m[38;5;124mmatplotlib[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mwidget[39m[38;5;124m'[39m)
+[0;32m----> 2[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m create_process
+[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m models_complex
 
-[0;31mTypeError[0m: __init__() got an unexpected keyword argument 'use_fleet_model'
+[0;31mImportError[0m: cannot import name 'create_process' from 'aeromaps.core.process' (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/core/process.py)
 

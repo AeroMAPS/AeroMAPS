@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,9 +38,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -139,6 +139,7 @@ const thebe_selector_output = ".output, .cell_output"
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
 <a class="navbar-brand logo" href="../intro.html">
@@ -301,6 +302,7 @@ const thebe_selector_output = ".output, .cell_output"
 </button>
 
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -310,6 +312,7 @@ document.write(`
   </button>
 `);
 </script>
+
 
 <script>
 document.write(`
@@ -348,8 +351,12 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots">Plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#excel-data">Excel data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-results">Main results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plots">Plots</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -363,7 +370,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="application-for-the-journal-of-open-aviation-science">
 <h1>Application for the Journal of Open Aviation Science<a class="headerlink" href="#application-for-the-journal-of-open-aviation-science" title="Permalink to this heading">#</a></h1>
-<p>This document has been published for reproducing the application presented in a software paper dedicated to AeroMAPS, submitted to <a class="reference external" href="https://journals.open.tudelft.nl/joas/index">Journal of Open Aviation Science</a>. The different assumptions of this prospective scenario are given in the following.</p>
+<p>This document has been published for reproducing the application presented in a software paper dedicated to AeroMAPS, published in <a class="reference external" href="https://journals.open.tudelft.nl/joas/index">Journal of Open Aviation Science</a>. The different assumptions of this prospective scenario are given in the following.</p>
 <p>An illustrative 2% annual air traffic growth is assumed for the different aviation markets, i.e. lower than trend estimates of around 3%. The impact of COVID-19 is modelled assuming that air traffic returns to 2019 levels in 2024. Concerning the aircraft fleet, an accelerated fleet renewal is assumed with the introduction of 20% more efficient aircraft architectures in 2035. A hydrogen-powered aircraft is more specifically considered for short-range. Operational improvements are also included for reducing fuel consumption, but operational strategies for contrail avoidance are not considered here, even though it is a promising approach. Regarding the replacement of kerosene by drop-in fuels (biofuel and electrofuel here), ReFuelEU targets are considered as blending mandates. Different pathways are considered for the production of biofuel and hydrogen. Electricity production is expected to decarbonise rapidly and strongly, so that CO<sub>2</sub> emissions from electricity-based fuels will be lower than those from kerosene by 2035. On the economic side, several assumptions are made such as median fuel costs or a constant electricity price of 80 €/MWh. Moreover, a carbon price trajectory, based on <em>Alain Quinet, What Value Do We Attach to Climate Action?, 2019</em>, is implemented in the form of a tax on the emissions of fossil and alternative fuels.</p>
 <p>Moreover, in order to carry out a sustainability assessment, some assumptions are required for setting targets for aviation. A climate target of +1.8°C with a 67% chance of success is chosen as well as a moderate use of Carbon Dioxide Removal (CDR) worldwide. Median estimations are considered for biomass and electricity availability. Finally, concerning allocation rules, a grandfathering approach is assumed for climate issues, which means that 2.6% (i.e. aviation’s current share of CO<sub>2</sub> emissions) of the world carbon budget is allocated for aviation. For energy resources, an illustrative and arbitrary allocation of 5% is assumed.</p>
 <section id="load-and-process">
@@ -373,7 +380,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">AeromapsProcess</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">create_process</span>
 <span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_complex</span>
 <span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Fleet</span><span class="p">,</span>
@@ -383,28 +390,32 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">time</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">create_process</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_complex</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">Fleet</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">AircraftParameters</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">Aircraft</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="p">)</span>
+
+<span class="ne">ImportError</span>: cannot import name &#39;create_process&#39; from &#39;aeromaps.core.process&#39; (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/core/process.py)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span>
     <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span>
     <span class="n">use_fleet_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">process</span> <span class="o">=</span> <span class="n">AeromapsProcess</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">use_fleet_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="p">)</span>
-
-<span class="ne">TypeError</span>: __init__() got an unexpected keyword argument &#39;use_fleet_model&#39;
 </pre></div>
 </div>
 </div>
@@ -617,12 +628,12 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computation time:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computation time:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computation time: 1.3 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computation time: 1.47 s
 </pre></div>
 </div>
 </div>
@@ -630,24 +641,36 @@ document.write(`
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Permalink to this heading">#</a></h2>
+<section id="excel-data">
+<h3>Excel data<a class="headerlink" href="#excel-data" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">write_excel</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;aeromaps_data.xlsx&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="main-results">
+<h3>Main results<a class="headerlink" href="#main-results" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;CO2 emissions in 2050:&quot;</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
-    <span class="s2">&quot;MtCO2, i.e. an evolution of:&quot;</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">(</span>
-        <span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
-                <span class="o">/</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="o">-</span> <span class="mi">1</span>
-        <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="mi">0</span><span class="p">,</span>
-    <span class="p">),</span>
-    <span class="s2">&quot;</span><span class="si">% c</span><span class="s2">ompared to 2019&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;CO2 emissions in 2050:&quot;</span><span class="p">,</span>
+   <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
+   <span class="s2">&quot;MtCO2, i.e. an evolution of:&quot;</span><span class="p">,</span>
+   <span class="nb">round</span><span class="p">(</span>
+       <span class="p">(</span>
+           <span class="p">(</span>
+               <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
+               <span class="o">/</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
+           <span class="p">)</span>
+           <span class="o">-</span> <span class="mi">1</span>
+       <span class="p">)</span>
+       <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+       <span class="mi">0</span><span class="p">,</span>
+   <span class="p">),</span>
+   <span class="s2">&quot;</span><span class="si">% c</span><span class="s2">ompared to 2019&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="s2">&quot;CO2 emissions per RPK in 2050:&quot;</span><span class="p">,</span>
@@ -667,21 +690,21 @@ document.write(`
     <span class="s2">&quot;</span><span class="si">% c</span><span class="s2">ompared to 2019&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Temperature increase due to aviation in 2050:&quot;</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>
-    <span class="s2">&quot;°C, i.e. an evolution of:&quot;</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">(</span>
-        <span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
-                <span class="o">/</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="o">-</span> <span class="mi">1</span>
-        <span class="p">)</span>
-        <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="mi">0</span><span class="p">,</span>
-    <span class="p">),</span>
-    <span class="s2">&quot;</span><span class="si">% c</span><span class="s2">ompared to 2019&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;Temperature increase due to aviation in 2050:&quot;</span><span class="p">,</span>
+   <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>
+   <span class="s2">&quot;°C, i.e. an evolution of:&quot;</span><span class="p">,</span>
+   <span class="nb">round</span><span class="p">(</span>
+       <span class="p">(</span>
+           <span class="p">(</span>
+               <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span>
+               <span class="o">/</span> <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;temperature_increase_from_aviation&quot;</span><span class="p">][</span><span class="mi">2019</span><span class="p">]</span>
+           <span class="p">)</span>
+           <span class="o">-</span> <span class="mi">1</span>
+       <span class="p">)</span>
+       <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+       <span class="mi">0</span><span class="p">,</span>
+   <span class="p">),</span>
+   <span class="s2">&quot;</span><span class="si">% c</span><span class="s2">ompared to 2019&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="s2">&quot;Total Direct Operating Cost, including carbon tax in 2050:&quot;</span><span class="p">,</span>
@@ -704,9 +727,9 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CO2 emissions in 2050: 404.0 MtCO2, i.e. an evolution of: -64.0 % compared to 2019
-CO2 emissions per RPK in 2050: 23.0 gCO2/RPK, i.e. an evolution of: -79.0 % compared to 2019
-Temperature increase due to aviation in 2050: 0.082 °C, i.e. an evolution of: 75.0 % compared to 2019
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CO2 emissions in 2050: 407.0 MtCO2, i.e. an evolution of: -64.0 % compared to 2019
+CO2 emissions per RPK in 2050: 24.0 gCO2/RPK, i.e. an evolution of: -79.0 % compared to 2019
+Temperature increase due to aviation in 2050: 0.074 °C, i.e. an evolution of: 85.0 % compared to 2019
 Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. an evolution of: 99.0 % compared to 2019
 </pre></div>
 </div>
@@ -714,7 +737,7 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
 </div>
 </section>
 <section id="plots">
-<h2>Plots<a class="headerlink" href="#plots" title="Permalink to this heading">#</a></h2>
+<h3>Plots<a class="headerlink" href="#plots" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">)</span>
@@ -722,10 +745,10 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x1a9a9ee0370&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x281d13d78b0&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9259bc8ea89e4905a335494672a75208", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "dc5458f59ca647f39f9f249422384f36", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -734,10 +757,10 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.sustainability_assessment.MultidisciplinaryAssessmentPlot at 0x1a9af5196a0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.sustainability_assessment.MultidisciplinaryAssessmentPlot at 0x2818071fd00&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b3eccd3860854ba1865c03b8a2f90f2c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "be2dcb4b78f54a139b13e7315cd2e436", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -746,11 +769,12 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.costs.DropInMACC at 0x1a9af567430&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.costs.DropInMACC at 0x28180595dc0&gt;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "261dcabd81e14cd6a8f8fc0dd5275f19", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5d4fee9ab64d401eaa7d4c129733e940", "version_major": 2, "version_minor": 0}</script></div>
 </div>
+</section>
 </section>
 </section>
 
@@ -782,7 +806,7 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="examples_fleet.html"
@@ -824,8 +848,12 @@ Total Direct Operating Cost, including carbon tax in 2050: 0.086 €/ASK, i.e. a
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots">Plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#excel-data">Excel data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-results">Main results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plots">Plots</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -847,6 +875,7 @@ By AeroMAPS Research Team
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2023.
@@ -873,8 +902,8 @@ By AeroMAPS Research Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
   </footer>
