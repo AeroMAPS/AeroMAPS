@@ -34,7 +34,7 @@ PARAMETERS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "parameters.json")
 OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
 
 
-class AeromapsProcess(object):
+class create_process(object):
     def __init__(
         self,
         models=models_simple,
