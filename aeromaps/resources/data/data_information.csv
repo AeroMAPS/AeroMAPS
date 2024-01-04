@@ -779,3 +779,5 @@ h2o_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model
 h2o_gwpstar_alpha_coefficient;Float;-;Alpha coefficient chosen for GWP* model for H2O
 sulfur_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for sulfur
 sulfur_gwpstar_alpha_coefficient;Float;-;Alpha coefficient chosen for GWP* model for sulfur
+noc_reference_years;List;yr;Reference years for the airline non-operating costs
+noc_reference_years_values;List; €/ASK;Reference years for the airline non-operating costs

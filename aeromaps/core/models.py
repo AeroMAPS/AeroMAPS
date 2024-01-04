@@ -1,4 +1,4 @@
-from aeromaps.models.impacts.costs.operations.average_ops_cost import (
+from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
     PassengerAircraftDocCarbonTax,
@@ -156,8 +156,9 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedScenarioCost,
 )
 
-from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
+from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
     PassengerAircraftNocCarbonOffset,
+    PassengerAircraftNonOpCosts
 )
 
 
@@ -284,6 +285,7 @@ models_simple = {
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
+    "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
 }
 
 
@@ -411,6 +413,7 @@ models_complex = {
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
+    "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
 }
 
 models_complex_improvedgwpstar = {
@@ -535,4 +538,5 @@ models_complex_improvedgwpstar = {
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
+    "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
 }
