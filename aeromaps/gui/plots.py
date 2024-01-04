@@ -120,5 +120,5 @@ plot_3 = {
     "Marginal abatement cost curve from drop in fuels": DropInMACC,
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,
-    "Direct and Non Operating Cost breakdown": AirfareEvolutionBreakdown,
+    "Airfare breakdown": AirfareEvolutionBreakdown,
 }
