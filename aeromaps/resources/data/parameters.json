@@ -434,6 +434,8 @@
     "noc_reference_years": [],
     "noc_reference_years_values": 0.02,
     "ioc_reference_years": [],
-    "ioc_reference_years_values": 0.02
+    "ioc_reference_years_values": 0.02,
+    "operational_profit_reference_years": [],
+    "operational_profit_reference_years_values": 0.02
 
 }

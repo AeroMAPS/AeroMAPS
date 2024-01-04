@@ -165,6 +165,10 @@ from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
     PassengerAircraftIndirectOpCosts
 )
 
+from aeromaps.models.impacts.costs.airlines.operational_profit import (
+    PassengerAircraftOperationalProfit
+)
+
 
 models_simple = {
     "rpk_measures": RPKMeasures("rpk_measures"),
@@ -291,6 +295,7 @@ models_simple = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
 }
 
 
@@ -420,6 +425,8 @@ models_complex = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
+
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
 }
 
 models_complex_improvedgwpstar = {
@@ -546,4 +553,6 @@ models_complex_improvedgwpstar = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
+
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
 }
