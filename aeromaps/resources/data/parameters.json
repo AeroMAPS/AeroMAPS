@@ -436,6 +436,8 @@
     "ioc_reference_years": [],
     "ioc_reference_years_values": 0.02,
     "operational_profit_reference_years": [],
-    "operational_profit_reference_years_values": 0.02
+    "operational_profit_reference_years_values": 0.02,
+    "passenger_tax_reference_years": [],
+    "passenger_tax_reference_years_values": 0.0
 
 }

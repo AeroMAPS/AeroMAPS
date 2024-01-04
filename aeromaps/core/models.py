@@ -158,7 +158,8 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
     PassengerAircraftNocCarbonOffset,
-    PassengerAircraftNonOpCosts
+    PassengerAircraftNonOpCosts,
+    PassengerAircraftPassengerTax
 )
 
 from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
@@ -295,7 +296,8 @@ models_simple = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
-"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
 }
 
 
@@ -426,7 +428,8 @@ models_complex = {
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 
-"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
 }
 
 models_complex_improvedgwpstar = {
@@ -554,5 +557,6 @@ models_complex_improvedgwpstar = {
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 
-"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit")
+"passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
 }
