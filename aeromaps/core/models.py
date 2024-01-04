@@ -161,6 +161,10 @@ from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
     PassengerAircraftNonOpCosts
 )
 
+from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
+    PassengerAircraftIndirectOpCosts
+)
+
 
 models_simple = {
     "rpk_measures": RPKMeasures("rpk_measures"),
@@ -286,6 +290,7 @@ models_simple = {
         "passenger_aircraft_noc_carbon_offset"
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
+    "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 }
 
 
@@ -414,6 +419,7 @@ models_complex = {
         "passenger_aircraft_noc_carbon_offset"
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
+    "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 }
 
 models_complex_improvedgwpstar = {
@@ -539,4 +545,5 @@ models_complex_improvedgwpstar = {
         "passenger_aircraft_noc_carbon_offset"
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
+    "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 }

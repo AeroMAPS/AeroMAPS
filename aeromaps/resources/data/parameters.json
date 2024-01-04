@@ -432,6 +432,8 @@
     "rpk_short_range_measures_final_impact": 0,
     "rpk_short_range_measures_start_year": 2051,
     "noc_reference_years": [],
-    "noc_reference_years_values": 0.02
+    "noc_reference_years_values": 0.02,
+    "ioc_reference_years": [],
+    "ioc_reference_years_values": 0.02
 
 }
