@@ -791,3 +791,7 @@ indirect_operating_cost_per_ask;Vector;€/ASK;Values for airlines indirect-oper
 operational_profit_reference_years;List;yr;Reference years for airline operating profits
 operational_profit_reference_years_values;List;€/ASK;Reference years values for airline operating profits
 operational_profit_per_ask;Vector;€/ASK;Values for airlines operating profits
+total_cost_per_ask_without_extra_tax;Vector;€/ASK;Total costs without new taxes (DOC+NOC+IOC+Offsets)
+total_extra_tax_per_ask;Vector;€/ASK;Total new taxes levied (Carbon tax + passenger tax per ask)
+total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes)
+airfare_per_ask;Vector;€/ASK;Airfare (Total costs + operational profits)

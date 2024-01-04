@@ -170,6 +170,10 @@ from aeromaps.models.impacts.costs.airlines.operational_profit import (
     PassengerAircraftOperationalProfit
 )
 
+from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
+    PassengerAircraftTotalCostAirfare
+)
+
 
 models_simple = {
     "rpk_measures": RPKMeasures("rpk_measures"),
@@ -297,7 +301,8 @@ models_simple = {
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+"passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare")
 }
 
 
@@ -429,7 +434,8 @@ models_complex = {
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 
 "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+"passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare")
 }
 
 models_complex_improvedgwpstar = {
@@ -558,5 +564,6 @@ models_complex_improvedgwpstar = {
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
 
 "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax")
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+"passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare")
 }
