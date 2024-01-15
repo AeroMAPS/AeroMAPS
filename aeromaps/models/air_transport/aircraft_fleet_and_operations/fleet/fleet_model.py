@@ -20,6 +20,9 @@ AIRCRAFT_COLUMNS = [
     "Non-Energy DOC evolution [%]",
     "Cruise altitude [m]",
     "Energy Type",
+    "Average ASK per year",
+    "Manufacturing Cost [M€]",
+    "Non Recurring Costs [M€]"
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -32,6 +35,9 @@ class AircraftParameters:
     soot_evolution: float = None
     doc_non_energy_evolution: float = None
     cruise_altitude: float = None
+    ask_year: float = None
+    nrc_cost: float = None
+    rc_cost: float = None
 
 
 @dataclass
@@ -42,6 +48,9 @@ class ReferenceAircraftParameters:
     doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
+    ask_year: float = None
+    nrc_cost: float = None
+    rc_cost: float = None
 
 
 @dataclass
@@ -93,6 +102,8 @@ class FleetModel(AeromapsModel):
 
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
+
+        #TODO add new methods once programmed
 
         warnings.resetwarnings()
         warnings.simplefilter("ignore", DeprecationWarning)
@@ -326,7 +337,7 @@ class FleetModel(AeromapsModel):
                 + ":"
                 + category.subcategories[0].name
                 + ":"
-                + "recent_reference:aircraft_share"
+                + "recent_reference:aircraft_share" 
             ]
 
             recent_reference_aircraft_doc_non_energy = category.subcategories[
