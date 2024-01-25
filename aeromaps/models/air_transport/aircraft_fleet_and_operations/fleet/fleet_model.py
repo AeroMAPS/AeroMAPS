@@ -20,9 +20,9 @@ AIRCRAFT_COLUMNS = [
     "Non-Energy DOC evolution [%]",
     "Cruise altitude [m]",
     "Energy Type",
-    "Average ASK per year",
-    "Manufacturing Cost [M€]",
-    "Non Recurring Costs [M€]"
+    # "Average ASK per year",
+    # "Manufacturing Cost [M€]",
+    # "Non Recurring Costs [M€]"
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -35,9 +35,9 @@ class AircraftParameters:
     soot_evolution: float = None
     doc_non_energy_evolution: float = None
     cruise_altitude: float = None
-    ask_year: float = None
-    nrc_cost: float = None
-    rc_cost: float = None
+    # ask_year: float = None
+    # nrc_cost: float = None
+    # rc_cost: float = None
 
 
 @dataclass
@@ -48,9 +48,9 @@ class ReferenceAircraftParameters:
     doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
-    ask_year: float = None
-    nrc_cost: float = None
-    rc_cost: float = None
+    # ask_year: float = None
+    # nrc_cost: float = None
+    # rc_cost: float = None
 
 
 @dataclass
@@ -72,7 +72,6 @@ class FleetModel(AeromapsModel):
     def compute(
         self,
     ):
-
         # TODO : correct warnings
         warnings.filterwarnings("ignore")
 
