@@ -490,7 +490,7 @@ class FleetModel(AeromapsModel):
                     ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
                     self.df[
                         category.name + ":" + subcategory.name + ":doc_non_energy:electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":hybrid_electric"]
+                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
 
                 for aircraft in subcategory.aircraft.values():
 
