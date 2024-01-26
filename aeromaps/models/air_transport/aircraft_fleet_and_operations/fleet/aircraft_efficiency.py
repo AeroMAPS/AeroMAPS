@@ -291,6 +291,24 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         ask_short_range_dropin_fuel_share = self.fleet_model.df["Short Range:share:dropin_fuel"]
         ask_medium_range_dropin_fuel_share = self.fleet_model.df["Medium Range:share:dropin_fuel"]
@@ -298,6 +316,18 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         ask_short_range_hydrogen_share = self.fleet_model.df["Short Range:share:hydrogen"]
         ask_medium_range_hydrogen_share = self.fleet_model.df["Medium Range:share:hydrogen"]
         ask_long_range_hydrogen_share = self.fleet_model.df["Long Range:share:hydrogen"]
+        ask_short_range_electric_share = self.fleet_model.df["Short Range:share:electric"]
+        ask_medium_range_electric_share = self.fleet_model.df["Medium Range:share:electric"]
+        ask_long_range_electric_share = self.fleet_model.df["Long Range:share:electric"]
+        ask_short_range_hybrid_electric_share = self.fleet_model.df[
+            "Short Range:share:hybrid_electric"
+        ]
+        ask_medium_range_hybrid_electric_share = self.fleet_model.df[
+            "Medium Range:share:hybrid_electric"
+        ]
+        ask_long_range_hybrid_electric_share = self.fleet_model.df[
+            "Long Range:share:hybrid_electric"
+        ]
 
         energy_per_ask_without_operations_short_range_dropin_fuel = self.fleet_model.df[
             "Short Range:energy_consumption:dropin_fuel"
@@ -316,6 +346,24 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         ]
         energy_per_ask_without_operations_long_range_hydrogen = self.fleet_model.df[
             "Long Range:energy_consumption:hydrogen"
+        ]
+        energy_per_ask_without_operations_short_range_electric = self.fleet_model.df[
+            "Short Range:energy_consumption:electric"
+        ]
+        energy_per_ask_without_operations_medium_range_electric = self.fleet_model.df[
+            "Medium Range:energy_consumption:electric"
+        ]
+        energy_per_ask_without_operations_long_range_electric = self.fleet_model.df[
+            "Long Range:energy_consumption:electric"
+        ]
+        energy_per_ask_without_operations_short_range_hybrid_electric = self.fleet_model.df[
+            "Short Range:energy_consumption:hybrid_electric"
+        ]
+        energy_per_ask_without_operations_medium_range_hybrid_electric = self.fleet_model.df[
+            "Medium Range:energy_consumption:hybrid_electric"
+        ]
+        energy_per_ask_without_operations_long_range_hybrid_electric = self.fleet_model.df[
+            "Long Range:energy_consumption:hybrid_electric"
         ]
 
         """Energy consumption per ASK (without operations) calculation using complex models."""
@@ -354,6 +402,28 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         self.df["ask_short_range_hydrogen_share"] = 0.0
         self.df["ask_medium_range_hydrogen_share"] = 0.0
         self.df["ask_long_range_hydrogen_share"] = 0.0
+
+        # Electric initialization
+        # Energy consumption
+        self.df["energy_per_ask_without_operations_short_range_electric"] = 0.0
+        self.df["energy_per_ask_without_operations_medium_range_electric"] = 0.0
+        self.df["energy_per_ask_without_operations_long_range_electric"] = 0.0
+
+        # Share
+        self.df["ask_short_range_electric_share"] = 0.0
+        self.df["ask_medium_range_electric_share"] = 0.0
+        self.df["ask_long_range_electric_share"] = 0.0
+
+        # Hybrid-electric initialization
+        # Energy consumption
+        self.df["energy_per_ask_without_operations_short_range_hybrid_electric"] = 0.0
+        self.df["energy_per_ask_without_operations_medium_range_hybrid_electric"] = 0.0
+        self.df["energy_per_ask_without_operations_long_range_hybrid_electric"] = 0.0
+
+        # Share
+        self.df["ask_short_range_hybrid_electric_share"] = 0.0
+        self.df["ask_medium_range_hybrid_electric_share"] = 0.0
+        self.df["ask_long_range_hybrid_electric_share"] = 0.0
 
         # Drop-in - Projections
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -413,6 +483,50 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
             "energy_per_ask_without_operations_long_range_hydrogen"
         ]
 
+        # Electric
+        for k in range(self.prospection_start_year + 1, self.end_year + 1):
+            self.df.loc[
+                k, "energy_per_ask_without_operations_short_range_electric"
+            ] = energy_per_ask_without_operations_short_range_electric.loc[k]
+            self.df.loc[
+                k, "energy_per_ask_without_operations_medium_range_electric"
+            ] = energy_per_ask_without_operations_medium_range_electric.loc[k]
+            self.df.loc[
+                k, "energy_per_ask_without_operations_long_range_electric"
+            ] = energy_per_ask_without_operations_long_range_electric.loc[k]
+
+        energy_per_ask_without_operations_short_range_electric = self.df[
+            "energy_per_ask_without_operations_short_range_electric"
+        ]
+        energy_per_ask_without_operations_medium_range_electric = self.df[
+            "energy_per_ask_without_operations_medium_range_electric"
+        ]
+        energy_per_ask_without_operations_long_range_electric = self.df[
+            "energy_per_ask_without_operations_long_range_electric"
+        ]
+
+        # Hybrid-electric
+        for k in range(self.prospection_start_year + 1, self.end_year + 1):
+            self.df.loc[
+                k, "energy_per_ask_without_operations_short_range_hybrid_electric"
+            ] = energy_per_ask_without_operations_short_range_hybrid_electric.loc[k]
+            self.df.loc[
+                k, "energy_per_ask_without_operations_medium_range_hybrid_electric"
+            ] = energy_per_ask_without_operations_medium_range_hybrid_electric.loc[k]
+            self.df.loc[
+                k, "energy_per_ask_without_operations_long_range_hybrid_electric"
+            ] = energy_per_ask_without_operations_long_range_hybrid_electric.loc[k]
+
+        energy_per_ask_without_operations_short_range_hybrid_electric = self.df[
+            "energy_per_ask_without_operations_short_range_hybrid_electric"
+        ]
+        energy_per_ask_without_operations_medium_range_hybrid_electric = self.df[
+            "energy_per_ask_without_operations_medium_range_hybrid_electric"
+        ]
+        energy_per_ask_without_operations_long_range_hybrid_electric = self.df[
+            "energy_per_ask_without_operations_long_range_hybrid_electric"
+        ]
+
         # Share
         self.df.loc[
             self.prospection_start_year : self.end_year + 1, "ask_short_range_dropin_fuel_share"
@@ -432,6 +546,25 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         self.df.loc[
             self.prospection_start_year : self.end_year + 1, "ask_long_range_hydrogen_share"
         ] = ask_long_range_hydrogen_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1, "ask_short_range_electric_share"
+        ] = ask_short_range_electric_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1, "ask_medium_range_electric_share"
+        ] = ask_medium_range_electric_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1, "ask_long_range_electric_share"
+        ] = ask_long_range_electric_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1, "ask_short_range_hybrid_electric_share"
+        ] = ask_short_range_hybrid_electric_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1,
+            "ask_medium_range_hybrid_electric_share",
+        ] = ask_medium_range_hybrid_electric_share
+        self.df.loc[
+            self.prospection_start_year : self.end_year + 1, "ask_long_range_hybrid_electric_share"
+        ] = ask_long_range_hybrid_electric_share
 
         # ASK
         ask_short_range_dropin_fuel = (
@@ -448,6 +581,20 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
             ask_medium_range * self.df["ask_medium_range_hydrogen_share"] / 100
         )
         ask_long_range_hydrogen = ask_long_range * self.df["ask_long_range_hydrogen_share"] / 100
+        ask_short_range_electric = ask_short_range * self.df["ask_short_range_electric_share"] / 100
+        ask_medium_range_electric = (
+            ask_medium_range * self.df["ask_medium_range_electric_share"] / 100
+        )
+        ask_long_range_electric = ask_long_range * self.df["ask_long_range_electric_share"] / 100
+        ask_short_range_hybrid_electric = (
+            ask_short_range * self.df["ask_short_range_hybrid_electric_share"] / 100
+        )
+        ask_medium_range_hybrid_electric = (
+            ask_medium_range * self.df["ask_medium_range_hybrid_electric_share"] / 100
+        )
+        ask_long_range_hybrid_electric = (
+            ask_long_range * self.df["ask_long_range_hybrid_electric_share"] / 100
+        )
 
         self.df.loc[:, "ask_short_range_dropin_fuel"] = ask_short_range_dropin_fuel
         self.df.loc[:, "ask_medium_range_dropin_fuel"] = ask_medium_range_dropin_fuel
@@ -455,6 +602,12 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         self.df.loc[:, "ask_short_range_hydrogen"] = ask_short_range_hydrogen
         self.df.loc[:, "ask_medium_range_hydrogen"] = ask_medium_range_hydrogen
         self.df.loc[:, "ask_long_range_hydrogen"] = ask_long_range_hydrogen
+        self.df.loc[:, "ask_short_range_electric"] = ask_short_range_electric
+        self.df.loc[:, "ask_medium_range_electric"] = ask_medium_range_electric
+        self.df.loc[:, "ask_long_range_electric"] = ask_long_range_electric
+        self.df.loc[:, "ask_short_range_hybrid_electric"] = ask_short_range_hybrid_electric
+        self.df.loc[:, "ask_medium_range_hybrid_electric"] = ask_medium_range_hybrid_electric
+        self.df.loc[:, "ask_long_range_hybrid_electric"] = ask_long_range_hybrid_electric
 
         return (
             energy_per_ask_without_operations_short_range_dropin_fuel,
@@ -463,18 +616,36 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
             energy_per_ask_without_operations_short_range_hydrogen,
             energy_per_ask_without_operations_medium_range_hydrogen,
             energy_per_ask_without_operations_long_range_hydrogen,
+            energy_per_ask_without_operations_short_range_electric,
+            energy_per_ask_without_operations_medium_range_electric,
+            energy_per_ask_without_operations_long_range_electric,
+            energy_per_ask_without_operations_short_range_hybrid_electric,
+            energy_per_ask_without_operations_medium_range_hybrid_electric,
+            energy_per_ask_without_operations_long_range_hybrid_electric,
             ask_short_range_dropin_fuel_share,
             ask_medium_range_dropin_fuel_share,
             ask_long_range_dropin_fuel_share,
             ask_short_range_hydrogen_share,
             ask_medium_range_hydrogen_share,
             ask_long_range_hydrogen_share,
+            ask_short_range_electric_share,
+            ask_medium_range_electric_share,
+            ask_long_range_electric_share,
+            ask_short_range_hybrid_electric_share,
+            ask_medium_range_hybrid_electric_share,
+            ask_long_range_hybrid_electric_share,
             ask_short_range_dropin_fuel,
             ask_medium_range_dropin_fuel,
             ask_long_range_dropin_fuel,
             ask_short_range_hydrogen,
             ask_medium_range_hydrogen,
             ask_long_range_hydrogen,
+            ask_short_range_electric,
+            ask_medium_range_electric,
+            ask_long_range_electric,
+            ask_short_range_hybrid_electric,
+            ask_medium_range_hybrid_electric,
+            ask_long_range_hybrid_electric,
         )
 
 
