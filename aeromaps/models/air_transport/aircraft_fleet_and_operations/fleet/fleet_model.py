@@ -376,6 +376,50 @@ class FleetModel(AeromapsModel):
                                     category.name
                                     + ":"
                                     + subcategory.name
+                                    + ":share:dropin_fuel",
+                                ] += (
+                                    (1 - float(aircraft.parameters.hybridization_factor))
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    # / self.df.loc[
+                                    #     k, category.name + ":" + subcategory.name + ":share:total"
+                                    # ]
+                                    # * 100
+                                )
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":share:electric",
+                                ] += (
+                                    float(aircraft.parameters.hybridization_factor)
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    # / self.df.loc[
+                                    #     k, category.name + ":" + subcategory.name + ":share:total"
+                                    # ]
+                                    # * 100
+                                )
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
                                     + ":energy_consumption:hybrid_electric",
                                 ] += (
                                     recent_reference_aircraft_energy_consumption
@@ -399,7 +443,7 @@ class FleetModel(AeromapsModel):
                                     + subcategory.name
                                     + ":energy_consumption:dropin_fuel",
                                 ] += (
-                                    (1 - aircraft.parameters.hybridization_factor)
+                                    (1 - float(aircraft.parameters.hybridization_factor))
                                     * recent_reference_aircraft_energy_consumption
                                     * (1 + float(aircraft.parameters.consumption_evolution) / 100)
                                     * self.df.loc[
@@ -421,7 +465,7 @@ class FleetModel(AeromapsModel):
                                     + subcategory.name
                                     + ":energy_consumption:electric",
                                 ] += (
-                                    aircraft.parameters.hybridization_factor
+                                    float(aircraft.parameters.hybridization_factor)
                                     * recent_reference_aircraft_energy_consumption
                                     * (1 + float(aircraft.parameters.consumption_evolution) / 100)
                                     * self.df.loc[
