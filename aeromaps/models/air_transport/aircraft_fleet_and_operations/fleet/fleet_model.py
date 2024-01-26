@@ -19,7 +19,8 @@ AIRCRAFT_COLUMNS = [
     "Soot evolution [%]",
     "Non-Energy DOC evolution [%]",
     "Cruise altitude [m]",
-    "Energy Type",
+    "Energy type",
+    "Hybridization factor"
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -32,6 +33,7 @@ class AircraftParameters:
     soot_evolution: float = None
     doc_non_energy_evolution: float = None
     cruise_altitude: float = None
+    hybridization_factor: float = 1.0
 
 
 @dataclass
@@ -42,6 +44,7 @@ class ReferenceAircraftParameters:
     doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
+    hybridization_factor: float = 1.0
 
 
 @dataclass
@@ -489,7 +492,7 @@ class FleetModel(AeromapsModel):
                         category.name + ":" + subcategory.name + ":doc_non_energy:electric"
                     ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
                     self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:electric"
+                        category.name + ":" + subcategory.name + ":doc_non_energy:hybrid_electric"
                     ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
 
                 for aircraft in subcategory.aircraft.values():
@@ -1829,6 +1832,7 @@ class Aircraft(object):
         self.parameters.doc_non_energy_evolution = row[AIRCRAFT_COLUMNS[5]]
         self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
         self.energy_type = row[AIRCRAFT_COLUMNS[7]]
+        self.parameters.hybridization_factor = row[AIRCRAFT_COLUMNS[8]]
 
         return self
 
@@ -1859,6 +1863,7 @@ class SubCategory(object):
                     10.0,
                     12000.0,
                     "DROP_IN_FUEL",
+                    1.0,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
         else:
@@ -1872,6 +1877,7 @@ class SubCategory(object):
                     aircraft.parameters.doc_non_energy_evolution,
                     aircraft.parameters.cruise_altitude,
                     aircraft.energy_type,
+                    aircraft.parameters.hybridization_factor,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
 
