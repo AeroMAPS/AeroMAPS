@@ -699,7 +699,17 @@ class FreightAircraftEfficiency(AeromapsModel):
         ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         """Energy consumption per RTK (without operations) calculation."""
 
         # Initialization based on 2019 share: to correct to include load factor
@@ -773,9 +783,9 @@ class FreightAircraftEfficiency(AeromapsModel):
             + ask_long_range_hydrogen_share * (ask_long_range / ask)
         )
         rtk_electric_share = (
-                ask_short_range_electric_share * (ask_short_range / ask)
-                + ask_medium_range_electric_share * (ask_medium_range / ask)
-                + ask_long_range_electric_share * (ask_long_range / ask)
+            ask_short_range_electric_share * (ask_short_range / ask)
+            + ask_medium_range_electric_share * (ask_medium_range / ask)
+            + ask_long_range_electric_share * (ask_long_range / ask)
         )
         rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
         self.df.loc[:, "rtk_hydrogen_share"] = rtk_hydrogen_share
@@ -801,16 +811,16 @@ class FreightAircraftEfficiency(AeromapsModel):
         )
 
         relative_energy_per_ask_electric_wrt_dropin_short_range = (
-                energy_per_ask_without_operations_short_range_electric
-                / energy_per_ask_without_operations_short_range_dropin_fuel
+            energy_per_ask_without_operations_short_range_electric
+            / energy_per_ask_without_operations_short_range_dropin_fuel
         )
         relative_energy_per_ask_electric_wrt_dropin_medium_range = (
-                energy_per_ask_without_operations_medium_range_electric
-                / energy_per_ask_without_operations_medium_range_dropin_fuel
+            energy_per_ask_without_operations_medium_range_electric
+            / energy_per_ask_without_operations_medium_range_dropin_fuel
         )
         relative_energy_per_ask_electric_wrt_dropin_long_range = (
-                energy_per_ask_without_operations_long_range_electric
-                / energy_per_ask_without_operations_long_range_dropin_fuel
+            energy_per_ask_without_operations_long_range_electric
+            / energy_per_ask_without_operations_long_range_dropin_fuel
         )
 
         for k in range(self.historic_start_year, self.end_year + 1):
