@@ -33,7 +33,7 @@ class AircraftParameters:
     soot_evolution: float = None
     doc_non_energy_evolution: float = None
     cruise_altitude: float = None
-    hybridization_factor: float = 1.0
+    hybridization_factor: float = 0.0
 
 
 @dataclass
@@ -44,7 +44,7 @@ class ReferenceAircraftParameters:
     doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
-    hybridization_factor: float = 1.0
+    hybridization_factor: float = 0.0
 
 
 @dataclass
