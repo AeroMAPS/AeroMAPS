@@ -80,6 +80,7 @@ from aeromaps.models.impacts.emissions.non_co2_emissions import (
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
     HydrogenConsumption,
+    ElectricConsumption,
     EnergyConsumption,
 )
 from aeromaps.models.impacts.energy_resources.resources_consumption import (
@@ -213,6 +214,7 @@ models_simple = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    # "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
@@ -341,6 +343,7 @@ models_complex = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
@@ -465,6 +468,7 @@ models_complex_improvedgwpstar = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
