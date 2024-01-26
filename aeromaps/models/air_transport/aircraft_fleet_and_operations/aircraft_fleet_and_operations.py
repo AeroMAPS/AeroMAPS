@@ -46,7 +46,18 @@ class EnergyIntensity(AeromapsModel):
         operations_gain: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_overconsumption: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
-        pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         """Energy consumption per ASK (with operations) calculation using simple models."""
 
