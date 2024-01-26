@@ -20,9 +20,9 @@ AIRCRAFT_COLUMNS = [
     "Non-Energy DOC evolution [%]",
     "Cruise altitude [m]",
     "Energy Type",
-    # "Average ASK per year",
-    # "Manufacturing Cost [M€]",
-    # "Non Recurring Costs [M€]"
+    "Average ASK per year",
+    "Manufacturing Cost [M€]",
+    "Non Recurring Costs [M€]"
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -35,9 +35,9 @@ class AircraftParameters:
     soot_evolution: float = None
     doc_non_energy_evolution: float = None
     cruise_altitude: float = None
-    # ask_year: float = None
-    # nrc_cost: float = None
-    # rc_cost: float = None
+    ask_year: float = None
+    nrc_cost: float = None
+    rc_cost: float = None
 
 
 @dataclass
@@ -48,9 +48,9 @@ class ReferenceAircraftParameters:
     doc_non_energy_base: float = None
     entry_into_service_year: float = None
     cruise_altitude: float = None
-    # ask_year: float = None
-    # nrc_cost: float = None
-    # rc_cost: float = None
+    ask_year: float = None
+    nrc_cost: float = None
+    rc_cost: float = None
 
 
 @dataclass
@@ -1427,6 +1427,9 @@ class Aircraft(object):
         self.parameters.doc_non_energy_evolution = row[AIRCRAFT_COLUMNS[5]]
         self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
         self.energy_type = row[AIRCRAFT_COLUMNS[7]]
+        self.parameters.ask_year = row[AIRCRAFT_COLUMNS[8]]
+        self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[9]]
+        self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[10]]
 
         return self
 
@@ -1455,8 +1458,12 @@ class SubCategory(object):
                     5.0,
                     10.0,
                     10.0,
+                    5.0,
                     12000.0,
                     "DROP_IN_FUEL",
+                    406000000.0,
+                    10.0,
+                    10.0,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
         else:
@@ -1470,6 +1477,9 @@ class SubCategory(object):
                     aircraft.parameters.doc_non_energy_evolution,
                     aircraft.parameters.cruise_altitude,
                     aircraft.energy_type,
+                    aircraft.parameters.ask_year,
+                    aircraft.parameters.nrc_cost,
+                    aircraft.parameters.rc_cost
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
 
@@ -1790,6 +1800,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_nb_aircraft_1 = Aircraft(
@@ -1803,6 +1816,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_nb_aircraft_2 = Aircraft(
@@ -1817,6 +1833,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_tp_aircraft_1 = Aircraft(
@@ -1832,6 +1851,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_tp_aircraft_2 = Aircraft(
@@ -1848,6 +1870,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_tf_aircraft_1 = Aircraft(
@@ -1863,6 +1888,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_tf_aircraft_2 = Aircraft(
@@ -1880,6 +1908,9 @@ class Fleet(object):
             soot_evolution=-100.0,
             doc_non_energy_evolution=10.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         sr_aircraft_hydrogen = Aircraft(
@@ -1894,6 +1925,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         mr_aircraft_1 = Aircraft(
@@ -1907,6 +1941,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         mr_aircraft_2 = Aircraft(
@@ -1921,6 +1958,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         lr_aircraft_1 = Aircraft(
@@ -1934,6 +1974,9 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
+            ask_year=406000000.0,
+            rc_cost=10.0,
+            nrc_cost=10.0,
         )
 
         lr_aircraft_2 = Aircraft(
@@ -1954,6 +1997,9 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
         sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
+        sr_nb_cat.old_reference_aircraft.ask_year = 12000.0
+        sr_nb_cat.old_reference_aircraft.rc_cost = 12000.0
+        sr_nb_cat.old_reference_aircraft.nrc_cost = 120000.0
 
         # Recent
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2007.13
@@ -1962,6 +2008,9 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
         sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
+        sr_nb_cat.recent_reference_aircraft.ask_year = 12000.0
+        sr_nb_cat.recent_reference_aircraft.rc_cost = 12000.0
+        sr_nb_cat.recent_reference_aircraft.nrc_cost = 120000.0
 
         if add_examples_aircraft_and_subcategory:
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
@@ -2041,6 +2090,9 @@ class Fleet(object):
         mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
         mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.028
         mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
+        mr_subcat.old_reference_aircraft.ask_year = 12000.0
+        mr_subcat.old_reference_aircraft.rc_cost = 12000.0
+        mr_subcat.old_reference_aircraft.nrc_cost = 120000.0
 
         # Recent
         mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
@@ -2049,6 +2101,9 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
         mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.028
         mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
+        mr_subcat.recent_reference_aircraft.ask_year = 12000.0
+        mr_subcat.recent_reference_aircraft.rc_cost = 12000.0
+        mr_subcat.recent_reference_aircraft.nrc_cost = 120000.0
 
         if add_examples_aircraft_and_subcategory:
             mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
@@ -2069,6 +2124,9 @@ class Fleet(object):
         lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
         lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.023
         lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
+        lr_subcat.old_reference_aircraft.ask_year = 12000.0
+        lr_subcat.old_reference_aircraft.rc_cost = 12000.0
+        lr_subcat.old_reference_aircraft.nrc_cost = 120000.0
 
         # Recent
         lr_subcat.recent_reference_aircraft.entry_into_service_year = 2009.36
@@ -2077,6 +2135,9 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
         lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.023
         lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
+        lr_subcat.recent_reference_aircraft.ask_year = 12000.0
+        lr_subcat.recent_reference_aircraft.rc_cost = 12000.0
+        lr_subcat.recent_reference_aircraft.nrc_cost = 120000.0
 
         if add_examples_aircraft_and_subcategory:
             lr_subcat.add_aircraft(aircraft=lr_aircraft_1)

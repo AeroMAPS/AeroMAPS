@@ -6,6 +6,7 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftTotalDoc,
     PassengerAircraftDocNonEnergySimple,
 )
+from aeromaps.models.impacts.costs.manufacturers.aircrfat_numbe import TESTMODEL
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -435,7 +436,8 @@ models_complex = {
 
 "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
     "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
-"passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare")
+"passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare"),
+    "test_model": TESTMODEL("test_model")
 }
 
 models_complex_improvedgwpstar = {
