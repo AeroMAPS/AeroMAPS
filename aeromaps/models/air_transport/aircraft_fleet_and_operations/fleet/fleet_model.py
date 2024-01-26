@@ -391,6 +391,50 @@ class FleetModel(AeromapsModel):
                                     ]
                                     / 100
                                 )
+                                # Drop-in
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":energy_consumption:dropin_fuel",
+                                ] += (
+                                    (1 - aircraft.parameters.hybridization_factor)
+                                    * recent_reference_aircraft_energy_consumption
+                                    * (1 + float(aircraft.parameters.consumption_evolution) / 100)
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    / 100
+                                )
+                                # Electric
+                                self.df.loc[
+                                    k,
+                                    category.name
+                                    + ":"
+                                    + subcategory.name
+                                    + ":energy_consumption:electric",
+                                ] += (
+                                    aircraft.parameters.hybridization_factor
+                                    * recent_reference_aircraft_energy_consumption
+                                    * (1 + float(aircraft.parameters.consumption_evolution) / 100)
+                                    * self.df.loc[
+                                        k,
+                                        category.name
+                                        + ":"
+                                        + subcategory.name
+                                        + ":"
+                                        + aircraft.name
+                                        + ":aircraft_share",
+                                    ]
+                                    / 100
+                                )
 
                 # Energy shares per category
                 var_name = category.name + ":share:dropin_fuel"
