@@ -110,7 +110,7 @@ class ElectricityConsumption(AeromapsModel):
         electricity_consumption = (
             electricity_hydrogen_consumption
             + electricity_electrofuel_consumption
-            + energy_consumption_electric
+            + energy_consumption_electric / 10**12
         )
 
         self.df.loc[:, "electricity_hydrogen_consumption"] = electricity_hydrogen_consumption
