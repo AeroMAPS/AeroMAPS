@@ -85,6 +85,7 @@ class ElectricityConsumption(AeromapsModel):
         self,
         hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: float = 0.0,
         liquefaction_efficiency: float = 0.0,
@@ -107,7 +108,9 @@ class ElectricityConsumption(AeromapsModel):
             / electrofuel_hydrogen_efficiency
         )
         electricity_consumption = (
-            electricity_hydrogen_consumption + electricity_electrofuel_consumption
+            electricity_hydrogen_consumption
+            + electricity_electrofuel_consumption
+            + energy_consumption_electric
         )
 
         self.df.loc[:, "electricity_hydrogen_consumption"] = electricity_hydrogen_consumption
