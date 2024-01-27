@@ -107,7 +107,7 @@ class KayaFactors(AeromapsModel):
             + electrofuel_emission_factor * energy_consumption_electrofuel
             + kerosene_emission_factor * energy_consumption_kerosene
             + hydrogen_mean_emission_factor * energy_consumption_hydrogen
-            + electricity_emission_factor * energy_consumption_electric
+            + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
 
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -256,6 +256,7 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_short_range_electric.loc[k]
                     * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -290,6 +291,7 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_medium_range_electric.loc[k]
                     * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -324,6 +326,7 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_long_range_electric.loc[k]
                     * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -357,6 +360,7 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_rtk_freight_electric.loc[k]
                     * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
