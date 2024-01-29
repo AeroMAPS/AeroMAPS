@@ -350,27 +350,27 @@ class FleetModel(AeromapsModel):
                                 )
 
                             if aircraft.energy_type == "HYBRID_ELECTRIC":
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":share:hybrid_electric",
-                                ] += (
-                                    self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    # / self.df.loc[
-                                    #     k, category.name + ":" + subcategory.name + ":share:total"
-                                    # ]
-                                    # * 100
-                                )
+                                # self.df.loc[
+                                #     k,
+                                #     category.name
+                                #     + ":"
+                                #     + subcategory.name
+                                #     + ":share:hybrid_electric",
+                                # ] += (
+                                #     self.df.loc[
+                                #         k,
+                                #         category.name
+                                #         + ":"
+                                #         + subcategory.name
+                                #         + ":"
+                                #         + aircraft.name
+                                #         + ":aircraft_share",
+                                #     ]
+                                #     # / self.df.loc[
+                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
+                                #     # ]
+                                #     # * 100
+                                # )
                                 self.df.loc[
                                     k,
                                     category.name
