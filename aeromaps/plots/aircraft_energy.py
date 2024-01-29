@@ -120,13 +120,22 @@ class EmissionFactorPerFuelPlot:
             linewidth=2,
         )
 
+        (self.line_kerosene_emission_factor,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "electricity_emission_factor"] / 3.6,
+            color="purple",
+            linestyle="-",
+            label="Electricity",
+            linewidth=2,
+        )
+
         self.ax.grid()
         self.ax.set_title("Evolution of the CO2 emission factor\nof aviation fuels")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(self.years[0], self.years[-1])
+        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
