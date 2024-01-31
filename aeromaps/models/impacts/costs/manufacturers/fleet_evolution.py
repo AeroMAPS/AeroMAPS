@@ -33,6 +33,11 @@ class FleetEvolution(AeromapsModel):
             else:
                 category_ask = ask_long_range
 
+            category_ask_covid_levelling = category_ask.copy()
+            category_ask_covid_levelling.loc[covid_start_year:covid_end_year] = \
+            category_ask.loc[covid_start_year - 1]
+
+
             subcategory = category.subcategories[0]
             # Old reference aircraft
             var_name_old = (
@@ -51,17 +56,15 @@ class FleetEvolution(AeromapsModel):
 
             ask_year_old = subcategory.old_reference_aircraft.ask_year
             ask_aircraft_value_old = self.fleet_model.df.loc[2019:  2050, var_name_old] / 100 * category_ask
-            ask_aircraft_value_old_level_covid = ask_aircraft_value_old.copy()
-            ask_aircraft_value_old_level_covid[covid_start_year:covid_end_year]=ask_aircraft_value_old_level_covid[covid_start_year-1]
-            print(ask_aircraft_value_old_level_covid)
-             ###STOPHERE NOTWORKING
+            ask_aircraft_value_old_covid_levelling = self.fleet_model.df.loc[2019:  2050, var_name_old] / 100 * category_ask_covid_levelling
 
             self.fleet_model.df.loc[
             :, ask_aircraft_var_name_old
             ] = ask_aircraft_value_old
 
             aircraft_in_fleet_value_old = np.ceil(ask_aircraft_value_old / ask_year_old)
-            aircraft_in_out_value_old = aircraft_in_fleet_value_old.diff()
+            aircraft_in_fleet_value_old_covid_levelling = np.ceil(ask_aircraft_value_old_covid_levelling / ask_year_old)
+            aircraft_in_out_value_old = aircraft_in_fleet_value_old_covid_levelling.diff()
 
             self.fleet_model.df.loc[
             :, aircraft_in_fleet_var_name_old
@@ -87,14 +90,17 @@ class FleetEvolution(AeromapsModel):
             )
 
             ask_year_recent = subcategory.recent_reference_aircraft.ask_year
+
             ask_aircraft_value_recent = self.fleet_model.df.loc[2019:  2050, var_name_recent] / 100 * category_ask
+            ask_aircraft_value_recent_covid_levelling = self.fleet_model.df.loc[2019:  2050, var_name_recent] / 100 * category_ask_covid_levelling
 
             self.fleet_model.df.loc[
             :, ask_aircraft_var_name_recent
             ] = ask_aircraft_value_recent
 
             aircraft_in_fleet_value_recent = np.ceil(ask_aircraft_value_recent / ask_year_recent)
-            aircraft_in_out_value_recent = aircraft_in_fleet_value_recent.diff()
+            aircraft_in_fleet_value_recent_covid_levelling = np.ceil(ask_aircraft_value_recent_covid_levelling / ask_year_recent)
+            aircraft_in_out_value_recent = aircraft_in_fleet_value_recent_covid_levelling.diff()
 
             self.fleet_model.df.loc[
             :, aircraft_in_fleet_var_name_recent
@@ -145,8 +151,11 @@ class FleetEvolution(AeromapsModel):
 
                     ask_year = aircraft.parameters.ask_year
                     ask_aircraft_value = self.fleet_model.df.loc[2019:  2050, var_name] / 100 * category_ask
+                    ask_aircraft_value_covid_levelling = self.fleet_model.df.loc[2019:  2050, var_name] / 100 * category_ask_covid_levelling
+
                     aircraft_in_fleet_value = np.ceil(ask_aircraft_value / float(ask_year))
-                    aircraft_in_out_value = aircraft_in_fleet_value.diff()
+                    aircraft_in_fleet_value_covid_levelling = np.ceil(ask_aircraft_value_covid_levelling / float(ask_year))
+                    aircraft_in_out_value = aircraft_in_fleet_value_covid_levelling.diff()
 
                     self.fleet_model.df.loc[
                     :, ask_aircraft_var_name
