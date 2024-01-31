@@ -98,7 +98,7 @@ class create_process(object):
             self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
             self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
             self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["test_model"].fleet_model = self.fleet_model
+            self.models["fleet_evolution"].fleet_model = self.fleet_model
         else:
             self.fleet = None
 
@@ -135,7 +135,7 @@ class create_process(object):
             self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
             self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
             self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["test_model"].fleet_model = self.fleet_model
+            self.models["fleet_evolution"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
