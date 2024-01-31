@@ -20,6 +20,8 @@ class FleetEvolution(AeromapsModel):
             ask_short_range: pd.Series = pd.Series(dtype="float64"),
             ask_medium_range: pd.Series = pd.Series(dtype="float64"),
             ask_long_range: pd.Series = pd.Series(dtype="float64"),
+            covid_start_year: int = 0,
+            covid_end_year: int = 0,
     ) -> Tuple[pd.Series]:
 
         for i, category in enumerate(self.fleet_model.fleet.categories.values()):
@@ -48,7 +50,11 @@ class FleetEvolution(AeromapsModel):
             )
 
             ask_year_old = subcategory.old_reference_aircraft.ask_year
-            ask_aircraft_value_old = self.fleet_model.df.loc[2020:  2050, var_name_old] / 100 * category_ask
+            ask_aircraft_value_old = self.fleet_model.df.loc[2019:  2050, var_name_old] / 100 * category_ask
+            ask_aircraft_value_old_level_covid = ask_aircraft_value_old.copy()
+            ask_aircraft_value_old_level_covid[covid_start_year:covid_end_year]=ask_aircraft_value_old_level_covid[covid_start_year-1]
+            print(ask_aircraft_value_old_level_covid)
+             ###STOPHERE NOTWORKING
 
             self.fleet_model.df.loc[
             :, ask_aircraft_var_name_old
@@ -81,7 +87,7 @@ class FleetEvolution(AeromapsModel):
             )
 
             ask_year_recent = subcategory.recent_reference_aircraft.ask_year
-            ask_aircraft_value_recent = self.fleet_model.df.loc[2020:  2050, var_name_recent] / 100 * category_ask
+            ask_aircraft_value_recent = self.fleet_model.df.loc[2019:  2050, var_name_recent] / 100 * category_ask
 
             self.fleet_model.df.loc[
             :, ask_aircraft_var_name_recent
@@ -138,7 +144,7 @@ class FleetEvolution(AeromapsModel):
                     )
 
                     ask_year = aircraft.parameters.ask_year
-                    ask_aircraft_value = self.fleet_model.df.loc[2020:  2050, var_name] / 100 * category_ask
+                    ask_aircraft_value = self.fleet_model.df.loc[2019:  2050, var_name] / 100 * category_ask
                     aircraft_in_fleet_value = np.ceil(ask_aircraft_value / float(ask_year))
                     aircraft_in_out_value = aircraft_in_fleet_value.diff()
 
@@ -154,6 +160,8 @@ class FleetEvolution(AeromapsModel):
                     :, aircraft_in_out_var_name
                     ] = aircraft_in_out_value
 
-        dummy_return = pd.Series(np.ones(self.end_year - self.historic_start_year))
+        dummy_return = {'a':8} #pd.Series(np.ones(self.end_year - self.historic_start_year))
+
+        print(dummy_return)
         # TODO handle the return => like "normal" variables, but with a variable number of them depending on fleet model output if we want to use them afterwards rather than this dummy return
         return (dummy_return,)
