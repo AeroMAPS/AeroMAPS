@@ -1,3 +1,4 @@
+from aeromaps.models.impacts.costs.abatement_cost.fleet_abatement_cost import FleetCarbonAbatementCosts
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -441,7 +442,8 @@ models_complex = {
 "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare"),
     "fleet_numeric": FleetEvolution("fleet_numeric"),
     "recurring_costs": RecurringCosts("recurring_costs"),
-    "non_recurring_costs": NonRecurringCosts("non_recurring_costs")
+    "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
+    "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost")
 }
 
 models_complex_improvedgwpstar = {

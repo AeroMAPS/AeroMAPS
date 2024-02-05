@@ -101,6 +101,7 @@ class create_process(object):
             self.models["fleet_numeric"].fleet_model = self.fleet_model
             self.models["recurring_costs"].fleet_model = self.fleet_model
             self.models["non_recurring_costs"].fleet_model = self.fleet_model
+            self.models["fleet_abatement_cost"].fleet_model = self.fleet_model
         else:
             self.fleet = None
 
@@ -140,6 +141,7 @@ class create_process(object):
             self.models["fleet_numeric"].fleet_model = self.fleet_model
             self.models["recurring_costs"].fleet_model = self.fleet_model
             self.models["non_recurring_costs"].fleet_model = self.fleet_model
+            self.models["fleet_abatement_cost"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
