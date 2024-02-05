@@ -6,7 +6,9 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftTotalDoc,
     PassengerAircraftDocNonEnergySimple,
 )
-from aeromaps.models.impacts.costs.manufacturers.fleet_evolution import FleetEvolution
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import FleetEvolution
+from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
+from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -437,7 +439,9 @@ models_complex = {
 "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit("passenger_aircraft_operational_profit"),
     "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
 "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare("passenger_aircraft_total_cost_and_airfare"),
-    "fleet_evolution": FleetEvolution("fleet_evolution")
+    "fleet_numeric": FleetEvolution("fleet_numeric"),
+    "recurring_costs": RecurringCosts("recurring_costs"),
+    "non_recurring_costs": NonRecurringCosts("non_recurring_costs")
 }
 
 models_complex_improvedgwpstar = {

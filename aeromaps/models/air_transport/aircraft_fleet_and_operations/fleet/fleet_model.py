@@ -38,6 +38,8 @@ class AircraftParameters:
     ask_year: float = None
     nrc_cost: float = None
     rc_cost: float = None
+    full_name: str = None
+
 
 
 @dataclass
@@ -51,6 +53,9 @@ class ReferenceAircraftParameters:
     ask_year: float = None
     nrc_cost: float = None
     rc_cost: float = None
+    full_name: str = None
+
+
 
 
 @dataclass
@@ -78,11 +83,17 @@ class FleetModel(AeromapsModel):
         # Start from empty dataframe
         self.df = self.df.filter([])
 
+        # Create an empty set of aircraft names
+        self.all_aircraft_elements = {}
+
         # Compute single aircraft shares
         self._compute_single_aircraft_share()
 
         # Compute aircraft shares
         self._compute_aircraft_share()
+
+        # Get aircraft names
+        self._get_aircraft_names()
 
         # Compute energy consumption and share per subcategory with respect to energy type
         self._compute_energy_consumption_and_share_wrt_energy_type()
@@ -106,6 +117,56 @@ class FleetModel(AeromapsModel):
 
         warnings.resetwarnings()
         warnings.simplefilter("ignore", DeprecationWarning)
+
+
+    def _get_aircraft_names(self):
+
+
+        for category in self.fleet.categories.values():
+            aircraft_category = []
+
+            subcategory = category.subcategories[0]
+
+            # Reference aircraft information
+            ref_old_aircraft_name = (
+                category.name
+                + ":"
+                + subcategory.name
+                + ":"
+                + "old_reference")
+
+            subcategory.old_reference_aircraft.full_name = ref_old_aircraft_name
+
+            aircraft_category.append(subcategory.old_reference_aircraft)
+
+            ref_recent_aircraft_name = (
+                category.name
+                + ":"
+                + subcategory.name
+                + ":"
+                + "recent_reference"
+            )
+
+            subcategory.recent_reference_aircraft.full_name = ref_recent_aircraft_name
+
+            aircraft_category.append(subcategory.recent_reference_aircraft)
+
+            for i, subcategory in category.subcategories.items():
+                for aircraft in subcategory.aircraft.values():
+
+                    for k in self.df.index:
+                        aircraft_name=(
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":"
+                                + aircraft.name
+                        )
+                        aircraft.parameters.full_name=aircraft_name
+                        aircraft_category.append(aircraft)
+
+            self.all_aircraft_elements[category.name]=aircraft_category
+        return
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         # Energy consumption calculations for drop-in fuel and hydrogen
@@ -1428,8 +1489,8 @@ class Aircraft(object):
         self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
         self.energy_type = row[AIRCRAFT_COLUMNS[7]]
         self.parameters.ask_year = row[AIRCRAFT_COLUMNS[8]]
-        self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[9]]
-        self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[10]]
+        self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[9]]
+        self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[10]]
 
         return self
 

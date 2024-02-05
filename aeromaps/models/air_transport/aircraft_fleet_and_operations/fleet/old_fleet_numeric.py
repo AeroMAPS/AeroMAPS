@@ -10,7 +10,7 @@ import numpy as np
 
 class FleetEvolution(AeromapsModel):
     def __init__(
-            self, name="fleet_evolution", fleet_model=None, *args, **kwargs
+            self, name="fleet_numeric", fleet_model=None, *args, **kwargs
     ):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
@@ -33,9 +33,13 @@ class FleetEvolution(AeromapsModel):
             else:
                 category_ask = ask_long_range
 
+            # Caculation of virtual fleet demand assuming that manufacturers/airlines adapt their production to be ready for traffic catchup after covid.
             category_ask_covid_levelling = category_ask.copy()
-            category_ask_covid_levelling.loc[covid_start_year:covid_end_year] = \
-            category_ask.loc[covid_start_year - 1]
+            category_ask_pre_covid = category_ask.loc[covid_start_year - 1]
+            category_ask_post_covid = category_ask.loc[covid_end_year]
+
+            for year in range(covid_start_year, covid_end_year+1):
+                category_ask_covid_levelling.loc[year] = ((category_ask_pre_covid-category_ask_post_covid)/(covid_start_year-1)-(covid_end_year))*(year-covid_start_year-1)+category_ask_pre_covid
 
 
             subcategory = category.subcategories[0]
@@ -48,6 +52,10 @@ class FleetEvolution(AeromapsModel):
             )
             aircraft_in_fleet_var_name_old = (
                     category.name + ":" + subcategory.name + ":" + "old_reference:aircraft_in_fleet"
+            )
+
+            aircraft_in_fleet_covid_levelling_var_name_old = (
+                    category.name + ":" + subcategory.name + ":" + "old_reference:aircraft_in_fleet_covid_levelling"
             )
 
             aircraft_in_out_var_name_old = (
@@ -71,18 +79,29 @@ class FleetEvolution(AeromapsModel):
             ] = aircraft_in_fleet_value_old
 
             self.fleet_model.df.loc[
+            :, aircraft_in_fleet_covid_levelling_var_name_old
+            ] = aircraft_in_fleet_value_old_covid_levelling
+
+            self.fleet_model.df.loc[
             :, aircraft_in_out_var_name_old
             ] = aircraft_in_out_value_old
 
             # Recent reference aircraft
+            aircraft_var = (category.name + ":" + subcategory.name + ":" + "recent_reference")
+
             var_name_recent = (
                     category.name + ":" + subcategory.name + ":" + "recent_reference:aircraft_share"
             )
             ask_aircraft_var_name_recent = (
                     category.name + ":" + subcategory.name + ":" + "recent_reference:aircraft_ask"
             )
+
             aircraft_in_fleet_var_name_recent = (
                     category.name + ":" + subcategory.name + ":" + "recent_reference:aircraft_in_fleet"
+            )
+
+            aircraft_in_fleet_covid_levelling_var_name_recent = (
+                    category.name + ":" + subcategory.name + ":" + "recent_reference:aircraft_in_fleet_covid_levelling"
             )
 
             aircraft_in_out_var_name_recent = (
@@ -107,6 +126,10 @@ class FleetEvolution(AeromapsModel):
             ] = aircraft_in_fleet_value_recent
 
             self.fleet_model.df.loc[
+            :, aircraft_in_fleet_covid_levelling_var_name_recent
+            ] = aircraft_in_fleet_value_recent_covid_levelling
+
+            self.fleet_model.df.loc[
             :, aircraft_in_out_var_name_recent
             ] = aircraft_in_out_value_recent
 
@@ -114,44 +137,34 @@ class FleetEvolution(AeromapsModel):
 
                 # New aircraft
                 for aircraft in subcategory.aircraft.values():
-                    var_name = (
-                            category.name
+                    aicraft_var= (category.name
                             + ":"
                             + subcategory.name
                             + ":"
-                            + aircraft.name
-                            + ":aircraft_share"
+                            + aircraft.name)
+
+                    share_var_name = (
+                            aicraft_var + ":aircraft_share"
                     )
                     ask_aircraft_var_name = (
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                            + ":aircraft_ask"
+                            aicraft_var + ":aircraft_ask"
                     )
 
                     aircraft_in_fleet_var_name = (
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                            + ":aircraft_in_fleet"
+                            aicraft_var + ":aircraft_in_fleet"
+                    )
+
+                    aircraft_in_fleet_covid_levelling_var_name = (
+                            aicraft_var + ":aircraft_in_fleet_covid_levelling"
                     )
 
                     aircraft_in_out_var_name = (
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                            + ":aircraft_in_out"
+                            aicraft_var + ":aircraft_in_out"
                     )
 
                     ask_year = aircraft.parameters.ask_year
-                    ask_aircraft_value = self.fleet_model.df.loc[2019:  2050, var_name] / 100 * category_ask
-                    ask_aircraft_value_covid_levelling = self.fleet_model.df.loc[2019:  2050, var_name] / 100 * category_ask_covid_levelling
+                    ask_aircraft_value = self.fleet_model.df.loc[2019:  2050, share_var_name] / 100 * category_ask
+                    ask_aircraft_value_covid_levelling = self.fleet_model.df.loc[2019:  2050, share_var_name] / 100 * category_ask_covid_levelling
 
                     aircraft_in_fleet_value = np.ceil(ask_aircraft_value / float(ask_year))
                     aircraft_in_fleet_value_covid_levelling = np.ceil(ask_aircraft_value_covid_levelling / float(ask_year))
@@ -166,11 +179,13 @@ class FleetEvolution(AeromapsModel):
                     ] = aircraft_in_fleet_value
 
                     self.fleet_model.df.loc[
+                    :, aircraft_in_fleet_covid_levelling_var_name
+                    ] = aircraft_in_fleet_value_covid_levelling
+
+                    self.fleet_model.df.loc[
                     :, aircraft_in_out_var_name
                     ] = aircraft_in_out_value
 
-        dummy_return = {'a':8} #pd.Series(np.ones(self.end_year - self.historic_start_year))
-
-        print(dummy_return)
+        fleet_evolution_return = True
         # TODO handle the return => like "normal" variables, but with a variable number of them depending on fleet model output if we want to use them afterwards rather than this dummy return
-        return (dummy_return,)
+        return (fleet_evolution_return)
