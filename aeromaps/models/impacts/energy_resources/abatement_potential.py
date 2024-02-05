@@ -18,20 +18,20 @@ class BiofuelAbatementPotential(AeromapsModel):
     def compute(
         self,
         biofuel_atj_efficiency: pd.Series = pd.Series(dtype="float64"),
-        # biomass_atj_consumption: pd.Series = pd.Series(dtype="float64"),
+        biomass_atj_consumption: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # biomass_hefa_fog_consumption: pd.Series = pd.Series(dtype="float64"),
+        biomass_hefa_fog_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_fuel_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_fog_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # biomass_hefa_others_consumption: pd.Series = pd.Series(dtype="float64"),
+        biomass_hefa_others_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_oil_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # biomass_ft_consumption: pd.Series = pd.Series(dtype="float64"),
+        biomass_ft_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_msw_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
-        # biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
         # hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
         # hydrogen_replacement_ratio: float = 1.0,
@@ -49,6 +49,12 @@ class BiofuelAbatementPotential(AeromapsModel):
         aviation_biomass_allocated_share: float = 0.0,
         aviation_available_electricity: float = 0.0,
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -186,51 +192,51 @@ class BiofuelAbatementPotential(AeromapsModel):
         ##### Effective #####
         # TODO delete this part?
 
-        # abatement_effective_atj = (
-        #     biomass_atj_consumption
-        #     * 10**12
-        #     * biofuel_atj_efficiency
-        #     * (kerosene_emission_factor - biofuel_atj_emission_factor)
-        #     / 1000000
-        # )
-        #
-        # # Biomass consumption in in EJ, while emission factors are in gCO2e/MJ, abatement effective is in tCO2e
-        #
-        # abatement_effective_hefa_fog = (
-        #     biomass_hefa_fog_consumption
-        #     * 10**12
-        #     * biofuel_hefa_fuel_efficiency
-        #     * (kerosene_emission_factor - biofuel_hefa_fog_emission_factor)
-        #     / 1000000
-        # )
-        #
-        # abatement_effective_hefa_others = (
-        #     biomass_hefa_others_consumption
-        #     * 10**12
-        #     * biofuel_hefa_oil_efficiency
-        #     * biofuel_hefa_fuel_efficiency
-        #     * (kerosene_emission_factor - biofuel_hefa_others_emission_factor)
-        #     / 1000000
-        # )
-        #
-        # abatement_effective_ft_msw = (
-        #     biomass_ft_consumption
-        #     * (biofuel_ft_msw_share / (biofuel_ft_others_share + biofuel_ft_msw_share))
-        #     * 10**12
-        #     * biofuel_ft_efficiency
-        #     * (kerosene_emission_factor - biofuel_ft_msw_emission_factor)
-        #     / 1000000
-        # )
-        #
-        # abatement_effective_ft_others = (
-        #     biomass_ft_consumption
-        #     * (biofuel_ft_others_share / (biofuel_ft_others_share + biofuel_ft_msw_share))
-        #     * 10**12
-        #     * biofuel_ft_efficiency
-        #     * (kerosene_emission_factor - biofuel_ft_others_emission_factor)
-        #     / 1000000
-        # )
-        #
+        abatement_effective_atj = (
+            biomass_atj_consumption
+            * 10**12
+            * biofuel_atj_efficiency
+            * (kerosene_emission_factor - biofuel_atj_emission_factor)
+            / 1000000
+        )
+
+        # Biomass consumption in in EJ, while emission factors are in gCO2e/MJ, abatement effective is in tCO2e
+
+        abatement_effective_hefa_fog = (
+            biomass_hefa_fog_consumption
+            * 10**12
+            * biofuel_hefa_fuel_efficiency
+            * (kerosene_emission_factor - biofuel_hefa_fog_emission_factor)
+            / 1000000
+        )
+
+        abatement_effective_hefa_others = (
+            biomass_hefa_others_consumption
+            * 10**12
+            * biofuel_hefa_oil_efficiency
+            * biofuel_hefa_fuel_efficiency
+            * (kerosene_emission_factor - biofuel_hefa_others_emission_factor)
+            / 1000000
+        )
+
+        abatement_effective_ft_msw = (
+            biomass_ft_consumption
+            * (biofuel_ft_msw_share / (biofuel_ft_others_share + biofuel_ft_msw_share))
+            * 10**12
+            * biofuel_ft_efficiency
+            * (kerosene_emission_factor - biofuel_ft_msw_emission_factor)
+            / 1000000
+        )
+
+        abatement_effective_ft_others = (
+            biomass_ft_consumption
+            * (biofuel_ft_others_share / (biofuel_ft_others_share + biofuel_ft_msw_share))
+            * 10**12
+            * biofuel_ft_efficiency
+            * (kerosene_emission_factor - biofuel_ft_others_emission_factor)
+            / 1000000
+        )
+
         # h2_avoided_emissions_factor = (
         #     kerosene_emission_factor / hydrogen_replacement_ratio
         #     - hydrogen_electrolysis_emission_factor
@@ -244,26 +250,26 @@ class BiofuelAbatementPotential(AeromapsModel):
         #     * h2_avoided_emissions_factor
         #     / 1000000
         # )
-        #
-        # abatement_effective_electrofuel = (
-        #     electricity_electrofuel_consumption
-        #     * 10**12
-        #     * electrolysis_efficiency
-        #     * electrofuel_hydrogen_efficiency
-        #     * (kerosene_emission_factor - electrofuel_emission_factor)
-        #     / 1000000
-        # )
+
+        abatement_effective_electrofuel = (
+            electricity_electrofuel_consumption
+            * 10**12
+            * electrolysis_efficiency
+            * electrofuel_hydrogen_efficiency
+            * (kerosene_emission_factor - electrofuel_emission_factor)
+            / 1000000
+        )
 
         # TODO delete?
-        # self.df.loc[:, "abatement_effective_atj"] = abatement_effective_atj
-        # self.df.loc[:, "abatement_effective_hefa_fog"] = abatement_effective_hefa_fog
-        # self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
-        # self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
-        # self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
+        self.df.loc[:, "abatement_effective_atj"] = abatement_effective_atj
+        self.df.loc[:, "abatement_effective_hefa_fog"] = abatement_effective_hefa_fog
+        self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
+        self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
+        self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
         # self.df.loc[
         #     :, "abatement_effective_hydrogen_electrolysis"
         # ] = abatement_effective_hydrogen_electrolysis
-        # self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
+        self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
 
         return (
             abatement_potential_atj,
@@ -273,13 +279,13 @@ class BiofuelAbatementPotential(AeromapsModel):
             abatement_potential_ft_others,
             # abatement_potential_hydrogen_electrolysis,
             abatement_potential_electrofuel,
-            # abatement_effective_atj,
-            # abatement_effective_hefa_fog,
-            # abatement_effective_hefa_others,
-            # abatement_effective_ft_msw,
-            # abatement_effective_ft_others,
+            abatement_effective_atj,
+            abatement_effective_hefa_fog,
+            abatement_effective_hefa_others,
+            abatement_effective_ft_msw,
+            abatement_effective_ft_others,
             # abatement_effective_hydrogen_electrolysis,
-            # abatement_effective_electrofuel,
+            abatement_effective_electrofuel,
             energy_avail_atj,
             energy_avail_hefa_fog,
             energy_avail_hefa_others,
