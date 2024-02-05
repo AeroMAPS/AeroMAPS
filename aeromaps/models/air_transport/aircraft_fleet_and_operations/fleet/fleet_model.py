@@ -153,17 +153,15 @@ class FleetModel(AeromapsModel):
 
             for i, subcategory in category.subcategories.items():
                 for aircraft in subcategory.aircraft.values():
-
-                    for k in self.df.index:
-                        aircraft_name=(
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                        )
-                        aircraft.parameters.full_name=aircraft_name
-                        aircraft_category.append(aircraft)
+                    aircraft_name=(
+                            category.name
+                            + ":"
+                            + subcategory.name
+                            + ":"
+                            + aircraft.name
+                    )
+                    aircraft.parameters.full_name=aircraft_name
+                    aircraft_category.append(aircraft)
 
             self.all_aircraft_elements[category.name]=aircraft_category
         return

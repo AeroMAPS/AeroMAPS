@@ -35,7 +35,6 @@ class FleetEvolution(AeromapsModel):
         aircraft_in_out_value_dict={}
 
         for category, sets in self.fleet_model.all_aircraft_elements.items():
-
             if category == 'Short Range':
                 category_ask = ask_short_range
             elif category == 'Medium Range':
@@ -91,21 +90,13 @@ class FleetEvolution(AeromapsModel):
                 aircraft_in_fleet_value_covid_levelling = np.ceil(ask_aircraft_value_covid_levelling / float(ask_year))
                 aircraft_in_out_value = aircraft_in_fleet_value_covid_levelling.diff()
 
-                self.fleet_model.df.loc[
-                :, ask_aircraft_var_name
-                ] = ask_aircraft_value
-
-                self.fleet_model.df.loc[
-                :, aircraft_in_fleet_var_name
-                ] = aircraft_in_fleet_value
-
-                self.fleet_model.df.loc[
-                :, aircraft_in_fleet_covid_levelling_var_name
-                ] = aircraft_in_fleet_value_covid_levelling
-
-                self.fleet_model.df.loc[
-                :, aircraft_in_out_var_name
-                ] = aircraft_in_out_value
+                self.fleet_model.df = pd.concat([
+                    self.fleet_model.df,
+                    ask_aircraft_value.rename(ask_aircraft_var_name),
+                    aircraft_in_fleet_value.rename(aircraft_in_fleet_var_name),
+                    aircraft_in_fleet_value_covid_levelling.rename(aircraft_in_fleet_covid_levelling_var_name),
+                    aircraft_in_out_value.rename(aircraft_in_out_var_name),
+                ], axis=1)
 
                 ask_aircraft_value_dict[aircraft_var_name] = ask_aircraft_value
                 aircraft_in_fleet_value_dict[aircraft_var_name] = aircraft_in_fleet_value

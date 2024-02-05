@@ -3,6 +3,7 @@
 # @File : recurring_costs.py
 # @Software: PyCharm
 import numpy as np
+import pandas as pd
 
 from aeromaps.models.base import AeromapsModel
 from typing import Tuple
@@ -45,9 +46,10 @@ class RecurringCosts(AeromapsModel):
                 rc_aircraft_value = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_in_out")] * float(rc_cost)
                 rc_aircraft_value[rc_aircraft_value<0]=0
 
-                self.fleet_model.df.loc[
-                :, rc_aircraft_var_name
-                ] = rc_aircraft_value
+                self.fleet_model.df = pd.concat([
+                    self.fleet_model.df,
+                    rc_aircraft_value.rename(rc_aircraft_var_name),
+                ], axis=1)
 
                 rc_aircraft_value_dict[aircraft_var_name] = rc_aircraft_value
 

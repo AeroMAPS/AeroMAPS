@@ -48,9 +48,10 @@ class NonRecurringCosts(AeromapsModel):
 
                 nrc_aircraft_value = self.compute_nrc(float(nrc_cost), 5, eis)
 
-                self.fleet_model.df.loc[
-                :, nrc_aircraft_var_name
-                ] = nrc_aircraft_value
+                self.fleet_model.df = pd.concat([
+                    self.fleet_model.df,
+                    nrc_aircraft_value.rename(nrc_aircraft_var_name),
+                ], axis=1)
 
                 nrc_aircraft_value_dict[aircraft_var_name] = nrc_aircraft_value
 
