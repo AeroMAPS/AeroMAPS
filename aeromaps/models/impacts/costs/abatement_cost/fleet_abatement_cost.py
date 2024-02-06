@@ -2,6 +2,7 @@
 # @Author : a.salgas
 # @File : fleet_abatement_cost.py
 # @Software: PyCharm
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeromapsModel
@@ -17,7 +18,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
     def compute(
             self,
-            aircraft_in_out_value_dict: dict,
+            ask_aircraft_value_dict: dict,
             doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
             doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
             doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
@@ -52,30 +53,47 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 if hasattr(aircraft_var,"parameters"):
                     aircraft_var_name = aircraft_var.parameters.full_name
                     aircraft_energy_delta = (1+float(aircraft_var.parameters.consumption_evolution)/100) * category_recent_reference.energy_per_ask  - category_reference_energy
-                    aircraft_doc_ne_delta = (1+float(aircraft_var.parameters.doc_non_energy_evolution)/100) *category_recent_reference.doc_non_energy_base - category_reference_doc_ne
+                    aircraft_doc_ne_delta = (1+float(aircraft_var.parameters.doc_non_energy_evolution)/100) * category_recent_reference.doc_non_energy_base - category_reference_doc_ne
+
                 else:
                     aircraft_var_name = aircraft_var.full_name
                     aircraft_energy_delta = aircraft_var.energy_per_ask - category_reference_energy
                     aircraft_doc_ne_delta = aircraft_var.doc_non_energy_base - category_reference_doc_ne
 
+                # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
+                # Value set to NaN to avoid erroneous interpretation
 
+                if aircraft_energy_delta > 0:
+                    aircraft_carbon_abatement_cost = pd.Series(np.NaN, index=self.fleet_model.df.index)
+                    aircraft_carbon_abatement_volume = pd.Series(np.NaN, index=self.fleet_model.df.index)
+                else:
+                    # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
+                    aircraft_carbon_abatement_cost = (aircraft_energy_delta * kerosene_market_price / fuel_lhv + aircraft_doc_ne_delta) / (-aircraft_energy_delta * kerosene_emission_factor )*1000000 #conversion to ton
 
-                aicraft_carbon_abatement_cost = (aircraft_energy_delta * kerosene_market_price / fuel_lhv + aircraft_doc_ne_delta) / (-aircraft_energy_delta * kerosene_emission_factor )*1000000 #conversion to ton
-                print(aircraft_var_name, aicraft_carbon_abatement_cost)
+                    # TODO use dictionnary if possible once implementeed
+                    aircraft_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_ask")]
+
+                    aircraft_carbon_abatement_volume = aircraft_ask * aircraft_energy_delta * kerosene_emission_factor  / 1000000 # in tons
+
                 cac_aircraft_var_name = (
                         aircraft_var_name + ":aircraft_carbon_abatement_cost"
                 )
 
-
-
-                #TODO use dictionnary if possible once implementeed
+                abatement_volume_aircraft_var_name = (
+                        aircraft_var_name + ":aircraft_carbon_abatement_volume"
+                )
 
                 self.fleet_model.df = pd.concat([
                     self.fleet_model.df,
-                    aicraft_carbon_abatement_cost.rename(cac_aircraft_var_name),
+                    aircraft_carbon_abatement_cost.rename(cac_aircraft_var_name),
                 ], axis=1)
 
-                cac_aircraft_value_dict[aircraft_var_name] = aicraft_carbon_abatement_cost
+                self.fleet_model.df = pd.concat([
+                    self.fleet_model.df,
+                    aircraft_carbon_abatement_volume.rename(abatement_volume_aircraft_var_name),
+                ], axis=1)
+
+                cac_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
 
         return(
             cac_aircraft_value_dict,
