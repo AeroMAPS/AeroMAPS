@@ -29,8 +29,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
             kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         dict,
+        dict
         ]:
         cac_aircraft_value_dict={}
+        cav_aircraft_value_dict={}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
 
             category_recent_reference=self.fleet_model.all_aircraft_elements[category][1]
@@ -38,6 +40,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
             fuel_lhv=35.3
             if category == 'Short Range':
                 category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init
+                # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
                 category_reference_energy = energy_per_ask_without_operations_short_range_dropin_fuel[self.prospection_start_year-1]
             elif category == 'Medium Range':
                 category_reference_doc_ne = doc_non_energy_per_ask_medium_range_dropin_fuel_init
@@ -62,6 +65,8 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
                 # Value set to NaN to avoid erroneous interpretation
+
+                #TODO handle hydrogen aircraft case!
 
                 if aircraft_energy_delta > 0:
                     aircraft_carbon_abatement_cost = pd.Series(np.NaN, index=self.fleet_model.df.index)
@@ -94,9 +99,11 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 ], axis=1)
 
                 cac_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
+                cav_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_volume
 
         return(
             cac_aircraft_value_dict,
+            cav_aircraft_value_dict,
             )
 
 
