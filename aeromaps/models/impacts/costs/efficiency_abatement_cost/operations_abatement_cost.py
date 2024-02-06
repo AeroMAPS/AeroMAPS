@@ -36,6 +36,7 @@ class OperationsAbatementCost(AeromapsModel):
         operations_gain: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        ask: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
 
         energy_per_ask_without_operations_total = (
@@ -50,14 +51,14 @@ class OperationsAbatementCost(AeromapsModel):
 
         emissions_reduction_operations = (
             energy_per_ask_without_operations_total
-            * operations_gain
+            * operations_gain / 100
             * kerosene_emission_factor
             / 1000000
         )
         extra_cost_operations = (
             operational_efficiency_cost_per_ask
             - energy_per_ask_without_operations_total
-            * operations_gain
+            * operations_gain / 100
             * kerosene_market_price
             / fuel_lhv
         )
@@ -65,5 +66,7 @@ class OperationsAbatementCost(AeromapsModel):
         operations_abatement_cost = extra_cost_operations / emissions_reduction_operations
 
         self.df.loc[:, "operations_abatement_cost"] = operations_abatement_cost
+        self.df.loc[:, "operations_abatement_potential"] = emissions_reduction_operations * ask
+
 
         return operations_abatement_cost

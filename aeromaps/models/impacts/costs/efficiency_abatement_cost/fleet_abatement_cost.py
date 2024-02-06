@@ -109,7 +109,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     # TODO use dictionnary if possible once implementeed
                     aircraft_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_ask")]
 
-                    aircraft_carbon_abatement_volume = (
+                    aircraft_carbon_abatement_volume = - (
                         aircraft_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
                     )  # in tons
 
