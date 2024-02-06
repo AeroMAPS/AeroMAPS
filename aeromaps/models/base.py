@@ -3,6 +3,8 @@ import numpy as np
 from numpy import genfromtxt
 from scipy.interpolate import interp1d
 import warnings
+from fair import FAIR
+from fair.interface import fill, initialise
 
 
 class AeromapsModel(object):
@@ -219,3 +221,242 @@ def GWPStarEquivalentEmissionsFunction(
     self.df_climate.pop("emissions_equivalent_emissions")
 
     return emissions_equivalent_emissions
+
+
+def RunFair2(self, species_quantities, without="None"):
+
+    # Creation of FaIR instance
+    f = FAIR()
+
+    # Definition of time horizon, scenarios, configs
+    start_time = self.climate_historic_start_year
+    end_time = self.end_year
+    f.define_time(start_time, end_time, 1)
+    f.define_scenarios(["central"])
+    f.define_configs(["high", "central", "low"])
+
+    # Definition of species and properties
+    species = [
+        "World CO2",
+        "World CH4",
+        "Aviation CO2",
+        "Aviation contrails",
+        "Aviation NOx ST O3 increase",
+        "Aviation NOx LT O3 decrease",
+        "Aviation NOx CH4 decrease",
+        "Aviation NOx H2O decrease",
+        "Aviation H2O",
+        "Aviation sulfur",
+        "Aviation soot",
+        "Aviation aerosols",
+    ]
+    properties = {
+        "World CO2": {
+            "type": "co2",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "World CH4": {
+            "type": "ch4",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": True,  # we treat methane as a reactive gas
+        },
+        "Aviation CO2": {
+            "type": "co2",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation contrails": {
+            "type": "contrails",
+            "input_mode": "forcing",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation NOx ST O3 increase": {
+            "type": "ozone",
+            "input_mode": "forcing",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation NOx LT O3 decrease": {
+            "type": "co2",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation NOx CH4 decrease": {
+            "type": "co2",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation NOx H2O decrease": {
+            "type": "co2",
+            "input_mode": "emissions",
+            "greenhouse_gas": True,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation H2O": {
+            "type": "h2o stratospheric",
+            "input_mode": "forcing",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation sulfur": {
+            "type": "sulfur",
+            "input_mode": "emissions",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": True,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        "Aviation soot": {
+            "type": "black carbon",
+            "input_mode": "emissions",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": True,
+            "aerosol_chemistry_from_concentration": False,
+        },
+        # Dedicated specie for aerosols
+        "Aviation aerosols": {
+            "type": "ari",
+            "input_mode": "calculated",
+            "greenhouse_gas": False,
+            "aerosol_chemistry_from_emissions": False,
+            "aerosol_chemistry_from_concentration": False,
+        },
+    }
+    f.define_species(species, properties)
+
+    # Definition of run options
+    f.ghg_method = "leach2021"
+    f.aci_method = "myhre1998"
+
+    # Creation of input and output data
+    f.allocate()
+
+    # Filling species quantities
+    if len(E) != 0:  # if we have CO2 as an entry
+        i = 0
+        for scenario in f.scenarios:
+            for j in range(len(E)):
+                fill(
+                    f.emissions, E[j, i], specie=species[j], config=f.configs[1], scenario=scenario
+                )
+            i += 1
+
+    if len(ERF) != 0:  # if we have non-CO2s as an entry
+        i = 0
+        for scenario in f.scenarios:
+            for j in range(len(ERF)):
+                fill(
+                    f.forcing,
+                    ERF[j, i],
+                    specie=species[j + len(E)],
+                    config=f.configs[1],
+                    scenario=scenario,
+                )
+            i += 1
+
+    initialise(f.forcing, 0)
+    initialise(f.temperature, 0)
+    initialise(f.cumulative_emissions, 0)
+    initialise(f.airborne_emissions, 0)
+
+    # Filling climate configs
+    fill(f.climate_configs["ocean_heat_transfer"], [1.1, 1.6, 0.9], config="central")
+    fill(f.climate_configs["ocean_heat_capacity"], [8, 14, 100], config="central")
+    fill(f.climate_configs["deep_ocean_efficacy"], 1.1, config="central")
+
+    # Filling species configs
+    for specie in species:
+        if specie == "World CO2" or specie == "Aviation CO2":
+            fill(
+                f.species_configs["partition_fraction"],
+                [0.2173, 0.2240, 0.2824, 0.2763],
+                specie="CO2",
+            )
+            fill(
+                f.species_configs["unperturbed_lifetime"], [1e9, 394.4, 36.54, 4.304], specie="CO2"
+            )
+            fill(f.species_configs["baseline_concentration"], 278.3, specie="CO2")
+            fill(f.species_configs["forcing_reference_concentration"], 278.3, specie="CO2")
+            fill(f.species_configs["molecular_weight"], 44.009, specie="CO2")
+            fill(
+                f.species_configs["greenhouse_gas_radiative_efficiency"],
+                1.3344985680386619e-05,
+                specie="CO2",
+            )
+            f.calculate_iirf0()
+            f.calculate_g()
+            f.calculate_concentration_per_emission()
+            fill(f.species_configs["iirf_0"], 29, specie="CO2")
+            fill(f.species_configs["iirf_airborne"], [0.000819 * 2], specie="CO2")
+            fill(f.species_configs["iirf_uptake"], [0.00846 * 2], specie="CO2")
+            fill(f.species_configs["iirf_temperature"], [8], specie="CO2")
+            fill(f.species_configs["aci_scale"], -2.09841432)
+
+        if specie == "CH4_E" or specie == "CH4_F":
+            fill(f.species_configs["partition_fraction"], [1, 0, 0, 0], specie=specie)
+            fill(f.species_configs["unperturbed_lifetime"], 8.25, specie=specie)
+            fill(f.species_configs["baseline_concentration"], 729, specie=specie)  # ppb
+            fill(f.species_configs["forcing_reference_concentration"], 729, specie=specie)
+            fill(f.species_configs["molecular_weight"], 16.043, specie=specie)
+            fill(
+                f.species_configs["greenhouse_gas_radiative_efficiency"],
+                0.00038864402860869495,
+                specie=specie,
+            )
+
+            f.calculate_iirf0()
+            f.calculate_g()
+            f.calculate_concentration_per_emission()
+
+            fill(f.species_configs["iirf_airborne"], 0.00032, specie=specie)
+            fill(f.species_configs["iirf_uptake"], 0, specie=specie)
+            fill(f.species_configs["iirf_temperature"], -0.3, specie=specie)
+
+            fill(
+                f.species_configs["erfari_radiative_efficiency"],
+                -0.002653 / 1023.2219696044921,
+                specie=specie,
+            )  # W m-2 ppb-1
+
+            fill(f.species_configs["aci_scale"], -2.09841432)
+
+        if specie == "sulfur":
+            erf_aci_sulfur = 0.0
+            fill(
+                f.species_configs["erfari_radiative_efficiency"],
+                -0.0199 + erf_aci_sulfur,
+                specie="sulfur",
+            )  # W m-2 MtSO2-1 yr
+            fill(f.species_configs["aci_shape"], 0.0, specie="sulfur")
+
+        if specie == "BC":
+            erf_aci_BC = 0.0
+            fill(
+                f.species_configs["erfari_radiative_efficiency"], 0.1007 + erf_aci_BC, specie="BC"
+            )  # W m-2 MtC-1 yr
+            fill(f.species_configs["aci_shape"], 0.0, specie="BC")
+
+    # Run
+    f.run()
+
+    return f.temperature.loc[dict(layer=0, config=f.configs[1])]
+
+
+def RunFair(self, species_quantities, without="None"):
+    a = np.zeros(self.end_year - 1765 + 1)
+    return a
