@@ -707,7 +707,7 @@ class TemperatureFair(AeromapsModel):
             species_quantities,
             without="None",
         )
-
+        print(total_temperature_list)
         ## Temperature increase due to aviation species
         temperature_increase_from_co2_from_aviation_list = total_temperature_list - RunFair(
             self,
