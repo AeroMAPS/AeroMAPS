@@ -33,11 +33,11 @@ class BiofuelAbatementPotential(AeromapsModel):
         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        # hydrogen_replacement_ratio: float = 1.0,
+        hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_replacement_ratio: float = 1.0,
         electricity_hydrogen_consumption: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        # liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
+        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
         electricity_electrofuel_consumption: pd.Series = pd.Series(dtype="float64"),
         electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -237,19 +237,21 @@ class BiofuelAbatementPotential(AeromapsModel):
             / 1000000
         )
 
-        # h2_avoided_emissions_factor = (
-        #     kerosene_emission_factor / hydrogen_replacement_ratio
-        #     - hydrogen_electrolysis_emission_factor
-        # )
-        #
-        # abatement_effective_hydrogen_electrolysis = (
-        #     electricity_hydrogen_consumption
-        #     * 10**12
-        #     * electrolysis_efficiency
-        #     * liquefaction_efficiency
-        #     * h2_avoided_emissions_factor
-        #     / 1000000
-        # )
+        # TODO reposer clairement le cadre de la comptabilisation de l'efficacité/énérgie avion h2!
+
+        h2_avoided_emissions_factor = (
+            kerosene_emission_factor / hydrogen_replacement_ratio
+            - hydrogen_electrolysis_emission_factor
+        )
+
+        abatement_effective_hydrogen_electrolysis = (
+            electricity_hydrogen_consumption
+            * 10**12
+            * electrolysis_efficiency
+            * liquefaction_efficiency
+            * h2_avoided_emissions_factor
+            / 1000000
+        )
 
         abatement_effective_electrofuel = (
             electricity_electrofuel_consumption
@@ -266,9 +268,9 @@ class BiofuelAbatementPotential(AeromapsModel):
         self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
         self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
         self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
-        # self.df.loc[
-        #     :, "abatement_effective_hydrogen_electrolysis"
-        # ] = abatement_effective_hydrogen_electrolysis
+        self.df.loc[
+            :, "abatement_effective_hydrogen_electrolysis"
+        ] = abatement_effective_hydrogen_electrolysis
         self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
 
         return (
@@ -284,7 +286,7 @@ class BiofuelAbatementPotential(AeromapsModel):
             abatement_effective_hefa_others,
             abatement_effective_ft_msw,
             abatement_effective_ft_others,
-            # abatement_effective_hydrogen_electrolysis,
+            abatement_effective_hydrogen_electrolysis,
             abatement_effective_electrofuel,
             energy_avail_atj,
             energy_avail_hefa_fog,
