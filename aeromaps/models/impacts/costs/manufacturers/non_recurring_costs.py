@@ -10,60 +10,54 @@ from typing import Tuple
 
 
 class NonRecurringCosts(AeromapsModel):
-    def __init__(
-            self, name="non_recurring_costs", fleet_model=None, *args, **kwargs
-    ):
+    def __init__(self, name="non_recurring_costs", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
 
     def compute(
-            self,
-            aircraft_in_out_value_dict:  dict,
-    ) -> Tuple[
-        dict,
-        ]:
-        nrc_aircraft_value_dict={}
+        self,
+        aircraft_in_out_value_dict: dict,
+    ) -> Tuple[dict,]:
+        nrc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
-
 
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
                 # Check if it's a reference aircraft or a normal aircraft...
-                if hasattr(aircraft_var,"parameters"):
+                if hasattr(aircraft_var, "parameters"):
                     aircraft_var_name = aircraft_var.parameters.full_name
                     nrc_cost = aircraft_var.parameters.nrc_cost
-                    eis=int(aircraft_var.parameters.entry_into_service_year)
+                    eis = int(aircraft_var.parameters.entry_into_service_year)
                 else:
                     aircraft_var_name = aircraft_var.full_name
                     nrc_cost = aircraft_var.nrc_cost
-                    eis=int(aircraft_var.entry_into_service_year)
+                    eis = int(aircraft_var.entry_into_service_year)
 
-                nrc_aircraft_var_name = (
-                        aircraft_var_name + ":aircraft_non_recurring_costs"
-                )
+                nrc_aircraft_var_name = aircraft_var_name + ":aircraft_non_recurring_costs"
 
-                #TODO use dictionnary if possible once implementeed
+                # TODO use dictionnary if possible once implementeed
                 # nrc_aircraft_value = max(0.0, aircraft_in_out_value_dict[aircraft_var_name] * nrc_cost)
                 # For now: direct use of fleet model df
 
                 nrc_aircraft_value = self.compute_nrc(float(nrc_cost), 5, eis)
 
-                self.fleet_model.df = pd.concat([
-                    self.fleet_model.df,
-                    nrc_aircraft_value.rename(nrc_aircraft_var_name),
-                ], axis=1)
+                self.fleet_model.df = pd.concat(
+                    [
+                        self.fleet_model.df,
+                        nrc_aircraft_value.rename(nrc_aircraft_var_name),
+                    ],
+                    axis=1,
+                )
 
                 nrc_aircraft_value_dict[aircraft_var_name] = nrc_aircraft_value
 
-        return(
-            nrc_aircraft_value_dict,
-            )
+        return (nrc_aircraft_value_dict,)
 
     @staticmethod
     def compute_nrc(
-            nrc_tot_aircraft_type,
-            development_time_aircraft_type,
-            entry_into_service_year,
+        nrc_tot_aircraft_type,
+        development_time_aircraft_type,
+        entry_into_service_year,
     ):
         costs = []
         years = []

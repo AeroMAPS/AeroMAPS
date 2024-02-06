@@ -13,13 +13,15 @@ class OperationalEfficiencyCost(AeromapsModel):
         super().__init__(name, *args, **kwargs)
 
     def compute(
-            self,
-            operational_efficiency_cost_per_ask_reference_years: list = [],
-            operational_efficiency_cost_per_ask_values: list = [],
+        self,
+        operational_efficiency_cost_per_ask_reference_years: list = [],
+        operational_efficiency_cost_per_ask_values: list = [],
     ) -> Tuple[pd.Series]:
         operational_efficiency_cost_per_ask = AeromapsInterpolationFunction(
-            self, operational_efficiency_cost_per_ask_reference_years, operational_efficiency_cost_per_ask_values,
-            model_name=self.name
+            self,
+            operational_efficiency_cost_per_ask_reference_years,
+            operational_efficiency_cost_per_ask_values,
+            model_name=self.name,
         )
         self.df.loc[:, "operational_efficiency_cost_per_ask"] = operational_efficiency_cost_per_ask
 

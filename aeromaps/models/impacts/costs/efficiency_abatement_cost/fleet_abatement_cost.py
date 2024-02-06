@@ -10,101 +10,135 @@ from typing import Tuple
 
 
 class FleetCarbonAbatementCosts(AeromapsModel):
-    def __init__(
-            self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs
-    ):
+    def __init__(self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
 
     def compute(
-            self,
-            ask_aircraft_value_dict: dict,
-            doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
-            doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
-            doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
-            energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-            energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-            energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-            kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-            kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[
-        dict,
-        dict
-        ]:
-        cac_aircraft_value_dict={}
-        cav_aircraft_value_dict={}
+        self,
+        ask_aircraft_value_dict: dict,
+        doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
+        doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
+        doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
+        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
+        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+    ) -> Tuple[dict, dict]:
+        cac_aircraft_value_dict = {}
+        cav_aircraft_value_dict = {}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
 
-            category_recent_reference=self.fleet_model.all_aircraft_elements[category][1]
+            category_recent_reference = self.fleet_model.all_aircraft_elements[category][1]
 
-            fuel_lhv=35.3
-            if category == 'Short Range':
+            fuel_lhv = 35.3
+            if category == "Short Range":
                 category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init
                 # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
-                category_reference_energy = energy_per_ask_without_operations_short_range_dropin_fuel[self.prospection_start_year-1]
-            elif category == 'Medium Range':
+                category_reference_energy = (
+                    energy_per_ask_without_operations_short_range_dropin_fuel[
+                        self.prospection_start_year - 1
+                    ]
+                )
+            elif category == "Medium Range":
                 category_reference_doc_ne = doc_non_energy_per_ask_medium_range_dropin_fuel_init
-                category_reference_energy = energy_per_ask_without_operations_medium_range_dropin_fuel[self.prospection_start_year-1]
+                category_reference_energy = (
+                    energy_per_ask_without_operations_medium_range_dropin_fuel[
+                        self.prospection_start_year - 1
+                    ]
+                )
             else:
                 category_reference_doc_ne = doc_non_energy_per_ask_long_range_dropin_fuel_init
-                category_reference_energy = energy_per_ask_without_operations_long_range_dropin_fuel[self.prospection_start_year-1]
-
+                category_reference_energy = (
+                    energy_per_ask_without_operations_long_range_dropin_fuel[
+                        self.prospection_start_year - 1
+                    ]
+                )
 
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
                 # Check if it's a reference aircraft or a normal aircraft...
-                if hasattr(aircraft_var,"parameters"):
+                if hasattr(aircraft_var, "parameters"):
                     aircraft_var_name = aircraft_var.parameters.full_name
-                    aircraft_energy_delta = (1+float(aircraft_var.parameters.consumption_evolution)/100) * category_recent_reference.energy_per_ask  - category_reference_energy
-                    aircraft_doc_ne_delta = (1+float(aircraft_var.parameters.doc_non_energy_evolution)/100) * category_recent_reference.doc_non_energy_base - category_reference_doc_ne
+                    aircraft_energy_delta = (
+                        1 + float(aircraft_var.parameters.consumption_evolution) / 100
+                    ) * category_recent_reference.energy_per_ask - category_reference_energy
+                    aircraft_doc_ne_delta = (
+                        (1 + float(aircraft_var.parameters.doc_non_energy_evolution) / 100)
+                        * category_recent_reference.doc_non_energy_base
+                        - category_reference_doc_ne
+                    )
 
                 else:
                     aircraft_var_name = aircraft_var.full_name
                     aircraft_energy_delta = aircraft_var.energy_per_ask - category_reference_energy
-                    aircraft_doc_ne_delta = aircraft_var.doc_non_energy_base - category_reference_doc_ne
+                    aircraft_doc_ne_delta = (
+                        aircraft_var.doc_non_energy_base - category_reference_doc_ne
+                    )
 
                 # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
                 # Value set to NaN to avoid erroneous interpretation
 
-                #TODO handle hydrogen aircraft case!
+                # TODO handle hydrogen aircraft case!
 
                 if aircraft_energy_delta > 0:
-                    aircraft_carbon_abatement_cost = pd.Series(np.NaN, index=self.fleet_model.df.index)
-                    aircraft_carbon_abatement_volume = pd.Series(np.NaN, index=self.fleet_model.df.index)
+                    aircraft_carbon_abatement_cost = pd.Series(
+                        np.NaN, index=self.fleet_model.df.index
+                    )
+                    aircraft_carbon_abatement_volume = pd.Series(
+                        np.NaN, index=self.fleet_model.df.index
+                    )
                 else:
                     # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
-                    aircraft_carbon_abatement_cost = (aircraft_energy_delta * kerosene_market_price / fuel_lhv + aircraft_doc_ne_delta) / (-aircraft_energy_delta * kerosene_emission_factor )*1000000 #conversion to ton
+                    aircraft_carbon_abatement_cost = (
+                        (
+                            aircraft_energy_delta * kerosene_market_price / fuel_lhv
+                            + aircraft_doc_ne_delta
+                        )
+                        / (-aircraft_energy_delta * kerosene_emission_factor)
+                        * 1000000
+                    )  # conversion to ton
 
                     # TODO use dictionnary if possible once implementeed
                     aircraft_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_ask")]
 
-                    aircraft_carbon_abatement_volume = aircraft_ask * aircraft_energy_delta * kerosene_emission_factor  / 1000000 # in tons
+                    aircraft_carbon_abatement_volume = (
+                        aircraft_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
+                    )  # in tons
 
-                cac_aircraft_var_name = (
-                        aircraft_var_name + ":aircraft_carbon_abatement_cost"
-                )
+                cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"
 
                 abatement_volume_aircraft_var_name = (
-                        aircraft_var_name + ":aircraft_carbon_abatement_volume"
+                    aircraft_var_name + ":aircraft_carbon_abatement_volume"
                 )
 
-                self.fleet_model.df = pd.concat([
-                    self.fleet_model.df,
-                    aircraft_carbon_abatement_cost.rename(cac_aircraft_var_name),
-                ], axis=1)
+                self.fleet_model.df = pd.concat(
+                    [
+                        self.fleet_model.df,
+                        aircraft_carbon_abatement_cost.rename(cac_aircraft_var_name),
+                    ],
+                    axis=1,
+                )
 
-                self.fleet_model.df = pd.concat([
-                    self.fleet_model.df,
-                    aircraft_carbon_abatement_volume.rename(abatement_volume_aircraft_var_name),
-                ], axis=1)
+                self.fleet_model.df = pd.concat(
+                    [
+                        self.fleet_model.df,
+                        aircraft_carbon_abatement_volume.rename(abatement_volume_aircraft_var_name),
+                    ],
+                    axis=1,
+                )
 
                 cac_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
                 cav_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_volume
 
-        return(
+        return (
             cac_aircraft_value_dict,
             cav_aircraft_value_dict,
-            )
-
-
-
+        )

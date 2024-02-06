@@ -22,7 +22,7 @@ AIRCRAFT_COLUMNS = [
     "Energy Type",
     "Average ASK per year",
     "Manufacturing Cost [M€]",
-    "Non Recurring Costs [M€]"
+    "Non Recurring Costs [M€]",
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -41,7 +41,6 @@ class AircraftParameters:
     full_name: str = None
 
 
-
 @dataclass
 class ReferenceAircraftParameters:
     energy_per_ask: float = None
@@ -54,8 +53,6 @@ class ReferenceAircraftParameters:
     nrc_cost: float = None
     rc_cost: float = None
     full_name: str = None
-
-
 
 
 @dataclass
@@ -113,14 +110,12 @@ class FleetModel(AeromapsModel):
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
 
-        #TODO add new methods once programmed
+        # TODO add new methods once programmed
 
         warnings.resetwarnings()
         warnings.simplefilter("ignore", DeprecationWarning)
 
-
     def _get_aircraft_names(self):
-
 
         for category in self.fleet.categories.values():
             aircraft_category = []
@@ -128,23 +123,14 @@ class FleetModel(AeromapsModel):
             subcategory = category.subcategories[0]
 
             # Reference aircraft information
-            ref_old_aircraft_name = (
-                category.name
-                + ":"
-                + subcategory.name
-                + ":"
-                + "old_reference")
+            ref_old_aircraft_name = category.name + ":" + subcategory.name + ":" + "old_reference"
 
             subcategory.old_reference_aircraft.full_name = ref_old_aircraft_name
 
             aircraft_category.append(subcategory.old_reference_aircraft)
 
             ref_recent_aircraft_name = (
-                category.name
-                + ":"
-                + subcategory.name
-                + ":"
-                + "recent_reference"
+                category.name + ":" + subcategory.name + ":" + "recent_reference"
             )
 
             subcategory.recent_reference_aircraft.full_name = ref_recent_aircraft_name
@@ -153,17 +139,11 @@ class FleetModel(AeromapsModel):
 
             for i, subcategory in category.subcategories.items():
                 for aircraft in subcategory.aircraft.values():
-                    aircraft_name=(
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":"
-                            + aircraft.name
-                    )
-                    aircraft.parameters.full_name=aircraft_name
+                    aircraft_name = category.name + ":" + subcategory.name + ":" + aircraft.name
+                    aircraft.parameters.full_name = aircraft_name
                     aircraft_category.append(aircraft)
 
-            self.all_aircraft_elements[category.name]=aircraft_category
+            self.all_aircraft_elements[category.name] = aircraft_category
         return
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
@@ -395,7 +375,7 @@ class FleetModel(AeromapsModel):
                 + ":"
                 + category.subcategories[0].name
                 + ":"
-                + "recent_reference:aircraft_share" 
+                + "recent_reference:aircraft_share"
             ]
 
             recent_reference_aircraft_doc_non_energy = category.subcategories[

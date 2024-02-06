@@ -12,9 +12,9 @@ class PassengerAircraftOperationalProfit(AeromapsModel):
         super().__init__(name, *args, **kwargs)
 
     def compute(
-            self,
-            operational_profit_reference_years: list = [],
-            operational_profit_reference_years_values: list = [],
+        self,
+        operational_profit_reference_years: list = [],
+        operational_profit_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         # Simple computation of airline non-operating costs (NOC)
 

@@ -1,4 +1,6 @@
-from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import FleetCarbonAbatementCosts
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
+    FleetCarbonAbatementCosts,
+)
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -7,8 +9,12 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftTotalDoc,
     PassengerAircraftDocNonEnergySimple,
 )
-from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import FleetEvolution
-from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import OperationsAbatementCost
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
+    FleetEvolution,
+)
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
+    OperationsAbatementCost,
+)
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
 from aeromaps.models.impacts.costs.operations.operations_cost import OperationalEfficiencyCost
@@ -164,19 +170,19 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
     PassengerAircraftNocCarbonOffset,
     PassengerAircraftNonOpCosts,
-    PassengerAircraftPassengerTax
+    PassengerAircraftPassengerTax,
 )
 
 from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
-    PassengerAircraftIndirectOpCosts
+    PassengerAircraftIndirectOpCosts,
 )
 
 from aeromaps.models.impacts.costs.airlines.operational_profit import (
-    PassengerAircraftOperationalProfit
+    PassengerAircraftOperationalProfit,
 )
 
 from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
-    PassengerAircraftTotalCostAirfare
+    PassengerAircraftTotalCostAirfare,
 )
 
 models_simple = {
@@ -305,10 +311,14 @@ models_simple = {
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
     "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit(
-        "passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+        "passenger_aircraft_operational_profit"
+    ),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
+        "passenger_aircraft_passenger_tax"
+    ),
     "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
-        "passenger_aircraft_total_cost_and_airfare")
+        "passenger_aircraft_total_cost_and_airfare"
+    ),
 }
 
 models_complex = {
@@ -437,18 +447,21 @@ models_complex = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
-
     "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit(
-        "passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+        "passenger_aircraft_operational_profit"
+    ),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
+        "passenger_aircraft_passenger_tax"
+    ),
     "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
-        "passenger_aircraft_total_cost_and_airfare"),
+        "passenger_aircraft_total_cost_and_airfare"
+    ),
     "fleet_numeric": FleetEvolution("fleet_numeric"),
     "recurring_costs": RecurringCosts("recurring_costs"),
     "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
-    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost")
+    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
 }
 
 models_complex_improvedgwpstar = {
@@ -575,10 +588,13 @@ models_complex_improvedgwpstar = {
     ),
     "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
     "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
-
     "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit(
-        "passenger_aircraft_operational_profit"),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax("passenger_aircraft_passenger_tax"),
+        "passenger_aircraft_operational_profit"
+    ),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
+        "passenger_aircraft_passenger_tax"
+    ),
     "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
-        "passenger_aircraft_total_cost_and_airfare")
+        "passenger_aircraft_total_cost_and_airfare"
+    ),
 }

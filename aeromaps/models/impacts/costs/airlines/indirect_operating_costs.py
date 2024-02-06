@@ -8,15 +8,14 @@ import pandas as pd
 from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
-
 class PassengerAircraftIndirectOpCosts(AeromapsModel):
     def __init__(self, name="passenger_aircraft_ioc", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
-            self,
-            ioc_reference_years: list = [],
-            ioc_reference_years_values: list = [],
+        self,
+        ioc_reference_years: list = [],
+        ioc_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
         # Simple computation of airline non-operating costs (NOC)
 
@@ -34,5 +33,3 @@ class PassengerAircraftIndirectOpCosts(AeromapsModel):
             ]
         indirect_operating_cost_per_ask = self.df["indirect_operating_cost_per_ask"]
         return indirect_operating_cost_per_ask
-
-
