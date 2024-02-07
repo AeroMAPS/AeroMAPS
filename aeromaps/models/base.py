@@ -233,7 +233,8 @@ def RunFair(self, species_quantities, without="None"):
     end_time = self.end_year
     f.define_time(start_time, end_time, 1)
     f.define_scenarios(["central"])
-    f.define_configs(["high", "central", "low"])
+    f.define_configs(["central"])
+    # f.define_configs(["high", "central", "low"])
 
     # Definition of species and properties
     species = [
@@ -324,13 +325,12 @@ def RunFair(self, species_quantities, without="None"):
         total_CO2 += species_quantities[3][1 : self.end_year - 1765 + 1]
     if without != "Aviation NOx H2O decrease":
         total_CO2 += species_quantities[4][1 : self.end_year - 1765 + 1]
-    print(total_CO2)
-    fill(f.emissions, total_CO2, specie="CO2", config=f.configs[1], scenario=f.scenarios[0])
+    fill(f.emissions, total_CO2, specie="CO2", config=f.configs[0], scenario=f.scenarios[0])
     fill(
         f.emissions,
         species_quantities[5][1 : self.end_year - 1765 + 1],
         specie="World CH4",
-        config=f.configs[1],
+        config=f.configs[0],
         scenario=f.scenarios[0],
     )
     if without != "Aviation contrails":
@@ -338,19 +338,19 @@ def RunFair(self, species_quantities, without="None"):
             f.forcing,
             species_quantities[6],
             specie="Aviation contrails",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     else:
         fill(
-            f.forcing, 0, specie="Aviation contrails", config=f.configs[1], scenario=f.scenarios[0]
+            f.forcing, 0, specie="Aviation contrails", config=f.configs[0], scenario=f.scenarios[0]
         )
     if without != "Aviation NOx ST O3 increase":
         fill(
             f.forcing,
             species_quantities[7],
             specie="Aviation NOx ST O3 increase",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     else:
@@ -358,7 +358,7 @@ def RunFair(self, species_quantities, without="None"):
             f.forcing,
             0,
             specie="Aviation NOx ST O3 increase",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     if without != "Aviation H2O":
@@ -366,31 +366,31 @@ def RunFair(self, species_quantities, without="None"):
             f.forcing,
             species_quantities[8],
             specie="Aviation H2O",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     else:
-        fill(f.forcing, 0, specie="Aviation H2O", config=f.configs[1], scenario=f.scenarios[0])
+        fill(f.forcing, 0, specie="Aviation H2O", config=f.configs[0], scenario=f.scenarios[0])
     if without != "Aviation sulfur":
         fill(
             f.emissions,
             species_quantities[9][1 : self.end_year - 1765 + 1],
             specie="Aviation sulfur",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     else:
-        fill(f.emissions, 0, specie="Aviation sulfur", config=f.configs[1], scenario=f.scenarios[0])
+        fill(f.emissions, 0, specie="Aviation sulfur", config=f.configs[0], scenario=f.scenarios[0])
     if without != "Aviation soot":
         fill(
             f.emissions,
             species_quantities[10][1 : self.end_year - 1765 + 1],
             specie="Aviation soot",
-            config=f.configs[1],
+            config=f.configs[0],
             scenario=f.scenarios[0],
         )
     else:
-        fill(f.emissions, 0, specie="Aviation soot", config=f.configs[1], scenario=f.scenarios[0])
+        fill(f.emissions, 0, specie="Aviation soot", config=f.configs[0], scenario=f.scenarios[0])
 
     initialise(f.forcing, 0)
     initialise(f.temperature, 0)
@@ -473,4 +473,4 @@ def RunFair(self, species_quantities, without="None"):
     # Run
     f.run()
 
-    return f.temperature.loc[dict(layer=0, config=f.configs[1])]
+    return f.temperature.loc[dict(layer=0, config=f.configs[0])].data
