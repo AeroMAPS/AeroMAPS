@@ -229,7 +229,7 @@ def RunFair(self, species_quantities, without="None"):
     f = FAIR()
 
     # Definition of time horizon, scenarios, configs
-    start_time = self.climate_historic_start_year
+    start_time = 1765
     end_time = self.end_year
     f.define_time(start_time, end_time, 1)
     f.define_scenarios(["central"])
@@ -237,21 +237,17 @@ def RunFair(self, species_quantities, without="None"):
 
     # Definition of species and properties
     species = [
-        "World CO2",
+        "CO2",  # Includes world emissions, aviation emissions, and equivalent emissions for NOx effects (except ST O3)
         "World CH4",
-        "Aviation CO2",
         "Aviation contrails",
         "Aviation NOx ST O3 increase",
-        "Aviation NOx LT O3 decrease",
-        "Aviation NOx CH4 decrease",
-        "Aviation NOx H2O decrease",
         "Aviation H2O",
         "Aviation sulfur",
         "Aviation soot",
         "Aviation aerosols",
     ]
     properties = {
-        "World CO2": {
+        "CO2": {
             "type": "co2",
             "input_mode": "emissions",
             "greenhouse_gas": True,
@@ -265,13 +261,6 @@ def RunFair(self, species_quantities, without="None"):
             "aerosol_chemistry_from_emissions": False,
             "aerosol_chemistry_from_concentration": True,  # we treat methane as a reactive gas
         },
-        "Aviation CO2": {
-            "type": "co2",
-            "input_mode": "emissions",
-            "greenhouse_gas": True,
-            "aerosol_chemistry_from_emissions": False,
-            "aerosol_chemistry_from_concentration": False,
-        },
         "Aviation contrails": {
             "type": "contrails",
             "input_mode": "forcing",
@@ -283,27 +272,6 @@ def RunFair(self, species_quantities, without="None"):
             "type": "ozone",
             "input_mode": "forcing",
             "greenhouse_gas": False,
-            "aerosol_chemistry_from_emissions": False,
-            "aerosol_chemistry_from_concentration": False,
-        },
-        "Aviation NOx LT O3 decrease": {
-            "type": "co2",
-            "input_mode": "emissions",
-            "greenhouse_gas": True,
-            "aerosol_chemistry_from_emissions": False,
-            "aerosol_chemistry_from_concentration": False,
-        },
-        "Aviation NOx CH4 decrease": {
-            "type": "co2",
-            "input_mode": "emissions",
-            "greenhouse_gas": True,
-            "aerosol_chemistry_from_emissions": False,
-            "aerosol_chemistry_from_concentration": False,
-        },
-        "Aviation NOx H2O decrease": {
-            "type": "co2",
-            "input_mode": "emissions",
-            "greenhouse_gas": True,
             "aerosol_chemistry_from_emissions": False,
             "aerosol_chemistry_from_concentration": False,
         },
@@ -347,26 +315,82 @@ def RunFair(self, species_quantities, without="None"):
     f.allocate()
 
     # Filling species quantities
-    fill(f.emissions, species_quantities[0], specie='World CO2', config=f.configs[1], scenario=f.scenarios[0])
-    fill(f.emissions, species_quantities[1], specie='World CH4', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation CO2':
-        fill(f.emissions, species_quantities[2], specie='Aviation CO2', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation contrails':
-        fill(f.forcing, species_quantities[3], specie='Aviation contrails', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation NOx ST O3 increase':
-        fill(f.forcing, species_quantities[4], specie='Aviation NOx ST O3 increase', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation NOx LT O3 decrease':
-        fill(f.emissions, species_quantities[5], specie='Aviation NOx LT O3 decrease', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation NOx CH4 decrease':
-        fill(f.emissions, species_quantities[6], specie='Aviation NOx CH4 decrease', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation NOx H2O decrease':
-        fill(f.emissions, species_quantities[7], specie='Aviation NOx H2O decrease', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation H2O':
-        fill(f.forcing, species_quantities[8], specie='Aviation H2O', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation sulfur':
-        fill(f.emissions, species_quantities[9], specie='Aviation sulfur', config=f.configs[1], scenario=f.scenarios[0])
-    if without != 'Aviation soot':
-        fill(f.emissions, species_quantities[10], specie='Aviation soot', config=f.configs[1], scenario=f.scenarios[0])
+    total_CO2 = species_quantities[0][1 : self.end_year - 1765 + 1]
+    if without != "Aviation CO2":
+        total_CO2 += species_quantities[1][1 : self.end_year - 1765 + 1]
+    if without != "Aviation NOx LT O3 decrease":
+        total_CO2 += species_quantities[2][1 : self.end_year - 1765 + 1]
+    if without != "Aviation NOx CH4 decrease":
+        total_CO2 += species_quantities[3][1 : self.end_year - 1765 + 1]
+    if without != "Aviation NOx H2O decrease":
+        total_CO2 += species_quantities[4][1 : self.end_year - 1765 + 1]
+    print(total_CO2)
+    fill(f.emissions, total_CO2, specie="CO2", config=f.configs[1], scenario=f.scenarios[0])
+    fill(
+        f.emissions,
+        species_quantities[5][1 : self.end_year - 1765 + 1],
+        specie="World CH4",
+        config=f.configs[1],
+        scenario=f.scenarios[0],
+    )
+    if without != "Aviation contrails":
+        fill(
+            f.forcing,
+            species_quantities[6],
+            specie="Aviation contrails",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    else:
+        fill(
+            f.forcing, 0, specie="Aviation contrails", config=f.configs[1], scenario=f.scenarios[0]
+        )
+    if without != "Aviation NOx ST O3 increase":
+        fill(
+            f.forcing,
+            species_quantities[7],
+            specie="Aviation NOx ST O3 increase",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    else:
+        fill(
+            f.forcing,
+            0,
+            specie="Aviation NOx ST O3 increase",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    if without != "Aviation H2O":
+        fill(
+            f.forcing,
+            species_quantities[8],
+            specie="Aviation H2O",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    else:
+        fill(f.forcing, 0, specie="Aviation H2O", config=f.configs[1], scenario=f.scenarios[0])
+    if without != "Aviation sulfur":
+        fill(
+            f.emissions,
+            species_quantities[9][1 : self.end_year - 1765 + 1],
+            specie="Aviation sulfur",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    else:
+        fill(f.emissions, 0, specie="Aviation sulfur", config=f.configs[1], scenario=f.scenarios[0])
+    if without != "Aviation soot":
+        fill(
+            f.emissions,
+            species_quantities[10][1 : self.end_year - 1765 + 1],
+            specie="Aviation soot",
+            config=f.configs[1],
+            scenario=f.scenarios[0],
+        )
+    else:
+        fill(f.emissions, 0, specie="Aviation soot", config=f.configs[1], scenario=f.scenarios[0])
 
     initialise(f.forcing, 0)
     initialise(f.temperature, 0)
@@ -380,13 +404,7 @@ def RunFair(self, species_quantities, without="None"):
 
     # Filling species configs
     for specie in species:
-        if (
-            specie == "World CO2"
-            or specie == "Aviation CO2"
-            or specie == "Aviation NOx LT O3 decrease"
-            or specie == "Aviation NOx CH4 decrease"
-            or specie == "Aviation NOx H2O decrease"
-        ):
+        if specie == "CO2":
             fill(
                 f.species_configs["partition_fraction"],
                 [0.2173, 0.2240, 0.2824, 0.2763],
@@ -441,16 +459,16 @@ def RunFair(self, species_quantities, without="None"):
             fill(
                 f.species_configs["erfari_radiative_efficiency"],
                 -0.0199 + erf_aci_sulfur,
-                specie="sulfur",
+                specie=specie,
             )  # W m-2 MtSO2-1 yr
-            fill(f.species_configs["aci_shape"], 0.0, specie="sulfur")
+            fill(f.species_configs["aci_shape"], 0.0, specie=specie)
 
         if specie == "Aviation soot":
             erf_aci_BC = 0.0
             fill(
-                f.species_configs["erfari_radiative_efficiency"], 0.1007 + erf_aci_BC, specie="BC"
+                f.species_configs["erfari_radiative_efficiency"], 0.1007 + erf_aci_BC, specie=specie
             )  # W m-2 MtC-1 yr
-            fill(f.species_configs["aci_shape"], 0.0, specie="BC")
+            fill(f.species_configs["aci_shape"], 0.0, specie=specie)
 
     # Run
     f.run()

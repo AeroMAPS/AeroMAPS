@@ -607,9 +607,11 @@ class TemperatureFair(AeromapsModel):
 
         # SPECIES QUANTITIES
         species_quantities = np.zeros((11, self.end_year - 1765 + 1))
-
-        ## World
         rcp_data_df = self.rcp26_data_df
+
+        ## CO2
+
+        ### World CO2
         species_quantities[0] = (
             (
                 rcp_data_df["FossilCO2"][0 : self.end_year - 1765 + 1].values
@@ -618,35 +620,16 @@ class TemperatureFair(AeromapsModel):
             * 44
             / 12
         )  # Conversion from GtC to GtCO2
-        species_quantities[1] = rcp_data_df["CH4"][
-            0 : self.end_year - 1765 + 1
-        ].values  # Unit: MtCH4
 
-        ## Aviation
-
-        ### CO2
-        species_quantities[2] = np.zeros(len(species_quantities[0]))
+        ### Aviation CO2
+        species_quantities[1] = np.zeros(len(species_quantities[0]))
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[2][k - 1765] = (
+            species_quantities[1][k - 1765] = (
                 co2_emissions.loc[k] / 1000
             )  # Conversion from MtCO2 to GtCO2
 
-        ### Contrails
-        species_quantities[3] = np.zeros(len(species_quantities[0]))
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[3][k - 1765] = (
-                contrails_erf.loc[k] / 1000
-            )  # Conversion from mW/m² to W/m²
-
-        ### NOx - Short-term O3 increase
-        species_quantities[4] = np.zeros(len(species_quantities[0]))
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[4][k - 1765] = (
-                nox_short_term_o3_increase_erf.loc[k] / 1000
-            )  # Conversion from mW/m² to W/m²
-
-        ### NOx - Long-term O3 decrease
-        species_quantities[5] = np.zeros(len(species_quantities[0]))
+        ### Aviation NOx - Long-term O3 decrease
+        species_quantities[2] = np.zeros(len(species_quantities[0]))
         nox_long_term_o3_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_long_term_o3_decrease_erf,
@@ -654,12 +637,12 @@ class TemperatureFair(AeromapsModel):
             gwpstar_alpha_coefficient=nox_long_term_o3_decrease_gwpstar_alpha_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[5][k - 1765] = (
+            species_quantities[2][k - 1765] = (
                 nox_long_term_o3_decrease_equivalent_emissions.loc[k] / 1000
             )  # Conversion from MtCO2-we to GtCO2-we
 
-        ### NOx - CH4 decrease
-        species_quantities[6] = np.zeros(len(species_quantities[0]))
+        ### Aviation NOx - CH4 decrease
+        species_quantities[3] = np.zeros(len(species_quantities[0]))
         nox_ch4_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_ch4_decrease_erf,
@@ -667,12 +650,12 @@ class TemperatureFair(AeromapsModel):
             gwpstar_alpha_coefficient=nox_ch4_decrease_gwpstar_alpha_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[6][k - 1765] = (
+            species_quantities[3][k - 1765] = (
                 nox_ch4_decrease_equivalent_emissions.loc[k] / 1000
             )  # Conversion from MtCO2-we  to GtCO2-we
 
-        ### NOx - Stratospheric water vapor decrease
-        species_quantities[7] = np.zeros(len(species_quantities[0]))
+        ### Aviation NOx - Stratospheric water vapor decrease
+        species_quantities[4] = np.zeros(len(species_quantities[0]))
         nox_stratospheric_water_vapor_decrease_equivalent_emissions = GWPStarEquivalentEmissionsFunction(
             self,
             emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
@@ -680,21 +663,40 @@ class TemperatureFair(AeromapsModel):
             gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[7][k - 1765] = (
+            species_quantities[4][k - 1765] = (
                 nox_stratospheric_water_vapor_decrease_equivalent_emissions.loc[k] / 1000
             )  # Conversion from MtCO2-we  to GtCO2-we
 
-        ### H2O
+        ## World CH4
+        species_quantities[5] = rcp_data_df["CH4"][
+            0 : self.end_year - 1765 + 1
+        ].values  # Unit: MtCH4
+
+        ## Aviation contrails
+        species_quantities[6] = np.zeros(len(species_quantities[0]))
+        for k in range(self.climate_historic_start_year, self.end_year + 1):
+            species_quantities[6][k - 1765] = (
+                contrails_erf.loc[k] / 1000
+            )  # Conversion from mW/m² to W/m²
+
+        ## Aviation NOx - Short-term O3 increase
+        species_quantities[7] = np.zeros(len(species_quantities[0]))
+        for k in range(self.climate_historic_start_year, self.end_year + 1):
+            species_quantities[7][k - 1765] = (
+                nox_short_term_o3_increase_erf.loc[k] / 1000
+            )  # Conversion from mW/m² to W/m²
+
+        ## Aviation H2O
         species_quantities[8] = np.zeros(len(species_quantities[0]))
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[8][k - 1765] = h2o_erf.loc[k]  # Conversion from mW/m² to W/m²
 
-        ### Sulfur
+        ## Aviation sulfur
         species_quantities[9] = np.zeros(len(species_quantities[0]))
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[9][k - 1765] = sulfur_emissions.loc[k]  # Unit: MtSO2
 
-        ### Soot
+        ## Aviation soot
         species_quantities[10] = np.zeros(len(species_quantities[0]))
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[10][k - 1765] = soot_emissions.loc[k]  # Unit: MtBC
@@ -705,7 +707,6 @@ class TemperatureFair(AeromapsModel):
         total_temperature_list = RunFair(
             self,
             species_quantities,
-            without="None",
         )
         print(total_temperature_list)
         ## Temperature increase due to aviation species
