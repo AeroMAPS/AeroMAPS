@@ -13,27 +13,42 @@ class CarbonBudgetConsumedShare(AeromapsModel):
     def compute(
         self,
         cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
         gross_carbon_budget_2050: float = 0.0,
-        equivalent_gross_carbon_budget_2050: float = 0.0,
-    ) -> Tuple[float, float]:
-        """(Equivalent) Carbon budget consumption share calculation."""
+    ) -> Tuple[float]:
+        """Carbon budget consumption share calculation."""
 
         carbon_budget_consumed_share = (
             cumulative_co2_emissions.loc[self.end_year] / gross_carbon_budget_2050 * 100
         )
+
+        self.float_outputs["carbon_budget_consumed_share"] = carbon_budget_consumed_share
+
+        return carbon_budget_consumed_share
+
+
+class EquivalentCarbonBudgetConsumedShare(AeromapsModel):
+    def __init__(self, name="equivalent_carbon_budget_consumed_share", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
+        gross_carbon_budget_2050: float = 0.0,
+        equivalent_gross_carbon_budget_2050: float = 0.0,
+    ) -> Tuple[float]:
+        """Equivalent Carbon budget consumption share calculation."""
+
         equivalent_carbon_budget_consumed_share = (
             cumulative_total_equivalent_emissions.loc[self.end_year]
             / equivalent_gross_carbon_budget_2050
             * 100
         )
 
-        self.float_outputs["carbon_budget_consumed_share"] = carbon_budget_consumed_share
         self.float_outputs[
             "equivalent_carbon_budget_consumed_share"
         ] = equivalent_carbon_budget_consumed_share
 
-        return carbon_budget_consumed_share, equivalent_carbon_budget_consumed_share
+        return equivalent_carbon_budget_consumed_share
 
 
 class ResourcesConsumedShare(AeromapsModel):

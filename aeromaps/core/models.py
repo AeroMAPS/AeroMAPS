@@ -98,6 +98,7 @@ from aeromaps.models.impacts.others.others import (
 )
 from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
+    EquivalentCarbonBudgetConsumedShare,
     ResourcesConsumedShare,
 )
 from aeromaps.models.impacts.emissions.carbon_offset import (
@@ -224,6 +225,9 @@ models_simple = {
         "dropin_fuel_consumption_liter_per_pax_100km"
     ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
+        "equivalent_carbon_budget_consumed_share"
+    ),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
@@ -352,6 +356,9 @@ models_complex = {
         "dropin_fuel_consumption_liter_per_pax_100km"
     ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
+        "equivalent_carbon_budget_consumed_share"
+    ),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
@@ -476,6 +483,9 @@ models_complex_improvedgwpstar = {
         "dropin_fuel_consumption_liter_per_pax_100km"
     ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
+        "equivalent_carbon_budget_consumed_share"
+    ),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
