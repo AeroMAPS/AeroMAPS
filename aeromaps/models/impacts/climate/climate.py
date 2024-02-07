@@ -689,7 +689,7 @@ class TemperatureFair(AeromapsModel):
         ## Aviation H2O
         species_quantities[8] = np.zeros(len(species_quantities[0]))
         for k in range(self.climate_historic_start_year, self.end_year + 1):
-            species_quantities[8][k - 1765] = h2o_erf.loc[k]  # Conversion from mW/m² to W/m²
+            species_quantities[8][k - 1765] = h2o_erf.loc[k] /1000  # Conversion from mW/m² to W/m²
 
         ## Aviation sulfur
         species_quantities[9] = np.zeros(len(species_quantities[0]))
@@ -767,7 +767,7 @@ class TemperatureFair(AeromapsModel):
             species_quantities,
             without="Aviation soot",
         )
-        print(temperature_increase_from_co2_from_aviation_list)
+        print(temperature_increase_from_soot_from_aviation_list)
         ## List to dataframe
         for k in range(self.climate_historic_start_year, self.end_year):
             self.df_climate.loc[
@@ -844,6 +844,11 @@ class TemperatureFair(AeromapsModel):
             temperature_increase_from_co2_from_aviation
             + temperature_increase_from_non_co2_from_aviation
         )
+
+        self.df_climate[
+            "temperature_increase_from_non_co2_from_aviation"
+        ] = temperature_increase_from_non_co2_from_aviation
+        self.df_climate["temperature_increase_from_aviation"] = temperature_increase_from_aviation
 
         return (
             temperature_increase_from_aviation,
