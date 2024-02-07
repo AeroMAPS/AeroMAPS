@@ -767,7 +767,7 @@ class TemperatureFair(AeromapsModel):
             species_quantities,
             without="Aviation soot",
         )
-
+        print(temperature_increase_from_co2_from_aviation_list)
         ## List to dataframe
         for k in range(self.climate_historic_start_year, self.end_year):
             self.df_climate.loc[
