@@ -54,6 +54,12 @@ covid_load_factor_2020;Float;%;Load factor due to Covid-19 for the start_year;IA
 covid_rpk_drop_start_year;Float;%;Drop in RPK due to Covid-19 for the start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
 covid_start_year;Float;yr;Covid-19 start year;IATA - https://www.iata.org/contentassets/6dfc19c3fdce4c9c8d5f1565c472b53f/2020-09-29-02-fr.pdf
 crops_biomass;Float;EJ;Available biomass in the form of energy crops in 2050;Statistical analysis of a literature review (see resources/energy_data)
+electric_final_market_share_long_range;Float;%;Share of electric aircraft in the passenger long-range market
+electric_final_market_share_medium_range;Float;%;Share of electric aircraft in the passenger medium-range market
+electric_final_market_share_short_range;Float;%;Share of electric aircraft in the passenger short-range market
+electric_introduction_year_long_range;Float;yr;Entry-Into-Service year of electric aircraft for long-range market
+electric_introduction_year_medium_range;Float;yr;Entry-Into-Service year of electric aircraft for medium-range market
+electric_introduction_year_short_range;Float;yr;Entry-Into-Service year of electric aircraft for short-range market
 electricity_emission_factor_reference_years;List;yr;Reference years for the electricity emission factor
 electricity_emission_factor_reference_years_values;List;gCO2/kWh;Electricity emission factor for the reference years; 2019 value
 electrofuel_hydrogen_efficiency_reference_years;List;yr;Reference years for the conversion efficiency for producing electrofuel from hydrogen;
@@ -739,9 +745,12 @@ doc_non_energy_per_ask_long_range_dropin_fuel_init;Float;€/ASK;Initial value f
 doc_non_energy_per_ask_short_range_dropin_fuel_gain;Float;%;Annual gain value for short-range non-energy related direct operating cost
 doc_non_energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Annual gain value for medium-range non-energy related direct operating cost
 doc_non_energy_per_ask_long_range_dropin_fuel_gain;Float;%;Annual gain value for long-range non-energy related direct operating cost
-relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range;Float;%;Relative non-energy DOC of an hydrogen short range aircraft compared to a drop-in aircraft
-relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range;Float;%;Relative non-energy DOC of an hydrogen medium range aircraft compared to a drop-in aircraft
-relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range;Float;%;Relative non-energy DOC of an hydrogen long range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range;Float;%;Relative non-energy DOC of a hydrogen short range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range;Float;%;Relative non-energy DOC of a hydrogen medium range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range;Float;%;Relative non-energy DOC of a hydrogen long range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range;Float;%;Relative non-energy DOC of an electric short range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range;Float;%;Relative non-energy DOC of an electric medium range aircraft compared to a drop-in aircraft
+relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range;Float;%;Relative non-energy DOC of an electric long range aircraft compared to a drop-in aircraft
 coal_market_price;Vector;€/kWh;Industrial wholesale coal market price evolution
 gas_market_price;Vector;€/kWh;Industrial wholesale gas market price evolution
 energy_avail_atj;Vector;EJ;Available energy (converted) under current allocation (ATJ)
