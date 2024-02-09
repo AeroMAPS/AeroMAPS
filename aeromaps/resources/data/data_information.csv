@@ -88,9 +88,12 @@ emission_index_sulfur_electrofuel;Float;kg_SOx/kg_fuel;Emission index of sulfur 
 emission_index_sulfur_hydrogen;Float;kg_SOx/kg_fuel;Emission index of sulfur for hydrogen combustion;Assuming the absence of sulfur
 emission_index_sulfur_kerosene;Float;kg_SOx/kg_fuel;Emission index of sulfur for kerosene combustion;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 end_year;Float;yr;End year for the calculation
-energy_per_ask_long_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
-energy_per_ask_medium_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
-energy_per_ask_short_range_dropin_fuel_gain;Float;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
+energy_per_ask_long_range_dropin_fuel_gain_reference_years;List;%;Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
+energy_per_ask_long_range_dropin_fuel_gain_reference_years_values;List;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft for the reference years
+energy_per_ask_medium_range_dropin_fuel_gain_reference_years;List;%;Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
+energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values;List;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft for the reference years
+energy_per_ask_short_range_dropin_fuel_gain_reference_years;List;%;Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
+energy_per_ask_short_range_dropin_fuel_gain_reference_years_values;List;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft for the reference years
 erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
@@ -154,9 +157,18 @@ operations_duration;Float;yr;Duration for implementing 98% of operational improv
 operations_final_gain;Float;%;Final impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
 operations_start_year;Float;yr;Start year for implementing operational improvements to reduce fuel consumption
 prospection_start_year;Float;yr;Start year for the calculation
-relative_energy_per_ask_hydrogen_wrt_dropin_long_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market
-relative_energy_per_ask_hydrogen_wrt_dropin_medium_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market
-relative_energy_per_ask_hydrogen_wrt_dropin_short_range;Float;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market
+relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market
+relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values;List;-;Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market for the reference years
+relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger medium-range market
+relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years_values;List;-;Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger medium-range market for the reference years
+relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger short-range market
+relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years_values;List;-;Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger short-range market for the reference years
+relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values;List;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market for the reference years
+relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years_values;List;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market for the reference years
+relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years_values;List;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market for the reference years
 rpk_long_range_measures_duration;Float;yr;Duration for implementing 98% of specific measures to reduce RPK on long-range market
 rpk_long_range_measures_final_impact;Float;%;Final impact of specific measures in terms of percentage reduction in RPK for long-range market
 rpk_long_range_measures_start_year;Float;yr;Start year for implementing specific measures to reduce RPK on long-range market
@@ -338,6 +350,9 @@ energy_consumption_short_range_kerosene;Vector;MJ;Energy consumption in the form
 energy_consumption_short_range_kerosene_without_operations;Vector;MJ;Energy consumption in the form of kerosene without considering operation improvements from passenger short-range market air transport
 energy_consumption_short_range_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from passenger short-range market air transport
 energy_consumption_without_operations;Vector;MJ;Energy consumption including all fuels without considering operation improvements from all commercial air transport
+energy_per_ask_long_range_dropin_fuel_gain;Vector;%;Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft
+energy_per_ask_medium_range_dropin_fuel_gain;Vector;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft
+energy_per_ask_short_range_dropin_fuel_gain;Vector;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
 energy_per_ask_long_range_dropin_fuel;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel
 energy_per_ask_long_range_hydrogen;Vector;MJ/ASK;Energy consumption per ASK for passenger long-range market aircraft using hydrogen
 energy_per_ask_mean;Vector;MJ/ASK;Mean energy consumption per ASK for passenger market
@@ -379,6 +394,9 @@ nox_erf;Vector;mW/m²;Effective radiative forcing due to NOx emissions
 operations_contrails_gain;Vector;%;Impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
 operations_contrails_overconsumption;Vector;%;Impact of contrail operational improvements in terms of percentage increase in fuel consumption
 operations_gain;Vector;%;Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
+relative_energy_per_ask_hydrogen_wrt_dropin_long_range;Vector;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_medium_range;Vector;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market
+relative_energy_per_ask_hydrogen_wrt_dropin_short_range;Vector;-;Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market
 rpk;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for all passenger air transport
 rpk_long_range;Vector;RPK;Number of Revenue Passenger Kilometer (RPK) for passenger long-range market
 rpk_long_range_measures_impact;Vector;-;Impact coefficient of specific measures on RPK for passenger long-range market
