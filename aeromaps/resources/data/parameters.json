@@ -438,6 +438,9 @@
     "operational_profit_reference_years": [],
     "operational_profit_reference_years_values": 0.02,
     "passenger_tax_reference_years": [],
-    "passenger_tax_reference_years_values": 0.0
-
+    "passenger_tax_reference_years_values": 0.0,
+    "operational_efficiency_cost_non_energy_per_ask_reference_years": [],
+    "operational_efficiency_cost_non_energy_per_ask_values": 0.01,
+    "load_factor_cost_non_energy_per_ask_reference_years": [],
+    "load_factor_cost_non_energy_per_ask_values": 0.01
 }

@@ -12,10 +12,11 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
 )
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import OperationsAbatementCost
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
-from aeromaps.models.impacts.costs.operations.operations_cost import LoadFactorEfficiencyCost
+from aeromaps.models.impacts.costs.operations.operations_cost import LoadFactorEfficiencyCost, OperationalEfficiencyCost
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -458,8 +459,9 @@ models_complex = {
     "recurring_costs": RecurringCosts("recurring_costs"),
     "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
-    "operational_efficiency_cost": LoadFactorEfficiencyCost("operational_efficiency_cost"),
-    "operations_abatement_cost": LoadFactorAbatementCost("operations_abatement_cost"),
+    "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
+    "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
+    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
 }
 
 models_complex_improvedgwpstar = {

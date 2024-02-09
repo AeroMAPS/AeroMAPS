@@ -50,10 +50,10 @@ class OperationsAbatementCost(AeromapsModel):
         operations_abatement_cost = extra_cost_operations / emissions_reduction_operations
 
         self.df.loc[:, "operations_abatement_cost"] = operations_abatement_cost
-        self.df.loc[:, "operations_abatement_potential"] = emissions_reduction_operations * ask
+        self.df.loc[:, "operations_abatement_effective"] = emissions_reduction_operations * ask
 
-        energy_per_rpk_base = energy_per_ask_mean / load_factor.loc[self.prospection_start_year - 1] / 100
-        energy_per_rpk_real = energy_per_ask_mean / load_factor / 100
+        energy_per_rpk_base = energy_per_ask_mean / load_factor.loc[self.prospection_start_year - 1] * 100
+        energy_per_rpk_real = energy_per_ask_mean / load_factor * 100
 
         emissions_reduction_load_factor = (
                 (energy_per_rpk_base - energy_per_rpk_real)
@@ -69,8 +69,9 @@ class OperationsAbatementCost(AeromapsModel):
 
         load_factor_abatement_cost = extra_cost_load_factor / emissions_reduction_load_factor
 
+
         self.df.loc[:, "load_factor_abatement_cost"] = load_factor_abatement_cost
-        self.df.loc[:, "emissions_reduction_load_factor"] = emissions_reduction_load_factor * rpk
+        self.df.loc[:, "load_factor_abatement_effective"] = emissions_reduction_load_factor * rpk
 
         return (
             operations_abatement_cost,
