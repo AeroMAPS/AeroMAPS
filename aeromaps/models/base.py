@@ -428,9 +428,9 @@ def RunFair(self, species_quantities, without="None"):
     # fill(f.climate_configs["ocean_heat_capacity"], [8, 14, 100], config="central")
     # fill(f.climate_configs["deep_ocean_efficacy"], 1.1, config="central")
     # Corresponds to a "low" configuration on FaIR
-    fill(f.climate_configs["ocean_heat_transfer"], [1.7, 2.0, 1.1], config='central')
-    fill(f.climate_configs["ocean_heat_capacity"], [6, 11, 75], config='central')
-    fill(f.climate_configs["deep_ocean_efficacy"], 0.8, config='central')
+    fill(f.climate_configs["ocean_heat_transfer"], [1.7, 2.0, 1.1], config="central")
+    fill(f.climate_configs["ocean_heat_capacity"], [6, 11, 75], config="central")
+    fill(f.climate_configs["deep_ocean_efficacy"], 0.8, config="central")
 
     # Filling species configs
     for specie in species:

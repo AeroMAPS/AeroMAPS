@@ -798,6 +798,7 @@ class TemperatureFair(AeromapsModel):
             self.df_climate.loc[
                 k, "temperature_increase_from_soot_from_aviation"
             ] = temperature_increase_from_soot_from_aviation_list[k - 1765]
+
         temperature_increase_from_co2_from_aviation = self.df_climate[
             "temperature_increase_from_co2_from_aviation"
         ]
