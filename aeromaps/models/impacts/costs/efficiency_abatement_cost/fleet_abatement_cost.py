@@ -17,6 +17,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
     def compute(
         self,
         ask_aircraft_value_dict: dict,
+        rpk_aircraft_value_dict: dict,
+        load_factor: pd.Series = pd.Series(
+            dtype="float64"
+        ),
         doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
         doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
         doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
@@ -107,10 +111,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     )  # conversion to ton
 
                     # TODO use dictionnary if possible once implementeed
-                    aircraft_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_ask")]
+                    aircraft_pseudo_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")] / load_factor[self.prospection_start_year-1] * 100
 
                     aircraft_carbon_abatement_volume = - (
-                        aircraft_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
+                        aircraft_pseudo_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
                     )  # in tons
 
                 cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"

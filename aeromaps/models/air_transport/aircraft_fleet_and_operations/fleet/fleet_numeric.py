@@ -18,11 +18,15 @@ class FleetEvolution(AeromapsModel):
         ask_short_range: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
+        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
+        rpk_medium_range: pd.Series = pd.Series(dtype="float64"),
+        rpk_long_range: pd.Series = pd.Series(dtype="float64"),
         covid_start_year: int = 0,
         covid_end_year: int = 0,
-    ) -> Tuple[dict, dict, dict, dict]:
+    ) -> Tuple[dict, dict, dict, dict, dict]:
 
         ask_aircraft_value_dict = {}
+        rpk_aircraft_value_dict = {}
         aircraft_in_fleet_value_dict = {}
         aircraft_in_fleet_value_covid_levelling_dict = {}
         aircraft_in_out_value_dict = {}
@@ -30,10 +34,13 @@ class FleetEvolution(AeromapsModel):
         for category, sets in self.fleet_model.all_aircraft_elements.items():
             if category == "Short Range":
                 category_ask = ask_short_range
+                category_rpk = rpk_short_range
             elif category == "Medium Range":
                 category_ask = ask_medium_range
+                category_rpk = rpk_medium_range
             else:
                 category_ask = ask_long_range
+                category_rpk = rpk_long_range
 
             # Caculation of virtual fleet demand assuming that manufacturers/airlines adapt their production to be ready for traffic catchup after covid.
             category_ask_covid_levelling = category_ask.copy()
@@ -58,6 +65,7 @@ class FleetEvolution(AeromapsModel):
 
                 share_var_name = aircraft_var_name + ":aircraft_share"
                 ask_aircraft_var_name = aircraft_var_name + ":aircraft_ask"
+                rpk_aircraft_var_name = aircraft_var_name + ":aircraft_rpk"
 
                 aircraft_in_fleet_var_name = aircraft_var_name + ":aircraft_in_fleet"
 
@@ -70,6 +78,11 @@ class FleetEvolution(AeromapsModel):
                 ask_aircraft_value = (
                     self.fleet_model.df.loc[2019:2050, share_var_name] / 100 * category_ask
                 )
+
+                rpk_aircraft_value = (
+                    self.fleet_model.df.loc[2019:2050, share_var_name] / 100 * category_rpk
+                )
+
                 ask_aircraft_value_covid_levelling = (
                     self.fleet_model.df.loc[2019:2050, share_var_name]
                     / 100
@@ -86,6 +99,7 @@ class FleetEvolution(AeromapsModel):
                     [
                         self.fleet_model.df,
                         ask_aircraft_value.rename(ask_aircraft_var_name),
+                        rpk_aircraft_value.rename(rpk_aircraft_var_name),
                         aircraft_in_fleet_value.rename(aircraft_in_fleet_var_name),
                         aircraft_in_fleet_value_covid_levelling.rename(
                             aircraft_in_fleet_covid_levelling_var_name
@@ -96,6 +110,7 @@ class FleetEvolution(AeromapsModel):
                 )
 
                 ask_aircraft_value_dict[aircraft_var_name] = ask_aircraft_value
+                rpk_aircraft_value_dict[aircraft_var_name] = rpk_aircraft_value
                 aircraft_in_fleet_value_dict[aircraft_var_name] = aircraft_in_fleet_value
                 aircraft_in_fleet_value_covid_levelling_dict[
                     aircraft_var_name
@@ -104,6 +119,7 @@ class FleetEvolution(AeromapsModel):
 
         return (
             ask_aircraft_value_dict,
+            rpk_aircraft_value_dict,
             aircraft_in_fleet_value_dict,
             aircraft_in_fleet_value_covid_levelling_dict,
             aircraft_in_out_value_dict,
