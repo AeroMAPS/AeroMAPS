@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from numpy import genfromtxt
 from scipy.interpolate import interp1d
 import warnings
 from fair import FAIR
@@ -316,15 +315,42 @@ def RunFair(self, species_quantities, without="None"):
     f.allocate()
 
     # Filling species quantities
-    total_CO2 = species_quantities[0][1 : self.end_year - 1765 + 1]
-    if without != "Aviation CO2":
-        total_CO2 += species_quantities[1][1 : self.end_year - 1765 + 1]
-    if without != "Aviation NOx LT O3 decrease":
-        total_CO2 += species_quantities[2][1 : self.end_year - 1765 + 1]
-    if without != "Aviation NOx CH4 decrease":
-        total_CO2 += species_quantities[3][1 : self.end_year - 1765 + 1]
-    if without != "Aviation NOx H2O decrease":
-        total_CO2 += species_quantities[4][1 : self.end_year - 1765 + 1]
+    if without == "Aviation CO2":
+        total_CO2 = (
+            species_quantities[0][1 : self.end_year - 1765 + 1]
+            + species_quantities[2][1 : self.end_year - 1765 + 1]
+            + species_quantities[3][1 : self.end_year - 1765 + 1]
+            + species_quantities[4][1 : self.end_year - 1765 + 1]
+        )
+    elif without == "Aviation NOx LT O3 decrease":
+        total_CO2 = (
+            species_quantities[0][1 : self.end_year - 1765 + 1]
+            + species_quantities[1][1 : self.end_year - 1765 + 1]
+            + species_quantities[3][1 : self.end_year - 1765 + 1]
+            + species_quantities[4][1 : self.end_year - 1765 + 1]
+        )
+    elif without == "Aviation NOx CH4 decrease":
+        total_CO2 = (
+            species_quantities[0][1 : self.end_year - 1765 + 1]
+            + species_quantities[1][1 : self.end_year - 1765 + 1]
+            + species_quantities[2][1 : self.end_year - 1765 + 1]
+            + species_quantities[4][1 : self.end_year - 1765 + 1]
+        )
+    elif without == "Aviation NOx H2O decrease":
+        total_CO2 = (
+            species_quantities[0][1 : self.end_year - 1765 + 1]
+            + species_quantities[1][1 : self.end_year - 1765 + 1]
+            + species_quantities[2][1 : self.end_year - 1765 + 1]
+            + species_quantities[3][1 : self.end_year - 1765 + 1]
+        )
+    else:
+        total_CO2 = (
+            species_quantities[0][1 : self.end_year - 1765 + 1]
+            + species_quantities[1][1 : self.end_year - 1765 + 1]
+            + species_quantities[2][1 : self.end_year - 1765 + 1]
+            + species_quantities[3][1 : self.end_year - 1765 + 1]
+            + species_quantities[4][1 : self.end_year - 1765 + 1]
+        )
     fill(f.emissions, total_CO2, specie="CO2", config=f.configs[0], scenario=f.scenarios[0])
     fill(
         f.emissions,
@@ -398,9 +424,13 @@ def RunFair(self, species_quantities, without="None"):
     initialise(f.airborne_emissions, 0)
 
     # Filling climate configs
-    fill(f.climate_configs["ocean_heat_transfer"], [1.1, 1.6, 0.9], config="central")
-    fill(f.climate_configs["ocean_heat_capacity"], [8, 14, 100], config="central")
-    fill(f.climate_configs["deep_ocean_efficacy"], 1.1, config="central")
+    # fill(f.climate_configs["ocean_heat_transfer"], [1.1, 1.6, 0.9], config="central")
+    # fill(f.climate_configs["ocean_heat_capacity"], [8, 14, 100], config="central")
+    # fill(f.climate_configs["deep_ocean_efficacy"], 1.1, config="central")
+    # Corresponds to a "low" configuration on FaIR
+    fill(f.climate_configs["ocean_heat_transfer"], [1.7, 2.0, 1.1], config='central')
+    fill(f.climate_configs["ocean_heat_capacity"], [6, 11, 75], config='central')
+    fill(f.climate_configs["deep_ocean_efficacy"], 0.8, config='central')
 
     # Filling species configs
     for specie in species:
