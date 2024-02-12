@@ -39,6 +39,7 @@ class OperationsAbatementCost(AeromapsModel):
             * kerosene_emission_factor
             / 1000000
         )
+
         extra_cost_operations = (
                 operational_efficiency_cost_non_energy_per_ask
                 - energy_per_ask_mean_without_operations
@@ -50,7 +51,7 @@ class OperationsAbatementCost(AeromapsModel):
         operations_abatement_cost = extra_cost_operations / emissions_reduction_operations
 
         self.df.loc[:, "operations_abatement_cost"] = operations_abatement_cost
-        self.df.loc[:, "operations_abatement_effective"] = emissions_reduction_operations * ask
+        self.df.loc[:, "operations_abatement_effective"] = emissions_reduction_operations * rpk / load_factor.loc[self.prospection_start_year-1] * 100
 
         energy_per_rpk_base = energy_per_ask_mean / load_factor.loc[self.prospection_start_year - 1] * 100
         energy_per_rpk_real = energy_per_ask_mean / load_factor * 100
