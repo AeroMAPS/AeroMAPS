@@ -969,7 +969,7 @@ class TemperatureFair(AeromapsModel):
         # )
 
         ## List to dataframe
-        for k in range(self.climate_historic_start_year, self.end_year):
+        for k in range(self.climate_historic_start_year, self.end_year + 1):
             self.df_climate.loc[
                 k, "temperature_increase_from_co2_from_aviation"
             ] = temperature_increase_from_co2_from_aviation_list[k - 1765]
