@@ -315,71 +315,24 @@ def RunFair(self, species_quantities, without="None"):
     f.allocate()
 
     # Filling species quantities
-    if without == "Aviation CO2":
-        total_CO2 = (
-            species_quantities[0][1 : self.end_year - 1765 + 1]
-            + species_quantities[2][1 : self.end_year - 1765 + 1]
-            + species_quantities[3][1 : self.end_year - 1765 + 1]
-            + species_quantities[4][1 : self.end_year - 1765 + 1]
-        )
-    elif without == "Aviation NOx LT O3 decrease":
-        total_CO2 = (
-            species_quantities[0][1 : self.end_year - 1765 + 1]
-            + species_quantities[1][1 : self.end_year - 1765 + 1]
-            + species_quantities[3][1 : self.end_year - 1765 + 1]
-            + species_quantities[4][1 : self.end_year - 1765 + 1]
-        )
-    elif without == "Aviation NOx CH4 decrease":
-        total_CO2 = (
-            species_quantities[0][1 : self.end_year - 1765 + 1]
-            + species_quantities[1][1 : self.end_year - 1765 + 1]
-            + species_quantities[2][1 : self.end_year - 1765 + 1]
-            + species_quantities[4][1 : self.end_year - 1765 + 1]
-        )
-    elif without == "Aviation NOx H2O decrease":
-        total_CO2 = (
-            species_quantities[0][1 : self.end_year - 1765 + 1]
-            + species_quantities[1][1 : self.end_year - 1765 + 1]
-            + species_quantities[2][1 : self.end_year - 1765 + 1]
-            + species_quantities[3][1 : self.end_year - 1765 + 1]
-        )
-    else:
-        total_CO2 = (
-            species_quantities[0][1 : self.end_year - 1765 + 1]
-            + species_quantities[1][1 : self.end_year - 1765 + 1]
-            + species_quantities[2][1 : self.end_year - 1765 + 1]
-            + species_quantities[3][1 : self.end_year - 1765 + 1]
-            + species_quantities[4][1 : self.end_year - 1765 + 1]
-        )
-    fill(f.emissions, total_CO2, specie="CO2", config=f.configs[0], scenario=f.scenarios[0])
-    fill(
-        f.emissions,
-        species_quantities[5][1 : self.end_year - 1765 + 1],
-        specie="World CH4",
-        config=f.configs[0],
-        scenario=f.scenarios[0],
-    )
-    if without != "Aviation contrails":
+    if without == "All aviation":
         fill(
-            f.forcing,
-            species_quantities[6],
-            specie="Aviation contrails",
+            f.emissions,
+            species_quantities[0][1 : self.end_year - 1765 + 1],
+            specie="CO2",
             config=f.configs[0],
             scenario=f.scenarios[0],
         )
-    else:
+        fill(
+            f.emissions,
+            species_quantities[5][1 : self.end_year - 1765 + 1],
+            specie="World CH4",
+            config=f.configs[0],
+            scenario=f.scenarios[0],
+        )
         fill(
             f.forcing, 0, specie="Aviation contrails", config=f.configs[0], scenario=f.scenarios[0]
         )
-    if without != "Aviation NOx ST O3 increase":
-        fill(
-            f.forcing,
-            species_quantities[7],
-            specie="Aviation NOx ST O3 increase",
-            config=f.configs[0],
-            scenario=f.scenarios[0],
-        )
-    else:
         fill(
             f.forcing,
             0,
@@ -387,36 +340,124 @@ def RunFair(self, species_quantities, without="None"):
             config=f.configs[0],
             scenario=f.scenarios[0],
         )
-    if without != "Aviation H2O":
-        fill(
-            f.forcing,
-            species_quantities[8],
-            specie="Aviation H2O",
-            config=f.configs[0],
-            scenario=f.scenarios[0],
-        )
-    else:
         fill(f.forcing, 0, specie="Aviation H2O", config=f.configs[0], scenario=f.scenarios[0])
-    if without != "Aviation sulfur":
-        fill(
-            f.emissions,
-            species_quantities[9][1 : self.end_year - 1765 + 1],
-            specie="Aviation sulfur",
-            config=f.configs[0],
-            scenario=f.scenarios[0],
-        )
-    else:
         fill(f.emissions, 0, specie="Aviation sulfur", config=f.configs[0], scenario=f.scenarios[0])
-    if without != "Aviation soot":
+        fill(f.emissions, 0, specie="Aviation soot", config=f.configs[0], scenario=f.scenarios[0])
+    else:
+        if without == "Aviation CO2":
+            total_CO2 = (
+                species_quantities[0][1 : self.end_year - 1765 + 1]
+                + species_quantities[2][1 : self.end_year - 1765 + 1]
+                + species_quantities[3][1 : self.end_year - 1765 + 1]
+                + species_quantities[4][1 : self.end_year - 1765 + 1]
+            )
+        elif without == "Aviation NOx LT O3 decrease":
+            total_CO2 = (
+                species_quantities[0][1 : self.end_year - 1765 + 1]
+                + species_quantities[1][1 : self.end_year - 1765 + 1]
+                + species_quantities[3][1 : self.end_year - 1765 + 1]
+                + species_quantities[4][1 : self.end_year - 1765 + 1]
+            )
+        elif without == "Aviation NOx CH4 decrease":
+            total_CO2 = (
+                species_quantities[0][1 : self.end_year - 1765 + 1]
+                + species_quantities[1][1 : self.end_year - 1765 + 1]
+                + species_quantities[2][1 : self.end_year - 1765 + 1]
+                + species_quantities[4][1 : self.end_year - 1765 + 1]
+            )
+        elif without == "Aviation NOx H2O decrease":
+            total_CO2 = (
+                species_quantities[0][1 : self.end_year - 1765 + 1]
+                + species_quantities[1][1 : self.end_year - 1765 + 1]
+                + species_quantities[2][1 : self.end_year - 1765 + 1]
+                + species_quantities[3][1 : self.end_year - 1765 + 1]
+            )
+        else:
+            total_CO2 = (
+                species_quantities[0][1 : self.end_year - 1765 + 1]
+                + species_quantities[1][1 : self.end_year - 1765 + 1]
+                + species_quantities[2][1 : self.end_year - 1765 + 1]
+                + species_quantities[3][1 : self.end_year - 1765 + 1]
+                + species_quantities[4][1 : self.end_year - 1765 + 1]
+            )
+        fill(f.emissions, total_CO2, specie="CO2", config=f.configs[0], scenario=f.scenarios[0])
         fill(
             f.emissions,
-            species_quantities[10][1 : self.end_year - 1765 + 1],
-            specie="Aviation soot",
+            species_quantities[5][1 : self.end_year - 1765 + 1],
+            specie="World CH4",
             config=f.configs[0],
             scenario=f.scenarios[0],
         )
-    else:
-        fill(f.emissions, 0, specie="Aviation soot", config=f.configs[0], scenario=f.scenarios[0])
+        if without != "Aviation contrails":
+            fill(
+                f.forcing,
+                species_quantities[6],
+                specie="Aviation contrails",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        else:
+            fill(
+                f.forcing,
+                0,
+                specie="Aviation contrails",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        if without != "Aviation NOx ST O3 increase":
+            fill(
+                f.forcing,
+                species_quantities[7],
+                specie="Aviation NOx ST O3 increase",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        else:
+            fill(
+                f.forcing,
+                0,
+                specie="Aviation NOx ST O3 increase",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        if without != "Aviation H2O":
+            fill(
+                f.forcing,
+                species_quantities[8],
+                specie="Aviation H2O",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        else:
+            fill(f.forcing, 0, specie="Aviation H2O", config=f.configs[0], scenario=f.scenarios[0])
+        if without != "Aviation sulfur":
+            fill(
+                f.emissions,
+                species_quantities[9][1 : self.end_year - 1765 + 1],
+                specie="Aviation sulfur",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        else:
+            fill(
+                f.emissions,
+                0,
+                specie="Aviation sulfur",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        if without != "Aviation soot":
+            fill(
+                f.emissions,
+                species_quantities[10][1 : self.end_year - 1765 + 1],
+                specie="Aviation soot",
+                config=f.configs[0],
+                scenario=f.scenarios[0],
+            )
+        else:
+            fill(
+                f.emissions, 0, specie="Aviation soot", config=f.configs[0], scenario=f.scenarios[0]
+            )
 
     initialise(f.forcing, 0)
     initialise(f.temperature, 0)

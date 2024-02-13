@@ -766,6 +766,11 @@ class TemperatureFair(AeromapsModel):
             species_quantities,
             without="Aviation soot",
         )
+        temperature_increase_from_aviation_list = total_temperature_list - RunFair(
+            self,
+            species_quantities,
+            without="All aviation",
+        )
 
         ## List to dataframe
         for k in range(self.climate_historic_start_year, self.end_year):
