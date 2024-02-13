@@ -65,6 +65,14 @@ class TemperatureGWPStar(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         """Temperature calculation using equivalent emissions (with GWP* method) and TCRE."""
 
@@ -172,6 +180,47 @@ class TemperatureGWPStar(AeromapsModel):
             self.climate_historic_start_year, "historical_cumulative_co2_emissions"
         ] = (co2_emissions.loc[self.climate_historic_start_year] / 1000)
         self.df_climate.loc[
+            self.climate_historic_start_year, "historical_cumulative_contrails_equivalent_emissions"
+        ] = (contrails_equivalent_emissions.loc[self.climate_historic_start_year] / 1000)
+        self.df_climate.loc[
+            self.climate_historic_start_year,
+            "historical_cumulative_nox_short_term_o3_increase_equivalent_emissions",
+        ] = (
+            nox_short_term_o3_increase_equivalent_emissions.loc[self.climate_historic_start_year]
+            / 1000
+        )
+        self.df_climate.loc[
+            self.climate_historic_start_year,
+            "historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions",
+        ] = (
+            nox_long_term_o3_decrease_equivalent_emissions.loc[self.climate_historic_start_year]
+            / 1000
+        )
+        self.df_climate.loc[
+            self.climate_historic_start_year,
+            "historical_cumulative_nox_ch4_decrease_equivalent_emissions",
+        ] = (
+            nox_ch4_decrease_equivalent_emissions.loc[self.climate_historic_start_year] / 1000
+        )
+        self.df_climate.loc[
+            self.climate_historic_start_year,
+            "historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions",
+        ] = (
+            nox_stratospheric_water_vapor_decrease_equivalent_emissions.loc[
+                self.climate_historic_start_year
+            ]
+            / 1000
+        )
+        self.df_climate.loc[
+            self.climate_historic_start_year, "historical_cumulative_soot_equivalent_emissions"
+        ] = (soot_equivalent_emissions.loc[self.climate_historic_start_year] / 1000)
+        self.df_climate.loc[
+            self.climate_historic_start_year, "historical_cumulative_h2o_equivalent_emissions"
+        ] = (h2o_equivalent_emissions.loc[self.climate_historic_start_year] / 1000)
+        self.df_climate.loc[
+            self.climate_historic_start_year, "historical_cumulative_sulfur_equivalent_emissions"
+        ] = (sulfur_equivalent_emissions.loc[self.climate_historic_start_year] / 1000)
+        self.df_climate.loc[
             self.climate_historic_start_year, "historical_cumulative_non_co2_equivalent_emissions"
         ] = (non_co2_equivalent_emissions[self.climate_historic_start_year] / 1000)
         for k in range(self.climate_historic_start_year + 1, self.end_year + 1):
@@ -179,11 +228,89 @@ class TemperatureGWPStar(AeromapsModel):
                 self.df_climate.loc[k - 1, "historical_cumulative_co2_emissions"]
                 + co2_emissions.loc[k] / 1000
             )
+            self.df_climate.loc[k, "historical_cumulative_contrails_equivalent_emissions"] = (
+                self.df_climate.loc[k - 1, "historical_cumulative_contrails_equivalent_emissions"]
+                + contrails_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[
+                k, "historical_cumulative_nox_short_term_o3_increase_equivalent_emissions"
+            ] = (
+                self.df_climate.loc[
+                    k - 1, "historical_cumulative_nox_short_term_o3_increase_equivalent_emissions"
+                ]
+                + nox_short_term_o3_increase_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[
+                k, "historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions"
+            ] = (
+                self.df_climate.loc[
+                    k - 1, "historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions"
+                ]
+                + nox_long_term_o3_decrease_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[
+                k, "historical_cumulative_nox_ch4_decrease_equivalent_emissions"
+            ] = (
+                self.df_climate.loc[
+                    k - 1, "historical_cumulative_nox_ch4_decrease_equivalent_emissions"
+                ]
+                + nox_ch4_decrease_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[
+                k,
+                "historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions",
+            ] = (
+                self.df_climate.loc[
+                    k - 1,
+                    "historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions",
+                ]
+                + nox_stratospheric_water_vapor_decrease_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[k, "historical_cumulative_soot_equivalent_emissions"] = (
+                self.df_climate.loc[k - 1, "historical_cumulative_soot_equivalent_emissions"]
+                + soot_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[k, "historical_cumulative_h2o_equivalent_emissions"] = (
+                self.df_climate.loc[k - 1, "historical_cumulative_h2o_equivalent_emissions"]
+                + h2o_equivalent_emissions.loc[k] / 1000
+            )
+            self.df_climate.loc[k, "historical_cumulative_sulfur_equivalent_emissions"] = (
+                self.df_climate.loc[k - 1, "historical_cumulative_sulfur_equivalent_emissions"]
+                + sulfur_equivalent_emissions.loc[k] / 1000
+            )
+
             self.df_climate.loc[k, "historical_cumulative_non_co2_equivalent_emissions"] = (
                 self.df_climate.loc[k - 1, "historical_cumulative_non_co2_equivalent_emissions"]
                 + non_co2_equivalent_emissions.loc[k] / 1000
             )
+
         historical_cumulative_co2_emissions = self.df_climate["historical_cumulative_co2_emissions"]
+        historical_cumulative_contrails_equivalent_emissions = self.df_climate[
+            "historical_cumulative_contrails_equivalent_emissions"
+        ]
+        historical_cumulative_nox_short_term_o3_increase_equivalent_emissions = self.df_climate[
+            "historical_cumulative_nox_short_term_o3_increase_equivalent_emissions"
+        ]
+        historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions = self.df_climate[
+            "historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions"
+        ]
+        historical_cumulative_nox_ch4_decrease_equivalent_emissions = self.df_climate[
+            "historical_cumulative_nox_ch4_decrease_equivalent_emissions"
+        ]
+        historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions = (
+            self.df_climate[
+                "historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions"
+            ]
+        )
+        historical_cumulative_soot_equivalent_emissions = self.df_climate[
+            "historical_cumulative_soot_equivalent_emissions"
+        ]
+        historical_cumulative_h2o_equivalent_emissions = self.df_climate[
+            "historical_cumulative_h2o_equivalent_emissions"
+        ]
+        historical_cumulative_sulfur_equivalent_emissions = self.df_climate[
+            "historical_cumulative_sulfur_equivalent_emissions"
+        ]
         historical_cumulative_non_co2_equivalent_emissions = self.df_climate[
             "historical_cumulative_non_co2_equivalent_emissions"
         ]
@@ -235,16 +362,77 @@ class TemperatureGWPStar(AeromapsModel):
             self.df_climate.loc[k, "temperature_increase_from_co2_from_aviation"] = (
                 tcre_coefficient * historical_cumulative_co2_emissions.loc[k]
             )
+            self.df_climate.loc[k, "temperature_increase_from_contrails_from_aviation"] = (
+                tcre_coefficient * historical_cumulative_contrails_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[
+                k, "temperature_increase_from_nox_short_term_o3_increase_from_aviation"
+            ] = (
+                tcre_coefficient
+                * historical_cumulative_nox_short_term_o3_increase_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[
+                k, "temperature_increase_from_nox_long_term_o3_decrease_from_aviation"
+            ] = (
+                tcre_coefficient
+                * historical_cumulative_nox_long_term_o3_decrease_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[k, "temperature_increase_from_nox_ch4_decrease_from_aviation"] = (
+                tcre_coefficient
+                * historical_cumulative_nox_ch4_decrease_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[
+                k, "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation"
+            ] = (
+                tcre_coefficient
+                * historical_cumulative_nox_stratospheric_water_vapor_decrease_equivalent_emissions.loc[
+                    k
+                ]
+            )
+            self.df_climate.loc[k, "temperature_increase_from_soot_from_aviation"] = (
+                tcre_coefficient * historical_cumulative_soot_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[k, "temperature_increase_from_h2o_from_aviation"] = (
+                tcre_coefficient * historical_cumulative_h2o_equivalent_emissions.loc[k]
+            )
+            self.df_climate.loc[k, "temperature_increase_from_sulfur_from_aviation"] = (
+                tcre_coefficient * historical_cumulative_sulfur_equivalent_emissions.loc[k]
+            )
             self.df_climate.loc[k, "temperature_increase_from_non_co2_from_aviation"] = (
                 tcre_coefficient * historical_cumulative_non_co2_equivalent_emissions.loc[k]
             )
         temperature_increase_from_co2_from_aviation = self.df_climate[
             "temperature_increase_from_co2_from_aviation"
         ]
+        temperature_increase_from_contrails_from_aviation = self.df_climate[
+            "temperature_increase_from_contrails_from_aviation"
+        ]
+        temperature_increase_from_nox_short_term_o3_increase_from_aviation = self.df_climate[
+            "temperature_increase_from_nox_short_term_o3_increase_from_aviation"
+        ]
+        temperature_increase_from_nox_long_term_o3_decrease_from_aviation = self.df_climate[
+            "temperature_increase_from_nox_long_term_o3_decrease_from_aviation"
+        ]
+        temperature_increase_from_nox_ch4_decrease_from_aviation = self.df_climate[
+            "temperature_increase_from_nox_ch4_decrease_from_aviation"
+        ]
+        temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation = (
+            self.df_climate[
+                "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation"
+            ]
+        )
+        temperature_increase_from_h2o_from_aviation = self.df_climate[
+            "temperature_increase_from_h2o_from_aviation"
+        ]
+        temperature_increase_from_soot_from_aviation = self.df_climate[
+            "temperature_increase_from_soot_from_aviation"
+        ]
+        temperature_increase_from_sulfur_from_aviation = self.df_climate[
+            "temperature_increase_from_sulfur_from_aviation"
+        ]
         temperature_increase_from_non_co2_from_aviation = self.df_climate[
             "temperature_increase_from_non_co2_from_aviation"
         ]
-
         temperature_increase_from_aviation = (
             temperature_increase_from_co2_from_aviation
             + temperature_increase_from_non_co2_from_aviation
@@ -269,6 +457,14 @@ class TemperatureGWPStar(AeromapsModel):
             temperature_increase_from_aviation,
             temperature_increase_from_co2_from_aviation,
             temperature_increase_from_non_co2_from_aviation,
+            temperature_increase_from_contrails_from_aviation,
+            temperature_increase_from_nox_short_term_o3_increase_from_aviation,
+            temperature_increase_from_nox_long_term_o3_decrease_from_aviation,
+            temperature_increase_from_nox_ch4_decrease_from_aviation,
+            temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation,
+            temperature_increase_from_h2o_from_aviation,
+            temperature_increase_from_sulfur_from_aviation,
+            temperature_increase_from_soot_from_aviation,
         )
 
 
