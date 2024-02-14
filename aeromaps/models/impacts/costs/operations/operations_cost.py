@@ -14,15 +14,12 @@ class OperationalEfficiencyCost(AeromapsModel):
 
     def compute(
         self,
-        operational_efficiency_cost_non_energy_per_ask_reference_years: list = [],
-        operational_efficiency_cost_non_energy_per_ask_values: list = [],
+        operational_efficiency_cost_non_energy_per_ask_final_value: float,
+        operations_final_gain: float,
+        operations_gain: pd.Series = pd.Series(dtype="float64")
     ) -> Tuple[pd.Series]:
-        operational_efficiency_cost_non_energy_per_ask = AeromapsInterpolationFunction(
-            self,
-            operational_efficiency_cost_non_energy_per_ask_reference_years,
-            operational_efficiency_cost_non_energy_per_ask_values,
-            model_name=self.name,
-        )
+
+        operational_efficiency_cost_non_energy_per_ask = operational_efficiency_cost_non_energy_per_ask_final_value * operations_gain/operations_final_gain
         self.df.loc[:, "operational_efficiency_cost_non_energy_per_ask"] = operational_efficiency_cost_non_energy_per_ask
 
         return operational_efficiency_cost_non_energy_per_ask
@@ -34,15 +31,13 @@ class LoadFactorEfficiencyCost(AeromapsModel):
 
     def compute(
         self,
-        load_factor_cost_non_energy_per_ask_reference_years: list = [],
-        load_factor_cost_non_energy_per_ask_values: list = [],
+        load_factor_cost_non_energy_per_ask_final_value: float,
+        load_factor_end_year: float = 0.0,
+        load_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
-        load_factor_cost_non_energy_per_ask = AeromapsInterpolationFunction(
-            self,
-            load_factor_cost_non_energy_per_ask_reference_years,
-            load_factor_cost_non_energy_per_ask_values,
-            model_name=self.name,
-        )
+
+        load_factor_init=load_factor[self.prospection_start_year-1]
+        load_factor_cost_non_energy_per_ask =  load_factor_cost_non_energy_per_ask_final_value * (load_factor-load_factor_init)/(load_factor_end_year-load_factor_init)
         self.df.loc[:, "load_factor_cost_non_energy_per_ask"] = load_factor_cost_non_energy_per_ask
 
         return load_factor_cost_non_energy_per_ask

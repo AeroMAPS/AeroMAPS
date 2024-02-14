@@ -35,6 +35,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         ),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        covid_energy_intensity_per_ask_increase_2020: float = 0.0,
     ) -> Tuple[dict, dict]:
         cac_aircraft_value_dict = {}
         cav_aircraft_value_dict = {}
@@ -71,9 +72,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 # Check if it's a reference aircraft or a normal aircraft...
                 if hasattr(aircraft_var, "parameters"):
                     aircraft_var_name = aircraft_var.parameters.full_name
-                    aircraft_energy_delta = (
+                    aircraft_energy_delta_val = (
                         1 + float(aircraft_var.parameters.consumption_evolution) / 100
                     ) * category_recent_reference.energy_per_ask - category_reference_energy
+
                     aircraft_doc_ne_delta = (
                         (1 + float(aircraft_var.parameters.doc_non_energy_evolution) / 100)
                         * category_recent_reference.doc_non_energy_base
@@ -82,40 +84,43 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 else:
                     aircraft_var_name = aircraft_var.full_name
-                    aircraft_energy_delta = aircraft_var.energy_per_ask - category_reference_energy
+                    aircraft_energy_delta_val = aircraft_var.energy_per_ask - category_reference_energy
                     aircraft_doc_ne_delta = (
                         aircraft_var.doc_non_energy_base - category_reference_doc_ne
                     )
 
+                # include covid energy per ask increase, applied indifferently to the whole fleet.
+                # Initialisation of a uniform pd.series and modification of 2020 value.
+                aircraft_energy_delta = pd.Series(
+                    aircraft_energy_delta_val, index=self.fleet_model.df.index
+                )
+
+                aircraft_energy_delta[2020] = aircraft_energy_delta[2020] * (
+                            1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+
                 # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
                 # Value set to NaN to avoid erroneous interpretation
 
-                # TODO handle hydrogen aircraft case!
+                # TODO check hydrogen aircraft case!
 
-                if aircraft_energy_delta > 0:
-                    aircraft_carbon_abatement_cost = pd.Series(
-                        np.NaN, index=self.fleet_model.df.index
+
+                # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
+                aircraft_carbon_abatement_cost = (
+                    (
+                        aircraft_energy_delta * kerosene_market_price / fuel_lhv
+                        + aircraft_doc_ne_delta
                     )
-                    aircraft_carbon_abatement_volume = pd.Series(
-                        np.NaN, index=self.fleet_model.df.index
-                    )
-                else:
-                    # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
-                    aircraft_carbon_abatement_cost = (
-                        (
-                            aircraft_energy_delta * kerosene_market_price / fuel_lhv
-                            + aircraft_doc_ne_delta
-                        )
-                        / (-aircraft_energy_delta * kerosene_emission_factor)
-                        * 1000000
-                    )  # conversion to ton
+                    / (-aircraft_energy_delta * kerosene_emission_factor)
+                    * 1000000
+                )  # conversion to ton
 
-                    # TODO use dictionnary if possible once implementeed
-                    aircraft_pseudo_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")] / load_factor[self.prospection_start_year-1] * 100
+                # TODO use dictionnary if possible once implementeed
+                aircraft_pseudo_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")] / load_factor[self.prospection_start_year-1] * 100
 
-                    aircraft_carbon_abatement_volume = - (
-                        aircraft_pseudo_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
-                    )  # in tons
+                aircraft_carbon_abatement_volume = - (
+                    aircraft_pseudo_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
+                )  # in tons
+
 
                 cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"
 
