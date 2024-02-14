@@ -1,5 +1,6 @@
 from typing import Tuple
 import pandas as pd
+import numpy as np
 
 from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
 
@@ -25,6 +26,12 @@ class ERF(AeromapsModel):
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
+        biofuel_share: pd.Series = pd.Series(dtype="float64"),
+        electrofuel_share: pd.Series = pd.Series(dtype="float64"),
+        kerosene_share: pd.Series = pd.Series(dtype="float64"),
+        emission_index_number_particles_biofuel: float = 0.0,
+        emission_index_number_particles_electrofuel: float = 0.0,
+        emission_index_number_particles_kerosene: float = 0.0,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -59,6 +66,19 @@ class ERF(AeromapsModel):
         co2_erf = self.df_climate["co2_erf"]
 
         # Contrails
+        ## Effect of drop-in fuel
+        dropin_fuel_effect = (
+            kerosene_share
+            / 100
+            * np.sqrt(emission_index_number_particles_kerosene / emission_index_number_particles_kerosene)
+            + biofuel_share
+            / 100
+            * np.sqrt(emission_index_number_particles_biofuel / emission_index_number_particles_kerosene)
+            + electrofuel_share
+            / 100
+            * np.sqrt(emission_index_number_particles_electrofuel / emission_index_number_particles_kerosene)
+        )
+        ## Calculation
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
@@ -68,6 +88,7 @@ class ERF(AeromapsModel):
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
+                * dropin_fuel_effect.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 
