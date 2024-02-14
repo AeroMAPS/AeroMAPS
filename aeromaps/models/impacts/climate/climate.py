@@ -803,7 +803,7 @@ class TemperatureFair(AeromapsModel):
 
         # SPECIES QUANTITIES
         species_quantities = np.zeros((11, self.end_year - 1765 + 1))
-        rcp_data_df = self.rcp26_data_df
+        rcp_data_df = self.rcp45_data_df
 
         ## CO2
 
