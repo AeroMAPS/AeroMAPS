@@ -25,6 +25,9 @@ class ERF(AeromapsModel):
         erf_coefficient_h2o: float = 0.0,
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
+        total_aircraft_distance_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
+        total_aircraft_distance_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        total_aircraft_distance_electric: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
         biofuel_share: pd.Series = pd.Series(dtype="float64"),
         electrofuel_share: pd.Series = pd.Series(dtype="float64"),
@@ -66,24 +69,35 @@ class ERF(AeromapsModel):
         co2_erf = self.df_climate["co2_erf"]
 
         # Contrails
-        ## Effect of drop-in fuel
-        dropin_fuel_effect = (
-            kerosene_share
-            / 100
-            * np.sqrt(
-                emission_index_number_particles_kerosene / emission_index_number_particles_kerosene
+        ## Effect of energy carriers
+        contrails_relative_effect_hydrogen_wrt_kerosene = 1
+        energy_carriers_effect = (
+            total_aircraft_distance_dropin_fuel
+            / total_aircraft_distance
+            * (
+                kerosene_share
+                / 100
+                * np.sqrt(
+                    emission_index_number_particles_kerosene
+                    / emission_index_number_particles_kerosene
+                )
+                + biofuel_share
+                / 100
+                * np.sqrt(
+                    emission_index_number_particles_biofuel
+                    / emission_index_number_particles_kerosene
+                )
+                + electrofuel_share
+                / 100
+                * np.sqrt(
+                    emission_index_number_particles_electrofuel
+                    / emission_index_number_particles_kerosene
+                )
             )
-            + biofuel_share
-            / 100
-            * np.sqrt(
-                emission_index_number_particles_biofuel / emission_index_number_particles_kerosene
-            )
-            + electrofuel_share
-            / 100
-            * np.sqrt(
-                emission_index_number_particles_electrofuel
-                / emission_index_number_particles_kerosene
-            )
+            + total_aircraft_distance_hydrogen
+            / total_aircraft_distance
+            * contrails_relative_effect_hydrogen_wrt_kerosene
+            + total_aircraft_distance_hydrogen / total_aircraft_distance * 0
         )
         ## Calculation
         for k in range(self.climate_historic_start_year, self.end_year + 1):
@@ -95,7 +109,7 @@ class ERF(AeromapsModel):
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
-                * dropin_fuel_effect.loc[k]
+                * energy_carriers_effect.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 
