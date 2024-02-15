@@ -604,6 +604,7 @@ models_complex_fair = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
