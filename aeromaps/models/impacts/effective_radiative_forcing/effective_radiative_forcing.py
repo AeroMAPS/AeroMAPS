@@ -70,13 +70,20 @@ class ERF(AeromapsModel):
         dropin_fuel_effect = (
             kerosene_share
             / 100
-            * np.sqrt(emission_index_number_particles_kerosene / emission_index_number_particles_kerosene)
+            * np.sqrt(
+                emission_index_number_particles_kerosene / emission_index_number_particles_kerosene
+            )
             + biofuel_share
             / 100
-            * np.sqrt(emission_index_number_particles_biofuel / emission_index_number_particles_kerosene)
+            * np.sqrt(
+                emission_index_number_particles_biofuel / emission_index_number_particles_kerosene
+            )
             + electrofuel_share
             / 100
-            * np.sqrt(emission_index_number_particles_electrofuel / emission_index_number_particles_kerosene)
+            * np.sqrt(
+                emission_index_number_particles_electrofuel
+                / emission_index_number_particles_kerosene
+            )
         )
         ## Calculation
         for k in range(self.climate_historic_start_year, self.end_year + 1):

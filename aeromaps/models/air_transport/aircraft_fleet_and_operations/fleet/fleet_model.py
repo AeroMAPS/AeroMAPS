@@ -373,10 +373,7 @@ class FleetModel(AeromapsModel):
                                 # )
                                 self.df.loc[
                                     k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":share:dropin_fuel",
+                                    category.name + ":" + subcategory.name + ":share:dropin_fuel",
                                 ] += (
                                     (1 - float(aircraft.parameters.hybridization_factor))
                                     * self.df.loc[
@@ -395,10 +392,7 @@ class FleetModel(AeromapsModel):
                                 )
                                 self.df.loc[
                                     k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":share:electric",
+                                    category.name + ":" + subcategory.name + ":share:electric",
                                 ] += (
                                     float(aircraft.parameters.hybridization_factor)
                                     * self.df.loc[

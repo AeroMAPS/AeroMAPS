@@ -173,6 +173,7 @@ class EmissionFactorPerFuelPlot:
         self.ax.autoscale_view()
         self.fig.canvas.draw()
 
+
 class ShareDropinFuelPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
@@ -235,17 +236,13 @@ class ShareDropinFuelPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.line_biofuel_share.set_ydata(
-            self.df.loc[self.prospective_years, "biofuel_share"]
-        )
+        self.line_biofuel_share.set_ydata(self.df.loc[self.prospective_years, "biofuel_share"])
 
         self.line_electrofuel_share.set_ydata(
             self.df.loc[self.prospective_years, "electrofuel_share"]
         )
 
-        self.line_kerosene_share.set_ydata(
-            self.df.loc[self.prospective_years, "kerosene_share"]
-        )
+        self.line_kerosene_share.set_ydata(self.df.loc[self.prospective_years, "kerosene_share"])
 
         for collection in self.ax.collections:
             collection.remove()
