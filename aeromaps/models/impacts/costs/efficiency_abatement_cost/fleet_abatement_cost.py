@@ -95,8 +95,12 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     aircraft_energy_delta_val, index=self.fleet_model.df.index
                 )
 
-                aircraft_energy_delta[2020] = aircraft_energy_delta[2020] * (
-                            1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+                #  TODO a mettre au propre, init basée sur le même mode que le calcul de aircraft efficiency, avec une transition d'un modèle simple à un modèle complexe en 2019
+
+                aircraft_energy_delta[2019] = 0 # start from reference
+
+                aircraft_energy_delta[2020] = aircraft_energy_delta[2019] * (
+                            1 + covid_energy_intensity_per_ask_increase_2020 / 100) + category_reference_energy * covid_energy_intensity_per_ask_increase_2020 / 100
 
                 # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
                 # Value set to NaN to avoid erroneous interpretation
