@@ -83,6 +83,9 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         """Energy consumption per ASK (without operations) calculation using simple models."""
 
@@ -459,6 +462,16 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
         self.df.loc[:, "ask_medium_range_dropin_fuel"] = ask_medium_range_dropin_fuel
         self.df.loc[:, "ask_long_range_dropin_fuel"] = ask_long_range_dropin_fuel
 
+        # Total ASK
+
+        ask_dropin_fuel = ask_short_range_dropin_fuel + ask_medium_range_dropin_fuel + ask_long_range_dropin_fuel
+        ask_hydrogen = ask_short_range_hydrogen + ask_medium_range_hydrogen + ask_long_range_hydrogen
+        ask_electric = ask_short_range_electric + ask_medium_range_electric + ask_long_range_electric
+
+        self.df.loc[:, "ask_dropin_fuel"] = ask_dropin_fuel
+        self.df.loc[:, "ask_hydrogen"] = ask_hydrogen
+        self.df.loc[:, "ask_electric"] = ask_electric
+
         return (
             energy_per_ask_without_operations_short_range_dropin_fuel,
             energy_per_ask_without_operations_medium_range_dropin_fuel,
@@ -487,6 +500,9 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
             ask_short_range_electric,
             ask_medium_range_electric,
             ask_long_range_electric,
+            ask_dropin_fuel,
+            ask_hydrogen,
+            ask_electric,
         )
 
 
@@ -513,6 +529,9 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -777,6 +796,14 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         self.df.loc[:, "ask_medium_range_electric"] = ask_medium_range_electric
         self.df.loc[:, "ask_long_range_electric"] = ask_long_range_electric
 
+        ask_dropin_fuel = ask_short_range_dropin_fuel + ask_medium_range_dropin_fuel + ask_long_range_dropin_fuel
+        ask_hydrogen = ask_short_range_hydrogen + ask_medium_range_hydrogen + ask_long_range_hydrogen
+        ask_electric = ask_short_range_electric + ask_medium_range_electric + ask_long_range_electric
+
+        self.df.loc[:, "ask_dropin_fuel"] = ask_dropin_fuel
+        self.df.loc[:, "ask_hydrogen"] = ask_hydrogen
+        self.df.loc[:, "ask_electric"] = ask_electric
+
         return (
             energy_per_ask_without_operations_short_range_dropin_fuel,
             energy_per_ask_without_operations_medium_range_dropin_fuel,
@@ -805,6 +832,9 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
             ask_short_range_electric,
             ask_medium_range_electric,
             ask_long_range_electric,
+            ask_dropin_fuel,
+            ask_hydrogen,
+            ask_electric,
         )
 
 
