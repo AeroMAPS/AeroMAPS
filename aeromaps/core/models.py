@@ -24,6 +24,8 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.oper
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2 import (
     OperationsContrailsSimple,
+    FuelEffectCorrectionContrails,
+    WithoutFuelEffectCorrectionContrails,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency import (
     PassengerAircraftEfficiencySimple,
@@ -181,6 +183,9 @@ models_simple = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "without_fuel_effect_correction_contrails": WithoutFuelEffectCorrectionContrails(
+        "without_fuel_effect_correction_contrails"
+    ),
     "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
         "passenger_aircraft_efficiency_simple"
     ),
@@ -311,6 +316,9 @@ models_complex = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "without_fuel_effect_correction_contrails": WithoutFuelEffectCorrectionContrails(
+        "without_fuel_effect_correction_contrails"
+    ),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
     ),
@@ -441,6 +449,9 @@ models_complex_improvedgwpstar = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "fuel_effect_correction_contrails": FuelEffectCorrectionContrails(
+        "fuel_effect_correction_contrails"
+    ),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
     ),
@@ -569,6 +580,9 @@ models_complex_fair = {
     "ask": ASK("ask"),
     "operations_simple": OperationsSimple("operations_simple"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "fuel_effect_correction_contrails": FuelEffectCorrectionContrails(
+        "fuel_effect_correction_contrails"
+    ),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
     ),

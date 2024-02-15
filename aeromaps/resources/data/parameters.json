@@ -452,6 +452,6 @@
     "rpk_medium_range_measures_start_year": 2051,
     "rpk_short_range_measures_duration": 5,
     "rpk_short_range_measures_final_impact": 0,
-    "rpk_short_range_measures_start_year": 2051
-
+    "rpk_short_range_measures_start_year": 2051,
+    "contrails_relative_effect_hydrogen_wrt_kerosene": 1
 }

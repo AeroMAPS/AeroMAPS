@@ -25,16 +25,8 @@ class ERF(AeromapsModel):
         erf_coefficient_h2o: float = 0.0,
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_electric: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
-        biofuel_share: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_share: pd.Series = pd.Series(dtype="float64"),
-        kerosene_share: pd.Series = pd.Series(dtype="float64"),
-        emission_index_number_particles_biofuel: float = 0.0,
-        emission_index_number_particles_electrofuel: float = 0.0,
-        emission_index_number_particles_kerosene: float = 0.0,
+        fuel_effect_correction_contrails: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -69,37 +61,6 @@ class ERF(AeromapsModel):
         co2_erf = self.df_climate["co2_erf"]
 
         # Contrails
-        ## Effect of energy carriers
-        contrails_relative_effect_hydrogen_wrt_kerosene = 1
-        energy_carriers_effect = (
-            total_aircraft_distance_dropin_fuel
-            / total_aircraft_distance
-            * (
-                kerosene_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_kerosene
-                    / emission_index_number_particles_kerosene
-                )
-                + biofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_biofuel
-                    / emission_index_number_particles_kerosene
-                )
-                + electrofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_electrofuel
-                    / emission_index_number_particles_kerosene
-                )
-            )
-            + total_aircraft_distance_hydrogen
-            / total_aircraft_distance
-            * contrails_relative_effect_hydrogen_wrt_kerosene
-            + total_aircraft_distance_electric / total_aircraft_distance * 0
-        )
-        ## Calculation
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
@@ -109,7 +70,7 @@ class ERF(AeromapsModel):
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
-                * energy_carriers_effect.loc[k]
+                * fuel_effect_correction_contrails.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 
@@ -191,16 +152,8 @@ class ERFSimplifiedNox(AeromapsModel):
         erf_coefficient_nox: float = 0.0,
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_electric: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
-        biofuel_share: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_share: pd.Series = pd.Series(dtype="float64"),
-        kerosene_share: pd.Series = pd.Series(dtype="float64"),
-        emission_index_number_particles_biofuel: float = 0.0,
-        emission_index_number_particles_electrofuel: float = 0.0,
-        emission_index_number_particles_kerosene: float = 0.0,
+        fuel_effect_correction_contrails: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -231,47 +184,16 @@ class ERFSimplifiedNox(AeromapsModel):
         co2_erf = self.df_climate["co2_erf"]
 
         # Contrails
-        ## Effect of energy carriers
-        contrails_relative_effect_hydrogen_wrt_kerosene = 1
-        energy_carriers_effect = (
-            total_aircraft_distance_dropin_fuel
-            / total_aircraft_distance
-            * (
-                kerosene_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_kerosene
-                    / emission_index_number_particles_kerosene
-                )
-                + biofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_biofuel
-                    / emission_index_number_particles_kerosene
-                )
-                + electrofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_electrofuel
-                    / emission_index_number_particles_kerosene
-                )
-            )
-            + total_aircraft_distance_hydrogen
-            / total_aircraft_distance
-            * contrails_relative_effect_hydrogen_wrt_kerosene
-            + total_aircraft_distance_electric / total_aircraft_distance * 0
-        )
-        ## Calculation
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
+        for k in range(self.climate_historic_start_year, self.prospection_start_year):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
             )
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.prospection_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
-                * energy_carriers_effect.loc[k]
+                * fuel_effect_correction_contrails.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 
