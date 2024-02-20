@@ -1,0 +1,217 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# Aircraft fleet for mix scenario
+
+if SCENARIO == "Mix":
+
+    ## Initialization
+    fleet = process.fleet
+
+    ## Subcategories (excluding long range which is not impacted by the studied architectures)
+    total_value = 47  # Share of the ASK that can be covered by the studied architecture
+    if total_value <= 25:
+        total_value_short = (
+            total_value / 25 * 100
+        )  # 25% of the world ASK is short range (below 1500 km)
+        total_value_medium = 0
+    if (
+        total_value > 25 and total_value < 25 + 35
+    ):  # 35% of the world ASK is medium range (between 1500 km and 4000 km)
+        total_value_short = 100
+        total_value_medium = (total_value - 25) / 35 * 100
+
+    ## Distribution between the architectures: the order of priority, based on emissions reduction, is electric aircraft, hydrogen aircraft and hybrid-electric aircraft
+    share_elec = 7 / 25 * 100
+    share_hydrogen_sr = (25 - 7) / 25 * 100
+    share_hydrogen_mr = (33 - 25) / 25 * 100
+    fleet.categories["Short Range"].subcategories[0].parameters.share = 0
+    sr_subcat = SubCategory("SR - Electric", parameters=SubcategoryParameters(share=share_elec))
+    fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat)
+    sr_subcat = SubCategory(
+        "SR - Hydrogen/HE", parameters=SubcategoryParameters(share=share_hydrogen_sr)
+    )
+    fleet.categories["Short Range"].add_subcategory(subcategory=sr_subcat)
+    fleet.categories["Medium Range"].subcategories[0].parameters.share = 100 - share_hydrogen_mr
+    mr_subcat = SubCategory(
+        "MR - Hydrogen/HE", parameters=SubcategoryParameters(share=share_hydrogen_mr)
+    )
+    fleet.categories["Medium Range"].add_subcategory(subcategory=mr_subcat)
+
+    ## Basic Short Range
+    short_range_aircraft_params = AircraftParameters(
+        entry_into_service_year=2035,
+        consumption_evolution=-20.0,
+        nox_evolution=-75.0,
+        soot_evolution=-100.0,
+        doc_non_energy_evolution=0.0,
+        cruise_altitude=12000.0,
+    )
+    short_range_aircraft = Aircraft(
+        "New Short-range Aircraft - Conventional",
+        parameters=short_range_aircraft_params,
+        energy_type="DROP_IN_FUEL",
+    )
+    fleet.categories["Short Range"].subcategories[0].add_aircraft(aircraft=short_range_aircraft)
+
+    ## New Short Range - Electric
+    short_range_aircraft_new_params = AircraftParameters(
+        entry_into_service_year=2040,
+        consumption_evolution=50.0,
+        nox_evolution=-50.0,
+        soot_evolution=-50.0,
+        doc_non_energy_evolution=10.0,
+        cruise_altitude=12000.0,
+    )
+    short_range_aircraft_new = Aircraft(
+        "New Short-range Aircraft - Electric",
+        parameters=short_range_aircraft_new_params,
+        energy_type="ELECTRIC",
+    )
+    fleet.categories["Short Range"].subcategories[1].add_aircraft(aircraft=short_range_aircraft_new)
+
+    ## New Short Range - Hybrid-electric
+    short_range_aircraft_new_params = AircraftParameters(
+        entry_into_service_year=2030,
+        consumption_evolution=-10.0,
+        nox_evolution=-50.0,
+        soot_evolution=-50.0,
+        doc_non_energy_evolution=10.0,
+        cruise_altitude=12000.0,
+        hybridization_factor=0.4,
+    )
+    short_range_aircraft_new = Aircraft(
+        "New Short-range Aircraft - Hybrid-electric",
+        parameters=short_range_aircraft_new_params,
+        energy_type="HYBRID_ELECTRIC",
+    )
+    fleet.categories["Short Range"].subcategories[2].add_aircraft(aircraft=short_range_aircraft_new)
+
+    ## New Short Range - Hydrogen
+    short_range_aircraft_new_params = AircraftParameters(
+        entry_into_service_year=2035,
+        consumption_evolution=5.0,
+        nox_evolution=-50.0,
+        soot_evolution=-50.0,
+        doc_non_energy_evolution=10.0,
+        cruise_altitude=12000.0,
+    )
+    short_range_aircraft_new = Aircraft(
+        "New Short-range Aircraft - Hydrogen",
+        parameters=short_range_aircraft_new_params,
+        energy_type="HYDROGEN",
+    )
+    fleet.categories["Short Range"].subcategories[2].add_aircraft(aircraft=short_range_aircraft_new)
+
+    ## Basic Medium Range
+    medium_range_aircraft_params = AircraftParameters(
+        entry_into_service_year=2035,
+        consumption_evolution=-20.0,
+        nox_evolution=0.0,
+        soot_evolution=0.0,
+        doc_non_energy_evolution=0.0,
+        cruise_altitude=12000.0,
+    )
+    medium_range_aircraft = Aircraft(
+        "New Medium-range Aircraft",
+        parameters=medium_range_aircraft_params,
+        energy_type="DROP_IN_FUEL",
+    )
+    fleet.categories["Medium Range"].subcategories[0].add_aircraft(aircraft=medium_range_aircraft)
+
+    ## New Medium Range - Hybrid-electric
+    medium_range_aircraft_new_params = AircraftParameters(
+        entry_into_service_year=2030,
+        consumption_evolution=-10.0,
+        nox_evolution=-50.0,
+        soot_evolution=-50.0,
+        doc_non_energy_evolution=10.0,
+        cruise_altitude=12000.0,
+        hybridization_factor=0.4,
+    )
+    medium_range_aircraft_new = Aircraft(
+        "New Medium-range Aircraft - Hybrid-electric",
+        parameters=medium_range_aircraft_new_params,
+        energy_type="HYBRID_ELECTRIC",
+    )
+    fleet.categories["Medium Range"].subcategories[1].add_aircraft(
+        aircraft=medium_range_aircraft_new
+    )
+
+    ## New Medium Range - Hydrogen
+    medium_range_aircraft_new_params = AircraftParameters(
+        entry_into_service_year=2035,
+        consumption_evolution=5.0,
+        nox_evolution=-50.0,
+        soot_evolution=-50.0,
+        doc_non_energy_evolution=10.0,
+        cruise_altitude=12000.0,
+    )
+    medium_range_aircraft_new = Aircraft(
+        "New Medium-range Aircraft - Hydrogen",
+        parameters=medium_range_aircraft_new_params,
+        energy_type="HYDROGEN",
+    )
+    fleet.categories["Medium Range"].subcategories[1].add_aircraft(
+        aircraft=medium_range_aircraft_new
+    )
+
+    ## Basic Long Range
+    long_range_aircraft_params = AircraftParameters(
+        entry_into_service_year=2035,
+        consumption_evolution=-20.0,
+        nox_evolution=0.0,
+        soot_evolution=0.0,
+        doc_non_energy_evolution=0.0,
+        cruise_altitude=12000.0,
+        hybridization_factor=0.0,
+    )
+    long_range_aircraft = Aircraft(
+        "New Long-range Aircraft", parameters=long_range_aircraft_params, energy_type="DROP_IN_FUEL"
+    )
+    fleet.categories["Long Range"].subcategories[0].add_aircraft(aircraft=long_range_aircraft)
+
+    ## Fleet renewal
+    fleet.categories["Short Range"].parameters.life = 20
+    fleet.categories["Medium Range"].parameters.life = 20
+    fleet.categories["Long Range"].parameters.life = 20
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mTypeError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[6], line 71[0m
+[1;32m     68[0m fleet[38;5;241m.[39mcategories[[38;5;124m"[39m[38;5;124mShort Range[39m[38;5;124m"[39m][38;5;241m.[39msubcategories[[38;5;241m1[39m][38;5;241m.[39madd_aircraft(aircraft[38;5;241m=[39mshort_range_aircraft_new)
+[1;32m     70[0m [38;5;66;03m## New Short Range - Hybrid-electric[39;00m
+[0;32m---> 71[0m short_range_aircraft_new_params [38;5;241m=[39m [43mAircraftParameters[49m[43m([49m
+[1;32m     72[0m [43m    [49m[43mentry_into_service_year[49m[38;5;241;43m=[39;49m[38;5;241;43m2030[39;49m[43m,[49m
+[1;32m     73[0m [43m    [49m[43mconsumption_evolution[49m[38;5;241;43m=[39;49m[38;5;241;43m-[39;49m[38;5;241;43m10.0[39;49m[43m,[49m
+[1;32m     74[0m [43m    [49m[43mnox_evolution[49m[38;5;241;43m=[39;49m[38;5;241;43m-[39;49m[38;5;241;43m50.0[39;49m[43m,[49m
+[1;32m     75[0m [43m    [49m[43msoot_evolution[49m[38;5;241;43m=[39;49m[38;5;241;43m-[39;49m[38;5;241;43m50.0[39;49m[43m,[49m
+[1;32m     76[0m [43m    [49m[43mdoc_non_energy_evolution[49m[38;5;241;43m=[39;49m[38;5;241;43m10.0[39;49m[43m,[49m
+[1;32m     77[0m [43m    [49m[43mcruise_altitude[49m[38;5;241;43m=[39;49m[38;5;241;43m12000.0[39;49m[43m,[49m
+[1;32m     78[0m [43m    [49m[43mhybridization_factor[49m[38;5;241;43m=[39;49m[38;5;241;43m0.4[39;49m[43m,[49m
+[1;32m     79[0m [43m[49m[43m)[49m
+[1;32m     80[0m short_range_aircraft_new [38;5;241m=[39m Aircraft(
+[1;32m     81[0m     [38;5;124m"[39m[38;5;124mNew Short-range Aircraft - Hybrid-electric[39m[38;5;124m"[39m,
+[1;32m     82[0m     parameters[38;5;241m=[39mshort_range_aircraft_new_params,
+[1;32m     83[0m     energy_type[38;5;241m=[39m[38;5;124m"[39m[38;5;124mHYBRID_ELECTRIC[39m[38;5;124m"[39m,
+[1;32m     84[0m )
+[1;32m     85[0m fleet[38;5;241m.[39mcategories[[38;5;124m"[39m[38;5;124mShort Range[39m[38;5;124m"[39m][38;5;241m.[39msubcategories[[38;5;241m2[39m][38;5;241m.[39madd_aircraft(aircraft[38;5;241m=[39mshort_range_aircraft_new)
+
+[0;31mTypeError[0m: __init__() got an unexpected keyword argument 'hybridization_factor'
+

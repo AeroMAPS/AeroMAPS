@@ -1,0 +1,1367 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Application for the More Electric Aircraft (MEA) conference &#8212; AeroMAPS documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'books/examples_mea_application';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Application for the Journal of Open Aviation Science" href="examples_joas_application.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_aeromaps.png" class="logo__image only-light" alt="AeroMAPS documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo_aeromaps.png" class="logo__image only-dark" alt="AeroMAPS documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About AeroMAPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citations.html">Citations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling and sustainability assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_gui.html">Use of the graphical user interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_joas_application.html">Application for the Journal of Open Aviation Science</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Application for the More Electric Aircraft (MEA) conference</a></li>
+
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/AeroMAPS/AeroMAPS" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/books/examples_mea_application.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Application for the More Electric Aircraft (MEA) conference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application for the More Electric Aircraft (MEA) conference</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scenario-settings">Scenario settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#all-results">All results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-scenarios">Baseline scenarios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-to-electricity-emission-factor">Sensitivity to electricity emission factor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-to-refueleu">Sensitivity to ReFuelEU</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="application-for-the-more-electric-aircraft-mea-conference">
+<h1>Application for the More Electric Aircraft (MEA) conference<a class="headerlink" href="#application-for-the-more-electric-aircraft-mea-conference" title="Permalink to this heading">#</a></h1>
+<p>This document has been published for reproducing the application presented in the 2024 <a class="reference external" href="https://conference-mea.org/">More Electric Aircraft Conference</a>. The code and results are given in the following.</p>
+<p>The objective is to estimate the impact of electric, hybrid-electric and hydrogen aircraft on aviation CO<sub>2</sub> emissions and energy consumption. It is the first application which includes the use of electric and hybrid-electric architectures in the AeroMAPS fleet model.</p>
+<section id="load-and-process">
+<h2>Load and process<a class="headerlink" href="#load-and-process" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">create_process</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="n">models_complex</span>
+<span class="kn">from</span> <span class="nn">aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Fleet</span><span class="p">,</span>
+    <span class="n">AircraftParameters</span><span class="p">,</span>
+    <span class="n">Aircraft</span><span class="p">,</span>
+    <span class="n">SubCategory</span><span class="p">,</span>
+    <span class="n">SubcategoryParameters</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span>
+    <span class="n">models</span><span class="o">=</span><span class="n">models_complex</span><span class="p">,</span>
+    <span class="n">use_fleet_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change end year</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">end_year</span> <span class="o">=</span> <span class="mi">2060</span>
+<span class="n">process</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="scenario-settings">
+<h2>Scenario settings<a class="headerlink" href="#scenario-settings" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Paper settings</span>
+
+<span class="c1">## Scenario settings</span>
+<span class="c1">## For all the scenarios, except for the mix scenario (4), you have to specify manually:</span>
+<span class="c1">## the aircraft characteristics (market share, performance, EIS...) and the type of fuel used (ELECTRIC, HYBRID_ELECTRIC, HYDROGEN)</span>
+<span class="c1">## For HYBRID_ELECTRIC architectures, you have to add an &quot;hybridization_factor&quot;</span>
+<span class="c1">## Here, for the scenarios &quot;Others&quot;, the default settings correspond to scenario (3) for the reference values</span>
+<span class="c1">## Note that NOx, soot, DOC and cruise altitute are not considered here (random values)</span>
+<span class="n">SCENARIO</span> <span class="o">=</span> <span class="s2">&quot;Mix&quot;</span>  <span class="c1"># Choose between &quot;Others&quot; and &quot;Mix&quot;</span>
+
+<span class="c1">## Settings for sensitivity analyses</span>
+<span class="n">DROP_IN_FUEL</span> <span class="o">=</span> <span class="s2">&quot;Kerosene&quot;</span>  <span class="c1"># Choose between &quot;Kerosene&quot; and &quot;ReFuelEU&quot;</span>
+<span class="n">ELECTRICITY</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Dedicated&quot;</span>  <span class="c1"># Choose between &quot;Dedicated&quot;, &quot;Linear transition&quot; and &quot;Accelerated transition&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Aircraft fleet for the other scenarios</span>
+
+<span class="k">if</span> <span class="n">SCENARIO</span> <span class="o">==</span> <span class="s2">&quot;Others&quot;</span><span class="p">:</span>
+
+    <span class="c1">## Initialization</span>
+    <span class="n">fleet</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">fleet</span>
+
+    <span class="c1">## Subcategories (excluding long range which is not impacted by the studied architectures)</span>
+    <span class="n">total_value</span> <span class="o">=</span> <span class="mi">33</span>  <span class="c1"># Share of the ASK that can be covered by the studied architecture</span>
+    <span class="k">if</span> <span class="n">total_value</span> <span class="o">&lt;=</span> <span class="mi">25</span><span class="p">:</span>  <span class="c1"># 25% of the world ASK is short range (below 1500 km)</span>
+        <span class="n">total_value_short</span> <span class="o">=</span> <span class="n">total_value</span> <span class="o">/</span> <span class="mi">25</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">total_value_medium</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">total_value</span> <span class="o">&gt;</span> <span class="mi">25</span> <span class="ow">and</span> <span class="n">total_value</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">+</span> <span class="mi">35</span>
+    <span class="p">):</span>  <span class="c1"># 35% of the world ASK is medium range (between 1500 km and 4000 km)</span>
+        <span class="n">total_value_short</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">total_value_medium</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_value</span> <span class="o">-</span> <span class="mi">25</span><span class="p">)</span> <span class="o">/</span> <span class="mi">35</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">total_value_short</span>
+    <span class="n">sr_subcat</span> <span class="o">=</span> <span class="n">SubCategory</span><span class="p">(</span><span class="s2">&quot;SR - New&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">SubcategoryParameters</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="n">total_value_short</span><span class="p">))</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_subcategory</span><span class="p">(</span><span class="n">subcategory</span><span class="o">=</span><span class="n">sr_subcat</span><span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">total_value_medium</span>
+    <span class="n">mr_subcat</span> <span class="o">=</span> <span class="n">SubCategory</span><span class="p">(</span><span class="s2">&quot;MR - New&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">SubcategoryParameters</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="n">total_value_medium</span><span class="p">))</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_subcategory</span><span class="p">(</span><span class="n">subcategory</span><span class="o">=</span><span class="n">mr_subcat</span><span class="p">)</span>
+
+    <span class="c1">## Basic Short Range</span>
+    <span class="n">short_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">75.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - Conventional&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## New Short Range</span>
+    <span class="n">short_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2030</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - New&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYBRID_ELECTRIC&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+
+    <span class="c1">## Basic Medium Range</span>
+    <span class="n">medium_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Medium-range Aircraft&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## New Medium Range</span>
+    <span class="n">medium_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2030</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Medium-range Aircraft - New&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYBRID_ELECTRIC&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span>
+        <span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft_new</span>
+    <span class="p">)</span>
+
+    <span class="c1">## Basic Long Range</span>
+    <span class="n">long_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">long_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Long-range Aircraft&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">long_range_aircraft_params</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Long Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">long_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## Fleet renewal</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Long Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Aircraft fleet for mix scenario</span>
+
+<span class="k">if</span> <span class="n">SCENARIO</span> <span class="o">==</span> <span class="s2">&quot;Mix&quot;</span><span class="p">:</span>
+
+    <span class="c1">## Initialization</span>
+    <span class="n">fleet</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">fleet</span>
+
+    <span class="c1">## Subcategories (excluding long range which is not impacted by the studied architectures)</span>
+    <span class="n">total_value</span> <span class="o">=</span> <span class="mi">47</span>  <span class="c1"># Share of the ASK that can be covered by the studied architecture</span>
+    <span class="k">if</span> <span class="n">total_value</span> <span class="o">&lt;=</span> <span class="mi">25</span><span class="p">:</span>
+        <span class="n">total_value_short</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">total_value</span> <span class="o">/</span> <span class="mi">25</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="p">)</span>  <span class="c1"># 25% of the world ASK is short range (below 1500 km)</span>
+        <span class="n">total_value_medium</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">total_value</span> <span class="o">&gt;</span> <span class="mi">25</span> <span class="ow">and</span> <span class="n">total_value</span> <span class="o">&lt;</span> <span class="mi">25</span> <span class="o">+</span> <span class="mi">35</span>
+    <span class="p">):</span>  <span class="c1"># 35% of the world ASK is medium range (between 1500 km and 4000 km)</span>
+        <span class="n">total_value_short</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">total_value_medium</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_value</span> <span class="o">-</span> <span class="mi">25</span><span class="p">)</span> <span class="o">/</span> <span class="mi">35</span> <span class="o">*</span> <span class="mi">100</span>
+
+    <span class="c1">## Distribution between the architectures: the order of priority, based on emissions reduction, is electric aircraft, hydrogen aircraft and hybrid-electric aircraft</span>
+    <span class="n">share_elec</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">/</span> <span class="mi">25</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">share_hydrogen_sr</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span> <span class="o">-</span> <span class="mi">7</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">share_hydrogen_mr</span> <span class="o">=</span> <span class="p">(</span><span class="mi">33</span> <span class="o">-</span> <span class="mi">25</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sr_subcat</span> <span class="o">=</span> <span class="n">SubCategory</span><span class="p">(</span><span class="s2">&quot;SR - Electric&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">SubcategoryParameters</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="n">share_elec</span><span class="p">))</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_subcategory</span><span class="p">(</span><span class="n">subcategory</span><span class="o">=</span><span class="n">sr_subcat</span><span class="p">)</span>
+    <span class="n">sr_subcat</span> <span class="o">=</span> <span class="n">SubCategory</span><span class="p">(</span>
+        <span class="s2">&quot;SR - Hydrogen/HE&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">SubcategoryParameters</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="n">share_hydrogen_sr</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_subcategory</span><span class="p">(</span><span class="n">subcategory</span><span class="o">=</span><span class="n">sr_subcat</span><span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">share</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">share_hydrogen_mr</span>
+    <span class="n">mr_subcat</span> <span class="o">=</span> <span class="n">SubCategory</span><span class="p">(</span>
+        <span class="s2">&quot;MR - Hydrogen/HE&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">SubcategoryParameters</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="n">share_hydrogen_mr</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_subcategory</span><span class="p">(</span><span class="n">subcategory</span><span class="o">=</span><span class="n">mr_subcat</span><span class="p">)</span>
+
+    <span class="c1">## Basic Short Range</span>
+    <span class="n">short_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">75.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - Conventional&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## New Short Range - Electric</span>
+    <span class="n">short_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2040</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - Electric&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;ELECTRIC&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+
+    <span class="c1">## New Short Range - Hybrid-electric</span>
+    <span class="n">short_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2030</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - Hybrid-electric&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYBRID_ELECTRIC&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+
+    <span class="c1">## New Short Range - Hydrogen</span>
+    <span class="n">short_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">short_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Short-range Aircraft - Hydrogen&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYDROGEN&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+
+    <span class="c1">## Basic Medium Range</span>
+    <span class="n">medium_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Medium-range Aircraft&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## New Medium Range - Hybrid-electric</span>
+    <span class="n">medium_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2030</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Medium-range Aircraft - Hybrid-electric&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYBRID_ELECTRIC&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span>
+        <span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft_new</span>
+    <span class="p">)</span>
+
+    <span class="c1">## New Medium Range - Hydrogen</span>
+    <span class="n">medium_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">medium_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Medium-range Aircraft - Hydrogen&quot;</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">medium_range_aircraft_new_params</span><span class="p">,</span>
+        <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYDROGEN&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span>
+        <span class="n">aircraft</span><span class="o">=</span><span class="n">medium_range_aircraft_new</span>
+    <span class="p">)</span>
+
+    <span class="c1">## Basic Long Range</span>
+    <span class="n">long_range_aircraft_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+        <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2035</span><span class="p">,</span>
+        <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">nox_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">soot_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+        <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">long_range_aircraft</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+        <span class="s2">&quot;New Long-range Aircraft&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">long_range_aircraft_params</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;DROP_IN_FUEL&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Long Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">long_range_aircraft</span><span class="p">)</span>
+
+    <span class="c1">## Fleet renewal</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Medium Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Long Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">life</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">71</span>
+<span class="g g-Whitespace">     </span><span class="mi">68</span> <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span> <span class="c1">## New Short Range - Hybrid-electric</span>
+<span class="ne">---&gt; </span><span class="mi">71</span> <span class="n">short_range_aircraft_new_params</span> <span class="o">=</span> <span class="n">AircraftParameters</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="n">entry_into_service_year</span><span class="o">=</span><span class="mi">2030</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="n">consumption_evolution</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span>     <span class="n">nox_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="n">soot_evolution</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>     <span class="n">doc_non_energy_evolution</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span>     <span class="n">cruise_altitude</span><span class="o">=</span><span class="mf">12000.0</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span>     <span class="n">hybridization_factor</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="n">short_range_aircraft_new</span> <span class="o">=</span> <span class="n">Aircraft</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span>     <span class="s2">&quot;New Short-range Aircraft - Hybrid-electric&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span>     <span class="n">parameters</span><span class="o">=</span><span class="n">short_range_aircraft_new_params</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span>     <span class="n">energy_type</span><span class="o">=</span><span class="s2">&quot;HYBRID_ELECTRIC&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span> <span class="n">fleet</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="s2">&quot;Short Range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subcategories</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">add_aircraft</span><span class="p">(</span><span class="n">aircraft</span><span class="o">=</span><span class="n">short_range_aircraft_new</span><span class="p">)</span>
+
+<span class="ne">TypeError</span>: __init__() got an unexpected keyword argument &#39;hybridization_factor&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fleet_model</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">fleet_model</span>
+<span class="n">fleet_model</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">fleet_model</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c44a5249bf414d4f90271f4ab5c42d4a", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Aircraft energy - Introduction of alternative drop-in fuels</span>
+
+<span class="c1">## Share of alternative fuels in the drop-in fuel mix (the rest being supplemented by kerosene) [%]</span>
+<span class="k">if</span> <span class="n">DROP_IN_FUEL</span> <span class="o">==</span> <span class="s2">&quot;Kerosene&quot;</span><span class="p">:</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electrofuel_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electrofuel_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+<span class="k">elif</span> <span class="n">DROP_IN_FUEL</span> <span class="o">==</span> <span class="s2">&quot;ReFuelEU&quot;</span><span class="p">:</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2040</span><span class="p">,</span> <span class="mi">2050</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electrofuel_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2040</span><span class="p">,</span> <span class="mi">2050</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electrofuel_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Various environmental settings</span>
+
+<span class="c1">## Share of biofuel production pathways (the rest being completed by AtJ processes) [%]</span>
+<span class="c1">## Assumption of a current use of HEFA FOG and an equal distribution from 2030 according to biomass resources distribution</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_hefa_fog_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_hefa_fog_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_hefa_others_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_hefa_others_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_ft_others_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_ft_others_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">76.3</span><span class="p">,</span> <span class="mf">76.3</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_ft_msw_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">biofuel_ft_msw_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">7.4</span><span class="p">,</span> <span class="mf">7.4</span><span class="p">]</span>
+
+<span class="c1">## Emission factors for electricity (2019 value: 429 gCO2/kWh)</span>
+<span class="k">if</span> <span class="n">ELECTRICITY</span> <span class="o">==</span> <span class="s2">&quot;Dedicated&quot;</span><span class="p">:</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">]</span>
+<span class="k">elif</span> <span class="n">ELECTRICITY</span> <span class="o">==</span> <span class="s2">&quot;Linear transition&quot;</span><span class="p">:</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">429.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+<span class="k">elif</span> <span class="n">ELECTRICITY</span> <span class="o">==</span> <span class="s2">&quot;Accelerated transition&quot;</span><span class="p">:</span>  <span class="c1"># Division by 2.5 per decade</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2040</span><span class="p">,</span> <span class="mi">2050</span><span class="p">,</span> <span class="mi">2060</span><span class="p">]</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">electricity_emission_factor_reference_years_values</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mf">429.0</span><span class="p">,</span>
+        <span class="mf">170.0</span><span class="p">,</span>
+        <span class="mf">70.0</span><span class="p">,</span>
+        <span class="mf">25.0</span><span class="p">,</span>
+        <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<span class="c1">## Share of hydrogen production pathways (the rest being completed by production via coal without CCS) [%]</span>
+<span class="c1">## Distribution in 2019: Gas without CCS (71%), Coal without CCS (27%), Electrolysis (2%), Others with CCS (0%), Co-products not taken into account</span>
+<span class="c1">## Assumption of a dedicated use of electrolysis pathway here</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_electrolysis_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_gas_ccs_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_gas_ccs_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_coal_ccs_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_coal_ccs_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_gas_share_reference_years</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">hydrogen_gas_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Other settings</span>
+
+<span class="c1">## Air traffic evolution - Growth rate by category [%]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_short_range_reference_periods</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_short_range_reference_periods_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_medium_range_reference_periods</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_medium_range_reference_periods_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_long_range_reference_periods</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_passenger_long_range_reference_periods_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_freight_reference_periods</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">cagr_freight_reference_periods_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]</span>
+
+<span class="c1">## Aircraft fleet and operation evolution - Aircraft load factor</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">load_factor_end_year</span> <span class="o">=</span> <span class="mi">89</span>  <span class="c1"># 2019 value: 82.399312</span>
+
+<span class="c1"># Aircraft fleet and operation evolution - Operations</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">operations_final_gain</span> <span class="o">=</span> <span class="mf">8.0</span>  <span class="c1"># [%]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">operations_start_year</span> <span class="o">=</span> <span class="mi">2025</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">operations_duration</span> <span class="o">=</span> <span class="mf">25.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="compute">
+<h2>Compute<a class="headerlink" href="#compute" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\models\base.py:73: UserWarning: Warning Message - Model name: coal_cost - Warning on AeromapsInterpolationFunction: The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.
+  warnings.warn(
+C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\models\base.py:73: UserWarning: Warning Message - Model name: coal_cost - Warning on AeromapsInterpolationFunction: The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.
+  warnings.warn(
+C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\models\base.py:73: UserWarning: Warning Message - Model name: electrolyser_capex - Warning on AeromapsInterpolationFunction: The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.
+  warnings.warn(
+C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\models\base.py:73: UserWarning: Warning Message - Model name: electrolyser_fixed_opex - Warning on AeromapsInterpolationFunction: The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.
+  warnings.warn(
+C:\Users\t.planes\PycharmProjects\AeroMAPS\aeromaps\models\base.py:73: UserWarning: Warning Message - Model name: electrolyser_var_opex - Warning on AeromapsInterpolationFunction: The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.
+  warnings.warn(
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading">#</a></h2>
+<p>The following results are those obtained for the scenario set previously.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;CO2 emissions in 2050:&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;MtCO2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Cumulative CO2 emissions between 2020 and 2050:&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;cumulative_co2_emissions&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;GtCO2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Energy consumption in 2050:&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;energy_consumption&quot;</span><span class="p">][</span><span class="mi">2050</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">12</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;EJ&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;CO2 emissions in 2060:&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2060</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;MtCO2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CO2 emissions in 2050: 952.0 MtCO2
+Cumulative CO2 emissions between 2020 and 2050: 31.1 GtCO2
+Energy consumption in 2050: 17.3 EJ
+CO2 emissions in 2060: 1121.0 MtCO2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x213c939a3a0&gt;
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "bc04d942c9874b4f85fb193c6796b59e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;emission_factor_per_fuel&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.aircraft_energy.EmissionFactorPerFuelPlot at 0x213c92786d0&gt;
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c6a417fb3eaa4a968d840da623b2d510", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="all-results">
+<h1>All results<a class="headerlink" href="#all-results" title="Permalink to this heading">#</a></h1>
+<p>This part includes the main plots of the paper, summarizing the different scenarios and sensitivity analyses. The scenarios data have been stored on csv files.</p>
+<section id="baseline-scenarios">
+<h2>Baseline scenarios<a class="headerlink" href="#baseline-scenarios" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mea_data_df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/mea_data.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+<span class="n">mea_data</span> <span class="o">=</span> <span class="n">mea_data_df</span><span class="o">.</span><span class="n">values</span>
+<span class="n">mea_data_reference</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">mea_data_electric</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">mea_data_electric_low</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">mea_data_electric_high</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">mea_data_hybridelectric</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">mea_data_hybridelectric_low</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">mea_data_hybridelectric_high</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">mea_data_hydrogen</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="n">mea_data_hydrogen_low</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="n">mea_data_hydrogen_high</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">mea_data_mix</span> <span class="o">=</span> <span class="n">mea_data</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_years_total</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1940</span><span class="p">,</span> <span class="mi">2101</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;historic_years&quot;</span><span class="p">],</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="p">:</span> <span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="o">+</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Historic&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_reference</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reference&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electric</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electric_low</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">mea_data_electric_high</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;salmon&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_hybridelectric</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hybrid-electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_hybridelectric_low</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">mea_data_hybridelectric_high</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_hydrogen</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hydrogen aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_hydrogen_low</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">mea_data_hydrogen_high</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;limegreen&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_mix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;All aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;CO2 emissions (MtCO2)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2060</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1900</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "edc65bd2fc264cbca11aa2064a5ad10d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="sensitivity-to-electricity-emission-factor">
+<h2>Sensitivity to electricity emission factor<a class="headerlink" href="#sensitivity-to-electricity-emission-factor" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mea_data_electricity_df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/mea_data_electricity.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+<span class="n">mea_data_electricity</span> <span class="o">=</span> <span class="n">mea_data_electricity_df</span><span class="o">.</span><span class="n">values</span>
+<span class="n">mea_data_electricity_electric</span> <span class="o">=</span> <span class="n">mea_data_electricity</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">mea_data_electricity_hybridelectric</span> <span class="o">=</span> <span class="n">mea_data_electricity</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">mea_data_electricity_hydrogen</span> <span class="o">=</span> <span class="n">mea_data_electricity</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">mea_data_electricity_mix</span> <span class="o">=</span> <span class="n">mea_data_electricity</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;historic_years&quot;</span><span class="p">],</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="p">:</span> <span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="o">+</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Historic&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_reference</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reference&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electricity_electric</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electricity_hybridelectric</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hybrid-electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electricity_hydrogen</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hydrogen aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_electricity_mix</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;All aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;CO2 emissions (MtCO2)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2060</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1900</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "025d51427bef441c8fe5e83d8e59636d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="sensitivity-to-refueleu">
+<h2>Sensitivity to ReFuelEU<a class="headerlink" href="#sensitivity-to-refueleu" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mea_data_refueleu_df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/mea_data_refueleu.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+<span class="n">mea_data_refueleu</span> <span class="o">=</span> <span class="n">mea_data_refueleu_df</span><span class="o">.</span><span class="n">values</span>
+<span class="n">mea_data_refueleu_reference</span> <span class="o">=</span> <span class="n">mea_data_refueleu</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">mea_data_refueleu_electric</span> <span class="o">=</span> <span class="n">mea_data_refueleu</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">mea_data_refueleu_hybridelectric</span> <span class="o">=</span> <span class="n">mea_data_refueleu</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">mea_data_refueleu_hydrogen</span> <span class="o">=</span> <span class="n">mea_data_refueleu</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">mea_data_refueleu_mix</span> <span class="o">=</span> <span class="n">mea_data_refueleu</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;historic_years&quot;</span><span class="p">],</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;climate_outputs&quot;</span><span class="p">][</span><span class="s2">&quot;co2_emissions&quot;</span><span class="p">][</span><span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="p">:</span> <span class="mi">2000</span> <span class="o">-</span> <span class="mi">1940</span> <span class="o">+</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Historic&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_refueleu_reference</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reference&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_refueleu_electric</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_refueleu_hybridelectric</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hybrid-electric aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_refueleu_hydrogen</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hydrogen aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;years&quot;</span><span class="p">][</span><span class="s2">&quot;prospective_years&quot;</span><span class="p">],</span>
+    <span class="n">mea_data_refueleu_mix</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;All aircraft&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;CO2 emissions (MtCO2)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2060</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">1200</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "071a04f73e3e4fd7ab1bebbdc0560c68", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./books"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="examples_joas_application.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Application for the Journal of Open Aviation Science</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application for the More Electric Aircraft (MEA) conference</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scenario-settings">Scenario settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#all-results">All results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-scenarios">Baseline scenarios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-to-electricity-emission-factor">Sensitivity to electricity emission factor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-to-refueleu">Sensitivity to ReFuelEU</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By AeroMAPS Research Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
