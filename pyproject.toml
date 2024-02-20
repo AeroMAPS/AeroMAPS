@@ -41,6 +41,7 @@ ipydatagrid = "^1.1.14"
 ipytree = "^0.2.2"
 docstring-inheritance = "^1.0.0"
 dacite = "^1.8.0"
+fair = "2.1.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
