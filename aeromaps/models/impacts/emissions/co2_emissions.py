@@ -29,10 +29,14 @@ class KayaFactors(AeromapsModel):
         energy_consumption_passenger_hydrogen_without_operations: pd.Series = pd.Series(
             dtype="float64"
         ),
+        energy_consumption_passenger_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
         energy_consumption_passenger_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_passenger_electrofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_passenger_kerosene: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_passenger_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_passenger_electric: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_freight_biofuel_without_operations: pd.Series = pd.Series(
             dtype="float64"
         ),
@@ -45,19 +49,25 @@ class KayaFactors(AeromapsModel):
         energy_consumption_freight_hydrogen_without_operations: pd.Series = pd.Series(
             dtype="float64"
         ),
+        energy_consumption_freight_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
         energy_consumption_freight_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_freight_electrofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_freight_kerosene: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_freight_electric: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
         energy_consumption: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
         hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
 
         energy_per_ask_mean_without_operations = (
@@ -65,6 +75,7 @@ class KayaFactors(AeromapsModel):
             + energy_consumption_passenger_electrofuel_without_operations
             + energy_consumption_passenger_kerosene_without_operations
             + energy_consumption_passenger_hydrogen_without_operations
+            + energy_consumption_passenger_electric_without_operations
         ) / ask
 
         energy_per_ask_mean = (
@@ -72,6 +83,7 @@ class KayaFactors(AeromapsModel):
             + energy_consumption_passenger_electrofuel
             + energy_consumption_passenger_kerosene
             + energy_consumption_passenger_hydrogen
+            + energy_consumption_passenger_electric
         ) / ask
 
         energy_per_rtk_mean_without_operations = (
@@ -79,6 +91,7 @@ class KayaFactors(AeromapsModel):
             + energy_consumption_freight_electrofuel_without_operations
             + energy_consumption_freight_kerosene_without_operations
             + energy_consumption_freight_hydrogen_without_operations
+            + energy_consumption_freight_electric_without_operations
         ) / rtk
 
         energy_per_rtk_mean = (
@@ -86,6 +99,7 @@ class KayaFactors(AeromapsModel):
             + energy_consumption_freight_electrofuel
             + energy_consumption_freight_kerosene
             + energy_consumption_freight_hydrogen
+            + energy_consumption_freight_electric
         ) / rtk
 
         co2_per_energy_mean = (
@@ -93,6 +107,7 @@ class KayaFactors(AeromapsModel):
             + electrofuel_emission_factor * energy_consumption_electrofuel
             + kerosene_emission_factor * energy_consumption_kerosene
             + hydrogen_mean_emission_factor * energy_consumption_hydrogen
+            + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
 
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -157,6 +172,10 @@ class CO2Emissions(AeromapsModel):
         energy_per_ask_medium_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         energy_per_rtk_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_rtk_freight_electric: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
@@ -165,10 +184,15 @@ class CO2Emissions(AeromapsModel):
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         rtk_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        rtk_electric_share: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
         hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
         energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
         co2_per_energy_mean: pd.Series = pd.Series(dtype="float64"),
@@ -228,6 +252,11 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_short_range_hydrogen.loc[k]
                     * hydrogen_mean_emission_factor.loc[k]
+                    + ask_short_range_electric_share.loc[k]
+                    / 100
+                    * energy_per_ask_short_range_electric.loc[k]
+                    * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -258,6 +287,11 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_medium_range_hydrogen.loc[k]
                     * hydrogen_mean_emission_factor.loc[k]
+                    + ask_medium_range_electric_share.loc[k]
+                    / 100
+                    * energy_per_ask_medium_range_electric.loc[k]
+                    * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -288,6 +322,11 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_ask_long_range_hydrogen.loc[k]
                     * hydrogen_mean_emission_factor.loc[k]
+                    + ask_long_range_electric_share.loc[k]
+                    / 100
+                    * energy_per_ask_long_range_electric.loc[k]
+                    * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
@@ -317,6 +356,11 @@ class CO2Emissions(AeromapsModel):
                     / 100
                     * energy_per_rtk_freight_hydrogen.loc[k]
                     * hydrogen_mean_emission_factor.loc[k]
+                    + rtk_electric_share.loc[k]
+                    / 100
+                    * energy_per_rtk_freight_electric.loc[k]
+                    * electricity_emission_factor.loc[k]
+                    / 3.6
                 )
                 * 10 ** (-12)
             )
