@@ -983,10 +983,10 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
             ]
-            self.process.parameters.cagr_passenger_long_range_reference_periods = [
+            self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
             ]
-            self.process.parameters.cagr_freight_reference_periods = [
+            self.process.parameters.cagr_freight_reference_periods_values = [
                 self.w_growth_short_range_percent.value
             ]
             self.w_growth_medium_range_percent.disabled = True
