@@ -380,27 +380,26 @@ class BiofuelCost(AeromapsModel):
                 for construction_year in range(year - construction_time, year):
                     plant_building_cost[construction_year] += capex_year / construction_time
 
-
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_life)
                 # Adding new plant production to future years and computing total cost associated
-  
+
                 for i in range(year + 1, end_bound + 1):
-                    missing_production_litres=missing_production * 1000 / fuel_density
+                    missing_production_litres = missing_production * 1000 / fuel_density
 
                     biofuel_total_cost[i] = (
-                        biofuel_total_cost[i] + (missing_production_litres * biofuel_cost[i]["TOTAL"]) / 1e6
+                            biofuel_total_cost[i] + (missing_production_litres * biofuel_cost[i]["TOTAL"]) / 1e6
                     )  # €/L and production in litres => /1000000 for M€
                     biofuel_capex_cost[i] = (
-                        biofuel_capex_cost[i] + (missing_production_litres * biofuel_cost[i]["CAPEX"]) / 1e6
+                            biofuel_capex_cost[i] + (missing_production_litres * biofuel_cost[i]["CAPEX"]) / 1e6
                     )  # M€
                     biofuel_opex_cost[i] = (
-                        biofuel_opex_cost[i]
-                        + (missing_production_litres * biofuel_cost[i]["VAR_OPEX"]) / 1e6
+                            biofuel_opex_cost[i]
+                            + (missing_production_litres * biofuel_cost[i]["VAR_OPEX"]) / 1e6
                     )  # M€
                     biofuel_feedstock_cost[i] = (
-                        biofuel_feedstock_cost[i]
-                        + (missing_production_litres * biofuel_cost[i]["FEEDSTOCK"]) / 1e6
+                            biofuel_feedstock_cost[i]
+                            + (missing_production_litres * biofuel_cost[i]["FEEDSTOCK"]) / 1e6
                     )  # M€
                     biofuel_production[i] = biofuel_production[i] + missing_production
 
@@ -417,35 +416,33 @@ class BiofuelCost(AeromapsModel):
             biofuel_opex_cost = biofuel_opex_cost * scaling_factor
             biofuel_feedstock_cost = biofuel_feedstock_cost * scaling_factor
 
+        biofuel_mfsp_litre = biofuel_total_cost / (demand_scenario * 1000 / fuel_density)
 
-
-        biofuel_mfsp_litre = biofuel_total_cost / demand_scenario
-
+        biofuel_mfsp_ton = biofuel_total_cost / demand_scenario
 
         # Compute the total cost premium (M€)
-        biofuel_cost_premium[year + 1] = (
-                (mfsp_ton[year + 1] - kerosene_price_ton[year + 1])
-                * demand_scenario[year + 1]
-                / 1000000
+        biofuel_cost_premium = (
+            (biofuel_mfsp_ton - kerosene_price_ton)
+                * demand_scenario / 1000000
         )
 
         # Compute the carbon tax (M€)
 
-        biofuel_carbon_tax_cost[year + 1] = (
-                carbon_tax[year + 1]
-                * emission_factor_ton[year + 1]
-                * demand_scenario[year + 1]
+        biofuel_carbon_tax_cost = (
+                carbon_tax
+                * emission_factor_ton
+                * demand_scenario
                 / 1000000
         )
 
-        mfsp_supplement_carbon_tax[year + 1] = (
-                carbon_tax[year + 1] * emission_factor_ton[year + 1] / 1000 * fuel_density
+        mfsp_supplement_carbon_tax = (
+                carbon_tax * emission_factor_ton / 1000 * fuel_density
         )
 
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
-        carbon_abatement_cost[year + 1] = (
-                                                  mfsp_ton[year + 1] - kerosene_price_ton[year + 1]
-                                          ) / avoided_emission_factor[year + 1]
+        carbon_abatement_cost = (
+                                                  biofuel_mfsp_ton - kerosene_price_ton
+                                          ) / avoided_emission_factor
 
         return (
             plant_building_scenario,
@@ -483,9 +480,8 @@ class BiofuelCost(AeromapsModel):
         """
         biofuel_prices = {}
 
-
-        fuel_lhv = 35.3 # MJ/L
-        fuel_energy_density = fuel_lhv / 0.803 # MJ/kg
+        fuel_lhv = 35.3  # MJ/L
+        fuel_energy_density = fuel_lhv / 0.803  # MJ/kg
 
         load_fact = 0.95
         real_year_days = 365.25 * load_fact
@@ -498,7 +494,7 @@ class BiofuelCost(AeromapsModel):
         # Construction of the facility
         for i in range(0, construction_time):
             # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (biofuel_capex[base_year] * 0.803  / construction_time) / (
+            cap_cost_npv += (biofuel_capex[base_year] * 0.803 / construction_time) / (
                     1 + private_discount_rate
             ) ** i
 
@@ -514,7 +510,7 @@ class BiofuelCost(AeromapsModel):
 
         for year in range(base_year + construction_time, end_bound + 1):
             feedstock_price = biomass_feedstock_cost[year]
-            feedstock_cost = feedstock_price * fuel_energy_density/plant_efficiency[base_year]
+            feedstock_cost = feedstock_price * fuel_energy_density / plant_efficiency[base_year]
             biofuel_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + feedstock_cost,
                 "CAPEX": cap_cost_lc,
