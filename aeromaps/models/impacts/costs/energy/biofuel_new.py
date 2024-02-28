@@ -9,8 +9,8 @@ import pandas as pd
 from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
 
 
-class BiofuelCost(AeromapsModel):
-    def __init__(self, name="biofuel_cost", *args, **kwargs):
+class BiofuelCostNew(AeromapsModel):
+    def __init__(self, name="biofuel_cost_new", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
@@ -447,14 +447,13 @@ class BiofuelCost(AeromapsModel):
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index)[:-1]:
             # Production missing in year n+1 must be supplied by plant built in year n
-
             if biofuel_production[year + 1] < demand_scenario[year + 1]:
                 # Getting the production not matched by plants already commissioned
                 # by creating plants with actual year data technical data
-                biofuel_cost = BiofuelCost._compute_pathway_year_mfsp(
-                    construction_time,
-                    plant_lifespan,
-                    year,
+                biofuel_cost = BiofuelCostNew._compute_pathway_year_mfsp(
+                    int(construction_time),
+                    int(plant_lifespan),
+                    year-construction_time,
                     biomass_feedstock_cost,
                     biofuel_eis_var_opex,
                     biofuel_eis_capex,
@@ -518,7 +517,7 @@ class BiofuelCost(AeromapsModel):
             biofuel_opex_cost = biofuel_opex_cost * scaling_factor
             biofuel_feedstock_cost = biofuel_feedstock_cost * scaling_factor
 
-        biofuel_mfsp_litre = biofuel_total_cost / (demand_scenario / fuel_lhv)
+        biofuel_mfsp_litre = biofuel_total_cost / (demand_scenario / fuel_lhv) * 1000000
 
         # biofuel_mfsp_ton = biofuel_total_cost / demand_scenario
 
@@ -527,6 +526,7 @@ class BiofuelCost(AeromapsModel):
         #         (biofuel_mfsp_ton - kerosene_price_ton)
         #         * demand_scenario / 1000000
         # )
+
 
         biofuel_cost_premium = (biofuel_mfsp_litre - kerosene_market_price) / (
                 demand_scenario /fuel_lhv ) / 1000000
@@ -538,7 +538,7 @@ class BiofuelCost(AeromapsModel):
                 carbon_tax
                 * emission_factor
                 * demand_scenario
-                / 1000000
+                / 1000000 /1000000
         )
 
         mfsp_supplement_carbon_tax = (
@@ -548,7 +548,9 @@ class BiofuelCost(AeromapsModel):
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
         carbon_abatement_cost = (
                                         biofuel_mfsp_litre - kerosene_market_price
-                                ) / (avoided_emission_factor * fuel_lhv) * 1000
+                                ) / (avoided_emission_factor * fuel_lhv) * 1000000
+
+        print(carbon_abatement_cost)
 
         return (
             plant_building_scenario,
@@ -626,111 +628,6 @@ class BiofuelCost(AeromapsModel):
             }
         return biofuel_prices
 
-
-# class BiofuelMfsp(AeromapsModel):
-#     def __init__(self, name="biofuel_mfsp", *args, **kwargs):
-#         super().__init__(name, *args, **kwargs)
-#
-#     def compute(
-#         self,
-#         biofuel_hefa_fog_mfsp_reference_years: list = [],
-#         biofuel_hefa_fog_mfsp_reference_years_values: list = [],
-#         biofuel_hefa_others_mfsp_reference_years: list = [],
-#         biofuel_hefa_others_mfsp_reference_years_values: list = [],
-#         biofuel_ft_others_mfsp_reference_years: list = [],
-#         biofuel_ft_others_mfsp_reference_years_values: list = [],
-#         biofuel_ft_msw_mfsp_reference_years: list = [],
-#         biofuel_ft_msw_mfsp_reference_years_values: list = [],
-#         biofuel_atj_mfsp_reference_years: list = [],
-#         biofuel_atj_mfsp_reference_years_values: list = [],
-#         biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
-#         biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
-#         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
-#         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
-#         biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
-#     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
-#         """Biofuel MFSP (Minimal fuel selling price) estimates"""
-#
-#         # HEFA FOG
-#         biofuel_hefa_fog_mfsp = AeromapsInterpolationFunction(
-#             self,
-#             biofuel_hefa_fog_mfsp_reference_years,
-#             biofuel_hefa_fog_mfsp_reference_years_values,
-#             model_name=self.name,
-#         )
-#         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
-#
-#         # HEFA OTHERS
-#         biofuel_hefa_others_mfsp = AeromapsInterpolationFunction(
-#             self,
-#             biofuel_hefa_others_mfsp_reference_years,
-#             biofuel_hefa_others_mfsp_reference_years_values,
-#             model_name=self.name,
-#         )
-#         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
-#
-#         # FT OTHERS
-#         biofuel_ft_others_mfsp = AeromapsInterpolationFunction(
-#             self,
-#             biofuel_ft_others_mfsp_reference_years,
-#             biofuel_ft_others_mfsp_reference_years_values,
-#             model_name=self.name,
-#         )
-#         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
-#
-#         # FT MSW
-#         biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
-#             self,
-#             biofuel_ft_msw_mfsp_reference_years,
-#             biofuel_ft_msw_mfsp_reference_years_values,
-#             model_name=self.name,
-#         )
-#         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
-#
-#         # ATJ
-#         biofuel_atj_mfsp = AeromapsInterpolationFunction(
-#             self,
-#             biofuel_atj_mfsp_reference_years,
-#             biofuel_atj_mfsp_reference_years_values,
-#             model_name=self.name,
-#         )
-#         self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
-#
-#         # MEAN
-#         biofuel_mean_mfsp = (
-#             biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100
-#             + biofuel_hefa_others_mfsp * biofuel_hefa_others_share / 100
-#             + biofuel_ft_others_mfsp * biofuel_ft_others_share / 100
-#             + biofuel_ft_msw_mfsp * biofuel_ft_msw_share / 100
-#             + biofuel_atj_mfsp * biofuel_atj_share / 100
-#         )
-#
-#         self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
-#
-#         # MARGINAL
-#
-#         biofuel_marginal_mfsp = self.df.loc[
-#             :,
-#             [
-#                 "biofuel_hefa_fog_mfsp",
-#                 "biofuel_hefa_others_mfsp",
-#                 "biofuel_ft_others_mfsp",
-#                 "biofuel_ft_msw_mfsp",
-#                 "biofuel_atj_mfsp",
-#             ],
-#         ].max(axis="columns")
-#
-#         self.df.loc[:, "biofuel_marginal_mfsp"] = biofuel_marginal_mfsp
-#
-#         return (
-#             biofuel_hefa_fog_mfsp,
-#             biofuel_hefa_others_mfsp,
-#             biofuel_ft_others_mfsp,
-#             biofuel_ft_msw_mfsp,
-#             biofuel_atj_mfsp,
-#             biofuel_mean_mfsp,
-#             biofuel_marginal_mfsp,
-#         )
 
 
 class BiofuelCapex(AeromapsModel):
@@ -857,6 +754,7 @@ class BiofuelVarOpex(AeromapsModel):
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_var_opex"] = biofuel_hefa_fog_var_opex
+
 
         # HEFA OTHERS
         biofuel_hefa_others_var_opex = AeromapsInterpolationFunction(
