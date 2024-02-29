@@ -89,6 +89,7 @@ class BiofuelCostNew(AeromapsModel):
         pd.Series,
     ]:
         ### HEFA FOG
+        print('HEFOG')
         (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
@@ -132,6 +133,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_fog
 
         ### HEFA OTHERS
+        print('HEFA OTHER')
         (
             plant_building_scenario_hefa_others,
             plant_building_cost_hefa_others,
@@ -175,6 +177,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_others
 
         ### FT OTHERS
+        print('FT OTHERS')
         (
             plant_building_scenario_ft_others,
             plant_building_cost_ft_others,
@@ -218,6 +221,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_ft_others
 
         ### FT MSW
+        print('FT MSW')
         (
             plant_building_scenario_ft_msw,
             plant_building_cost_ft_msw,
@@ -262,6 +266,7 @@ class BiofuelCostNew(AeromapsModel):
 
 
         ### ATJ
+        print('ATJ')
         (
             plant_building_scenario_atj,
             plant_building_cost_atj,
@@ -550,7 +555,7 @@ class BiofuelCostNew(AeromapsModel):
                                         biofuel_mfsp_litre - kerosene_market_price
                                 ) / (avoided_emission_factor * fuel_lhv) * 1000000
 
-        print(carbon_abatement_cost)
+        print(biofuel_capex_cost / (demand_scenario / fuel_lhv) * 1000000)
 
         return (
             plant_building_scenario,
@@ -619,7 +624,7 @@ class BiofuelCostNew(AeromapsModel):
 
         for year in range(base_year + construction_time, end_bound + 1):
             feedstock_price = biomass_feedstock_cost[year]
-            feedstock_cost = feedstock_price * fuel_energy_density / plant_eis_efficiency[base_year]
+            feedstock_cost = feedstock_price * fuel_lhv / plant_eis_efficiency[base_year]
             biofuel_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + feedstock_cost,
                 "CAPEX": cap_cost_lc,
