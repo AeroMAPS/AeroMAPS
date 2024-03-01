@@ -18,9 +18,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         self,
         ask_aircraft_value_dict: dict,
         rpk_aircraft_value_dict: dict,
-        load_factor: pd.Series = pd.Series(
-            dtype="float64"
-        ),
+        load_factor: pd.Series = pd.Series(dtype="float64"),
         doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
         doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
         doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
@@ -84,7 +82,9 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 else:
                     aircraft_var_name = aircraft_var.full_name
-                    aircraft_energy_delta_val = aircraft_var.energy_per_ask - category_reference_energy
+                    aircraft_energy_delta_val = (
+                        aircraft_var.energy_per_ask - category_reference_energy
+                    )
                     aircraft_doc_ne_delta = (
                         aircraft_var.doc_non_energy_base - category_reference_doc_ne
                     )
@@ -97,16 +97,18 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 #  TODO a mettre au propre, init basée sur le même mode que le calcul de aircraft efficiency, avec une transition d'un modèle simple à un modèle complexe en 2019
 
-                aircraft_energy_delta[2019] = 0 # start from reference
+                aircraft_energy_delta[2019] = 0  # start from reference
 
-                aircraft_energy_delta[2020] = aircraft_energy_delta[2019] * (
-                            1 + covid_energy_intensity_per_ask_increase_2020 / 100) + category_reference_energy * covid_energy_intensity_per_ask_increase_2020 / 100
+                aircraft_energy_delta[2020] = (
+                    aircraft_energy_delta[2019]
+                    * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+                    + category_reference_energy * covid_energy_intensity_per_ask_increase_2020 / 100
+                )
 
                 # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
                 # Value set to NaN to avoid erroneous interpretation
 
                 # TODO check hydrogen aircraft case!
-
 
                 # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
                 aircraft_carbon_abatement_cost = (
@@ -119,12 +121,15 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 )  # conversion to ton
 
                 # TODO use dictionnary if possible once implementeed
-                aircraft_pseudo_ask = self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")] / load_factor[self.prospection_start_year-1] * 100
+                aircraft_pseudo_ask = (
+                    self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")]
+                    / load_factor[self.prospection_start_year - 1]
+                    * 100
+                )
 
-                aircraft_carbon_abatement_volume = - (
+                aircraft_carbon_abatement_volume = -(
                     aircraft_pseudo_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
                 )  # in tons
-
 
                 cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"
 

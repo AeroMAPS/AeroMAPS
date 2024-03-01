@@ -12,13 +12,22 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
 )
-from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import OperationsAbatementCost
-from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelVarOpex, BiofuelFeedstock, \
-    BiofuelCapex
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
+    OperationsAbatementCost,
+)
+from aeromaps.models.impacts.costs.energy.biofuel import (
+    BiofuelCost,
+    BiofuelVarOpex,
+    BiofuelFeedstock,
+    BiofuelCapex,
+)
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
-from aeromaps.models.impacts.costs.operations.operations_cost import LoadFactorEfficiencyCost, OperationalEfficiencyCost
+from aeromaps.models.impacts.costs.operations.operations_cost import (
+    LoadFactorEfficiencyCost,
+    OperationalEfficiencyCost,
+)
 from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
@@ -467,7 +476,6 @@ models_complex = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
-
 }
 
 models_complex_improvedgwpstar = {

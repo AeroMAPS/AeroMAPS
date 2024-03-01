@@ -16,15 +16,21 @@ class OperationalEfficiencyCost(AeromapsModel):
         self,
         operational_efficiency_cost_non_energy_per_ask_final_value: float,
         operations_final_gain: float,
-        operations_gain: pd.Series = pd.Series(dtype="float64")
+        operations_gain: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
 
-        operational_efficiency_cost_non_energy_per_ask = operational_efficiency_cost_non_energy_per_ask_final_value * operations_gain/operations_final_gain
-        self.df.loc[:, "operational_efficiency_cost_non_energy_per_ask"] = operational_efficiency_cost_non_energy_per_ask
+        operational_efficiency_cost_non_energy_per_ask = (
+            operational_efficiency_cost_non_energy_per_ask_final_value
+            * operations_gain
+            / operations_final_gain
+        )
+        self.df.loc[
+            :, "operational_efficiency_cost_non_energy_per_ask"
+        ] = operational_efficiency_cost_non_energy_per_ask
 
         return operational_efficiency_cost_non_energy_per_ask
-    
-    
+
+
 class LoadFactorEfficiencyCost(AeromapsModel):
     def __init__(self, name="load_factor_efficiency_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -36,8 +42,12 @@ class LoadFactorEfficiencyCost(AeromapsModel):
         load_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
 
-        load_factor_init=load_factor[self.prospection_start_year-1]
-        load_factor_cost_non_energy_per_ask =  load_factor_cost_non_energy_per_ask_final_value * (load_factor-load_factor_init)/(load_factor_end_year-load_factor_init)
+        load_factor_init = load_factor[self.prospection_start_year - 1]
+        load_factor_cost_non_energy_per_ask = (
+            load_factor_cost_non_energy_per_ask_final_value
+            * (load_factor - load_factor_init)
+            / (load_factor_end_year - load_factor_init)
+        )
         self.df.loc[:, "load_factor_cost_non_energy_per_ask"] = load_factor_cost_non_energy_per_ask
 
         return load_factor_cost_non_energy_per_ask

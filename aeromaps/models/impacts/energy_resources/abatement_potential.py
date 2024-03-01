@@ -262,7 +262,8 @@ class BiofuelAbatementPotential(AeromapsModel):
 
         abatement_effective_hydrogen_electrolysis = (
             energy_consumption_hydrogen
-            * hydrogen_electrolysis_share / 100
+            * hydrogen_electrolysis_share
+            / 100
             * h2_electrolysis_avoided_emissions_factor
             / 1000000
         )
@@ -273,7 +274,8 @@ class BiofuelAbatementPotential(AeromapsModel):
 
         abatement_effective_hydrogen_coal = (
             energy_consumption_hydrogen
-            * hydrogen_coal_share / 100
+            * hydrogen_coal_share
+            / 100
             * h2_coal_avoided_emissions_factor
             / 1000000
         )
@@ -285,7 +287,8 @@ class BiofuelAbatementPotential(AeromapsModel):
 
         abatement_effective_hydrogen_coal_ccs = (
             energy_consumption_hydrogen
-            * hydrogen_coal_ccs_share / 100
+            * hydrogen_coal_ccs_share
+            / 100
             * h2_coal_ccs_avoided_emissions_factor
             / 1000000
         )
@@ -296,7 +299,8 @@ class BiofuelAbatementPotential(AeromapsModel):
 
         abatement_effective_hydrogen_gas = (
             energy_consumption_hydrogen
-            * hydrogen_gas_share / 100
+            * hydrogen_gas_share
+            / 100
             * h2_gas_avoided_emissions_factor
             / 1000000
         )
@@ -307,7 +311,8 @@ class BiofuelAbatementPotential(AeromapsModel):
 
         abatement_effective_hydrogen_gas_ccs = (
             energy_consumption_hydrogen
-            * hydrogen_gas_ccs_share / 100
+            * hydrogen_gas_ccs_share
+            / 100
             * h2_gas_ccs_avoided_emissions_factor
             / 1000000
         )
