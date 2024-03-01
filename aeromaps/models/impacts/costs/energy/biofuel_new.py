@@ -87,9 +87,30 @@ class BiofuelCostNew(AeromapsModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         ### HEFA FOG
-        print('HEFOG')
+        # print('HEFOG')
         (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
@@ -133,7 +154,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_fog
 
         ### HEFA OTHERS
-        print('HEFA OTHER')
+        # print('HEFA OTHER')
         (
             plant_building_scenario_hefa_others,
             plant_building_cost_hefa_others,
@@ -157,7 +178,7 @@ class BiofuelCostNew(AeromapsModel):
             biofuel_hefa_others_feedstock_cost,
             biofuel_hefa_others_var_opex,
             biofuel_hefa_others_capex,
-            biofuel_hefa_oil_efficiency*biofuel_hefa_fuel_efficiency,
+            biofuel_hefa_oil_efficiency * biofuel_hefa_fuel_efficiency,
             plant_lifespan,
             private_discount_rate,
         )
@@ -177,7 +198,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_others
 
         ### FT OTHERS
-        print('FT OTHERS')
+        # print('FT OTHERS')
         (
             plant_building_scenario_ft_others,
             plant_building_cost_ft_others,
@@ -221,7 +242,7 @@ class BiofuelCostNew(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_ft_others
 
         ### FT MSW
-        print('FT MSW')
+        # print('FT MSW')
         (
             plant_building_scenario_ft_msw,
             plant_building_cost_ft_msw,
@@ -264,9 +285,8 @@ class BiofuelCostNew(AeromapsModel):
         :, "biofuel_mfsp_carbon_tax_supplement_ft_msw"
         ] = biofuel_mfsp_carbon_tax_supplement_ft_msw
 
-
         ### ATJ
-        print('ATJ')
+        # print('ATJ')
         (
             plant_building_scenario_atj,
             plant_building_cost_atj,
@@ -309,6 +329,16 @@ class BiofuelCostNew(AeromapsModel):
         :, "biofuel_mfsp_carbon_tax_supplement_atj"
         ] = biofuel_mfsp_carbon_tax_supplement_atj
 
+        biofuel_mean_mfsp = (
+                biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100
+                + biofuel_hefa_others_mfsp * biofuel_hefa_others_share / 100
+                + biofuel_ft_others_mfsp * biofuel_ft_others_share / 100
+                + biofuel_ft_msw_mfsp * biofuel_ft_msw_share / 100
+                + biofuel_atj_mfsp * biofuel_atj_share / 100
+        )
+
+        self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
+
         # MEAN tax
         biofuel_mean_carbon_tax_per_l = (
                 biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100
@@ -325,13 +355,21 @@ class BiofuelCostNew(AeromapsModel):
             plant_building_cost_hefa_fog,
             carbon_abatement_cost_hefa_fog,
             biofuel_cost_hefa_fog,
-            biofuel_cost_premium_hefa_fog,
+            biofuel_capex_cost_hefa_fog,
+            biofuel_var_opex_cost_hefa_fog,
+            biofuel_feedstock_cost_hefa_fog,
+            biofuel_hefa_fog_mfsp,
             biofuel_carbon_tax_hefa_fog,
+            biofuel_cost_premium_hefa_fog,
             biofuel_mfsp_carbon_tax_supplement_hefa_fog,
             plant_building_scenario_hefa_others,
             plant_building_cost_hefa_others,
             carbon_abatement_cost_hefa_others,
             biofuel_cost_hefa_others,
+            biofuel_capex_cost_hefa_others,
+            biofuel_var_opex_cost_hefa_others,
+            biofuel_feedstock_cost_hefa_others,
+            biofuel_hefa_others_mfsp,
             biofuel_cost_premium_hefa_others,
             biofuel_carbon_tax_hefa_others,
             biofuel_mfsp_carbon_tax_supplement_hefa_others,
@@ -339,6 +377,10 @@ class BiofuelCostNew(AeromapsModel):
             plant_building_cost_ft_others,
             carbon_abatement_cost_ft_others,
             biofuel_cost_ft_others,
+            biofuel_capex_cost_ft_others,
+            biofuel_var_opex_cost_ft_others,
+            biofuel_feedstock_cost_ft_others,
+            biofuel_ft_others_mfsp,
             biofuel_cost_premium_ft_others,
             biofuel_carbon_tax_ft_others,
             biofuel_mfsp_carbon_tax_supplement_ft_others,
@@ -346,17 +388,26 @@ class BiofuelCostNew(AeromapsModel):
             plant_building_cost_ft_msw,
             carbon_abatement_cost_ft_msw,
             biofuel_cost_ft_msw,
+            biofuel_capex_cost_ft_msw,
+            biofuel_var_opex_cost_ft_msw,
+            biofuel_feedstock_cost_ft_msw,
+            biofuel_ft_msw_mfsp,
             biofuel_cost_premium_ft_msw,
             biofuel_carbon_tax_ft_msw,
             biofuel_mfsp_carbon_tax_supplement_ft_msw,
             plant_building_scenario_atj,
             plant_building_cost_atj,
+            biofuel_capex_cost_atj,
+            biofuel_var_opex_cost_atj,
+            biofuel_feedstock_cost_atj,
+            biofuel_atj_mfsp,
             carbon_abatement_cost_atj,
             biofuel_cost_atj,
             biofuel_cost_premium_atj,
             biofuel_carbon_tax_atj,
             biofuel_mfsp_carbon_tax_supplement_atj,
             biofuel_mean_carbon_tax_per_l,
+            biofuel_mean_mfsp
         )
 
     def _pathway_computation(
@@ -395,7 +446,7 @@ class BiofuelCostNew(AeromapsModel):
         # fuel density at 15 degrees
         fuel_density = 0.804
         construction_time = 3
-        load_factor=0.95
+        load_factor = 0.95
 
         # convert emision factor fom gCO2e/MJ to tCo2e/t and mfsp in €/L to €/ton
         # emission_factor_ton = emission_factor * fuel_lhv / fuel_density * 1000 / 1000000
@@ -458,7 +509,7 @@ class BiofuelCostNew(AeromapsModel):
                 biofuel_cost = BiofuelCostNew._compute_pathway_year_mfsp(
                     int(construction_time),
                     int(plant_lifespan),
-                    year-construction_time,
+                    year - construction_time,
                     biomass_feedstock_cost,
                     biofuel_eis_var_opex,
                     biofuel_eis_capex,
@@ -489,7 +540,7 @@ class BiofuelCostNew(AeromapsModel):
                     plant_building_cost[construction_year] += capex_year / construction_time
 
                 # When production ends: either at the end of plant life or the end of the scenario;
-                end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
+                end_bound = int(min(list(demand_scenario.index)[-1], year + plant_lifespan))
                 # Adding new plant production to future years and computing total cost associated
 
                 for i in range(year + 1, end_bound + 1):
@@ -531,11 +582,10 @@ class BiofuelCostNew(AeromapsModel):
         #         (biofuel_mfsp_ton - kerosene_price_ton)
         #         * demand_scenario / 1000000
         # )
-
+        # print(biofuel_feedstock_cost / (demand_scenario / fuel_lhv) * 1000000)
 
         biofuel_cost_premium = (biofuel_mfsp_litre - kerosene_market_price) / (
-                demand_scenario /fuel_lhv ) / 1000000
-
+                demand_scenario / fuel_lhv) / 1000000
 
         # Compute the carbon tax (M€)
 
@@ -543,7 +593,7 @@ class BiofuelCostNew(AeromapsModel):
                 carbon_tax
                 * emission_factor
                 * demand_scenario
-                / 1000000 /1000000
+                / 1000000 / 1000000
         )
 
         mfsp_supplement_carbon_tax = (
@@ -554,8 +604,6 @@ class BiofuelCostNew(AeromapsModel):
         carbon_abatement_cost = (
                                         biofuel_mfsp_litre - kerosene_market_price
                                 ) / (avoided_emission_factor * fuel_lhv) * 1000000
-
-        print(biofuel_capex_cost / (demand_scenario / fuel_lhv) * 1000000)
 
         return (
             plant_building_scenario,
@@ -632,7 +680,6 @@ class BiofuelCostNew(AeromapsModel):
                 "FEEDSTOCK": feedstock_cost,
             }
         return biofuel_prices
-
 
 
 class BiofuelCapex(AeromapsModel):
@@ -759,7 +806,6 @@ class BiofuelVarOpex(AeromapsModel):
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_var_opex"] = biofuel_hefa_fog_var_opex
-
 
         # HEFA OTHERS
         biofuel_hefa_others_var_opex = AeromapsInterpolationFunction(
@@ -907,3 +953,4 @@ class BiofuelFeedstock(AeromapsModel):
             biofuel_atj_feedstock_cost,
             biofuel_mean_feedstock_cost,
         )
+

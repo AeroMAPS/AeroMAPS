@@ -13,7 +13,8 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_num
     FleetEvolution,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import OperationsAbatementCost
-from aeromaps.models.impacts.costs.energy.biofuel_new import BiofuelCostNew, BiofuelVarOpex, BiofuelFeedstock
+from aeromaps.models.impacts.costs.energy.biofuel_new import BiofuelCostNew, BiofuelVarOpex, BiofuelFeedstock, \
+    BiofuelCapex
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -119,7 +120,7 @@ from aeromaps.models.impacts.emissions.carbon_offset import (
 )
 
 # COSTS
-from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
+from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp
 from aeromaps.models.impacts.costs.energy.market_prices import (
     ElectricityCost,
     Co2Cost,
@@ -386,7 +387,7 @@ models_complex = {
     ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
-    "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
+    # "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
     "kerosene_cost": KeroseneCost("kerosene_cost"),
@@ -466,6 +467,7 @@ models_complex = {
     "biofuel_cost_new": BiofuelCostNew("biofuel_cost_new"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+
 }
 
 models_complex_improvedgwpstar = {
