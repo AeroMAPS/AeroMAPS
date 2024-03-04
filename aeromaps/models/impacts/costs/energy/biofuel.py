@@ -51,7 +51,7 @@ class BiofuelCost(AeromapsModel):
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         lhv_biofuel: float = 0.0,
-            density_biofuel: float =0.0,
+        density_biofuel: float = 0.0,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -140,7 +140,7 @@ class BiofuelCost(AeromapsModel):
             plant_lifespan,
             private_discount_rate,
             lhv_biofuel,
-            density_biofuel
+            density_biofuel,
         )
 
         self.df.loc[:, "plant_building_scenario_hefa_fog"] = plant_building_scenario_hefa_fog
@@ -186,7 +186,7 @@ class BiofuelCost(AeromapsModel):
             plant_lifespan,
             private_discount_rate,
             lhv_biofuel,
-            density_biofuel
+            density_biofuel,
         )
 
         self.df.loc[:, "plant_building_scenario_hefa_others"] = plant_building_scenario_hefa_others
@@ -232,7 +232,7 @@ class BiofuelCost(AeromapsModel):
             plant_lifespan,
             private_discount_rate,
             lhv_biofuel,
-            density_biofuel
+            density_biofuel,
         )
 
         self.df.loc[:, "plant_building_scenario_ft_others"] = plant_building_scenario_ft_others
@@ -278,7 +278,7 @@ class BiofuelCost(AeromapsModel):
             plant_lifespan,
             private_discount_rate,
             lhv_biofuel,
-            density_biofuel
+            density_biofuel,
         )
 
         self.df.loc[:, "plant_building_scenario_ft_msw"] = plant_building_scenario_ft_msw
@@ -324,7 +324,7 @@ class BiofuelCost(AeromapsModel):
             plant_lifespan,
             private_discount_rate,
             lhv_biofuel,
-            density_biofuel
+            density_biofuel,
         )
 
         self.df.loc[:, "plant_building_scenario_atj"] = plant_building_scenario_atj
@@ -436,8 +436,8 @@ class BiofuelCost(AeromapsModel):
         plant_eis_efficiency: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
-        lhv_biofuel: float =0.0,
-        density_biofuel: float =0.0,
+        lhv_biofuel: float = 0.0,
+        density_biofuel: float = 0.0,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -562,10 +562,14 @@ class BiofuelCost(AeromapsModel):
             biofuel_opex_cost = biofuel_opex_cost * scaling_factor
             biofuel_feedstock_cost = biofuel_feedstock_cost * scaling_factor
 
-        biofuel_mfsp_litre = biofuel_total_cost / (demand_scenario / (lhv_biofuel * density_biofuel)) * 1000000
+        biofuel_mfsp_litre = (
+            biofuel_total_cost / (demand_scenario / (lhv_biofuel * density_biofuel)) * 1000000
+        )
 
         biofuel_cost_premium = (
-            (biofuel_mfsp_litre - kerosene_market_price) / (demand_scenario / (lhv_biofuel * density_biofuel)) / 1000000
+            (biofuel_mfsp_litre - kerosene_market_price)
+            / (demand_scenario / (lhv_biofuel * density_biofuel))
+            / 1000000
         )
 
         # Compute the carbon tax (M€)

@@ -174,8 +174,6 @@ class DropinAbatementPotential(AeromapsModel):
         # self.df.loc[:, "energy_avail_hydrogen_electrolysis"] = energy_avail_hydrogen_electrolysis
         self.df.loc[:, "energy_avail_electrofuel"] = energy_avail_electrofuel
 
-
-
         return (
             abatement_potential_atj,
             abatement_potential_hefa_fog,
@@ -292,8 +290,7 @@ class EnergyAbatementEffective(AeromapsModel):
         #  H2 extra energy handling is supposed to be done in fleet abatement -> energy_replacement_ratio parameter deleted
 
         h2_electrolysis_avoided_emissions_factor = (
-            kerosene_emission_factor
-            - hydrogen_electrolysis_emission_factor
+            kerosene_emission_factor - hydrogen_electrolysis_emission_factor
         )
 
         abatement_effective_hydrogen_electrolysis = (
@@ -304,9 +301,7 @@ class EnergyAbatementEffective(AeromapsModel):
             / 1000000
         )
 
-        h2_coal_avoided_emissions_factor = (
-            kerosene_emission_factor  - hydrogen_coal_emission_factor
-        )
+        h2_coal_avoided_emissions_factor = kerosene_emission_factor - hydrogen_coal_emission_factor
 
         abatement_effective_hydrogen_coal = (
             energy_consumption_hydrogen
@@ -317,8 +312,7 @@ class EnergyAbatementEffective(AeromapsModel):
         )
 
         h2_coal_ccs_avoided_emissions_factor = (
-            kerosene_emission_factor
-            - hydrogen_coal_ccs_emission_factor
+            kerosene_emission_factor - hydrogen_coal_ccs_emission_factor
         )
 
         abatement_effective_hydrogen_coal_ccs = (
@@ -329,9 +323,7 @@ class EnergyAbatementEffective(AeromapsModel):
             / 1000000
         )
 
-        h2_gas_avoided_emissions_factor = (
-            kerosene_emission_factor  - hydrogen_gas_emission_factor
-        )
+        h2_gas_avoided_emissions_factor = kerosene_emission_factor - hydrogen_gas_emission_factor
 
         abatement_effective_hydrogen_gas = (
             energy_consumption_hydrogen
@@ -342,7 +334,7 @@ class EnergyAbatementEffective(AeromapsModel):
         )
 
         h2_gas_ccs_avoided_emissions_factor = (
-            kerosene_emission_factor  - hydrogen_gas_ccs_emission_factor
+            kerosene_emission_factor - hydrogen_gas_ccs_emission_factor
         )
 
         abatement_effective_hydrogen_gas_ccs = (
