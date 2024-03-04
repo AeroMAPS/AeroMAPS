@@ -456,22 +456,8 @@ class BiofuelCost(AeromapsModel):
         construction_time = 3
         load_factor = 0.95
 
-        # convert emision factor fom gCO2e/MJ to tCo2e/t and mfsp in €/L to €/ton
-        # emission_factor_ton = emission_factor * fuel_lhv / fuel_density * 1000 / 1000000
-
-        # kerosene_price_ton = kerosene_market_price / fuel_density * 1000
-        # avoided_emission_factor = (
-        #         kerosene_emission_factor * fuel_lhv / fuel_density * 1000 / 1000000
-        #         - emission_factor_ton
-        # )
-
         # Avoided emission factor in kgCO2/MJ
         avoided_emission_factor = kerosene_emission_factor - emission_factor
-
-        # compute demand scenario in litres for the given pathway
-        # demand_scenario = (
-        #         energy_consumption_biofuel / (fuel_lhv / fuel_density) / 1000 * share / 100
-        # )
 
         # Demand scenario for the pathway in MJ
         demand_scenario = energy_consumption_biofuel * share / 100
@@ -482,9 +468,6 @@ class BiofuelCost(AeromapsModel):
         plant_building_scenario = pd.Series(np.zeros(len(indexes)), indexes)
         # Relative CAPEX cost to build the new facilities in M€2020
         plant_building_cost = pd.Series(np.zeros(len(indexes)), indexes)
-
-        # # Annual production in tons
-        # biofuel_production = pd.Series(np.zeros(len(indexes)), indexes)
 
         # Annual production in MJ
         biofuel_production = pd.Series(np.zeros(len(indexes)), indexes)
@@ -580,15 +563,6 @@ class BiofuelCost(AeromapsModel):
             biofuel_feedstock_cost = biofuel_feedstock_cost * scaling_factor
 
         biofuel_mfsp_litre = biofuel_total_cost / (demand_scenario / (lhv_biofuel * density_biofuel)) * 1000000
-
-        # biofuel_mfsp_ton = biofuel_total_cost / demand_scenario
-
-        # Compute the total cost premium (M€)
-        # biofuel_cost_premium_old = (
-        #         (biofuel_mfsp_ton - kerosene_price_ton)
-        #         * demand_scenario / 1000000
-        # )
-        # print(biofuel_feedstock_cost / (demand_scenario / fuel_lhv) * 1000000)
 
         biofuel_cost_premium = (
             (biofuel_mfsp_litre - kerosene_market_price) / (demand_scenario / (lhv_biofuel * density_biofuel)) / 1000000
