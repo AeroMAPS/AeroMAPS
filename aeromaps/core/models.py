@@ -28,7 +28,7 @@ from aeromaps.models.impacts.costs.operations.operations_cost import (
     LoadFactorEfficiencyCost,
     OperationalEfficiencyCost,
 )
-from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
+from aeromaps.models.impacts.energy_resources.abatement_potential import DropinAbatementPotential, EnergyAbatementEffective
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
     RPK,
@@ -298,7 +298,8 @@ models_simple = {
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
+    "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
         "passenger_aircraft_doc_non_energy_simple"
@@ -438,7 +439,8 @@ models_complex = {
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
+        "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
         "passenger_aircraft_doc_non_energy_complex"
@@ -581,7 +583,8 @@ models_complex_improvedgwpstar = {
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
+    "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
         "passenger_aircraft_doc_non_energy_complex"

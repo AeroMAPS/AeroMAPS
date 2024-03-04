@@ -11,42 +11,24 @@ import pandas as pd
 from aeromaps.models.base import AeromapsModel
 
 
-class BiofuelAbatementPotential(AeromapsModel):
-    def __init__(self, name="biofuel_abatement_potential", *args, **kwargs):
+class DropinAbatementPotential(AeromapsModel):
+    def __init__(self, name="dropin_abatement_potential", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
         self,
         biofuel_atj_efficiency: pd.Series = pd.Series(dtype="float64"),
-        biomass_atj_consumption: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biomass_hefa_fog_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_fuel_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_fog_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biomass_hefa_others_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_oil_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biomass_ft_consumption: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_efficiency: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_msw_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_emission_factor: float = 0.0,
-        hydrogen_coal_ccs_emission_factor: float = 0.0,
-        hydrogen_gas_emission_factor: float = 0.0,
-        hydrogen_gas_ccs_emission_factor: float = 0.0,
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
         electricity_hydrogen_consumption: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
         electricity_electrofuel_consumption: pd.Series = pd.Series(dtype="float64"),
         electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -58,17 +40,6 @@ class BiofuelAbatementPotential(AeromapsModel):
         aviation_biomass_allocated_share: float = 0.0,
         aviation_available_electricity: float = 0.0,
     ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -203,9 +174,76 @@ class BiofuelAbatementPotential(AeromapsModel):
         # self.df.loc[:, "energy_avail_hydrogen_electrolysis"] = energy_avail_hydrogen_electrolysis
         self.df.loc[:, "energy_avail_electrofuel"] = energy_avail_electrofuel
 
-        ##### Effective #####
-        # TODO delete this part?
 
+
+        return (
+            abatement_potential_atj,
+            abatement_potential_hefa_fog,
+            abatement_potential_hefa_others,
+            abatement_potential_ft_msw,
+            abatement_potential_ft_others,
+            abatement_potential_electrofuel,
+            energy_avail_atj,
+            energy_avail_hefa_fog,
+            energy_avail_hefa_others,
+            energy_avail_ft_msw,
+            energy_avail_ft_others,
+            energy_avail_electrofuel,
+        )
+
+
+class EnergyAbatementEffective(AeromapsModel):
+    def __init__(self, name="energy_abatement_effective", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        biofuel_atj_efficiency: pd.Series = pd.Series(dtype="float64"),
+        biomass_atj_consumption: pd.Series = pd.Series(dtype="float64"),
+        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        biofuel_atj_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        biomass_hefa_fog_consumption: pd.Series = pd.Series(dtype="float64"),
+        biofuel_hefa_fuel_efficiency: pd.Series = pd.Series(dtype="float64"),
+        biofuel_hefa_fog_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        biomass_hefa_others_consumption: pd.Series = pd.Series(dtype="float64"),
+        biofuel_hefa_oil_efficiency: pd.Series = pd.Series(dtype="float64"),
+        biofuel_hefa_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        biomass_ft_consumption: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_efficiency: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_msw_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
+        biofuel_ft_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_coal_emission_factor: float = 0.0,
+        hydrogen_coal_ccs_emission_factor: float = 0.0,
+        hydrogen_gas_emission_factor: float = 0.0,
+        hydrogen_gas_ccs_emission_factor: float = 0.0,
+        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
+        electricity_electrofuel_consumption: pd.Series = pd.Series(dtype="float64"),
+        electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
+        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        """Maximal and effective abatement potential through biofuel usage under the allocated biomass hypothesis."""
+        ##### Effective #####
         abatement_effective_atj = (
             biomass_atj_consumption
             * 10**12
@@ -324,7 +362,6 @@ class BiofuelAbatementPotential(AeromapsModel):
             / 1000000
         )
 
-        # TODO delete?
         self.df.loc[:, "abatement_effective_atj"] = abatement_effective_atj
         self.df.loc[:, "abatement_effective_hefa_fog"] = abatement_effective_hefa_fog
         self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
@@ -344,12 +381,6 @@ class BiofuelAbatementPotential(AeromapsModel):
         self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
 
         return (
-            abatement_potential_atj,
-            abatement_potential_hefa_fog,
-            abatement_potential_hefa_others,
-            abatement_potential_ft_msw,
-            abatement_potential_ft_others,
-            abatement_potential_electrofuel,
             abatement_effective_atj,
             abatement_effective_hefa_fog,
             abatement_effective_hefa_others,
@@ -361,10 +392,4 @@ class BiofuelAbatementPotential(AeromapsModel):
             abatement_effective_hydrogen_gas,
             abatement_effective_hydrogen_gas_ccs,
             abatement_effective_electrofuel,
-            energy_avail_atj,
-            energy_avail_hefa_fog,
-            energy_avail_hefa_others,
-            energy_avail_ft_msw,
-            energy_avail_ft_others,
-            energy_avail_electrofuel,
         )
