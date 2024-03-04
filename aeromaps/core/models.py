@@ -180,13 +180,12 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
-    PassengerAircraftNocCarbonOffset,
     PassengerAircraftNonOpCosts,
     PassengerAircraftPassengerTax,
 )
 
 from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
-    PassengerAircraftIndirectOpCosts,
+    PassengerAircraftIndirectOpCosts, PassengerAircraftNocCarbonOffset,
 )
 
 from aeromaps.models.impacts.costs.airlines.operational_profit import (
