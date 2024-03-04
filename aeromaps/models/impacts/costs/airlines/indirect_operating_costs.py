@@ -17,9 +17,8 @@ class PassengerAircraftIndirectOpCosts(AeromapsModel):
         ioc_reference_years: list = [],
         ioc_reference_years_values: list = [],
     ) -> Tuple[pd.Series]:
-        # Simple computation of airline non-operating costs (NOC)
+        # Simple computation of airline indirect-operating costs (NOC)
 
-        # TODO calibrate IOC values in parameters.json
         ioc_prospective = AeromapsInterpolationFunction(
             self,
             ioc_reference_years,

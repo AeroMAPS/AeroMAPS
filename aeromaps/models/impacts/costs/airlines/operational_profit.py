@@ -18,7 +18,6 @@ class PassengerAircraftOperationalProfit(AeromapsModel):
     ) -> Tuple[pd.Series]:
         # Simple computation of airline non-operating costs (NOC)
 
-        # TODO calibrate profit values in parameters.json
         operational_profit_prospective = AeromapsInterpolationFunction(
             self,
             operational_profit_reference_years,
