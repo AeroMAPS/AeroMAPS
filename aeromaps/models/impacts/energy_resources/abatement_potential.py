@@ -44,7 +44,6 @@ class BiofuelAbatementPotential(AeromapsModel):
         hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_replacement_ratio: float = 1.0,  # TODO adapt
         electricity_hydrogen_consumption: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
         liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
@@ -154,7 +153,7 @@ class BiofuelAbatementPotential(AeromapsModel):
             / 1000000
         )
 
-        ## TODO reactivate for potential hydrogen MACC
+        ##  reactivate for potential hydrogen MACC if ever implemented
         # h2_electrolysis_avoided_emissions_factor = (
         #     kerosene_emission_factor / hydrogen_replacement_ratio
         #     - hydrogen_electrolysis_emission_factor
@@ -252,11 +251,10 @@ class BiofuelAbatementPotential(AeromapsModel):
             / 1000000
         )
 
-        # TODO reposer clairement le cadre de la comptabilisation de l'efficacité/énérgie avion h2!
-        # TODO avoir une MACC qui se permet d'aller à gauche de l'axe des ordonnées pour les inneficacités par ex!
+        #  H2 extra energy handling is supposed to be done in fleet abatement -> energy_replacement_ratio parameter deleted
 
         h2_electrolysis_avoided_emissions_factor = (
-            kerosene_emission_factor / hydrogen_replacement_ratio
+            kerosene_emission_factor
             - hydrogen_electrolysis_emission_factor
         )
 
@@ -269,7 +267,7 @@ class BiofuelAbatementPotential(AeromapsModel):
         )
 
         h2_coal_avoided_emissions_factor = (
-            kerosene_emission_factor / hydrogen_replacement_ratio - hydrogen_coal_emission_factor
+            kerosene_emission_factor  - hydrogen_coal_emission_factor
         )
 
         abatement_effective_hydrogen_coal = (
@@ -281,7 +279,7 @@ class BiofuelAbatementPotential(AeromapsModel):
         )
 
         h2_coal_ccs_avoided_emissions_factor = (
-            kerosene_emission_factor / hydrogen_replacement_ratio
+            kerosene_emission_factor
             - hydrogen_coal_ccs_emission_factor
         )
 
@@ -294,7 +292,7 @@ class BiofuelAbatementPotential(AeromapsModel):
         )
 
         h2_gas_avoided_emissions_factor = (
-            kerosene_emission_factor / hydrogen_replacement_ratio - hydrogen_gas_emission_factor
+            kerosene_emission_factor  - hydrogen_gas_emission_factor
         )
 
         abatement_effective_hydrogen_gas = (
@@ -306,7 +304,7 @@ class BiofuelAbatementPotential(AeromapsModel):
         )
 
         h2_gas_ccs_avoided_emissions_factor = (
-            kerosene_emission_factor / hydrogen_replacement_ratio - hydrogen_gas_ccs_emission_factor
+            kerosene_emission_factor  - hydrogen_gas_ccs_emission_factor
         )
 
         abatement_effective_hydrogen_gas_ccs = (
