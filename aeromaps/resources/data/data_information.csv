@@ -798,3 +798,5 @@ total_cost_per_ask_without_extra_tax;Vector;€/ASK;Total costs without new taxe
 total_extra_tax_per_ask;Vector;€/ASK;Total new taxes levied (Carbon tax + passenger tax per ask)
 total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes)
 airfare_per_ask;Vector;€/ASK;Airfare (Total costs + operational profits)
+operational_efficiency_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of operational efficiency measures
+load_factor_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of load factor measures
