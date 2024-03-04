@@ -303,7 +303,6 @@ class ScenarioEnergyExpensesPlot:
 
         self.ax.set_xlim(2020, self.years[-1])
 
-        # TODO : correct warnings
         warnings.filterwarnings("ignore")
 
         primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
@@ -1129,7 +1128,6 @@ class DiscountEffect:
 
 
 class DropInMACC:
-    # TODO do the same for LH2?
     def __init__(self, data):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]

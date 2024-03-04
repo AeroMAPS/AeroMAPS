@@ -34,14 +34,15 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
+            lhv_kerosene: float = 0.0,
+            density_kerosene: float = 0.0,
     ) -> Tuple[dict, dict]:
-        cac_aircraft_value_dict = {}
-        cav_aircraft_value_dict = {}
+        dummy_carbon_abatement_cost_aircraft_value_dict = {}
+        dummy_carbon_abatement_volume_aircraft_value_dict = {}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
 
             category_recent_reference = self.fleet_model.all_aircraft_elements[category][1]
 
-            fuel_lhv = 35.3
             if category == "Short Range":
                 category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init
                 # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
@@ -95,7 +96,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     aircraft_energy_delta_val, index=self.fleet_model.df.index
                 )
 
-                #  TODO a mettre au propre, init basée sur le même mode que le calcul de aircraft efficiency, avec une transition d'un modèle simple à un modèle complexe en 2019
+                # initialisation based on the same model transition than aircraft efficiency model, transitioning
 
                 aircraft_energy_delta[2019] = 0  # start from reference
 
@@ -105,22 +106,20 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     + category_reference_energy * covid_energy_intensity_per_ask_increase_2020 / 100
                 )
 
-                # Handling the case in which more fuel is used and more expensive to operate (which is the case if iso non-energy for instance).
-                # Value set to NaN to avoid erroneous interpretation
+                # Assumption: 100% kerosene for cost calculation. Effect of SAFs/Hydrogen is accounted for downwards in
+                # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
+                # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-                # TODO check hydrogen aircraft case!
-
-                # Assumption: 100% kerosene for cost calculation. Effect of SAFs is accounted for separately.
                 aircraft_carbon_abatement_cost = (
                     (
-                        aircraft_energy_delta * kerosene_market_price / fuel_lhv
+                        aircraft_energy_delta * kerosene_market_price / (lhv_kerosene * density_kerosene)
                         + aircraft_doc_ne_delta
                     )
                     / (-aircraft_energy_delta * kerosene_emission_factor)
                     * 1000000
-                )  # conversion to ton
+                )  # €/ton
 
-                # TODO use dictionnary if possible once implementeed
+                # TODO use input dictionary if possible once implemented instead of looking in fleet model df + dummy output
                 aircraft_pseudo_ask = (
                     self.fleet_model.df.loc[:, (aircraft_var_name + ":aircraft_rpk")]
                     / load_factor[self.prospection_start_year - 1]
@@ -153,10 +152,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     axis=1,
                 )
 
-                cac_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
-                cav_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_volume
+                dummy_carbon_abatement_cost_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
+                dummy_carbon_abatement_volume_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_volume
 
         return (
-            cac_aircraft_value_dict,
-            cav_aircraft_value_dict,
+            dummy_carbon_abatement_cost_aircraft_value_dict,
+            dummy_carbon_abatement_volume_aircraft_value_dict,
         )
