@@ -505,6 +505,8 @@ class BiofuelCost(AeromapsModel):
                     plant_eis_efficiency,
                     private_discount_rate,
                     load_factor,
+                    lhv_biofuel,
+                    density_biofuel
                 )
 
                 # Getting the production not matched by plants already commissioned [MJ]
@@ -611,6 +613,8 @@ class BiofuelCost(AeromapsModel):
         plant_eis_efficiency,
         private_discount_rate,
         load_fact,
+        lhv_biofuel,
+        density_biofuel
     ):
         """
         This function computes the MFSP for a given biofuel production pathway for a plant commissioned at the base year.
@@ -622,9 +626,6 @@ class BiofuelCost(AeromapsModel):
         Biofuel MFSP returned in €/L
         """
         biofuel_prices = {}
-
-        fuel_lhv = 35.3  # MJ/L #TODO use to standard AeroMAPS val
-        fuel_energy_density = fuel_lhv / 0.803  # MJ/kg
 
         real_year_days = 365.25 * load_fact
         real_var_opex = biofuel_eis_var_opex[base_year] * real_year_days
@@ -654,7 +655,7 @@ class BiofuelCost(AeromapsModel):
 
         for year in range(base_year + construction_time, end_bound + 1):
             feedstock_price = biomass_feedstock_cost[year]
-            feedstock_cost = feedstock_price * fuel_lhv / plant_eis_efficiency[base_year]
+            feedstock_cost = feedstock_price * lhv_biofuel * density_biofuel / plant_eis_efficiency[base_year]
             biofuel_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + feedstock_cost,
                 "CAPEX": cap_cost_lc,
