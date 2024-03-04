@@ -127,9 +127,12 @@ hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production
 kerosene_emission_factor_reference_years;List;yr;Reference years for the emission factor of fossil kerosene
 kerosene_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of fossil kerosene for the reference years
 lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
+density_biofuel;Float;kg/L;Density of biofuel
 lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
+density_electrofuel;Float;kg/L;Density of electrofuel
 lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen
 lhv_kerosene;Float;MJ/kg;Lower Heating Value of kerosene
+density_kerosene;Float;kg/L;Density of kerosene
 lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose;Statistical analysis of a literature review (see resources/energy_data)
 liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen;
 liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
