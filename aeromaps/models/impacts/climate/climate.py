@@ -20,21 +20,21 @@ class TemperatureGWPStar(AeromapsModel):
     def compute(
         self,
         contrails_gwpstar_variation_duration: float = 0.0,
-        contrails_gwpstar_alpha_coefficient: float = 0.0,
+        contrails_gwpstar_s_coefficient: float = 0.0,
         nox_short_term_o3_increase_gwpstar_variation_duration: float = 0.0,
-        nox_short_term_o3_increase_gwpstar_alpha_coefficient: float = 0.0,
+        nox_short_term_o3_increase_gwpstar_s_coefficient: float = 0.0,
         nox_long_term_o3_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_long_term_o3_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_long_term_o3_decrease_gwpstar_s_coefficient: float = 0.0,
         nox_ch4_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_ch4_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_ch4_decrease_gwpstar_s_coefficient: float = 0.0,
         nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_stratospheric_water_vapor_decrease_gwpstar_s_coefficient: float = 0.0,
         soot_gwpstar_variation_duration: float = 0.0,
-        soot_gwpstar_alpha_coefficient: float = 0.0,
+        soot_gwpstar_s_coefficient: float = 0.0,
         h2o_gwpstar_variation_duration: float = 0.0,
-        h2o_gwpstar_alpha_coefficient: float = 0.0,
+        h2o_gwpstar_s_coefficient: float = 0.0,
         sulfur_gwpstar_variation_duration: float = 0.0,
-        sulfur_gwpstar_alpha_coefficient: float = 0.0,
+        sulfur_gwpstar_s_coefficient: float = 0.0,
         contrails_erf: pd.Series = pd.Series(dtype="float64"),
         nox_short_term_o3_increase_erf: pd.Series = pd.Series(dtype="float64"),
         nox_long_term_o3_decrease_erf: pd.Series = pd.Series(dtype="float64"),
@@ -83,7 +83,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=contrails_erf,
             gwpstar_variation_duration=contrails_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=contrails_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=contrails_gwpstar_s_coefficient,
         )
         self.df_climate["contrails_equivalent_emissions"] = contrails_equivalent_emissions
 
@@ -92,7 +92,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=nox_short_term_o3_increase_erf,
             gwpstar_variation_duration=nox_short_term_o3_increase_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_short_term_o3_increase_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_short_term_o3_increase_gwpstar_s_coefficient,
         )
         self.df_climate[
             "nox_short_term_o3_increase_equivalent_emissions"
@@ -103,7 +103,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=nox_long_term_o3_decrease_erf,
             gwpstar_variation_duration=nox_long_term_o3_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_long_term_o3_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_long_term_o3_decrease_gwpstar_s_coefficient,
         )
         self.df_climate[
             "nox_long_term_o3_decrease_equivalent_emissions"
@@ -114,7 +114,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=nox_ch4_decrease_erf,
             gwpstar_variation_duration=nox_ch4_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_ch4_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_ch4_decrease_gwpstar_s_coefficient,
         )
         self.df_climate[
             "nox_ch4_decrease_equivalent_emissions"
@@ -125,7 +125,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
             gwpstar_variation_duration=nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_s_coefficient,
         )
         self.df_climate[
             "nox_stratospheric_water_vapor_decrease_equivalent_emissions"
@@ -136,7 +136,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=soot_erf,
             gwpstar_variation_duration=soot_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=soot_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=soot_gwpstar_s_coefficient,
         )
         self.df_climate["soot_equivalent_emissions"] = soot_equivalent_emissions
 
@@ -145,7 +145,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=h2o_erf,
             gwpstar_variation_duration=h2o_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=h2o_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=h2o_gwpstar_s_coefficient,
         )
         self.df_climate["h2o_equivalent_emissions"] = h2o_equivalent_emissions
 
@@ -154,7 +154,7 @@ class TemperatureGWPStar(AeromapsModel):
             self,
             emissions_erf=sulfur_erf,
             gwpstar_variation_duration=sulfur_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=sulfur_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=sulfur_gwpstar_s_coefficient,
         )
         self.df_climate["sulfur_equivalent_emissions"] = sulfur_equivalent_emissions
 
@@ -781,11 +781,11 @@ class TemperatureFair(AeromapsModel):
         sulfur_emissions: pd.Series = pd.Series(dtype="float64"),
         soot_emissions: pd.Series = pd.Series(dtype="float64"),
         nox_long_term_o3_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_long_term_o3_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_long_term_o3_decrease_gwpstar_s_coefficient: float = 0.0,
         nox_ch4_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_ch4_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_ch4_decrease_gwpstar_s_coefficient: float = 0.0,
         nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration: float = 0.0,
-        nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient: float = 0.0,
+        nox_stratospheric_water_vapor_decrease_gwpstar_s_coefficient: float = 0.0,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -830,7 +830,7 @@ class TemperatureFair(AeromapsModel):
             self,
             emissions_erf=nox_long_term_o3_decrease_erf,
             gwpstar_variation_duration=nox_long_term_o3_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_long_term_o3_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_long_term_o3_decrease_gwpstar_s_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[2][k - 1765] = (
@@ -843,7 +843,7 @@ class TemperatureFair(AeromapsModel):
             self,
             emissions_erf=nox_ch4_decrease_erf,
             gwpstar_variation_duration=nox_ch4_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_ch4_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_ch4_decrease_gwpstar_s_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[3][k - 1765] = (
@@ -856,7 +856,7 @@ class TemperatureFair(AeromapsModel):
             self,
             emissions_erf=nox_stratospheric_water_vapor_decrease_erf,
             gwpstar_variation_duration=nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration,
-            gwpstar_alpha_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_alpha_coefficient,
+            gwpstar_s_coefficient=nox_stratospheric_water_vapor_decrease_gwpstar_s_coefficient,
         )
         for k in range(self.climate_historic_start_year, self.end_year + 1):
             species_quantities[4][k - 1765] = (
