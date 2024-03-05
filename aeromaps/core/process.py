@@ -16,7 +16,7 @@ from aeromaps.core.gemseo import AeromapsModelWrapper
 from aeromaps.core.models import models_simple
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
-from aeromaps.plots import available_plots
+from aeromaps.plots import available_plots, available_plots_fleet
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
     FleetModel,
@@ -183,14 +183,17 @@ class create_process(object):
         return self.data["float_inputs"]
 
     def plot(self, name, save=False):
-
-        if name in available_plots:
+        if name in available_plots_fleet:
+            fig = available_plots_fleet[name](self.data, self.fleet_model)
+            if save:
+                fig.fig.savefig(f"{name}.pdf")
+        elif name in available_plots:
             fig = available_plots[name](self.data)
             if save:
                 fig.fig.savefig(f"{name}.pdf")
         else:
             raise NameError(
-                f"Plot {name} is not available. List of available plots: {list(available_plots.keys())}"
+                f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
 
