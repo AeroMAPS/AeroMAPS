@@ -1,3 +1,4 @@
+from typing import Tuple
 import pandas as pd
 from pandas import read_csv
 import os.path as pth
@@ -18,9 +19,13 @@ class TotalAircraftDistance(AeromapsModel):
 
     def compute(
         self,
-        rpk: pd.Series = pd.Series(dtype="float64"),
+        rtk: pd.Series = pd.Series(dtype="float64"),
+        ask: pd.Series = pd.Series(dtype="float64"),
+        ask_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
+        ask_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        ask_electric: pd.Series = pd.Series(dtype="float64"),
         total_aircraft_distance_init: pd.Series = pd.Series(dtype="float64"),
-    ) -> pd.Series:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Total aircraft distance calculation."""
 
         historical_distance_for_temperature = self.historical_dataset[:, 6]
@@ -33,13 +38,30 @@ class TotalAircraftDistance(AeromapsModel):
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df_climate.loc[k, "total_aircraft_distance"] = total_aircraft_distance_init.loc[k]
 
+        # Assumption: 1 RTK = 10 ASK
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df_climate.loc[k, "total_aircraft_distance"] = (
-                rpk.loc[k]
-                / rpk.loc[self.prospection_start_year - 1]
+                (ask.loc[k] + 10 * rtk.loc[k])
+                / (
+                    ask.loc[self.prospection_start_year - 1]
+                    + 10 * rtk.loc[self.prospection_start_year - 1]
+                )
                 * self.df_climate.loc[self.prospection_start_year - 1, "total_aircraft_distance"]
             )
 
         total_aircraft_distance = self.df_climate["total_aircraft_distance"]
 
-        return total_aircraft_distance
+        # Assumption: distribution proportional to ASK
+        total_aircraft_distance_dropin_fuel = total_aircraft_distance * ask_dropin_fuel / ask
+        total_aircraft_distance_hydrogen = total_aircraft_distance * ask_hydrogen / ask
+        total_aircraft_distance_electric = total_aircraft_distance * ask_electric / ask
+        self.df.loc[:, "total_aircraft_distance_dropin_fuel"] = total_aircraft_distance_dropin_fuel
+        self.df.loc[:, "total_aircraft_distance_hydrogen"] = total_aircraft_distance_hydrogen
+        self.df.loc[:, "total_aircraft_distance_electric"] = total_aircraft_distance_electric
+
+        return (
+            total_aircraft_distance,
+            total_aircraft_distance_dropin_fuel,
+            total_aircraft_distance_hydrogen,
+            total_aircraft_distance_electric,
+        )

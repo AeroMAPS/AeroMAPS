@@ -193,7 +193,7 @@ class AvailableSeatKilometerPlot:
 
 class TotalAircraftDistancePlot:
     def __init__(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
@@ -207,7 +207,7 @@ class TotalAircraftDistancePlot:
     def create_plot(self):
         self.ax.plot(
             self.historic_years,
-            self.df.loc[self.historic_years, "total_aircraft_distance"] / 10**9,
+            self.df_climate.loc[self.historic_years, "total_aircraft_distance"] / 10**9,
             color="black",
             linestyle="-",
             label="History",
@@ -216,7 +216,7 @@ class TotalAircraftDistancePlot:
 
         (self.line_total_aircraft_distance,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "total_aircraft_distance"] / 10**9,
+            self.df_climate.loc[self.prospective_years, "total_aircraft_distance"] / 10**9,
             color="blue",
             linestyle="-",
             label="Projections",
@@ -238,14 +238,14 @@ class TotalAircraftDistancePlot:
         self.fig.tight_layout()
 
     def update(self, data):
-        self.df = data["vector_outputs"]
+        self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_total_aircraft_distance.set_ydata(
-            self.df.loc[self.prospective_years, "total_aircraft_distance"] / 10**9
+            self.df_climate.loc[self.prospective_years, "total_aircraft_distance"] / 10**9
         )
 
         for collection in self.ax.collections:

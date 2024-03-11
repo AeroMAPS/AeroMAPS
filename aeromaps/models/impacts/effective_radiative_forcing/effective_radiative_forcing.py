@@ -1,5 +1,6 @@
 from typing import Tuple
 import pandas as pd
+import numpy as np
 
 from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
 
@@ -25,6 +26,7 @@ class ERF(AeromapsModel):
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
+        fuel_effect_correction_contrails: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -68,6 +70,7 @@ class ERF(AeromapsModel):
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
+                * fuel_effect_correction_contrails.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 
@@ -150,6 +153,7 @@ class ERFSimplifiedNox(AeromapsModel):
         erf_coefficient_sulfur: float = 0.0,
         total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
         operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
+        fuel_effect_correction_contrails: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -180,15 +184,16 @@ class ERFSimplifiedNox(AeromapsModel):
         co2_erf = self.df_climate["co2_erf"]
 
         # Contrails
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
+        for k in range(self.climate_historic_start_year, self.prospection_start_year):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
             )
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.prospection_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails
                 * (1 - operations_contrails_gain.loc[k] / 100)
+                * fuel_effect_correction_contrails.loc[k]
             )
         contrails_erf = self.df_climate["contrails_erf"]
 

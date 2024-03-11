@@ -47,6 +47,7 @@ from .climate import (
     CumulativeEquivalentEmissionsPlot,
     EquivalentEmissionsRatioPlot,
     TemperatureIncreaseFromAirTransportPlot,
+    DetailedTemperatureIncreaseFromAirTransportPlot,
 )
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
@@ -73,6 +74,7 @@ available_plots = {
     "electricity_resource_budget_assessment": ElectricityResourceBudgetAssessmentPlot,
     "multidisciplinary_assessment": MultidisciplinaryAssessmentPlot,
     "temperature_increase_from_air_transport": TemperatureIncreaseFromAirTransportPlot,
+    "detailed_temperature_increase_from_air_transport": DetailedTemperatureIncreaseFromAirTransportPlot,
     "biomass_consumption": BiomassConsumptionPlot,
     "electricity_consumption": ElectricityConsumptionPlot,
     "co2_per_rpk": MeanCO2PerRPKPlot,
