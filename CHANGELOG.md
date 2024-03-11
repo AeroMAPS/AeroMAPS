@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.6.1-beta
+
+Changed:
+- Provide the ability to vary annual efficiency gains in the top-down models. (#56)
+- Add electric and hybrid-electric aircraft. (#57)
+- Add new climate models using FaIR. (#60)
+
+Fixed:
+- Correct graphical user interface. (#59)
+- Correct some errors for plots. (#62)
+
 ## Version 0.6.0-beta
 
 Changed:
