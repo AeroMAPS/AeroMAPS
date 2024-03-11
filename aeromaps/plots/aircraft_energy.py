@@ -120,7 +120,7 @@ class EmissionFactorPerFuelPlot:
             linewidth=2,
         )
 
-        (self.line_kerosene_emission_factor,) = self.ax.plot(
+        (self.line_electricity_emission_factor,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "electricity_emission_factor"] / 3.6,
             color="purple",
@@ -135,8 +135,7 @@ class EmissionFactorPerFuelPlot:
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
-
+        self.ax.set_xlim(self.prospective_years[0]+1, self.prospective_years[-1])
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         # self.fig.canvas.layout.width = "auto"
@@ -164,6 +163,10 @@ class EmissionFactorPerFuelPlot:
 
         self.line_kerosene_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "kerosene_emission_factor"]
+        )
+
+        self.line_electricity_emission_factor.set_ydata(
+            self.df.loc[self.prospective_years, "electricity_emission_factor"] / 3.6
         )
 
         for collection in self.ax.collections:
