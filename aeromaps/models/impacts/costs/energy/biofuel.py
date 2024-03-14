@@ -496,6 +496,7 @@ class BiofuelCost(AeromapsModel):
                 # Getting the production not matched by plants already commissioned
                 # by creating plants with actual year data technical data
                 biofuel_cost = BiofuelCost._compute_pathway_year_mfsp(
+                    self,
                     int(construction_time),
                     int(plant_lifespan),
                     year - construction_time,
@@ -511,6 +512,8 @@ class BiofuelCost(AeromapsModel):
 
                 # Getting the production not matched by plants already commissioned [MJ]
                 missing_production = demand_scenario[year + 1] - biofuel_production[year + 1]
+
+
 
                 # Converting the missing production to a capacity [in kg/day capacity], including availability of plant
                 missing_production_kg = missing_production / lhv_biofuel
@@ -550,6 +553,8 @@ class BiofuelCost(AeromapsModel):
                         + (missing_production_litres * biofuel_cost[i]["FEEDSTOCK"]) / 1e6
                     )  # M€
                     biofuel_production[i] = biofuel_production[i] + missing_production
+
+                print(year, biofuel_total_cost, biofuel_cost)
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -602,8 +607,9 @@ class BiofuelCost(AeromapsModel):
             mfsp_supplement_carbon_tax,
         )
 
-    @staticmethod
+
     def _compute_pathway_year_mfsp(
+        self,
         construction_time,
         plant_lifespan,
         base_year,
@@ -627,9 +633,11 @@ class BiofuelCost(AeromapsModel):
         """
         biofuel_prices = {}
 
-        real_year_days = 365.25 * load_fact
-        real_var_opex = biofuel_eis_var_opex[base_year] * real_year_days
+        #modification to base year not to use undefined technology costs => either base year or start of prospection year
+        technology_year=max(base_year, self.prospection_start_year)
 
+        real_year_days = 365.25 * load_fact
+        real_var_opex = biofuel_eis_var_opex[technology_year] * real_year_days
         cap_cost_npv = 0
         var_op_cost_npv = 0
         biofuel_npv = 0
@@ -637,7 +645,7 @@ class BiofuelCost(AeromapsModel):
         # Construction of the facility
         for i in range(0, construction_time):
             # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (biofuel_eis_capex[base_year] * 0.803 / construction_time) / (
+            cap_cost_npv += (biofuel_eis_capex[technology_year] * 0.803 / construction_time) / (
                 1 + private_discount_rate
             ) ** i
 
@@ -655,7 +663,7 @@ class BiofuelCost(AeromapsModel):
 
         for year in range(base_year + construction_time, end_bound + 1):
             feedstock_price = biomass_feedstock_cost[year]
-            feedstock_cost = feedstock_price * lhv_biofuel * density_biofuel / plant_eis_efficiency[base_year]
+            feedstock_cost = feedstock_price * lhv_biofuel * density_biofuel / plant_eis_efficiency[technology_year]
             biofuel_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + feedstock_cost,
                 "CAPEX": cap_cost_lc,
