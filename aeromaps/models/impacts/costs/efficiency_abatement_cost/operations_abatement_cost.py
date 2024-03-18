@@ -71,6 +71,7 @@ class OperationsAbatementCost(AeromapsModel):
                 extra_cost_operations_non_fuel,
                 extra_cost_operations_fuel,
                 kerosene_market_price,
+                kerosene_emission_factor,
                 emissions_reduction_operations,
             )
 
@@ -107,12 +108,11 @@ class OperationsAbatementCost(AeromapsModel):
                 extra_cost_load_factor_non_fuel,
                 extra_cost_load_factor_fuel,
                 kerosene_market_price,
+                kerosene_emission_factor,
                 emissions_reduction_load_factor,
             )
 
         load_factor_specific_abatement_cost = self.df["load_factor_specific_abatement_cost"]
-
-        print(load_factor_abatement_cost, load_factor_specific_abatement_cost)
 
         return (
             operations_abatement_cost,
@@ -125,22 +125,23 @@ class OperationsAbatementCost(AeromapsModel):
         self,
         year,
         discount_rate,
-        operations_duration,
+        measure_duration,
         extra_cost_non_fuel,
         extra_cost_fuel,
         kerosene_market_price,
+        kerosene_emission_factor,
         emissions_reduction,
     ):
 
         discounted_cumul_cost = 0
         cumul_em = 0
-        for i in range(year, year + int(operations_duration)):
+        for i in range(year, year + int(measure_duration)):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
                     + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year]
+                cumul_em += emissions_reduction[year] * kerosene_emission_factor[i] / kerosene_emission_factor[year]
             else:
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
@@ -148,6 +149,6 @@ class OperationsAbatementCost(AeromapsModel):
                     * kerosene_market_price[self.end_year]
                     / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year]
+                cumul_em += emissions_reduction[year] * kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year]
 
         return discounted_cumul_cost / cumul_em
