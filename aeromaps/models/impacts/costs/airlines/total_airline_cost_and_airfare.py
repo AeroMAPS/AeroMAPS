@@ -23,8 +23,8 @@ class PassengerAircraftTotalCostAirfare(AeromapsModel):
         indirect_operating_cost_per_ask: pd.Series = pd.Series(dtype="float64"),
         passenger_tax_per_ask: pd.Series = pd.Series(dtype="float64"),
         operational_profit_per_ask: pd.Series = pd.Series(dtype="float64"),
-        operational_efficiency_cost_non_energy_per_ask:  pd.Series = pd.Series(dtype="float64"),
-        load_factor_cost_non_energy_per_ask:  pd.Series = pd.Series(dtype="float64"),
+        operational_efficiency_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
+        load_factor_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series,]:
         # Cost without any tax
         total_cost_per_ask_without_extra_tax = (

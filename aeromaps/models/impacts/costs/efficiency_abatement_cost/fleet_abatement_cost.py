@@ -34,8 +34,8 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
-            lhv_kerosene: float = 0.0,
-            density_kerosene: float = 0.0,
+        lhv_kerosene: float = 0.0,
+        density_kerosene: float = 0.0,
     ) -> Tuple[dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
@@ -112,7 +112,9 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 aircraft_carbon_abatement_cost = (
                     (
-                        aircraft_energy_delta * kerosene_market_price / (lhv_kerosene * density_kerosene)
+                        aircraft_energy_delta
+                        * kerosene_market_price
+                        / (lhv_kerosene * density_kerosene)
                         + aircraft_doc_ne_delta
                     )
                     / (-aircraft_energy_delta * kerosene_emission_factor)
@@ -152,8 +154,12 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     axis=1,
                 )
 
-                dummy_carbon_abatement_cost_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_cost
-                dummy_carbon_abatement_volume_aircraft_value_dict[aircraft_var_name] = aircraft_carbon_abatement_volume
+                dummy_carbon_abatement_cost_aircraft_value_dict[
+                    aircraft_var_name
+                ] = aircraft_carbon_abatement_cost
+                dummy_carbon_abatement_volume_aircraft_value_dict[
+                    aircraft_var_name
+                ] = aircraft_carbon_abatement_volume
 
         return (
             dummy_carbon_abatement_cost_aircraft_value_dict,
