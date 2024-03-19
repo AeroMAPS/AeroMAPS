@@ -237,6 +237,10 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_load_factor,
             hydrogen_gas_emission_factor,
             0,
+            plant_lifespan,
+        private_discount_rate,
+        social_discount_rate,
+        lhv_hydrogen,
         )
 
         self.df.loc[:, "gas_plant_building_scenario"] = gas_plant_building_scenario
@@ -269,6 +273,10 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_ccs_load_factor,
             hydrogen_coal_ccs_emission_factor,
             coal_ccs_ccs_efficiency,
+            plant_lifespan,
+        private_discount_rate,
+        social_discount_rate,
+        lhv_hydrogen,
         )
 
         self.df.loc[:, "coal_ccs_plant_building_scenario"] = coal_ccs_plant_building_scenario
@@ -302,6 +310,10 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_load_factor,
             hydrogen_coal_emission_factor,
             0,
+            plant_lifespan,
+        private_discount_rate,
+        social_discount_rate,
+        lhv_hydrogen,
         )
 
         self.df.loc[:, "coal_plant_building_scenario"] = coal_plant_building_scenario
@@ -326,6 +338,10 @@ class LiquidHydrogenCost(AeromapsModel):
             liquefaction_efficiency,
             electricity_market_price,
             energy_consumption_hydrogen,
+            plant_lifespan,
+            private_discount_rate,
+            social_discount_rate,
+            lhv_hydrogen,
         )
 
         self.df.loc[
@@ -935,7 +951,7 @@ class LiquidHydrogenCost(AeromapsModel):
         # Annual production in tons
         hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
 
-        specific_discounted_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
         h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
@@ -1011,7 +1027,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
-            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]):
+            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]>0):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
@@ -1167,7 +1183,7 @@ class LiquidHydrogenCost(AeromapsModel):
         # Annual production in tons
         hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
 
-        specific_discounted_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
         h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
@@ -1250,8 +1266,9 @@ class LiquidHydrogenCost(AeromapsModel):
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
-            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]):
+            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1] >0):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
+
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -1393,7 +1410,7 @@ class LiquidHydrogenCost(AeromapsModel):
         # Annual production in tons
         hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
 
-        specific_discounted_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
         h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
@@ -1467,7 +1484,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
-            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]):
+            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]>0):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
@@ -1567,7 +1584,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         indexes = kerosene_market_price.index
 
-        specific_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        specific_cost = pd.Series(np.nan, indexes)
 
         for year in list(kerosene_market_price.index):
 
@@ -1599,7 +1616,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         indexes = avoided_emission_factor.index
 
-        specific_em = pd.Series(np.zeros(len(indexes)), indexes)
+        specific_em = pd.Series(np.nan, indexes)
 
         for year in list(avoided_emission_factor.index):
             cumul_em = 0
