@@ -143,7 +143,7 @@ class LiquidHydrogenCost(AeromapsModel):
             electrolysis_h2_capex_cost,
             electrolysis_h2_opex_cost,
             electrolysis_h2_elec_cost,
-        ) = self.electrolysis_computation(
+        ) = self._electrolysis_computation(
             electrolysis_h2_eis_capex,
             electrolysis_h2_eis_fixed_opex,
             electrolysis_h2_eis_var_opex,
@@ -783,8 +783,9 @@ class LiquidHydrogenCost(AeromapsModel):
             h2_avg_carbon_tax_per_kg,
         )
 
-    @staticmethod
-    def electrolysis_computation(
+
+    def _electrolysis_computation(
+        self,
         electrolysis_h2_eis_capex: pd.Series = pd.Series(dtype="float64"),
         electrolysis_h2_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
         electrolysis_h2_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
@@ -793,6 +794,10 @@ class LiquidHydrogenCost(AeromapsModel):
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
         pathway_share: pd.Series = pd.Series(dtype="float64"),
         electricity_load_factor: float = 0.0,
+        plant_lifespan: float = 0.0,
+        private_discount_rate: float = 0.0,
+        social_discount_rate: float = 0.0,
+        lhv_hydrogen: float = 0.0,
     ):
         """
         Computes the yearly costs to respect a given hydrogen electrolysis production scenario.
@@ -804,10 +809,10 @@ class LiquidHydrogenCost(AeromapsModel):
         Energy_consumption_hydrogen in MJ.
         Values returned are in M€ or t/day
         """
+        construction_time = 3
         # Convert hydrogen demand from MJ to tons.
 
         demand_scenario = energy_consumption_hydrogen / 119.93 / 1000 * pathway_share / 100
-        plant_life = 30
 
         # Catching the indexes from the demand scenario
         indexes = demand_scenario.index
@@ -819,6 +824,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # Annual production in tons
         hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
 
+        specific_discounted_cost = pd.Series(np.zeros(len(indexes)), indexes)
+
         # Annual cost and cost components of hydrogen production in M€
         h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
         h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
@@ -826,20 +833,23 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_elec_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         # For each year of the demand scenario the demand is matched by the production
-        for year in list(demand_scenario.index)[:-1]:
+        for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant build in year n
-
-            if hydrogen_production[year + 1] < demand_scenario[year + 1]:
+            if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[year+1]:
 
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
-                hydrogen_cost = LiquidHydrogenCost.compute_electrolyser_year_lcoh(
-                    year,
+                hydrogen_cost = self._compute_electrolyser_year_lcoh(
+                    int(construction_time),
+                    int(plant_lifespan),
+                    year - construction_time,
                     electricity_market_price,
                     electricity_load_factor,
                     electrolysis_h2_eis_capex,
                     electrolysis_h2_eis_fixed_opex,
                     electrolysis_h2_eis_var_opex,
                     electrolysis_efficiency,
+                    private_discount_rate,
+                    lhv_hydrogen,
                 )
 
                 # Getting the production not matched by plants already commissioned
@@ -859,8 +869,9 @@ class LiquidHydrogenCost(AeromapsModel):
                 ] = electrolyser_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;
-                end_bound = min(list(demand_scenario.index)[-1], year + plant_life)
+                end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
 
+                discounted_cumul_cost = 0
                 # Adding new plant production to future years
                 for i in range(year + 1, end_bound + 1):
                     h2_total_cost[i] = (
@@ -879,6 +890,19 @@ class LiquidHydrogenCost(AeromapsModel):
                         + (missing_production * hydrogen_cost[i]["ELECTRICITY"]) / 1000
                     )  # M€
                     hydrogen_production[i] = hydrogen_production[i] + missing_production
+
+                for i in range(year, year + int(plant_lifespan)):
+                    if i < (self.end_year + 1):
+                        discounted_cumul_cost += (hydrogen_cost[i]["TOTAL"]) / (1 + social_discount_rate) ** (i - year)
+                    else:
+                        discounted_cumul_cost += (hydrogen_cost[self.end_year]["TOTAL"]) / (
+                                    1 + social_discount_rate) ** (i - year)
+
+                specific_discounted_cost[year] = discounted_cumul_cost
+
+            elif (year == self.end_year) or (hydrogen_production[year + 1] >= demand_scenario[year + 1]) :
+                specific_discounted_cost[year] = specific_discounted_cost[year-1]
+
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -902,8 +926,10 @@ class LiquidHydrogenCost(AeromapsModel):
             h2_elec_cost,
         )
 
-    @staticmethod
-    def compute_electrolyser_year_lcoh(
+    def _compute_electrolyser_year_lcoh(
+        self,
+        construction_time,
+        plant_lifespan,
         base_year,
         electricity_market_price,
         electricity_load_factor,
@@ -911,6 +937,8 @@ class LiquidHydrogenCost(AeromapsModel):
         electrolyser_fixed_opex,
         electrolyser_var_opex,
         plant_efficiency,
+        private_discount_rate,
+        lhv_hydrogen,
     ):
         """
         This function computes the MFSP for hydrogen production for an electrolyser commissioned at the base year.
@@ -925,18 +953,21 @@ class LiquidHydrogenCost(AeromapsModel):
         Hydrogen price returned in €/kg
         """
 
-        operational_time = 30
         hydrogen_prices = {}
-        construction_time = 3
 
-        hydrogen_specific_energy = 119.93 / 3.6  # kWh/kg
+        # modification to base year not to use undefined technology costs => either base year or start of prospection year
+        technology_year = max(base_year, self.prospection_start_year)
+
+        hydrogen_specific_energy = lhv_hydrogen / 3.6  # convert MJ per kg in kWh/kg
+
         # compute plant specific energy #kWh energy/kg h2
+        # Average efficiency evolves with scenario, used for consistency but potentially introduces errors.
+        # Plants comissioned in year n are likely to stay with a frozen EIS efficiency.
         electrolyser_specific_electricity = hydrogen_specific_energy / plant_efficiency
 
-        discount = 0.10
         load_fact = min(0.95, electricity_load_factor)
         real_year_days = 365.25 * load_fact
-        real_var_opex = electrolyser_var_opex[base_year] * real_year_days
+        real_var_opex = electrolyser_var_opex[technology_year] * real_year_days
 
         cap_cost_npv = 0
         fix_op_cost_npv = 0
@@ -946,25 +977,25 @@ class LiquidHydrogenCost(AeromapsModel):
         # Construction
         for i in range(0, construction_time):
             # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (electrolyser_capex[base_year] / construction_time) / (
-                1 + discount
+            cap_cost_npv += (electrolyser_capex[technology_year] / construction_time) / (
+                1 + private_discount_rate
             ) ** (i)
 
         # commissioning
-        for i in range(construction_time, operational_time + construction_time):
-            fix_op_cost_npv += electrolyser_fixed_opex[base_year] / (1 + discount) ** (i)
-            var_op_cost_npv += real_var_opex / (1 + discount) ** (i)
-            hydrogen_npv += real_year_days / (1 + discount) ** (i)
+        for i in range(construction_time, plant_lifespan + construction_time):
+            fix_op_cost_npv += electrolyser_fixed_opex[technology_year] / (1 + private_discount_rate) ** (i)
+            var_op_cost_npv += real_var_opex / (1 + private_discount_rate) ** (i)
+            hydrogen_npv += real_year_days / (1 + private_discount_rate) ** (i)
 
         cap_cost_lc = cap_cost_npv / hydrogen_npv
         fix_op_cost_lc = fix_op_cost_npv / hydrogen_npv
         var_op_cost_lc = var_op_cost_npv / hydrogen_npv
 
-        end_bound = min(max(electricity_market_price.index), base_year + operational_time)
+        end_bound = min(max(electricity_market_price.index), base_year + construction_time + plant_lifespan)
 
         for year in range(base_year, end_bound + 1):
             elec_price = electricity_market_price[year]
-            elec_cost = elec_price * electrolyser_specific_electricity[base_year]
+            elec_cost = elec_price * electrolyser_specific_electricity[technology_year]
             hydrogen_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + elec_cost,
                 "CAPEX": cap_cost_lc,
