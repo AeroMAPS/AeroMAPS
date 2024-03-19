@@ -520,9 +520,9 @@ class BiofuelCost(AeromapsModel):
         mfsp_supplement_carbon_tax = pd.Series(np.zeros(len(indexes)), indexes)
 
         # For each year of the demand scenario the demand is matched by the production
-        for year in list(demand_scenario.index)[:-1]:
+        for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant built in year n
-            if biofuel_production[year + 1] < demand_scenario[year + 1]:
+            if (year + 1) <= self.end_year and biofuel_production[year + 1] < demand_scenario[year + 1]:
                 # Getting the production not matched by plants already commissioned
                 # by creating plants with actual year data technical data
                 biofuel_cost = BiofuelCost._compute_pathway_year_mfsp(
@@ -596,6 +596,11 @@ class BiofuelCost(AeromapsModel):
                         cumul_em += avoided_emission_factor[self.end_year] * (lhv_biofuel * density_biofuel) / 1000000
 
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost/cumul_em
+
+            elif (year == self.end_year) or (biofuel_production[year + 1] >= demand_scenario[year + 1]) :
+                specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year-1]
+
+
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
