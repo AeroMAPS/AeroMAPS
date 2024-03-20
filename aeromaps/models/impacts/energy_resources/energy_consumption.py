@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeromapsModel
@@ -595,8 +594,141 @@ class HydrogenConsumption(AeromapsModel):
         )
 
 
+class ElectricConsumption(AeromapsModel):
+    def __init__(self, name="electric_consumption", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        rtk_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_short_range_electric: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_per_ask_without_operations_medium_range_electric: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_per_ask_without_operations_long_range_electric: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_per_rtk_without_operations_freight_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_rtk_freight_electric: pd.Series = pd.Series(dtype="float64"),
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        """Hydrogen consumption calculation."""
+
+        # WITHOUT OPERATIONS
+        energy_consumption_short_range_electric_without_operations = (
+            energy_per_ask_without_operations_short_range_electric * ask_short_range_electric
+        )
+        energy_consumption_medium_range_electric_without_operations = (
+            energy_per_ask_without_operations_medium_range_electric * ask_medium_range_electric
+        )
+        energy_consumption_long_range_electric_without_operations = (
+            energy_per_ask_without_operations_long_range_electric * ask_long_range_electric
+        )
+        energy_consumption_passenger_electric_without_operations = (
+            energy_consumption_short_range_electric_without_operations
+            + energy_consumption_medium_range_electric_without_operations
+            + energy_consumption_long_range_electric_without_operations
+        )
+        energy_consumption_freight_electric_without_operations = (
+            energy_per_rtk_without_operations_freight_electric * rtk_electric
+        )
+        energy_consumption_electric_without_operations = (
+            energy_consumption_passenger_electric_without_operations
+            + energy_consumption_freight_electric_without_operations
+        )
+
+        self.df.loc[
+            :, "energy_consumption_short_range_electric_without_operations"
+        ] = energy_consumption_short_range_electric_without_operations
+        self.df.loc[
+            :, "energy_consumption_medium_range_electric_without_operations"
+        ] = energy_consumption_medium_range_electric_without_operations
+        self.df.loc[
+            :, "energy_consumption_long_range_electric_without_operations"
+        ] = energy_consumption_long_range_electric_without_operations
+        self.df.loc[
+            :, "energy_consumption_passenger_electric_without_operations"
+        ] = energy_consumption_passenger_electric_without_operations
+        self.df.loc[
+            :, "energy_consumption_freight_electric_without_operations"
+        ] = energy_consumption_freight_electric_without_operations
+        self.df.loc[
+            :, "energy_consumption_electric_without_operations"
+        ] = energy_consumption_electric_without_operations
+
+        # WITH OPERATIONS
+        energy_consumption_short_range_electric = (
+            energy_per_ask_short_range_electric * ask_short_range_electric
+        )
+        energy_consumption_medium_range_electric = (
+            energy_per_ask_medium_range_electric * ask_medium_range_electric
+        )
+        energy_consumption_long_range_electric = (
+            energy_per_ask_long_range_electric * ask_long_range_electric
+        )
+        energy_consumption_passenger_electric = (
+            energy_consumption_short_range_electric
+            + energy_consumption_medium_range_electric
+            + energy_consumption_long_range_electric
+        )
+        energy_consumption_freight_electric = energy_per_rtk_freight_electric * rtk_electric
+        energy_consumption_electric = (
+            energy_consumption_passenger_electric + energy_consumption_freight_electric
+        )
+
+        self.df.loc[
+            :, "energy_consumption_short_range_electric"
+        ] = energy_consumption_short_range_electric
+        self.df.loc[
+            :, "energy_consumption_medium_range_electric"
+        ] = energy_consumption_medium_range_electric
+        self.df.loc[
+            :, "energy_consumption_long_range_electric"
+        ] = energy_consumption_long_range_electric
+        self.df.loc[
+            :, "energy_consumption_passenger_electric"
+        ] = energy_consumption_passenger_electric
+        self.df.loc[:, "energy_consumption_freight_electric"] = energy_consumption_freight_electric
+        self.df.loc[:, "energy_consumption_electric"] = energy_consumption_electric
+
+        return (
+            energy_consumption_short_range_electric_without_operations,
+            energy_consumption_medium_range_electric_without_operations,
+            energy_consumption_long_range_electric_without_operations,
+            energy_consumption_passenger_electric_without_operations,
+            energy_consumption_freight_electric_without_operations,
+            energy_consumption_electric_without_operations,
+            energy_consumption_short_range_electric,
+            energy_consumption_medium_range_electric,
+            energy_consumption_long_range_electric,
+            energy_consumption_passenger_electric,
+            energy_consumption_freight_electric,
+            energy_consumption_electric,
+        )
+
+
 class EnergyConsumption(AeromapsModel):
-    def __init__(self, name="hydrogen_consumption", *args, **kwargs):
+    def __init__(self, name="energy_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
@@ -661,10 +793,26 @@ class EnergyConsumption(AeromapsModel):
         energy_consumption_freight_hydrogen_without_operations: pd.Series = pd.Series(
             dtype="float64"
         ),
+        energy_consumption_short_range_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_consumption_medium_range_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_consumption_long_range_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_consumption_passenger_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
+        energy_consumption_freight_electric_without_operations: pd.Series = pd.Series(
+            dtype="float64"
+        ),
         energy_consumption_biofuel_without_operations: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_electrofuel_without_operations: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_kerosene_without_operations: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen_without_operations: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_electric_without_operations: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_short_range_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_medium_range_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_long_range_biofuel: pd.Series = pd.Series(dtype="float64"),
@@ -685,10 +833,16 @@ class EnergyConsumption(AeromapsModel):
         energy_consumption_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_passenger_hydrogen: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_passenger_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_freight_electric: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_biofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -711,36 +865,42 @@ class EnergyConsumption(AeromapsModel):
             + energy_consumption_short_range_electrofuel_without_operations
             + energy_consumption_short_range_kerosene_without_operations
             + energy_consumption_short_range_hydrogen_without_operations
+            + energy_consumption_short_range_electric_without_operations
         )
         energy_consumption_medium_range_without_operations = (
             energy_consumption_medium_range_biofuel_without_operations
             + energy_consumption_medium_range_electrofuel_without_operations
             + energy_consumption_medium_range_kerosene_without_operations
             + energy_consumption_medium_range_hydrogen_without_operations
+            + energy_consumption_medium_range_electric_without_operations
         )
         energy_consumption_long_range_without_operations = (
             energy_consumption_long_range_biofuel_without_operations
             + energy_consumption_long_range_electrofuel_without_operations
             + energy_consumption_long_range_kerosene_without_operations
             + energy_consumption_long_range_hydrogen_without_operations
+            + energy_consumption_long_range_electric_without_operations
         )
         energy_consumption_passenger_without_operations = (
             energy_consumption_passenger_biofuel_without_operations
             + energy_consumption_passenger_electrofuel_without_operations
             + energy_consumption_passenger_kerosene_without_operations
             + energy_consumption_passenger_hydrogen_without_operations
+            + energy_consumption_passenger_electric_without_operations
         )
         energy_consumption_freight_without_operations = (
             energy_consumption_freight_biofuel_without_operations
             + energy_consumption_freight_electrofuel_without_operations
             + energy_consumption_freight_kerosene_without_operations
             + energy_consumption_freight_hydrogen_without_operations
+            + energy_consumption_freight_electric_without_operations
         )
         energy_consumption_without_operations = (
             energy_consumption_biofuel_without_operations
             + energy_consumption_electrofuel_without_operations
             + energy_consumption_kerosene_without_operations
             + energy_consumption_hydrogen_without_operations
+            + energy_consumption_electric_without_operations
         )
 
         self.df.loc[
@@ -768,36 +928,42 @@ class EnergyConsumption(AeromapsModel):
             + energy_consumption_short_range_electrofuel
             + energy_consumption_short_range_kerosene
             + energy_consumption_short_range_hydrogen
+            + energy_consumption_short_range_electric
         )
         energy_consumption_medium_range = (
             energy_consumption_medium_range_biofuel
             + energy_consumption_medium_range_electrofuel
             + energy_consumption_medium_range_kerosene
             + energy_consumption_medium_range_hydrogen
+            + energy_consumption_medium_range_electric
         )
         energy_consumption_long_range = (
             energy_consumption_long_range_biofuel
             + energy_consumption_long_range_electrofuel
             + energy_consumption_long_range_kerosene
             + energy_consumption_long_range_hydrogen
+            + energy_consumption_long_range_electric
         )
         energy_consumption_passenger = (
             energy_consumption_passenger_biofuel
             + energy_consumption_passenger_electrofuel
             + energy_consumption_passenger_kerosene
             + energy_consumption_passenger_hydrogen
+            + energy_consumption_passenger_electric
         )
         energy_consumption_freight = (
             energy_consumption_freight_biofuel
             + energy_consumption_freight_electrofuel
             + energy_consumption_freight_kerosene
             + energy_consumption_freight_hydrogen
+            + energy_consumption_freight_electric
         )
         energy_consumption = (
             energy_consumption_biofuel
             + energy_consumption_electrofuel
             + energy_consumption_kerosene
             + energy_consumption_hydrogen
+            + energy_consumption_electric
         )
 
         self.df.loc[:, "energy_consumption_short_range"] = energy_consumption_short_range

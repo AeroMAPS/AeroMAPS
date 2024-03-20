@@ -29,6 +29,7 @@ from .aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelPlot,
     EnergyConsumptionPlot,
+    ShareDropinFuelPlot,
 )
 from .emissions import (
     CumulativeCO2EmissionsPlot,
@@ -46,6 +47,7 @@ from .climate import (
     CumulativeEquivalentEmissionsPlot,
     EquivalentEmissionsRatioPlot,
     TemperatureIncreaseFromAirTransportPlot,
+    DetailedTemperatureIncreaseFromAirTransportPlot,
 )
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
@@ -73,6 +75,7 @@ available_plots = {
     "electricity_resource_budget_assessment": ElectricityResourceBudgetAssessmentPlot,
     "multidisciplinary_assessment": MultidisciplinaryAssessmentPlot,
     "temperature_increase_from_air_transport": TemperatureIncreaseFromAirTransportPlot,
+    "detailed_temperature_increase_from_air_transport": DetailedTemperatureIncreaseFromAirTransportPlot,
     "biomass_consumption": BiomassConsumptionPlot,
     "electricity_consumption": ElectricityConsumptionPlot,
     "co2_per_rpk": MeanCO2PerRPKPlot,
@@ -91,6 +94,7 @@ available_plots = {
     "fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "mean_fuel_emission_factor": MeanFuelEmissionFactorPlot,
     "emission_factor_per_fuel": EmissionFactorPerFuelPlot,
+    "dropin_fuel_shares": ShareDropinFuelPlot,
     "cumulative_co2_emissions": CumulativeCO2EmissionsPlot,
     "direct_h2o_emissions": DirectH2OEmissionsPlot,
     "direct_nox_emissions": DirectNOxEmissionsPlot,
