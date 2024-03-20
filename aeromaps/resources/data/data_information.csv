@@ -555,15 +555,25 @@ biofuel_mfsp_carbon_tax_supplement_ft_others;Vector;€/L;Biofuel (FT-Others) ca
 biofuel_mfsp_carbon_tax_supplement_hefa_fog;Vector;€/L;Biofuel (HEFA-FOG) carbon tax per L evolution
 biofuel_mfsp_carbon_tax_supplement_hefa_others;Vector;€/L;Biofuel (HEFA-Others) carbon tax per L evolution
 carbon_abatement_cost_atj;Vector;€/tCO2e;Carbon abatement cost (ATJ) evolution
+specific_carbon_abatement_cost_atj;Vector;€/tCO2e;Specific carbon abatement cost (ATJ) evolution
 carbon_abatement_cost_ft_msw;Vector;€/tCO2e;Carbon abatement cost (FT-MSW) evolution
+specific_carbon_abatement_cost_ft_msw;Vector;€/tCO2e;Specific carbon abatement cost (FT-MSW) evolution
 carbon_abatement_cost_ft_others;Vector;€/tCO2e;Carbon abatement cost (FT-Others) evolution
+specific_carbon_abatement_cost_ft_others;Vector;€/tCO2e;Specific carbon abatement cost (FT-Others) evolution
 carbon_abatement_cost_h2_coal;Vector;€/tCO2e;Carbon abatement cost (H2 Coal gasification without CCS) evolution
+specific_carbon_abatement_cost_h2_coal;Vector;€/tCO2e;Specific carbon abatement cost (H2 Coal gasification without CCS) evolution
 carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Coal Gasification with CCS) evolution
+specific_carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;Specific carbon abatement cost (H2 Coal Gasification with CCS) evolution
 carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;Carbon abatement cost (H2 Electrolysis) evolution
+specific_carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;Specific carbon abatement cost (H2 Electrolysis) evolution
 carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
+specific_carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Specific carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
 carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
+specific_carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Specific carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
 carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Carbon abatement cost (HEFA-FOG) evolution
+specific_carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Specific carbon abatement cost (HEFA-FOG) evolution
 carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Carbon abatement cost (HEFA-Others) evolution
+specific_carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Specific carbon abatement cost (HEFA-Others) evolution
 carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution;
 ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants (evolution);
 abatement_potential_atj;Vector;tCO2e;Total carbon abatement potential of ATJ if allocated resource is used to 100% (evolution)
@@ -643,6 +653,7 @@ dropin_mean_mfsp;Vector;€/L;Drop-in fuel average MFSP evolution (market price 
 dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L (evolution)
 electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution);
 carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Carbon abatement cost for electrofuel (evolution)
+specific_carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Specific carbon abatement cost for electrofuel (evolution)
 electrofuel_avg_cost_per_l;Vector;€/L;Average electrofuel production cost year by year (evolution)
 electrofuel_capex_cost;Vector;M€;Annual electrofuel production cost attributable to Capex
 electrofuel_carbon_tax;Vector;M€;Annual electrofuel production cost attributable to carbon tax
@@ -800,3 +811,9 @@ total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes)
 airfare_per_ask;Vector;€/ASK;Airfare (Total costs + operational profits)
 operational_efficiency_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of operational efficiency measures
 load_factor_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of load factor measures
+operations_abatement_cost;Vector;€/tCO2;Carbon abatement cost related to Operations
+operations_abatement_effective;Vector;tCO2;Abatement related to operations
+operations_specific_abatement_cost;Vector;€/tCO2;Specific carbon abatement cost related to Operations
+load_factor_abatement_cost;Vector;€/tCO2;Carbon abatement cost related to Loaf Factor
+load_factor_abatement_effective;Vector;tCO2;Abatement related to load factor
+load_factor_specific_abatement_cost;Vector;€/tCO2;Specific carbon abatement cost related to Load Factor
