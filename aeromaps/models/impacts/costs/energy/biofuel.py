@@ -618,7 +618,7 @@ class BiofuelCost(AeromapsModel):
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
 
             elif (year == self.end_year) or (
-                biofuel_production[year + 1] >= demand_scenario[year + 1] >0
+                biofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
 
@@ -649,7 +649,9 @@ class BiofuelCost(AeromapsModel):
 
         biofuel_carbon_tax_cost = carbon_tax * emission_factor * demand_scenario / 1000000 / 1000000
 
-        mfsp_supplement_carbon_tax = carbon_tax * emission_factor * (lhv_biofuel * density_biofuel) / 1000000
+        mfsp_supplement_carbon_tax = (
+            carbon_tax * emission_factor * (lhv_biofuel * density_biofuel) / 1000000
+        )
 
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
         carbon_abatement_cost = (
@@ -711,9 +713,9 @@ class BiofuelCost(AeromapsModel):
         # Construction of the facility
         for i in range(0, construction_time):
             # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (biofuel_eis_capex[technology_year] * density_biofuel / construction_time) / (
-                1 + private_discount_rate
-            ) ** i
+            cap_cost_npv += (
+                biofuel_eis_capex[technology_year] * density_biofuel / construction_time
+            ) / (1 + private_discount_rate) ** i
 
         # Commissioning of the facility
         for i in range(construction_time, plant_lifespan + construction_time):
