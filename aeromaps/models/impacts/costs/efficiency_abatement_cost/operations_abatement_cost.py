@@ -141,7 +141,11 @@ class OperationsAbatementCost(AeromapsModel):
                     extra_cost_non_fuel[year]
                     + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year] * kerosene_emission_factor[i] / kerosene_emission_factor[year]
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[i]
+                    / kerosene_emission_factor[year]
+                )
             else:
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
@@ -149,6 +153,10 @@ class OperationsAbatementCost(AeromapsModel):
                     * kerosene_market_price[self.end_year]
                     / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year] * kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year]
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[self.end_year]
+                    / kerosene_emission_factor[year]
+                )
 
         return discounted_cumul_cost / cumul_em

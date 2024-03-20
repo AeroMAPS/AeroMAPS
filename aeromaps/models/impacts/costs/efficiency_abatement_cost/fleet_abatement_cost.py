@@ -36,14 +36,13 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
-            social_discount_rate: float = 0.0,
+        social_discount_rate: float = 0.0,
     ) -> Tuple[dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
 
             category_recent_reference = self.fleet_model.all_aircraft_elements[category][1]
-
 
             if category == "Short Range":
                 category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init
@@ -112,33 +111,40 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
                 # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-
-                extra_cost_fuel = aircraft_energy_delta* kerosene_market_price/ (lhv_kerosene * density_kerosene)
+                extra_cost_fuel = (
+                    aircraft_energy_delta
+                    * kerosene_market_price
+                    / (lhv_kerosene * density_kerosene)
+                )
 
                 extra_emissions = (-aircraft_energy_delta * kerosene_emission_factor) / 1000000
 
                 aircraft_carbon_abatement_cost = (
-                    (extra_cost_fuel+ aircraft_doc_ne_delta)
-                    / extra_emissions
-                )  # €/ton
+                    extra_cost_fuel + aircraft_doc_ne_delta
+                ) / extra_emissions  # €/ton
 
+                specific_cac_aircraft_var_name = (
+                    aircraft_var_name + ":aircraft_specific_carbon_abatement_cost"
+                )
 
-                specific_cac_aircraft_var_name = aircraft_var_name + ":aircraft_specific_carbon_abatement_cost"
-
-                scac_vals=[]
+                scac_vals = []
                 for k in range(self.prospection_start_year, self.end_year + 1):
-                    scac_vals.append(self._get_discounted_vals(
-                        k,
-                        social_discount_rate,
-                        self.fleet_model.fleet.categories[category].parameters.life,
-                        aircraft_doc_ne_delta,
-                        extra_cost_fuel,
-                        kerosene_market_price,
-                        kerosene_emission_factor,
-                        extra_emissions,
-                    ))
-                scac_column = pd.DataFrame({specific_cac_aircraft_var_name: scac_vals},
-                                          index=range(self.prospection_start_year, self.end_year + 1))
+                    scac_vals.append(
+                        self._get_discounted_vals(
+                            k,
+                            social_discount_rate,
+                            self.fleet_model.fleet.categories[category].parameters.life,
+                            aircraft_doc_ne_delta,
+                            extra_cost_fuel,
+                            kerosene_market_price,
+                            kerosene_emission_factor,
+                            extra_emissions,
+                        )
+                    )
+                scac_column = pd.DataFrame(
+                    {specific_cac_aircraft_var_name: scac_vals},
+                    index=range(self.prospection_start_year, self.end_year + 1),
+                )
 
                 self.fleet_model.df = pd.concat([self.fleet_model.df, scac_column], axis=1)
 
@@ -154,7 +160,6 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 )  # in tons
 
                 cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"
-
 
                 abatement_volume_aircraft_var_name = (
                     aircraft_var_name + ":aircraft_carbon_abatement_volume"
@@ -208,7 +213,11 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     extra_cost_non_fuel
                     + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year] * kerosene_emission_factor[i] / kerosene_emission_factor[year]
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[i]
+                    / kerosene_emission_factor[year]
+                )
             else:
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
@@ -216,6 +225,10 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     * kerosene_market_price[self.end_year]
                     / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
-                cumul_em += emissions_reduction[year] * kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year]
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[self.end_year]
+                    / kerosene_emission_factor[year]
+                )
 
         return discounted_cumul_cost / cumul_em

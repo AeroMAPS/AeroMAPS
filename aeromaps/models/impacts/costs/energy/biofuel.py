@@ -154,7 +154,9 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, "plant_building_scenario_hefa_fog"] = plant_building_scenario_hefa_fog
         self.df.loc[:, "plant_building_cost_hefa_fog"] = plant_building_cost_hefa_fog
         self.df.loc[:, "carbon_abatement_cost_hefa_fog"] = carbon_abatement_cost_hefa_fog
-        self.df.loc[:, "specific_carbon_abatement_cost_hefa_fog"] = specific_carbon_abatement_cost_hefa_fog
+        self.df.loc[
+            :, "specific_carbon_abatement_cost_hefa_fog"
+        ] = specific_carbon_abatement_cost_hefa_fog
         self.df.loc[:, "biofuel_cost_hefa_fog"] = biofuel_cost_hefa_fog
         self.df.loc[:, "biofuel_capex_cost_hefa_fog"] = biofuel_capex_cost_hefa_fog
         self.df.loc[:, "biofuel_var_opex_cost_hefa_fog"] = biofuel_var_opex_cost_hefa_fog
@@ -203,7 +205,9 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, "plant_building_scenario_hefa_others"] = plant_building_scenario_hefa_others
         self.df.loc[:, "plant_building_cost_hefa_others"] = plant_building_cost_hefa_others
         self.df.loc[:, "carbon_abatement_cost_hefa_others"] = carbon_abatement_cost_hefa_others
-        self.df.loc[:, "specific_carbon_abatement_cost_hefa_others"] = specific_carbon_abatement_cost_hefa_others
+        self.df.loc[
+            :, "specific_carbon_abatement_cost_hefa_others"
+        ] = specific_carbon_abatement_cost_hefa_others
         self.df.loc[:, "biofuel_cost_hefa_others"] = biofuel_cost_hefa_others
         self.df.loc[:, "biofuel_capex_cost_hefa_others"] = biofuel_capex_cost_hefa_others
         self.df.loc[:, "biofuel_var_opex_cost_hefa_others"] = biofuel_var_opex_cost_hefa_others
@@ -252,7 +256,9 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, "plant_building_scenario_ft_others"] = plant_building_scenario_ft_others
         self.df.loc[:, "plant_building_cost_ft_others"] = plant_building_cost_ft_others
         self.df.loc[:, "carbon_abatement_cost_ft_others"] = carbon_abatement_cost_ft_others
-        self.df.loc[:, "specific_carbon_abatement_cost_ft_others"] = specific_carbon_abatement_cost_ft_others
+        self.df.loc[
+            :, "specific_carbon_abatement_cost_ft_others"
+        ] = specific_carbon_abatement_cost_ft_others
         self.df.loc[:, "biofuel_cost_ft_others"] = biofuel_cost_ft_others
         self.df.loc[:, "biofuel_capex_cost_ft_others"] = biofuel_capex_cost_ft_others
         self.df.loc[:, "biofuel_var_opex_cost_ft_others"] = biofuel_var_opex_cost_ft_others
@@ -301,7 +307,9 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, "plant_building_scenario_ft_msw"] = plant_building_scenario_ft_msw
         self.df.loc[:, "plant_building_cost_ft_msw"] = plant_building_cost_ft_msw
         self.df.loc[:, "carbon_abatement_cost_ft_msw"] = carbon_abatement_cost_ft_msw
-        self.df.loc[:, "specific_carbon_abatement_cost_ft_msw"] = specific_carbon_abatement_cost_ft_msw
+        self.df.loc[
+            :, "specific_carbon_abatement_cost_ft_msw"
+        ] = specific_carbon_abatement_cost_ft_msw
         self.df.loc[:, "biofuel_cost_ft_msw"] = biofuel_cost_ft_msw
         self.df.loc[:, "biofuel_capex_cost_ft_msw"] = biofuel_capex_cost_ft_msw
         self.df.loc[:, "biofuel_var_opex_cost_ft_msw"] = biofuel_var_opex_cost_ft_msw
@@ -522,7 +530,9 @@ class BiofuelCost(AeromapsModel):
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant built in year n
-            if (year + 1) <= self.end_year and biofuel_production[year + 1] < demand_scenario[year + 1]:
+            if (year + 1) <= self.end_year and biofuel_production[year + 1] < demand_scenario[
+                year + 1
+            ]:
                 # Getting the production not matched by plants already commissioned
                 # by creating plants with actual year data technical data
                 biofuel_cost = BiofuelCost._compute_pathway_year_mfsp(
@@ -588,19 +598,29 @@ class BiofuelCost(AeromapsModel):
 
                 for i in range(year, year + int(plant_lifespan)):
                     if i < (self.end_year + 1):
-                        discounted_cumul_cost += (biofuel_cost[i]["TOTAL"] - kerosene_market_price[i]) / (1 + social_discount_rate) ** (i - year)
-                        cumul_em += avoided_emission_factor[i] * (lhv_biofuel * density_biofuel) / 1000000
+                        discounted_cumul_cost += (
+                            biofuel_cost[i]["TOTAL"] - kerosene_market_price[i]
+                        ) / (1 + social_discount_rate) ** (i - year)
+                        cumul_em += (
+                            avoided_emission_factor[i] * (lhv_biofuel * density_biofuel) / 1000000
+                        )
                     else:
-                        discounted_cumul_cost += (biofuel_cost[self.end_year]["TOTAL"] - kerosene_market_price[self.end_year]) / (
-                                    1 + social_discount_rate) ** (i - year)
-                        cumul_em += avoided_emission_factor[self.end_year] * (lhv_biofuel * density_biofuel) / 1000000
+                        discounted_cumul_cost += (
+                            biofuel_cost[self.end_year]["TOTAL"]
+                            - kerosene_market_price[self.end_year]
+                        ) / (1 + social_discount_rate) ** (i - year)
+                        cumul_em += (
+                            avoided_emission_factor[self.end_year]
+                            * (lhv_biofuel * density_biofuel)
+                            / 1000000
+                        )
 
-                specific_carbon_abatement_cost[year] = discounted_cumul_cost/cumul_em
+                specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
 
-            elif (year == self.end_year) or (biofuel_production[year + 1] >= demand_scenario[year + 1]) :
-                specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year-1]
-
-
+            elif (year == self.end_year) or (
+                biofuel_production[year + 1] >= demand_scenario[year + 1]
+            ):
+                specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -651,7 +671,7 @@ class BiofuelCost(AeromapsModel):
             biofuel_carbon_tax_cost,
             biofuel_cost_premium,
             mfsp_supplement_carbon_tax,
-            specific_carbon_abatement_cost
+            specific_carbon_abatement_cost,
         )
 
     def _compute_pathway_year_mfsp(
