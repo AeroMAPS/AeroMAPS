@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
-from ipywidgets import interact
+from ipywidgets import interact, Dropdown
+from matplotlib.ticker import FuncFormatter
 
 from .constants import plot_3_x, plot_3_y
 
@@ -2618,9 +2619,319 @@ class GeneralMACC:
         self.ax.legend(handles=legend_patches, loc="upper left")
 
         self.ax.grid()
-        plt.show()
-
         self.ax.set_title("Marginal abatement cost curve for drop-in fuels")
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
 
+
+
+class DetailledMFSPBreakdownPerPathway:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.ax2 = self.ax.twinx()
+        self.create_plot()
+        self.plot_interact()
+
+    def plot_interact(self):
+        interact(self.update, pathway=[('HEFA Fog', 'hefa_fog'),
+                                       ('HEFA Others', 'hefa_others'),
+                                       ('FT MSW','ft_msw'),
+                                       ('FT Others', 'ft_others'),
+                                       ('ATJ','atj'),
+                                       ('Electrolysis','electrolysis_h2'),
+                                       ('Gas CCS','gas_ccs_h2'),
+                                       ('Gas','gas_h2'),
+                                       ('Coal CCS','coal_ccs_h2'),
+                                       ('Coal','coal_h2'),
+                                       ])
+
+    def create_plot(self):
+        pass
+
+    def update(self, pathway):
+        self.ax.cla()
+        self.ax2.cla()
+
+
+        if pathway in ['hefa_fog','hefa_others','ft_msw','ft_others','atj']:
+
+            capex_val = self.df.loc[self.prospective_years, "biofuel_"+pathway+"_mfsp"] * self.df.loc[
+                self.prospective_years, "biofuel_mean_capex_share_"+pathway] / 100
+            opex_val = self.df.loc[self.prospective_years, "biofuel_"+pathway+"_mfsp"] * self.df.loc[
+                self.prospective_years, "biofuel_mean_var_opex_share_"+pathway] / 100
+            feedstock_val = self.df.loc[self.prospective_years, "biofuel_"+pathway+"_mfsp"] * self.df.loc[
+                self.prospective_years, "biofuel_mean_feedstock_share_"+pathway] / 100
+            carbon_tax_val = self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_"+pathway]
+            kerosene_val = self.df.loc[self.prospective_years, "kerosene_market_price"]
+            kerosene_tax_val = self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val,
+                np.zeros(len(self.prospective_years)),
+                color="#277DA1",
+                label="Capex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val,
+                capex_val,
+                color="#4D908E",
+                label="Opex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + feedstock_val,
+                capex_val + opex_val,
+                color="#90BE6D",
+                label="Feedstock",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_total,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + feedstock_val,
+                color="#43AA8B",
+                linestyle="-",
+                label="Total mean MFSP",
+                linewidth=2,
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + feedstock_val + carbon_tax_val,
+                capex_val + opex_val + feedstock_val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Carbon Tax",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_tax,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + feedstock_val + carbon_tax_val,
+                color="#6414E5",
+                linestyle="--",
+                label="Total mean MFSP + carbon tax",
+                linewidth=2,
+            )
+
+            (self.line_fossil,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val,
+                color="black",
+                linestyle="-",
+                label="Fossil kerosene",
+                linewidth=2,
+            )
+
+            (self.line_fossil_plus_tax,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val + kerosene_tax_val,
+                color="black",
+                linestyle="--",
+                label="Fossil kerosene + carbon tax",
+                linewidth=2,
+            )
+
+            self.ax.grid()
+            self.ax.set_title("MFSP breakdown")
+            self.ax.set_xlabel("Year")
+            self.ax.set_ylabel("MFSP [€/L]")
+
+            self.ax.set_ylim(0, None)
+            self.ax2.set_ylim(self.ax.get_ylim()[0] / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]),
+                              self.ax.get_ylim()[1] / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]))
+
+            # Move the label for the second y-axis to the right
+            self.ax2.yaxis.set_label_position("right")
+            self.ax2.set_ylabel("MFSP [€/MJ]")
+
+
+
+
+        elif pathway in ['electrolysis_h2','gas_ccs_h2','gas_h2','coal_ccs_h2','coal_h2']:
+            capex_val = self.df.loc[self.prospective_years, pathway+"_mean_mfsp_kg"] * self.df.loc[
+                self.prospective_years, pathway+"_mean_capex_share"] / 100
+            opex_val = self.df.loc[self.prospective_years, pathway+"_mean_mfsp_kg"] * self.df.loc[
+                self.prospective_years, pathway+"_mean_opex_share"] / 100
+
+            if pathway == 'electrolysis_h2':
+                energy_val = self.df.loc[self.prospective_years, pathway+"_mean_mfsp_kg"] * self.df.loc[
+                    self.prospective_years, pathway+"_mean_elec_share"] / 100
+            else:
+                energy_val = self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"] * self.df.loc[
+                    self.prospective_years, pathway + "_mean_fuel_cost_share"] / 100
+
+            if pathway in ['gas_ccs_h2','coal_ccs_h2']:
+                ccs_val = self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"] * self.df.loc[
+                    self.prospective_years, pathway + "_mean_ccs_cost_share"] / 100
+
+            else:
+                ccs_val = 0
+
+            liquefaction_capex_val = self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"] * self.df.loc[
+                self.prospective_years, "liquefaction_h2_mean_capex_share"] / 100
+            liquefaction_opex_val = self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"] * self.df.loc[
+                self.prospective_years, "liquefaction_h2_mean_opex_share"] / 100
+            liquefaction_energy_val = self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"] * self.df.loc[
+                    self.prospective_years, "liquefaction_h2_mean_elec_share"] / 100
+
+            transport =  self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+
+
+            carbon_tax_val = self.df.loc[self.prospective_years, pathway+"_mfsp_carbon_tax_supplement"]
+            kerosene_val = self.df.loc[self.prospective_years, "kerosene_market_price"]
+            kerosene_tax_val = self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val,
+                np.zeros(len(self.prospective_years)),
+                color="#277DA1",
+                label="Hydrogen Capex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val,
+                capex_val,
+                color="#4D908E",
+                label="Hydrogen Opex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val,
+                capex_val + opex_val,
+                color="#90BE6D",
+                label="Hydrogen Energy",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val,
+                capex_val + opex_val + energy_val,
+                color="#F94144",
+                label="Hydrogen CCS",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_total,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val,
+                color="#43AA8B",
+                linestyle="-",
+                label="Hydrogen Mean MFSP",
+                linewidth=2,
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val,
+                capex_val + opex_val + energy_val +ccs_val,
+                color="#F9C74F",
+                label="Liquefaction Capex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val+liquefaction_opex_val,
+                capex_val + opex_val + energy_val + ccs_val+ liquefaction_capex_val,
+                color="#F9844A",
+                label="Liquefaction Opex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val +liquefaction_energy_val,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val ++ liquefaction_opex_val,
+                color="#F8961E",
+                label="Liquefaction Energy",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val + liquefaction_energy_val +transport,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + + liquefaction_opex_val + liquefaction_energy_val,
+                color="#C9A690",
+                label="Transport",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_total_full,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val + liquefaction_energy_val + transport,
+                color="#253C78",
+                linestyle="-",
+                label="Mean MFSP incl. L+T",
+                linewidth=2,
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val + liquefaction_energy_val + transport + carbon_tax_val,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val + liquefaction_energy_val + transport,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Carbon Tax",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_tax,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val + liquefaction_opex_val + liquefaction_energy_val + transport + carbon_tax_val,
+                color="#6414E5",
+                linestyle="--",
+                label="Total Mean MFSP + carbon tax",
+                linewidth=2,
+            )
+
+            (self.line_fossil,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]) * self.float_inputs["lhv_hydrogen"],
+                color="black",
+                linestyle="-",
+                label="Fossil kerosene",
+                linewidth=2,
+            )
+
+            (self.line_fossil_plus_tax,) = self.ax.plot(
+                self.prospective_years,
+                (kerosene_val + kerosene_tax_val) / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]) * self.float_inputs["lhv_hydrogen"],
+                color="black",
+                linestyle="--",
+                label="Fossil kerosene + carbon tax",
+                linewidth=2,
+            )
+
+            self.ax.grid()
+            self.ax.set_title("MFSP breakdown")
+            self.ax.set_xlabel("Year")
+            self.ax.set_ylabel("Hydrogen MFSP [€/Kg]")
+
+            self.ax.set_ylim(0, None)
+            self.ax2.set_ylim(self.ax.get_ylim()[0]/self.float_inputs["lhv_hydrogen"], self.ax.get_ylim()[1]/self.float_inputs["lhv_hydrogen"])
+
+            # Move the label for the second y-axis to the right
+            self.ax2.yaxis.set_label_position("right")
+            self.ax2.set_ylabel("MFSP [€/MJ]")
+
+        # Reversing legend entries
+        handles, labels = self.ax.get_legend_handles_labels()
+        self.ax.legend(handles[::-1], labels[::-1])
+        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        self.fig.tight_layout()
         self.fig.tight_layout()
         self.fig.canvas.draw()
