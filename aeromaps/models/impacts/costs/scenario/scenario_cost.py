@@ -28,11 +28,11 @@ class NonDiscountedScenarioCost(AeromapsModel):
         biofuel_cost_premium_ft_others: pd.Series = pd.Series(dtype="float64"),
         biofuel_cost_premium_ft_msw: pd.Series = pd.Series(dtype="float64"),
         biofuel_cost_premium_atj: pd.Series = pd.Series(dtype="float64"),
-        h2_cost_premium_electrolysis: pd.Series = pd.Series(dtype="float64"),
-        h2_cost_premium_gas_ccs: pd.Series = pd.Series(dtype="float64"),
-        h2_cost_premium_gas: pd.Series = pd.Series(dtype="float64"),
-        h2_cost_premium_coal_ccs: pd.Series = pd.Series(dtype="float64"),
-        h2_cost_premium_coal: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
+        gas_ccs_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
+        gas_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
+        coal_ccs_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
+        coal_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
         electrofuel_cost_premium: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         # Compute the total energy expenses of the scenario
@@ -54,11 +54,11 @@ class NonDiscountedScenarioCost(AeromapsModel):
             + biofuel_cost_premium_ft_others.fillna(0)
             + biofuel_cost_premium_hefa_others.fillna(0)
             + biofuel_cost_premium_hefa_fog.fillna(0)
-            + h2_cost_premium_electrolysis.fillna(0)
-            + h2_cost_premium_gas_ccs.fillna(0)
-            + h2_cost_premium_gas.fillna(0)
-            + h2_cost_premium_coal_ccs.fillna(0)
-            + h2_cost_premium_coal.fillna(0)
+            + electrolysis_h2_cost_premium.fillna(0)
+            + gas_ccs_h2_cost_premium.fillna(0)
+            + gas_h2_cost_premium.fillna(0)
+            + coal_ccs_h2_cost_premium.fillna(0)
+            + coal_h2_cost_premium.fillna(0)
             + electrofuel_cost_premium.fillna(0)
         )
 

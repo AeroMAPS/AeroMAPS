@@ -500,19 +500,19 @@ class ScenarioEnergyCarbonTaxPlot:
         (self.line_energy_expenses_carb_tax,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"]
-                + self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                    self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"]
+                    + self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "gas_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
             ),
             label="Scenario energy expenses incl. carbon tax",
             linestyle="--",
@@ -528,8 +528,8 @@ class ScenarioEnergyCarbonTaxPlot:
         (self.line_bau_energy_expenses_carbon_tax,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                    self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
             ),
             label="Business as usual energy expenses incl. carbon tax",
             linestyle="--",
@@ -559,19 +559,19 @@ class ScenarioEnergyCarbonTaxPlot:
 
         self.line_energy_expenses_carb_tax.set_ydata(
             (
-                self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"]
-                + self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                    self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"]
+                    + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"]
+                    + self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "gas_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
+                    + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
             )
         )
 
@@ -581,8 +581,8 @@ class ScenarioEnergyCarbonTaxPlot:
 
         self.line_bau_energy_expenses_carbon_tax.set_ydata(
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                    self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
             )
         )
 
@@ -671,7 +671,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_hydrogen_electrolysis_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_electrolysis"] / 119.93,
+            (self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
             color="#0075A3",
             linestyle="-",
             label="Hydrogen - Electrolysis",
@@ -680,7 +683,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_hydrogen_gas_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas_ccs"] / 119.93,
+            (self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
             color="#0075A3",
             linestyle=":",
             label="Hydrogen - Gas CSS",
@@ -689,7 +695,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_hydrogen_gas_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas"] / 119.93,
+            (self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
             color="#0075A3",
             linestyle="--",
             label="Hydrogen - Gas",
@@ -698,7 +707,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_hydrogen_coal_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal_ccs"] / 119.93,
+            (self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
             color="#0075A3",
             linestyle="-.",
             label="Hydrogen - Coal CCS",
@@ -707,7 +719,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_hydrogen_coal_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal"] / 119.93,
+            (self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
             color="#0075A3",
             linestyle=(0, (5, 10)),
             label="Hydrogen Coal",
@@ -752,19 +767,34 @@ class ScenarioEnergyUnitCostPlot:
             (self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]) / 35.3,
         )
         self.line_hydrogen_electrolysis_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_electrolysis"]) / 119.93,
+            (self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
         )
         self.line_hydrogen_gas_ccs_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas_ccs"]) / 119.93,
+            (self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
         )
         self.line_hydrogen_gas_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas"]) / 119.93,
+            (self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
         )
         self.line_hydrogen_coal_ccs_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal_ccs"]) / 119.93,
+            (self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
         )
         self.line_hydrogen_coal_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal"]) / 119.93,
+            (self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"] +
+             self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+             + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+             ) / 119.93,
         )
 
         for collection in self.ax.collections:
@@ -794,8 +824,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_kerosene_price,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "kerosene_market_price"]
-                + self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
+                    self.df.loc[self.prospective_years, "kerosene_market_price"]
+                    + self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
             )
             / 35.3,
             color="#2A3438",
@@ -807,8 +837,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_biofuel_hefa_fog_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "biofuel_hefa_fog_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"]
+                    self.df.loc[self.prospective_years, "biofuel_hefa_fog_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"]
             )
             / 35.3,
             color="#097223",
@@ -820,10 +850,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_biofuel_hefa_others_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "biofuel_hefa_others_mfsp"]
-                + self.df.loc[
-                    self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
-                ]
+                    self.df.loc[self.prospective_years, "biofuel_hefa_others_mfsp"]
+                    + self.df.loc[
+                        self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
+                    ]
             )
             / 35.3,
             color="#097223",
@@ -835,8 +865,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_biofuel_atj_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "biofuel_atj_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_atj"]
+                    self.df.loc[self.prospective_years, "biofuel_atj_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_atj"]
             )
             / 35.3,
             color="#097223",
@@ -847,10 +877,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_biofuel_ft_others_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "biofuel_ft_others_mfsp"]
-                + self.df.loc[
-                    self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_others"
-                ]
+                    self.df.loc[self.prospective_years, "biofuel_ft_others_mfsp"]
+                    + self.df.loc[
+                        self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_others"
+                    ]
             )
             / 35.3,
             color="#097223",
@@ -862,8 +892,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_biofuel_ft_msw_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "biofuel_ft_msw_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_msw"]
+                    self.df.loc[self.prospective_years, "biofuel_ft_msw_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_msw"]
             )
             / 35.3,
             color="#097223",
@@ -875,8 +905,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_electrofuel_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
-                + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
+                    + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
             )
             / 35.3,
             color="#828782",
@@ -888,8 +918,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_hydrogen_electrolysis_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_electrolysis"]
-                + self.df.loc[self.prospective_years, "electrolysis_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "electrolysis_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
             color="#0075A3",
@@ -901,8 +933,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_hydrogen_gas_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas_ccs"]
-                + self.df.loc[self.prospective_years, "gas_ccs_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "gas_ccs_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
             color="#0075A3",
@@ -914,8 +948,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_hydrogen_gas_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas"]
-                + +self.df.loc[self.prospective_years, "gas_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + +self.df.loc[self.prospective_years, "gas_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
             color="#0075A3",
@@ -927,8 +963,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_hydrogen_coal_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal_ccs"]
-                + self.df.loc[self.prospective_years, "coal_ccs_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "coal_ccs_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
             color="#0075A3",
@@ -940,8 +978,10 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_hydrogen_coal_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal"]
-                + self.df.loc[self.prospective_years, "coal_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "coal_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
             color="#0075A3",
@@ -968,89 +1008,99 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
 
         self.line_kerosene_price.set_ydata(
             (
-                self.df.loc[self.prospective_years, "kerosene_market_price"]
-                + self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
+                    self.df.loc[self.prospective_years, "kerosene_market_price"]
+                    + self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
             )
             / 35.3,
         )
         self.line_biofuel_hefa_fog_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "biofuel_hefa_fog_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"]
+                    self.df.loc[self.prospective_years, "biofuel_hefa_fog_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"]
             )
             / 35.3,
         )
         self.line_biofuel_hefa_others_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "biofuel_hefa_others_mfsp"]
-                + self.df.loc[
-                    self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
-                ]
+                    self.df.loc[self.prospective_years, "biofuel_hefa_others_mfsp"]
+                    + self.df.loc[
+                        self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
+                    ]
             )
             / 35.3,
         )
         self.line_biofuel_atj_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "biofuel_atj_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_atj"]
+                    self.df.loc[self.prospective_years, "biofuel_atj_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_atj"]
             )
             / 35.3,
         )
         self.line_biofuel_ft_others_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "biofuel_ft_others_mfsp"]
-                + self.df.loc[
-                    self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_others"
-                ]
+                    self.df.loc[self.prospective_years, "biofuel_ft_others_mfsp"]
+                    + self.df.loc[
+                        self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_others"
+                    ]
             )
             / 35.3,
         )
         self.line_biofuel_ft_msw_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "biofuel_ft_msw_mfsp"]
-                + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_msw"]
+                    self.df.loc[self.prospective_years, "biofuel_ft_msw_mfsp"]
+                    + self.df.loc[self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_ft_msw"]
             )
             / 35.3,
         )
         self.line_electrofuel_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
-                + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
+                    + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
             )
             / 35.3,
         )
         self.line_hydrogen_electrolysis_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_electrolysis"]
-                + self.df.loc[self.prospective_years, "electrolysis_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "electrolysis_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
         )
         self.line_hydrogen_gas_ccs_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas_ccs"]
-                + self.df.loc[self.prospective_years, "gas_ccs_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "gas_ccs_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
         )
         self.line_hydrogen_gas_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_gas"]
-                + self.df.loc[self.prospective_years, "gas_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "gas_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
         )
         self.line_hydrogen_coal_ccs_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal_ccs"]
-                + self.df.loc[self.prospective_years, "coal_ccs_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "coal_ccs_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
         )
         self.line_hydrogen_coal_mfsp.set_ydata(
             (
-                self.df.loc[self.prospective_years, "h2_avg_cost_per_kg_coal"]
-                + self.df.loc[self.prospective_years, "coal_h2_mfsp_carbon_tax_supplement"]
+                    self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"] +
+                    self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "coal_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
         )
@@ -1257,7 +1307,7 @@ class DropInMACC:
 
         self.ax2.axhline(
             y=self.df.energy_consumption_dropin_fuel[year] / 1e12
-            - self.df.energy_consumption_kerosene[year] / 1e12,
+              - self.df.energy_consumption_kerosene[year] / 1e12,
             color="black",
             linewidth=1,
             linestyle="-.",
@@ -1266,8 +1316,8 @@ class DropInMACC:
             0,
             1.02
             * (
-                self.df.energy_consumption_dropin_fuel[year] / 1e12
-                - self.df.energy_consumption_kerosene[year] / 1e12
+                    self.df.energy_consumption_dropin_fuel[year] / 1e12
+                    - self.df.energy_consumption_kerosene[year] / 1e12
             ),
             "Air transport sustainable drop-in fuels use, final year",
         )
@@ -1441,7 +1491,7 @@ class DropInMACC:
 
         self.ax2.axhline(
             y=self.df.energy_consumption_dropin_fuel[year] / 1e12
-            - self.df.energy_consumption_kerosene[year] / 1e12,
+              - self.df.energy_consumption_kerosene[year] / 1e12,
             color="black",
             linewidth=1,
             linestyle="-.",
@@ -1450,8 +1500,8 @@ class DropInMACC:
             0,
             1.02
             * (
-                self.df.energy_consumption_dropin_fuel[year] / 1e12
-                - self.df.energy_consumption_kerosene[year] / 1e12
+                    self.df.energy_consumption_dropin_fuel[year] / 1e12
+                    - self.df.energy_consumption_kerosene[year] / 1e12
             ),
             "Air transport sustainable drop-in fuels use, final year",
         )
@@ -2142,20 +2192,20 @@ class GeneralMACC:
                 [
                     el
                     for el in [
-                        "Bio - HEFA FOG",
-                        "Bio - HEFA Others",
-                        "Bio - Alcohol to Jet",
-                        "Bio - FT MSW",
-                        "Bio - FT Others",
-                        "H2C",
-                        "H2CCCS",
-                        "H2G",
-                        "H2GCCS",
-                        "H2E",
-                        "Electrofuel",
-                        "OPS",
-                        "LF",
-                    ]
+                    "Bio - HEFA FOG",
+                    "Bio - HEFA Others",
+                    "Bio - Alcohol to Jet",
+                    "Bio - FT MSW",
+                    "Bio - FT Others",
+                    "H2C",
+                    "H2CCCS",
+                    "H2G",
+                    "H2GCCS",
+                    "H2E",
+                    "Electrofuel",
+                    "OPS",
+                    "LF",
+                ]
                 ]
             )
 
@@ -2164,20 +2214,20 @@ class GeneralMACC:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.abatement_effective_hefa_fog[year],
-                        self.df.abatement_effective_hefa_others[year],
-                        self.df.abatement_effective_atj[year],
-                        self.df.abatement_effective_ft_msw[year],
-                        self.df.abatement_effective_ft_others[year],
-                        self.df.abatement_effective_hydrogen_coal[year],
-                        self.df.abatement_effective_hydrogen_coal_ccs[year],
-                        self.df.abatement_effective_hydrogen_gas[year],
-                        self.df.abatement_effective_hydrogen_gas_ccs[year],
-                        self.df.abatement_effective_hydrogen_electrolysis[year],
-                        self.df.abatement_effective_electrofuel[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.load_factor_abatement_effective[year],
-                    ]
+                    self.df.abatement_effective_hefa_fog[year],
+                    self.df.abatement_effective_hefa_others[year],
+                    self.df.abatement_effective_atj[year],
+                    self.df.abatement_effective_ft_msw[year],
+                    self.df.abatement_effective_ft_others[year],
+                    self.df.abatement_effective_hydrogen_coal[year],
+                    self.df.abatement_effective_hydrogen_coal_ccs[year],
+                    self.df.abatement_effective_hydrogen_gas[year],
+                    self.df.abatement_effective_hydrogen_gas_ccs[year],
+                    self.df.abatement_effective_hydrogen_electrolysis[year],
+                    self.df.abatement_effective_electrofuel[year],
+                    self.df.operations_abatement_effective[year],
+                    self.df.load_factor_abatement_effective[year],
+                ]
                 ]
             )
 
@@ -2186,20 +2236,20 @@ class GeneralMACC:
                 [
                     el
                     for el in [
-                        self.df.carbon_abatement_cost_hefa_fog[year],
-                        self.df.carbon_abatement_cost_hefa_others[year],
-                        self.df.carbon_abatement_cost_atj[year],
-                        self.df.carbon_abatement_cost_ft_msw[year],
-                        self.df.carbon_abatement_cost_ft_others[year],
-                        self.df.carbon_abatement_cost_h2_coal[year],
-                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
-                        self.df.carbon_abatement_cost_h2_gas[year],
-                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
-                        self.df.carbon_abatement_cost_h2_electrolysis[year],
-                        self.df.carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.load_factor_abatement_cost[year],
-                    ]
+                    self.df.carbon_abatement_cost_hefa_fog[year],
+                    self.df.carbon_abatement_cost_hefa_others[year],
+                    self.df.carbon_abatement_cost_atj[year],
+                    self.df.carbon_abatement_cost_ft_msw[year],
+                    self.df.carbon_abatement_cost_ft_others[year],
+                    self.df.carbon_abatement_cost_h2_coal[year],
+                    self.df.carbon_abatement_cost_h2_coal_ccs[year],
+                    self.df.carbon_abatement_cost_h2_gas[year],
+                    self.df.carbon_abatement_cost_h2_gas_ccs[year],
+                    self.df.carbon_abatement_cost_h2_electrolysis[year],
+                    self.df.carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_abatement_cost[year],
+                    self.df.load_factor_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -2207,20 +2257,20 @@ class GeneralMACC:
                 [
                     el
                     for el in [
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "orange",
-                        "orange",
-                    ]
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "orange",
+                    "orange",
+                ]
                 ]
             )
 
@@ -2485,8 +2535,8 @@ class GeneralMACC:
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
-                cumwidths_effective_neg[-1]
-                - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
+                    cumwidths_effective_neg[-1]
+                    - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
             y_position = max(-2000 + 10, heights_neg[i + 1] + 5)
             self.ax.text(
