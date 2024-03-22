@@ -1537,7 +1537,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         h2_mean_capex_share = h2_capex_cost / h2_total_cost * 100
         h2_mean_opex_share = h2_opex_cost / h2_total_cost * 100
-        h2_mean_feedstock_share = h2_elec_cost / h2_total_cost * 100
+        h2_mean_elec_share = h2_elec_cost / h2_total_cost * 100
 
         return (
             plant_building_scenario,
@@ -1545,7 +1545,7 @@ class LiquidHydrogenCost(AeromapsModel):
             h2_total_cost,
             h2_mean_capex_share,
             h2_mean_opex_share,
-            h2_opex_cost,
+            h2_mean_elec_share,
             specific_discounted_cost,
         )
 

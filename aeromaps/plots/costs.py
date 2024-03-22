@@ -663,7 +663,7 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_electrofuel_mfsp,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"] / 35.3,
+            self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"] / 35.3,
             color="#828782",
             linestyle="-",
             label="Electrofuel",
@@ -765,7 +765,7 @@ class ScenarioEnergyUnitCostPlot:
             (self.df.loc[self.prospective_years, "biofuel_ft_msw_mfsp"]) / 35.3,
         )
         self.line_electrofuel_mfsp.set_ydata(
-            (self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]) / 35.3,
+            (self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]) / 35.3,
         )
         self.line_hydrogen_electrolysis_mfsp.set_ydata(
             (self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"] +
@@ -906,7 +906,7 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_electrofuel_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                    self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
                     + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
             )
             / 35.3,
@@ -1055,7 +1055,7 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         )
         self.line_electrofuel_mfsp.set_ydata(
             (
-                    self.df.loc[self.prospective_years, "electrofuel_avg_cost_per_l"]
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
                     + self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
             )
             / 35.3,
@@ -2642,16 +2642,17 @@ class DetailledMFSPBreakdownPerPathway:
         self.plot_interact()
 
     def plot_interact(self):
-        interact(self.update, pathway=[('HEFA Fog', 'hefa_fog'),
-                                       ('HEFA Others', 'hefa_others'),
-                                       ('FT MSW','ft_msw'),
-                                       ('FT Others', 'ft_others'),
-                                       ('ATJ','atj'),
-                                       ('Electrolysis','electrolysis_h2'),
-                                       ('Gas CCS','gas_ccs_h2'),
-                                       ('Gas','gas_h2'),
-                                       ('Coal CCS','coal_ccs_h2'),
-                                       ('Coal','coal_h2'),
+        interact(self.update, pathway=[('Bio - HEFA Fog', 'hefa_fog'),
+                                       ('Bio - HEFA Others', 'hefa_others'),
+                                       ('Bio - FT MSW','ft_msw'),
+                                       ('Bio - FT Others', 'ft_others'),
+                                       ('Bio - ATJ','atj'),
+                                       ('LH2 - Electrolysis','electrolysis_h2'),
+                                       ('LH2 - Gas CCS','gas_ccs_h2'),
+                                       ('LH2 - Gas','gas_h2'),
+                                       ('LH2 - Coal CCS','coal_ccs_h2'),
+                                       ('LH2 - Coal','coal_h2'),
+                                       ('E-fuel','electrofuel'),
                                        ])
 
     def create_plot(self):
@@ -2757,7 +2758,110 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.yaxis.set_label_position("right")
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
+        elif pathway == 'electrofuel':
 
+            capex_val = self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"] * self.df.loc[
+                self.prospective_years, "electrofuel_mean_capex_share"] / 100
+            opex_val = self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"] * self.df.loc[
+                self.prospective_years, "electrofuel_mean_opex_share"] / 100
+            energy_val = self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"] * self.df.loc[
+                self.prospective_years, "electrofuel_mean_elec_share"] / 100
+            co2_feed_val = self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"] * self.df.loc[
+                self.prospective_years, "electrofuel_mean_co2_share"] / 100
+            carbon_tax_val = self.df.loc[self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"]
+            kerosene_val = self.df.loc[self.prospective_years, "kerosene_market_price"]
+            kerosene_tax_val = self.df.loc[self.prospective_years, "kerosene_price_supplement_carbon_tax"]
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val,
+                np.zeros(len(self.prospective_years)),
+                color="#277DA1",
+                label="Capex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val,
+                capex_val,
+                color="#4D908E",
+                label="Opex",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val,
+                capex_val + opex_val,
+                color="#90BE6D",
+                label="Energy",edgecolor='#212529', linewidth=0.5
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + co2_feed_val,
+                capex_val + opex_val + energy_val,
+                color="#540b0e",
+                label="CO2 Feed", edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_total,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + co2_feed_val,
+                color="#43AA8B",
+                linestyle="-",
+                label="Total mean MFSP",
+                linewidth=2,
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + co2_feed_val + carbon_tax_val,
+                capex_val + opex_val + energy_val + co2_feed_val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Carbon Tax",edgecolor='#212529', linewidth=0.5
+            )
+
+            (self.line_tax,) = self.ax.plot(
+                self.prospective_years,
+                capex_val + opex_val + energy_val + co2_feed_val + carbon_tax_val,
+                color="#6414E5",
+                linestyle="--",
+                label="Total mean MFSP + carbon tax",
+                linewidth=2,
+            )
+
+            (self.line_fossil,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val,
+                color="black",
+                linestyle="-",
+                label="Fossil kerosene",
+                linewidth=2,
+            )
+
+            (self.line_fossil_plus_tax,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val + kerosene_tax_val,
+                color="black",
+                linestyle="--",
+                label="Fossil kerosene + carbon tax",
+                linewidth=2,
+            )
+
+            self.ax.grid()
+            self.ax.set_title("MFSP breakdown")
+            self.ax.set_xlabel("Year")
+            self.ax.set_ylabel("MFSP [€/L]")
+
+            self.ax.set_ylim(0, None)
+            self.ax2.set_ylim(self.ax.get_ylim()[0] / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]),
+                              self.ax.get_ylim()[1] / (self.float_inputs["lhv_kerosene"]*self.float_inputs["density_kerosene"]))
+
+            # Move the label for the second y-axis to the right
+            self.ax2.yaxis.set_label_position("right")
+            self.ax2.set_ylabel("MFSP [€/MJ]")
 
 
         elif pathway in ['electrolysis_h2','gas_ccs_h2','gas_h2','coal_ccs_h2','coal_h2']:

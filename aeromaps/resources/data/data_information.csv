@@ -701,18 +701,18 @@ dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L (ev
 electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution);
 carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Carbon abatement cost for electrofuel (evolution)
 specific_carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Specific carbon abatement cost for electrofuel (evolution)
-electrofuel_avg_cost_per_l;Vector;€/L;Average electrofuel production cost year by year (evolution)
-electrofuel_capex_cost;Vector;M€;Annual electrofuel production cost attributable to Capex
+electrofuel_mean_mfsp_litre;Vector;€/L;Average electrofuel production cost year by year (evolution)
+electrofuel_mean_capex_share;Vector;M€;Annual electrofuel production cost attributable to Capex
 electrofuel_carbon_tax;Vector;M€;Annual electrofuel production cost attributable to carbon tax
-electrofuel_co2_cost;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
+electrofuel_mean_co2_share;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
 electrofuel_cost_premium;Vector;M€;Electrofuel cost premium over fossil kerosene (without carbon tax);
 electrofuel_eis_capex;Vector;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity (evolution for EIS date);
 electrofuel_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant EIS date (evolution for EIS date);
 electrofuel_eis_specific_co2;Vector;kgCO2/kgfuel;Specific CO2 consumption (evolution for EIS date);
 electrofuel_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrofuel plant EIS date (evolution for EIS date);
-electrofuel_elec_cost;Vector;M€;Annual electrofuel production cost attributable to electricity procurement;
+electrofuel_mean_elec_share;Vector;M€;Annual electrofuel production cost attributable to electricity procurement;
 electrofuel_mfsp_carbon_tax_supplement;Vector;€/L;Electrofuel carbon tax per L evolution
-electrofuel_opex_cost;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
+electrofuel_mean_opex_share;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
 electrofuel_plant_building_cost;Vector;M€;Annual expenses for electrofuel plants built each year
 electrofuel_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year
 electrofuel_total_cost;Vector;M€;Annual electrofuel total production cost

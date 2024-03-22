@@ -60,11 +60,11 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_plant_building_scenario,
             electrofuel_plant_building_cost,
             electrofuel_total_cost,
-            electrofuel_capex_cost,
-            electrofuel_opex_cost,
-            electrofuel_elec_cost,
-            electrofuel_co2_cost,
-            electrofuel_avg_cost_per_l,
+            electrofuel_mean_capex_share,
+            electrofuel_mean_opex_share,
+            electrofuel_mean_elec_share,
+            electrofuel_mean_co2_share,
+            electrofuel_mean_mfsp_litre,
             electrofuel_cost_premium,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
@@ -95,12 +95,12 @@ class ElectrofuelCost(AeromapsModel):
         self.df.loc[:, "electrofuel_plant_building_scenario"] = electrofuel_plant_building_scenario
         self.df.loc[:, "electrofuel_plant_building_cost"] = electrofuel_plant_building_cost
         self.df.loc[:, "electrofuel_total_cost"] = electrofuel_total_cost
-        self.df.loc[:, "electrofuel_capex_cost"] = electrofuel_capex_cost
-        self.df.loc[:, "electrofuel_opex_cost"] = electrofuel_opex_cost
-        self.df.loc[:, "electrofuel_elec_cost"] = electrofuel_elec_cost
-        self.df.loc[:, "electrofuel_co2_cost"] = electrofuel_co2_cost
+        self.df.loc[:, "electrofuel_mean_capex_share"] = electrofuel_mean_capex_share
+        self.df.loc[:, "electrofuel_mean_opex_share"] = electrofuel_mean_opex_share
+        self.df.loc[:, "electrofuel_mean_elec_share"] = electrofuel_mean_elec_share
+        self.df.loc[:, "electrofuel_mean_co2_share"] = electrofuel_mean_co2_share
         self.df.loc[:, "electrofuel_cost_premium"] = electrofuel_cost_premium
-        self.df.loc[:, "electrofuel_avg_cost_per_l"] = electrofuel_avg_cost_per_l
+        self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
         self.df.loc[:, "carbon_abatement_cost_electrofuel"] = carbon_abatement_cost_electrofuel
         self.df.loc[
             :, "specific_carbon_abatement_cost_electrofuel"
@@ -114,12 +114,12 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_plant_building_scenario,
             electrofuel_plant_building_cost,
             electrofuel_total_cost,
-            electrofuel_capex_cost,
-            electrofuel_opex_cost,
-            electrofuel_elec_cost,
-            electrofuel_co2_cost,
+            electrofuel_mean_capex_share,
+            electrofuel_mean_opex_share,
+            electrofuel_mean_elec_share,
+            electrofuel_mean_co2_share,
             electrofuel_cost_premium,
-            electrofuel_avg_cost_per_l,
+            electrofuel_mean_mfsp_litre,
             carbon_abatement_cost_electrofuel,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
@@ -321,17 +321,23 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_elec_cost = electrofuel_elec_cost * scaling_factor
             electrofuel_co2_cost = electrofuel_co2_cost * scaling_factor
 
-        electrofuel_avg_cost_per_l = (
+        electrofuel_mean_mfsp_litre = (
             electrofuel_total_cost
             / (demand_scenario / (lhv_electrofuel * density_electrofuel))
             * 1000000
         )
 
+        electrofuel_mean_capex_share = electrofuel_capex_cost / electrofuel_total_cost * 100
+        electrofuel_mean_opex_share = electrofuel_opex_cost / electrofuel_total_cost * 100
+        electrofuel_mean_elec_share = electrofuel_elec_cost / electrofuel_total_cost * 100
+        electrofuel_mean_co2_share = electrofuel_co2_cost / electrofuel_total_cost * 100
+
         electrofuel_cost_premium = (
-            (electrofuel_avg_cost_per_l - kerosene_market_price)
+            (electrofuel_mean_mfsp_litre - kerosene_market_price)
             / (demand_scenario / (lhv_electrofuel * density_electrofuel))
             / 1000000
         )
+
 
         # Compute the carbon tax (M€)
         electrofuel_carbon_tax = (
@@ -346,7 +352,7 @@ class ElectrofuelCost(AeromapsModel):
         )
         # Abatement cost in €/tCO2e (= overcost for a ton of biofuel/avoided emissions)
         carbon_abatement_cost_electrofuel = (
-            (electrofuel_avg_cost_per_l - kerosene_market_price)
+            (electrofuel_mean_mfsp_litre - kerosene_market_price)
             / (avoided_emission_factor * (lhv_electrofuel * density_electrofuel))
             * 1000000
         )
@@ -355,11 +361,11 @@ class ElectrofuelCost(AeromapsModel):
             plant_building_scenario,
             plant_building_cost,
             electrofuel_total_cost,
-            electrofuel_capex_cost,
-            electrofuel_opex_cost,
-            electrofuel_elec_cost,
-            electrofuel_co2_cost,
-            electrofuel_avg_cost_per_l,
+            electrofuel_mean_capex_share,
+            electrofuel_mean_opex_share,
+            electrofuel_mean_elec_share,
+            electrofuel_mean_co2_share,
+            electrofuel_mean_mfsp_litre,
             electrofuel_cost_premium,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
