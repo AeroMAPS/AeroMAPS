@@ -60,7 +60,7 @@ from aeromaps.plots.costs import (
     DropInMACC,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
-    AirfareEvolutionBreakdown, DetailledMFSPBreakdownPerPathway,
+    AirfareEvolutionBreakdown, DetailledMFSPBreakdownPerPathway, DetailledMFSPBreakdownPerYear,
 )
 
 # Left plot
@@ -121,5 +121,6 @@ plot_3 = {
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,
     "Airfare breakdown": AirfareEvolutionBreakdown,
-    "Detailled MFSP breakdown per pathway": DetailledMFSPBreakdownPerPathway
+    "Detailled MFSP breakdown per pathway": DetailledMFSPBreakdownPerPathway,
+    "Detailled MFSP breakdown per year": DetailledMFSPBreakdownPerYear,
 }
