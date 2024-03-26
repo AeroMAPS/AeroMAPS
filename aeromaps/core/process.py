@@ -172,7 +172,7 @@ class create_process(object):
 
     def write_excel(self, file_name=None):
         if file_name is None:
-            self.config["EXCEL_DATA_INFORMATION_FILE"]
+            file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
             self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
