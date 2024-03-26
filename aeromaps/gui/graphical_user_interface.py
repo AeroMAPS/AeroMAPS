@@ -1,9 +1,7 @@
-import os
 import os.path as pth
 import matplotlib
 import ipywidgets as widgets
 import markdown as md
-from aeromaps.core.process import DATA_FOLDER, EXCEL_DATA_FILE
 from IPython.display import display, HTML, Javascript
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -40,7 +38,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.process = process
 
         self._data_files = {}
-        self._load_data(EXCEL_DATA_FILE)
+        self._load_data(self.process.config["EXCEL_DATA_FILE"])
 
         # Initialization of data tabs outputs
         self.w_data_information_df = None
@@ -697,20 +695,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.environment.layout.display = "flex"
         self.environment.layout.width = "38%"
 
-        self.w_file_input = widgets.FileUpload(
-            accept=".xlsx",  # Accepted file extension e.g. '.txt', '.pdf', 'image/*', 'image/*,.pdf'
-            multiple=False,  # True to accept multiple files upload else False
-        )
-        self.w_file_input.observe(self._upload_file, "value")
-
-        self.w_file_delete = widgets.Button(
-            description="Delete",
-            disabled=False,
-            button_style="warning",  # 'success', 'info', 'warning', 'danger' or ''
-            tooltip="Delete the selected file",
-            icon="delete",
-        )
-
         self.w_file_output = widgets.Button(
             description="Download",
             disabled=False,
@@ -748,10 +732,6 @@ class GraphicalUserInterface(widgets.VBox):
             button_style="",  # 'success', 'info', 'warning', 'danger' or ''
             tooltip="Reset manual",
             icon="reset",
-        )
-
-        self.w_file_in_out = widgets.VBox(
-            [widgets.HBox([self.w_file_input, self.w_file_delete]), self.w_expert_select_file]
         )
 
         self.w_accordion = widgets.Accordion(
@@ -856,24 +836,6 @@ class GraphicalUserInterface(widgets.VBox):
 
     def _mode_deactivate(self, change=None):
         pass
-
-    def _upload_file(self, change=None):
-        data = self.w_file_input.value
-        file_name = list(data.keys())[0]
-        # if file_name not in self._data_files:
-        parts = file_name.split(".")
-        if ".xlsx" in file_name and parts[-1] == "xlsx":
-            file_data = data[file_name]
-            file_path = pth.join(DATA_FOLDER, file_name)
-            with open(file_path, "w+b") as i:
-                i.write(file_data["content"])
-            self._load_data(file_name)
-            data.pop(file_name)
-            os.remove(file_path)
-
-            # Adding filename to available data files
-            # self._data_filenames.append(file_name)
-            self.w_expert_select_file.options = self._data_files.keys()
 
     def _create_graphs(self):
         self._create_graph_1_en(None)
@@ -2341,8 +2303,9 @@ class GraphicalUserInterface(widgets.VBox):
         with output:
             display(HTML(f"<script>{js_code}</script>"))
 
-    def _load_data(self, filename: str = EXCEL_DATA_FILE):
-        file_path = pth.join(DATA_FOLDER, filename)
+    def _load_data(self, file_path=None):
+        if file_path is None:
+            file_path = self.process.config["EXCEL_DATA_FILE"]
         vector_outputs_df = pd.read_excel(
             file_path, sheet_name="Vector Outputs", index_col=0, engine="openpyxl"
         )
@@ -2358,7 +2321,7 @@ class GraphicalUserInterface(widgets.VBox):
             "Climate Outputs": climate_outputs_df,
         }
 
-        self._data_files[filename] = data
+        self._data_files["EXCEL_DATA_FILE"] = data
 
     def _download_figures(self, change=None):
         FOLDER_PATH = pth.join(pth.dirname(__file__), "../../src", "impacts")
