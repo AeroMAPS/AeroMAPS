@@ -1,5 +1,5 @@
-import os.path as pth
-from json import dump
+import os
+from json import load, dump
 import numpy as np
 import pandas as pd
 
@@ -23,29 +23,30 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 )
 
 
-DATA_FOLDER = pth.join(pth.dirname(__file__), "..", "resources", "data")
+# Get the directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Contains all data (parameters, inputs, outputs)
-EXCEL_DATA_FILE = pth.join(DATA_FOLDER, "data.xlsx")
-EXCEL_DATA_INFORMATION_FILE = pth.join(DATA_FOLDER, "data_information.csv")
-# Contains parameters and inputs
-PARAMETERS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "parameters.json")
-# Contains outputs
-OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
+# Construct the path to the config.json file
+default_config_path = os.path.join(current_dir, 'config.json')
 
 
 class create_process(object):
     def __init__(
         self,
+        configuration_file=None,
         models=models_simple,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
+
+        self.configuration_file = configuration_file
+        self._initialize_configuration()
+
         self.use_fleet_model = use_fleet_model
         self.models = models
 
         self.parameters = Parameters()
-        self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
+        self.parameters.read_json(file_name=self.config["PARAMETERS_JSON_DATA_FILE"])
 
         self.setup(add_examples_aircraft_and_subcategory)
 
@@ -65,6 +66,22 @@ class create_process(object):
         )
         self._initialize_data()
         self._update_variables()
+
+    def _initialize_configuration(self):
+        # Load the default configuration file
+        with open(default_config_path, 'r') as f:
+            self.config = load(f)
+        # Update paths in the configuration file with absolute paths
+        for key, value in self.config.items():
+            self.config[key] = os.path.join(current_dir, value)
+
+        # Load the new configuration file
+        if self.configuration_file is not None:
+            with open(self.configuration_file, 'r') as f:
+                new_config = load(f)
+            # Replace the default configuration with the new configuration
+            for key, value in new_config.items():
+                self.config[key] = value
 
     def _initialize_data(self):
         # Inputs
@@ -147,12 +164,15 @@ class create_process(object):
 
         self.write_json()
 
-    def write_json(self, file_name=OUTPUTS_JSON_DATA_FILE):
+    def write_json(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
 
-    def write_excel(self, file_name=EXCEL_DATA_FILE):
-
+    def write_excel(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
             self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
@@ -321,8 +341,10 @@ class create_process(object):
             self.data["climate_outputs"].to_dict("list")
         )
 
-    def _read_data_information(self):
-        df = pd.read_csv(EXCEL_DATA_INFORMATION_FILE, encoding="utf-8", sep=";")
+    def _read_data_information(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
+        df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():
