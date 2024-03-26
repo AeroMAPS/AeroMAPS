@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.6.2-beta
+
+Changed:
+- Data file management using configuration file. (#65)
+
 ## Version 0.6.1-beta
 
 Changed:
