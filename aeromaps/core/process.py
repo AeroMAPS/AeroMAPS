@@ -79,9 +79,9 @@ class create_process(object):
         if self.configuration_file is not None:
             with open(self.configuration_file, 'r') as f:
                 new_config = load(f)
-        # Replace the default configuration with the new configuration
-        for key, value in new_config.items():
-            self.config[key] = value
+            # Replace the default configuration with the new configuration
+            for key, value in new_config.items():
+                self.config[key] = value
 
     def _initialize_data(self):
         # Inputs
