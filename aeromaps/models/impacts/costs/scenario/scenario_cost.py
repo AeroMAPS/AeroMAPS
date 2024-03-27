@@ -23,18 +23,14 @@ class NonDiscountedScenarioCost(AeromapsModel):
         biofuel_cost_atj: pd.Series = pd.Series(dtype="float64"),
         electrofuel_total_cost: pd.Series = pd.Series(dtype="float64"),
         total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_premium_hefa_fog: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_premium_hefa_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_premium_ft_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_premium_ft_msw: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_premium_atj: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
-        gas_ccs_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
-        gas_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
-        coal_ccs_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
-        coal_h2_cost_premium: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_cost_premium: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions_2019technology: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions_including_load_factor: pd.Series = pd.Series(dtype="float64"),
+        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
+            density_kerosene: float =0.0,
+            lhv_kerosene: float =0.0,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
+
         # Compute the total energy expenses of the scenario
         non_discounted_energy_expenses = (
             kerosene_cost.fillna(0)
@@ -47,33 +43,28 @@ class NonDiscountedScenarioCost(AeromapsModel):
             + total_hydrogen_supply_cost.fillna(0)
         )
 
-        # Compute the total cost premium compared to the "business as usual"
-        non_discounted_energy_cost_premium = (
-            biofuel_cost_premium_atj.fillna(0)
-            + biofuel_cost_premium_ft_msw.fillna(0)
-            + biofuel_cost_premium_ft_others.fillna(0)
-            + biofuel_cost_premium_hefa_others.fillna(0)
-            + biofuel_cost_premium_hefa_fog.fillna(0)
-            + electrolysis_h2_cost_premium.fillna(0)
-            + gas_ccs_h2_cost_premium.fillna(0)
-            + gas_h2_cost_premium.fillna(0)
-            + coal_ccs_h2_cost_premium.fillna(0)
-            + coal_h2_cost_premium.fillna(0)
-            + electrofuel_cost_premium.fillna(0)
-        )
 
         # Compute the business as usual energy expenses
-        non_discounted_BAU_energy_expenses = (
-            non_discounted_energy_expenses - non_discounted_energy_cost_premium
-        )
+
+        energy_consumption_full_kero = co2_emissions_including_load_factor * 1e12/ kerosene_emission_factor.loc[
+                self.prospection_start_year - 1
+            ]
+
+        energy_consumption_BAU = co2_emissions_2019technology * 1e12 / kerosene_emission_factor.loc[
+            self.prospection_start_year - 1
+            ]
+
+        non_discounted_BAU_energy_expenses = energy_consumption_BAU / (density_kerosene * lhv_kerosene) * kerosene_market_price / 1000000
+        non_discounted_full_kero_energy_expenses = energy_consumption_full_kero / (density_kerosene * lhv_kerosene) * kerosene_market_price / 1000000
+
 
         self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
-        self.df.loc[:, "non_discounted_energy_cost_premium"] = non_discounted_energy_cost_premium
         self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
+        self.df.loc[:, "non_discounted_full_kero_energy_expenses"] = non_discounted_full_kero_energy_expenses
 
         return (
             non_discounted_energy_expenses,
-            non_discounted_energy_cost_premium,
+            non_discounted_full_kero_energy_expenses,
             non_discounted_BAU_energy_expenses,
         )
 

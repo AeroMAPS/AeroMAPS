@@ -334,7 +334,7 @@ class ElectrofuelCost(AeromapsModel):
 
         electrofuel_cost_premium = (
             (electrofuel_mean_mfsp_litre - kerosene_market_price)
-            / (demand_scenario / (lhv_electrofuel * density_electrofuel))
+            * (demand_scenario / (lhv_electrofuel * density_electrofuel))
             / 1000000
         )
 

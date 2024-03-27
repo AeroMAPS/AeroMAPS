@@ -538,6 +538,24 @@ class ScenarioEnergyCarbonTaxPlot:
             color="#2A3438",
         )
 
+        (self.line_full_kero_energy_expenses,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"],
+            label="Efficiency only energy expenses",
+            linestyle="-",
+            color="#A64253",
+        )
+        (self.line_full_kero_energy_expenses_carbon_tax,) = self.ax.plot(
+            self.prospective_years,
+            (
+                    self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_full_kero"]
+            ),
+            label="Efficiency only energy expenses incl. carbon tax",
+            linestyle="--",
+            color="#A64253",
+        )
+
         self.ax.grid(axis="y")
         self.ax.legend(loc="upper left")
         self.ax.set_title("Annual energy expenses per pathway")
@@ -737,6 +755,7 @@ class ScenarioEnergyUnitCostPlot:
         self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
+        self.ax.set_ylim(0,)
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -998,6 +1017,7 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
+        self.ax.set_ylim(0, )
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"

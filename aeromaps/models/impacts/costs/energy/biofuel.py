@@ -645,7 +645,7 @@ class BiofuelCost(AeromapsModel):
 
         biofuel_cost_premium = (
             (biofuel_mean_mfsp_litre - kerosene_market_price)
-            / (demand_scenario / (lhv_biofuel * density_biofuel))
+            * (demand_scenario / (lhv_biofuel * density_biofuel))
             / 1000000
         )
 
