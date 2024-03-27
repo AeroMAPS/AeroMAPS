@@ -477,6 +477,163 @@ class ScenarioEnergyExpensesPlot:
         self.fig.canvas.draw()
 
 
+class ScenarioEnergyExpensesPlotWithoutCarbonTax:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot()
+
+    def create_plot(self):
+        # mine
+        colors = [
+            "#2A3438",
+            "#ee9b00",
+            "#ffbf47",
+            "#bb3e03",
+            "#0c9e30",
+            "#097223",
+            "#828782",
+            "#52F752",
+            "#0ABAFF",
+            "#8CAAB6",
+            "#0ABAFF",
+            "#8CAAB6",
+            "#87AE87",
+        ]
+
+        self.annual_energy_expenses = self.ax.stackplot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "kerosene_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_hefa_fog"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_hefa_others"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_atj"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_ft_others"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_ft_msw"].fillna(0),
+            self.df.loc[self.prospective_years, "electrofuel_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electrolysis_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_ccs_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_ccs_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
+            + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            colors=colors,
+            lw=0.5,
+            edgecolor="black",
+        )
+
+        self.ax.grid(axis="y")
+        self.ax.set_title("Annual energy expenses per pathway")
+        self.ax.set_ylabel("Energy expenses [M€]")
+
+        primary_legend_entries = [
+            "Fossil Kerosene",
+            "Bio - HEFA FOG",
+            "Bio - HEFA Others",
+            "Bio - Alcohol to Jet",
+            "Bio - FT Others",
+            "Bio - FT MSW",
+            "Electrofuel",
+            "Electrolysis $H_2$ ",
+            "Gas CCS $H_2$ ",
+            "Gas $H_2$ ",
+            "Coal CCS $H_2$ ",
+            "Coal $H_2$ ",
+            "$H_2$ liq. & transport",
+        ]
+
+
+        self.ax.set_xlim(2020, self.years[-1])
+
+        primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
+        self.ax.add_artist(primary_legend)
+
+        self.fig.canvas.header_visible = False
+        self.fig.canvas.toolbar_position = "bottom"
+        # self.fig.canvas.layout.width = "auto"
+        # self.fig.canvas.layout.height = "auto"
+        self.fig.tight_layout()
+
+    def update(self, df_data):
+
+        self.df = df_data["vector_outputs"]
+
+        self.ax.clear()
+
+        colors = [
+            "#2A3438",
+            "#ee9b00",
+            "#ffbf47",
+            "#bb3e03",
+            "#0c9e30",
+            "#097223",
+            "#828782",
+            "#52F752",
+            "#0ABAFF",
+            "#8CAAB6",
+            "#0ABAFF",
+            "#8CAAB6",
+            "#87AE87",
+        ]
+
+        self.annual_energy_expenses = self.ax.stackplot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "kerosene_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_hefa_fog"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_hefa_others"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_atj"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_ft_others"].fillna(0),
+            self.df.loc[self.prospective_years, "biofuel_cost_ft_msw"].fillna(0),
+            self.df.loc[self.prospective_years, "electrofuel_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electrolysis_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_ccs_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "gas_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_ccs_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
+            + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            colors=colors,
+            lw=0.5,
+            edgecolor="black",
+        )
+
+        self.ax.grid(axis="y")
+        self.ax.set_title("Annual energy expenses per pathway")
+        self.ax.set_ylabel("Energy expenses [M€]")
+
+        primary_legend_entries = [
+            "Fossil Kerosene",
+            "Bio - HEFA FOG",
+            "Bio - HEFA Others",
+            "Bio - Alcohol to Jet",
+            "Bio - FT Others",
+            "Bio - FT MSW",
+            "Electrofuel",
+            "Electrolysis $H_2$ ",
+            "Gas CCS $H_2$ ",
+            "Gas $H_2$ ",
+            "Coal CCS $H_2$ ",
+            "Coal $H_2$ ",
+            "$H_2$ liq. & transport",
+        ]
+
+        self.ax.set_xlim(2020, self.years[-1])
+
+        primary_legend = self.ax.legend(primary_legend_entries, loc="upper left", prop={"size": 7})
+        self.ax.add_artist(primary_legend)
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
 class ScenarioEnergyCarbonTaxPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
@@ -755,7 +912,7 @@ class ScenarioEnergyUnitCostPlot:
         self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
-        self.ax.set_ylim(0,)
+        self.ax.set_ylim(0, )
         # #
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -2759,7 +2916,7 @@ class DetailledMFSPBreakdownPerPathway:
             (self.line_fossil_plus_tax,) = self.ax.plot(
                 self.prospective_years,
                 (kerosene_val + kerosene_tax_val) / (
-                            self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]) *
+                        self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]) *
                 self.float_inputs["lhv_electrofuel"],
                 color="black",
                 linestyle="--",
@@ -2868,7 +3025,7 @@ class DetailledMFSPBreakdownPerPathway:
             (self.line_fossil_plus_tax,) = self.ax.plot(
                 self.prospective_years,
                 (kerosene_val + kerosene_tax_val) / (
-                            self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]) *
+                        self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]) *
                 self.float_inputs["lhv_electrofuel"],
                 color="black",
                 linestyle="--",
@@ -2884,9 +3041,9 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax.set_ylim(0, None)
             self.ax2.set_ylim(
                 self.ax.get_ylim()[0] / (
-                            self.float_inputs["lhv_electrofuel"] * self.float_inputs["density_electrofuel"]),
+                        self.float_inputs["lhv_electrofuel"] * self.float_inputs["density_electrofuel"]),
                 self.ax.get_ylim()[1] / (
-                            self.float_inputs["lhv_electrofuel"] * self.float_inputs["density_electrofuel"]))
+                        self.float_inputs["lhv_electrofuel"] * self.float_inputs["density_electrofuel"]))
 
             # Move the label for the second y-axis to the right
             self.ax2.yaxis.set_label_position("right")
@@ -3106,9 +3263,8 @@ class DetailledMFSPBreakdownPerYear:
         kero_vlhv = self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]
         hyrdogen_lhv = self.float_inputs["lhv_hydrogen"]
 
-
-        kerosene_val = self.df.loc[year, "kerosene_market_price"]/kero_vlhv
-        kerosene_tax_val = self.df.loc[year, "kerosene_price_supplement_carbon_tax"]/kero_vlhv
+        kerosene_val = self.df.loc[year, "kerosene_market_price"] / kero_vlhv
+        kerosene_tax_val = self.df.loc[year, "kerosene_price_supplement_carbon_tax"] / kero_vlhv
 
         self.ax.bar(
             'Kerosene',
@@ -3229,8 +3385,6 @@ class DetailledMFSPBreakdownPerYear:
                 label="Carbon Tax", edgecolor='#212529', linewidth=0.5
             )
 
-
-
         for (name, pathway) in [('LH2 - Electrolysis', 'electrolysis_h2'),
                                 ('LH2 - Gas CCS', 'gas_ccs_h2'),
                                 ('LH2 - Gas', 'gas_h2'),
@@ -3348,22 +3502,22 @@ class DetailledMFSPBreakdownPerYear:
         # self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
         self.ax.grid(axis='y')
-        self.ax.set_title("Mean MFSP breakdown for year "+str(year))
+        self.ax.set_title("Mean MFSP breakdown for year " + str(year))
         self.ax.set_ylabel("MFSP [€/MJ]")
 
         legend_handles = [
-                        Patch(color='black'),
-                        Patch(color='#277DA1'),
-                          Patch(color='#4D908E'),
-                          Patch(color='#90BE6D'),
-                          Patch(facecolor='#9066D4', edgecolor='black',hatch='//'),
-                          Patch(color='#540b0e'),
-                          Patch(color='#F94144'),
-                          Patch(color='#F9C74F'),
-                          Patch(color='#F9844A'),
-                          Patch(color='#F8961E'),
-                          Patch(color='#C9A690'),
-                          ]
+            Patch(color='black'),
+            Patch(color='#277DA1'),
+            Patch(color='#4D908E'),
+            Patch(color='#90BE6D'),
+            Patch(facecolor='#9066D4', edgecolor='black', hatch='//'),
+            Patch(color='#540b0e'),
+            Patch(color='#F94144'),
+            Patch(color='#F9C74F'),
+            Patch(color='#F9844A'),
+            Patch(color='#F8961E'),
+            Patch(color='#C9A690'),
+        ]
         legend_names = ['Kerosene',
                         'Capex',
                         'Opex',

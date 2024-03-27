@@ -61,6 +61,7 @@ from aeromaps.plots.costs import (
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown, DetailledMFSPBreakdownPerPathway, DetailledMFSPBreakdownPerYear,
+    ScenarioEnergyExpensesPlotWithoutCarbonTax,
 )
 
 # Left plot
@@ -113,6 +114,7 @@ plot_3 = {
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
     "Annual expenses for energy procurement": ScenarioEnergyExpensesPlot,
+    "Annual expenses for energy procurement without carbon tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
     "Effect of a carbon tax on energy expenses": ScenarioEnergyCarbonTaxPlot,
     "Evolution of pathways MFSP": ScenarioEnergyUnitCostPlot,
     "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
