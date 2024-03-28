@@ -179,7 +179,7 @@ class create_process(object):
 
         if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"])
+            new_output_file_path = os.path.join(configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"])
             file_name = new_output_file_path
         else:
             file_name = None
