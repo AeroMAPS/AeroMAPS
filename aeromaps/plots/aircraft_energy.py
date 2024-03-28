@@ -135,7 +135,7 @@ class EmissionFactorPerFuelPlot:
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
         self.ax = plt.gca()
         self.ax.legend()
-        self.ax.set_xlim(self.prospective_years[0]+1, self.prospective_years[-1])
+        self.ax.set_xlim(self.prospective_years[0] + 1, self.prospective_years[-1])
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         # self.fig.canvas.layout.width = "auto"

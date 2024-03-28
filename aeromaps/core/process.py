@@ -27,7 +27,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Construct the path to the config.json file
-default_config_path = os.path.join(current_dir, 'config.json')
+default_config_path = os.path.join(current_dir, "config.json")
+
+# Construct the path to the parameters.json file
+default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 
 class create_process(object):
@@ -45,8 +48,7 @@ class create_process(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
 
-        self.parameters = Parameters()
-        self.parameters.read_json(file_name=self.config["PARAMETERS_JSON_DATA_FILE"])
+        self._initialize_inputs()
 
         self.setup(add_examples_aircraft_and_subcategory)
 
@@ -69,7 +71,7 @@ class create_process(object):
 
     def _initialize_configuration(self):
         # Load the default configuration file
-        with open(default_config_path, 'r') as f:
+        with open(default_config_path, "r") as f:
             self.config = load(f)
         # Update paths in the configuration file with absolute paths
         for key, value in self.config.items():
@@ -77,7 +79,7 @@ class create_process(object):
 
         # Load the new configuration file
         if self.configuration_file is not None:
-            with open(self.configuration_file, 'r') as f:
+            with open(self.configuration_file, "r") as f:
                 new_config = load(f)
             # Replace the default configuration with the new configuration
             for key, value in new_config.items():
@@ -143,6 +145,21 @@ class create_process(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
+    def _initialize_inputs(self):
+
+        self.parameters = Parameters()
+        # First use main parameters.json as default values
+        self.parameters.read_json(file_name=default_parameters_path)
+
+        if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_input_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
+            )
+            # If an alternative file is provided overwrite values
+            if new_input_file_path != default_parameters_path:
+                self.parameters.read_json(file_name=new_input_file_path)
+
     def compute(self):
 
         if self.fleet is not None:
@@ -162,7 +179,15 @@ class create_process(object):
 
         self._update_variables()
 
-        self.write_json()
+        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_output_file_path = os.path.join(
+                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
+            )
+            file_name = new_output_file_path
+        else:
+            file_name = None
+        self.write_json(file_name=file_name)
 
     def write_json(self, file_name=None):
         if file_name is None:
