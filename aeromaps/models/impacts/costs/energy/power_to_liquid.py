@@ -31,12 +31,14 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
         electricity_load_factor: float = 0.0,
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
+            exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
         lhv_electrofuel: float = 0.0,
         density_electrofuel: float = 0.0,
     ) -> Tuple[
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -70,6 +72,7 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_mfsp_carbon_tax_supplement,
             carbon_abatement_cost_electrofuel,
             specific_carbon_abatement_cost_electrofuel,
+            generic_specific_carbon_abatement_cost_electrofuel,
         ) = self._electrofuel_computation(
             electrofuel_eis_capex,
             electrofuel_eis_fixed_opex,
@@ -85,6 +88,7 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_emission_factor,
             kerosene_market_price,
             carbon_tax,
+            exogenous_carbon_price_trajectory,
             plant_lifespan,
             private_discount_rate,
             social_discount_rate,
@@ -105,6 +109,9 @@ class ElectrofuelCost(AeromapsModel):
         self.df.loc[
             :, "specific_carbon_abatement_cost_electrofuel"
         ] = specific_carbon_abatement_cost_electrofuel
+        self.df.loc[
+        :, "generic_specific_carbon_abatement_cost_electrofuel"
+        ] = generic_specific_carbon_abatement_cost_electrofuel
         self.df.loc[:, "electrofuel_carbon_tax"] = electrofuel_carbon_tax
         self.df.loc[
             :, "electrofuel_mfsp_carbon_tax_supplement"
@@ -124,6 +131,7 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
             specific_carbon_abatement_cost_electrofuel,
+            generic_specific_carbon_abatement_cost_electrofuel,
         )
 
     def _electrofuel_computation(
@@ -143,6 +151,7 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
+            exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -185,6 +194,7 @@ class ElectrofuelCost(AeromapsModel):
         carbon_abatement_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
+        generic_specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
         electrofuel_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
@@ -253,6 +263,7 @@ class ElectrofuelCost(AeromapsModel):
 
                 discounted_cumul_cost = 0
                 cumul_em = 0
+                generic_discounted_cumul_em = 0
 
                 # Adding new plant production to future years
                 for i in range(year + 1, end_bound + 1):
@@ -289,6 +300,16 @@ class ElectrofuelCost(AeromapsModel):
                             * (lhv_electrofuel * density_electrofuel)
                             / 1000000
                         )
+
+                        # discounting emissions for non-hotelling scc
+                        generic_discounted_cumul_em += (
+                                avoided_emission_factor[i]
+                                * (lhv_electrofuel * density_electrofuel)
+                                / 1000000
+                                * exogenous_carbon_price_trajectory[i]
+                                / exogenous_carbon_price_trajectory[year]
+                                / (1 + social_discount_rate) ** (i - year)
+                        )
                     else:
                         discounted_cumul_cost += (
                             electrofuel_cost[self.end_year]["TOTAL"]
@@ -300,12 +321,30 @@ class ElectrofuelCost(AeromapsModel):
                             / 1000000
                         )
 
+                        # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
+                        future_scc_growth = (
+                                exogenous_carbon_price_trajectory[self.end_year]
+                                / exogenous_carbon_price_trajectory[self.end_year - 1]
+                        )
+
+                        generic_discounted_cumul_em += (
+                                avoided_emission_factor[self.end_year]
+                                * (lhv_electrofuel * density_electrofuel)
+                                / 1000000
+                                * (exogenous_carbon_price_trajectory[self.end_year]
+                                   / exogenous_carbon_price_trajectory[year]
+                                   * (future_scc_growth) ** (i - self.end_year))
+                                / (1 + social_discount_rate) ** (i - year)
+                        )
+
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
+                generic_specific_carbon_abatement_cost[year] = discounted_cumul_cost / generic_discounted_cumul_em
 
             elif (year == self.end_year) or (
                 electrofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
+                generic_specific_carbon_abatement_cost[year] = generic_specific_carbon_abatement_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -370,6 +409,7 @@ class ElectrofuelCost(AeromapsModel):
             electrofuel_mfsp_carbon_tax_supplement,
             carbon_abatement_cost_electrofuel,
             specific_carbon_abatement_cost,
+            generic_specific_carbon_abatement_cost,
         )
 
     def _compute_electrofuel_year_lcop(

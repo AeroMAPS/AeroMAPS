@@ -680,7 +680,7 @@ class BiofuelCost(AeromapsModel):
                         )
 
                         generic_discounted_cumul_em += (
-                                avoided_emission_factor[i] * (lhv_biofuel * density_biofuel) / 1000000
+                                avoided_emission_factor[self.end_year] * (lhv_biofuel * density_biofuel) / 1000000
                                 * (exogenous_carbon_price_trajectory[self.end_year]
                                    / exogenous_carbon_price_trajectory[year]
                                    * (future_scc_growth) ** (i - self.end_year))
