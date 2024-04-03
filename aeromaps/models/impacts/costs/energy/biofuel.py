@@ -683,7 +683,7 @@ class BiofuelCost(AeromapsModel):
                                 avoided_emission_factor[i] * (lhv_biofuel * density_biofuel) / 1000000
                                 * (exogenous_carbon_price_trajectory[self.end_year]
                                    / exogenous_carbon_price_trajectory[year]
-                                   * (1 + future_scc_growth) ** (i - self.end_year))
+                                   * (future_scc_growth) ** (i - self.end_year))
                                 / (1 + social_discount_rate) ** (i - year)
                         )
 
