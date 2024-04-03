@@ -28,6 +28,7 @@ from aeromaps.models.impacts.costs.operations.operations_cost import (
     LoadFactorEfficiencyCost,
     OperationalEfficiencyCost,
 )
+from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import ExogenousCarbonPriceTrajectory
 from aeromaps.models.impacts.energy_resources.abatement_potential import (
     DropinAbatementPotential,
     EnergyAbatementEffective,
@@ -352,6 +353,7 @@ models_simple = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory("exogenous_carbon_price_trajectory"),
 }
 
 models_simple_fair = {
@@ -501,6 +503,7 @@ models_simple_fair = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory("exogenous_carbon_price_trajectory"),
 }
 
 models_complex = {
@@ -657,6 +660,7 @@ models_complex = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory("exogenous_carbon_price_trajectory"),
 }
 
 models_complex_improvedgwpstar = {
@@ -809,6 +813,7 @@ models_complex_improvedgwpstar = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory("exogenous_carbon_price_trajectory"),
 }
 
 models_complex_fair = {
@@ -878,12 +883,10 @@ models_complex_fair = {
     ),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
-
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
     "kerosene_cost": KeroseneCost("kerosene_cost"),
     "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
-
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "electricity_cost": ElectricityCost("electricity_cost"),
@@ -960,4 +963,5 @@ models_complex_fair = {
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory("exogenous_carbon_price_trajectory"),
 }

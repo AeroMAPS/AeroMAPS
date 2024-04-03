@@ -27,8 +27,8 @@ class NonDiscountedScenarioCost(AeromapsModel):
         co2_emissions_including_load_factor: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-            density_kerosene: float =0.0,
-            lhv_kerosene: float =0.0,
+        density_kerosene: float = 0.0,
+        lhv_kerosene: float = 0.0,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
 
         # Compute the total energy expenses of the scenario
@@ -43,24 +43,38 @@ class NonDiscountedScenarioCost(AeromapsModel):
             + total_hydrogen_supply_cost.fillna(0)
         )
 
-
         # Compute the business as usual energy expenses
 
-        energy_consumption_full_kero = co2_emissions_including_load_factor * 1e12/ kerosene_emission_factor.loc[
-                self.prospection_start_year - 1
-            ]
+        energy_consumption_full_kero = (
+            co2_emissions_including_load_factor
+            * 1e12
+            / kerosene_emission_factor.loc[self.prospection_start_year - 1]
+        )
 
-        energy_consumption_BAU = co2_emissions_2019technology * 1e12 / kerosene_emission_factor.loc[
-            self.prospection_start_year - 1
-            ]
+        energy_consumption_BAU = (
+            co2_emissions_2019technology
+            * 1e12
+            / kerosene_emission_factor.loc[self.prospection_start_year - 1]
+        )
 
-        non_discounted_BAU_energy_expenses = energy_consumption_BAU / (density_kerosene * lhv_kerosene) * kerosene_market_price / 1000000
-        non_discounted_full_kero_energy_expenses = energy_consumption_full_kero / (density_kerosene * lhv_kerosene) * kerosene_market_price / 1000000
-
+        non_discounted_BAU_energy_expenses = (
+            energy_consumption_BAU
+            / (density_kerosene * lhv_kerosene)
+            * kerosene_market_price
+            / 1000000
+        )
+        non_discounted_full_kero_energy_expenses = (
+            energy_consumption_full_kero
+            / (density_kerosene * lhv_kerosene)
+            * kerosene_market_price
+            / 1000000
+        )
 
         self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
         self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
-        self.df.loc[:, "non_discounted_full_kero_energy_expenses"] = non_discounted_full_kero_energy_expenses
+        self.df.loc[
+            :, "non_discounted_full_kero_energy_expenses"
+        ] = non_discounted_full_kero_energy_expenses
 
         return (
             non_discounted_energy_expenses,

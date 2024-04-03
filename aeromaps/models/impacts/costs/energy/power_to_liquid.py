@@ -338,7 +338,6 @@ class ElectrofuelCost(AeromapsModel):
             / 1000000
         )
 
-
         # Compute the carbon tax (M€)
         electrofuel_carbon_tax = (
             carbon_tax * electrofuel_emission_factor * demand_scenario / 1000000 / 1000000

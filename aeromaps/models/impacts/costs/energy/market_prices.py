@@ -208,13 +208,17 @@ class KeroseneBAUCost(AeromapsModel):
         # Quantity of kerosene used in BAU "full_kero" including efficiceny and ops (virtual)
 
         kerosene_consumption_full_kero = (
-                non_discounted_full_kero_energy_expenses / kerosene_market_price * 1000000 * fuel_lhv
+            non_discounted_full_kero_energy_expenses / kerosene_market_price * 1000000 * fuel_lhv
         )
 
         # Carbon tax that would be paid in full_kero
 
         kerosene_carbon_tax_full_kero = (
-                kerosene_consumption_full_kero * carbon_tax * kerosene_emission_factor / 1000000 / 1000000
+            kerosene_consumption_full_kero
+            * carbon_tax
+            * kerosene_emission_factor
+            / 1000000
+            / 1000000
         )
 
         self.df.loc[:, "kerosene_carbon_tax_full_kero"] = kerosene_carbon_tax_full_kero

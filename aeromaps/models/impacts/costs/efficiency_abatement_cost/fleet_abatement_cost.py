@@ -33,6 +33,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         ),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         covid_energy_intensity_per_ask_increase_2020: float = 0.0,
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
@@ -127,10 +128,15 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     aircraft_var_name + ":aircraft_specific_carbon_abatement_cost"
                 )
 
+                specific_cac_prime_aircraft_var_name = (
+                    aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost"
+                )
+
                 scac_vals = []
+                scac_vals_prime = []
                 for k in range(self.prospection_start_year, self.end_year + 1):
-                    scac_vals.append(
-                        self._get_discounted_vals(
+
+                    scac,scac_prime=    self._get_discounted_vals(
                             k,
                             social_discount_rate,
                             self.fleet_model.fleet.categories[category].parameters.life,
@@ -139,14 +145,24 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                             kerosene_market_price,
                             kerosene_emission_factor,
                             extra_emissions,
+                            exogenous_carbon_price_trajectory
                         )
-                    )
+                    scac_vals.append(scac)
+                    scac_vals_prime.append(scac_prime)
+
+
                 scac_column = pd.DataFrame(
                     {specific_cac_aircraft_var_name: scac_vals},
                     index=range(self.prospection_start_year, self.end_year + 1),
                 )
 
+                scac_prime_column = pd.DataFrame(
+                    {specific_cac_prime_aircraft_var_name: scac_vals_prime},
+                    index=range(self.prospection_start_year, self.end_year + 1),
+                )
+
                 self.fleet_model.df = pd.concat([self.fleet_model.df, scac_column], axis=1)
+                self.fleet_model.df = pd.concat([self.fleet_model.df, scac_prime_column], axis=1)
 
                 # TODO use input dictionary if possible once implemented instead of looking in fleet model df + dummy output
                 aircraft_pseudo_ask = (
@@ -203,10 +219,12 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         kerosene_market_price,
         kerosene_emission_factor,
         emissions_reduction,
+        exogenous_carbon_price_trajectory,
     ):
 
         discounted_cumul_cost = 0
         cumul_em = 0
+        generic_discounted_cumul_em = 0
         for i in range(year, year + int(aircraft_life)):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
@@ -217,6 +235,16 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     emissions_reduction[year]
                     * kerosene_emission_factor[i]
                     / kerosene_emission_factor[year]
+                )
+
+                # discounting emissions for non-hotelling scc
+                generic_discounted_cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[i]
+                    / kerosene_emission_factor[year]
+                    * exogenous_carbon_price_trajectory[i]
+                    / exogenous_carbon_price_trajectory[year]
+                    / (1 + discount_rate) ** (i - year)
                 )
             else:
                 discounted_cumul_cost += (
@@ -231,4 +259,21 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     / kerosene_emission_factor[year]
                 )
 
-        return discounted_cumul_cost / cumul_em
+                # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
+                future_scc_growth = (
+                    exogenous_carbon_price_trajectory[self.end_year]
+                    / exogenous_carbon_price_trajectory[self.end_year - 1]
+                )
+
+                generic_discounted_cumul_em += (
+                    emissions_reduction[year]
+                    * (kerosene_emission_factor[self.end_year]
+                    / kerosene_emission_factor[year])
+                    * (exogenous_carbon_price_trajectory[self.end_year]
+                    / exogenous_carbon_price_trajectory[year]
+                    * (1 + future_scc_growth) ** (i - self.end_year))
+                    / (1 + discount_rate) ** (i - year)
+                )
+
+        return (discounted_cumul_cost / cumul_em,
+                discounted_cumul_cost / generic_discounted_cumul_em)

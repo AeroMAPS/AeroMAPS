@@ -68,7 +68,7 @@ class LiquidHydrogenCost(AeromapsModel):
         social_discount_rate: float = 0.0,
         lhv_hydrogen: float = 0.0,
         lhv_kerosene: float = 0.0,
-        density_kerosene: float = 0.0
+        density_kerosene: float = 0.0,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -357,9 +357,6 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "liquefaction_h2_mean_opex_share"] = liquefaction_h2_mean_opex_share
         self.df.loc[:, "liquefaction_h2_mean_elec_share"] = liquefaction_h2_mean_elec_share
 
-
-        
-
         ######## HYDROGEN TRANSPORT ########
 
         transport_h2_total_cost = transport_cost_ratio * (
@@ -373,27 +370,26 @@ class LiquidHydrogenCost(AeromapsModel):
 
         self.df.loc[:, "transport_h2_total_cost"] = transport_h2_total_cost
 
-        transport_h2_cost_per_kg = transport_h2_total_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
+        transport_h2_cost_per_kg = (
+            transport_h2_total_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
+        )
 
-        liquefaction_h2_mean_mfsp_kg = liquefaction_h2_total_cost/(energy_consumption_hydrogen / lhv_hydrogen) * 1000000
+        liquefaction_h2_mean_mfsp_kg = (
+            liquefaction_h2_total_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
+        )
 
         self.df.loc[:, "transport_h2_cost_per_kg"] = transport_h2_cost_per_kg
         self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"] = liquefaction_h2_mean_mfsp_kg
-
 
         ######## SYNTHESIS ########
         kerosene_lhv_litre = lhv_kerosene * density_kerosene
         # energy_replacement_ratio = 1  # average energy required when hydrogen powered compared to kerosene
 
         # compute average costs per kg for each pathway
-        
+
         electrolysis_h2_mean_mfsp_kg = (
             electrolysis_h2_total_cost
-            / (
-                energy_consumption_hydrogen
-                / lhv_hydrogen
-                * (hydrogen_electrolysis_share / 100)
-            )
+            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_electrolysis_share / 100))
         ) * 1000000
 
         self.df.loc[:, "electrolysis_h2_mean_mfsp_kg"] = electrolysis_h2_mean_mfsp_kg
@@ -401,11 +397,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         gas_ccs_h2_mean_mfsp_kg = (
             gas_ccs_h2_total_cost
-            / (
-                energy_consumption_hydrogen
-                / lhv_hydrogen
-                * (hydrogen_gas_ccs_share / 100)
-            )
+            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_gas_ccs_share / 100))
         ) * 1000000
 
         self.df.loc[:, "gas_ccs_h2_mean_mfsp_kg"] = gas_ccs_h2_mean_mfsp_kg
@@ -421,11 +413,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         coal_ccs_h2_mean_mfsp_kg = (
             coal_ccs_h2_total_cost
-            / (
-                energy_consumption_hydrogen
-                / lhv_hydrogen
-                * (hydrogen_coal_ccs_share / 100)
-            )
+            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_coal_ccs_share / 100))
         ) * 1000000
 
         self.df.loc[:, "coal_ccs_h2_mean_mfsp_kg"] = coal_ccs_h2_mean_mfsp_kg
@@ -455,9 +443,7 @@ class LiquidHydrogenCost(AeromapsModel):
         # M€
 
         h2_avg_cost_per_kg = (
-            total_hydrogen_supply_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen)
-            * 1000000
+            total_hydrogen_supply_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
         )
         self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
         # €/kg
@@ -898,7 +884,7 @@ class LiquidHydrogenCost(AeromapsModel):
             coal_ccs_h2_specific_abatement_cost,
             coal_h2_specific_abatement_cost,
             transport_h2_cost_per_kg,
-            liquefaction_h2_mean_mfsp_kg
+            liquefaction_h2_mean_mfsp_kg,
         )
 
     def _electrolysis_computation(
@@ -1302,7 +1288,7 @@ class LiquidHydrogenCost(AeromapsModel):
         h2_mean_opex_share = h2_opex_cost / h2_total_cost * 100
         h2_mean_fuel_share = h2_fuel_cost / h2_total_cost * 100
         h2_mean_ccs_share = h2_ccs_cost / h2_total_cost * 100
-        
+
         return (
             plant_building_scenario,
             plant_building_cost,

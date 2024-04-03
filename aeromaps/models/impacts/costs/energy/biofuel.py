@@ -159,8 +159,12 @@ class BiofuelCost(AeromapsModel):
         ] = specific_carbon_abatement_cost_hefa_fog
         self.df.loc[:, "biofuel_cost_hefa_fog"] = biofuel_cost_hefa_fog
         self.df.loc[:, "biofuel_mean_capex_share_hefa_fog"] = biofuel_mean_capex_share_hefa_fog
-        self.df.loc[:, "biofuel_mean_var_opex_share_hefa_fog"] = biofuel_mean_var_opex_share_hefa_fog
-        self.df.loc[:, "biofuel_mean_feedstock_share_hefa_fog"] = biofuel_mean_feedstock_share_hefa_fog
+        self.df.loc[
+            :, "biofuel_mean_var_opex_share_hefa_fog"
+        ] = biofuel_mean_var_opex_share_hefa_fog
+        self.df.loc[
+            :, "biofuel_mean_feedstock_share_hefa_fog"
+        ] = biofuel_mean_feedstock_share_hefa_fog
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
         self.df.loc[:, "biofuel_carbon_tax_hefa_fog"] = biofuel_carbon_tax_hefa_fog
         self.df.loc[:, "biofuel_cost_premium_hefa_fog"] = biofuel_cost_premium_hefa_fog
@@ -209,9 +213,15 @@ class BiofuelCost(AeromapsModel):
             :, "specific_carbon_abatement_cost_hefa_others"
         ] = specific_carbon_abatement_cost_hefa_others
         self.df.loc[:, "biofuel_cost_hefa_others"] = biofuel_cost_hefa_others
-        self.df.loc[:, "biofuel_mean_capex_share_hefa_others"] = biofuel_mean_capex_share_hefa_others
-        self.df.loc[:, "biofuel_mean_var_opex_share_hefa_others"] = biofuel_mean_var_opex_share_hefa_others
-        self.df.loc[:, "biofuel_mean_feedstock_share_hefa_others"] = biofuel_mean_feedstock_share_hefa_others
+        self.df.loc[
+            :, "biofuel_mean_capex_share_hefa_others"
+        ] = biofuel_mean_capex_share_hefa_others
+        self.df.loc[
+            :, "biofuel_mean_var_opex_share_hefa_others"
+        ] = biofuel_mean_var_opex_share_hefa_others
+        self.df.loc[
+            :, "biofuel_mean_feedstock_share_hefa_others"
+        ] = biofuel_mean_feedstock_share_hefa_others
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
         self.df.loc[:, "biofuel_carbon_tax_hefa_others"] = biofuel_carbon_tax_hefa_others
         self.df.loc[:, "biofuel_cost_premium_hefa_others"] = biofuel_cost_premium_hefa_others
@@ -261,8 +271,12 @@ class BiofuelCost(AeromapsModel):
         ] = specific_carbon_abatement_cost_ft_others
         self.df.loc[:, "biofuel_cost_ft_others"] = biofuel_cost_ft_others
         self.df.loc[:, "biofuel_mean_capex_share_ft_others"] = biofuel_mean_capex_share_ft_others
-        self.df.loc[:, "biofuel_mean_var_opex_share_ft_others"] = biofuel_mean_var_opex_share_ft_others
-        self.df.loc[:, "biofuel_mean_feedstock_share_ft_others"] = biofuel_mean_feedstock_share_ft_others
+        self.df.loc[
+            :, "biofuel_mean_var_opex_share_ft_others"
+        ] = biofuel_mean_var_opex_share_ft_others
+        self.df.loc[
+            :, "biofuel_mean_feedstock_share_ft_others"
+        ] = biofuel_mean_feedstock_share_ft_others
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
         self.df.loc[:, "biofuel_carbon_tax_ft_others"] = biofuel_carbon_tax_ft_others
         self.df.loc[:, "biofuel_cost_premium_ft_others"] = biofuel_cost_premium_ft_others
@@ -637,11 +651,10 @@ class BiofuelCost(AeromapsModel):
         biofuel_mean_mfsp_litre = (
             biofuel_total_cost / (demand_scenario / (lhv_biofuel * density_biofuel)) * 1000000
         )
-        
+
         biofuel_mean_capex_share = biofuel_capex_cost / biofuel_total_cost * 100
         biofuel_mean_opex_share = biofuel_opex_cost / biofuel_total_cost * 100
         biofuel_mean_feedstock_share = biofuel_feedstock_cost / biofuel_total_cost * 100
-        
 
         biofuel_cost_premium = (
             (biofuel_mean_mfsp_litre - kerosene_market_price)
