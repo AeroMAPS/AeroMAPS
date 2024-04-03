@@ -38,7 +38,12 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
         social_discount_rate: float = 0.0,
-    ) -> Tuple[dict, dict]:
+    ) -> Tuple[
+        dict,
+        dict,
+        dict,
+        dict
+    ]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
@@ -283,7 +288,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     / kerosene_emission_factor[year])
                     * (exogenous_carbon_price_trajectory[self.end_year]
                     / exogenous_carbon_price_trajectory[year]
-                    * (1 + future_scc_growth) ** (i - self.end_year))
+                    * (future_scc_growth) ** (i - self.end_year))
                     / (1 + discount_rate) ** (i - year)
                 )
 

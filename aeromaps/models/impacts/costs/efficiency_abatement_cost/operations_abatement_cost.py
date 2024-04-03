@@ -202,7 +202,7 @@ class OperationsAbatementCost(AeromapsModel):
                            / kerosene_emission_factor[year])
                         * (exogenous_carbon_price_trajectory[self.end_year]
                            / exogenous_carbon_price_trajectory[year]
-                           * (1 + future_scc_growth) ** (i - self.end_year))
+                           * (future_scc_growth) ** (i - self.end_year))
                         / (1 + discount_rate) ** (i - year)
                 )
 
