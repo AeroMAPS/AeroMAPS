@@ -40,6 +40,8 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         social_discount_rate: float = 0.0,
     ) -> Tuple[dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
+        dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
+        dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
         for category, sets in self.fleet_model.all_aircraft_elements.items():
 
@@ -204,9 +206,19 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     aircraft_var_name
                 ] = aircraft_carbon_abatement_volume
 
+                dummy_specific_carbon_abatement_cost_aircraft_value_dict[
+                    aircraft_var_name
+                ] = scac_column
+
+                dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict[
+                    aircraft_var_name
+                ] = scac_prime_column
+
         return (
             dummy_carbon_abatement_cost_aircraft_value_dict,
             dummy_carbon_abatement_volume_aircraft_value_dict,
+            dummy_specific_carbon_abatement_cost_aircraft_value_dict,
+            dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict,
         )
 
     def _get_discounted_vals(
