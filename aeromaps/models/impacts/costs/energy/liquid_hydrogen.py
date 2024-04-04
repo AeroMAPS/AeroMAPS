@@ -63,6 +63,7 @@ class LiquidHydrogenCost(AeromapsModel):
         transport_cost_ratio: float = 0.0,
         energy_replacement_ratio: float = 1.0,
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -70,6 +71,11 @@ class LiquidHydrogenCost(AeromapsModel):
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -525,8 +531,15 @@ class LiquidHydrogenCost(AeromapsModel):
             kerosene_market_price, plant_lifespan, social_discount_rate
         )
 
-        (electrolysis_h2_cumul_avoided_emissions,) = self._unitary_avoided_cumul_emissions(
-            h2_avoided_emissions_factor, plant_lifespan, lhv_hydrogen
+        (
+            electrolysis_h2_cumul_avoided_emissions,
+            electrolysis_h2_generic_discounted_cumul_avoided_emissions,
+        ) = self._unitary_avoided_cumul_emissions(
+            h2_avoided_emissions_factor,
+            exogenous_carbon_price_trajectory,
+            plant_lifespan,
+            lhv_hydrogen,
+            social_discount_rate,
         )
 
         electrolysis_h2_specific_abatement_cost = (
@@ -535,9 +548,19 @@ class LiquidHydrogenCost(AeromapsModel):
             - discounted_cumul_kerosene_costs
         ) / electrolysis_h2_cumul_avoided_emissions
 
+        electrolysis_h2_generic_specific_abatement_cost = (
+            (1 + transport_cost_ratio)
+            * (electrolysis_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
+            - discounted_cumul_kerosene_costs
+        ) / electrolysis_h2_generic_discounted_cumul_avoided_emissions
+
         self.df.loc[
             :, "electrolysis_h2_specific_abatement_cost"
         ] = electrolysis_h2_specific_abatement_cost
+
+        self.df.loc[
+            :, "electrolysis_h2_generic_specific_abatement_cost"
+        ] = electrolysis_h2_generic_specific_abatement_cost
 
         #### GAS CCS ####
         gas_ccs_h2_cost_premium = (
@@ -593,8 +616,15 @@ class LiquidHydrogenCost(AeromapsModel):
             :, "gas_ccs_h2_mfsp_carbon_tax_supplement"
         ] = gas_ccs_h2_mfsp_carbon_tax_supplement
 
-        (gas_ccs_h2_cumul_avoided_emissions,) = self._unitary_avoided_cumul_emissions(
-            h2_avoided_emissions_factor, plant_lifespan, lhv_hydrogen
+        (
+            gas_ccs_h2_cumul_avoided_emissions,
+            gas_ccs_h2_generic_discounted_cumul_avoided_emissions,
+        ) = self._unitary_avoided_cumul_emissions(
+            h2_avoided_emissions_factor,
+            exogenous_carbon_price_trajectory,
+            plant_lifespan,
+            lhv_hydrogen,
+            social_discount_rate,
         )
 
         gas_ccs_h2_specific_abatement_cost = (
@@ -603,7 +633,17 @@ class LiquidHydrogenCost(AeromapsModel):
             - discounted_cumul_kerosene_costs
         ) / gas_ccs_h2_cumul_avoided_emissions
 
+        gas_ccs_h2_generic_specific_abatement_cost = (
+            (1 + transport_cost_ratio)
+            * (gas_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
+            - discounted_cumul_kerosene_costs
+        ) / gas_ccs_h2_generic_discounted_cumul_avoided_emissions
+
         self.df.loc[:, "gas_ccs_h2_specific_abatement_cost"] = gas_ccs_h2_specific_abatement_cost
+
+        self.df.loc[
+            :, "gas_ccs_h2_generic_specific_abatement_cost"
+        ] = gas_ccs_h2_generic_specific_abatement_cost
 
         #### GAS ####
         gas_h2_cost_premium = (
@@ -655,8 +695,15 @@ class LiquidHydrogenCost(AeromapsModel):
         # €/kg_H2
         self.df.loc[:, "gas_h2_mfsp_carbon_tax_supplement"] = gas_h2_mfsp_carbon_tax_supplement
 
-        (gas_h2_cumul_avoided_emissions,) = self._unitary_avoided_cumul_emissions(
-            h2_avoided_emissions_factor, plant_lifespan, lhv_hydrogen
+        (
+            gas_h2_cumul_avoided_emissions,
+            gas_h2_generic_discounted_cumul_avoided_emissions,
+        ) = self._unitary_avoided_cumul_emissions(
+            h2_avoided_emissions_factor,
+            exogenous_carbon_price_trajectory,
+            plant_lifespan,
+            lhv_hydrogen,
+            social_discount_rate,
         )
 
         gas_h2_specific_abatement_cost = (
@@ -665,7 +712,17 @@ class LiquidHydrogenCost(AeromapsModel):
             - discounted_cumul_kerosene_costs
         ) / gas_h2_cumul_avoided_emissions
 
+        gas_h2_generic_specific_abatement_cost = (
+            (1 + transport_cost_ratio)
+            * (gas_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
+            - discounted_cumul_kerosene_costs
+        ) / gas_h2_generic_discounted_cumul_avoided_emissions
+
         self.df.loc[:, "gas_h2_specific_abatement_cost"] = gas_h2_specific_abatement_cost
+
+        self.df.loc[
+            :, "gas_h2_generic_specific_abatement_cost"
+        ] = gas_h2_generic_specific_abatement_cost
 
         #### COAL CCS ####
         coal_ccs_h2_cost_premium = (
@@ -721,8 +778,15 @@ class LiquidHydrogenCost(AeromapsModel):
             :, "coal_ccs_h2_mfsp_carbon_tax_supplement"
         ] = coal_ccs_h2_mfsp_carbon_tax_supplement
 
-        (coal_ccs_h2_cumul_avoided_emissions,) = self._unitary_avoided_cumul_emissions(
-            h2_avoided_emissions_factor, plant_lifespan, lhv_hydrogen
+        (
+            coal_ccs_h2_cumul_avoided_emissions,
+            coal_ccs_h2_generic_discounted_cumul_avoided_emissions,
+        ) = self._unitary_avoided_cumul_emissions(
+            h2_avoided_emissions_factor,
+            exogenous_carbon_price_trajectory,
+            plant_lifespan,
+            lhv_hydrogen,
+            social_discount_rate,
         )
 
         coal_ccs_h2_specific_abatement_cost = (
@@ -731,7 +795,17 @@ class LiquidHydrogenCost(AeromapsModel):
             - discounted_cumul_kerosene_costs
         ) / coal_ccs_h2_cumul_avoided_emissions
 
+        coal_ccs_h2_generic_specific_abatement_cost = (
+            (1 + transport_cost_ratio)
+            * (coal_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
+            - discounted_cumul_kerosene_costs
+        ) / coal_ccs_h2_generic_discounted_cumul_avoided_emissions
+
         self.df.loc[:, "coal_ccs_h2_specific_abatement_cost"] = coal_ccs_h2_specific_abatement_cost
+
+        self.df.loc[
+            :, "coal_ccs_h2_generic_specific_abatement_cost"
+        ] = coal_ccs_h2_generic_specific_abatement_cost
 
         #### COAL ####
         coal_h2_cost_premium = (
@@ -797,8 +871,15 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
         # €/kg
 
-        (coal_h2_cumul_avoided_emissions,) = self._unitary_avoided_cumul_emissions(
-            h2_avoided_emissions_factor, plant_lifespan, lhv_hydrogen
+        (
+            coal_h2_cumul_avoided_emissions,
+            coal_h2_generic_discounted_cumul_avoided_emissions,
+        ) = self._unitary_avoided_cumul_emissions(
+            h2_avoided_emissions_factor,
+            exogenous_carbon_price_trajectory,
+            plant_lifespan,
+            lhv_hydrogen,
+            social_discount_rate,
         )
 
         coal_h2_specific_abatement_cost = (
@@ -807,7 +888,17 @@ class LiquidHydrogenCost(AeromapsModel):
             - discounted_cumul_kerosene_costs
         ) / coal_h2_cumul_avoided_emissions
 
+        coal_h2_generic_specific_abatement_cost = (
+            (1 + transport_cost_ratio)
+            * (coal_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
+            - discounted_cumul_kerosene_costs
+        ) / coal_h2_generic_discounted_cumul_avoided_emissions
+
         self.df.loc[:, "coal_h2_specific_abatement_cost"] = coal_h2_specific_abatement_cost
+
+        self.df.loc[
+            :, "coal_h2_generic_specific_abatement_cost"
+        ] = coal_h2_generic_specific_abatement_cost
 
         return (
             electrolysis_plant_building_scenario,
@@ -883,6 +974,11 @@ class LiquidHydrogenCost(AeromapsModel):
             gas_h2_specific_abatement_cost,
             coal_ccs_h2_specific_abatement_cost,
             coal_h2_specific_abatement_cost,
+            electrolysis_h2_generic_specific_abatement_cost,
+            gas_ccs_h2_generic_specific_abatement_cost,
+            gas_h2_generic_specific_abatement_cost,
+            coal_ccs_h2_generic_specific_abatement_cost,
+            coal_h2_generic_specific_abatement_cost,
             transport_h2_cost_per_kg,
             liquefaction_h2_mean_mfsp_kg,
         )
@@ -1633,26 +1729,59 @@ class LiquidHydrogenCost(AeromapsModel):
     def _unitary_avoided_cumul_emissions(
         self,
         avoided_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         lhv_hydrogen: float = 0.0,
-    ) -> Tuple[pd.Series,]:
+        social_discount_rate: float = 0.0,
+    ) -> Tuple[pd.Series, pd.Series,]:
         # Constants:
 
         indexes = avoided_emission_factor.index
 
         specific_em = pd.Series(np.nan, indexes)
+        generic_discounted_specific_em = pd.Series(np.nan, indexes)
 
         for year in list(avoided_emission_factor.index):
             cumul_em = 0
+            generic_discounted_cumul_em = 0
             for i in range(year, year + int(plant_lifespan)):
                 if i < (self.end_year + 1):
                     cumul_em += avoided_emission_factor[i] * (lhv_hydrogen) / 1000000
 
+                    # discounting emissions for non-hotelling scc
+                    generic_discounted_cumul_em += (
+                        avoided_emission_factor[i]
+                        * (lhv_hydrogen)
+                        / 1000000
+                        * exogenous_carbon_price_trajectory[i]
+                        / exogenous_carbon_price_trajectory[year]
+                        / (1 + social_discount_rate) ** (i - year)
+                    )
+
                 else:
                     cumul_em += avoided_emission_factor[self.end_year] * (lhv_hydrogen) / 1000000
-            specific_em[year] = cumul_em
+                    # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
+                    future_scc_growth = (
+                        exogenous_carbon_price_trajectory[self.end_year]
+                        / exogenous_carbon_price_trajectory[self.end_year - 1]
+                    )
 
-        return (specific_em,)
+                    generic_discounted_cumul_em += (
+                        avoided_emission_factor[self.end_year]
+                        * (lhv_hydrogen)
+                        / 1000000
+                        * (
+                            exogenous_carbon_price_trajectory[self.end_year]
+                            / exogenous_carbon_price_trajectory[year]
+                            * (future_scc_growth) ** (i - self.end_year)
+                        )
+                        / (1 + social_discount_rate) ** (i - year)
+                    )
+
+            specific_em[year] = cumul_em
+            generic_discounted_specific_em[year] = generic_discounted_cumul_em
+
+        return (specific_em, generic_discounted_specific_em)
 
 
 class ElectrolyserCapex(AeromapsModel):

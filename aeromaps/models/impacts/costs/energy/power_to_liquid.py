@@ -31,7 +31,7 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
         electricity_load_factor: float = 0.0,
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
-            exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -110,7 +110,7 @@ class ElectrofuelCost(AeromapsModel):
             :, "specific_carbon_abatement_cost_electrofuel"
         ] = specific_carbon_abatement_cost_electrofuel
         self.df.loc[
-        :, "generic_specific_carbon_abatement_cost_electrofuel"
+            :, "generic_specific_carbon_abatement_cost_electrofuel"
         ] = generic_specific_carbon_abatement_cost_electrofuel
         self.df.loc[:, "electrofuel_carbon_tax"] = electrofuel_carbon_tax
         self.df.loc[
@@ -151,7 +151,7 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
-            exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -303,12 +303,12 @@ class ElectrofuelCost(AeromapsModel):
 
                         # discounting emissions for non-hotelling scc
                         generic_discounted_cumul_em += (
-                                avoided_emission_factor[i]
-                                * (lhv_electrofuel * density_electrofuel)
-                                / 1000000
-                                * exogenous_carbon_price_trajectory[i]
-                                / exogenous_carbon_price_trajectory[year]
-                                / (1 + social_discount_rate) ** (i - year)
+                            avoided_emission_factor[i]
+                            * (lhv_electrofuel * density_electrofuel)
+                            / 1000000
+                            * exogenous_carbon_price_trajectory[i]
+                            / exogenous_carbon_price_trajectory[year]
+                            / (1 + social_discount_rate) ** (i - year)
                         )
                     else:
                         discounted_cumul_cost += (
@@ -323,28 +323,34 @@ class ElectrofuelCost(AeromapsModel):
 
                         # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
                         future_scc_growth = (
-                                exogenous_carbon_price_trajectory[self.end_year]
-                                / exogenous_carbon_price_trajectory[self.end_year - 1]
+                            exogenous_carbon_price_trajectory[self.end_year]
+                            / exogenous_carbon_price_trajectory[self.end_year - 1]
                         )
 
                         generic_discounted_cumul_em += (
-                                avoided_emission_factor[self.end_year]
-                                * (lhv_electrofuel * density_electrofuel)
-                                / 1000000
-                                * (exogenous_carbon_price_trajectory[self.end_year]
-                                   / exogenous_carbon_price_trajectory[year]
-                                   * (future_scc_growth) ** (i - self.end_year))
-                                / (1 + social_discount_rate) ** (i - year)
+                            avoided_emission_factor[self.end_year]
+                            * (lhv_electrofuel * density_electrofuel)
+                            / 1000000
+                            * (
+                                exogenous_carbon_price_trajectory[self.end_year]
+                                / exogenous_carbon_price_trajectory[year]
+                                * (future_scc_growth) ** (i - self.end_year)
+                            )
+                            / (1 + social_discount_rate) ** (i - year)
                         )
 
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
-                generic_specific_carbon_abatement_cost[year] = discounted_cumul_cost / generic_discounted_cumul_em
+                generic_specific_carbon_abatement_cost[year] = (
+                    discounted_cumul_cost / generic_discounted_cumul_em
+                )
 
             elif (year == self.end_year) or (
                 electrofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
-                generic_specific_carbon_abatement_cost[year] = generic_specific_carbon_abatement_cost[year - 1]
+                generic_specific_carbon_abatement_cost[
+                    year
+                ] = generic_specific_carbon_abatement_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.

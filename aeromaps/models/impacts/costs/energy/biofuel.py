@@ -48,7 +48,7 @@ class BiofuelCost(AeromapsModel):
         biofuel_atj_feedstock_cost: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_efficiency: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
-            exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
+        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -226,7 +226,7 @@ class BiofuelCost(AeromapsModel):
             :, "specific_carbon_abatement_cost_hefa_others"
         ] = specific_carbon_abatement_cost_hefa_others
         self.df.loc[
-        :, "generic_specific_carbon_abatement_cost_hefa_others"
+            :, "generic_specific_carbon_abatement_cost_hefa_others"
         ] = generic_specific_carbon_abatement_cost_hefa_others
         self.df.loc[:, "biofuel_cost_hefa_others"] = biofuel_cost_hefa_others
         self.df.loc[
@@ -348,7 +348,7 @@ class BiofuelCost(AeromapsModel):
             :, "specific_carbon_abatement_cost_ft_msw"
         ] = specific_carbon_abatement_cost_ft_msw
         self.df.loc[
-        :, "generic_specific_carbon_abatement_cost_ft_msw"
+            :, "generic_specific_carbon_abatement_cost_ft_msw"
         ] = generic_specific_carbon_abatement_cost_ft_msw
         self.df.loc[:, "biofuel_cost_ft_msw"] = biofuel_cost_ft_msw
         self.df.loc[:, "biofuel_mean_capex_share_ft_msw"] = biofuel_mean_capex_share_ft_msw
@@ -401,7 +401,9 @@ class BiofuelCost(AeromapsModel):
         self.df.loc[:, "plant_building_cost_atj"] = plant_building_cost_atj
         self.df.loc[:, "carbon_abatement_cost_atj"] = carbon_abatement_cost_atj
         self.df.loc[:, "specific_carbon_abatement_cost_atj"] = specific_carbon_abatement_cost_atj
-        self.df.loc[:, "generic_specific_carbon_abatement_cost_atj"] = generic_specific_carbon_abatement_cost_atj
+        self.df.loc[
+            :, "generic_specific_carbon_abatement_cost_atj"
+        ] = generic_specific_carbon_abatement_cost_atj
         self.df.loc[:, "biofuel_cost_atj"] = biofuel_cost_atj
         self.df.loc[:, "biofuel_mean_capex_share_atj"] = biofuel_mean_capex_share_atj
         self.df.loc[:, "biofuel_mean_var_opex_share_atj"] = biofuel_mean_var_opex_share_atj
@@ -657,10 +659,12 @@ class BiofuelCost(AeromapsModel):
                         )
                         # discounting emissions for non-hotelling scc
                         generic_discounted_cumul_em += (
-                                avoided_emission_factor[i] * (lhv_biofuel * density_biofuel) / 1000000
-                                * exogenous_carbon_price_trajectory[i]
-                                / exogenous_carbon_price_trajectory[year]
-                                / (1 + social_discount_rate) ** (i - year)
+                            avoided_emission_factor[i]
+                            * (lhv_biofuel * density_biofuel)
+                            / 1000000
+                            * exogenous_carbon_price_trajectory[i]
+                            / exogenous_carbon_price_trajectory[year]
+                            / (1 + social_discount_rate) ** (i - year)
                         )
 
                     else:
@@ -675,28 +679,34 @@ class BiofuelCost(AeromapsModel):
                         )
                         # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
                         future_scc_growth = (
-                                exogenous_carbon_price_trajectory[self.end_year]
-                                / exogenous_carbon_price_trajectory[self.end_year - 1]
+                            exogenous_carbon_price_trajectory[self.end_year]
+                            / exogenous_carbon_price_trajectory[self.end_year - 1]
                         )
 
                         generic_discounted_cumul_em += (
-                                avoided_emission_factor[self.end_year] * (lhv_biofuel * density_biofuel) / 1000000
-                                * (exogenous_carbon_price_trajectory[self.end_year]
-                                   / exogenous_carbon_price_trajectory[year]
-                                   * (future_scc_growth) ** (i - self.end_year))
-                                / (1 + social_discount_rate) ** (i - year)
+                            avoided_emission_factor[self.end_year]
+                            * (lhv_biofuel * density_biofuel)
+                            / 1000000
+                            * (
+                                exogenous_carbon_price_trajectory[self.end_year]
+                                / exogenous_carbon_price_trajectory[year]
+                                * (future_scc_growth) ** (i - self.end_year)
+                            )
+                            / (1 + social_discount_rate) ** (i - year)
                         )
 
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
-                generic_specific_carbon_abatement_cost[year] = discounted_cumul_cost / generic_discounted_cumul_em
-
+                generic_specific_carbon_abatement_cost[year] = (
+                    discounted_cumul_cost / generic_discounted_cumul_em
+                )
 
             elif (year == self.end_year) or (
                 biofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
-                generic_specific_carbon_abatement_cost[year] = generic_specific_carbon_abatement_cost[year - 1]
-
+                generic_specific_carbon_abatement_cost[
+                    year
+                ] = generic_specific_carbon_abatement_cost[year - 1]
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -754,7 +764,7 @@ class BiofuelCost(AeromapsModel):
             biofuel_cost_premium,
             mfsp_supplement_carbon_tax,
             specific_carbon_abatement_cost,
-            generic_specific_carbon_abatement_cost
+            generic_specific_carbon_abatement_cost,
         )
 
     def _compute_pathway_year_mfsp(

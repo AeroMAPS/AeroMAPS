@@ -38,12 +38,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
         social_discount_rate: float = 0.0,
-    ) -> Tuple[
-        dict,
-        dict,
-        dict,
-        dict
-    ]:
+    ) -> Tuple[dict, dict, dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
@@ -143,20 +138,19 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 scac_vals_prime = []
                 for k in range(self.prospection_start_year, self.end_year + 1):
 
-                    scac,scac_prime=    self._get_discounted_vals(
-                            k,
-                            social_discount_rate,
-                            self.fleet_model.fleet.categories[category].parameters.life,
-                            aircraft_doc_ne_delta,
-                            extra_cost_fuel,
-                            kerosene_market_price,
-                            kerosene_emission_factor,
-                            extra_emissions,
-                            exogenous_carbon_price_trajectory
-                        )
+                    scac, scac_prime = self._get_discounted_vals(
+                        k,
+                        social_discount_rate,
+                        self.fleet_model.fleet.categories[category].parameters.life,
+                        aircraft_doc_ne_delta,
+                        extra_cost_fuel,
+                        kerosene_market_price,
+                        kerosene_emission_factor,
+                        extra_emissions,
+                        exogenous_carbon_price_trajectory,
+                    )
                     scac_vals.append(scac)
                     scac_vals_prime.append(scac_prime)
-
 
                 scac_column = pd.DataFrame(
                     {specific_cac_aircraft_var_name: scac_vals},
@@ -284,13 +278,16 @@ class FleetCarbonAbatementCosts(AeromapsModel):
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * (kerosene_emission_factor[self.end_year]
-                    / kerosene_emission_factor[year])
-                    * (exogenous_carbon_price_trajectory[self.end_year]
-                    / exogenous_carbon_price_trajectory[year]
-                    * (future_scc_growth) ** (i - self.end_year))
+                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        exogenous_carbon_price_trajectory[self.end_year]
+                        / exogenous_carbon_price_trajectory[year]
+                        * (future_scc_growth) ** (i - self.end_year)
+                    )
                     / (1 + discount_rate) ** (i - year)
                 )
 
-        return (discounted_cumul_cost / cumul_em,
-                discounted_cumul_cost / generic_discounted_cumul_em)
+        return (
+            discounted_cumul_cost / cumul_em,
+            discounted_cumul_cost / generic_discounted_cumul_em,
+        )
