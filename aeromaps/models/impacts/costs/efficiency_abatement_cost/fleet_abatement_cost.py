@@ -130,7 +130,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                     aircraft_var_name + ":aircraft_specific_carbon_abatement_cost"
                 )
 
-                specific_cac_prime_aircraft_var_name = (
+                generic_specific_cac_aircraft_var_name = (
                     aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost"
                 )
 
@@ -158,7 +158,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
                 )
 
                 scac_prime_column = pd.DataFrame(
-                    {specific_cac_prime_aircraft_var_name: scac_vals_prime},
+                    {generic_specific_cac_aircraft_var_name: scac_vals_prime},
                     index=range(self.prospection_start_year, self.end_year + 1),
                 )
 
