@@ -2779,6 +2779,566 @@ class AnnualMACC:
         self.fig.canvas.draw()
 
 
+class CumulativeMACC:
+    def __init__(self, data, fleet_model):
+        self.df = data["vector_outputs"]
+        self.fleet_model = fleet_model
+        self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(plot_3_x, plot_3_y),
+        )
+        self.create_plot_data()
+        self.update()
+
+    def create_plot_data(self):
+        social_discount_rate = self.float_inputs["social_discount_rate"]
+        start_year = self.prospective_years[1]  # not 2020
+        end_year = self.prospective_years[-1]
+
+        macc_dict = {}
+
+        name_list = []
+        cumvol_list = []
+        cumcost_list = []
+        discounted_cumcost_list = []
+        undiscounted_cac_list = []
+        discounted_cac_list = []
+
+        colors_list = []
+
+        for category, sets in self.fleet_model.all_aircraft_elements.items():
+            for aircraft_var in sets:
+                if hasattr(aircraft_var, "parameters"):
+                    aircraft_var_name = aircraft_var.parameters.full_name
+                else:
+                    aircraft_var_name = aircraft_var.full_name
+
+                cumvol = 0
+                cumcost = 0
+                discountedcumcost = 0
+                for year in range(start_year, end_year + 1):
+                    year_vol = (
+                            self.fleet_model.df.loc[
+                                year, aircraft_var_name + ":aircraft_carbon_abatement_volume"
+                            ]
+                            / 1000000
+                    )
+
+                    year_cost = (
+                            year_vol
+                            * 1000000
+                            * self.fleet_model.df.loc[
+                                year, aircraft_var_name + ":aircraft_carbon_abatement_cost"
+                            ]
+                    )
+
+                    cumvol += year_vol
+                    cumcost += year_cost
+                    discountedcumcost += year_cost / (1 + social_discount_rate) ** (year - start_year)
+                cumvol_list.append(cumvol)
+                cumcost_list.append(cumcost)
+                discounted_cumcost_list.append(discountedcumcost)
+
+                if category == "Short Range":
+                    colors_list.append("gold")
+                elif category == "Medium Range":
+                    colors_list.append("goldenrod")
+                else:
+                    colors_list.append("darkgoldenrod")
+                name_list.append(aircraft_var_name.split(":")[-1])
+
+        name_list.extend(
+            [
+                el
+                for el in [
+                "Freighter - Dropin",
+                "Freighter - Hydrogen",
+                "Freighter - Electric",
+                "Bio - HEFA FOG",
+                "Bio - HEFA Others",
+                "Bio - Alcohol to Jet",
+                "Bio - FT MSW",
+                "Bio - FT Others",
+                "H2C",
+                "H2CCCS",
+                "H2G",
+                "H2GCCS",
+                "H2E",
+                "Electrofuel",
+                "OPS",
+                "OPS - Freighter",
+                "LF",
+            ]
+            ]
+        )
+
+        # Abatement effective in MtCO2e
+        cumvol_list.extend(
+            [
+                elt / 1000000
+                for elt in [
+                self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[start_year:end_year].sum(),
+                self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[start_year:end_year].sum(),
+                self.df.aircraft_carbon_abatement_volume_freight_electric.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hefa_fog.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hefa_others.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_atj.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_ft_msw.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_ft_others.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_coal.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_hydrogen_coal_ccs.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_hydrogen_gas.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_hydrogen_gas_ccs.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_hydrogen_electrolysis.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_electrofuel.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.operations_abatement_effective.loc[start_year:end_year].sum(),
+                self.df.operations_abatement_effective_freight.loc[start_year:end_year].sum(),
+                self.df.load_factor_abatement_effective.loc[
+                start_year:end_year
+                ].sum(),
+            ]
+            ]
+        )
+
+        # carbon abatement cost in (€/tCO2e)
+        cumcost_list.extend(
+            [
+                el
+                for el in [
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_electric.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_hefa_fog.loc[start_year:end_year]
+                        * self.df.abatement_effective_hefa_fog.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_hefa_others.loc[start_year:end_year]
+                        * self.df.abatement_effective_hefa_others.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_atj.loc[start_year:end_year]
+                        * self.df.abatement_effective_atj.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_ft_msw.loc[start_year:end_year]
+                        * self.df.abatement_effective_ft_msw.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_ft_others.loc[start_year:end_year]
+                        * self.df.abatement_effective_ft_others.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_coal.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_coal.loc[
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_coal_ccs.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_coal_ccs.loc[
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_gas.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_gas.loc[
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_gas_ccs.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_gas_ccs.loc[
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_electrolysis.loc[
+                        start_year:end_year
+                        ]
+                        * self.df.abatement_effective_hydrogen_electrolysis.loc[
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_electrofuel.loc[start_year:end_year]
+                        * self.df.abatement_effective_electrofuel.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.operations_abatement_cost.loc[start_year:end_year]
+                        * self.df.operations_abatement_effective.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.operations_abatement_cost_freight.loc[start_year:end_year]
+                        * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
+                ).sum(),
+                (
+                        self.df.load_factor_abatement_cost.loc[start_year:end_year]
+                        * self.df.load_factor_abatement_effective.loc[start_year:end_year]
+                ).sum(),
+            ]
+            ]
+        )
+
+        power_series = pd.Series(
+            [(1 + social_discount_rate) ** (year - start_year) for year in range(start_year, end_year + 1)],
+            index=range(start_year, end_year + 1),
+        )
+
+        discounted_cumcost_list.extend(
+            [
+                el
+                for el in [
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.aircraft_carbon_abatement_cost_freight_electric.loc[start_year:end_year]
+                        * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_hefa_fog.loc[start_year:end_year]
+                        * self.df.abatement_effective_hefa_fog.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_hefa_others.loc[start_year:end_year]
+                        * self.df.abatement_effective_hefa_others.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_atj.loc[start_year:end_year]
+                        * self.df.abatement_effective_atj.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_ft_msw.loc[start_year:end_year]
+                        * self.df.abatement_effective_ft_msw.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_ft_others.loc[start_year:end_year]
+                        * self.df.abatement_effective_ft_others.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_coal.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_coal.loc[
+                          start_year:end_year
+                          ]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_coal_ccs.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_coal_ccs.loc[
+                          start_year:end_year
+                          ]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_gas.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_gas.loc[
+                          start_year:end_year
+                          ]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_gas_ccs.loc[start_year:end_year]
+                        * self.df.abatement_effective_hydrogen_gas_ccs.loc[
+                          start_year:end_year
+                          ]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_h2_electrolysis.loc[
+                        start_year:end_year
+                        ]
+                        * self.df.abatement_effective_hydrogen_electrolysis.loc[
+                          start_year:end_year
+                          ]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.carbon_abatement_cost_electrofuel.loc[start_year:end_year]
+                        * self.df.abatement_effective_electrofuel.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.operations_abatement_cost.loc[start_year:end_year]
+                        * self.df.operations_abatement_effective.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.operations_abatement_cost_freight.loc[start_year:end_year]
+                        * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+                (
+                        self.df.load_factor_abatement_cost.loc[start_year:end_year]
+                        * self.df.load_factor_abatement_effective.loc[start_year:end_year]
+                        / power_series
+                ).sum(),
+            ]
+            ]
+        )
+
+        colors_list.extend(
+            [
+                el
+                for el in [
+                "khaki",
+                "khaki",
+                "khaki",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "orange",
+                "orange",
+                "orange",
+            ]
+            ]
+        )
+
+        undiscounted_cac_list = [a / (b * 1000000) for a, b in zip(cumcost_list, cumvol_list)]
+        discounted_cac_list = [a / (b * 1000000) for a, b in zip(discounted_cumcost_list, cumvol_list)]
+
+        macc_df = pd.DataFrame(
+            data=[
+                cumvol_list,
+                cumcost_list,
+                discounted_cumcost_list,
+                undiscounted_cac_list,
+                discounted_cac_list,
+                colors_list,
+            ],
+            columns=name_list,
+            index=[
+                "abatement_effective",
+                "cumulative_abatement_cost",
+                "discoutend_cumulative_abatement_cost",
+                "undiscounted_carbon_abatement_cost",
+                "carbon_abatement_cost",
+                "colors",
+            ],
+        )
+        self.macc_df = macc_df.transpose().sort_values(by="carbon_abatement_cost").dropna(subset='carbon_abatement_cost')
+
+    def update(self):
+        self.ax.cla()
+
+        maccneg_df = self.macc_df[self.macc_df["abatement_effective"] < 0]
+        maccpos_df = self.macc_df[self.macc_df["abatement_effective"] > 0]
+
+        ##### POS ######
+
+        heights_pos = maccpos_df["carbon_abatement_cost"].to_list()
+        names_pos = maccpos_df.index.to_list()
+        heights_pos.insert(0, 0)
+        heights_pos.append(heights_pos[-1])
+
+        # # Max effective maccpos
+        widths_effective_pos = maccpos_df["abatement_effective"].to_list()
+        widths_effective_pos.insert(0, 0)
+        widths_effective_pos.append(widths_effective_pos[-1])
+
+        colors_pos = maccpos_df["colors"].to_list()
+
+        maccpos_curve = self.ax.step(
+            np.cumsum(widths_effective_pos) - widths_effective_pos,
+            heights_pos,
+            where="post",
+            color="#335C67",
+            label="Marginal abatement cost",
+            linewidth=1,
+        )
+
+        for i in range(len(widths_effective_pos) - 2):
+            x_position = (np.cumsum(widths_effective_pos)[i] + np.cumsum(widths_effective_pos)[i + 1]) / 2
+            y_position = min(2000 - 10, heights_pos[i + 1] + 5)
+            self.ax.text(
+                x_position,
+                y_position,
+                f"{names_pos[i]}\n {int(heights_pos[i + 1])}",
+                rotation=0,
+                size=8,
+                ha="center",
+                va="center",
+            )
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0, (len(widths_effective_pos) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon(
+                [
+                    (np.cumsum(widths_effective_pos)[i], 0),
+                    (np.cumsum(widths_effective_pos)[i], heights_pos[i + 1]),
+                    (np.cumsum(widths_effective_pos)[i + 1], heights_pos[i + 1]),
+                    (np.cumsum(widths_effective_pos)[i + 1], 0),
+                ],
+                closed=True,
+                alpha=1,
+                facecolor=colors_pos[i],
+                edgecolor="#335C67",
+                linewidth=1,
+                linestyle="--",
+            )
+            self.ax.add_patch(polygon)
+
+        ##### NEG #####
+
+        heights_neg = maccneg_df["carbon_abatement_cost"].to_list()
+        names_neg = maccneg_df.index.to_list()
+
+        heights_neg.append(0)
+        heights_neg.insert(0, heights_neg[0])
+
+        # # Mself.ax effective maccneg
+        widths_effective_neg = maccneg_df["abatement_effective"].to_list()
+
+        widths_effective_neg.insert(0, 0)
+        widths_effective_neg.append(0)
+
+        colors_neg = maccneg_df["colors"].to_list()
+
+        maccneg_curve = self.ax.step(
+            np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg) + widths_effective_neg,
+            heights_neg,
+            where="post",
+            color="#335C67",
+            label="Marginal emission cost",
+            linewidth=1,
+        )
+
+        for i in range(len(widths_effective_neg) - 2):
+            x_position = (
+                    np.cumsum(widths_effective_neg)[-1]
+                    - (np.cumsum(widths_effective_neg)[i] + np.cumsum(widths_effective_neg)[i + 1]) / 2
+            )
+            y_position = max(-2000 + 10, heights_neg[i + 1] + 5)
+            self.ax.text(
+                x_position,
+                y_position,
+                f"{names_neg[i]}\n {int(heights_neg[i + 1])}",
+                rotation=0,
+                size=8,
+                ha="center",
+                va="center",
+            )
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0, (len(widths_effective_neg) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon(
+                [
+                    (np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i], 0),
+                    (
+                        np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i],
+                        heights_neg[i + 1],
+                    ),
+                    (
+                        np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i + 1],
+                        heights_neg[i + 1],
+                    ),
+                    (np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i + 1], 0),
+                ],
+                closed=True,
+                alpha=1,
+                facecolor=colors_neg[i],
+                edgecolor="#335C67",
+                linewidth=1,
+                linestyle="--",
+            )
+            self.ax.add_patch(polygon)
+
+        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
+        self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
+
+        self.ax.axhline(0, color="black", linestyle="--", linewidth=2)
+
+        self.ax.axvline(0, color="black", linestyle="--", linewidth=2)
+
+        legend_patches_1 = [
+            mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
+            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiecny"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+            mpatches.Patch(color="orange", alpha=1, label="Operations"),
+        ]
+
+        self.ax.add_artist(self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper right"))
+
+        self.ax.set_xlim(
+            np.cumsum(widths_effective_neg)[-1] - 50,
+            np.cumsum(widths_effective_pos)[len(widths_effective_pos) - 2] + 50,
+        )
+
+        self.ax.axvspan(xmin=self.ax.get_xlim()[0], xmax=0, facecolor="red", alpha=0.1, clip_on=True)
+        self.ax.axvspan(xmin=0, xmax=self.ax.get_xlim()[1], facecolor="blue", alpha=0.1, clip_on=True)
+
+        legend_patches = [
+            mpatches.Patch(
+                color="red",
+                alpha=0.1,
+                label="Extra emissions zone\nnegative abatement costs are\nassociated with extra costs",
+            ),
+            mpatches.Patch(color="blue", alpha=0.1, label="Carbon abatement zone"),
+        ]
+        self.ax.set_ylim(
+            max(-2000, min(min(heights_pos), min(heights_neg)) - 50),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 50),
+        )
+
+        self.ax.legend(handles=legend_patches, loc="upper left")
+
+        self.ax.grid()
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+
 class ScenarioMACC:
     def __init__(self, data, fleet_model):
         self.df = data["vector_outputs"]
