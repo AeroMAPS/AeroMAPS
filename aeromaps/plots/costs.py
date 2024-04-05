@@ -2796,6 +2796,7 @@ class CumulativeMACC:
         self.update()
 
     def create_plot_data(self):
+        #TODO check consistency and add variable sdr
         social_discount_rate = self.float_inputs["social_discount_rate"]
         start_year = self.prospective_years[1]  # not 2020
         end_year = self.prospective_years[-1]
