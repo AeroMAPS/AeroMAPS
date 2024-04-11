@@ -461,8 +461,12 @@ class ElectrofuelCost(AeromapsModel):
 
         dropin_specific_energy = lhv_electrofuel * density_electrofuel / 3.6  # kWh/L
 
-        electrofuel_specific_electricity = dropin_specific_energy / (
-            electrolysis_efficiency * electrofuel_hydrogen_efficiency
+        # Electrolysis efficiency correction to remove DAC input from efficiency (Fig.2 of https://www.nature.com/articles/s41558-021-01032-7)
+
+        electrofuel_efficiency = electrolysis_efficiency * electrofuel_hydrogen_efficiency * (0.81+0.03+0.6)/(0.81+0.03)
+
+        electrofuel_specific_electricity = dropin_specific_energy / ( electrofuel_efficiency
+
         )
 
         cap_cost_npv = 0
