@@ -530,9 +530,9 @@ electrofuel_capex_reference_years_values;List;€/(kg/day);Capital expenditures 
 electrofuel_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for electrofuel plant built
 electrofuel_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
-electrofuel_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+electrofuel_var_opex_reference_years_values;List;€/L;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_specific_co2_reference_years;List;yr;Reference years for the CO2 required per kg of of e-fuel produced for plant built
-electrofuel_specific_co2_reference_years_values;List;kg/kg;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+electrofuel_specific_co2_reference_years_values;List;kg/L;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_cost_reference_years;List;yr;Reference years for the industrial wholesale electricity market price
 electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_load_factor;Float;%;Electricity input load factor

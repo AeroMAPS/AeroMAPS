@@ -428,8 +428,8 @@ class LiquidHydrogenCost(AeromapsModel):
         coal_h2_mean_mfsp_kg = (
             coal_h2_total_cost
             / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_coal_share / 100))
-            + (liquefaction_h2_total_cost + transport_h2_total_cost)
-            / (energy_consumption_hydrogen / lhv_hydrogen)
+            # + (liquefaction_h2_total_cost + transport_h2_total_cost)
+            # / (energy_consumption_hydrogen / lhv_hydrogen)
         ) * 1000000
 
         self.df.loc[:, "coal_h2_mean_mfsp_kg"] = coal_h2_mean_mfsp_kg
