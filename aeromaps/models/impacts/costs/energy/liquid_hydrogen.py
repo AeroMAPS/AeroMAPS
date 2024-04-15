@@ -1653,7 +1653,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         hydrogen_specific_energy = lhv_hydrogen / 3.6  # kWh/kg
         # compute plant specific energy #kWh energy/kg h2
-        liquefier_specific_electricity = hydrogen_specific_energy / liquefaction_efficiency
+        liquefier_specific_electricity = hydrogen_specific_energy / liquefaction_efficiency - hydrogen_specific_energy
 
         load_fact = 0.95
         real_year_days = 365.25 * load_fact
