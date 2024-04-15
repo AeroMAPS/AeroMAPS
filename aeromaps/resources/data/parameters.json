@@ -343,7 +343,7 @@
     "hydrogen_gas_share_reference_years": [],
     "hydrogen_gas_share_reference_years_values": [71.0],
     "electrofuel_hydrogen_efficiency_reference_years": [],
-    "electrofuel_hydrogen_efficiency_reference_years_values": [0.67],
+    "electrofuel_hydrogen_efficiency_reference_years_values": [0.74],
     "hydrogen_replacement_ratio": 1.0,
     "electrolyser_capex_reference_years": [2020, 2030, 2040, 2050],
     "electrolyser_capex_reference_years_values": [588.0, 459.0, 433.0, 419.0],
