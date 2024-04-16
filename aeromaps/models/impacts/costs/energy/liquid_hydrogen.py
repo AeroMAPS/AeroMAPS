@@ -543,13 +543,13 @@ class LiquidHydrogenCost(AeromapsModel):
         electrolysis_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (electrolysis_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / electrolysis_h2_cumul_avoided_emissions
 
         electrolysis_h2_generic_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (electrolysis_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / electrolysis_h2_generic_discounted_cumul_avoided_emissions
 
         self.df.loc[
@@ -628,13 +628,13 @@ class LiquidHydrogenCost(AeromapsModel):
         gas_ccs_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / gas_ccs_h2_cumul_avoided_emissions
 
         gas_ccs_h2_generic_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / gas_ccs_h2_generic_discounted_cumul_avoided_emissions
 
         self.df.loc[:, "gas_ccs_h2_specific_abatement_cost"] = gas_ccs_h2_specific_abatement_cost
@@ -707,13 +707,13 @@ class LiquidHydrogenCost(AeromapsModel):
         gas_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / gas_h2_cumul_avoided_emissions
 
         gas_h2_generic_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / gas_h2_generic_discounted_cumul_avoided_emissions
 
         self.df.loc[:, "gas_h2_specific_abatement_cost"] = gas_h2_specific_abatement_cost
@@ -790,13 +790,13 @@ class LiquidHydrogenCost(AeromapsModel):
         coal_ccs_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / coal_ccs_h2_cumul_avoided_emissions
 
         coal_ccs_h2_generic_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / coal_ccs_h2_generic_discounted_cumul_avoided_emissions
 
         self.df.loc[:, "coal_ccs_h2_specific_abatement_cost"] = coal_ccs_h2_specific_abatement_cost
@@ -883,13 +883,13 @@ class LiquidHydrogenCost(AeromapsModel):
         coal_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / coal_h2_cumul_avoided_emissions
 
         coal_h2_generic_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
-            - discounted_cumul_kerosene_costs
+            - discounted_cumul_kerosene_costs / lhv_kerosene * lhv_hydrogen / energy_replacement_ratio
         ) / coal_h2_generic_discounted_cumul_avoided_emissions
 
         self.df.loc[:, "coal_h2_specific_abatement_cost"] = coal_h2_specific_abatement_cost
@@ -1433,8 +1433,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # compute plant specific energy #kWh energy/kg h2
         plant_specific_energy = hydrogen_specific_energy / plant_efficiency
 
-        emission_factor_kg = emission_factor * hydrogen_specific_energy * 3.6
-        emission_factor_without_ccs_kg = emission_factor_without_ccs * hydrogen_specific_energy * 3.6
+        emission_factor_kg = emission_factor * hydrogen_specific_energy * 3.6 / 1000
+        emission_factor_without_ccs_kg = emission_factor_without_ccs * hydrogen_specific_energy * 3.6 / 1000
 
         # compute the carbon captured per kg h2
         carbon_captured_kg = emission_factor_without_ccs_kg - emission_factor_kg
