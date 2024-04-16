@@ -1439,7 +1439,6 @@ class LiquidHydrogenCost(AeromapsModel):
         # compute the carbon captured per kg h2
         carbon_captured_kg = emission_factor_without_ccs_kg - emission_factor_kg
 
-        print(carbon_captured_kg, emission_factor_kg)
 
         hydrogen_prices = {}
 

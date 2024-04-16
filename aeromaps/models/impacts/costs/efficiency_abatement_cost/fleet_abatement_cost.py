@@ -497,7 +497,7 @@ class CargoEfficiencyCarbonAbatementCosts(AeromapsModel):
         aircraft_carbon_abatement_volume_freight_electric = -(
                 rtk_electric * aircraft_energy_delta_electric * kerosene_emission_factor / 1000000
         )
-        print(aircraft_energy_delta_dropin)
+
         self.df.loc[:,
         "aircraft_carbon_abatement_volume_freight_dropin"] = aircraft_carbon_abatement_volume_freight_dropin
         self.df.loc[:,
