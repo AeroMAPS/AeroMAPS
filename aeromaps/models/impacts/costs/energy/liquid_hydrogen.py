@@ -57,7 +57,7 @@ class LiquidHydrogenCost(AeromapsModel):
         gas_market_price: pd.Series = pd.Series(dtype="float64"),
         coal_market_price: pd.Series = pd.Series(dtype="float64"),
         ccs_cost: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: float = 0.0,
+        electricity_load_factor : pd.Series = pd.Series(dtype="float64"),
         transport_cost_ratio: float = 0.0,
         energy_replacement_ratio: float = 1.0,
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
@@ -990,7 +990,7 @@ class LiquidHydrogenCost(AeromapsModel):
         electricity_market_price: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
         pathway_share: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: float = 0.0,
+        electricity_load_factor : pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -1056,7 +1056,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
                 # Converting the missing production to a capacity (in t/day)
                 electrolyser_capacity_to_build = (
-                    missing_production / 365.25 / electricity_load_factor
+                    missing_production / 365.25 / electricity_load_factor[year]
                 )  # capacity to build in t/day production, taking into account load_factor
 
                 electrolyser_capex_year = (
@@ -1178,7 +1178,7 @@ class LiquidHydrogenCost(AeromapsModel):
         # Plants comissioned in year n are likely to stay with a frozen EIS efficiency.
         electrolyser_specific_electricity = hydrogen_specific_energy / plant_efficiency
 
-        load_fact = min(0.95, electricity_load_factor)
+        load_fact = min(0.95, electricity_load_factor[technology_year])
         real_year_days = 365.25 * load_fact
         real_var_opex = electrolyser_var_opex[technology_year] * real_year_days
 

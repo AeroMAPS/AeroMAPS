@@ -29,7 +29,7 @@ class ElectrofuelCost(AeromapsModel):
         electricity_market_price: pd.Series = pd.Series(dtype="float64"),
         co2_market_price: pd.Series = pd.Series(dtype="float64"),
         electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: float = 0.0,
+        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
         exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         plant_lifespan: float = 0.0,
@@ -144,7 +144,7 @@ class ElectrofuelCost(AeromapsModel):
         electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
         electricity_market_price: pd.Series = pd.Series(dtype="float64"),
         energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: float = 0.0,
+        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
         co2_market_price: pd.Series = pd.Series(dtype="float64"),
         electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -245,7 +245,7 @@ class ElectrofuelCost(AeromapsModel):
                 missing_production_kg = missing_production / lhv_electrofuel
                 missing_production_litres = missing_production_kg / density_electrofuel
                 electrofuel_capacity_to_build = (
-                    missing_production_kg / 365.25 / min(electricity_load_factor, plant_load_fact)
+                    missing_production_kg / 365.25 / min(electricity_load_factor[year], plant_load_fact)
                 )  # capacity to build in kg/day production, taking into account load_factor
 
                 electrolyser_capex_year = (
@@ -452,9 +452,9 @@ class ElectrofuelCost(AeromapsModel):
         """
         hydrogen_prices = {}
 
-        load_fact = min(plant_load_fact, electricity_load_factor)
-
         technology_year = max(base_year, self.prospection_start_year)
+
+        load_fact = min(plant_load_fact, electricity_load_factor[technology_year])
 
         real_year_days = 365.25 * load_fact
         real_var_opex = electrofuel_var_opex[technology_year] * real_year_days

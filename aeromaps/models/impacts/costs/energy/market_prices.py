@@ -31,6 +31,28 @@ class ElectricityCost(AeromapsModel):
         return electricity_market_price
 
 
+class ElectricityLoadFactor(AeromapsModel):
+    def __init__(self, name="electricity_load_factor", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        electricity_load_factor_reference_years: list = [],
+        electricity_load_factor_reference_years_values: list = [],
+    ) -> Tuple[pd.Series]:
+        """LCOE"""
+
+        electricity_load_factor = AeromapsInterpolationFunction(
+            self,
+            electricity_load_factor_reference_years,
+            electricity_load_factor_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electricity_load_factor"] = electricity_load_factor
+
+        return electricity_load_factor
+
+
 class CoalCost(AeromapsModel):
     def __init__(self, name="coal_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -225,3 +247,5 @@ class KeroseneBAUCost(AeromapsModel):
         self.df.loc[:, "kerosene_carbon_tax_BAU"] = kerosene_carbon_tax_BAU
 
         return kerosene_carbon_tax_BAU, kerosene_consumption_full_kero
+
+

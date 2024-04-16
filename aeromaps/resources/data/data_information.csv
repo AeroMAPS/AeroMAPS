@@ -535,7 +535,8 @@ electrofuel_specific_co2_reference_years;List;yr;Reference years for the CO2 req
 electrofuel_specific_co2_reference_years_values;List;kg/L;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_cost_reference_years;List;yr;Reference years for the industrial wholesale electricity market price
 electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-electricity_load_factor;Float;%;Electricity input load factor
+electricity_load_factor_reference_years;List;yr;Reference yearsElectricity input load factor
+electricity_load_factor_referenc_years_values;List;%;Electricity input load factor for reference years
 co2_cost_reference_years;List;yr;Reference years for the CO2 market price for e-fuel operations procurement
 co2_cost_reference_years_values;List;€/kg;CO2 market price for e-fuel operations procurement for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 carbon_tax_reference_years;List;yr;Reference years for the carbon flat tax applied
