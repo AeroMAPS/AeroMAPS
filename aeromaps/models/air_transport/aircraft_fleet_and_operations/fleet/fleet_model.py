@@ -2551,7 +2551,7 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
         sr_nb_cat.old_reference_aircraft.ask_year = 406000000.0
-        sr_nb_cat.old_reference_aircraft.rc_cost = 80000000.0
+        sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
 
         # Recent
@@ -2562,7 +2562,7 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
         sr_nb_cat.recent_reference_aircraft.ask_year = 406000000
-        sr_nb_cat.recent_reference_aircraft.rc_cost = 80000000.0
+        sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
         if add_examples_aircraft_and_subcategory:
