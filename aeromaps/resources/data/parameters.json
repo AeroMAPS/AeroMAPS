@@ -355,8 +355,6 @@
     "gas_load_factor": 0.95,
     "coal_ccs_load_factor": 0.9,
     "coal_load_factor": 0.9,
-    "gas_ccs_ccs_efficiency": 0.95,
-    "coal_ccs_ccs_efficiency": 0.95,
     "gas_ccs_eis_capex_reference_years": [],
     "gas_ccs_eis_capex_reference_years_values": [1728.0],
     "gas_ccs_eis_fixed_opex_reference_years": [],

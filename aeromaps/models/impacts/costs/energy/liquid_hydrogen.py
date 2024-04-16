@@ -33,7 +33,6 @@ class LiquidHydrogenCost(AeromapsModel):
         gas_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
         gas_ccs_load_factor: float = 0.0,
         hydrogen_gas_ccs_emission_factor: float = 0.0,
-        gas_ccs_ccs_efficiency: float = 0.0,
         gas_eis_capex: pd.Series = pd.Series(dtype="float64"),
         gas_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
         gas_efficiency: pd.Series = pd.Series(dtype="float64"),
@@ -44,7 +43,6 @@ class LiquidHydrogenCost(AeromapsModel):
         coal_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
         coal_ccs_load_factor: float = 0.0,
         hydrogen_coal_ccs_emission_factor: float = 0.0,
-        coal_ccs_ccs_efficiency: float = 0.0,
         coal_eis_capex: pd.Series = pd.Series(dtype="float64"),
         coal_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
         coal_efficiency: pd.Series = pd.Series(dtype="float64"),
@@ -209,7 +207,7 @@ class LiquidHydrogenCost(AeromapsModel):
             hydrogen_gas_ccs_share,
             gas_ccs_load_factor,
             hydrogen_gas_ccs_emission_factor,
-            gas_ccs_ccs_efficiency,
+            hydrogen_gas_emission_factor,
             plant_lifespan,
             private_discount_rate,
             social_discount_rate,
@@ -246,7 +244,7 @@ class LiquidHydrogenCost(AeromapsModel):
             hydrogen_gas_share,
             gas_load_factor,
             hydrogen_gas_emission_factor,
-            0,
+            hydrogen_gas_emission_factor,
             plant_lifespan,
             private_discount_rate,
             social_discount_rate,
@@ -282,7 +280,7 @@ class LiquidHydrogenCost(AeromapsModel):
             hydrogen_coal_ccs_share,
             coal_ccs_load_factor,
             hydrogen_coal_ccs_emission_factor,
-            coal_ccs_ccs_efficiency,
+            hydrogen_coal_emission_factor,
             plant_lifespan,
             private_discount_rate,
             social_discount_rate,
@@ -319,7 +317,7 @@ class LiquidHydrogenCost(AeromapsModel):
             hydrogen_coal_share,
             coal_load_factor,
             hydrogen_coal_emission_factor,
-            0,
+            hydrogen_coal_emission_factor,
             plant_lifespan,
             private_discount_rate,
             social_discount_rate,
@@ -1236,7 +1234,7 @@ class LiquidHydrogenCost(AeromapsModel):
         pathway_share: pd.Series = pd.Series(dtype="float64"),
         plant_load_factor: float = 0.0,
         emission_factor: float = 0.0,
-        ccs_efficiency: float = 0.0,
+        emission_factor_without_ccs: float = 0.0,
         plant_lifespan: float = 0.0,
         private_discount_rate: float = 0.0,
         social_discount_rate: float = 0.0,
@@ -1296,8 +1294,8 @@ class LiquidHydrogenCost(AeromapsModel):
                     year - construction_time,
                     fuel_market_price,
                     ccs_cost,
-                    ccs_efficiency,
                     emission_factor,
+                    emission_factor_without_ccs,
                     plant_load_factor,
                     plant_eis_capex,
                     plant_eis_fixed_opex,
@@ -1403,8 +1401,8 @@ class LiquidHydrogenCost(AeromapsModel):
         base_year,
         fuel_market_price,
         ccs_cost,
-        ccs_efficiency,
         emission_factor,
+        emission_factor_without_ccs,
         plant_load_factor,
         plant_capex,
         plant_fixed_opex,
@@ -1436,9 +1434,12 @@ class LiquidHydrogenCost(AeromapsModel):
         plant_specific_energy = hydrogen_specific_energy / plant_efficiency
 
         emission_factor_kg = emission_factor * hydrogen_specific_energy * 3.6
+        emission_factor_without_ccs_kg = emission_factor_without_ccs * hydrogen_specific_energy * 3.6
 
         # compute the carbon captured per kg h2
-        carbon_captured_kg = emission_factor_kg / (1 - ccs_efficiency) / 1000
+        carbon_captured_kg = emission_factor_without_ccs_kg - emission_factor_kg
+
+        print(carbon_captured_kg, emission_factor_kg)
 
         hydrogen_prices = {}
 

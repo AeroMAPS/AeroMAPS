@@ -641,7 +641,6 @@ abatement_potential_hefa_fog;Vector;tCO2e;Total carbon abatement potential of He
 abatement_potential_hefa_others;Vector;tCO2e;Total carbon abatement potential of Hefa-Others if allocated resource is used to 100% (evolution)
 abatement_potential_hydrogen_electrolysis;Vector;tCO2e;Total carbon abatement potential of hydrogen with electrolysis if allocated resource is used to 100% (evolution)
 co2_market_price;Vector;€/kgCO2e;CO2 market price is used as en input for electrofuel production, evolution (evolution);
-coal_ccs_efficiency;Vector;%;coal coal gasification (with CCS) energy conversion efficiency (evolution for EIS date);
 coal_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 coal_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant EIS date (evolution for EIS date);
 coal_ccs_h2_mean_capex_share;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex;
@@ -735,7 +734,6 @@ electrolysis_h2_mean_opex_share;Vector;M€;Annual H2 electrolysis production co
 electrolysis_h2_total_cost;Vector;M€;Annual h2 electrolysis total production cost
 electrolysis_plant_building_cost;Vector;M€;Annual expenses for electrolysis plants built each year
 electrolysis_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year;
-gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date);
 gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date);
 gas_ccs_h2_mean_capex_share;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
