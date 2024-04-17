@@ -2550,7 +2550,7 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
         sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.old_reference_aircraft.ask_year = 281000000.0
+        sr_nb_cat.old_reference_aircraft.ask_year = 280000000.0
         sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
 
@@ -2561,7 +2561,7 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
         sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.recent_reference_aircraft.ask_year = 281000000
+        sr_nb_cat.recent_reference_aircraft.ask_year = 280000000
         sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
