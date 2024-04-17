@@ -2353,7 +2353,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=80000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2369,7 +2369,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2386,7 +2386,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2404,7 +2404,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=6000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=30000000.0,
             nrc_cost=5000000000.0,
         )
@@ -2423,7 +2423,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=30000000.0,
             nrc_cost=5000000000.0,
         )
@@ -2441,7 +2441,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=40000000.0,
             nrc_cost=5000000000.0,
         )
@@ -2461,7 +2461,7 @@ class Fleet(object):
             soot_evolution=-100.0,
             doc_non_energy_evolution=10.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=280000000.0,
             rc_cost=40000000.0,
             nrc_cost=5000000000.0,
         )
@@ -2478,7 +2478,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=352000000.0,
             rc_cost=50000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2494,7 +2494,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=352000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2511,7 +2511,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=912000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
         )
@@ -2527,7 +2527,7 @@ class Fleet(object):
             soot_evolution=0.0,
             doc_non_energy_evolution=0.0,
             cruise_altitude=12000.0,
-            ask_year=406000000.0,
+            ask_year=912000000.0,
             rc_cost=150000000.0,
             nrc_cost=25000000000.0,
         )
@@ -2548,9 +2548,9 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045
+        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.045 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.old_reference_aircraft.ask_year = 406000000.0
+        sr_nb_cat.old_reference_aircraft.ask_year = 281000000.0
         sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
 
@@ -2559,9 +2559,9 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.energy_per_ask = 84.2 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045
+        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.045 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.recent_reference_aircraft.ask_year = 406000000
+        sr_nb_cat.recent_reference_aircraft.ask_year = 281000000
         sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
@@ -2641,9 +2641,9 @@ class Fleet(object):
         mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.028
+        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.028 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.old_reference_aircraft.ask_year = 406000000.0
+        mr_subcat.old_reference_aircraft.ask_year = 352000000.0
         mr_subcat.old_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.old_reference_aircraft.nrc_cost = 10000000000.0
 
@@ -2652,9 +2652,9 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824  # [MJ/ASK]
         mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.028
+        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.028 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.recent_reference_aircraft.ask_year = 406000000.0
+        mr_subcat.recent_reference_aircraft.ask_year = 352000000.0
         mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
@@ -2675,9 +2675,9 @@ class Fleet(object):
         lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.023
+        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.023 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
-        lr_subcat.old_reference_aircraft.ask_year = 406000000.0
+        lr_subcat.old_reference_aircraft.ask_year = 912000000.0
         lr_subcat.old_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.old_reference_aircraft.nrc_cost = 25000000000.0
 
@@ -2686,9 +2686,9 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.023
+        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.023 * (0.9 + 0.1 *(0.07/0.04)) # conversion of capital to 0.7 annuity factor (US based airlines very low)
         lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
-        lr_subcat.recent_reference_aircraft.ask_year = 406000000.0
+        lr_subcat.recent_reference_aircraft.ask_year = 912000000.0
         lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.recent_reference_aircraft.nrc_cost = 25000000000.0
 
