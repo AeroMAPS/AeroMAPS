@@ -302,7 +302,7 @@ models_sustainability = {
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share")
 }
 
-models_costs = {
+models_costs_top_down = {
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
@@ -353,6 +353,60 @@ models_costs = {
         "passenger_aircraft_noc_carbon_offset"
     )
 }
+
+models_costs_bottom_up = {
+    "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
+    "biofuel_capex": BiofuelCapex("biofuel_capex"),
+    "kerosene_market_price": KerosenePrice("kerosene_market_price"),
+    "kerosene_cost": KeroseneCost("kerosene_cost"),
+    "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
+    "biofuel_cost": BiofuelCost("biofuel_cost"),
+    "co2_cost": Co2Cost("co2_cost"),
+    "carbon_tax": CarbonTax("carbon_tax"),
+    "electricity_cost": ElectricityCost("electricity_cost"),
+    "coal_cost": CoalCost("coal_cost"),
+    "gas_cost": GasCost("coal_cost"),
+    "liquid_hydrogen_cost": LiquidHydrogenCost("liquid_hydrogen_cost"),
+    "electrolyser_capex": ElectrolyserCapex("electrolyser_capex"),
+    "electrolyser_fixed_opex": ElectrolyserFixedOpex("electrolyser_fixed_opex"),
+    "electrolyser_var_opex": ElectrolyserVarOpex("electrolyser_var_opex"),
+    "gas_ccs_capex": GasCcsCapex("gas_ccs_capex"),
+    "gas_ccs_fixed_opex": GasCcsFixedOpex("gas_ccs_fixed_opex"),
+    "gas_ccs_efficiency": GasCcsEfficiency("gas_ccs_efficiency"),
+    "gas_capex": GasCapex("gas_capex"),
+    "gas_fixed_opex": GasFixedOpex("gas_fixed_opex"),
+    "gas_efficiency": GasEfficiency("gas_efficiency"),
+    "coal_ccs_capex": CoalCcsCapex("coal_ccs_capex"),
+    "coal_ccs_fixed_opex": CoalCcsFixedOpex("coal_ccs_fixed_opex"),
+    "coal_ccs_efficiency": CoalCcsEfficiency("coal_ccs_efficiency"),
+    "coal_capex": CoalCapex("coal_capex"),
+    "coal_fixed_opex": CoalFixedOpex("coal_fixed_opex"),
+    "coal_efficiency": CoalEfficiency("coal_efficiency"),
+    "ccs_cost": CcsCost("ccs_cost"),
+    "liquefier_capex": LiquefierCapex("liquefier_capex"),
+    "electrofuel_cost": ElectrofuelCost("electrofuel_cost"),
+    "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
+    "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
+    "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
+    "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
+    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
+    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
+    "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
+    "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
+        "passenger_aircraft_doc_non_energy_complex"
+    ),
+    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
+    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
+    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
+        "passenger_aircraft_doc_carbon_tax"
+    ),
+    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
+        "passenger_aircraft_noc_carbon_offset"
+    )
+}
+
+
 
 models_simple = {
     "rpk": {
