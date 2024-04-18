@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
+from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from ipywidgets import interact, Dropdown, widgets
 from matplotlib.ticker import FuncFormatter
@@ -2448,7 +2449,7 @@ class AnnualMACC:
                     "Electrofuel",
                     "OPS",
                     "OPS - Freight",
-                    "LF",
+                    "Load Factor",
                 ]
                 ]
             )
@@ -2620,6 +2621,8 @@ class AnnualMACC:
 
         colors_pos = maccpos_df["colors"].to_list()
 
+        ### POS
+
         maccpos_curve = self.ax.step(
             cumwidths_effective_pos - widths_effective_pos,
             heights_pos,
@@ -2631,16 +2634,37 @@ class AnnualMACC:
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
-            y_position = min(2000 - 10, heights_pos[i + 1] + 5)
-            self.ax.text(
-                x_position,
-                y_position,
-                f"{names_pos[i]}\n {int(heights_pos[i + 1])}",
-                rotation=0,
-                size=8,
-                ha="center",
-                va="center",
-            )
+            y_position = min(heights_pos[i+1], 2000)
+            if heights_pos[i+1]>=0:
+                if heights_pos[i+1]>=2000:
+                    text=f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+                else:
+                    text=f"{names_pos[i]}"
+                self.ax.annotate(
+                    text,
+                    (x_position, y_position),
+                    xycoords='data',
+                    xytext=(x_position, y_position+50),
+                    textcoords='data',
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=7,
+                    ha="right",
+                    va="bottom",
+                )
+            else:
+                self.ax.annotate(
+                    f"{names_pos[i]}",
+                    (x_position, 0),
+                    xycoords='data',
+                    xytext=(x_position, min(50, max(heights_pos) - 50)+50*(i%2)),
+                    textcoords='data',
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=7,
+                    ha="right",
+                    va="bottom",
+                )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_pos) - 2)):
@@ -2660,6 +2684,8 @@ class AnnualMACC:
                 linestyle="--",
             )
             self.ax.add_patch(polygon)
+
+        ### NEG
 
         ##### NEG #####
 
@@ -2693,15 +2719,17 @@ class AnnualMACC:
                     cumwidths_effective_neg[-1]
                     - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
-            y_position = max(-2000 + 10, heights_neg[i + 1] + 5)
-            self.ax.text(
-                x_position,
-                y_position,
-                f"{names_neg[i]}\n {int(heights_neg[i + 1])}",
-                rotation=0,
-                size=8,
-                ha="center",
-                va="center",
+            self.ax.annotate(
+                f"{names_neg[i]}",
+                (x_position, 0),
+                xycoords='data',
+                xytext=(x_position, min(50, max(heights_pos) - 50) + 50 * (i % 3)),
+                textcoords='data',
+                arrowprops=dict(width=0.5, headwidth=0),
+                rotation=-60,
+                fontsize=7,
+                ha="right",
+                va="bottom",
             )
 
         # Fill under the step plot with different colors for each step
@@ -2739,20 +2767,20 @@ class AnnualMACC:
         legend_patches_1 = [
             mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
             mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
-            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiecny"),
-            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiecny"),
-            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
+            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiency"),
             mpatches.Patch(color="orange", alpha=1, label="Operations"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
         ]
 
         self.ax.add_artist(
-            self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper right")
+            self.ax.legend(handles=legend_patches_1, fontsize=8, title='Type of lever', loc="upper left")
         )
 
         self.ax.set_xlim(cumwidths_effective_neg[-1] - 50, cumwidths_effective_pos[-1] + 50)
         self.ax.set_ylim(
-            max(-2000, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 50),
+            max(-300, min(min(heights_pos), min(heights_neg)) - 50),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 100),
         )
 
         self.ax.axvspan(
@@ -2762,19 +2790,8 @@ class AnnualMACC:
             xmin=0, xmax=self.ax.get_xlim()[1], facecolor="blue", alpha=0.1, clip_on=True
         )
 
-        legend_patches = [
-            mpatches.Patch(
-                color="red",
-                alpha=0.1,
-                label="Extra emissions zone\nnegative abatement costs are\nassociated with extra costs",
-            ),
-            mpatches.Patch(color="blue", alpha=0.1, label="Carbon abatement zone"),
-        ]
-
-        self.ax.legend(handles=legend_patches, loc="upper left")
-
         self.ax.grid()
-        self.ax.set_title("Marginal abatement cost curve for drop-in fuels")
+        self.ax.set_title(f'Marginal abatement cost curve for year {year}')
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
