@@ -3,6 +3,8 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 
+from aeromaps.models.base import AeromapsModel
+
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
@@ -97,15 +99,26 @@ class create_process(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-        for name, model in self.models.items():
-            # TODO: check how to avoid providing all parameters
-            model.parameters = self.parameters
-            model._initialize_df()
-            if hasattr(model, "compute"):
-                model = AeromapsModelWrapper(model=model)
-                self.disciplines.append(model)
-            else:
-                print(model.name)
+
+        def check_instance_in_dict(d):
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    check_instance_in_dict(value)
+                elif isinstance(value, AeromapsModel):
+                    model = value
+                    # TODO: check how to avoid providing all parameters
+                    model.parameters = self.parameters
+                    model._initialize_df()
+                    if hasattr(model, "compute"):
+                        model = AeromapsModelWrapper(model=model)
+                        self.disciplines.append(model)
+                    else:
+                        print(model.name)
+                else:
+                    print(f"{key} is not an instance of AeromapsModel")
+
+        check_instance_in_dict(self.models)
+
         if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
