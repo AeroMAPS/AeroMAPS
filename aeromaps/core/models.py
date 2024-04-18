@@ -167,9 +167,13 @@ from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
 
 
 models_simple = {
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk": RPK("rpk"),
-    "rpk_reference": RPKReference("rpk_reference"),
+    "rpk": {
+        "rpk_measures": RPKMeasures("rpk_measures"),
+        "rpk": RPK("rpk"),
+        "rpk_bis": {
+            "rpk_reference": RPKReference("rpk_reference")
+        }
+    },
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
     "rtk": RTK("rtk"),
     "rtk_reference": RTKReference("rtk_reference"),
