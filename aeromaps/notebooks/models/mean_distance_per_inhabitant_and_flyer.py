@@ -21,9 +21,6 @@ class MeanDistancePerInhabitantFlyer(AeromapsModel):
         """Mean distance per inhabitant reference calculation."""
         # Calculation of the mean distance per inhabitant
 
-        print(world_inhabitant_number_reference_years)
-        print(world_inhabitant_number_reference_years_values)
-
         world_inhabitant_number = AeromapsInterpolationFunction(
             self,
             world_inhabitant_number_reference_years,
