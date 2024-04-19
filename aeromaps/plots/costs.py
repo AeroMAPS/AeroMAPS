@@ -644,7 +644,7 @@ class ScenarioEnergyCarbonTaxPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.create_plot()
 
@@ -780,7 +780,7 @@ class ScenarioEnergyUnitCostPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.create_plot()
 
@@ -2000,7 +2000,7 @@ class AirfareEvolutionBreakdown:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.create_plot()
 
@@ -2350,7 +2350,7 @@ class AnnualMACC:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.create_plot_data()
         self.plot_interact()
@@ -2807,7 +2807,7 @@ class CumulativeMACC:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.create_plot_data()
         self.update()
@@ -3367,7 +3367,7 @@ class ScenarioMACC:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.colorbar = None
         self.create_plot_data()
@@ -4349,7 +4349,7 @@ class DetailledMFSPBreakdownPerYear:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
+            # figsize=(plot_3_x, plot_3_y),
         )
         self.ax2 = self.ax.twinx()
         self.ax3 = self.ax.twinx()
