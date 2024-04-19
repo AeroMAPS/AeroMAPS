@@ -4357,7 +4357,15 @@ class DetailledMFSPBreakdownPerYear:
         self.plot_interact()
 
     def plot_interact(self):
-        interact(self.update, year=(self.prospective_years[0], self.prospective_years[-1]))
+        year_widget = widgets.IntSlider(
+            min=self.prospective_years[0],
+            max=self.prospective_years[-1],
+            step=1,
+            description='Year:',
+            value=2035
+        )
+
+        interact(self.update, year=year_widget)
 
     def create_plot(self):
         pass
@@ -4731,11 +4739,6 @@ class DetailledMFSPBreakdownPerYear:
                 linewidth=0.5,
             )
 
-        # Reversing legend entries
-        # handles, labels = self.ax.get_legend_handles_labels()
-        # self.ax.legend(handles[::-1], labels[::-1])
-        # self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
-
         self.ax.grid(axis="y")
         self.ax.set_title("Mean MFSP breakdown for year " + str(year))
         self.ax.set_ylabel("MFSP [€/MJ]")
@@ -4768,20 +4771,24 @@ class DetailledMFSPBreakdownPerYear:
         ]
         self.ax.legend(legend_handles[::-1], legend_names[::-1])
 
+        # little trick to rotate the labels: get and re-set the ticks
+        self.ax.set_xticks(self.ax.get_xticks())
         self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=-30, ha="left")
+
+        # Add hydrogen axis
 
         self.ax2.set_ylim(
             self.ax.get_ylim()[0] * self.float_inputs["lhv_hydrogen"],
             self.ax.get_ylim()[1] * self.float_inputs["lhv_hydrogen"],
         )
 
-        # Move the label for the second y-axis to the right
         self.ax2.yaxis.set_label_position("right")
         self.ax2.set_ylabel("MFSP [€/kg] - H2 Equivalent")
 
+        # Add dropin axis
+
         self.ax3.set_ylim(self.ax.get_ylim()[0] * kero_vlhv, self.ax.get_ylim()[1] * kero_vlhv)
 
-        # Move the label for the second y-axis to the right
         self.ax3.yaxis.set_label_position("right")
         self.ax3.set_ylabel("MFSP [€/L] - Kerosene Equivalent")
         self.ax3.spines.right.set_position(("axes", 1.1))
