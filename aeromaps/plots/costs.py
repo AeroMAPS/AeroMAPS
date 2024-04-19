@@ -2350,8 +2350,9 @@ class AnnualMACC:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
+            figsize=(10, 7),
         )
+        self.ax2=self.ax.twiny()
         self.create_plot_data()
         self.plot_interact()
 
@@ -2610,7 +2611,8 @@ class AnnualMACC:
         heights_pos = maccpos_df[metric].to_list()
         names_pos = maccpos_df.index.to_list()
         heights_pos.insert(0, 0)
-        heights_pos.append(heights_pos[-1])
+        heights_pos.append(0)
+
 
         # # MAx effective maccpos
         widths_effective_pos = maccpos_df["abatement_effective"].to_list()
@@ -2623,13 +2625,14 @@ class AnnualMACC:
 
         ### POS
 
-        maccpos_curve = self.ax.step(
+        self.ax.step(
             cumwidths_effective_pos - widths_effective_pos,
             heights_pos,
             where="post",
-            color="#335C67",
+            color="black",
             label="Marginal abatement cost",
             linewidth=1,
+            zorder=10 #ensure top level
         )
 
         for i in range(len(widths_effective_pos) - 2):
@@ -2657,7 +2660,7 @@ class AnnualMACC:
                     f"{names_pos[i]}",
                     (x_position, 0),
                     xycoords='data',
-                    xytext=(x_position, min(50, max(heights_pos) - 50)+50*(i%2)),
+                    xytext=(x_position, min(50, max(heights_pos) - 50)+30*(i%3)),
                     textcoords='data',
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
@@ -2679,9 +2682,9 @@ class AnnualMACC:
                 closed=True,
                 alpha=1,
                 facecolor=colors_pos[i],
-                edgecolor="#335C67",
-                linewidth=1,
-                linestyle="--",
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
             )
             self.ax.add_patch(polygon)
 
@@ -2693,7 +2696,7 @@ class AnnualMACC:
         names_neg = maccneg_df.index.to_list()
 
         heights_neg.append(0)
-        heights_neg.insert(0, heights_neg[0])
+        heights_neg.insert(0, 0)
 
         # # MAx effective maccneg
         widths_effective_neg = maccneg_df["abatement_effective"].to_list()
@@ -2705,13 +2708,14 @@ class AnnualMACC:
 
         colors_neg = maccneg_df["colors"].to_list()
 
-        maccneg_curve = self.ax.step(
+        self.ax.step(
             cumwidths_effective_neg[-1] - cumwidths_effective_neg + widths_effective_neg,
             heights_neg,
             where="post",
             color="#335C67",
             label="Marginal emission cost",
             linewidth=1,
+            zorder=9
         )
 
         for i in range(len(widths_effective_neg) - 2):
@@ -2723,7 +2727,7 @@ class AnnualMACC:
                 f"{names_neg[i]}",
                 (x_position, 0),
                 xycoords='data',
-                xytext=(x_position, min(50, max(heights_pos) - 50) + 50 * (i % 3)),
+                xytext=(x_position, 50 + 30 * (i % 3)),
                 textcoords='data',
                 arrowprops=dict(width=0.5, headwidth=0),
                 rotation=-60,
@@ -2751,20 +2755,22 @@ class AnnualMACC:
                 closed=True,
                 alpha=1,
                 facecolor=colors_neg[i],
-                edgecolor="#335C67",
-                linewidth=1,
-                linestyle="--",
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
             )
             self.ax.add_patch(polygon)
 
         self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
         self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
 
-        self.ax.axhline(0, color="black", linestyle="--", linewidth=2)
+        self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
 
-        self.ax.axvline(0, color="black", linestyle="--", linewidth=2)
+        self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
+
 
         legend_patches_1 = [
+            Line2D([0], [0], color='black', linewidth=1, linestyle='-', label='Marginal Abatement Cost'),
             mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
             mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
             mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
@@ -2777,21 +2783,39 @@ class AnnualMACC:
             self.ax.legend(handles=legend_patches_1, fontsize=8, title='Type of lever', loc="upper left")
         )
 
-        self.ax.set_xlim(cumwidths_effective_neg[-1] - 50, cumwidths_effective_pos[-1] + 50)
+        self.ax.set_xlim(cumwidths_effective_neg[-1] - 100, cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 50)
         self.ax.set_ylim(
             max(-300, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 100),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 230),
         )
 
+        # Add abatement and emission zones
         self.ax.axvspan(
-            xmin=self.ax.get_xlim()[0], xmax=0, facecolor="red", alpha=0.1, clip_on=True
+            xmin=self.ax.get_xlim()[0], xmax=0, facecolor="#ff70a6", alpha=0.1, clip_on=True, zorder=-1
         )
         self.ax.axvspan(
-            xmin=0, xmax=self.ax.get_xlim()[1], facecolor="blue", alpha=0.1, clip_on=True
+            xmin=0, xmax=self.ax.get_xlim()[1], facecolor="#70d6ff", alpha=0.15, clip_on=True, zorder=-1
         )
+
+        self.ax.text(-1, self.ax.get_ylim()[1]/3.5, "Extra carbon emissions", rotation=90, va="bottom", ha="right", fontsize=8,
+                     color='dimgrey')
+        self.ax.text(5, self.ax.get_ylim()[1]/3.5, "Carbon abatement", rotation=90, va="bottom", ha="left", fontsize=8, color='dimgrey')
 
         self.ax.grid()
         self.ax.set_title(f'Marginal abatement cost curve for year {year}')
+
+
+
+        self.ax2.xaxis.set_label_position("bottom")
+        self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
+
+        self.ax2.spines['bottom'].set_position(('axes', -0.1))  # Move spine below the plot
+        self.ax2.xaxis.set_ticks_position("bottom")
+
+        self.ax2.set_xlim(
+            self.df.co2_emissions_2019technology[year] - self.ax.get_xlim()[0] - cumwidths_effective_neg[-1],
+            self.df.co2_emissions_2019technology[year] - self.ax.get_xlim()[1] - cumwidths_effective_neg[-1])
+
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
