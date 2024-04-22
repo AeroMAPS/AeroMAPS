@@ -42,5 +42,4 @@ class MeanDistancePerInhabitantFlyer(AeromapsModel):
         mean_distance_per_flyer = mean_distance_per_inhabitant / (inhabitant_flyer_share / 100)
         self.df.loc[:, "mean_distance_per_flyer"] = mean_distance_per_flyer
 
-
         return (mean_distance_per_inhabitant, mean_distance_per_flyer)
