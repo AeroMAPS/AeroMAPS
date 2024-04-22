@@ -100,6 +100,15 @@ class create_process(object):
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
 
+        if self.use_fleet_model:
+            self.fleet = Fleet(
+                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+            )
+            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model.parameters = self.parameters
+            self.fleet_model._initialize_df()
+        else:
+            self.fleet = None
         def check_instance_in_dict(d):
             for key, value in d.items():
                 if isinstance(value, dict):
@@ -109,6 +118,9 @@ class create_process(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    if self.use_fleet_model and hasattr(model, "fleet_model"):
+                        model.fleet_model = self.fleet_model
+                        print(model.name)
                     if hasattr(model, "compute"):
                         model = AeromapsModelWrapper(model=model)
                         self.disciplines.append(model)
@@ -118,20 +130,6 @@ class create_process(object):
                     print(f"{key} is not an instance of AeromapsModel")
 
         check_instance_in_dict(self.models)
-
-        if self.use_fleet_model:
-            self.fleet = Fleet(
-                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
-            )
-            self.fleet_model = FleetModel(fleet=self.fleet)
-            self.fleet_model.parameters = self.parameters
-            self.fleet_model._initialize_df()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
-        else:
-            self.fleet = None
 
     def _initialize_years(self):
         # Years
@@ -177,10 +175,6 @@ class create_process(object):
 
         if self.fleet is not None:
             self.fleet_model.compute()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
