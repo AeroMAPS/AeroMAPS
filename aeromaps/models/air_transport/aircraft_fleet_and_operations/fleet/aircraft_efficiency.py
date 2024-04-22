@@ -525,9 +525,7 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
 
 
 class PassengerAircraftEfficiencyComplex(AeromapsModel):
-    def __init__(
-        self, name="passenger_aircraft_efficiency_complex", *args, **kwargs
-    ):
+    def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
 
