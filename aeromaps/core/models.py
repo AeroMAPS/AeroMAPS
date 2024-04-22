@@ -165,7 +165,7 @@ models_traffic = {
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
     "rtk": RTK("rtk"),
     "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask")
+    "ask": ASK("ask"),
 }
 
 models_efficiency_top_down = {
@@ -178,7 +178,7 @@ models_efficiency_top_down = {
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
-    "soot_emission_index": SootEmissionIndex("soot_emission_index")
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
 }
 
 models_efficiency_bottom_up = {
@@ -191,7 +191,7 @@ models_efficiency_bottom_up = {
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index_complex": NOxEmissionIndexComplex("nox_emission_index_complex"),
-    "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex")
+    "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
 }
 
 models_energy_without_fuel_effect = {
@@ -268,7 +268,7 @@ models_climate_simple_gwpstar = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_simple_gwpstar": TemperatureSimpleGWPStar("temperature_simple_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
-    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk")
+    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
 models_climate_gwpstar = {
@@ -286,7 +286,7 @@ models_climate_gwpstar = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
-    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk")
+    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
 models_climate_fair = {
@@ -304,7 +304,7 @@ models_climate_fair = {
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_fair": TemperatureFair("temperature_fair"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
-    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk")
+    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
 models_sustainability = {
@@ -316,7 +316,7 @@ models_sustainability = {
     "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
         "equivalent_carbon_budget_consumed_share"
     ),
-    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share")
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 
 models_costs_top_down = {
@@ -366,7 +366,6 @@ models_costs_top_down = {
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
     ),
-
 }
 
 models_costs_bottom_up = {
@@ -418,5 +417,15 @@ models_costs_bottom_up = {
     ),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
-    )
+    ),
+}
+
+default_models = {
+    "models_traffic": models_traffic,
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
+    "models_sustainability": models_sustainability,
+    "models_costs_top_down": models_costs_top_down,
 }
