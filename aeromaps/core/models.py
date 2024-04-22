@@ -319,6 +319,15 @@ models_sustainability = {
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 
+models_sustainability_without_equivalent_emissions = {
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
+    "biomass_availability": BiomassAvailability("biomass_availability"),
+    "electricity_availability": ElectricityAvailability("electricity_availability"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+}
+
 models_costs_top_down = {
     "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
