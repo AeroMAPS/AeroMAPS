@@ -8,10 +8,10 @@ from aeromaps.models.base import AeromapsModel
 
 class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
     def __init__(
-        self, name="passenger_aircraft_doc_non_energy_complex", fleet_model=None, *args, **kwargs
+        self, name="passenger_aircraft_doc_non_energy_complex", *args, **kwargs
     ):
         super().__init__(name=name, *args, **kwargs)
-        self.fleet_model = fleet_model
+        self.fleet_model = None
 
     def compute(
         self,
@@ -283,8 +283,9 @@ class PassengerAircraftDocNonEnergySimple(AeromapsModel):
 
 
 class PassengerAircraftDocEnergy(AeromapsModel):
-    def __init__(self, name="passenger_aircraft_doc_energy", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="passenger_aircraft_doc_energy", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        self.fleet_model = None
 
     def compute(
         self,
@@ -440,8 +441,9 @@ class PassengerAircraftDocEnergy(AeromapsModel):
 
 
 class PassengerAircraftDocCarbonTax(AeromapsModel):
-    def __init__(self, name="passenger_aircraft_doc_carbon_tax", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="passenger_aircraft_doc_carbon_tax", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        self.fleet_model = None
 
     def compute(
         self,
@@ -627,8 +629,9 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
 
 
 class PassengerAircraftTotalDoc(AeromapsModel):
-    def __init__(self, name="passenger_aircraft_total_doc", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="passenger_aircraft_total_doc", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        self.fleet_model = None
 
     def compute(
         self,
@@ -775,8 +778,9 @@ class PassengerAircraftTotalDoc(AeromapsModel):
 
 
 class DropInMeanMfsp(AeromapsModel):
-    def __init__(self, name="dropin_mean_mfsp", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="dropin_mean_mfsp", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+        self.fleet_model = None
 
     def compute(
         self,
