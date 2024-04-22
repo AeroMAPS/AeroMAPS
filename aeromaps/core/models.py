@@ -420,7 +420,7 @@ models_costs_bottom_up = {
     ),
 }
 
-default_models = {
+default_models_top_down = {
     "models_traffic": models_traffic,
     "models_efficiency_top_down": models_efficiency_top_down,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
@@ -428,4 +428,14 @@ default_models = {
     "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
     "models_sustainability": models_sustainability,
     "models_costs_top_down": models_costs_top_down,
+}
+
+default_models_bottom_up = {
+    "models_traffic": models_traffic,
+    "models_efficiency_bottom_up": models_efficiency_bottom_up,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
+    "models_sustainability": models_sustainability,
+    "models_costs_bottom_up": models_costs_bottom_up,
 }

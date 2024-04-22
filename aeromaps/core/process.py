@@ -15,7 +15,7 @@ from gemseo import generate_n2_plot, create_mda
 
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
-from aeromaps.core.models import default_models
+from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
@@ -39,7 +39,7 @@ class create_process(object):
     def __init__(
         self,
         configuration_file=None,
-        models=default_models,
+        models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
