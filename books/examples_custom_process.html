@@ -1,0 +1,909 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Example for creating a custom process in AeroMAPS &#8212; AeroMAPS documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'books/examples_custom_process';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic example for using AeroMAPS with Jupyter Notebook" href="examples_basic.html" />
+    <link rel="prev" title="Examples" href="examples.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_aeromaps.png" class="logo__image only-light" alt="AeroMAPS documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo_aeromaps.png" class="logo__image only-dark" alt="AeroMAPS documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About AeroMAPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citations.html">Citations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_impacts.html">Impact modeling and sustainability assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_gui.html">Use of the graphical user interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Example for creating a custom process in AeroMAPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_joas_application.html">Application for the Journal of Open Aviation Science</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_mea_application.html">Application for the More Electric Aircraft (MEA) conference</a></li>
+
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/AeroMAPS/AeroMAPS" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/books/examples_custom_process.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Example for creating a custom process in AeroMAPS</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-custom-model">Create a custom model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-process">Create the process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="example-for-creating-a-custom-process-in-aeromaps">
+<h1>Example for creating a custom process in AeroMAPS<a class="headerlink" href="#example-for-creating-a-custom-process-in-aeromaps" title="Permalink to this heading">#</a></h1>
+<p>This document aims to show the recommended way to create a custom process (configuration file and custom models) and execute them within AeroMAPS.</p>
+<section id="load-and-process">
+<h2>Load and process<a class="headerlink" href="#load-and-process" title="Permalink to this heading">#</a></h2>
+<p>First, the user has to load the framework and generate a process.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">create_process</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">models_traffic</span><span class="p">,</span>
+    <span class="n">models_efficiency_top_down</span><span class="p">,</span>
+    <span class="n">models_energy_without_fuel_effect</span><span class="p">,</span>
+    <span class="n">models_offset</span><span class="p">,</span>
+    <span class="n">models_climate_simple_gwpstar</span><span class="p">,</span>
+    <span class="n">models_sustainability</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">aeromaps.core.process</span> <span class="kn">import</span> <span class="n">create_process</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">models_traffic</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">models_efficiency_top_down</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">models_energy_without_fuel_effect</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">models_offset</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">models_climate_simple_gwpstar</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">models_sustainability</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="p">)</span>
+
+<span class="ne">ImportError</span>: cannot import name &#39;models_traffic&#39; from &#39;aeromaps.core.models&#39; (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/core/models.py)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-a-custom-model">
+<h2>Create a custom model<a class="headerlink" href="#create-a-custom-model" title="Permalink to this heading">#</a></h2>
+<p>Here by default we import several aggregated reference models, such as <code class="docutils literal notranslate"><span class="pre">models_traffic</span></code>, that contains basic models used in AeroMAPS. Overall, these different aggregated models include 100 basic models. We recommend to keep these default models to not remove any outputs that may be needed by other models.
+For instance, the <code class="docutils literal notranslate"><span class="pre">models_traffic</span></code> is a dictionnary structure with keys that are the name of the model and the value an instance of the model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">models_traffic</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;rpk_measures&quot;</span><span class="p">:</span> <span class="n">RPKMeasures</span><span class="p">(</span><span class="s2">&quot;rpk_measures&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;rpk&quot;</span><span class="p">:</span> <span class="n">RPK</span><span class="p">(</span><span class="s2">&quot;rpk&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;rpk_reference&quot;</span><span class="p">:</span> <span class="n">RPKReference</span><span class="p">(</span><span class="s2">&quot;rpk_reference&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">:</span> <span class="n">TotalAircraftDistance</span><span class="p">(</span><span class="s2">&quot;total_aircraft_distance&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;rtk&quot;</span><span class="p">:</span> <span class="n">RTK</span><span class="p">(</span><span class="s2">&quot;rtk&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;rtk_reference&quot;</span><span class="p">:</span> <span class="n">RTKReference</span><span class="p">(</span><span class="s2">&quot;rtk_reference&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;ask&quot;</span><span class="p">:</span> <span class="n">ASK</span><span class="p">(</span><span class="s2">&quot;ask&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>We create a custom model example <code class="docutils literal notranslate"><span class="pre">MeanDistancePerInhabitantFlyer</span></code> that is located <span class="xref myst">here</span>, in the file <code class="docutils literal notranslate"><span class="pre">models/mean_distance_per_inhabitant_and_flyer.py</span></code>. To integrate it in to the AeroMAPS process we propose to import it and to add it to the dictionnary containing the models.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">models.mean_distance_per_inhabitant_and_flyer</span> <span class="kn">import</span> <span class="n">MeanDistancePerInhabitantFlyer</span>
+
+<span class="n">extended_models</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;models_traffic&quot;</span><span class="p">:</span> <span class="n">models_traffic</span><span class="p">,</span>
+    <span class="s2">&quot;models_efficiency_top_down&quot;</span><span class="p">:</span> <span class="n">models_efficiency_top_down</span><span class="p">,</span>
+    <span class="s2">&quot;models_energy_without_fuel_effect&quot;</span><span class="p">:</span> <span class="n">models_energy_without_fuel_effect</span><span class="p">,</span>
+    <span class="s2">&quot;models_offset&quot;</span><span class="p">:</span> <span class="n">models_offset</span><span class="p">,</span>
+    <span class="s2">&quot;models_climate_simple_gwpstar&quot;</span><span class="p">:</span> <span class="n">models_climate_simple_gwpstar</span><span class="p">,</span>
+    <span class="s2">&quot;models_sustainability&quot;</span><span class="p">:</span> <span class="n">models_sustainability</span><span class="p">,</span>
+    <span class="s2">&quot;mean_distance_per_inhabitant_and_flyer&quot;</span><span class="p">:</span> <span class="n">MeanDistancePerInhabitantFlyer</span><span class="p">(</span>
+        <span class="s2">&quot;mean_distance_per_inhabitant_and_flyer&quot;</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This new ensemble of models can be provided to the process.</p>
+</section>
+<section id="create-the-process">
+<h2>Create the process<a class="headerlink" href="#create-the-process" title="Permalink to this heading">#</a></h2>
+<p>Here we show how we can use a configuration file with an example <span class="xref myst">here</span>, in the file <code class="docutils literal notranslate"><span class="pre">data_files/config.json</span></code>.
+There you can specify the relative path to the different files.
+For example, you can provide a custom input file with the parameters you want to modify with an example <span class="xref myst">here</span>, in the file <code class="docutils literal notranslate"><span class="pre">data_files/inputs.json</span></code>.</p>
+<p>Be careful, do not forget to set the inputs required by your models, either in the <code class="docutils literal notranslate"><span class="pre">resources/data/parameters.json</span></code> file if you modify the source code, or directly in the <code class="docutils literal notranslate"><span class="pre">inputs.json</span></code> file from your configuration file. You can also change the inputs data directly through the code after the creation of the process (see below).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;data_files/config.json&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">extended_models</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">world_inhabitant_number_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2040</span><span class="p">,</span> <span class="mi">2050</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">world_inhabitant_number_reference_years_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mf">7.805e9</span><span class="p">,</span>
+    <span class="mf">8.512e9</span><span class="p">,</span>
+    <span class="mf">9.159e9</span><span class="p">,</span>
+    <span class="mf">9.687e9</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># Assumption based on the 2022 Revision of World Population Prospects from the United Nations</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">inhabitant_flyer_share_reference_years</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">2030</span><span class="p">,</span> <span class="mi">2040</span><span class="p">,</span> <span class="mi">2050</span><span class="p">]</span>
+<span class="n">process</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">inhabitant_flyer_share_reference_years_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">11</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># Assumption based on a linear increase from Gossling and Humpe (2020) value</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="compute">
+<h2>Compute<a class="headerlink" href="#compute" title="Permalink to this heading">#</a></h2>
+<p>Once all the parameters have been set up, the user can compute.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading">#</a></h2>
+<p>The user can then display the results. The user has access to float outputs but also to annual data outputs, with the possibility of choosing the output.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;vector_outputs&quot;</span><span class="p">][[</span><span class="s2">&quot;mean_distance_per_inhabitant&quot;</span><span class="p">,</span> <span class="s2">&quot;mean_distance_per_flyer&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mean_distance_per_inhabitant</th>
+      <th>mean_distance_per_flyer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2000</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2001</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2002</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2003</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2004</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2005</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2006</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2007</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2008</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2009</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2010</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2012</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2016</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2017</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2018</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2019</th>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2020</th>
+      <td>378.363457</td>
+      <td>3439.667789</td>
+    </tr>
+    <tr>
+      <th>2021</th>
+      <td>556.936124</td>
+      <td>4928.638269</td>
+    </tr>
+    <tr>
+      <th>2022</th>
+      <td>732.331230</td>
+      <td>6313.200263</td>
+    </tr>
+    <tr>
+      <th>2023</th>
+      <td>904.632840</td>
+      <td>7601.956642</td>
+    </tr>
+    <tr>
+      <th>2024</th>
+      <td>1073.922080</td>
+      <td>8802.640001</td>
+    </tr>
+    <tr>
+      <th>2025</th>
+      <td>1096.554147</td>
+      <td>8772.433178</td>
+    </tr>
+    <tr>
+      <th>2026</th>
+      <td>1119.747256</td>
+      <td>8748.025439</td>
+    </tr>
+    <tr>
+      <th>2027</th>
+      <td>1143.515325</td>
+      <td>8729.124616</td>
+    </tr>
+    <tr>
+      <th>2028</th>
+      <td>1167.872641</td>
+      <td>8715.467471</td>
+    </tr>
+    <tr>
+      <th>2029</th>
+      <td>1192.833873</td>
+      <td>8706.816590</td>
+    </tr>
+    <tr>
+      <th>2030</th>
+      <td>1218.414078</td>
+      <td>8702.957697</td>
+    </tr>
+    <tr>
+      <th>2031</th>
+      <td>1245.499417</td>
+      <td>8709.786131</td>
+    </tr>
+    <tr>
+      <th>2032</th>
+      <td>1273.259321</td>
+      <td>8720.954250</td>
+    </tr>
+    <tr>
+      <th>2033</th>
+      <td>1301.710914</td>
+      <td>8736.314857</td>
+    </tr>
+    <tr>
+      <th>2034</th>
+      <td>1330.871773</td>
+      <td>8755.735349</td>
+    </tr>
+    <tr>
+      <th>2035</th>
+      <td>1360.759940</td>
+      <td>8779.096388</td>
+    </tr>
+    <tr>
+      <th>2036</th>
+      <td>1391.393933</td>
+      <td>8806.290717</td>
+    </tr>
+    <tr>
+      <th>2037</th>
+      <td>1422.792760</td>
+      <td>8837.222111</td>
+    </tr>
+    <tr>
+      <th>2038</th>
+      <td>1454.975930</td>
+      <td>8871.804451</td>
+    </tr>
+    <tr>
+      <th>2039</th>
+      <td>1487.963469</td>
+      <td>8909.960893</td>
+    </tr>
+    <tr>
+      <th>2040</th>
+      <td>1521.775932</td>
+      <td>8951.623130</td>
+    </tr>
+    <tr>
+      <th>2041</th>
+      <td>1558.445053</td>
+      <td>9008.352905</td>
+    </tr>
+    <tr>
+      <th>2042</th>
+      <td>1596.050197</td>
+      <td>9068.467031</td>
+    </tr>
+    <tr>
+      <th>2043</th>
+      <td>1634.615843</td>
+      <td>9131.932086</td>
+    </tr>
+    <tr>
+      <th>2044</th>
+      <td>1674.167120</td>
+      <td>9198.720440</td>
+    </tr>
+    <tr>
+      <th>2045</th>
+      <td>1714.729828</td>
+      <td>9268.809883</td>
+    </tr>
+    <tr>
+      <th>2046</th>
+      <td>1756.330457</td>
+      <td>9342.183283</td>
+    </tr>
+    <tr>
+      <th>2047</th>
+      <td>1798.996204</td>
+      <td>9418.828294</td>
+    </tr>
+    <tr>
+      <th>2048</th>
+      <td>1842.754993</td>
+      <td>9498.737076</td>
+    </tr>
+    <tr>
+      <th>2049</th>
+      <td>1887.635493</td>
+      <td>9581.906057</td>
+    </tr>
+    <tr>
+      <th>2050</th>
+      <td>1933.667142</td>
+      <td>9668.335710</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./books"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="examples.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="examples_basic.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Basic example for using AeroMAPS with Jupyter Notebook</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-process">Load and process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-custom-model">Create a custom model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-process">Create the process</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute">Compute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By AeroMAPS Research Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
