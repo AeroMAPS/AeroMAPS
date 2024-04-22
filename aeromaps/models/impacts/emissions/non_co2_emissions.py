@@ -58,9 +58,9 @@ class NOxEmissionIndex(AeromapsModel):
 
 
 class NOxEmissionIndexComplex(AeromapsModel):
-    def __init__(self, name="nox_emission_index_complex", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        self.fleet_model = fleet_model
+        self.fleet_model = None
 
     def compute(
         self,
@@ -215,9 +215,9 @@ class SootEmissionIndex(AeromapsModel):
 
 
 class SootEmissionIndexComplex(AeromapsModel):
-    def __init__(self, name="soot_emission_index_complex", fleet_model=None, *args, **kwargs):
+    def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        self.fleet_model = fleet_model
+        self.fleet_model = None
 
     def compute(
         self,

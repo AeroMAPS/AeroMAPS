@@ -18,6 +18,7 @@ chapters:
     - file: books/bibliography
 - file: books/examples
   sections:
+    - file: books/examples_custom_process
     - file: books/examples_basic
     - file: books/examples_fleet
     - file: books/examples_joas_application

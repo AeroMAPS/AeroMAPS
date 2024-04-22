@@ -3,6 +3,8 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 
+from aeromaps.models.base import AeromapsModel
+
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
@@ -13,7 +15,7 @@ from gemseo import generate_n2_plot, create_mda
 
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
-from aeromaps.core.models import models_simple
+from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots
@@ -37,7 +39,7 @@ class create_process(object):
     def __init__(
         self,
         configuration_file=None,
-        models=models_simple,
+        models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
@@ -97,15 +99,7 @@ class create_process(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-        for name, model in self.models.items():
-            # TODO: check how to avoid providing all parameters
-            model.parameters = self.parameters
-            model._initialize_df()
-            if hasattr(model, "compute"):
-                model = AeromapsModelWrapper(model=model)
-                self.disciplines.append(model)
-            else:
-                print(model.name)
+
         if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
@@ -113,12 +107,29 @@ class create_process(object):
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
         else:
             self.fleet = None
+
+        def check_instance_in_dict(d):
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    check_instance_in_dict(value)
+                elif isinstance(value, AeromapsModel):
+                    model = value
+                    # TODO: check how to avoid providing all parameters
+                    model.parameters = self.parameters
+                    model._initialize_df()
+                    if self.use_fleet_model and hasattr(model, "fleet_model"):
+                        model.fleet_model = self.fleet_model
+                    if hasattr(model, "compute"):
+                        model = AeromapsModelWrapper(model=model)
+                        self.disciplines.append(model)
+                    else:
+                        print(model.name)
+                else:
+                    print(f"{key} is not an instance of AeromapsModel")
+
+        check_instance_in_dict(self.models)
 
     def _initialize_years(self):
         # Years
@@ -164,10 +175,6 @@ class create_process(object):
 
         if self.fleet is not None:
             self.fleet_model.compute()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
