@@ -441,7 +441,7 @@
     "social_discount_rate": 0.03,
     "doc_non_energy_per_ask_short_range_dropin_fuel_init": 0.048375,
     "doc_non_energy_per_ask_medium_range_dropin_fuel_init": 0.0301,
-    "doc_non_energy_per_ask_long_range_dropin_fuel_init": 0.02475,
+    "doc_non_energy_per_ask_long_range_dropin_fuel_init": 0.024725,
     "doc_non_energy_per_ask_short_range_dropin_fuel_gain": 0.0,
     "doc_non_energy_per_ask_medium_range_dropin_fuel_gain": 0.0,
     "doc_non_energy_per_ask_long_range_dropin_fuel_gain": 0.0,
