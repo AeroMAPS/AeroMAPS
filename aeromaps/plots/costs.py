@@ -4,6 +4,7 @@
 # @Software: PyCharm
 import warnings
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -14,8 +15,11 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from ipywidgets import interact, Dropdown, widgets
 from matplotlib.ticker import FuncFormatter
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .constants import plot_3_x, plot_3_y
+
+
 
 
 class ScenarioEnergyCapitalPlot:
@@ -2831,7 +2835,7 @@ class CumulativeMACC:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
+            figsize=(10, 7),
         )
         self.create_plot_data()
         self.update()
@@ -3386,14 +3390,18 @@ class ScenarioMACC:
         self.df = data["vector_outputs"]
         self.fleet_model = fleet_model
         self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
         self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
+            figsize=(10, 7),
         )
-        self.colorbar = None
+        divider = make_axes_locatable(self.ax)
+
+        # Define the size and position of the colorbar axes relative to the main axes
+        self.ax2 = divider.append_axes("right", size="5%", pad=0.1)
         self.create_plot_data()
         self.plot_interact()
 
@@ -3641,7 +3649,7 @@ class ScenarioMACC:
             self.macc_dict[year] = macc_df
 
     def update(self, metric, scc_start):
-        self.ax.cla()
+        scc_list=[]
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
 
@@ -3660,7 +3668,8 @@ class ScenarioMACC:
             widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
 
             if metric == 'specific_carbon_abatement_cost':
-                scc_year = scc_start * (1.035 ** (year - self.prospective_years[0]))
+                scc_year = scc_start * ((1+self.float_inputs['social_discount_rate']) ** (year - self.prospective_years[0]))
+                scc_list.append(scc_year)
                 hatch_list = []
                 for value in heights_pos:
                     # Check if the value is above the threshold
@@ -3671,6 +3680,7 @@ class ScenarioMACC:
 
             elif metric == 'generic_specific_carbon_abatement_cost':
                 scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
+                scc_list.append(scc_year)
                 hatch_list = []
                 for value in heights_pos:
                     # Check if the value is above the threshold
@@ -3714,9 +3724,7 @@ class ScenarioMACC:
         sm = ScalarMappable(cmap=plt.cm.RdBu_r, norm=norm)
         sm.set_array([])  # Set an empty array since we don't have specific data values
 
-        if self.colorbar:
-            self.colorbar.remove()
-        self.colorbar = self.fig.colorbar(sm, ax=self.ax, label="Carbon Abatement Cost", norm=norm)
+        self.fig.colorbar(sm, cax=self.ax2, label="Carbon Abatement Cost", norm=norm)
 
         # Hatch legedn
 
@@ -3729,37 +3737,9 @@ class ScenarioMACC:
             labels=["Above SCC (if applicable)", "Extra Emissions", "Below or Equal to SCC"],
         )
 
-        ##### NEG ######
-
-        #         heights_neg = maccneg_df[metric].to_list()
-        #         heights_neg.append(0)
-        #         heights_neg.insert(0, heights_neg[0])
-
-        #         # # Max effective maccneg
-        #         widths_effective_neg = maccneg_df["abatement_effective"].to_list()
-
-        #         widths_effective_neg.insert(0, 0)
-        #         widths_effective_neg.append(0)
-
-        #         colors_neg = maccneg_df["colors"].to_list()
-
-        #         years_neg = [year] * len(heights_neg)
-
-        #         ax.step(
-        #             np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg) + widths_effective_neg,
-        #             years_neg,
-        #             heights_neg,
-        #             where="post",
-        #             color="#335C67",
-        #             label="Marginal emission cost",
-        #             linewidth=1,
-        #         )
-
-        # ax.set_zlim(-1000,2000)
-        # ax.set_ylim(2020,2050)
-
+        self.ax.grid()
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Abatement Effective")
+        self.ax.set_ylabel("Abatement Effective (Mt)")
         self.ax.set_title("Carbon Abatement Cost for Positive Effective Abatement")
         self.fig.tight_layout()
         self.fig.canvas.draw()
