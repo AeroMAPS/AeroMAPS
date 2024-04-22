@@ -120,7 +120,6 @@ class create_process(object):
                     model._initialize_df()
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
-                        print(model.name)
                     if hasattr(model, "compute"):
                         model = AeromapsModelWrapper(model=model)
                         self.disciplines.append(model)
