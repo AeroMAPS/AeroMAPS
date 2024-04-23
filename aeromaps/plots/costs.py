@@ -2837,11 +2837,11 @@ class CumulativeMACC:
         self.fig, self.ax = plt.subplots(
             figsize=(10, 7),
         )
+        self.ax2 = self.ax.twiny()
         self.create_plot_data()
         self.update()
 
     def create_plot_data(self):
-        #TODO check consistency and add variable sdr
         social_discount_rate = self.float_inputs["social_discount_rate"]
         start_year = self.prospective_years[1]  # not 2020
         end_year = self.prospective_years[-1]
@@ -3189,8 +3189,8 @@ class CumulativeMACC:
             ]
         )
 
-        undiscounted_cac_list = [a / (b * 1000000) for a, b in zip(cumcost_list, cumvol_list)]
-        discounted_cac_list = [a / (b * 1000000) for a, b in zip(discounted_cumcost_list, cumvol_list)]
+        undiscounted_cac_list = [a / (b * 1000000)  if (b != 0 and not np.isnan(b)) else np.NaN for a, b in zip(cumcost_list, cumvol_list)]
+        discounted_cac_list = [a / (b * 1000000)  if (b != 0 and not np.isnan(b)) else np.NaN for a, b in zip(discounted_cumcost_list, cumvol_list)]
 
         macc_df = pd.DataFrame(
             data=[
@@ -3224,53 +3224,77 @@ class CumulativeMACC:
         heights_pos = maccpos_df["carbon_abatement_cost"].to_list()
         names_pos = maccpos_df.index.to_list()
         heights_pos.insert(0, 0)
-        heights_pos.append(heights_pos[-1])
+        heights_pos.append(0)
 
         # # Max effective maccpos
         widths_effective_pos = maccpos_df["abatement_effective"].to_list()
         widths_effective_pos.insert(0, 0)
         widths_effective_pos.append(widths_effective_pos[-1])
 
+        cumwidths_effective_pos = np.cumsum(widths_effective_pos)
+
         colors_pos = maccpos_df["colors"].to_list()
 
-        maccpos_curve = self.ax.step(
-            np.cumsum(widths_effective_pos) - widths_effective_pos,
+        self.ax.step(
+            cumwidths_effective_pos - widths_effective_pos,
             heights_pos,
             where="post",
-            color="#335C67",
+            color="black",
             label="Marginal abatement cost",
             linewidth=1,
+            zorder=10 #ensure top level
         )
 
         for i in range(len(widths_effective_pos) - 2):
-            x_position = (np.cumsum(widths_effective_pos)[i] + np.cumsum(widths_effective_pos)[i + 1]) / 2
-            y_position = min(2000 - 10, heights_pos[i + 1] + 5)
-            self.ax.text(
-                x_position,
-                y_position,
-                f"{names_pos[i]}\n {int(heights_pos[i + 1])}",
-                rotation=0,
-                size=8,
-                ha="center",
-                va="center",
-            )
+            x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
+            y_position = min(heights_pos[i+1], 2000)
+            if heights_pos[i + 1] >= 0:
+                if heights_pos[i + 1] >= 2000:
+                    text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+                else:
+                    text = f"{names_pos[i]}"
+                self.ax.annotate(
+                    text,
+                    (x_position, y_position),
+                    xycoords='data',
+                    xytext=(x_position, y_position + 50),
+                    textcoords='data',
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=7,
+                    ha="right",
+                    va="bottom",
+                )
+            else:
+                self.ax.annotate(
+                    f"{names_pos[i]}",
+                    (x_position, 0),
+                    xycoords='data',
+                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    textcoords='data',
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=7,
+                    ha="right",
+                    va="bottom",
+                )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_pos) - 2)):
             # Create a polygon for each step
             polygon = plt.Polygon(
                 [
-                    (np.cumsum(widths_effective_pos)[i], 0),
-                    (np.cumsum(widths_effective_pos)[i], heights_pos[i + 1]),
-                    (np.cumsum(widths_effective_pos)[i + 1], heights_pos[i + 1]),
-                    (np.cumsum(widths_effective_pos)[i + 1], 0),
+                    (cumwidths_effective_pos[i], 0),
+                    (cumwidths_effective_pos[i], heights_pos[i + 1]),
+                    (cumwidths_effective_pos[i + 1], heights_pos[i + 1]),
+                    (cumwidths_effective_pos[i + 1], 0),
                 ],
                 closed=True,
                 alpha=1,
                 facecolor=colors_pos[i],
-                edgecolor="#335C67",
-                linewidth=1,
-                linestyle="--",
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
             )
             self.ax.add_patch(polygon)
 
@@ -3280,7 +3304,7 @@ class CumulativeMACC:
         names_neg = maccneg_df.index.to_list()
 
         heights_neg.append(0)
-        heights_neg.insert(0, heights_neg[0])
+        heights_neg.insert(0, 0)
 
         # # Mself.ax effective maccneg
         widths_effective_neg = maccneg_df["abatement_effective"].to_list()
@@ -3288,31 +3312,36 @@ class CumulativeMACC:
         widths_effective_neg.insert(0, 0)
         widths_effective_neg.append(0)
 
+        cumwidths_effective_neg = np.cumsum(widths_effective_neg)
+
         colors_neg = maccneg_df["colors"].to_list()
 
-        maccneg_curve = self.ax.step(
+        self.ax.step(
             np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg) + widths_effective_neg,
             heights_neg,
             where="post",
             color="#335C67",
             label="Marginal emission cost",
             linewidth=1,
+            zorder=9
         )
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
-                    np.cumsum(widths_effective_neg)[-1]
-                    - (np.cumsum(widths_effective_neg)[i] + np.cumsum(widths_effective_neg)[i + 1]) / 2
+                    cumwidths_effective_neg[-1]
+                    - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
-            y_position = max(-2000 + 10, heights_neg[i + 1] + 5)
-            self.ax.text(
-                x_position,
-                y_position,
-                f"{names_neg[i]}\n {int(heights_neg[i + 1])}",
-                rotation=0,
-                size=8,
-                ha="center",
-                va="center",
+            self.ax.annotate(
+                f"{names_neg[i]}",
+                (x_position, 0),
+                xycoords='data',
+                xytext=(x_position, 50 + 30 * (i % 3)),
+                textcoords='data',
+                arrowprops=dict(width=0.5, headwidth=0),
+                rotation=-60,
+                fontsize=7,
+                ha="right",
+                va="bottom",
             )
 
         # Fill under the step plot with different colors for each step
@@ -3320,67 +3349,79 @@ class CumulativeMACC:
             # Create a polygon for each step
             polygon = plt.Polygon(
                 [
-                    (np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i], 0),
+                    (cumwidths_effective_neg[-1] - cumwidths_effective_neg[i], 0),
                     (
-                        np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i],
+                        cumwidths_effective_neg[-1] - cumwidths_effective_neg[i],
                         heights_neg[i + 1],
                     ),
                     (
-                        np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i + 1],
+                        cumwidths_effective_neg[-1] - cumwidths_effective_neg[i + 1],
                         heights_neg[i + 1],
                     ),
-                    (np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i + 1], 0),
+                    (cumwidths_effective_neg[-1] - cumwidths_effective_neg[i + 1], 0),
                 ],
                 closed=True,
                 alpha=1,
                 facecolor=colors_neg[i],
-                edgecolor="#335C67",
-                linewidth=1,
-                linestyle="--",
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
             )
             self.ax.add_patch(polygon)
 
         self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
         self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
 
-        self.ax.axhline(0, color="black", linestyle="--", linewidth=2)
+        self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
 
-        self.ax.axvline(0, color="black", linestyle="--", linewidth=2)
+        self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
 
         legend_patches_1 = [
+            Line2D([0], [0], color='black', linewidth=1, linestyle='-', label='Marginal Abatement Cost'),
             mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
             mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
-            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiecny"),
-            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
+            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiency"),
             mpatches.Patch(color="orange", alpha=1, label="Operations"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
         ]
 
-        self.ax.add_artist(self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper right"))
+        self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper left")
 
-        self.ax.set_xlim(
-            np.cumsum(widths_effective_neg)[-1] - 50,
-            np.cumsum(widths_effective_pos)[len(widths_effective_pos) - 2] + 50,
-        )
-
-        self.ax.axvspan(xmin=self.ax.get_xlim()[0], xmax=0, facecolor="red", alpha=0.1, clip_on=True)
-        self.ax.axvspan(xmin=0, xmax=self.ax.get_xlim()[1], facecolor="blue", alpha=0.1, clip_on=True)
-
-        legend_patches = [
-            mpatches.Patch(
-                color="red",
-                alpha=0.1,
-                label="Extra emissions zone\nnegative abatement costs are\nassociated with extra costs",
-            ),
-            mpatches.Patch(color="blue", alpha=0.1, label="Carbon abatement zone"),
-        ]
+        self.ax.set_xlim(cumwidths_effective_neg[-1] - 1000, cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 500)
         self.ax.set_ylim(
-            max(-2000, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 50),
+            max(-300, min(min(heights_pos), min(heights_neg)) - 50),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 230),
         )
 
-        self.ax.legend(handles=legend_patches, loc="upper left")
+        # Add abatement and emission zones
+        self.ax.axvspan(
+            xmin=self.ax.get_xlim()[0], xmax=0, facecolor="#ff70a6", alpha=0.1, clip_on=True, zorder=-1
+        )
+        self.ax.axvspan(
+            xmin=0, xmax=self.ax.get_xlim()[1], facecolor="#70d6ff", alpha=0.15, clip_on=True, zorder=-1
+        )
+
+        self.ax.text(-1, self.ax.get_ylim()[1] / 3.5, "Extra carbon emissions", rotation=90, va="bottom", ha="right",
+                     fontsize=8,
+                     color='dimgrey')
+        self.ax.text(5, self.ax.get_ylim()[1] / 3.5, "Carbon abatement", rotation=90, va="bottom", ha="left",
+                     fontsize=8, color='dimgrey')
 
         self.ax.grid()
+        self.ax.set_title(f'Marginal abatement cost curve, for starting year {self.prospective_years[0]}')
+
+        self.ax2.xaxis.set_label_position("bottom")
+        self.ax2.set_xlabel("Cummulative $\mathregular{CO_2}$ emissions (Mt)")
+
+        self.ax2.spines['bottom'].set_position(('axes', -0.1))  # Move spine below the plot
+        self.ax2.xaxis.set_ticks_position("bottom")
+
+        self.ax2.set_xlim(
+            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]]*1000 - self.ax.get_xlim()[0] - cumwidths_effective_neg[-1],
+            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]]*1000 - self.ax.get_xlim()[1] - cumwidths_effective_neg[-1])
+
+
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
