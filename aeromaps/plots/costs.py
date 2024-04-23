@@ -3395,13 +3395,19 @@ class ScenarioMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
+        self.fig, (self.ax, self.ax_scc) = plt.subplots( 2,1,
+            figsize=(10, 7), sharex=True,
+                                gridspec_kw={'height_ratios': [20, 1]}
         )
         divider = make_axes_locatable(self.ax)
+        dummy_divider = make_axes_locatable(self.ax_scc)
 
-        # Define the size and position of the colorbar axes relative to the main axes
-        self.ax2 = divider.append_axes("right", size="5%", pad=0.1)
+        # Create ax2 for the colorbar
+        self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
+        #Create a dummy ax to keep sharex
+        self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
+        self.dummy_ax.set_visible(False)
+
         self.create_plot_data()
         self.plot_interact()
 
@@ -3674,7 +3680,7 @@ class ScenarioMACC:
                 for value in heights_pos:
                     # Check if the value is above the threshold
                     if value > scc_year:
-                        hatch_list.append("oo")
+                        hatch_list.append("..")
                     else:
                         hatch_list.append("")
 
@@ -3685,14 +3691,14 @@ class ScenarioMACC:
                 for value in heights_pos:
                     # Check if the value is above the threshold
                     if value > scc_year:
-                        hatch_list.append("oo")
+                        hatch_list.append("..")
                     else:
                         hatch_list.append("")
 
             else:
                 hatch_list = ['' for val in heights_pos]
 
-            norm = Normalize(vmin=-500, vmax=2000)
+            norm = Normalize(vmin=-300, vmax=1000)
 
             for i in range(len(heights_pos)):
                 self.ax.bar(
@@ -3705,42 +3711,75 @@ class ScenarioMACC:
                     width=1,
                 )
 
-            ##### POS ######
+            ##### NEG ######
             heights_neg = maccneg_df[metric].to_numpy()
             widths_effective_neg = maccneg_df["abatement_effective"].to_numpy()
 
             for i in range(len(heights_neg)):
                 self.ax.bar(
                     year,
-                    widths_effective_neg[i],
+                    -widths_effective_neg[i],
                     color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=np.cumsum(widths_effective_neg)[i] - widths_effective_neg[i],
+                    bottom=np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i] + widths_effective_neg[i] ,
                     edgecolor="black",
-                    hatch="//",
+                    hatch="xx",
                     width=1,
                 )
+
+            # colorbar ssc
+            if metric != "carbon_abatement_cost":
+                self.ax_scc.bar(
+                    year,
+                    1,
+                    color=plt.cm.RdBu_r(norm(scc_year)),
+                    bottom=0,
+                    edgecolor="black",
+                    width=1,
+                )
+
+                self.ax.legend(
+                    handles=[
+                        mpatches.Patch(facecolor="none", edgecolor="black", hatch=".."),
+                        mpatches.Patch(facecolor="none", edgecolor="black"),
+                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
+                    ],
+                    labels=["Above SCC", "Below or Equal to SCC", "Extra Emissions"],
+                )
+            else:
+                self.ax_scc.set_visible(False)
+
+                self.ax.legend(
+                    handles=[
+                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
+                    ],
+                    labels=["Extra Emissions"],
+                )
+
+
         # Create a ScalarMappable to display the colormap as a legend
 
         sm = ScalarMappable(cmap=plt.cm.RdBu_r, norm=norm)
         sm.set_array([])  # Set an empty array since we don't have specific data values
 
-        self.fig.colorbar(sm, cax=self.ax2, label="Carbon Abatement Cost", norm=norm)
+        self.fig.colorbar(sm, cax=self.ax2, label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", norm=norm)
 
         # Hatch legedn
 
-        self.ax.legend(
-            handles=[
-                mpatches.Patch(facecolor="none", edgecolor="black", hatch="oo"),
-                mpatches.Patch(facecolor="none", edgecolor="black", hatch="//"),
-                mpatches.Patch(facecolor="none", edgecolor="black"),
-            ],
-            labels=["Above SCC (if applicable)", "Extra Emissions", "Below or Equal to SCC"],
-        )
 
-        self.ax.grid()
+
+
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Abatement Effective (Mt)")
-        self.ax.set_title("Carbon Abatement Cost for Positive Effective Abatement")
+        self.ax.tick_params(labelbottom=True)
+
+        self.ax_scc.set_xlim((2*self.prospective_years[0]-1)/2, (2*self.prospective_years[-1]+1)/2)
+        self.ax_scc.set_ylim(0,1)
+        self.ax_scc.yaxis.set_visible(False)
+        self.ax_scc.tick_params(top=True, bottom=False, labelbottom=False)
+        self.ax_scc.set_xlabel("Reference carbon value (€/t$\mathregular{CO_2}$)")
+
+        self.ax.set_title("Scenario Carbon Abatement Cost Evolution")
+        self.ax.yaxis.grid(True)
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
