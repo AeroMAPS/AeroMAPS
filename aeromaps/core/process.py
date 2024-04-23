@@ -1,7 +1,9 @@
-import os.path as pth
-from json import dump
+import os
+from json import load, dump
 import numpy as np
 import pandas as pd
+
+from aeromaps.models.base import AeromapsModel
 
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
@@ -13,7 +15,7 @@ from gemseo import generate_n2_plot, create_mda
 
 
 from aeromaps.core.gemseo import AeromapsModelWrapper
-from aeromaps.core.models import models_simple
+from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
 from aeromaps.plots import available_plots, available_plots_fleet
@@ -23,29 +25,32 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 )
 
 
-DATA_FOLDER = pth.join(pth.dirname(__file__), "..", "resources", "data")
+# Get the directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Contains all data (parameters, inputs, outputs)
-EXCEL_DATA_FILE = pth.join(DATA_FOLDER, "data.xlsx")
-EXCEL_DATA_INFORMATION_FILE = pth.join(DATA_FOLDER, "data_information.csv")
-# Contains parameters and inputs
-PARAMETERS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "parameters.json")
-# Contains outputs
-OUTPUTS_JSON_DATA_FILE = pth.join(DATA_FOLDER, "outputs.json")
+# Construct the path to the config.json file
+default_config_path = os.path.join(current_dir, "config.json")
+
+# Construct the path to the parameters.json file
+default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 
 class create_process(object):
     def __init__(
         self,
-        models=models_simple,
+        configuration_file=None,
+        models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
+
+        self.configuration_file = configuration_file
+        self._initialize_configuration()
+
         self.use_fleet_model = use_fleet_model
         self.models = models
 
-        self.parameters = Parameters()
-        self.parameters.read_json(file_name=PARAMETERS_JSON_DATA_FILE)
+        self._initialize_inputs()
 
         self.setup(add_examples_aircraft_and_subcategory)
 
@@ -66,6 +71,22 @@ class create_process(object):
         self._initialize_data()
         self._update_variables()
 
+    def _initialize_configuration(self):
+        # Load the default configuration file
+        with open(default_config_path, "r") as f:
+            self.config = load(f)
+        # Update paths in the configuration file with absolute paths
+        for key, value in self.config.items():
+            self.config[key] = os.path.join(current_dir, value)
+
+        # Load the new configuration file
+        if self.configuration_file is not None:
+            with open(self.configuration_file, "r") as f:
+                new_config = load(f)
+            # Replace the default configuration with the new configuration
+            for key, value in new_config.items():
+                self.config[key] = value
+
     def _initialize_data(self):
         # Inputs
         self.data["float_inputs"] = {}
@@ -78,15 +99,7 @@ class create_process(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-        for name, model in self.models.items():
-            # TODO: check how to avoid providing all parameters
-            model.parameters = self.parameters
-            model._initialize_df()
-            if hasattr(model, "compute"):
-                model = AeromapsModelWrapper(model=model)
-                self.disciplines.append(model)
-            else:
-                print(model.name)
+
         if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
@@ -94,17 +107,29 @@ class create_process(object):
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["fleet_numeric"].fleet_model = self.fleet_model
-            self.models["recurring_costs"].fleet_model = self.fleet_model
-            self.models["non_recurring_costs"].fleet_model = self.fleet_model
-            self.models["fleet_abatement_cost"].fleet_model = self.fleet_model
-            self.models["cargo_efficiency_carbon_abatement_cost"].fleet_model = self.fleet_model
         else:
             self.fleet = None
+
+        def check_instance_in_dict(d):
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    check_instance_in_dict(value)
+                elif isinstance(value, AeromapsModel):
+                    model = value
+                    # TODO: check how to avoid providing all parameters
+                    model.parameters = self.parameters
+                    model._initialize_df()
+                    if self.use_fleet_model and hasattr(model, "fleet_model"):
+                        model.fleet_model = self.fleet_model
+                    if hasattr(model, "compute"):
+                        model = AeromapsModelWrapper(model=model)
+                        self.disciplines.append(model)
+                    else:
+                        print(model.name)
+                else:
+                    print(f"{key} is not an instance of AeromapsModel")
+
+        check_instance_in_dict(self.models)
 
     def _initialize_years(self):
         # Years
@@ -131,19 +156,25 @@ class create_process(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
+    def _initialize_inputs(self):
+
+        self.parameters = Parameters()
+        # First use main parameters.json as default values
+        self.parameters.read_json(file_name=default_parameters_path)
+
+        if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_input_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
+            )
+            # If an alternative file is provided overwrite values
+            if new_input_file_path != default_parameters_path:
+                self.parameters.read_json(file_name=new_input_file_path)
+
     def compute(self):
 
         if self.fleet is not None:
             self.fleet_model.compute()
-            self.models["passenger_aircraft_efficiency_complex"].fleet_model = self.fleet_model
-            self.models["passenger_aircraft_doc_non_energy_complex"].fleet_model = self.fleet_model
-            self.models["nox_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["soot_emission_index_complex"].fleet_model = self.fleet_model
-            self.models["fleet_numeric"].fleet_model = self.fleet_model
-            self.models["recurring_costs"].fleet_model = self.fleet_model
-            self.models["non_recurring_costs"].fleet_model = self.fleet_model
-            self.models["fleet_abatement_cost"].fleet_model = self.fleet_model
-            self.models["cargo_efficiency_carbon_abatement_cost"].fleet_model = self.fleet_model
 
         input_data = self._set_inputs()
 
@@ -155,14 +186,25 @@ class create_process(object):
 
         self._update_variables()
 
-        self.write_json()
+        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_output_file_path = os.path.join(
+                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
+            )
+            file_name = new_output_file_path
+        else:
+            file_name = None
+        self.write_json(file_name=file_name)
 
-    def write_json(self, file_name=OUTPUTS_JSON_DATA_FILE):
+    def write_json(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
 
-    def write_excel(self, file_name=EXCEL_DATA_FILE):
-
+    def write_excel(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
             self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
@@ -334,8 +376,10 @@ class create_process(object):
             self.data["climate_outputs"].to_dict("list")
         )
 
-    def _read_data_information(self):
-        df = pd.read_csv(EXCEL_DATA_INFORMATION_FILE, encoding="utf-8", sep=";")
+    def _read_data_information(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
+        df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():

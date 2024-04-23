@@ -1,0 +1,6 @@
+{
+    "EXCEL_DATA_FILE": "../resources/data/data.xlsx",
+    "EXCEL_DATA_INFORMATION_FILE": "../resources/data/data_information.csv",
+    "PARAMETERS_JSON_DATA_FILE": "../resources/data/parameters.json",
+    "OUTPUTS_JSON_DATA_FILE": "../resources/data/outputs.json"
+}
