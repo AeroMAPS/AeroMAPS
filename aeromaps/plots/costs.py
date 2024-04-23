@@ -20,8 +20,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .constants import plot_3_x, plot_3_y
 
 
-
-
 class ScenarioEnergyCapitalPlot:
     def __init__(self, data):
         self.df = data["vector_outputs"]
@@ -2356,7 +2354,7 @@ class AnnualMACC:
         self.fig, self.ax = plt.subplots(
             figsize=(10, 7),
         )
-        self.ax2=self.ax.twiny()
+        self.ax2 = self.ax.twiny()
         self.create_plot_data()
         self.plot_interact()
 
@@ -2617,7 +2615,6 @@ class AnnualMACC:
         heights_pos.insert(0, 0)
         heights_pos.append(0)
 
-
         # # MAx effective maccpos
         widths_effective_pos = maccpos_df["abatement_effective"].to_list()
         widths_effective_pos.insert(0, 0)
@@ -2636,22 +2633,22 @@ class AnnualMACC:
             color="black",
             label="Marginal abatement cost",
             linewidth=1,
-            zorder=10 #ensure top level
+            zorder=10  #ensure top level
         )
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
-            y_position = min(heights_pos[i+1], 2000)
-            if heights_pos[i+1]>=0:
-                if heights_pos[i+1]>=2000:
-                    text=f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+            y_position = min(heights_pos[i + 1], 2000)
+            if heights_pos[i + 1] >= 0:
+                if heights_pos[i + 1] >= 2000:
+                    text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
                 else:
-                    text=f"{names_pos[i]}"
+                    text = f"{names_pos[i]}"
                 self.ax.annotate(
                     text,
                     (x_position, y_position),
                     xycoords='data',
-                    xytext=(x_position, y_position+50),
+                    xytext=(x_position, y_position + 50),
                     textcoords='data',
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
@@ -2664,7 +2661,7 @@ class AnnualMACC:
                     f"{names_pos[i]}",
                     (x_position, 0),
                     xycoords='data',
-                    xytext=(x_position, min(50, max(heights_pos) - 50)+30*(i%3)),
+                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
                     textcoords='data',
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
@@ -2772,7 +2769,6 @@ class AnnualMACC:
 
         self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
 
-
         legend_patches_1 = [
             Line2D([0], [0], color='black', linewidth=1, linestyle='-', label='Marginal Abatement Cost'),
             mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
@@ -2801,14 +2797,14 @@ class AnnualMACC:
             xmin=0, xmax=self.ax.get_xlim()[1], facecolor="#70d6ff", alpha=0.15, clip_on=True, zorder=-1
         )
 
-        self.ax.text(-1, self.ax.get_ylim()[1]/3.5, "Extra carbon emissions", rotation=90, va="bottom", ha="right", fontsize=8,
+        self.ax.text(-1, self.ax.get_ylim()[1] / 3.5, "Extra carbon emissions", rotation=90, va="bottom", ha="right",
+                     fontsize=8,
                      color='dimgrey')
-        self.ax.text(5, self.ax.get_ylim()[1]/3.5, "Carbon abatement", rotation=90, va="bottom", ha="left", fontsize=8, color='dimgrey')
+        self.ax.text(5, self.ax.get_ylim()[1] / 3.5, "Carbon abatement", rotation=90, va="bottom", ha="left",
+                     fontsize=8, color='dimgrey')
 
         self.ax.grid()
         self.ax.set_title(f'Marginal abatement cost curve for year {year}')
-
-
 
         self.ax2.xaxis.set_label_position("bottom")
         self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
@@ -3189,8 +3185,10 @@ class CumulativeMACC:
             ]
         )
 
-        undiscounted_cac_list = [a / (b * 1000000)  if (b != 0 and not np.isnan(b)) else np.NaN for a, b in zip(cumcost_list, cumvol_list)]
-        discounted_cac_list = [a / (b * 1000000)  if (b != 0 and not np.isnan(b)) else np.NaN for a, b in zip(discounted_cumcost_list, cumvol_list)]
+        undiscounted_cac_list = [a / (b * 1000000) if (b != 0 and not np.isnan(b)) else np.NaN for a, b in
+                                 zip(cumcost_list, cumvol_list)]
+        discounted_cac_list = [a / (b * 1000000) if (b != 0 and not np.isnan(b)) else np.NaN for a, b in
+                               zip(discounted_cumcost_list, cumvol_list)]
 
         macc_df = pd.DataFrame(
             data=[
@@ -3211,7 +3209,8 @@ class CumulativeMACC:
                 "colors",
             ],
         )
-        self.macc_df = macc_df.transpose().sort_values(by="carbon_abatement_cost").dropna(subset='carbon_abatement_cost')
+        self.macc_df = macc_df.transpose().sort_values(by="carbon_abatement_cost").dropna(
+            subset='carbon_abatement_cost')
 
     def update(self):
         self.ax.cla()
@@ -3242,12 +3241,12 @@ class CumulativeMACC:
             color="black",
             label="Marginal abatement cost",
             linewidth=1,
-            zorder=10 #ensure top level
+            zorder=10  #ensure top level
         )
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
-            y_position = min(heights_pos[i+1], 2000)
+            y_position = min(heights_pos[i + 1], 2000)
             if heights_pos[i + 1] >= 0:
                 if heights_pos[i + 1] >= 2000:
                     text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
@@ -3388,7 +3387,8 @@ class CumulativeMACC:
 
         self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper left")
 
-        self.ax.set_xlim(cumwidths_effective_neg[-1] - 1000, cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 500)
+        self.ax.set_xlim(cumwidths_effective_neg[-1] - 1000,
+                         cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 500)
         self.ax.set_ylim(
             max(-300, min(min(heights_pos), min(heights_neg)) - 50),
             min(2000, max(max(heights_neg), max(heights_pos)) + 230),
@@ -3418,9 +3418,10 @@ class CumulativeMACC:
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]]*1000 - self.ax.get_xlim()[0] - cumwidths_effective_neg[-1],
-            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]]*1000 - self.ax.get_xlim()[1] - cumwidths_effective_neg[-1])
-
+            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]] * 1000 - self.ax.get_xlim()[0] -
+            cumwidths_effective_neg[-1],
+            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]] * 1000 - self.ax.get_xlim()[1] -
+            cumwidths_effective_neg[-1])
 
         self.fig.tight_layout()
         self.fig.canvas.draw()
@@ -3436,10 +3437,10 @@ class ScenarioMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, (self.ax, self.ax_scc) = plt.subplots( 2,1,
-            figsize=(10, 7), sharex=True,
-                                gridspec_kw={'height_ratios': [20, 1]}
-        )
+        self.fig, (self.ax, self.ax_scc) = plt.subplots(2, 1,
+                                                        figsize=(10, 7), sharex=True,
+                                                        gridspec_kw={'height_ratios': [20, 1]}
+                                                        )
         divider = make_axes_locatable(self.ax)
         dummy_divider = make_axes_locatable(self.ax_scc)
 
@@ -3696,7 +3697,7 @@ class ScenarioMACC:
             self.macc_dict[year] = macc_df
 
     def update(self, metric, scc_start):
-        scc_list=[]
+        scc_list = []
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
 
@@ -3715,7 +3716,8 @@ class ScenarioMACC:
             widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
 
             if metric == 'specific_carbon_abatement_cost':
-                scc_year = scc_start * ((1+self.float_inputs['social_discount_rate']) ** (year - self.prospective_years[0]))
+                scc_year = scc_start * (
+                            (1 + self.float_inputs['social_discount_rate']) ** (year - self.prospective_years[0]))
                 scc_list.append(scc_year)
                 hatch_list = []
                 for value in heights_pos:
@@ -3761,7 +3763,8 @@ class ScenarioMACC:
                     year,
                     -widths_effective_neg[i],
                     color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i] + widths_effective_neg[i] ,
+                    bottom=np.cumsum(widths_effective_neg)[-1] - np.cumsum(widths_effective_neg)[i] +
+                           widths_effective_neg[i],
                     edgecolor="black",
                     hatch="xx",
                     width=1,
@@ -3796,7 +3799,6 @@ class ScenarioMACC:
                     labels=["Extra Emissions"],
                 )
 
-
         # Create a ScalarMappable to display the colormap as a legend
 
         sm = ScalarMappable(cmap=plt.cm.RdBu_r, norm=norm)
@@ -3806,15 +3808,12 @@ class ScenarioMACC:
 
         # Hatch legedn
 
-
-
-
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Abatement Effective (Mt)")
         self.ax.tick_params(labelbottom=True)
 
-        self.ax_scc.set_xlim((2*self.prospective_years[0]-1)/2, (2*self.prospective_years[-1]+1)/2)
-        self.ax_scc.set_ylim(0,1)
+        self.ax_scc.set_xlim((2 * self.prospective_years[0] - 1) / 2, (2 * self.prospective_years[-1] + 1) / 2)
+        self.ax_scc.set_ylim(0, 1)
         self.ax_scc.yaxis.set_visible(False)
         self.ax_scc.tick_params(top=True, bottom=False, labelbottom=False)
         self.ax_scc.set_xlabel("Reference carbon value (€/t$\mathregular{CO_2}$)")
