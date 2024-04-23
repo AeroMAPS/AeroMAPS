@@ -61,9 +61,12 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
 )
 
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
-    ERF,
-    ERFSimplifiedNox,
-    DetailedERF,
+    SimplifiedERFCo2,
+    SimplifiedERFNox,
+    ERFNox,
+    ERFOthers,
+    ERFTotal,
+    ERFDetailed,
 )
 from aeromaps.models.impacts.emissions.co2_emissions import (
     CO2Emissions,
@@ -256,8 +259,13 @@ models_offset = {
 }
 
 models_climate_simple_gwpstar = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
+        "simplified_effective_radiative_forcing_co2"
+    ),
+    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -272,8 +280,13 @@ models_climate_simple_gwpstar = {
 }
 
 models_climate_gwpstar = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
+        "simplified_effective_radiative_forcing_co2"
+    ),
+    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -290,8 +303,13 @@ models_climate_gwpstar = {
 }
 
 models_climate_fair = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
+        "simplified_effective_radiative_forcing_co2"
+    ),
+    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
