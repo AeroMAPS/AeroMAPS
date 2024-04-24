@@ -911,13 +911,18 @@ class TemperatureFair(AeromapsModel):
             species_quantities,
             without="Aviation CO2",
         )
-        temperature_increase_from_co2_from_aviation_list = total_temperature_list - total_temperature_without_co2_list
+        temperature_increase_from_co2_from_aviation_list = (
+            total_temperature_list - total_temperature_without_co2_list
+        )
         co2_erf_list = 1000 * (total_forcing_list - total_forcing_without_co2_list)
-        temperature_increase_from_contrails_from_aviation_list = total_temperature_list - RunFair(
-            self,
-            species_quantities,
-            without="Aviation contrails",
-        )[0]
+        temperature_increase_from_contrails_from_aviation_list = (
+            total_temperature_list
+            - RunFair(
+                self,
+                species_quantities,
+                without="Aviation contrails",
+            )[0]
+        )
         temperature_increase_from_nox_short_term_o3_increase_from_aviation_list = (
             total_temperature_list
             - RunFair(
@@ -950,21 +955,30 @@ class TemperatureFair(AeromapsModel):
                 without="Aviation NOx H2O decrease",
             )[0]
         )
-        temperature_increase_from_h2o_from_aviation_list = total_temperature_list - RunFair(
-            self,
-            species_quantities,
-            without="Aviation H2O",
-        )[0]
-        temperature_increase_from_sulfur_from_aviation_list = total_temperature_list - RunFair(
-            self,
-            species_quantities,
-            without="Aviation sulfur",
-        )[0]
-        temperature_increase_from_soot_from_aviation_list = total_temperature_list - RunFair(
-            self,
-            species_quantities,
-            without="Aviation soot",
-        )[0]
+        temperature_increase_from_h2o_from_aviation_list = (
+            total_temperature_list
+            - RunFair(
+                self,
+                species_quantities,
+                without="Aviation H2O",
+            )[0]
+        )
+        temperature_increase_from_sulfur_from_aviation_list = (
+            total_temperature_list
+            - RunFair(
+                self,
+                species_quantities,
+                without="Aviation sulfur",
+            )[0]
+        )
+        temperature_increase_from_soot_from_aviation_list = (
+            total_temperature_list
+            - RunFair(
+                self,
+                species_quantities,
+                without="Aviation soot",
+            )[0]
+        )
         # temperature_increase_from_aviation_list = total_temperature_list - RunFair(
         #     self,
         #     species_quantities,
@@ -976,9 +990,7 @@ class TemperatureFair(AeromapsModel):
             self.df_climate.loc[
                 k, "temperature_increase_from_co2_from_aviation"
             ] = temperature_increase_from_co2_from_aviation_list[k - 1765]
-            self.df_climate.loc[
-                k, "co2_erf"
-            ] = co2_erf_list[k - 1765]
+            self.df_climate.loc[k, "co2_erf"] = co2_erf_list[k - 1765]
             self.df_climate.loc[
                 k, "temperature_increase_from_contrails_from_aviation"
             ] = temperature_increase_from_contrails_from_aviation_list[k - 1765]
