@@ -303,9 +303,6 @@ models_climate_gwpstar = {
 }
 
 models_climate_fair = {
-    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
-        "simplified_effective_radiative_forcing_co2"
-    ),
     "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
     "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
     "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
