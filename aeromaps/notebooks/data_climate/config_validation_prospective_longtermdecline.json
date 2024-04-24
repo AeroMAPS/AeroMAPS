@@ -1,0 +1,4 @@
+{
+    "PARAMETERS_JSON_DATA_FILE": "./inputs/inputs_validation_prospective_longtermdecline.json",
+    "OUTPUTS_JSON_DATA_FILE": "./outputs.json"
+}
