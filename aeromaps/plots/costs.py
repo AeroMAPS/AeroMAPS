@@ -2177,9 +2177,9 @@ class AirfareEvolutionBreakdown:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Airfare [€/ASK]")
         self.ax = plt.gca()
-        self.ax.legend(fontsize="8")
+        self.ax.legend(fontsize="8", loc='upper left')
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
-        # self.ax.set_ylim(0,)
+        self.ax.set_ylim(0,)
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -4858,7 +4858,14 @@ class DetailledMFSPBreakdownPerYear:
         self.ax.set_xticks(self.ax.get_xticks())
         self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=-30, ha="left")
 
-        # Add hydrogen axis
+        # Add a bit of space on top
+
+        self.ax.set_ylim(
+            self.ax.get_ylim()[0],
+            self.ax.get_ylim()[1] * 1.1,
+        )
+
+        # Add "hydrogen" axis
 
         self.ax2.set_ylim(
             self.ax.get_ylim()[0] * self.float_inputs["lhv_hydrogen"],
