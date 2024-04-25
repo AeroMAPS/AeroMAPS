@@ -540,6 +540,8 @@ class LiquidHydrogenCost(AeromapsModel):
             social_discount_rate,
         )
 
+        # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+        # (Volume gets out of cac sums)
         electrolysis_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (electrolysis_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
@@ -625,6 +627,8 @@ class LiquidHydrogenCost(AeromapsModel):
             social_discount_rate,
         )
 
+        # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+        # (Volume gets out of cac sums)
         gas_ccs_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
@@ -704,6 +708,8 @@ class LiquidHydrogenCost(AeromapsModel):
             social_discount_rate,
         )
 
+        # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+        # (Volume gets out of cac sums)
         gas_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (gas_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
@@ -787,6 +793,8 @@ class LiquidHydrogenCost(AeromapsModel):
             social_discount_rate,
         )
 
+        # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+        # (Volume gets out of cac sums)
         coal_ccs_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_ccs_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)
@@ -880,6 +888,8 @@ class LiquidHydrogenCost(AeromapsModel):
             social_discount_rate,
         )
 
+        # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+        # (Volume gets out of cac sums)
         coal_h2_specific_abatement_cost = (
             (1 + transport_cost_ratio)
             * (coal_h2_specific_discounted_cost + liquefaction_h2_specific_discounted_cost)

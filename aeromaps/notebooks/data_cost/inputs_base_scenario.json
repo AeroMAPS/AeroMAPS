@@ -263,16 +263,18 @@
         0,
         0
     ],
-    "social_discount_rate": 0.039,
+    "social_discount_rate": 0.07,
     "exogenous_carbon_price_reference_years": [
         2020,
-        2025,
+        2030,
+        2040,
         2050
     ],
     "exogenous_carbon_price_reference_years_values": [
-        43.3,
-        51,
-        108
+        54,
+        250,
+        500,
+        775
     ],
     "net_carbon_budget": 850.0,
     "carbon_dioxyde_removal_2100": 285.0,

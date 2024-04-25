@@ -695,6 +695,9 @@ class BiofuelCost(AeromapsModel):
                             / (1 + social_discount_rate) ** (i - year)
                         )
 
+
+                # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+                # (Volume gets out of cac sums)
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
                 generic_specific_carbon_abatement_cost[year] = (
                     discounted_cumul_cost / generic_discounted_cumul_em

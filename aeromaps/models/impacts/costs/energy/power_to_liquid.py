@@ -292,6 +292,7 @@ class ElectrofuelCost(AeromapsModel):
 
                 for i in range(year, year + int(plant_lifespan)):
                     if i < (self.end_year + 1):
+
                         discounted_cumul_cost += (
                             electrofuel_cost[i]["TOTAL"] - kerosene_market_price[i]
                         ) / (1 + social_discount_rate) ** (i - year)
@@ -339,6 +340,9 @@ class ElectrofuelCost(AeromapsModel):
                             / (1 + social_discount_rate) ** (i - year)
                         )
 
+
+                # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
+                # (Volume gets out of cac sums)
                 specific_carbon_abatement_cost[year] = discounted_cumul_cost / cumul_em
                 generic_specific_carbon_abatement_cost[year] = (
                     discounted_cumul_cost / generic_discounted_cumul_em
