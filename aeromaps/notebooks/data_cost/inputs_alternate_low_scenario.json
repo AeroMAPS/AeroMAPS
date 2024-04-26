@@ -20,23 +20,13 @@
     "operations_start_year": 2025,
     "operations_duration": 25.0,
     "biofuel_share_reference_years": [
-        2020,
-        2035,
-        2050
     ],
     "biofuel_share_reference_years_values": [
-        0,
-        0,
         0
     ],
     "electrofuel_share_reference_years": [
-        2020,
-        2035,
-        2050
     ],
     "electrofuel_share_reference_years_values": [
-        0,
-        0,
         0
     ],
     "biofuel_hefa_fog_share_reference_years": [],
@@ -247,14 +237,14 @@
         0,
         0
     ],
-    "social_discount_rate": 0.039,
+    "social_discount_rate": 0.043,
     "exogenous_carbon_price_reference_years": [
         2020,
         2025,
         2050
     ],
     "exogenous_carbon_price_reference_years_values": [
-        43.3,
+        43.1,
         51,
         108
     ],

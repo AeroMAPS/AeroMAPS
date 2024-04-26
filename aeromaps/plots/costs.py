@@ -2347,6 +2347,7 @@ class AnnualMACC:
         self.df = data["vector_outputs"]
         self.fleet_model = fleet_model
         self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
@@ -2377,11 +2378,26 @@ class AnnualMACC:
             description='Metric:'
         )
 
+        scc_widget = widgets.FloatText(
+            description='Base year SCC (Specific CAC ONLY):'
+        )
+
+        def update_numeric_widget(change):
+            if change['new'] == 'specific_carbon_abatement_cost':
+                scc_widget.disabled = False
+            else:
+                scc_widget.disabled = True
+                scc_widget.value = 0
+
+        metric_widget.observe(update_numeric_widget, names='value')
+
         interact(
             self.update,
             year=year_widget,
-            metric=metric_widget
+            metric=metric_widget,
+            scc_start=scc_widget
         )
+
 
     def create_plot_data(self):
         self.macc_dict = {}
@@ -2595,7 +2611,7 @@ class AnnualMACC:
 
             self.macc_dict[year] = macc_df
 
-    def update(self, year, metric):
+    def update(self, year, scc_start, metric):
         self.ax.cla()
 
         macc_df = self.macc_dict[year]
@@ -2623,6 +2639,13 @@ class AnnualMACC:
         cumwidths_effective_pos = np.cumsum(widths_effective_pos)
 
         colors_pos = maccpos_df["colors"].to_list()
+
+        scc_year=None
+        if metric == 'specific_carbon_abatement_cost':
+            scc_year = scc_start * (
+                    (1 + self.float_inputs['social_discount_rate']) ** (year - self.prospective_years[0]))
+        elif metric == 'generic_specific_carbon_abatement_cost':
+            scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
 
         ### POS
 
@@ -2761,6 +2784,10 @@ class AnnualMACC:
                 linestyle="dotted",
             )
             self.ax.add_patch(polygon)
+
+        if scc_year:
+            self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
+            self.ax.text(10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8)
 
         self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
         self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
