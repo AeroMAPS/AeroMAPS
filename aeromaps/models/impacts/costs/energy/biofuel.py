@@ -416,22 +416,22 @@ class BiofuelCost(AeromapsModel):
         ] = biofuel_mfsp_carbon_tax_supplement_atj
 
         biofuel_mean_mfsp = (
-            biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100
-            + biofuel_hefa_others_mfsp * biofuel_hefa_others_share / 100
-            + biofuel_ft_others_mfsp * biofuel_ft_others_share / 100
-            + biofuel_ft_msw_mfsp * biofuel_ft_msw_share / 100
-            + biofuel_atj_mfsp * biofuel_atj_share / 100
+            (biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100).fillna(0)
+            + (biofuel_hefa_others_mfsp * biofuel_hefa_others_share / 100).fillna(0)
+            + (biofuel_ft_others_mfsp * biofuel_ft_others_share / 100).fillna(0)
+            + (biofuel_ft_msw_mfsp * biofuel_ft_msw_share / 100).fillna(0)
+            + (biofuel_atj_mfsp * biofuel_atj_share / 100).fillna(0)
         )
 
         self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
 
         # MEAN tax
         biofuel_mean_carbon_tax_per_l = (
-            biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_ft_msw * biofuel_ft_msw_share / 100
-            + biofuel_mfsp_carbon_tax_supplement_atj * biofuel_atj_share / 100
+        (biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100).fillna(0)
+            + (biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100).fillna(0)
+            + (biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100).fillna(0)
+            + (biofuel_mfsp_carbon_tax_supplement_ft_msw * biofuel_ft_msw_share / 100).fillna(0)
+            + (biofuel_mfsp_carbon_tax_supplement_atj * biofuel_atj_share / 100).fillna(0)
         )
 
         self.df.loc[:, "biofuel_mean_carbon_tax_per_l"] = biofuel_mean_carbon_tax_per_l
