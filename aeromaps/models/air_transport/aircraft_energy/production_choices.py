@@ -75,8 +75,6 @@ class BiofuelProduction(AeromapsModel):
         )
         self.df.loc[:, "biofuel_atj_share"] = biofuel_atj_share
 
-        print(biofuel_atj_share)
-
         return (
             biofuel_hefa_fog_share,
             biofuel_hefa_others_share,
