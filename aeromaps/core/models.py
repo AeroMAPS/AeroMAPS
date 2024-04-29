@@ -1,3 +1,4 @@
+# Import elementary models from aeromaps.models
 from aeromaps.models.impacts.costs.operations.average_ops_cost import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -158,6 +159,8 @@ from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
     PassengerAircraftNocCarbonOffset,
 )
 
+
+# Aggregate models
 models_traffic = {
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk": RPK("rpk"),

@@ -453,5 +453,7 @@
     "rpk_short_range_measures_duration": 5,
     "rpk_short_range_measures_final_impact": 0,
     "rpk_short_range_measures_start_year": 2051,
-    "contrails_relative_effect_hydrogen_wrt_kerosene": 1
+    "contrails_relative_effect_hydrogen_wrt_kerosene": 1,
+    "share_efuel_reference_years": [2010, 2020, 2030, 2040, 2050],
+    "share_efuel_reference_years_values": [0.0, 0.0, 0.1, 0.2, 1.0]
 }

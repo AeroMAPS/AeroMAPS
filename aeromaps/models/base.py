@@ -29,6 +29,9 @@ class AeromapsModel(object):
         self.df_climate: pd.DataFrame = pd.DataFrame(
             index=range(self.climate_historic_start_year, self.end_year + 1)
         )
+        self.df_lca: pd.DataFrame = pd.DataFrame(
+            index=range(self.prospection_start_year, self.end_year + 1)
+        )
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 

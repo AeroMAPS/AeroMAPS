@@ -228,6 +228,8 @@ class AutoPyDiscipline(MDODiscipline):
                 # TODO: make this more generic with module approach
                 elif len(val) == len(self.model.df_climate.index):
                     input_vals[name] = pd.Series(val, index=self.model.df_climate.index)
+                # elif len(val) == len(self.model.df_lca.index):
+                #     input_vals[name] = pd.Series(val, index=self.model.df_lca.index)
                 else:
                     raise ValueError(
                         f"The length of the input {name} is not consistent with the length of the model."

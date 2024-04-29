@@ -1,0 +1,180 @@
+project: example_methodology_ei391
+
+ecoinvent:
+    version: '3.9.1'
+    system_model: 'cutoff'
+    # Note: import of ecoinvent requires to provide credentials.
+    # For privacy reasons, we ask you to create a file named .env, that you will not share /commit, 
+    # and contains the following :
+        # ECOINVENT_LOGIN=<your_login>
+        # ECOINVENT_PASSWORD=<your_password>
+
+model:
+
+    aircraft_production: 
+        name: 'aircraft production, passenger aircraft, long haul'
+        exchange: n_aircraft / aircraft_lifetime
+        custom_attributes:
+            - attribute: "phase"
+              value: "aircraft production"
+
+    airports: 
+        name: 'market for airport'
+        exchange: n_airports / airport_lifetime
+        custom_attributes:
+            - attribute: "phase"
+              value: "airport"
+        
+    energy: 
+        exchange: total_energy
+        unit: kilowatt hour
+
+        kerosene:
+            exchange: (1 - share_efuel) / energy_density_kero
+            
+            production:
+                name: 'market for kerosene'
+                loc: 'Europe without Switzerland'
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "kerosene_production"
+                  
+            combustion:
+                custom_attributes:
+                        - attribute: "phase"
+                          value: "combustion"
+            
+                chemicals:
+                    CO2:
+                        exchange: 3.15818
+                        name: 'carbon dioxide, fossil'  # this is a biosphere process   
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CO:
+                        exchange: 0.00278982792508569
+                        name: 'carbon monoxide, fossil'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NOx:
+                        exchange: 0.0138567068171911
+                        name: 'nitrogen oxides'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    SOx:
+                        exchange: 0.00102
+                        name: 'sulfur dioxide'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    H2O:
+                        exchange: 0.00123
+                        name: 'water'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    PM:
+                        exchange: 0.000309885409990546
+                        name: 'Particulate Matter, < 2.5 um'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NMVOC:
+                        exchange: 0.000134838256440604
+                        name: 'NMVOC, non-methane volatile organic compounds'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CH4:
+                        exchange: 0.0000149820284934004
+                        name: 'methane, fossil'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                    N2O:
+                        exchange: 0.0001
+                        name: 'dinitrogen monoxide'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                        
+                heavy_metals:
+                    Cadmium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Cadmium II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Chromium:
+                        exchange: 4.99993497838031e-8
+                        name: 'Chromium III'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Copper:
+                        exchange: 1.70001625540492e-6
+                        name: 'Copper ion'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Lead:
+                        exchange: 0.00002
+                        name: 'Lead II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Mercury:
+                        exchange: 6.99993497838031e-11
+                        name: 'Mercury II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Nickel:
+                        exchange: 6.99993497838031e-8
+                        name: 'Nickel II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Selenium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Selenium IV'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Zinc:
+                        exchange: 9.99990246757047e-6
+                        name: 'Zinc II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                            
+
+        efuel:
+            exchange: share_efuel
+            unit: kilowatt hour
+            
+            production:
+                electricity:
+                    exchange: amount_elec_h2
+                    is_switch: True
+                    pv:
+                        name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
+                        loc: 'FR'
+                    wind:
+                        name: 'electricity production, wind, <1MW turbine, onshore'
+                        loc: 'FR'
+                hydrogen_production:
+                    name: 'hydrogen production, steam reforming'
+                    loc: 'RER'
+                    exchange: amount_h2 / energy_density_h2
+
+
+
+methods:
+    - "('EF v3.1', 'acidification', 'accumulated exceedance (AE)')"
+    - "('EF v3.1', 'climate change', 'global warming potential (GWP100)')"
+    - "('EF v3.1', 'water use', 'user deprivation potential (deprivation-weighted water consumption)')"
+    - "('EF v3.1', 'land use', 'soil quality index')"
+    
