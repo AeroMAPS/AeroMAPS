@@ -35,7 +35,7 @@ default_config_path = os.path.join(current_dir, "config.json")
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 
-class create_process(object):
+class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
