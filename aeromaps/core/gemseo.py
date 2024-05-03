@@ -222,23 +222,25 @@ class AutoPyDiscipline(MDODiscipline):
 
     def _convert_inputs(self, input_vals):
         for name, val in input_vals.items():
-            if issubclass(self._get_input_types()[name], pd.Series):
-                if len(val) == len(self.model.df.index):
-                    input_vals[name] = pd.Series(val, index=self.model.df.index)
-                # TODO: make this more generic with module approach
-                elif len(val) == len(self.model.df_climate.index):
-                    input_vals[name] = pd.Series(val, index=self.model.df_climate.index)
-                # elif len(val) == len(self.model.df_lca.index):
-                #     input_vals[name] = pd.Series(val, index=self.model.df_lca.index)
+            if name in self._get_input_types():
+                if issubclass(self._get_input_types()[name], pd.Series):
+                    if len(val) == len(self.model.df.index):
+                        input_vals[name] = pd.Series(val, index=self.model.df.index)
+                    # TODO: make this more generic with module approach
+                    elif len(val) == len(self.model.df_climate.index):
+                        input_vals[name] = pd.Series(val, index=self.model.df_climate.index)
+                    # elif len(val) == len(self.model.df_lca.index):
+                    #     input_vals[name] = pd.Series(val, index=self.model.df_lca.index)
+                    else:
+                        raise ValueError(
+                            f"The length of the input {name} is not consistent with the length of the model."
+                        )
+                elif issubclass(self._get_input_types()[name], int):
+                    input_vals[name] = int(val)
                 else:
-                    raise ValueError(
-                        f"The length of the input {name} is not consistent with the length of the model."
-                    )
-
-            elif issubclass(self._get_input_types()[name], int):
-                input_vals[name] = int(val)
+                    pass
             else:
-                pass
+                pass  # TODO: deal with custom inputs not defined as args of compute() method
         return input_vals
 
 
@@ -335,6 +337,10 @@ class AeromapsModelWrapper(AutoPyDiscipline):
             py_func=self.model.compute, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
 
+        # Test to add inputs that are not defined as compute() method arguments
+        if hasattr(self.model, "custom_inputs"):
+            self.input_grammar.update_from_names(self.model.custom_inputs)
+
         self.name = model.__class__.__name__
 
         self.update_defaults()
@@ -344,7 +350,9 @@ class AeromapsModelWrapper(AutoPyDiscipline):
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
-                if issubclass(self._get_input_types()[input], pd.Series):
+                if hasattr(self.model, "custom_inputs") and input in self.model.custom_inputs:
+                    self.default_inputs[input] = array(getattr(self.model.parameters, input))
+                elif issubclass(self._get_input_types()[input], pd.Series):
                     self.default_inputs[input] = array(getattr(self.model.parameters, input))
                 else:
                     self.default_inputs[input] = array([getattr(self.model.parameters, input)])

@@ -253,7 +253,7 @@ class create_process(object):
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
-            if not isinstance(field_value, (float, int, list)):
+            if not isinstance(field_value, (float, int, list, str)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
