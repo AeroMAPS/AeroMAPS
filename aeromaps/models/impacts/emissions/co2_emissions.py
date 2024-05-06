@@ -191,7 +191,7 @@ class CO2Emissions(AeromapsModel):
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
         energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
@@ -251,7 +251,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_short_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_short_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_short_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_short_range_electric.loc[k]
@@ -286,7 +286,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_medium_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_medium_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_medium_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_medium_range_electric.loc[k]
@@ -321,7 +321,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_long_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_long_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_long_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_long_range_electric.loc[k]
@@ -355,7 +355,7 @@ class CO2Emissions(AeromapsModel):
                     + rtk_hydrogen_share.loc[k]
                     / 100
                     * energy_per_rtk_freight_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + rtk_electric_share.loc[k]
                     / 100
                     * energy_per_rtk_freight_electric.loc[k]
