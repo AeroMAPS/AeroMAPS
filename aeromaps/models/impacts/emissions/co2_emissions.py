@@ -66,7 +66,7 @@ class KayaFactors(AeromapsModel):
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
 
@@ -106,7 +106,7 @@ class KayaFactors(AeromapsModel):
             biofuel_mean_emission_factor * energy_consumption_biofuel
             + electrofuel_emission_factor * energy_consumption_electrofuel
             + kerosene_emission_factor * energy_consumption_kerosene
-            + hydrogen_mean_emission_factor * energy_consumption_hydrogen
+            + liquid_hydrogen_mean_emission_factor * energy_consumption_hydrogen
             + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
 
