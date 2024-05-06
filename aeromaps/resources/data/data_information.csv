@@ -114,19 +114,19 @@ cagr_freight_reference_periods_values;List;%;Compound annual growth rate for fre
 reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
 reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
 historic_start_year;Float;yr;Historic start year for the data
-hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_ccs_share_reference_years_values;List;%;Share of hydrogen production from coal pathway with carbon capture and storage for the reference years
-hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_electrolysis_share_reference_years;List;yr;Reference years for the share of hydrogen production from electrolysis pathway
 hydrogen_electrolysis_share_reference_years_values;List;%;Share of hydrogen production from electrolysis pathway for the reference years
 hydrogen_final_market_share_long_range;Float;%;Share of hydrogen aircraft in the passenger long-range market
 hydrogen_final_market_share_medium_range;Float;%;Share of hydrogen aircraft in the passenger medium-range market
 hydrogen_final_market_share_short_range;Float;%;Share of hydrogen aircraft in the passenger short-range market
-hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from gas pathway with carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway with carbon capture and storage
 hydrogen_gas_ccs_share_reference_years_values;List;%;Share of hydrogen production from gas pathway with carbon capture and storage for the reference years
-hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from gas pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway without carbon capture and storage
 hydrogen_gas_share_reference_years_values;List;%;Share of hydrogen production from gas pathway without carbon capture and storage for the reference years
 hydrogen_introduction_year_long_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for long-range market
@@ -401,7 +401,11 @@ h2o_emissions;Vector;MtH2O;Water vapor emissions from all commercial air transpo
 h2o_erf;Vector;mW/m²;Effective radiative forcing due to water vapor emissions
 hydrogen_coal_ccs_share;Vector;%;Share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_share;Vector;%;Share of hydrogen production from coal pathway without carbon capture and storage
-hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of hydrogen from electrolysis pathway
+liquid_hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from electrolysis pathway
+liquid_hydrogen_gas_ccs_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from gas pathway with carbon capture and storage
+liquid_hydrogen_coal_ccs_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from coal pathway with carbon capture and storage
+liquid_hydrogen_gas_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from gas pathway without carbon capture and storage
+liquid_hydrogen_coal_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from coal pathway without carbon capture and storage
 hydrogen_electrolysis_share;Vector;%;Share of hydrogen production from electrolysis pathway
 hydrogen_gas_ccs_share;Vector;%;Share of hydrogen production from gas pathway with carbon capture and storage
 hydrogen_gas_share;Vector;%;Share of hydrogen production from gas pathway without carbon capture and storage
