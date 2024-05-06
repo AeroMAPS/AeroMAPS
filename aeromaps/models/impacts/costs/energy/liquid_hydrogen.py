@@ -52,7 +52,7 @@ class LiquidHydrogenCost(AeromapsModel):
         liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electricity_market_price: pd.Series = pd.Series(dtype="float64"),
         gas_market_price: pd.Series = pd.Series(dtype="float64"),
         coal_market_price: pd.Series = pd.Series(dtype="float64"),
@@ -484,7 +484,7 @@ class LiquidHydrogenCost(AeromapsModel):
 
         h2_avoided_emissions_factor = (
             kerosene_emission_factor / energy_replacement_ratio
-            - hydrogen_electrolysis_emission_factor
+            - liquid_hydrogen_electrolysis_emission_factor
         )
         total_avoided_emissions = (
             energy_consumption_hydrogen
@@ -507,7 +507,7 @@ class LiquidHydrogenCost(AeromapsModel):
             energy_consumption_hydrogen
             * hydrogen_electrolysis_share
             / 100
-            * hydrogen_electrolysis_emission_factor
+            * liquid_hydrogen_electrolysis_emission_factor
             / 1000000
             * carbon_tax
             / 1000000
@@ -516,7 +516,7 @@ class LiquidHydrogenCost(AeromapsModel):
         self.df.loc[:, "electrolysis_h2_carbon_tax"] = electrolysis_h2_carbon_tax
 
         electrolysis_h2_mfsp_carbon_tax_supplement = (
-            carbon_tax * hydrogen_electrolysis_emission_factor / 1000000 * lhv_hydrogen
+            carbon_tax * liquid_hydrogen_electrolysis_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
         self.df.loc[

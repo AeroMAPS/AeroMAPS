@@ -127,7 +127,7 @@ class DropinAbatementPotential(AeromapsModel):
         ##  reactivate for potential hydrogen MACC if ever implemented
         # h2_electrolysis_avoided_emissions_factor = (
         #     kerosene_emission_factor / hydrogen_replacement_ratio
-        #     - hydrogen_electrolysis_emission_factor
+        #     - liquid_hydrogen_electrolysis_emission_factor
         # )
         # energy_avail_hydrogen_electrolysis = (
         #     aviation_available_electricity
@@ -212,7 +212,7 @@ class EnergyAbatementEffective(AeromapsModel):
         biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
         liquid_hydrogen_coal_emission_factor: pd.Series = pd.Series(dtype="float64"),
         liquid_hydrogen_coal_ccs_emission_factor: pd.Series = pd.Series(dtype="float64"),
         liquid_hydrogen_gas_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -290,7 +290,7 @@ class EnergyAbatementEffective(AeromapsModel):
         #  H2 extra energy handling is supposed to be done in fleet abatement -> energy_replacement_ratio parameter deleted
 
         h2_electrolysis_avoided_emissions_factor = (
-            kerosene_emission_factor - hydrogen_electrolysis_emission_factor
+            kerosene_emission_factor - liquid_hydrogen_electrolysis_emission_factor
         )
 
         abatement_effective_hydrogen_electrolysis = (
