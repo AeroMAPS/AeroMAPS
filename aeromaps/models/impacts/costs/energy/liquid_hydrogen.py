@@ -1516,7 +1516,7 @@ class LiquidHydrogenCost(AeromapsModel):
         for year in range(base_year, end_bound + 1):
             fuel_price = fuel_market_price[year]
             fuel_cost = fuel_price * plant_specific_energy[technology_year]
-            co2_ccs_cost = ccs_cost[year] * carbon_captured_kg
+            co2_ccs_cost = ccs_cost[year] * carbon_captured_kg[year]
             hydrogen_prices[year] = {
                 "TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + fuel_cost,
                 "CAPEX": cap_cost_lc,

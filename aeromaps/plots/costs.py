@@ -2866,7 +2866,7 @@ class CumulativeMACC:
 
     def create_plot_data(self):
         social_discount_rate = self.float_inputs["social_discount_rate"]
-        start_year = self.prospective_years[1]  # not 2020
+        start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
         macc_dict = {}
@@ -3396,7 +3396,7 @@ class CumulativeMACC:
             self.ax.add_patch(polygon)
 
         self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
-        self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
+        self.ax.set_xlabel("Cumulative $\mathregular{CO_2}$ abatted (Mt)")
 
         self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
 
@@ -3436,7 +3436,7 @@ class CumulativeMACC:
                      fontsize=8, color='dimgrey')
 
         self.ax.grid()
-        self.ax.set_title(f'Marginal abatement cost curve, for starting year {self.prospective_years[0]}')
+        self.ax.set_title(f'Marginal abatement cost curve, for starting year {self.prospective_years[1]}')
 
         self.ax2.xaxis.set_label_position("bottom")
         self.ax2.set_xlabel("Cummulative $\mathregular{CO_2}$ emissions (Mt)")
