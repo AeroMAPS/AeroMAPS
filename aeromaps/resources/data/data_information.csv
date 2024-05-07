@@ -279,6 +279,8 @@ electricity_consumption;Vector;EJ;Electricity consumption from electrofuel and h
 electricity_electrofuel_consumption;Vector;EJ;Electricity consumption from electrofuel production
 electricity_emission_factor;Vector;gCO2/kWh;Electricity emission factor
 electricity_hydrogen_consumption;Vector;EJ;Electricity consumption from hydrogen production
+electricity_hydrogen_electrolysis_consumption;Vector;EJ;Electricity consumption from hydrogen production from electrolysis pathway
+electricity_hydrogen_non_electrolysis_consumption;Vector;EJ;Electricity consumption from hydrogen production from non-electrolysis pathway (due to liquefaction)
 electrofuel_emission_factor;Vector;gCO2/MJ;Emission factor of electrofuel
 electrofuel_hydrogen_efficiency;Vector;-;Conversion efficiency for producing electrofuel from hydrogen
 electrofuel_share;Vector;%;Share of electrofuel in drop-in fuel
