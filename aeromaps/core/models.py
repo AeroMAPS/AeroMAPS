@@ -262,7 +262,7 @@ models_climate_simple_gwpstar = {
     "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
         "simplified_effective_radiative_forcing_co2"
     ),
-    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox("simplified_effective_radiative_forcing_nox"),
     "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
     "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
     "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
@@ -294,8 +294,6 @@ models_climate_gwpstar = {
     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
         "detailed_cumulative_co2_emissions"
     ),
-    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
-    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
@@ -314,8 +312,6 @@ models_climate_fair = {
     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
         "detailed_cumulative_co2_emissions"
     ),
-    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
-    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_fair": TemperatureFair("temperature_fair"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
