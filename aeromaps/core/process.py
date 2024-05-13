@@ -1,19 +1,16 @@
+# Standard library imports
 import os
 from json import load, dump
+
+# Third-party imports
 import numpy as np
 import pandas as pd
-
-from aeromaps.models.base import AeromapsModel
-
-pd.options.display.max_rows = 150
-pd.set_option("display.max_columns", 150)
-pd.set_option("max_colwidth", 200)
-pd.options.mode.chained_assignment = None
-
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
 
 
+# Local application imports
+from aeromaps.models.base import AeromapsModel
 from aeromaps.core.gemseo import AeromapsModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
@@ -24,6 +21,11 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     FleetModel,
 )
 
+# Settings
+pd.options.display.max_rows = 150
+pd.set_option("display.max_columns", 150)
+pd.set_option("max_colwidth", 200)
+pd.options.mode.chained_assignment = None
 
 # Get the directory of the current script
 current_dir = os.path.dirname(os.path.abspath(__file__))
