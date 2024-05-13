@@ -61,9 +61,12 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
 )
 
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
-    ERF,
-    ERFSimplifiedNox,
-    DetailedERF,
+    SimplifiedERFCo2,
+    SimplifiedERFNox,
+    ERFNox,
+    ERFOthers,
+    ERFTotal,
+    ERFDetailed,
 )
 from aeromaps.models.impacts.emissions.co2_emissions import (
     CO2Emissions,
@@ -256,8 +259,13 @@ models_offset = {
 }
 
 models_climate_simple_gwpstar = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
+        "simplified_effective_radiative_forcing_co2"
+    ),
+    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox("simplified_effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -272,8 +280,13 @@ models_climate_simple_gwpstar = {
 }
 
 models_climate_gwpstar = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
+        "simplified_effective_radiative_forcing_co2"
+    ),
+    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -281,8 +294,6 @@ models_climate_gwpstar = {
     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
         "detailed_cumulative_co2_emissions"
     ),
-    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
-    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
@@ -290,8 +301,10 @@ models_climate_gwpstar = {
 }
 
 models_climate_fair = {
-    "effective_radiative_forcing": ERF("effective_radiative_forcing"),
-    "detailed_erf": DetailedERF("detailed_erf"),
+    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
+    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
+    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
+    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -299,8 +312,6 @@ models_climate_fair = {
     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
         "detailed_cumulative_co2_emissions"
     ),
-    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
-    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
     "temperature_fair": TemperatureFair("temperature_fair"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
@@ -316,6 +327,15 @@ models_sustainability = {
     "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
         "equivalent_carbon_budget_consumed_share"
     ),
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+}
+
+models_sustainability_without_equivalent_emissions = {
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
+    "biomass_availability": BiomassAvailability("biomass_availability"),
+    "electricity_availability": ElectricityAvailability("electricity_availability"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 

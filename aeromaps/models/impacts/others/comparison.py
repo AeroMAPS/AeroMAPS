@@ -33,7 +33,6 @@ class EquivalentCarbonBudgetConsumedShare(AeromapsModel):
     def compute(
         self,
         cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
-        gross_carbon_budget_2050: float = 0.0,
         equivalent_gross_carbon_budget_2050: float = 0.0,
     ) -> Tuple[float]:
         """Equivalent Carbon budget consumption share calculation."""

@@ -97,6 +97,10 @@ energy_per_ask_short_range_dropin_fuel_gain_reference_years_values;List;%;Mean a
 erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_short_term_o3_increase;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to short-term O3 increase;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_long_term_o3_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to long-term O3 decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_ch4_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to methane decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_stratospheric_water_vapor_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to stratospheric water vapor decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet;Assuming the default value for calibrating the fleet renewal models
