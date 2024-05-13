@@ -247,5 +247,3 @@ class KeroseneBAUCost(AeromapsModel):
         self.df.loc[:, "kerosene_carbon_tax_BAU"] = kerosene_carbon_tax_BAU
 
         return kerosene_carbon_tax_BAU, kerosene_consumption_full_kero
-
-

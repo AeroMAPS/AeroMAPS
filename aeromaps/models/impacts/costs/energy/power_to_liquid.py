@@ -245,7 +245,9 @@ class ElectrofuelCost(AeromapsModel):
                 missing_production_kg = missing_production / lhv_electrofuel
                 missing_production_litres = missing_production_kg / density_electrofuel
                 electrofuel_capacity_to_build = (
-                    missing_production_kg / 365.25 / min(electricity_load_factor[year], plant_load_fact)
+                    missing_production_kg
+                    / 365.25
+                    / min(electricity_load_factor[year], plant_load_fact)
                 )  # capacity to build in kg/day production, taking into account load_factor
 
                 electrolyser_capex_year = (
@@ -339,7 +341,6 @@ class ElectrofuelCost(AeromapsModel):
                             )
                             / (1 + social_discount_rate) ** (i - year)
                         )
-
 
                 # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
                 # (Volume gets out of cac sums)
@@ -467,11 +468,14 @@ class ElectrofuelCost(AeromapsModel):
 
         # Electrolysis efficiency correction to remove DAC input from efficiency (Fig.2 of https://www.nature.com/articles/s41558-021-01032-7)
 
-        electrofuel_efficiency = electrolysis_efficiency * electrofuel_hydrogen_efficiency * (0.81+0.03+0.06)/(0.81+0.03)
-
-        electrofuel_specific_electricity = dropin_specific_energy / ( electrofuel_efficiency
-
+        electrofuel_efficiency = (
+            electrolysis_efficiency
+            * electrofuel_hydrogen_efficiency
+            * (0.81 + 0.03 + 0.06)
+            / (0.81 + 0.03)
         )
+
+        electrofuel_specific_electricity = dropin_specific_energy / (electrofuel_efficiency)
 
         cap_cost_npv = 0
         fix_op_cost_npv = 0

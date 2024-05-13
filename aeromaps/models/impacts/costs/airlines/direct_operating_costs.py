@@ -794,7 +794,7 @@ class DropInMeanMfsp(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series]:
 
         dropin_mean_mfsp = (
-                (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
+            (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
             + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
             + (kerosene_market_price * kerosene_share / 100).fillna(0)
         )

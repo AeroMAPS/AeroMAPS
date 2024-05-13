@@ -301,7 +301,9 @@ class EnergyAbatementEffective(AeromapsModel):
             / 1000000
         )
 
-        h2_coal_avoided_emissions_factor = kerosene_emission_factor - liquid_hydrogen_coal_emission_factor
+        h2_coal_avoided_emissions_factor = (
+            kerosene_emission_factor - liquid_hydrogen_coal_emission_factor
+        )
 
         abatement_effective_hydrogen_coal = (
             energy_consumption_hydrogen
@@ -323,7 +325,9 @@ class EnergyAbatementEffective(AeromapsModel):
             / 1000000
         )
 
-        h2_gas_avoided_emissions_factor = kerosene_emission_factor - liquid_hydrogen_gas_emission_factor
+        h2_gas_avoided_emissions_factor = (
+            kerosene_emission_factor - liquid_hydrogen_gas_emission_factor
+        )
 
         abatement_effective_hydrogen_gas = (
             energy_consumption_hydrogen

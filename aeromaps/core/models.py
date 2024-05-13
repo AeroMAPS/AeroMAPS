@@ -9,8 +9,10 @@ from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
 )
-from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import FleetCarbonAbatementCosts, \
-    CargoEfficiencyCarbonAbatementCosts
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
+    FleetCarbonAbatementCosts,
+    CargoEfficiencyCarbonAbatementCosts,
+)
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
 )
@@ -150,7 +152,8 @@ from aeromaps.models.impacts.costs.energy.market_prices import (
     CarbonTax,
     KeroseneBAUCost,
     CoalCost,
-    GasCost, ElectricityLoadFactor,
+    GasCost,
+    ElectricityLoadFactor,
 )
 from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCost,
@@ -303,7 +306,9 @@ models_climate_simple_gwpstar = {
     "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
         "simplified_effective_radiative_forcing_co2"
     ),
-    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox("simplified_effective_radiative_forcing_nox"),
+    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox(
+        "simplified_effective_radiative_forcing_nox"
+    ),
     "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
     "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
     "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
@@ -445,23 +450,24 @@ models_operation_cost = {
     "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
         "passenger_aircraft_total_cost_and_airfare"
     ),
-
 }
 
-models_abatements_cost ={
+models_abatements_cost = {
     "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
     "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
-    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
-        "exogenous_carbon_price_trajectory"
-    ),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
-"cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts("cargo_efficiency_carbon_abatement_cost")
+    "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
+        "cargo_efficiency_carbon_abatement_cost"
+    ),
 }
 
 models_costs_top_down_specific = {
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
         "passenger_aircraft_doc_non_energy_simple"
+    ),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
+        "exogenous_carbon_price_trajectory"
     ),
 }
 
@@ -469,10 +475,12 @@ models_costs_bottom_up_specific = {
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
         "passenger_aircraft_doc_non_energy_complex"
     ),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
+        "exogenous_carbon_price_trajectory"
+    ),
     "fleet_numeric": FleetEvolution("fleet_numeric"),
-    "recurring_costs": RecurringCosts("recurring_costs"),
-    "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
-
+    # "recurring_costs": RecurringCosts("recurring_costs"),
+    # "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
 }
 
 
@@ -485,7 +493,7 @@ default_models_top_down = {
     "models_sustainability": models_sustainability,
     "models_energy_cost": models_energy_cost,
     "models_costs_top_down_specific": models_costs_top_down_specific,
-    "models_operation_cost": models_operation_cost
+    "models_operation_cost": models_operation_cost,
 }
 
 default_models_bottom_up = {

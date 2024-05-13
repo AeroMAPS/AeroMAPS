@@ -9,13 +9,13 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     for key, value in parameters_dict.items():
         # TODO: generic handling of timetables
         if isinstance(value, list) and key in [
-            'rpk_init',
-            'ask_init',
-            'rtk_init',
-            'pax_init',
-            'freight_init',
-            'energy_consumption_init',
-            'total_aircraft_distance_init'
+            "rpk_init",
+            "ask_init",
+            "rtk_init",
+            "pax_init",
+            "freight_init",
+            "energy_consumption_init",
+            "total_aircraft_distance_init",
         ]:
             parameters_dict[key] = pd.Series(value)
 

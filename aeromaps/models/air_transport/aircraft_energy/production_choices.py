@@ -11,15 +11,15 @@ class BiofuelProduction(AeromapsModel):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
-            self,
-            biofuel_hefa_fog_share_reference_years: list = [],
-            biofuel_hefa_fog_share_reference_years_values: list = [],
-            biofuel_hefa_others_share_reference_years: list = [],
-            biofuel_hefa_others_share_reference_years_values: list = [],
-            biofuel_ft_others_share_reference_years: list = [],
-            biofuel_ft_others_share_reference_years_values: list = [],
-            biofuel_ft_msw_share_reference_years: list = [],
-            biofuel_ft_msw_share_reference_years_values: list = [],
+        self,
+        biofuel_hefa_fog_share_reference_years: list = [],
+        biofuel_hefa_fog_share_reference_years_values: list = [],
+        biofuel_hefa_others_share_reference_years: list = [],
+        biofuel_hefa_others_share_reference_years_values: list = [],
+        biofuel_ft_others_share_reference_years: list = [],
+        biofuel_ft_others_share_reference_years_values: list = [],
+        biofuel_ft_msw_share_reference_years: list = [],
+        biofuel_ft_msw_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biomass production calculation using interpolation functions"""
 
@@ -59,20 +59,18 @@ class BiofuelProduction(AeromapsModel):
         )
         self.df.loc[:, "biofuel_ft_msw_share"] = biofuel_ft_msw_share
 
-        share_without_atj =(biofuel_hefa_fog_share
-                   + biofuel_hefa_others_share
-                   + biofuel_ft_others_share
-                   + biofuel_ft_msw_share)
-
+        share_without_atj = (
+            biofuel_hefa_fog_share
+            + biofuel_hefa_others_share
+            + biofuel_ft_others_share
+            + biofuel_ft_msw_share
+        )
 
         # rounding to a very high order to avoid numerical problems when computing atj share
         share_without_atj = np.round(share_without_atj, 12)
 
         # ATJ
-        biofuel_atj_share = (
-                100.00
-                - share_without_atj
-        )
+        biofuel_atj_share = 100.00 - share_without_atj
         self.df.loc[:, "biofuel_atj_share"] = biofuel_atj_share
 
         return (
@@ -89,15 +87,15 @@ class HydrogenProduction(AeromapsModel):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
-            self,
-            hydrogen_electrolysis_share_reference_years: list = [],
-            hydrogen_electrolysis_share_reference_years_values: list = [],
-            hydrogen_gas_ccs_share_reference_years: list = [],
-            hydrogen_gas_ccs_share_reference_years_values: list = [],
-            hydrogen_coal_ccs_share_reference_years: list = [],
-            hydrogen_coal_ccs_share_reference_years_values: list = [],
-            hydrogen_gas_share_reference_years: list = [],
-            hydrogen_gas_share_reference_years_values: list = [],
+        self,
+        hydrogen_electrolysis_share_reference_years: list = [],
+        hydrogen_electrolysis_share_reference_years_values: list = [],
+        hydrogen_gas_ccs_share_reference_years: list = [],
+        hydrogen_gas_ccs_share_reference_years_values: list = [],
+        hydrogen_coal_ccs_share_reference_years: list = [],
+        hydrogen_coal_ccs_share_reference_years_values: list = [],
+        hydrogen_gas_share_reference_years: list = [],
+        hydrogen_gas_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen production calculation using interpolation functions"""
 
@@ -139,11 +137,11 @@ class HydrogenProduction(AeromapsModel):
 
         # Coal
         hydrogen_coal_share = (
-                100
-                - hydrogen_electrolysis_share
-                - hydrogen_gas_ccs_share
-                - hydrogen_coal_ccs_share
-                - hydrogen_gas_share
+            100
+            - hydrogen_electrolysis_share
+            - hydrogen_gas_ccs_share
+            - hydrogen_coal_ccs_share
+            - hydrogen_gas_share
         )
         self.df.loc[:, "hydrogen_coal_share"] = hydrogen_coal_share
 

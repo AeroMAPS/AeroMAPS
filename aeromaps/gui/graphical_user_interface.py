@@ -1028,6 +1028,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1044,6 +1047,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1060,6 +1066,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1076,6 +1085,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1092,6 +1104,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1108,6 +1123,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1131,6 +1149,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1147,6 +1168,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1163,6 +1187,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1179,6 +1206,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1195,6 +1225,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1211,6 +1244,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1234,6 +1270,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1250,6 +1289,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1266,6 +1308,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1282,6 +1327,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1298,6 +1346,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1314,6 +1365,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1337,6 +1391,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1353,6 +1410,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1369,6 +1429,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1385,6 +1448,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1401,6 +1467,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1417,6 +1486,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1440,6 +1512,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             print(short_range_aircraft1_params)
             short_range_aircraft1 = Aircraft(
@@ -1457,6 +1532,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1473,6 +1551,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1489,6 +1570,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1505,6 +1589,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1521,6 +1608,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1544,6 +1634,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1560,6 +1653,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             short_range_aircraft2 = Aircraft(
                 "New Short-range Aircraft 2",
@@ -1576,6 +1672,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft1 = Aircraft(
                 "New Medium-range Aircraft 1",
@@ -1592,6 +1691,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=10.0,
                 cruise_altitude=6000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             medium_range_aircraft2 = Aircraft(
                 "New Medium-range Aircraft 2",
@@ -1608,6 +1710,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
@@ -1624,6 +1729,9 @@ class GraphicalUserInterface(widgets.VBox):
                 soot_evolution=0.0,
                 doc_non_energy_evolution=0.0,
                 cruise_altitude=12000.0,
+                ask_year=1.0,  # Dummy
+                rc_cost=1.0,  # Dummy
+                nrc_cost=1.0,  # Dummy
             )
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
@@ -1656,6 +1764,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1681,6 +1792,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1706,6 +1820,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1730,6 +1847,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=10.0,
                     cruise_altitude=12000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 medium_range_aircraft_hydrogen = Aircraft(
                     "New Medium-range Hydrogen Aircraft",
@@ -1756,6 +1876,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1781,6 +1904,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1806,6 +1932,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 short_range_aircraft_hydrogen = Aircraft(
                     "New Short-range Hydrogen Aircraft",
@@ -1830,6 +1959,9 @@ class GraphicalUserInterface(widgets.VBox):
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
                     cruise_altitude=6000.0,
+                    ask_year=1.0,  # Dummy
+                    rc_cost=1.0,  # Dummy
+                    nrc_cost=1.0,  # Dummy
                 )
                 medium_range_aircraft_hydrogen = Aircraft(
                     "New Medium-range Hydrogen Aircraft",

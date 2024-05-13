@@ -233,7 +233,7 @@ class create_process(object):
                 if size_inches is not None:
                     fig.fig.set_size_inches(size_inches)
                 if remove_title:
-                    fig.fig.gca().set_title('')
+                    fig.fig.gca().set_title("")
                 fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         elif name in available_plots:
             fig = available_plots[name](self.data)
@@ -241,7 +241,7 @@ class create_process(object):
                 if size_inches is not None:
                     fig.fig.set_size_inches(size_inches)
                 if remove_title:
-                    fig.fig.gca().set_title('')
+                    fig.fig.gca().set_title("")
                 fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         else:
             raise NameError(

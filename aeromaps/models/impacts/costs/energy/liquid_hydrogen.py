@@ -583,7 +583,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # M€
 
         h2_avoided_emissions_factor = (
-            kerosene_emission_factor / energy_replacement_ratio - liquid_hydrogen_gas_ccs_emission_factor
+            kerosene_emission_factor / energy_replacement_ratio
+            - liquid_hydrogen_gas_ccs_emission_factor
         )
         total_avoided_emissions = (
             energy_consumption_hydrogen
@@ -674,7 +675,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # M€
 
         h2_avoided_emissions_factor = (
-            kerosene_emission_factor / energy_replacement_ratio - liquid_hydrogen_gas_emission_factor
+            kerosene_emission_factor / energy_replacement_ratio
+            - liquid_hydrogen_gas_emission_factor
         )
         total_avoided_emissions = (
             energy_consumption_hydrogen
@@ -761,7 +763,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # M€
 
         h2_avoided_emissions_factor = (
-            kerosene_emission_factor / energy_replacement_ratio - liquid_hydrogen_coal_ccs_emission_factor
+            kerosene_emission_factor / energy_replacement_ratio
+            - liquid_hydrogen_coal_ccs_emission_factor
         )
         total_avoided_emissions = (
             energy_consumption_hydrogen
@@ -852,7 +855,8 @@ class LiquidHydrogenCost(AeromapsModel):
         # M€
 
         h2_avoided_emissions_factor = (
-            kerosene_emission_factor / energy_replacement_ratio - liquid_hydrogen_coal_emission_factor
+            kerosene_emission_factor / energy_replacement_ratio
+            - liquid_hydrogen_coal_emission_factor
         )
         total_avoided_emissions = (
             energy_consumption_hydrogen

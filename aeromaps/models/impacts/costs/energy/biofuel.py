@@ -427,9 +427,13 @@ class BiofuelCost(AeromapsModel):
 
         # MEAN tax
         biofuel_mean_carbon_tax_per_l = (
-        (biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100).fillna(0)
-            + (biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100).fillna(0)
-            + (biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100).fillna(0)
+            (biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100).fillna(0)
+            + (
+                biofuel_mfsp_carbon_tax_supplement_hefa_others * biofuel_hefa_others_share / 100
+            ).fillna(0)
+            + (biofuel_mfsp_carbon_tax_supplement_ft_others * biofuel_ft_others_share / 100).fillna(
+                0
+            )
             + (biofuel_mfsp_carbon_tax_supplement_ft_msw * biofuel_ft_msw_share / 100).fillna(0)
             + (biofuel_mfsp_carbon_tax_supplement_atj * biofuel_atj_share / 100).fillna(0)
         )
@@ -694,7 +698,6 @@ class BiofuelCost(AeromapsModel):
                             )
                             / (1 + social_discount_rate) ** (i - year)
                         )
-
 
                 # Using unitary values for cost and emission possible as long as the plant operates at constant capacity during its life
                 # (Volume gets out of cac sums)
