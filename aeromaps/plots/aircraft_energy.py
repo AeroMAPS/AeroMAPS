@@ -95,7 +95,7 @@ class EmissionFactorPerFuelPlot:
 
         (self.line_hydrogen_mean_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "hydrogen_mean_emission_factor"],
+            self.df.loc[self.prospective_years, "liquid_hydrogen_mean_emission_factor"],
             color="blue",
             linestyle="-",
             label="Hydrogen",
@@ -154,7 +154,7 @@ class EmissionFactorPerFuelPlot:
         )
 
         self.line_hydrogen_mean_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "hydrogen_mean_emission_factor"]
+            self.df.loc[self.prospective_years, "liquid_hydrogen_mean_emission_factor"]
         )
 
         self.line_electrofuel_emission_factor.set_ydata(

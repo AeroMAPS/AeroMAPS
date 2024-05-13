@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
@@ -58,14 +59,18 @@ class BiofuelProduction(AeromapsModel):
         )
         self.df.loc[:, "biofuel_ft_msw_share"] = biofuel_ft_msw_share
 
-        # ATJ
-        biofuel_atj_share = (
-            100
-            - biofuel_hefa_fog_share
-            - biofuel_hefa_others_share
-            - biofuel_ft_others_share
-            - biofuel_ft_msw_share
+        share_without_atj = (
+            biofuel_hefa_fog_share
+            + biofuel_hefa_others_share
+            + biofuel_ft_others_share
+            + biofuel_ft_msw_share
         )
+
+        # rounding to a very high order to avoid numerical problems when computing atj share
+        share_without_atj = np.round(share_without_atj, 12)
+
+        # ATJ
+        biofuel_atj_share = 100.00 - share_without_atj
         self.df.loc[:, "biofuel_atj_share"] = biofuel_atj_share
 
         return (

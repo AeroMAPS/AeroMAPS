@@ -1,4 +1,4 @@
-from aeromaps.models.impacts.costs.operations.average_ops_cost import (
+from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
     PassengerAircraftDocCarbonTax,
@@ -6,7 +6,36 @@ from aeromaps.models.impacts.costs.operations.average_ops_cost import (
     PassengerAircraftTotalDoc,
     PassengerAircraftDocNonEnergySimple,
 )
-from aeromaps.models.impacts.energy_resources.abatement_potential import BiofuelAbatementPotential
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
+    FleetEvolution,
+)
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
+    FleetCarbonAbatementCosts,
+    CargoEfficiencyCarbonAbatementCosts,
+)
+from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
+    OperationsAbatementCost,
+)
+from aeromaps.models.impacts.costs.energy.biofuel import (
+    BiofuelCost,
+    BiofuelVarOpex,
+    BiofuelFeedstock,
+    BiofuelCapex,
+)
+
+from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
+from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
+from aeromaps.models.impacts.costs.operations.operations_cost import (
+    LoadFactorEfficiencyCost,
+    OperationalEfficiencyCost,
+)
+from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import (
+    ExogenousCarbonPriceTrajectory,
+)
+from aeromaps.models.impacts.energy_resources.abatement_potential import (
+    DropinAbatementPotential,
+    EnergyAbatementEffective,
+)
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
     RPK,
@@ -115,7 +144,6 @@ from aeromaps.models.impacts.emissions.carbon_offset import (
 )
 
 # COSTS
-from aeromaps.models.impacts.costs.energy.biofuel import BiofuelCost, BiofuelMfsp, BiofuelCapex
 from aeromaps.models.impacts.costs.energy.market_prices import (
     ElectricityCost,
     Co2Cost,
@@ -125,6 +153,7 @@ from aeromaps.models.impacts.costs.energy.market_prices import (
     KeroseneBAUCost,
     CoalCost,
     GasCost,
+    ElectricityLoadFactor,
 )
 from aeromaps.models.impacts.costs.energy.power_to_liquid import (
     ElectrofuelCost,
@@ -157,8 +186,23 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedScenarioCost,
     NonDiscountedScenarioCost,
 )
-from aeromaps.models.impacts.costs.non_operations.non_ops_cost import (
+
+from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
+    PassengerAircraftNonOpCosts,
+    PassengerAircraftPassengerTax,
+)
+
+from aeromaps.models.impacts.costs.airlines.indirect_operating_costs import (
+    PassengerAircraftIndirectOpCosts,
     PassengerAircraftNocCarbonOffset,
+)
+
+from aeromaps.models.impacts.costs.airlines.operational_profit import (
+    PassengerAircraftOperationalProfit,
+)
+
+from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
+    PassengerAircraftTotalCostAirfare,
 )
 
 models_traffic = {
@@ -262,7 +306,9 @@ models_climate_simple_gwpstar = {
     "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
         "simplified_effective_radiative_forcing_co2"
     ),
-    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox("simplified_effective_radiative_forcing_nox"),
+    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox(
+        "simplified_effective_radiative_forcing_nox"
+    ),
     "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
     "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
     "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
@@ -339,8 +385,8 @@ models_sustainability_without_equivalent_emissions = {
     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 
-models_costs_top_down = {
-    "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
+
+models_energy_cost = {
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
     "kerosene_cost": KeroseneCost("kerosene_cost"),
@@ -349,6 +395,7 @@ models_costs_top_down = {
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "electricity_cost": ElectricityCost("electricity_cost"),
+    "electricity_load_factor": ElectricityLoadFactor("electricity_load_factor"),
     "coal_cost": CoalCost("coal_cost"),
     "gas_cost": GasCost("coal_cost"),
     "liquid_hydrogen_cost": LiquidHydrogenCost("liquid_hydrogen_cost"),
@@ -374,71 +421,68 @@ models_costs_top_down = {
     "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
     "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
+    "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
+    "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
+    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
-    "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
-        "passenger_aircraft_doc_non_energy_simple"
-    ),
-    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
-        "passenger_aircraft_doc_carbon_tax"
-    ),
 }
 
-models_costs_bottom_up = {
-    "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
-    "biofuel_capex": BiofuelCapex("biofuel_capex"),
-    "kerosene_market_price": KerosenePrice("kerosene_market_price"),
-    "kerosene_cost": KeroseneCost("kerosene_cost"),
-    "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
-    "biofuel_cost": BiofuelCost("biofuel_cost"),
-    "co2_cost": Co2Cost("co2_cost"),
-    "carbon_tax": CarbonTax("carbon_tax"),
-    "electricity_cost": ElectricityCost("electricity_cost"),
-    "coal_cost": CoalCost("coal_cost"),
-    "gas_cost": GasCost("coal_cost"),
-    "liquid_hydrogen_cost": LiquidHydrogenCost("liquid_hydrogen_cost"),
-    "electrolyser_capex": ElectrolyserCapex("electrolyser_capex"),
-    "electrolyser_fixed_opex": ElectrolyserFixedOpex("electrolyser_fixed_opex"),
-    "electrolyser_var_opex": ElectrolyserVarOpex("electrolyser_var_opex"),
-    "gas_ccs_capex": GasCcsCapex("gas_ccs_capex"),
-    "gas_ccs_fixed_opex": GasCcsFixedOpex("gas_ccs_fixed_opex"),
-    "gas_ccs_efficiency": GasCcsEfficiency("gas_ccs_efficiency"),
-    "gas_capex": GasCapex("gas_capex"),
-    "gas_fixed_opex": GasFixedOpex("gas_fixed_opex"),
-    "gas_efficiency": GasEfficiency("gas_efficiency"),
-    "coal_ccs_capex": CoalCcsCapex("coal_ccs_capex"),
-    "coal_ccs_fixed_opex": CoalCcsFixedOpex("coal_ccs_fixed_opex"),
-    "coal_ccs_efficiency": CoalCcsEfficiency("coal_ccs_efficiency"),
-    "coal_capex": CoalCapex("coal_capex"),
-    "coal_fixed_opex": CoalFixedOpex("coal_fixed_opex"),
-    "coal_efficiency": CoalEfficiency("coal_efficiency"),
-    "ccs_cost": CcsCost("ccs_cost"),
-    "liquefier_capex": LiquefierCapex("liquefier_capex"),
-    "electrofuel_cost": ElectrofuelCost("electrofuel_cost"),
-    "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
-    "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
-    "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
-    "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "biofuel_abatement_potential": BiofuelAbatementPotential("biofuel_abatement_potential"),
+models_operation_cost = {
+    "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
+    "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
-        "passenger_aircraft_doc_non_energy_complex"
-    ),
     "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
         "passenger_aircraft_doc_carbon_tax"
     ),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
+    "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
+    "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
+    "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit(
+        "passenger_aircraft_operational_profit"
+    ),
+    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
+        "passenger_aircraft_passenger_tax"
+    ),
+    "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
+        "passenger_aircraft_total_cost_and_airfare"
+    ),
 }
+
+models_abatements_cost = {
+    "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
+    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
+    "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
+    "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
+        "cargo_efficiency_carbon_abatement_cost"
+    ),
+}
+
+models_costs_top_down_specific = {
+    "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
+        "passenger_aircraft_doc_non_energy_simple"
+    ),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
+        "exogenous_carbon_price_trajectory"
+    ),
+}
+
+models_costs_bottom_up_specific = {
+    "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
+        "passenger_aircraft_doc_non_energy_complex"
+    ),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
+        "exogenous_carbon_price_trajectory"
+    ),
+    "fleet_numeric": FleetEvolution("fleet_numeric"),
+    # "recurring_costs": RecurringCosts("recurring_costs"),
+    # "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
+}
+
 
 default_models_top_down = {
     "models_traffic": models_traffic,
@@ -447,7 +491,9 @@ default_models_top_down = {
     "models_offset": models_offset,
     "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
     "models_sustainability": models_sustainability,
-    "models_costs_top_down": models_costs_top_down,
+    "models_energy_cost": models_energy_cost,
+    "models_costs_top_down_specific": models_costs_top_down_specific,
+    "models_operation_cost": models_operation_cost,
 }
 
 default_models_bottom_up = {
@@ -457,5 +503,7 @@ default_models_bottom_up = {
     "models_offset": models_offset,
     "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
     "models_sustainability": models_sustainability,
-    "models_costs_bottom_up": models_costs_bottom_up,
+    "models_energy_cost": models_energy_cost,
+    "models_costs_bottom_up_specific": models_costs_bottom_up_specific,
+    "models_operation_cost": models_operation_cost,
 }

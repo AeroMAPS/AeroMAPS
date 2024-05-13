@@ -785,7 +785,7 @@ class DropInMeanMfsp(AeromapsModel):
         biofuel_mean_mfsp: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_carbon_tax_per_l: pd.Series = pd.Series(dtype="float64"),
         biofuel_share: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_avg_cost_per_l: pd.Series = pd.Series(dtype="float64"),
+        electrofuel_mean_mfsp_litre: pd.Series = pd.Series(dtype="float64"),
         electrofuel_mfsp_carbon_tax_supplement: pd.Series = pd.Series(dtype="float64"),
         electrofuel_share: pd.Series = pd.Series(dtype="float64"),
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
@@ -794,15 +794,15 @@ class DropInMeanMfsp(AeromapsModel):
     ) -> Tuple[pd.Series, pd.Series]:
 
         dropin_mean_mfsp = (
-            biofuel_mean_mfsp.fillna(0) * biofuel_share / 100
-            + electrofuel_avg_cost_per_l.fillna(0) * electrofuel_share / 100
-            + kerosene_market_price.fillna(0) * kerosene_share / 100
+            (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
+            + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
+            + (kerosene_market_price * kerosene_share / 100).fillna(0)
         )
 
         dropin_mfsp_carbon_tax_supplement = (
-            biofuel_mean_carbon_tax_per_l.fillna(0) * biofuel_share / 100
-            + electrofuel_mfsp_carbon_tax_supplement.fillna(0) * electrofuel_share / 100
-            + kerosene_price_supplement_carbon_tax.fillna(0) * kerosene_share / 100
+            (biofuel_mean_carbon_tax_per_l * biofuel_share / 100).fillna(0)
+            + (electrofuel_mfsp_carbon_tax_supplement * electrofuel_share / 100).fillna(0)
+            + (kerosene_price_supplement_carbon_tax * kerosene_share / 100).fillna(0)
         )
 
         self.df.loc[:, "dropin_mean_mfsp"] = dropin_mean_mfsp

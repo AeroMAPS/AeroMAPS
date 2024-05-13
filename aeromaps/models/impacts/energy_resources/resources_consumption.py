@@ -90,16 +90,27 @@ class ElectricityConsumption(AeromapsModel):
         electrolysis_efficiency: float = 0.0,
         liquefaction_efficiency: float = 0.0,
         electrofuel_hydrogen_efficiency: float = 0.0,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Electricity consumption calculation."""
 
-        electricity_hydrogen_consumption = (
+        electricity_hydrogen_electrolysis_consumption = (
             hydrogen_electrolysis_share
             / 100
             * energy_consumption_hydrogen
             / 10**12
             / electrolysis_efficiency
             / liquefaction_efficiency
+        )
+        electricity_hydrogen_non_electrolysis_consumption = (
+            (1 - hydrogen_electrolysis_share)
+            / 100
+            * energy_consumption_hydrogen
+            / 10**12
+            * (1 / liquefaction_efficiency - 1)
+        )
+        electricity_hydrogen_consumption = (
+            electricity_hydrogen_electrolysis_consumption
+            + electricity_hydrogen_non_electrolysis_consumption
         )
         electricity_electrofuel_consumption = (
             energy_consumption_electrofuel
@@ -113,6 +124,12 @@ class ElectricityConsumption(AeromapsModel):
             + energy_consumption_electric / 10**12
         )
 
+        self.df.loc[
+            :, "electricity_hydrogen_electrolysis_consumption"
+        ] = electricity_hydrogen_electrolysis_consumption
+        self.df.loc[
+            :, "electricity_hydrogen_non_electrolysis_consumption"
+        ] = electricity_hydrogen_non_electrolysis_consumption
         self.df.loc[:, "electricity_hydrogen_consumption"] = electricity_hydrogen_consumption
         self.df.loc[:, "electricity_electrofuel_consumption"] = electricity_electrofuel_consumption
         self.df.loc[:, "electricity_consumption"] = electricity_consumption
@@ -122,6 +139,8 @@ class ElectricityConsumption(AeromapsModel):
         self.float_outputs["electricity_consumption_end_year"] = electricity_consumption_end_year
 
         return (
+            electricity_hydrogen_electrolysis_consumption,
+            electricity_hydrogen_non_electrolysis_consumption,
             electricity_hydrogen_consumption,
             electricity_electrofuel_consumption,
             electricity_consumption,

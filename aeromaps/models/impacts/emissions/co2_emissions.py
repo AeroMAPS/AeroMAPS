@@ -66,7 +66,7 @@ class KayaFactors(AeromapsModel):
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
 
@@ -106,7 +106,7 @@ class KayaFactors(AeromapsModel):
             biofuel_mean_emission_factor * energy_consumption_biofuel
             + electrofuel_emission_factor * energy_consumption_electrofuel
             + kerosene_emission_factor * energy_consumption_kerosene
-            + hydrogen_mean_emission_factor * energy_consumption_hydrogen
+            + liquid_hydrogen_mean_emission_factor * energy_consumption_hydrogen
             + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
 
@@ -191,7 +191,7 @@ class CO2Emissions(AeromapsModel):
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
         energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
@@ -251,7 +251,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_short_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_short_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_short_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_short_range_electric.loc[k]
@@ -286,7 +286,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_medium_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_medium_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_medium_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_medium_range_electric.loc[k]
@@ -321,7 +321,7 @@ class CO2Emissions(AeromapsModel):
                     + ask_long_range_hydrogen_share.loc[k]
                     / 100
                     * energy_per_ask_long_range_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + ask_long_range_electric_share.loc[k]
                     / 100
                     * energy_per_ask_long_range_electric.loc[k]
@@ -355,7 +355,7 @@ class CO2Emissions(AeromapsModel):
                     + rtk_hydrogen_share.loc[k]
                     / 100
                     * energy_per_rtk_freight_hydrogen.loc[k]
-                    * hydrogen_mean_emission_factor.loc[k]
+                    * liquid_hydrogen_mean_emission_factor.loc[k]
                     + rtk_electric_share.loc[k]
                     / 100
                     * energy_per_rtk_freight_electric.loc[k]
@@ -455,14 +455,20 @@ class DetailedCo2Emissions(AeromapsModel):
                 * co2_per_energy_mean.loc[self.prospection_start_year - 1]
                 * 10 ** (-12)
             )
-            self.df.loc[k, "co2_emissions_2019technology"] = (
-                rpk.loc[k]
-                * energy_per_ask_mean_without_operations.loc[self.prospection_start_year - 1]
-                * energy_per_ask_mean.loc[self.prospection_start_year - 1]
-                / energy_per_ask_mean_without_operations.loc[self.prospection_start_year - 1]
-                / (load_factor.loc[self.prospection_start_year - 1] / 100)
-                * co2_per_energy_mean.loc[self.prospection_start_year - 1]
-                * 10 ** (-12)
+            self.df.loc[k, "co2_emissions_2019technology"] = rpk.loc[
+                k
+            ] * energy_per_ask_mean_without_operations.loc[
+                self.prospection_start_year - 1
+            ] * energy_per_ask_mean.loc[
+                self.prospection_start_year - 1
+            ] / energy_per_ask_mean_without_operations.loc[
+                self.prospection_start_year - 1
+            ] / (
+                load_factor.loc[self.prospection_start_year - 1] / 100
+            ) * co2_per_energy_mean.loc[
+                self.prospection_start_year - 1
+            ] * 10 ** (
+                -12
             ) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[self.prospection_start_year - 1]
@@ -471,14 +477,18 @@ class DetailedCo2Emissions(AeromapsModel):
                 * co2_per_energy_mean.loc[self.prospection_start_year - 1]
                 * 10 ** (-12)
             )
-            self.df.loc[k, "co2_emissions_including_aircraft_efficiency"] = (
-                rpk.loc[k]
-                * energy_per_ask_mean_without_operations.loc[k]
-                * energy_per_ask_mean.loc[self.prospection_start_year - 1]
-                / energy_per_ask_mean_without_operations.loc[self.prospection_start_year - 1]
-                / (load_factor.loc[self.prospection_start_year - 1] / 100)
-                * co2_per_energy_mean.loc[self.prospection_start_year - 1]
-                * 10 ** (-12)
+            self.df.loc[k, "co2_emissions_including_aircraft_efficiency"] = rpk.loc[
+                k
+            ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
+                self.prospection_start_year - 1
+            ] / energy_per_ask_mean_without_operations.loc[
+                self.prospection_start_year - 1
+            ] / (
+                load_factor.loc[self.prospection_start_year - 1] / 100
+            ) * co2_per_energy_mean.loc[
+                self.prospection_start_year - 1
+            ] * 10 ** (
+                -12
             ) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
@@ -487,14 +497,18 @@ class DetailedCo2Emissions(AeromapsModel):
                 * co2_per_energy_mean.loc[self.prospection_start_year - 1]
                 * 10 ** (-12)
             )
-            self.df.loc[k, "co2_emissions_including_operations"] = (
-                rpk.loc[k]
-                * energy_per_ask_mean_without_operations.loc[k]
-                * energy_per_ask_mean.loc[k]
-                / energy_per_ask_mean_without_operations.loc[k]
-                / (load_factor.loc[self.prospection_start_year - 1] / 100)
-                * co2_per_energy_mean.loc[self.prospection_start_year - 1]
-                * 10 ** (-12)
+            self.df.loc[k, "co2_emissions_including_operations"] = rpk.loc[
+                k
+            ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
+                k
+            ] / energy_per_ask_mean_without_operations.loc[
+                k
+            ] / (
+                load_factor.loc[self.prospection_start_year - 1] / 100
+            ) * co2_per_energy_mean.loc[
+                self.prospection_start_year - 1
+            ] * 10 ** (
+                -12
             ) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
@@ -503,14 +517,18 @@ class DetailedCo2Emissions(AeromapsModel):
                 * co2_per_energy_mean.loc[self.prospection_start_year - 1]
                 * 10 ** (-12)
             )
-            self.df.loc[k, "co2_emissions_including_load_factor"] = (
-                rpk.loc[k]
-                * energy_per_ask_mean_without_operations.loc[k]
-                * energy_per_ask_mean.loc[k]
-                / energy_per_ask_mean_without_operations.loc[k]
-                / (load_factor.loc[k] / 100)
-                * co2_per_energy_mean.loc[self.prospection_start_year - 1]
-                * 10 ** (-12)
+            self.df.loc[k, "co2_emissions_including_load_factor"] = rpk.loc[
+                k
+            ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
+                k
+            ] / energy_per_ask_mean_without_operations.loc[
+                k
+            ] / (
+                load_factor.loc[k] / 100
+            ) * co2_per_energy_mean.loc[
+                self.prospection_start_year - 1
+            ] * 10 ** (
+                -12
             ) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
@@ -519,14 +537,18 @@ class DetailedCo2Emissions(AeromapsModel):
                 * co2_per_energy_mean.loc[self.prospection_start_year - 1]
                 * 10 ** (-12)
             )
-            self.df.loc[k, "co2_emissions_including_energy"] = (
-                rpk.loc[k]
-                * energy_per_ask_mean_without_operations.loc[k]
-                * energy_per_ask_mean.loc[k]
-                / energy_per_ask_mean_without_operations.loc[k]
-                / (load_factor.loc[k] / 100)
-                * co2_per_energy_mean.loc[k]
-                * 10 ** (-12)
+            self.df.loc[k, "co2_emissions_including_energy"] = rpk.loc[
+                k
+            ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
+                k
+            ] / energy_per_ask_mean_without_operations.loc[
+                k
+            ] / (
+                load_factor.loc[k] / 100
+            ) * co2_per_energy_mean.loc[
+                k
+            ] * 10 ** (
+                -12
             ) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]

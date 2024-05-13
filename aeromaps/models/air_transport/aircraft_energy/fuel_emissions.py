@@ -126,36 +126,76 @@ class HydrogenEmissionFactor(AeromapsModel):
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
         liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_ccs_emission_factor: float = 0.0,
-        hydrogen_coal_ccs_emission_factor: float = 0.0,
-        hydrogen_gas_emission_factor: float = 0.0,
-        hydrogen_coal_emission_factor: float = 0.0,
+        gaseous_hydrogen_gas_ccs_emission_factor: float = 0.0,
+        gaseous_hydrogen_coal_ccs_emission_factor: float = 0.0,
+        gaseous_hydrogen_gas_emission_factor: float = 0.0,
+        gaseous_hydrogen_coal_emission_factor: float = 0.0,
         hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen CO2 emission factor calculation."""
 
-        hydrogen_electrolysis_emission_factor = (
+        liquid_hydrogen_electrolysis_emission_factor = (
             electricity_emission_factor / 3.6 / electrolysis_efficiency / liquefaction_efficiency
         )
 
-        hydrogen_mean_emission_factor = (
-            hydrogen_electrolysis_emission_factor * hydrogen_electrolysis_share / 100
-            + hydrogen_gas_ccs_emission_factor * hydrogen_gas_ccs_share / 100
-            + hydrogen_coal_ccs_emission_factor * hydrogen_coal_ccs_share / 100
-            + hydrogen_gas_emission_factor * hydrogen_gas_share / 100
-            + hydrogen_coal_emission_factor * hydrogen_coal_share / 100
+        liquefaction_hydrogen_non_electrolysis_emission_factor = (
+            electricity_emission_factor / 3.6 * (1 / liquefaction_efficiency - 1)
+        )
+
+        liquid_hydrogen_gas_ccs_emission_factor = (
+            gaseous_hydrogen_gas_ccs_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_coal_ccs_emission_factor = (
+            gaseous_hydrogen_coal_ccs_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_gas_emission_factor = (
+            gaseous_hydrogen_gas_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_coal_emission_factor = (
+            gaseous_hydrogen_coal_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+
+        liquid_hydrogen_mean_emission_factor = (
+            liquid_hydrogen_electrolysis_emission_factor * hydrogen_electrolysis_share / 100
+            + liquid_hydrogen_gas_ccs_emission_factor * hydrogen_gas_ccs_share / 100
+            + liquid_hydrogen_coal_ccs_emission_factor * hydrogen_coal_ccs_share / 100
+            + liquid_hydrogen_gas_emission_factor * hydrogen_gas_share / 100
+            + liquid_hydrogen_coal_emission_factor * hydrogen_coal_share / 100
         )
 
         self.df.loc[
-            :, "hydrogen_electrolysis_emission_factor"
-        ] = hydrogen_electrolysis_emission_factor
-        self.df.loc[:, "hydrogen_mean_emission_factor"] = hydrogen_mean_emission_factor
+            :, "liquid_hydrogen_electrolysis_emission_factor"
+        ] = liquid_hydrogen_electrolysis_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_gas_ccs_emission_factor"
+        ] = liquid_hydrogen_gas_ccs_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_coal_ccs_emission_factor"
+        ] = liquid_hydrogen_coal_ccs_emission_factor
+        self.df.loc[:, "liquid_hydrogen_gas_emission_factor"] = liquid_hydrogen_gas_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_coal_emission_factor"
+        ] = liquid_hydrogen_coal_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_mean_emission_factor"
+        ] = liquid_hydrogen_mean_emission_factor
 
-        return hydrogen_electrolysis_emission_factor, hydrogen_mean_emission_factor
+        return (
+            liquid_hydrogen_electrolysis_emission_factor,
+            liquid_hydrogen_gas_ccs_emission_factor,
+            liquid_hydrogen_coal_ccs_emission_factor,
+            liquid_hydrogen_gas_emission_factor,
+            liquid_hydrogen_coal_emission_factor,
+            liquid_hydrogen_mean_emission_factor,
+        )
 
 
 class ElectrofuelEmissionFactor(AeromapsModel):

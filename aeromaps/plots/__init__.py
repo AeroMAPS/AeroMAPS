@@ -62,6 +62,14 @@ from aeromaps.plots.costs import (
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
+    AnnualMACC,
+    ScenarioMACC,
+    CumulativeMACC,
+    DetailledMFSPBreakdownPerPathway,
+    DetailledMFSPBreakdownPerYear,
+    ScenarioEnergyExpensesPlotWithoutCarbonTax,
+    CumulativeMACC,
+    ShadowCarbonPrice,
 )
 
 
@@ -107,13 +115,23 @@ available_plots = {
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
     "energy_capex": ScenarioEnergyCapitalPlot,
-    "energy_expenses": ScenarioEnergyExpensesPlot,
+    "energy_expenses_with_carbon_tax": ScenarioEnergyExpensesPlot,
+    "energy_expenses_without_carbon_tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
     "energy_mfsp": ScenarioEnergyUnitCostPlot,
     "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "energy_expenses_discounted": DiscountEffect,
-    "energy_expenses_with_carbon_tax": ScenarioEnergyCarbonTaxPlot,
+    "energy_expenses_carbon_tax_effect": ScenarioEnergyCarbonTaxPlot,
     "drop_in_macc_curve": DropInMACC,
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
-    "airfare_fleet_breakdown": AirfareEvolutionBreakdown,
+    "airfare_breakdown": AirfareEvolutionBreakdown,
+    "mfsp_detailled_pathway": DetailledMFSPBreakdownPerPathway,
+    "mfsp_detailled_year": DetailledMFSPBreakdownPerYear,
+}
+
+available_plots_fleet = {
+    "annual_MACC": AnnualMACC,
+    "scenario_MACC": ScenarioMACC,
+    "cumulative_MACC": CumulativeMACC,
+    "shadow_carbon_pricing": ShadowCarbonPrice,
 }

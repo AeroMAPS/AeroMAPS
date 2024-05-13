@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
@@ -27,6 +28,10 @@ class DropinFuelDistribution(AeromapsModel):
             positive_constraint=True,
             model_name=self.name,
         )
+
+        # rounding to a very high order to avoid numerical problems when computing atj share
+        biofuel_share_prospective = np.round(biofuel_share_prospective, 15)
+
         self.df.loc[:, "biofuel_share"] = biofuel_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "biofuel_share"] = self.df.loc[
@@ -43,6 +48,10 @@ class DropinFuelDistribution(AeromapsModel):
             positive_constraint=True,
             model_name=self.name,
         )
+
+        # rounding to a very high order to avoid numerical problems when computing atj share
+        electrofuel_share_prospective = np.round(electrofuel_share_prospective, 15)
+
         self.df.loc[:, "electrofuel_share"] = electrofuel_share_prospective
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "electrofuel_share"] = self.df.loc[
