@@ -2,7 +2,7 @@ import os.path as pth
 import matplotlib
 import ipywidgets as widgets
 import markdown as md
-from IPython.display import display, HTML, Javascript
+from IPython.display import display, HTML
 import matplotlib.pyplot as plt
 import pandas as pd
 from ipydatagrid import DataGrid
