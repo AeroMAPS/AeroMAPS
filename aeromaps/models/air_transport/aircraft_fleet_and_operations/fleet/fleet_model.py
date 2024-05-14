@@ -78,8 +78,8 @@ class FleetModel(AeroMAPSModel):
         self,
     ):
 
-        # TODO : correct warnings
-        warnings.filterwarnings("ignore")
+        # # TODO : correct warnings
+        # warnings.filterwarnings("ignore")
 
         # Start from empty dataframe
         self.df = self.df.filter([])
