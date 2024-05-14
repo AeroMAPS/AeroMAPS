@@ -251,7 +251,6 @@ class AeroMAPSProcess(object):
             if new_input_file_path != default_parameters_path:
                 self.parameters.read_json(file_name=new_input_file_path)
 
-
     def _set_inputs(self):
 
         all_inputs = {}

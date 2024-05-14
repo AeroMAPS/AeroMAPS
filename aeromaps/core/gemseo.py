@@ -10,7 +10,6 @@ from typing import Sequence
 from typing import Union
 from typing import get_type_hints
 
-import numpy as np
 from numpy import array
 from numpy import atleast_2d
 from numpy import ndarray
