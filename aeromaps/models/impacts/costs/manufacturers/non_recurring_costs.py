@@ -39,7 +39,7 @@ class NonRecurringCosts(AeroMAPSModel):
                 # nrc_aircraft_value = max(0.0, aircraft_in_out_value_dict[aircraft_var_name] * nrc_cost)
                 # For now: direct use of fleet model df
 
-                nrc_aircraft_value = self.compute_nrc(float(nrc_cost), 5, eis)
+                nrc_aircraft_value = self._compute_nrc(float(nrc_cost), 5, eis)
 
                 self.fleet_model.df = pd.concat(
                     [
@@ -53,8 +53,9 @@ class NonRecurringCosts(AeroMAPSModel):
 
         return (nrc_aircraft_value_dict,)
 
-    @staticmethod
-    def compute_nrc(
+
+    def _compute_nrc(
+        self,
         nrc_tot_aircraft_type,
         development_time_aircraft_type,
         entry_into_service_year,
@@ -76,4 +77,9 @@ class NonRecurringCosts(AeroMAPSModel):
         costs = [round(cost * scaling_factor) for cost in costs]
         nrc_distributed = pd.Series(costs, index=years)
 
-        return nrc_distributed
+        # Keep only teh indexes that are within the scope of scenario range to
+        # avoid adding out of range nrc (for old aircraft for instance)
+        filtered_nrc_distributed = nrc_distributed[
+            (nrc_distributed.index >= self.historic_start_year) & (nrc_distributed.index <= self.end_year)]
+
+        return filtered_nrc_distributed

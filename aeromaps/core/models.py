@@ -479,8 +479,8 @@ models_costs_bottom_up_specific = {
         "exogenous_carbon_price_trajectory"
     ),
     "fleet_numeric": FleetEvolution("fleet_numeric"),
-    # "recurring_costs": RecurringCosts("recurring_costs"),
-    # "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
+    "recurring_costs": RecurringCosts("recurring_costs"),
+    "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
 }
 
 
