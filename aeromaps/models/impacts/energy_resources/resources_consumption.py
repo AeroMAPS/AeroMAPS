@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class BiomassConsumption(AeromapsModel):
+class BiomassConsumption(AeroMAPSModel):
     def __init__(self, name="biomass_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -77,7 +77,7 @@ class BiomassConsumption(AeromapsModel):
         )
 
 
-class ElectricityConsumption(AeromapsModel):
+class ElectricityConsumption(AeroMAPSModel):
     def __init__(self, name="electricity_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

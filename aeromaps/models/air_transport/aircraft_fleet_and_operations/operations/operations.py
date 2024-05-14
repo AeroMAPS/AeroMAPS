@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class OperationsSimple(AeromapsModel):
+class OperationsSimple(AeroMAPSModel):
     def __init__(self, name="operations_simple", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

@@ -9,10 +9,10 @@ from typing import Tuple, Union, Any
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class LiquidHydrogenCost(AeromapsModel):
+class LiquidHydrogenCost(AeroMAPSModel):
     def __init__(self, name="liquid_hydrogen_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1829,7 +1829,7 @@ class LiquidHydrogenCost(AeromapsModel):
         return (specific_em, generic_discounted_specific_em)
 
 
-class ElectrolyserCapex(AeromapsModel):
+class ElectrolyserCapex(AeroMAPSModel):
     def __init__(self, name="electrolyser_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1851,7 +1851,7 @@ class ElectrolyserCapex(AeromapsModel):
         return electrolysis_h2_eis_capex
 
 
-class ElectrolyserFixedOpex(AeromapsModel):
+class ElectrolyserFixedOpex(AeroMAPSModel):
     def __init__(self, name="electrolyser_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1873,7 +1873,7 @@ class ElectrolyserFixedOpex(AeromapsModel):
         return electrolysis_h2_eis_fixed_opex
 
 
-class ElectrolyserVarOpex(AeromapsModel):
+class ElectrolyserVarOpex(AeroMAPSModel):
     def __init__(self, name="electrolyser_var_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1897,7 +1897,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 
 ########## Deprecated for the time being, might be reactivated. #####################
 
-# class ElectrolyserSpecificElectricity(AeromapsModel):
+# class ElectrolyserSpecificElectricity(AeroMAPSModel):
 
 #     def __init__(self, name="electrolyser_specific_electricity", *args, **kwargs):
 #         super().__init__(name, *args, **kwargs)
@@ -1936,7 +1936,7 @@ class ElectrolyserVarOpex(AeromapsModel):
 ####################################################################################
 
 
-class LiquefierCapex(AeromapsModel):
+class LiquefierCapex(AeroMAPSModel):
     def __init__(self, name="liquefier_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1960,7 +1960,7 @@ class LiquefierCapex(AeromapsModel):
 
 ########## Deprecated for the time being, might be reactivated. ####################
 
-# class LiquefierSpecificElectricity(AeromapsModel):
+# class LiquefierSpecificElectricity(AeroMAPSModel):
 #     def __init__(self, name="liquefier_specific_electricity", *args, **kwargs):
 #         super().__init__(name, *args, **kwargs)
 #
@@ -1998,7 +1998,7 @@ class LiquefierCapex(AeromapsModel):
 ####################################################################################
 
 
-class GasCcsCapex(AeromapsModel):
+class GasCcsCapex(AeroMAPSModel):
     def __init__(self, name="gas_ccs_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2018,7 +2018,7 @@ class GasCcsCapex(AeromapsModel):
         return gas_ccs_eis_capex
 
 
-class GasCcsFixedOpex(AeromapsModel):
+class GasCcsFixedOpex(AeroMAPSModel):
     def __init__(self, name="gas_ccs_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2038,7 +2038,7 @@ class GasCcsFixedOpex(AeromapsModel):
         return gas_ccs_eis_fixed_opex
 
 
-class GasCcsEfficiency(AeromapsModel):
+class GasCcsEfficiency(AeroMAPSModel):
     def __init__(self, name="gas_ccs_efficiency", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2058,7 +2058,7 @@ class GasCcsEfficiency(AeromapsModel):
         return gas_ccs_efficiency
 
 
-class GasCapex(AeromapsModel):
+class GasCapex(AeroMAPSModel):
     def __init__(self, name="gas_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2078,7 +2078,7 @@ class GasCapex(AeromapsModel):
         return gas_eis_capex
 
 
-class GasFixedOpex(AeromapsModel):
+class GasFixedOpex(AeroMAPSModel):
     def __init__(self, name="gas_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2098,7 +2098,7 @@ class GasFixedOpex(AeromapsModel):
         return gas_eis_fixed_opex
 
 
-class GasEfficiency(AeromapsModel):
+class GasEfficiency(AeroMAPSModel):
     def __init__(self, name="gas_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2118,7 +2118,7 @@ class GasEfficiency(AeromapsModel):
         return gas_efficiency
 
 
-class CoalCcsCapex(AeromapsModel):
+class CoalCcsCapex(AeroMAPSModel):
     def __init__(self, name="coal_ccs_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2138,7 +2138,7 @@ class CoalCcsCapex(AeromapsModel):
         return coal_ccs_eis_capex
 
 
-class CoalCcsFixedOpex(AeromapsModel):
+class CoalCcsFixedOpex(AeroMAPSModel):
     def __init__(self, name="coal_ccs_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2158,7 +2158,7 @@ class CoalCcsFixedOpex(AeromapsModel):
         return coal_ccs_eis_fixed_opex
 
 
-class CoalCcsEfficiency(AeromapsModel):
+class CoalCcsEfficiency(AeroMAPSModel):
     def __init__(self, name="coal_ccs_efficiency", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2178,7 +2178,7 @@ class CoalCcsEfficiency(AeromapsModel):
         return coal_ccs_efficiency
 
 
-class CoalCapex(AeromapsModel):
+class CoalCapex(AeroMAPSModel):
     def __init__(self, name="coal_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2198,7 +2198,7 @@ class CoalCapex(AeromapsModel):
         return coal_eis_capex
 
 
-class CoalFixedOpex(AeromapsModel):
+class CoalFixedOpex(AeroMAPSModel):
     def __init__(self, name="coal_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2218,7 +2218,7 @@ class CoalFixedOpex(AeromapsModel):
         return coal_eis_fixed_opex
 
 
-class CoalEfficiency(AeromapsModel):
+class CoalEfficiency(AeroMAPSModel):
     def __init__(self, name="coal_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -2238,7 +2238,7 @@ class CoalEfficiency(AeromapsModel):
         return coal_efficiency
 
 
-class CcsCost(AeromapsModel):
+class CcsCost(AeroMAPSModel):
     def __init__(self, name="ccs_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

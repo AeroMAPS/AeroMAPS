@@ -4,10 +4,10 @@
 # @Software: PyCharm
 from typing import Tuple
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class PassengerAircraftOperationalProfit(AeromapsModel):
+class PassengerAircraftOperationalProfit(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_operational_profit", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

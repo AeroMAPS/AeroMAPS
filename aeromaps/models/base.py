@@ -6,7 +6,7 @@ from fair import FAIR
 from fair.interface import fill, initialise
 
 
-class AeromapsModel(object):
+class AeroMAPSModel(object):
     def __init__(
         self,
         name,

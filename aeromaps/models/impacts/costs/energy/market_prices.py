@@ -6,10 +6,10 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class ElectricityCost(AeromapsModel):
+class ElectricityCost(AeroMAPSModel):
     def __init__(self, name="electricity_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -31,7 +31,7 @@ class ElectricityCost(AeromapsModel):
         return electricity_market_price
 
 
-class ElectricityLoadFactor(AeromapsModel):
+class ElectricityLoadFactor(AeroMAPSModel):
     def __init__(self, name="electricity_load_factor", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -53,7 +53,7 @@ class ElectricityLoadFactor(AeromapsModel):
         return electricity_load_factor
 
 
-class CoalCost(AeromapsModel):
+class CoalCost(AeroMAPSModel):
     def __init__(self, name="coal_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -71,7 +71,7 @@ class CoalCost(AeromapsModel):
         return coal_market_price
 
 
-class GasCost(AeromapsModel):
+class GasCost(AeroMAPSModel):
     def __init__(self, name="gas_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -89,7 +89,7 @@ class GasCost(AeromapsModel):
         return gas_market_price
 
 
-class Co2Cost(AeromapsModel):
+class Co2Cost(AeroMAPSModel):
     def __init__(self, name="co2_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -107,7 +107,7 @@ class Co2Cost(AeromapsModel):
         return co2_market_price
 
 
-class CarbonTax(AeromapsModel):
+class CarbonTax(AeroMAPSModel):
     def __init__(self, name="carbon_tax", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -131,7 +131,7 @@ class CarbonTax(AeromapsModel):
         return carbon_tax
 
 
-class KerosenePrice(AeromapsModel):
+class KerosenePrice(AeroMAPSModel):
     def __init__(self, name="kerosene_market_price", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -157,7 +157,7 @@ class KerosenePrice(AeromapsModel):
         return kerosene_market_price
 
 
-class KeroseneCost(AeromapsModel):
+class KeroseneCost(AeroMAPSModel):
     def __init__(self, name="kerosene_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -199,7 +199,7 @@ class KeroseneCost(AeromapsModel):
         return kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax
 
 
-class KeroseneBAUCost(AeromapsModel):
+class KeroseneBAUCost(AeroMAPSModel):
     def __init__(self, name="kerosene_BAU_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

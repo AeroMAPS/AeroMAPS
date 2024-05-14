@@ -8,10 +8,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class ElectrofuelCost(AeromapsModel):
+class ElectrofuelCost(AeroMAPSModel):
     def __init__(self, name="electrofuel_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -523,7 +523,7 @@ class ElectrofuelCost(AeromapsModel):
         return hydrogen_prices
 
 
-class ElectrofuelCapex(AeromapsModel):
+class ElectrofuelCapex(AeroMAPSModel):
     def __init__(self, name="electrofuel_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -545,7 +545,7 @@ class ElectrofuelCapex(AeromapsModel):
         return electrofuel_eis_capex
 
 
-class ElectrofuelFixedOpex(AeromapsModel):
+class ElectrofuelFixedOpex(AeroMAPSModel):
     def __init__(self, name="electrofuel_fixed_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -567,7 +567,7 @@ class ElectrofuelFixedOpex(AeromapsModel):
         return electrofuel_eis_fixed_opex
 
 
-class ElectrofuelVarOpex(AeromapsModel):
+class ElectrofuelVarOpex(AeroMAPSModel):
     def __init__(self, name="electrofuel_var_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -591,7 +591,7 @@ class ElectrofuelVarOpex(AeromapsModel):
 
 ########## Deprecated for the time being, might be reactivated. ####################
 #
-# class ElectrofuelSpecificElectricity(AeromapsModel):
+# class ElectrofuelSpecificElectricity(AeroMAPSModel):
 #
 #     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
 #     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées
@@ -633,7 +633,7 @@ class ElectrofuelVarOpex(AeromapsModel):
 ####################################################################################
 
 
-class ElectrofuelSpecificCo2(AeromapsModel):
+class ElectrofuelSpecificCo2(AeroMAPSModel):
 
     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.

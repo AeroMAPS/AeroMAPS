@@ -2,10 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class BiofuelEmissionFactor(AeromapsModel):
+class BiofuelEmissionFactor(AeroMAPSModel):
     def __init__(self, name="biofuel_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -95,7 +95,7 @@ class BiofuelEmissionFactor(AeromapsModel):
         )
 
 
-class ElectricityEmissionFactor(AeromapsModel):
+class ElectricityEmissionFactor(AeroMAPSModel):
     def __init__(self, name="electricity_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -117,7 +117,7 @@ class ElectricityEmissionFactor(AeromapsModel):
         return electricity_emission_factor
 
 
-class HydrogenEmissionFactor(AeromapsModel):
+class HydrogenEmissionFactor(AeroMAPSModel):
     def __init__(self, name="hydrogen_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -198,7 +198,7 @@ class HydrogenEmissionFactor(AeromapsModel):
         )
 
 
-class ElectrofuelEmissionFactor(AeromapsModel):
+class ElectrofuelEmissionFactor(AeroMAPSModel):
     def __init__(self, name="electrofuel_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -222,7 +222,7 @@ class ElectrofuelEmissionFactor(AeromapsModel):
         return electrofuel_emission_factor
 
 
-class KeroseneEmissionFactor(AeromapsModel):
+class KeroseneEmissionFactor(AeroMAPSModel):
     def __init__(self, name="kerosene_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

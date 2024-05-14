@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class BiofuelProduction(AeromapsModel):
+class BiofuelProduction(AeroMAPSModel):
     def __init__(self, name="biofuel_production", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -82,7 +82,7 @@ class BiofuelProduction(AeromapsModel):
         )
 
 
-class HydrogenProduction(AeromapsModel):
+class HydrogenProduction(AeroMAPSModel):
     def __init__(self, name="hydrogen_production", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

@@ -5,10 +5,10 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class OperationalEfficiencyCost(AeromapsModel):
+class OperationalEfficiencyCost(AeroMAPSModel):
     def __init__(self, name="operational_efficiency_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -31,7 +31,7 @@ class OperationalEfficiencyCost(AeromapsModel):
         return operational_efficiency_cost_non_energy_per_ask
 
 
-class LoadFactorEfficiencyCost(AeromapsModel):
+class LoadFactorEfficiencyCost(AeroMAPSModel):
     def __init__(self, name="load_factor_efficiency_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

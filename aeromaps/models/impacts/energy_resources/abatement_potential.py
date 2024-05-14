@@ -8,10 +8,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class DropinAbatementPotential(AeromapsModel):
+class DropinAbatementPotential(AeroMAPSModel):
     def __init__(self, name="dropin_abatement_potential", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -190,7 +190,7 @@ class DropinAbatementPotential(AeromapsModel):
         )
 
 
-class EnergyAbatementEffective(AeromapsModel):
+class EnergyAbatementEffective(AeroMAPSModel):
     def __init__(self, name="energy_abatement_effective", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

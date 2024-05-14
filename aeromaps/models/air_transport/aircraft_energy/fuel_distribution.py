@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class DropinFuelDistribution(AeromapsModel):
+class DropinFuelDistribution(AeroMAPSModel):
     def __init__(self, name="dropin_fuel_distribution", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

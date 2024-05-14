@@ -2,10 +2,10 @@ from typing import Tuple
 import pandas as pd
 import numpy as np
 
-from aeromaps.models.base import AeromapsModel, AbsoluteGlobalWarmingPotentialCO2Function
+from aeromaps.models.base import AeroMAPSModel, AbsoluteGlobalWarmingPotentialCO2Function
 
 
-class SimplifiedERFCo2(AeromapsModel):
+class SimplifiedERFCo2(AeroMAPSModel):
     def __init__(self, name="simplified_effective_radiative_forcing_co2", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -37,7 +37,7 @@ class SimplifiedERFCo2(AeromapsModel):
         )
 
 
-class SimplifiedERFNox(AeromapsModel):
+class SimplifiedERFNox(AeroMAPSModel):
     def __init__(self, name="simplified_effective_radiative_forcing_nox", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -56,7 +56,7 @@ class SimplifiedERFNox(AeromapsModel):
         return nox_erf
 
 
-class ERFNox(AeromapsModel):
+class ERFNox(AeroMAPSModel):
     def __init__(self, name="effective_radiative_forcing_nox", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -105,7 +105,7 @@ class ERFNox(AeromapsModel):
         )
 
 
-class ERFOthers(AeromapsModel):
+class ERFOthers(AeroMAPSModel):
     def __init__(self, name="effective_radiative_forcing_others", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -157,7 +157,7 @@ class ERFOthers(AeromapsModel):
         )
 
 
-class ERFTotal(AeromapsModel):
+class ERFTotal(AeroMAPSModel):
     def __init__(self, name="effective_radiative_forcing_total", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -180,7 +180,7 @@ class ERFTotal(AeromapsModel):
         return total_erf
 
 
-class ERFDetailed(AeromapsModel):
+class ERFDetailed(AeroMAPSModel):
     def __init__(self, name="effective_radiative_forcing_detailed", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

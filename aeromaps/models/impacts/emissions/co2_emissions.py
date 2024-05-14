@@ -4,11 +4,11 @@ import pandas as pd
 from pandas import read_csv
 import os.path as pth
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from aeromaps.resources import climate_data
 
 
-class KayaFactors(AeromapsModel):
+class KayaFactors(AeroMAPSModel):
     def __init__(self, name="kaya_factors", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -144,7 +144,7 @@ class KayaFactors(AeromapsModel):
         )
 
 
-class CO2Emissions(AeromapsModel):
+class CO2Emissions(AeroMAPSModel):
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset
@@ -401,7 +401,7 @@ class CO2Emissions(AeromapsModel):
         )
 
 
-class CumulativeCO2Emissions(AeromapsModel):
+class CumulativeCO2Emissions(AeroMAPSModel):
     def __init__(self, name="cumulative_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -421,7 +421,7 @@ class CumulativeCO2Emissions(AeromapsModel):
         return cumulative_co2_emissions
 
 
-class DetailedCo2Emissions(AeromapsModel):
+class DetailedCo2Emissions(AeroMAPSModel):
     def __init__(self, name="detailed_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -577,7 +577,7 @@ class DetailedCo2Emissions(AeromapsModel):
         )
 
 
-class DetailedCumulativeCO2Emissions(AeromapsModel):
+class DetailedCumulativeCO2Emissions(AeroMAPSModel):
     def __init__(self, name="detailed_cumulative_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

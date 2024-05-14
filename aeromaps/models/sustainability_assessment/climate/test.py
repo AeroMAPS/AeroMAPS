@@ -9,13 +9,13 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
     BiomassAvailability,
     ElectricityAvailability,
 )
-from aeromaps.core.gemseo import AeromapsModelWrapper
+from aeromaps.core.gemseo import AeroMAPSModelWrapper
 from gemseo.api import create_discipline, generate_n2_plot, create_mda
 
-disc1 = AeromapsModelWrapper(model=GrossCarbonBudget(parameters=AllParameters()))
-disc2 = AeromapsModelWrapper(model=EquivalentGrossCarbonBudget(parameters=AllParameters()))
-disc3 = AeromapsModelWrapper(model=BiomassAvailability(parameters=AllParameters()))
-disc4 = AeromapsModelWrapper(model=ElectricityAvailability(parameters=AllParameters()))
+disc1 = AeroMAPSModelWrapper(model=GrossCarbonBudget(parameters=AllParameters()))
+disc2 = AeroMAPSModelWrapper(model=EquivalentGrossCarbonBudget(parameters=AllParameters()))
+disc3 = AeroMAPSModelWrapper(model=BiomassAvailability(parameters=AllParameters()))
+disc4 = AeroMAPSModelWrapper(model=ElectricityAvailability(parameters=AllParameters()))
 
 disciplines = [disc1, disc2, disc3, disc4]
 

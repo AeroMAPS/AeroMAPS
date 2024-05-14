@@ -3,13 +3,13 @@ from typing import Tuple
 import pandas as pd
 
 from aeromaps.models.base import (
-    AeromapsModel,
+    AeroMAPSModel,
     AeromapsInterpolationFunction,
     AeromapsLevelingFunction,
 )
 
 
-class LevelCarbonOffset(AeromapsModel):
+class LevelCarbonOffset(AeroMAPSModel):
     def __init__(self, name="level_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -54,7 +54,7 @@ class LevelCarbonOffset(AeromapsModel):
         return (carbon_offset_baseline_level_vs_2019, level_carbon_offset)
 
 
-class ResidualCarbonOffset(AeromapsModel):
+class ResidualCarbonOffset(AeroMAPSModel):
     def __init__(self, name="residual_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -89,7 +89,7 @@ class ResidualCarbonOffset(AeromapsModel):
         return (residual_carbon_offset_share, residual_carbon_offset)
 
 
-class CarbonOffset(AeromapsModel):
+class CarbonOffset(AeroMAPSModel):
     def __init__(self, name="carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -106,7 +106,7 @@ class CarbonOffset(AeromapsModel):
         return carbon_offset
 
 
-class CumulativeCarbonOffset(AeromapsModel):
+class CumulativeCarbonOffset(AeroMAPSModel):
     def __init__(self, name="cumulative_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

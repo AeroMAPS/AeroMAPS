@@ -6,10 +6,10 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class BiofuelCost(AeromapsModel):
+class BiofuelCost(AeroMAPSModel):
     def __init__(self, name="biofuel_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -843,7 +843,7 @@ class BiofuelCost(AeromapsModel):
         return biofuel_prices
 
 
-class BiofuelCapex(AeromapsModel):
+class BiofuelCapex(AeroMAPSModel):
     def __init__(self, name="biofuel_capex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -933,7 +933,7 @@ class BiofuelCapex(AeromapsModel):
         )
 
 
-class BiofuelVarOpex(AeromapsModel):
+class BiofuelVarOpex(AeroMAPSModel):
     def __init__(self, name="biofuel_var_opex", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -1025,7 +1025,7 @@ class BiofuelVarOpex(AeromapsModel):
         )
 
 
-class BiofuelFeedstock(AeromapsModel):
+class BiofuelFeedstock(AeroMAPSModel):
     def __init__(self, name="biofuel_feedstock_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

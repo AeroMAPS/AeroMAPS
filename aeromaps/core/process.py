@@ -10,8 +10,8 @@ from gemseo import generate_n2_plot, create_mda
 
 
 # Local application imports
-from aeromaps.models.base import AeromapsModel
-from aeromaps.core.gemseo import AeromapsModelWrapper
+from aeromaps.models.base import AeroMAPSModel
+from aeromaps.core.gemseo import AeroMAPSModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -194,7 +194,7 @@ class AeroMAPSProcess(object):
             for key, value in d.items():
                 if isinstance(value, dict):
                     check_instance_in_dict(value)
-                elif isinstance(value, AeromapsModel):
+                elif isinstance(value, AeroMAPSModel):
                     model = value
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
@@ -202,12 +202,12 @@ class AeroMAPSProcess(object):
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "compute"):
-                        model = AeromapsModelWrapper(model=model)
+                        model = AeroMAPSModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
                         print(model.name)
                 else:
-                    print(f"{key} is not an instance of AeromapsModel")
+                    print(f"{key} is not an instance of AeroMAPSModel")
 
         check_instance_in_dict(self.models)
 

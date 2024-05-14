@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class OperationsContrailsSimple(AeromapsModel):
+class OperationsContrailsSimple(AeroMAPSModel):
     def __init__(self, name="operations_contrails_simple", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -49,7 +49,7 @@ class OperationsContrailsSimple(AeromapsModel):
         return operations_contrails_gain, operations_contrails_overconsumption
 
 
-class FuelEffectCorrectionContrails(AeromapsModel):
+class FuelEffectCorrectionContrails(AeroMAPSModel):
     def __init__(self, name="fuel_effect_correction_contrails", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -104,7 +104,7 @@ class FuelEffectCorrectionContrails(AeromapsModel):
         return fuel_effect_correction_contrails
 
 
-class WithoutFuelEffectCorrectionContrails(AeromapsModel):
+class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
     def __init__(self, name="without_fuel_effect_correction_contrails", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

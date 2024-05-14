@@ -2,10 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class EnergyIntensity(AeromapsModel):
+class EnergyIntensity(AeroMAPSModel):
     def __init__(self, name="passenger_energy_intensity", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

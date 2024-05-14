@@ -5,11 +5,11 @@
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from typing import Tuple
 
 
-class RecurringCosts(AeromapsModel):
+class RecurringCosts(AeroMAPSModel):
     def __init__(self, name="recurring_costs", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model

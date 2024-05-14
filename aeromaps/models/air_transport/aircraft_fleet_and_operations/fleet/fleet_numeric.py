@@ -2,13 +2,13 @@
 # @Author : a.salgas
 # @File : aircrfat_numbe.py
 # @Software: PyCharm
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from typing import Tuple, Dict, Any
 import pandas as pd
 import numpy as np
 
 
-class FleetEvolution(AeromapsModel):
+class FleetEvolution(AeroMAPSModel):
     def __init__(self, name="fleet_numeric", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model

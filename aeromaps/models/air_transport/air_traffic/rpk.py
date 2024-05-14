@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel, AeromapsLevelingFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
 
 
-class RPK(AeromapsModel):
+class RPK(AeroMAPSModel):
     def __init__(self, name="rpk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -266,7 +266,7 @@ class RPK(AeromapsModel):
         )
 
 
-class RPKReference(AeromapsModel):
+class RPKReference(AeroMAPSModel):
     def __init__(self, name="rpk_reference", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -326,7 +326,7 @@ class RPKReference(AeromapsModel):
         return (rpk_reference, reference_annual_growth_rate_aviation)
 
 
-class RPKMeasures(AeromapsModel):
+class RPKMeasures(AeroMAPSModel):
     def __init__(self, name="rpk_measures", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

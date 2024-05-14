@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
+class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_doc_non_energy_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -130,7 +130,7 @@ class PassengerAircraftDocNonEnergyComplex(AeromapsModel):
         )
 
 
-class PassengerAircraftDocNonEnergySimple(AeromapsModel):
+class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_doc_non_energy_simple", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -280,7 +280,7 @@ class PassengerAircraftDocNonEnergySimple(AeromapsModel):
         )
 
 
-class PassengerAircraftDocEnergy(AeromapsModel):
+class PassengerAircraftDocEnergy(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_doc_energy", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -438,7 +438,7 @@ class PassengerAircraftDocEnergy(AeromapsModel):
         )
 
 
-class PassengerAircraftDocCarbonTax(AeromapsModel):
+class PassengerAircraftDocCarbonTax(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_doc_carbon_tax", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -626,7 +626,7 @@ class PassengerAircraftDocCarbonTax(AeromapsModel):
         )
 
 
-class PassengerAircraftTotalDoc(AeromapsModel):
+class PassengerAircraftTotalDoc(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_total_doc", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -775,7 +775,7 @@ class PassengerAircraftTotalDoc(AeromapsModel):
         )
 
 
-class DropInMeanMfsp(AeromapsModel):
+class DropInMeanMfsp(AeroMAPSModel):
     def __init__(self, name="dropin_mean_mfsp", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
