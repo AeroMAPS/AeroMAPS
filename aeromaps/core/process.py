@@ -188,6 +188,8 @@ class AeroMAPSProcess(object):
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
+
+            self.models["fleet_model"] = self.fleet_model
         else:
             self.fleet = None
 

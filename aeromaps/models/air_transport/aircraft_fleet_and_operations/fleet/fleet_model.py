@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from dataclasses import dataclass
 import warnings
@@ -78,7 +80,26 @@ class FleetModel(AeroMAPSModel):
 
     def compute(
         self,
-    ):
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
 
         # # TODO : correct warnings
         # warnings.filterwarnings("ignore")
@@ -112,6 +133,68 @@ class FleetModel(AeroMAPSModel):
 
         warnings.resetwarnings()
         warnings.simplefilter("ignore", DeprecationWarning)
+
+        # Outputs
+        # Efficiency
+        ask_short_range_dropin_fuel_share = self.df["Short Range:share:dropin_fuel"]
+        ask_medium_range_dropin_fuel_share = self.df["Medium Range:share:dropin_fuel"]
+        ask_long_range_dropin_fuel_share = self.df["Long Range:share:dropin_fuel"]
+        ask_short_range_hydrogen_share = self.df["Short Range:share:hydrogen"]
+        ask_medium_range_hydrogen_share = self.df["Medium Range:share:hydrogen"]
+        ask_long_range_hydrogen_share = self.df["Long Range:share:hydrogen"]
+        ask_short_range_electric_share = self.df["Short Range:share:electric"]
+        ask_medium_range_electric_share = self.df["Medium Range:share:electric"]
+        ask_long_range_electric_share = self.df["Long Range:share:electric"]
+
+        energy_per_ask_without_operations_short_range_dropin_fuel = self.df[
+            "Short Range:energy_consumption:dropin_fuel"
+        ]
+        energy_per_ask_without_operations_medium_range_dropin_fuel = self.df[
+            "Medium Range:energy_consumption:dropin_fuel"
+        ]
+        energy_per_ask_without_operations_long_range_dropin_fuel = self.df[
+            "Long Range:energy_consumption:dropin_fuel"
+        ]
+        energy_per_ask_without_operations_short_range_hydrogen = self.df[
+            "Short Range:energy_consumption:hydrogen"
+        ]
+        energy_per_ask_without_operations_medium_range_hydrogen = self.df[
+            "Medium Range:energy_consumption:hydrogen"
+        ]
+        energy_per_ask_without_operations_long_range_hydrogen = self.df[
+            "Long Range:energy_consumption:hydrogen"
+        ]
+        energy_per_ask_without_operations_short_range_electric = self.df[
+            "Short Range:energy_consumption:electric"
+        ]
+        energy_per_ask_without_operations_medium_range_electric = self.df[
+            "Medium Range:energy_consumption:electric"
+        ]
+        energy_per_ask_without_operations_long_range_electric = self.df[
+            "Long Range:energy_consumption:electric"
+        ]
+
+        return (
+            # Efficiency
+            ask_short_range_dropin_fuel_share,
+            ask_medium_range_dropin_fuel_share,
+            ask_long_range_dropin_fuel_share,
+            ask_short_range_hydrogen_share,
+            ask_medium_range_hydrogen_share,
+            ask_long_range_hydrogen_share,
+            ask_short_range_electric_share,
+            ask_medium_range_electric_share,
+            ask_long_range_electric_share,
+            energy_per_ask_without_operations_short_range_dropin_fuel,
+            energy_per_ask_without_operations_medium_range_dropin_fuel,
+            energy_per_ask_without_operations_long_range_dropin_fuel,
+            energy_per_ask_without_operations_short_range_hydrogen,
+            energy_per_ask_without_operations_medium_range_hydrogen,
+            energy_per_ask_without_operations_long_range_hydrogen,
+            energy_per_ask_without_operations_short_range_electric,
+            energy_per_ask_without_operations_medium_range_electric,
+            energy_per_ask_without_operations_long_range_electric,
+        )
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
         # Energy consumption calculations for drop-in fuel and hydrogen

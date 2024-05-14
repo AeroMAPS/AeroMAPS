@@ -527,7 +527,6 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
 class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        self.fleet_model = None
 
     def compute(
         self,
@@ -544,6 +543,24 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         ask_short_range: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_medium_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_long_range_electric: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -576,43 +593,6 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        ask_short_range_dropin_fuel_share = self.fleet_model.df["Short Range:share:dropin_fuel"]
-        ask_medium_range_dropin_fuel_share = self.fleet_model.df["Medium Range:share:dropin_fuel"]
-        ask_long_range_dropin_fuel_share = self.fleet_model.df["Long Range:share:dropin_fuel"]
-        ask_short_range_hydrogen_share = self.fleet_model.df["Short Range:share:hydrogen"]
-        ask_medium_range_hydrogen_share = self.fleet_model.df["Medium Range:share:hydrogen"]
-        ask_long_range_hydrogen_share = self.fleet_model.df["Long Range:share:hydrogen"]
-        ask_short_range_electric_share = self.fleet_model.df["Short Range:share:electric"]
-        ask_medium_range_electric_share = self.fleet_model.df["Medium Range:share:electric"]
-        ask_long_range_electric_share = self.fleet_model.df["Long Range:share:electric"]
-
-        energy_per_ask_without_operations_short_range_dropin_fuel = self.fleet_model.df[
-            "Short Range:energy_consumption:dropin_fuel"
-        ]
-        energy_per_ask_without_operations_medium_range_dropin_fuel = self.fleet_model.df[
-            "Medium Range:energy_consumption:dropin_fuel"
-        ]
-        energy_per_ask_without_operations_long_range_dropin_fuel = self.fleet_model.df[
-            "Long Range:energy_consumption:dropin_fuel"
-        ]
-        energy_per_ask_without_operations_short_range_hydrogen = self.fleet_model.df[
-            "Short Range:energy_consumption:hydrogen"
-        ]
-        energy_per_ask_without_operations_medium_range_hydrogen = self.fleet_model.df[
-            "Medium Range:energy_consumption:hydrogen"
-        ]
-        energy_per_ask_without_operations_long_range_hydrogen = self.fleet_model.df[
-            "Long Range:energy_consumption:hydrogen"
-        ]
-        energy_per_ask_without_operations_short_range_electric = self.fleet_model.df[
-            "Short Range:energy_consumption:electric"
-        ]
-        energy_per_ask_without_operations_medium_range_electric = self.fleet_model.df[
-            "Medium Range:energy_consumption:electric"
-        ]
-        energy_per_ask_without_operations_long_range_electric = self.fleet_model.df[
-            "Long Range:energy_consumption:electric"
-        ]
 
         """Energy consumption per ASK (without operations) calculation using complex models."""
 
@@ -827,24 +807,6 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         self.df.loc[:, "ask_electric"] = ask_electric
 
         return (
-            energy_per_ask_without_operations_short_range_dropin_fuel,
-            energy_per_ask_without_operations_medium_range_dropin_fuel,
-            energy_per_ask_without_operations_long_range_dropin_fuel,
-            energy_per_ask_without_operations_short_range_hydrogen,
-            energy_per_ask_without_operations_medium_range_hydrogen,
-            energy_per_ask_without_operations_long_range_hydrogen,
-            energy_per_ask_without_operations_short_range_electric,
-            energy_per_ask_without_operations_medium_range_electric,
-            energy_per_ask_without_operations_long_range_electric,
-            ask_short_range_dropin_fuel_share,
-            ask_medium_range_dropin_fuel_share,
-            ask_long_range_dropin_fuel_share,
-            ask_short_range_hydrogen_share,
-            ask_medium_range_hydrogen_share,
-            ask_long_range_hydrogen_share,
-            ask_short_range_electric_share,
-            ask_medium_range_electric_share,
-            ask_long_range_electric_share,
             ask_short_range_dropin_fuel,
             ask_medium_range_dropin_fuel,
             ask_long_range_dropin_fuel,
