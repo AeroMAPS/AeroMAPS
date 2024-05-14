@@ -76,15 +76,15 @@ class FleetEvolution(AeroMAPSModel):
                 aircraft_in_out_var_name = aircraft_var_name + ":aircraft_in_out"
 
                 ask_aircraft_value = (
-                    self.fleet_model.df.loc[2019:2050, share_var_name] / 100 * category_ask
+                    self.fleet_model.df.loc[self.prospection_start_year:self.end_year, share_var_name] / 100 * category_ask
                 )
 
                 rpk_aircraft_value = (
-                    self.fleet_model.df.loc[2019:2050, share_var_name] / 100 * category_rpk
+                    self.fleet_model.df.loc[self.prospection_start_year:self.end_year, share_var_name] / 100 * category_rpk
                 )
 
                 ask_aircraft_value_covid_levelling = (
-                    self.fleet_model.df.loc[2019:2050, share_var_name]
+                    self.fleet_model.df.loc[self.prospection_start_year:self.end_year, share_var_name]
                     / 100
                     * category_ask_covid_levelling
                 )
