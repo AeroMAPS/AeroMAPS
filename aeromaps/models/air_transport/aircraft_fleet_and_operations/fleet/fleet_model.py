@@ -2661,6 +2661,10 @@ class Fleet(object):
         # sr_cat.add_subcategory(subcategory=sr_tf_cat)
 
         # Medium range
+
+        cat_params = CategoryParameters(life=25)
+        mr_cat = Category(name="Medium Range", parameters=cat_params)
+
         subcat_params = SubcategoryParameters(share=100.0)
         mr_subcat = SubCategory("MR conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
@@ -2686,15 +2690,44 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
+        mean_energy_init_ask_medium_range = ((self.parameters.energy_consumption_init.values[
+                                                 -1] * self.parameters.medium_range_energy_share_2019) /
+                                            (self.parameters.ask_init.values[
+                                                 -1] * self.parameters.medium_range_rpk_share_2019))
+
+        share_recent_medium_range = (
+                                               mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask) / (
+                                           mr_subcat.recent_reference_aircraft.energy_per_ask - mr_subcat.old_reference_aircraft.energy_per_ask)
+
+        lambda_medium_range = np.log(100 / 2 - 1) / (mr_cat.parameters.life / 2)
+
+        if 1 > share_recent_medium_range > 0:
+            t0_mr = np.log((1 - share_recent_medium_range) / share_recent_medium_range) / lambda_medium_range + (
+                        self.parameters.prospection_start_year - 1)
+
+            t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
+
+        elif share_recent_medium_range > 1:
+            t_eis_medium_range = self.parameters.prospection_start_year - 1 - mr_cat.parameters.life
+
+        else:
+            t_eis_medium_range = self.parameters.prospection_start_year - 1
+
+        mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
+
+        print(t_eis_medium_range)
+
         if add_examples_aircraft_and_subcategory:
             mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
             mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
 
-        cat_params = CategoryParameters(life=25)
-        mr_cat = Category(name="Medium Range", parameters=cat_params)
+
         mr_cat.add_subcategory(subcategory=mr_subcat)
 
         # Long range
+        cat_params = CategoryParameters(life=25)
+        lr_cat = Category("Long Range", parameters=cat_params)
+
         subcat_params = SubcategoryParameters(share=100.0)
         lr_subcat = SubCategory("LR conventional wide-body", parameters=subcat_params)
         # Reference aircraft
@@ -2720,12 +2753,39 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.recent_reference_aircraft.nrc_cost = 25000000000.0
 
+
+        mean_energy_init_ask_long_range = ((self.parameters.energy_consumption_init.values[
+                                                 -1] * self.parameters.long_range_energy_share_2019) /
+                                            (self.parameters.ask_init.values[
+                                                 -1] * self.parameters.long_range_rpk_share_2019))
+
+        share_recent_long_range = (
+                                               mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask) / (
+                                           lr_subcat.recent_reference_aircraft.energy_per_ask - lr_subcat.old_reference_aircraft.energy_per_ask)
+
+        lambda_long_range = np.log(100 / 2 - 1) / (lr_cat.parameters.life / 2)
+
+        if 1 > share_recent_long_range > 0:
+            t0_lr = np.log((1 - share_recent_long_range) / share_recent_long_range) / lambda_long_range + (
+                        self.parameters.prospection_start_year - 1)
+
+            t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
+
+        elif share_recent_long_range > 1:
+            t_eis_long_range = self.parameters.prospection_start_year - 1 - lr_cat.parameters.life
+
+        else:
+            t_eis_long_range = self.parameters.prospection_start_year - 1
+
+        lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
+
+        print(t_eis_long_range)
+
         if add_examples_aircraft_and_subcategory:
             lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
             lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
-        cat_params = CategoryParameters(life=25)
-        lr_cat = Category("Long Range", parameters=cat_params)
+
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
         self.categories[sr_cat.name] = sr_cat
