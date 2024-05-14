@@ -2538,6 +2538,10 @@ class Fleet(object):
             "New Long-range wide-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
         )
 
+        # Short range
+        cat_params = CategoryParameters(life=25)
+        sr_cat = Category("Short Range", parameters=cat_params)
+
         # Short range narrow-body
         if add_examples_aircraft_and_subcategory:
             subcat_params = SubcategoryParameters(share=20.0)
@@ -2566,6 +2570,30 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.ask_year = 280000000
         sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
+
+        mean_energy_init_ask_short_range = ((self.parameters.energy_consumption_init.values[-1] * self.parameters.short_range_energy_share_2019) /
+                                        (self.parameters.ask_init.values[-1] *  self.parameters.short_range_rpk_share_2019))
+
+
+        share_recent_short_range = (mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask) / (
+                sr_nb_cat.recent_reference_aircraft.energy_per_ask - sr_nb_cat.old_reference_aircraft.energy_per_ask)
+
+        lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
+
+        if 1 > share_recent_short_range > 0:
+            t0_mr = np.log((1 - share_recent_short_range) / share_recent_short_range) / lambda_short_range + (self.parameters.prospection_start_year-1)
+
+            t_eis_short_range = t0_mr - sr_cat.parameters.life / 2
+
+        elif share_recent_short_range > 1:
+            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+
+        else:
+            t_eis_short_range = self.parameters.prospection_start_year - 1
+
+        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
+
+        print(t_eis_short_range)
 
         if add_examples_aircraft_and_subcategory:
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
@@ -2625,9 +2653,7 @@ class Fleet(object):
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_1)
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
-        # Short range
-        cat_params = CategoryParameters(life=25)
-        sr_cat = Category("Short Range", parameters=cat_params)
+
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
         if add_examples_aircraft_and_subcategory:
             sr_cat.add_subcategory(subcategory=sr_rp_cat)
