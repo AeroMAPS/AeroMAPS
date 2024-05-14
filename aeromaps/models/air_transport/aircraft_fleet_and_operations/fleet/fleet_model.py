@@ -2254,12 +2254,14 @@ class Fleet(object):
     def __init__(
         self,
         add_examples_aircraft_and_subcategory=True,
+        parameters=None
     ):
         self.categories = {}
 
+        self.parameters = parameters
         # Build default fleet
         self._build_default_fleet(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
         )
 
         # Initialize

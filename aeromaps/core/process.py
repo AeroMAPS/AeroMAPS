@@ -182,7 +182,7 @@ class AeroMAPSProcess(object):
 
         if self.use_fleet_model:
             self.fleet = Fleet(
-                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory, parameters=self.parameters
             )
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters
