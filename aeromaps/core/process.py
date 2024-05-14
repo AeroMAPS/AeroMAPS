@@ -292,7 +292,7 @@ class AeroMAPSProcess(object):
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
             disc.model._initialize_df()
-            disc.update_defaults()
+            # disc.update_defaults()
             all_inputs.update(disc.default_inputs)
 
         return all_inputs
