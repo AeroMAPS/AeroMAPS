@@ -128,17 +128,29 @@ class AeroMAPSProcess(object):
     def list_float_inputs(self):
         return self.data["float_inputs"]
 
-    def plot(self, name, save=False):
-
-        if name in available_plots:
+    def plot(self, name, save=False, size_inches=None, remove_title=False):
+        if name in available_plots_fleet:
+            fig = available_plots_fleet[name](self.data, self.fleet_model)
+            if save:
+                if size_inches is not None:
+                    fig.fig.set_size_inches(size_inches)
+                if remove_title:
+                    fig.fig.gca().set_title("")
+                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+        elif name in available_plots:
             fig = available_plots[name](self.data)
             if save:
-                fig.fig.savefig(f"{name}.pdf")
+                if size_inches is not None:
+                    fig.fig.set_size_inches(size_inches)
+                if remove_title:
+                    fig.fig.gca().set_title("")
+                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         else:
             raise NameError(
-                f"Plot {name} is not available. List of available plots: {list(available_plots.keys())}"
+                f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
+
     def _initialize_configuration(self):
         # Load the default configuration file
         with open(default_config_path, "r") as f:
