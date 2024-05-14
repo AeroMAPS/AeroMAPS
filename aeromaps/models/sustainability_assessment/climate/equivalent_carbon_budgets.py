@@ -2,10 +2,10 @@ from typing import Tuple
 from scipy.optimize import fsolve
 
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class EquivalentGrossCarbonBudget(AeromapsModel):
+class EquivalentGrossCarbonBudget(AeroMAPSModel):
     def __init__(self, name="equivalent_gross_carbon_budget", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

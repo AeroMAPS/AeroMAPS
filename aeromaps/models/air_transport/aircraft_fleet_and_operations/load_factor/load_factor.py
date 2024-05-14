@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class LoadFactor(AeromapsModel):
+class LoadFactor(AeroMAPSModel):
     def __init__(self, name="load_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

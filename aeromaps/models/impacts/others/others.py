@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class EmissionsPerRPK(AeromapsModel):
+class EmissionsPerRPK(AeroMAPSModel):
     def __init__(self, name="emissions_per_rpk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -23,7 +23,7 @@ class EmissionsPerRPK(AeromapsModel):
         return co2_emissions_per_rpk
 
 
-class EmissionsPerRTK(AeromapsModel):
+class EmissionsPerRTK(AeroMAPSModel):
     def __init__(self, name="emissions_per_rpk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -40,7 +40,7 @@ class EmissionsPerRTK(AeromapsModel):
         return co2_emissions_per_rtk
 
 
-class DropinFuelConsumptionLiterPerPax100km(AeromapsModel):
+class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
     def __init__(self, name="dropin_fuel_consumption_liter_per_pax_100km", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

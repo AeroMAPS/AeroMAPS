@@ -6,10 +6,10 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class NonDiscountedScenarioCost(AeromapsModel):
+class NonDiscountedScenarioCost(AeroMAPSModel):
     def __init__(self, name="non_discounted_scenario_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -83,7 +83,7 @@ class NonDiscountedScenarioCost(AeromapsModel):
         )
 
 
-class DicountedScenarioCost(AeromapsModel):
+class DicountedScenarioCost(AeroMAPSModel):
     def __init__(self, name="discounted_scenario_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 

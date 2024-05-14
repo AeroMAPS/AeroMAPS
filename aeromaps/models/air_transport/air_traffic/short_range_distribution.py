@@ -3,10 +3,10 @@ from typing import Tuple
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class ShortRangeDistribution(AeromapsModel):
+class ShortRangeDistribution(AeroMAPSModel):
     def __init__(self, name="short_range_distribution", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -76,7 +76,7 @@ class ShortRangeDistribution(AeromapsModel):
         )
 
 
-class RPKShortRange(AeromapsModel):
+class RPKShortRange(AeroMAPSModel):
     def __init__(self, name="rpk_short_range", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

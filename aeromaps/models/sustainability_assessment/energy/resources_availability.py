@@ -1,8 +1,8 @@
 from typing import Tuple
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class BiomassAvailability(AeromapsModel):
+class BiomassAvailability(AeroMAPSModel):
     def __init__(self, name="biomass_availability", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -73,7 +73,7 @@ class BiomassAvailability(AeromapsModel):
         )
 
 
-class ElectricityAvailability(AeromapsModel):
+class ElectricityAvailability(AeroMAPSModel):
     def __init__(self, name="electricity_availability", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

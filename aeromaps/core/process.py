@@ -1,20 +1,17 @@
+# Standard library imports
 import os
 from json import load, dump
+
+# Third-party imports
 import numpy as np
 import pandas as pd
-
-from aeromaps.models.base import AeromapsModel
-
-pd.options.display.max_rows = 150
-pd.set_option("display.max_columns", 150)
-pd.set_option("max_colwidth", 200)
-pd.options.mode.chained_assignment = None
-
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
 
 
-from aeromaps.core.gemseo import AeromapsModelWrapper
+# Local application imports
+from aeromaps.models.base import AeroMAPSModel
+from aeromaps.core.gemseo import AeroMAPSModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -24,6 +21,11 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     FleetModel,
 )
 
+# Settings
+pd.options.display.max_rows = 150
+pd.set_option("display.max_columns", 150)
+pd.set_option("max_colwidth", 200)
+pd.options.mode.chained_assignment = None
 
 # Get the directory of the current script
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,7 +37,7 @@ default_config_path = os.path.join(current_dir, "config.json")
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 
-class create_process(object):
+class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
@@ -70,106 +72,6 @@ class create_process(object):
         )
         self._initialize_data()
         self._update_variables()
-
-    def _initialize_configuration(self):
-        # Load the default configuration file
-        with open(default_config_path, "r") as f:
-            self.config = load(f)
-        # Update paths in the configuration file with absolute paths
-        for key, value in self.config.items():
-            self.config[key] = os.path.join(current_dir, value)
-
-        # Load the new configuration file
-        if self.configuration_file is not None:
-            with open(self.configuration_file, "r") as f:
-                new_config = load(f)
-            # Replace the default configuration with the new configuration
-            for key, value in new_config.items():
-                self.config[key] = value
-
-    def _initialize_data(self):
-        # Inputs
-        self.data["float_inputs"] = {}
-        # TODO: explore the possibility of using a dataframe for vector inputs
-        self.data["vector_inputs"] = {}
-
-        # Outputs
-        self.data["float_outputs"] = {}
-        self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
-        self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
-
-    def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-
-        if self.use_fleet_model:
-            self.fleet = Fleet(
-                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
-            )
-            self.fleet_model = FleetModel(fleet=self.fleet)
-            self.fleet_model.parameters = self.parameters
-            self.fleet_model._initialize_df()
-        else:
-            self.fleet = None
-
-        def check_instance_in_dict(d):
-            for key, value in d.items():
-                if isinstance(value, dict):
-                    check_instance_in_dict(value)
-                elif isinstance(value, AeromapsModel):
-                    model = value
-                    # TODO: check how to avoid providing all parameters
-                    model.parameters = self.parameters
-                    model._initialize_df()
-                    if self.use_fleet_model and hasattr(model, "fleet_model"):
-                        model.fleet_model = self.fleet_model
-                    if hasattr(model, "compute"):
-                        model = AeromapsModelWrapper(model=model)
-                        self.disciplines.append(model)
-                    else:
-                        print(model.name)
-                else:
-                    print(f"{key} is not an instance of AeromapsModel")
-
-        check_instance_in_dict(self.models)
-
-    def _initialize_years(self):
-        # Years
-        self.data["years"] = {}
-        self.data["years"]["full_years"] = list(
-            range(self.parameters.historic_start_year, self.parameters.end_year + 1)
-        )
-        self.data["years"]["climate_full_years"] = list(
-            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
-        )
-        self.data["years"]["historic_years"] = list(
-            range(
-                self.parameters.historic_start_year,
-                self.parameters.prospection_start_year,
-            )
-        )
-        self.data["years"]["climate_historic_years"] = list(
-            range(
-                self.parameters.climate_historic_start_year,
-                self.parameters.prospection_start_year,
-            )
-        )
-        self.data["years"]["prospective_years"] = list(
-            range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
-        )
-
-    def _initialize_inputs(self):
-
-        self.parameters = Parameters()
-        # First use main parameters.json as default values
-        self.parameters.read_json(file_name=default_parameters_path)
-
-        if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_input_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
-            )
-            # If an alternative file is provided overwrite values
-            if new_input_file_path != default_parameters_path:
-                self.parameters.read_json(file_name=new_input_file_path)
 
     def compute(self):
 
@@ -248,6 +150,106 @@ class create_process(object):
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
+
+    def _initialize_configuration(self):
+        # Load the default configuration file
+        with open(default_config_path, "r") as f:
+            self.config = load(f)
+        # Update paths in the configuration file with absolute paths
+        for key, value in self.config.items():
+            self.config[key] = os.path.join(current_dir, value)
+
+        # Load the new configuration file
+        if self.configuration_file is not None:
+            with open(self.configuration_file, "r") as f:
+                new_config = load(f)
+            # Replace the default configuration with the new configuration
+            for key, value in new_config.items():
+                self.config[key] = value
+
+    def _initialize_data(self):
+        # Inputs
+        self.data["float_inputs"] = {}
+        # TODO: explore the possibility of using a dataframe for vector inputs
+        self.data["vector_inputs"] = {}
+
+        # Outputs
+        self.data["float_outputs"] = {}
+        self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
+        self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
+
+    def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
+
+        if self.use_fleet_model:
+            self.fleet = Fleet(
+                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+            )
+            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model.parameters = self.parameters
+            self.fleet_model._initialize_df()
+        else:
+            self.fleet = None
+
+        def check_instance_in_dict(d):
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    check_instance_in_dict(value)
+                elif isinstance(value, AeroMAPSModel):
+                    model = value
+                    # TODO: check how to avoid providing all parameters
+                    model.parameters = self.parameters
+                    model._initialize_df()
+                    if self.use_fleet_model and hasattr(model, "fleet_model"):
+                        model.fleet_model = self.fleet_model
+                    if hasattr(model, "compute"):
+                        model = AeroMAPSModelWrapper(model=model)
+                        self.disciplines.append(model)
+                    else:
+                        print(model.name)
+                else:
+                    print(f"{key} is not an instance of AeroMAPSModel")
+
+        check_instance_in_dict(self.models)
+
+    def _initialize_years(self):
+        # Years
+        self.data["years"] = {}
+        self.data["years"]["full_years"] = list(
+            range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+        )
+        self.data["years"]["climate_full_years"] = list(
+            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
+        )
+        self.data["years"]["historic_years"] = list(
+            range(
+                self.parameters.historic_start_year,
+                self.parameters.prospection_start_year,
+            )
+        )
+        self.data["years"]["climate_historic_years"] = list(
+            range(
+                self.parameters.climate_historic_start_year,
+                self.parameters.prospection_start_year,
+            )
+        )
+        self.data["years"]["prospective_years"] = list(
+            range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
+        )
+
+    def _initialize_inputs(self):
+
+        self.parameters = Parameters()
+        # First use main parameters.json as default values
+        self.parameters.read_json(file_name=default_parameters_path)
+
+        if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_input_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
+            )
+            # If an alternative file is provided overwrite values
+            if new_input_file_path != default_parameters_path:
+                self.parameters.read_json(file_name=new_input_file_path)
 
     def _set_inputs(self):
 

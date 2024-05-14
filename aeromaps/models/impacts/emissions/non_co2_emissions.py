@@ -3,11 +3,11 @@ import pandas as pd
 from pandas import read_csv
 import os.path as pth
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from aeromaps.resources import climate_data
 
 
-class NOxEmissionIndex(AeromapsModel):
+class NOxEmissionIndex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -57,7 +57,7 @@ class NOxEmissionIndex(AeromapsModel):
         )
 
 
-class NOxEmissionIndexComplex(AeromapsModel):
+class NOxEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -167,7 +167,7 @@ class NOxEmissionIndexComplex(AeromapsModel):
         )
 
 
-class SootEmissionIndex(AeromapsModel):
+class SootEmissionIndex(AeroMAPSModel):
     def __init__(self, name="soot_emission_index", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -214,7 +214,7 @@ class SootEmissionIndex(AeromapsModel):
         )
 
 
-class SootEmissionIndexComplex(AeromapsModel):
+class SootEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -326,7 +326,7 @@ class SootEmissionIndexComplex(AeromapsModel):
         )
 
 
-class NonCO2Emissions(AeromapsModel):
+class NonCO2Emissions(AeroMAPSModel):
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset

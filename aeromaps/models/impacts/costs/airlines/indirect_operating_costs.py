@@ -5,10 +5,10 @@
 
 from typing import Tuple
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class PassengerAircraftIndirectOpCosts(AeromapsModel):
+class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_ioc", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -34,7 +34,7 @@ class PassengerAircraftIndirectOpCosts(AeromapsModel):
         return indirect_operating_cost_per_ask
 
 
-class PassengerAircraftNocCarbonOffset(AeromapsModel):
+class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_noc_carbon_offset", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

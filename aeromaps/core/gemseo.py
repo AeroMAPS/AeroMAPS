@@ -10,7 +10,6 @@ from typing import Sequence
 from typing import Union
 from typing import get_type_hints
 
-import numpy as np
 from numpy import array
 from numpy import atleast_2d
 from numpy import ndarray
@@ -20,7 +19,7 @@ from gemseo.core.data_processor import DataProcessor
 from gemseo.core.discipline import MDODiscipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 DataType = Union[float, ndarray]
 
@@ -325,11 +324,11 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
     return data
 
 
-class AeromapsModelWrapper(AutoPyDiscipline):
+class AeroMAPSModelWrapper(AutoPyDiscipline):
     def __init__(self, model):
-        self.model: AeromapsModel = model
+        self.model: AeroMAPSModel = model
 
-        super(AeromapsModelWrapper, self).__init__(
+        super(AeroMAPSModelWrapper, self).__init__(
             py_func=self.model.compute, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
 

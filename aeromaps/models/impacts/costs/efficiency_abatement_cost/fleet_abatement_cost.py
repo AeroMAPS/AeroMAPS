@@ -5,11 +5,11 @@
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from typing import Tuple
 
 
-class FleetCarbonAbatementCosts(AeromapsModel):
+class FleetCarbonAbatementCosts(AeroMAPSModel):
     def __init__(self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
@@ -292,7 +292,7 @@ class FleetCarbonAbatementCosts(AeromapsModel):
         )
 
 
-class CargoEfficiencyCarbonAbatementCosts(AeromapsModel):
+class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
     def __init__(
         self, name="cargo_efficiency_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):

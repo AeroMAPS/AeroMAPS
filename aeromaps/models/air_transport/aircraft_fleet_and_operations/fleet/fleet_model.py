@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 import ipywidgets as ipw
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 AIRCRAFT_COLUMNS = [
     "Name",
@@ -69,7 +69,7 @@ class CategoryParameters:
     limit: float = 2
 
 
-class FleetModel(AeromapsModel):
+class FleetModel(AeroMAPSModel):
     def __init__(self, name="fleet_model", fleet=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet

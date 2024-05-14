@@ -5,7 +5,7 @@ import pandas as pd
 import os.path as pth
 
 from aeromaps.models.base import (
-    AeromapsModel,
+    AeroMAPSModel,
     GWPStarEquivalentEmissionsFunction,
     AbsoluteGlobalWarmingPotentialCO2Function,
     RunFair,
@@ -13,7 +13,7 @@ from aeromaps.models.base import (
 from aeromaps.resources.climate_data import RCP
 
 
-class TemperatureGWPStar(AeromapsModel):
+class TemperatureGWPStar(AeroMAPSModel):
     def __init__(self, name="temperature_gwpstar", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -468,7 +468,7 @@ class TemperatureGWPStar(AeromapsModel):
         )
 
 
-class TemperatureSimpleGWPStar(AeromapsModel):
+class TemperatureSimpleGWPStar(AeroMAPSModel):
     def __init__(self, name="temperature_simple_gwpstar", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -752,7 +752,7 @@ class TemperatureSimpleGWPStar(AeromapsModel):
         )
 
 
-class TemperatureFair(AeromapsModel):
+class TemperatureFair(AeroMAPSModel):
     def __init__(self, name="temperature_fair", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         # Load dataset

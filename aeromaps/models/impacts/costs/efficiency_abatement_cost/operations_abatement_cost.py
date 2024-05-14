@@ -6,10 +6,10 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class OperationsAbatementCost(AeromapsModel):
+class OperationsAbatementCost(AeroMAPSModel):
     def __init__(self, name="operations_abatement_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
