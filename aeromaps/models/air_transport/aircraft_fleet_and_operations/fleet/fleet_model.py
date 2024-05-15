@@ -2593,7 +2593,6 @@ class Fleet(object):
 
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
 
-        print(t_eis_short_range)
 
         if add_examples_aircraft_and_subcategory:
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
