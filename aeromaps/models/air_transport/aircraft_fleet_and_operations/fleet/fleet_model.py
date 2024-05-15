@@ -74,8 +74,6 @@ class FleetModel(AeroMAPSModel):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
 
-        self.all_aircraft_elements = self.fleet.get_all_aircraft_elements()
-
     def compute(
         self,
     ):
@@ -2221,7 +2219,7 @@ class Fleet(object):
         add_examples_aircraft_and_subcategory=True,
         parameters=None
     ):
-        self.categories = {}
+        self._categories = {}
 
         self.parameters = parameters
         # Build default fleet
@@ -2243,9 +2241,20 @@ class Fleet(object):
         # Setup user interface
         self._setup_ui()
 
+        self.all_aircraft_elements = self.get_all_aircraft_elements()
+
     def compute(self):
         for cat in self.categories.values():
             cat._compute()
+
+    @property
+    def categories(self):
+        return self._categories
+
+    @categories.setter
+    def categories(self, value):
+        self._categories = value
+        self.all_aircraft_elements = self.get_all_aircraft_elements()
 
     def get_all_aircraft_elements(self):
 

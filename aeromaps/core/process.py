@@ -76,7 +76,7 @@ class AeroMAPSProcess(object):
     def compute(self):
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
-            self.fleet_model.all_aircraft_elements = self.fleet_model.fleet.get_all_aircraft_elements()
+            self.fleet_model.fleet.all_aircraft_elements = self.fleet_model.fleet.get_all_aircraft_elements()
             self.fleet_model.compute()
 
         input_data = self._set_inputs()
