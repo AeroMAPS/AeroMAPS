@@ -2214,11 +2214,7 @@ class Category(object):
 
 
 class Fleet(object):
-    def __init__(
-        self,
-        add_examples_aircraft_and_subcategory=True,
-        parameters=None
-    ):
+    def __init__(self, add_examples_aircraft_and_subcategory=True, parameters=None):
         self._categories = {}
 
         self.parameters = parameters
@@ -2579,17 +2575,24 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
-        mean_energy_init_ask_short_range = ((self.parameters.energy_consumption_init.values[-1] * self.parameters.short_range_energy_share_2019) /
-                                        (self.parameters.ask_init.values[-1] *  self.parameters.short_range_rpk_share_2019))
+        mean_energy_init_ask_short_range = (
+            self.parameters.energy_consumption_init.values[-1]
+            * self.parameters.short_range_energy_share_2019
+        ) / (self.parameters.ask_init.values[-1] * self.parameters.short_range_rpk_share_2019)
 
-
-        share_recent_short_range = (mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask) / (
-                sr_nb_cat.recent_reference_aircraft.energy_per_ask - sr_nb_cat.old_reference_aircraft.energy_per_ask)
+        share_recent_short_range = (
+            mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
+        ) / (
+            sr_nb_cat.recent_reference_aircraft.energy_per_ask
+            - sr_nb_cat.old_reference_aircraft.energy_per_ask
+        )
 
         lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
 
         if 1 > share_recent_short_range > 0:
-            t0_mr = np.log((1 - share_recent_short_range) / share_recent_short_range) / lambda_short_range + (self.parameters.prospection_start_year-1)
+            t0_mr = np.log(
+                (1 - share_recent_short_range) / share_recent_short_range
+            ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
 
             t_eis_short_range = t0_mr - sr_cat.parameters.life / 2
 
@@ -2600,7 +2603,6 @@ class Fleet(object):
             t_eis_short_range = self.parameters.prospection_start_year - 1
 
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
-
 
         if add_examples_aircraft_and_subcategory:
             sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
@@ -2660,7 +2662,6 @@ class Fleet(object):
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_1)
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
-
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
         if add_examples_aircraft_and_subcategory:
             sr_cat.add_subcategory(subcategory=sr_rp_cat)
@@ -2697,20 +2698,24 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
 
-        mean_energy_init_ask_medium_range = ((self.parameters.energy_consumption_init.values[
-                                                 -1] * self.parameters.medium_range_energy_share_2019) /
-                                            (self.parameters.ask_init.values[
-                                                 -1] * self.parameters.medium_range_rpk_share_2019))
+        mean_energy_init_ask_medium_range = (
+            self.parameters.energy_consumption_init.values[-1]
+            * self.parameters.medium_range_energy_share_2019
+        ) / (self.parameters.ask_init.values[-1] * self.parameters.medium_range_rpk_share_2019)
 
         share_recent_medium_range = (
-                                               mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask) / (
-                                           mr_subcat.recent_reference_aircraft.energy_per_ask - mr_subcat.old_reference_aircraft.energy_per_ask)
+            mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
+        ) / (
+            mr_subcat.recent_reference_aircraft.energy_per_ask
+            - mr_subcat.old_reference_aircraft.energy_per_ask
+        )
 
         lambda_medium_range = np.log(100 / 2 - 1) / (mr_cat.parameters.life / 2)
 
         if 1 > share_recent_medium_range > 0:
-            t0_mr = np.log((1 - share_recent_medium_range) / share_recent_medium_range) / lambda_medium_range + (
-                        self.parameters.prospection_start_year - 1)
+            t0_mr = np.log(
+                (1 - share_recent_medium_range) / share_recent_medium_range
+            ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
 
             t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
 
@@ -2725,7 +2730,6 @@ class Fleet(object):
         if add_examples_aircraft_and_subcategory:
             mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
             mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
-
 
         mr_cat.add_subcategory(subcategory=mr_subcat)
 
@@ -2758,21 +2762,24 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.recent_reference_aircraft.nrc_cost = 25000000000.0
 
-
-        mean_energy_init_ask_long_range = ((self.parameters.energy_consumption_init.values[
-                                                 -1] * self.parameters.long_range_energy_share_2019) /
-                                            (self.parameters.ask_init.values[
-                                                 -1] * self.parameters.long_range_rpk_share_2019))
+        mean_energy_init_ask_long_range = (
+            self.parameters.energy_consumption_init.values[-1]
+            * self.parameters.long_range_energy_share_2019
+        ) / (self.parameters.ask_init.values[-1] * self.parameters.long_range_rpk_share_2019)
 
         share_recent_long_range = (
-                                               mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask) / (
-                                           lr_subcat.recent_reference_aircraft.energy_per_ask - lr_subcat.old_reference_aircraft.energy_per_ask)
+            mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask
+        ) / (
+            lr_subcat.recent_reference_aircraft.energy_per_ask
+            - lr_subcat.old_reference_aircraft.energy_per_ask
+        )
 
         lambda_long_range = np.log(100 / 2 - 1) / (lr_cat.parameters.life / 2)
 
         if 1 > share_recent_long_range > 0:
-            t0_lr = np.log((1 - share_recent_long_range) / share_recent_long_range) / lambda_long_range + (
-                        self.parameters.prospection_start_year - 1)
+            t0_lr = np.log(
+                (1 - share_recent_long_range) / share_recent_long_range
+            ) / lambda_long_range + (self.parameters.prospection_start_year - 1)
 
             t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
 
@@ -2784,11 +2791,9 @@ class Fleet(object):
 
         lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
-
         if add_examples_aircraft_and_subcategory:
             lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
             lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
-
 
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
