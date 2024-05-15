@@ -32,58 +32,53 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
     return df
 
 
-def create_partitioning(file, path=''):
+def create_partitioning(file, path=""):
     """Generation of a JSON input file for running an AeroMAPS process for a partitioned scope."""
-
-    # AeroSCOPE data recovery
-    partitioned_data_df = read_csv(file, delimiter=",")
-    partitioned_data = partitioned_data_df.values
-    share_ask_partitioned_vs_world_2019 = partitioned_data[5, 1]
-    share_seats_partitioned_vs_world_2019 = partitioned_data[6, 1]
-    share_energy_consumption_partitioned_vs_world_2019 = partitioned_data[7, 1]
-    total_ask_2019 = partitioned_data[0, 1]
-    short_range_ask_2019 = partitioned_data[0, 2]
-    medium_range_ask_2019 = partitioned_data[0, 3]
-    long_range_ask_2019 = partitioned_data[0, 4]
-    total_energy_consumption_per_ask_2019 = partitioned_data[4, 1]
-    short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
-    medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
-    long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
-    total_energy_consumption_2019 = total_energy_consumption_per_ask_2019 * total_ask_2019
-    short_range_energy_consumption_2019 = (
-        short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    )
-    medium_range_energy_consumption_2019 = (
-        medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    )
-    long_range_energy_consumption_2019 = (
-        long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    )
 
     # World input data recovery
     world_data_path = pth.join(data.__path__[0], "parameters.json")
     with open(world_data_path, "r") as parameters_file:
         world_data_dict = json.load(parameters_file)
 
+    # Assumption on freight
+    freight_energy_share_2019_partitioned = world_data_dict["freight_energy_share_2019"]
+
+    # AeroSCOPE data recovery
+    partitioned_data_df = read_csv(file, delimiter=",")
+    partitioned_data = partitioned_data_df.values
+    total_ask_2019 = partitioned_data[0, 1]
+    short_range_ask_2019 = partitioned_data[0, 2]
+    medium_range_ask_2019 = partitioned_data[0, 3]
+    long_range_ask_2019 = partitioned_data[0, 4]
+    total_seats_2019 = partitioned_data[2, 1]
+    total_energy_consumption_per_ask_2019 = partitioned_data[4, 1]
+    short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
+    medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
+    long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
+    total_energy_consumption_2019 = total_energy_consumption_per_ask_2019 * total_ask_2019 / (
+                1 - freight_energy_share_2019_partitioned / 2 / 100
+            )  # Dedicated freight (half of total freight) not included in AeroSCOPE
+    short_range_energy_consumption_2019 = (
+        short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
+    ) * (1 - 0.075/(1-0.075))
+    medium_range_energy_consumption_2019 = (
+        medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
+    ) * (1 - 0.075/(1-0.075))
+    long_range_energy_consumption_2019 = (
+        long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
+    ) * (1 - 0.075/(1-0.075))
+
     # Calculation of the partitioned input values
 
     ## Float inputs
-    freight_energy_share_2019_partitioned = world_data_dict["freight_energy_share_2019"]
-    passenger_energy_share_2019_partitioned = 100 - freight_energy_share_2019_partitioned
     short_range_energy_share_2019_partitioned = (
-        (short_range_energy_consumption_2019 / total_energy_consumption_2019 * 100)
-        * passenger_energy_share_2019_partitioned
-        / 100
+        short_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
     medium_range_energy_share_2019_partitioned = (
-        (medium_range_energy_consumption_2019 / total_energy_consumption_2019 * 100)
-        * passenger_energy_share_2019_partitioned
-        / 100
+        medium_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
     long_range_energy_share_2019_partitioned = (
-        (long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100)
-        * passenger_energy_share_2019_partitioned
-        / 100
+        long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
     short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
     medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
@@ -91,6 +86,16 @@ def create_partitioning(file, path=''):
     commercial_aviation_coefficient_partitioned = 1
 
     ## Vector inputs
+    share_ask_partitioned_vs_world_2019 = total_ask_2019 / world_data_dict["ask_init"][19] * 100
+    share_seats_partitioned_vs_world_2019 = total_seats_2019 / (
+        world_data_dict["pax_init"][19]
+        * world_data_dict["ask_init"][19]
+        / world_data_dict["rpk_init"][19]
+        * 100
+    )
+    share_energy_consumption_partitioned_vs_world_2019 = (
+        total_energy_consumption_2019 / world_data_dict["energy_consumption_init"][19] * 100
+    )
     rpk_init_partitioned = []
     ask_init_partitioned = []
     rtk_init_partitioned = []
@@ -123,9 +128,6 @@ def create_partitioning(file, path=''):
             world_data_dict["energy_consumption_init"][k]
             * share_energy_consumption_partitioned_vs_world_2019
             / 100
-            / (
-                1 - freight_energy_share_2019_partitioned / 2 / 100
-            )  # Dedicated freight (half of total freight) not included in AeroSCOPE
         )
 
     # Generation of the JSON file
