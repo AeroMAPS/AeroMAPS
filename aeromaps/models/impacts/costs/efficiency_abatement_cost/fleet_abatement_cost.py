@@ -43,9 +43,9 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
-        for category, sets in self.fleet_model.all_aircraft_elements.items():
+        for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
 
-            category_recent_reference = self.fleet_model.all_aircraft_elements[category][1]
+            category_recent_reference = self.fleet_model.fleet.all_aircraft_elements[category][1]
 
             if category == "Short Range":
                 category_reference_doc_ne = doc_non_energy_per_ask_short_range_dropin_fuel_init

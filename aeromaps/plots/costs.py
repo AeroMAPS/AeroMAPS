@@ -2407,7 +2407,7 @@ class AnnualMACC:
             g_spe_cost = []
 
             colors = []
-            for category, sets in self.fleet_model.all_aircraft_elements.items():
+            for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
                 for aircraft_var in sets:
                     if hasattr(aircraft_var, "parameters"):
                         aircraft_var_name = aircraft_var.parameters.full_name
@@ -2930,7 +2930,7 @@ class CumulativeMACC:
 
         colors_list = []
 
-        for category, sets in self.fleet_model.all_aircraft_elements.items():
+        for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
             for aircraft_var in sets:
                 if hasattr(aircraft_var, "parameters"):
                     aircraft_var_name = aircraft_var.parameters.full_name
@@ -3607,7 +3607,7 @@ class ScenarioMACC:
             g_spe_cost = []
 
             colors = []
-            for category, sets in self.fleet_model.all_aircraft_elements.items():
+            for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
                 for aircraft_var in sets:
                     if hasattr(aircraft_var, "parameters"):
                         aircraft_var_name = aircraft_var.parameters.full_name
@@ -4016,7 +4016,7 @@ class ShadowCarbonPrice:
             g_spe_cost = []
 
             colors = []
-            for category, sets in self.fleet_model.all_aircraft_elements.items():
+            for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
                 for aircraft_var in sets:
                     if hasattr(aircraft_var, "parameters"):
                         aircraft_var_name = aircraft_var.parameters.full_name

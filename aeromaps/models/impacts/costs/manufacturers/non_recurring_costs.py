@@ -19,7 +19,7 @@ class NonRecurringCosts(AeroMAPSModel):
         aircraft_in_out_value_dict: dict,
     ) -> Tuple[dict,]:
         nrc_aircraft_value_dict = {}
-        for category, sets in self.fleet_model.all_aircraft_elements.items():
+        for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
 
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:

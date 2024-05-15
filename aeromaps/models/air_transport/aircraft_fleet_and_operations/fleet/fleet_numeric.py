@@ -31,7 +31,7 @@ class FleetEvolution(AeroMAPSModel):
         aircraft_in_fleet_value_covid_levelling_dict = {}
         aircraft_in_out_value_dict = {}
 
-        for category, sets in self.fleet_model.all_aircraft_elements.items():
+        for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
             if category == "Short Range":
                 category_ask = ask_short_range
                 category_rpk = rpk_short_range
