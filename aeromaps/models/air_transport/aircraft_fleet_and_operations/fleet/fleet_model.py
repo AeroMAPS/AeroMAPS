@@ -2714,8 +2714,6 @@ class Fleet(object):
 
         mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
 
-        print(t_eis_medium_range)
-
         if add_examples_aircraft_and_subcategory:
             mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
             mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
@@ -2778,7 +2776,6 @@ class Fleet(object):
 
         lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
-        print(t_eis_long_range)
 
         if add_examples_aircraft_and_subcategory:
             lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
