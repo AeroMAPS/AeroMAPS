@@ -1,10 +1,12 @@
 import json
 from json import load
+import numpy as np
 import pandas as pd
 from pandas import read_csv
 import os.path as pth
 
 from aeromaps.resources import data
+from aeromaps.resources import climate_data
 
 
 def _dict_from_json(file_name="parameters.json") -> dict:
@@ -55,18 +57,20 @@ def create_partitioning(file, path=""):
     short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
     medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
     long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
-    total_energy_consumption_2019 = total_energy_consumption_per_ask_2019 * total_ask_2019 / (
-                1 - freight_energy_share_2019_partitioned / 2 / 100
-            )  # Dedicated freight (half of total freight) not included in AeroSCOPE
+    total_energy_consumption_2019 = (
+        total_energy_consumption_per_ask_2019
+        * total_ask_2019
+        / (1 - freight_energy_share_2019_partitioned / 2 / 100)
+    )  # Dedicated freight (half of total freight) not included in AeroSCOPE
     short_range_energy_consumption_2019 = (
         short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
     medium_range_energy_consumption_2019 = (
         medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
     long_range_energy_consumption_2019 = (
         long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
 
     # Calculation of the partitioned input values
 
@@ -151,5 +155,52 @@ def create_partitioning(file, path=""):
     partitioned_inputs_path = pth.join(path, "partitioned_inputs.json")
     with open(partitioned_inputs_path, "w") as outfile:
         json.dump(partitioned_inputs_dict, outfile)
+
+    # Generation of a CSV file for using climate models
+    climate_world_data_path = pth.join(
+        climate_data.__path__[0], "temperature_historical_dataset.csv"
+    )
+    climate_world_data_df = pd.read_csv(climate_world_data_path, delimiter=";")
+    climate_world_data = climate_world_data_df.values
+    climate_world_data_years = climate_world_data[:, 0]
+    climate_world_data_co2_emissions = climate_world_data[:, 1]
+    climate_world_data_nox_emissions = climate_world_data[:, 2]
+    climate_world_data_h2o_emissions = climate_world_data[:, 3]
+    climate_world_data_soot_emissions = climate_world_data[:, 4]
+    climate_world_data_sulfur_emissions = climate_world_data[:, 5]
+    climate_world_data_distance = climate_world_data[:, 6]
+    climate_partitioned_data_years = climate_world_data_years
+    climate_partitioned_data_co2_emissions = (
+        climate_world_data_co2_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
+    )
+    climate_partitioned_data_nox_emissions = (
+        climate_world_data_nox_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
+    )
+    climate_partitioned_data_h2o_emissions = (
+        climate_world_data_h2o_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
+    )
+    climate_partitioned_data_soot_emissions = (
+        climate_world_data_soot_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
+    )
+    climate_partitioned_data_sulfur_emissions = (
+        climate_world_data_sulfur_emissions
+        * share_energy_consumption_partitioned_vs_world_2019
+        / 100
+    )
+    climate_partitioned_data_distance = (
+        climate_world_data_distance * share_ask_partitioned_vs_world_2019 / 100
+    )
+    climate_partitioned_data_years_number = len(climate_partitioned_data_years)
+    partitioned_historical_climate_dataset = np.zeros((climate_partitioned_data_years_number, 7))
+    for k in range(0, climate_partitioned_data_years_number):
+        partitioned_historical_climate_dataset[k, 0] = climate_partitioned_data_years[k]
+        partitioned_historical_climate_dataset[k, 1] = climate_partitioned_data_co2_emissions[k]
+        partitioned_historical_climate_dataset[k, 2] = climate_partitioned_data_nox_emissions[k]
+        partitioned_historical_climate_dataset[k, 3] = climate_partitioned_data_h2o_emissions[k]
+        partitioned_historical_climate_dataset[k, 4] = climate_partitioned_data_soot_emissions[k]
+        partitioned_historical_climate_dataset[k, 5] = climate_partitioned_data_sulfur_emissions[k]
+        partitioned_historical_climate_dataset[k, 6] = climate_partitioned_data_distance[k]
+    climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
+    np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
