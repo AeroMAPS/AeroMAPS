@@ -77,12 +77,8 @@ class FleetModel(AeroMAPSModel):
     def compute(
         self,
     ):
-
-        # # TODO : correct warnings
-        # warnings.filterwarnings("ignore")
-
-        # Start from empty dataframe
-        self.df = self.df.filter([])
+        # Start from empty dataframe (necessary for multiple runs of the model)
+        self.df = pd.DataFrame(index=self.df.index)
 
         # Compute single aircraft shares
         self._compute_single_aircraft_share()
@@ -107,9 +103,6 @@ class FleetModel(AeroMAPSModel):
 
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
-
-        warnings.resetwarnings()
-        warnings.simplefilter("ignore", DeprecationWarning)
 
     def _compute_single_aircraft_share(self):
         temp_dict = {}
