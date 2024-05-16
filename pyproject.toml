@@ -42,9 +42,10 @@ ipytree = "^0.2.2"
 docstring-inheritance = "^1.0.0"
 dacite = "^1.8.0"
 fair = "2.1.4"
-#lca-algebraic = "1.1"
-#"ruamel.yaml" = "^0.18.5"
-#ensure = "^1.0.0"
+lca-algebraic = "1.1"
+"ruamel.yaml" = "^0.18.5"
+ensure = "^1.0.0"
+premise = "2.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
