@@ -474,307 +474,83 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_doc_non_energy(self):
-        # Non-energy DOC calculations for drop-in fuel and hydrogen
+        temp_dict = {}
+
         for category in self.fleet.categories.values():
-            # Reference aircraft information
             ref_old_aircraft_share = self.df[
-                category.name
-                + ":"
-                + category.subcategories[0].name
-                + ":"
-                + "old_reference:aircraft_share"
-            ]
+                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
+            ].values
             ref_recent_aircraft_share = self.df[
-                category.name
-                + ":"
-                + category.subcategories[0].name
-                + ":"
-                + "recent_reference:aircraft_share"
-            ]
+                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
+            ].values
 
             recent_reference_aircraft_doc_non_energy = category.subcategories[
                 0
             ].recent_reference_aircraft.doc_non_energy_base
 
             for i, subcategory in category.subcategories.items():
-                # Initialization
-                if i == 0:
-                    self.df[category.name + ":" + subcategory.name + ":doc_non_energy"] = (
-                        subcategory.old_reference_aircraft.doc_non_energy_base
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.doc_non_energy_base
-                        * ref_recent_aircraft_share
-                        / 100
-                    )
-                    # Initial energy consumption
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen"
-                    ] = 0.0
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:electric"
-                    ] = 0.0
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:hybrid_electric"
-                    ] = 0.0
+                subcategory_key = f"{category.name}:{subcategory.name}"
 
+                if i == 0:
+                    initial_doc_non_energy = (
+                            subcategory.old_reference_aircraft.doc_non_energy_base
+                            * ref_old_aircraft_share
+                            / 100
+                            + subcategory.recent_reference_aircraft.doc_non_energy_base
+                            * ref_recent_aircraft_share
+                            / 100
+                    )
                 else:
-                    self.df[category.name + ":" + subcategory.name + ":doc_non_energy"] = 0.0
-                    # Initial energy consumption
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:hydrogen"
-                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":doc_non_energy:hybrid_electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":doc_non_energy"]
+                    initial_doc_non_energy = np.zeros_like(ref_old_aircraft_share)
+
+                temp_dict[f"{subcategory_key}:doc_non_energy"] = initial_doc_non_energy.copy()
+                temp_dict[f"{subcategory_key}:doc_non_energy:dropin_fuel"] = initial_doc_non_energy.copy()
+                temp_dict[f"{subcategory_key}:doc_non_energy:hydrogen"] = np.zeros_like(ref_old_aircraft_share)
+                temp_dict[f"{subcategory_key}:doc_non_energy:electric"] = np.zeros_like(ref_old_aircraft_share)
+                temp_dict[f"{subcategory_key}:doc_non_energy:hybrid_electric"] = np.zeros_like(ref_old_aircraft_share)
 
                 for aircraft in subcategory.aircraft.values():
+                    aircraft_share = self.df[
+                        f"{subcategory_key}:{aircraft.name}:aircraft_share"
+                    ].values
 
-                    for k in self.df.index:
+                    doc_non_energy = (
+                            recent_reference_aircraft_doc_non_energy
+                            * (1 + float(aircraft.parameters.doc_non_energy_evolution) / 100)
+                            * aircraft_share
+                            / 100
+                    )
 
-                        if (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                                + ":aircraft_share",
-                            ]
-                            != 0.0
-                        ):
+                    temp_dict[f"{subcategory_key}:doc_non_energy"] += doc_non_energy
 
-                            # self.df.loc[
-                            #     k, category.name + ":" + subcategory.name + ":share:total"
-                            # ] += self.df.loc[
-                            #     k,
-                            #     category.name
-                            #     + ":"
-                            #     + subcategory.name
-                            #     + ":"
-                            #     + aircraft.name
-                            #     + ":aircraft_share",
-                            # ]
+                    if aircraft.energy_type == "DROP_IN_FUEL":
+                        temp_dict[f"{subcategory_key}:doc_non_energy:dropin_fuel"] += doc_non_energy
 
-                            self.df.loc[
-                                k, category.name + ":" + subcategory.name + ":doc_non_energy"
-                            ] += (
-                                recent_reference_aircraft_doc_non_energy
-                                * (1 + float(aircraft.parameters.doc_non_energy_evolution) / 100)
-                                * self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
-                                / 100
-                            )
+                    if aircraft.energy_type == "HYDROGEN":
+                        temp_dict[f"{subcategory_key}:doc_non_energy:hydrogen"] += doc_non_energy
 
-                            if aircraft.energy_type == "DROP_IN_FUEL":
-                                # self.df.loc[
-                                #     k, category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                                # ] += (
-                                #     self.df.loc[
-                                #         k,
-                                #         category.name
-                                #         + ":"
-                                #         + subcategory.name
-                                #         + ":"
-                                #         + aircraft.name
-                                #         + ":aircraft_share",
-                                #     ]
-                                #     # / self.df.loc[
-                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
-                                #     # ]
-                                #     # * 100
-                                # )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":doc_non_energy:dropin_fuel",
-                                ] += (
-                                    recent_reference_aircraft_doc_non_energy
-                                    * (
-                                        1
-                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
-                                    )
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+                    if aircraft.energy_type == "ELECTRIC":
+                        temp_dict[f"{subcategory_key}:doc_non_energy:electric"] += doc_non_energy
 
-                            if aircraft.energy_type == "HYDROGEN":
-                                # self.df.loc[
-                                #     k, category.name + ":" + subcategory.name + ":share:hydrogen"
-                                # ] += (
-                                #     self.df.loc[
-                                #         k,
-                                #         category.name
-                                #         + ":"
-                                #         + subcategory.name
-                                #         + ":"
-                                #         + aircraft.name
-                                #         + ":aircraft_share",
-                                #     ]
-                                #     # / self.df.loc[
-                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
-                                #     # ]
-                                #     # * 100
-                                # )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":doc_non_energy:hydrogen",
-                                ] += (
-                                    recent_reference_aircraft_doc_non_energy
-                                    * (
-                                        1
-                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
-                                    )
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+                    if aircraft.energy_type == "HYBRID_ELECTRIC":
+                        temp_dict[f"{subcategory_key}:doc_non_energy:hybrid_electric"] += doc_non_energy
 
-                            if aircraft.energy_type == "ELECTRIC":
-                                # self.df.loc[
-                                #     k, category.name + ":" + subcategory.name + ":share:electric"
-                                # ] += (
-                                #     self.df.loc[
-                                #         k,
-                                #         category.name
-                                #         + ":"
-                                #         + subcategory.name
-                                #         + ":"
-                                #         + aircraft.name
-                                #         + ":aircraft_share",
-                                #     ]
-                                #     # / self.df.loc[
-                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
-                                #     # ]
-                                #     # * 100
-                                # )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":doc_non_energy:electric",
-                                ] += (
-                                    recent_reference_aircraft_doc_non_energy
-                                    * (
-                                        1
-                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
-                                    )
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+            # Summing up doc_non_energy for categories
+            for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
+                category_doc_key = f"{category.name}:doc_non_energy:{energy_type}"
+                subcategory_doc_key = f"{subcategory_key}:doc_non_energy:{energy_type}"
+                if category_doc_key in temp_dict:
+                    temp_dict[category_doc_key] += temp_dict[subcategory_doc_key]
+                else:
+                    temp_dict[category_doc_key] = temp_dict[subcategory_doc_key].copy()
 
-                            if aircraft.energy_type == "HYBRID_ELECTRIC":
-                                # self.df.loc[
-                                #     k, category.name + ":" + subcategory.name + ":share:electric"
-                                # ] += (
-                                #     self.df.loc[
-                                #         k,
-                                #         category.name
-                                #         + ":"
-                                #         + subcategory.name
-                                #         + ":"
-                                #         + aircraft.name
-                                #         + ":aircraft_share",
-                                #     ]
-                                #     # / self.df.loc[
-                                #     #     k, category.name + ":" + subcategory.name + ":share:total"
-                                #     # ]
-                                #     # * 100
-                                # )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":doc_non_energy:hybrid_electric",
-                                ] += (
-                                    recent_reference_aircraft_doc_non_energy
-                                    * (
-                                        1
-                                        + float(aircraft.parameters.doc_non_energy_evolution) / 100
-                                    )
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+        final_dict = {
+            key: np.array(values) if isinstance(values, list) else values
+            for key, values in temp_dict.items()
+        }
 
-                # # Energy shares per category
-                # var_name = category.name + ":share:dropin_fuel"
-                # if var_name in self.df:
-                #     # Dropin
-                #     self.df[category.name + ":share:dropin_fuel"] += self.df[
-                #         category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                #     ]
-                # else:
-                #     # Dropin
-                #     self.df[category.name + ":share:dropin_fuel"] = self.df[
-                #         category.name + ":" + subcategory.name + ":share:dropin_fuel"
-                #     ]
-                #
-                # var_name = category.name + ":share:hydrogen"
-                # if var_name in self.df:
-                #     # Hydrogen
-                #     self.df[category.name + ":share:hydrogen"] += self.df[
-                #         category.name + ":" + subcategory.name + ":share:hydrogen"
-                #     ]
-                # else:
-                #     # Hydrogen
-                #     self.df[category.name + ":share:hydrogen"] = self.df[
-                #         category.name + ":" + subcategory.name + ":share:hydrogen"
-                #     ]
+        final_df = pd.DataFrame(final_dict, index=self.df.index)
+        self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_non_co2_emission_index(self):
         # Non-CO2 (NOx and soot) emission index calculations for drop-in fuel and hydrogen
