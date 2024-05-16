@@ -1873,7 +1873,7 @@ class Fleet(object):
         sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
-        sr_nb_cat.old_reference_aircraft.entry_into_service_year = 1970
+        sr_nb_cat.old_reference_aircraft.entry_into_service_year = 1970 #Not used: old iarcraft starts at 100
         sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
         sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
         sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
@@ -1910,6 +1910,7 @@ class Fleet(object):
 
         lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
 
+        # nominal case where mean fleet energy is between old and recent aircraft performances
         if 1 > share_recent_short_range > 0:
             t0_mr = np.log(
                 (1 - share_recent_short_range) / share_recent_short_range
@@ -1917,11 +1918,31 @@ class Fleet(object):
 
             t_eis_short_range = t0_mr - sr_cat.parameters.life / 2
 
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_short_range > 1:
-            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
 
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: Short Range Aircraft: "
+                + "Average initial short-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                + "AeroMAPS is using initial short-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+            )
+            
+            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+            sr_nb_cat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
         else:
-            t_eis_short_range = self.parameters.prospection_start_year - 1
+            t_eis_short_range = self.parameters.prospection_start_year
+            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: Short Range Aircraft: "
+                + "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                + "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
+            )
 
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
 
@@ -2040,11 +2061,32 @@ class Fleet(object):
 
             t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
 
-        elif share_recent_medium_range > 1:
-            t_eis_medium_range = self.parameters.prospection_start_year - 1 - mr_cat.parameters.life
 
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
+        elif share_recent_medium_range > 1:
+
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: medium Range Aircraft: "
+                + "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                + "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+            )
+
+            t_eis_medium_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+            mr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
         else:
-            t_eis_medium_range = self.parameters.prospection_start_year - 1
+            t_eis_medium_range = self.parameters.prospection_start_year
+            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+    
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: medium Range Aircraft: "
+                + "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                + "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
+            )
 
         mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
 
@@ -2104,11 +2146,31 @@ class Fleet(object):
 
             t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
 
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_long_range > 1:
-            t_eis_long_range = self.parameters.prospection_start_year - 1 - lr_cat.parameters.life
 
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: long Range Aircraft: "
+                + "Average initial long-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                + "AeroMAPS is using initial long-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+            )
+
+            t_eis_long_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+            lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+            lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
         else:
-            t_eis_long_range = self.parameters.prospection_start_year - 1
+            t_eis_long_range = self.parameters.prospection_start_year
+            lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: long Range Aircraft: "
+                + "Average initial long-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                + "AeroMAPS is using initial long-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
+            )
 
         lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
