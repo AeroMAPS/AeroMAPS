@@ -991,146 +991,93 @@ class FleetModel(AeroMAPSModel):
                 )
 
     def _compute_mean_non_co2_emission_index(self):
+        temp_dict = {}
 
         for category in self.fleet.categories.values():
-            # Mean non-CO2 emission index per category
-            # Initialization
-            self.df[category.name + ":emission_index_nox:dropin_fuel"] = 0.0
-            self.df[category.name + ":emission_index_nox:hydrogen"] = 0.0
-            self.df[category.name + ":emission_index_nox:electric"] = 0.0
-            self.df[category.name + ":emission_index_nox:hybrid_electric"] = 0.0
-            self.df[category.name + ":emission_index_soot:dropin_fuel"] = 0.0
-            self.df[category.name + ":emission_index_soot:hydrogen"] = 0.0
-            self.df[category.name + ":emission_index_soot:electric"] = 0.0
-            self.df[category.name + ":emission_index_soot:hybrid_electric"] = 0.0
-            # Calculation
+            category_name = category.name
+            # Initialize temporary storage for each energy type
+            for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
+                temp_dict[f"{category_name}:emission_index_nox:{energy_type}"] = np.zeros(len(self.df))
+                temp_dict[f"{category_name}:emission_index_soot:{energy_type}"] = np.zeros(len(self.df))
+
             for subcategory in category.subcategories.values():
-                # TODO: verify aircraft order
+                subcategory_key = f"{category_name}:{subcategory.name}"
                 for k in self.df.index:
-                    if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":emission_index_nox:dropin_fuel"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_nox:dropin_fuel",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
-                        )
-                        self.df.loc[
-                            k, category.name + ":emission_index_soot:dropin_fuel"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_soot:dropin_fuel",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
-                        )
-                    else:
-                        self.df.loc[k, category.name + ":emission_index_nox:dropin_fuel"] = 0.0
-                        self.df.loc[k, category.name + ":emission_index_soot:dropin_fuel"] = 0.0
+                    dropin_fuel_share = self.df.at[k, f"{category_name}:share:dropin_fuel"]
+                    hydrogen_share = self.df.at[k, f"{category_name}:share:hydrogen"]
+                    electric_share = self.df.at[k, f"{category_name}:share:electric"]
+                    hybrid_electric_share = self.df.at[k, f"{category_name}:share:hybrid_electric"]
 
-                    if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":emission_index_nox:hydrogen"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":emission_index_nox:hydrogen",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hydrogen"] / 100
+                    if dropin_fuel_share != 0.0:
+                        temp_dict[f"{category_name}:emission_index_nox:dropin_fuel"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_nox:dropin_fuel"]
+                                / (dropin_fuel_share / 100)
                         )
-                        self.df.loc[
-                            k, category.name + ":emission_index_soot:hydrogen"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_soot:hydrogen",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hydrogen"] / 100
+                        temp_dict[f"{category_name}:emission_index_soot:dropin_fuel"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_soot:dropin_fuel"]
+                                / (dropin_fuel_share / 100)
                         )
-                    else:
-                        self.df.loc[k, category.name + ":emission_index_nox:hydrogen"] = 0.0
-                        self.df.loc[k, category.name + ":emission_index_soot:hydrogen"] = 0.0
 
-                    if self.df.loc[k, category.name + ":share:electric"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":emission_index_nox:electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":emission_index_nox:electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:electric"] / 100
+                    if hydrogen_share != 0.0:
+                        temp_dict[f"{category_name}:emission_index_nox:hydrogen"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_nox:hydrogen"]
+                                / (hydrogen_share / 100)
                         )
-                        self.df.loc[
-                            k, category.name + ":emission_index_soot:electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_soot:electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:electric"] / 100
+                        temp_dict[f"{category_name}:emission_index_soot:hydrogen"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_soot:hydrogen"]
+                                / (hydrogen_share / 100)
                         )
-                    else:
-                        self.df.loc[k, category.name + ":emission_index_nox:electric"] = 0.0
-                        self.df.loc[k, category.name + ":emission_index_soot:electric"] = 0.0
 
-                    if self.df.loc[k, category.name + ":share:hybrid_electric"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":emission_index_nox:hybrid_electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_nox:hybrid_electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hybrid_electric"] / 100
+                    if electric_share != 0.0:
+                        temp_dict[f"{category_name}:emission_index_nox:electric"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_nox:electric"]
+                                / (electric_share / 100)
                         )
-                        self.df.loc[
-                            k, category.name + ":emission_index_soot:hybrid_electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":emission_index_soot:hybrid_electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hybrid_electric"] / 100
+                        temp_dict[f"{category_name}:emission_index_soot:electric"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_soot:electric"]
+                                / (electric_share / 100)
                         )
-                    else:
-                        self.df.loc[k, category.name + ":emission_index_nox:hybrid_electric"] = 0.0
-                        self.df.loc[k, category.name + ":emission_index_soot:hybrid_electric"] = 0.0
 
-            # Mean emission index
+                    if hybrid_electric_share != 0.0:
+                        temp_dict[f"{category_name}:emission_index_nox:hybrid_electric"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_nox:hybrid_electric"]
+                                / (hybrid_electric_share / 100)
+                        )
+                        temp_dict[f"{category_name}:emission_index_soot:hybrid_electric"][k - self.df.index[0]] += (
+                                self.df.at[k, f"{subcategory_key}:emission_index_soot:hybrid_electric"]
+                                / (hybrid_electric_share / 100)
+                        )
+
+            # Calculate mean emission index
             for k in self.df.index:
-                self.df.loc[k, category.name + ":emission_index_nox"] = (
-                    self.df.loc[k, category.name + ":emission_index_nox:dropin_fuel"]
-                    * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_nox:hydrogen"]
-                    * (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_nox:electric"]
-                    * (self.df.loc[k, category.name + ":share:electric"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_nox:hybrid_electric"]
-                    * (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
+                self.df.at[k, f"{category_name}:emission_index_nox"] = (
+                        temp_dict[f"{category_name}:emission_index_nox:dropin_fuel"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:dropin_fuel"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_nox:hydrogen"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:hydrogen"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_nox:electric"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:electric"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_nox:hybrid_electric"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:hybrid_electric"] / 100)
                 )
-                self.df.loc[k, category.name + ":emission_index_soot"] = (
-                    self.df.loc[k, category.name + ":emission_index_soot:dropin_fuel"]
-                    * (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_soot:hydrogen"]
-                    * (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_soot:electric"]
-                    * (self.df.loc[k, category.name + ":share:electric"] / 100)
-                    + self.df.loc[k, category.name + ":emission_index_soot:hybrid_electric"]
-                    * (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
+                self.df.at[k, f"{category_name}:emission_index_soot"] = (
+                        temp_dict[f"{category_name}:emission_index_soot:dropin_fuel"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:dropin_fuel"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_soot:hydrogen"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:hydrogen"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_soot:electric"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:electric"] / 100)
+                        + temp_dict[f"{category_name}:emission_index_soot:hybrid_electric"][k - self.df.index[0]]
+                        * (self.df.at[k, f"{category_name}:share:hybrid_electric"] / 100)
                 )
+
+        final_dict = {
+            key: np.array(values) if isinstance(values, list) else values
+            for key, values in temp_dict.items()
+        }
+
+        final_df = pd.DataFrame(final_dict, index=self.df.index)
+        self.df = pd.concat([self.df, final_df], axis=1)
 
     def plot(self):
         x = np.linspace(
