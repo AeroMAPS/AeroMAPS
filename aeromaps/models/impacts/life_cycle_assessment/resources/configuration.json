@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://json-schema.org/draft-07/schema#",
+  "title": "lca-algebraic configuration file",
+  "description": "Schema for defining LCA models in configuration files.",
+  "type": "object",
+  "definitions": {
+    "background_process": {
+      "$comment": "Definition of a background process",
+      "type": "object",
+      "required": [
+            "name"
+          ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "loc": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unit": {
+          "type": "string"
+        },
+        "exchange": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "custom_attributes": {
+          "$ref": "#/definitions/custom_attributes"
+        }
+      }
+    },
+    "foreground_process": {
+      "$comment": "Definition of an LCA foreground process",
+      "type": "object",
+      "properties": {
+        "exchange": {
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "is_switch": {
+          "type": "boolean"
+        },
+        "custom_attributes": {
+          "$ref": "#/definitions/custom_attributes"
+        }
+      },
+      "additionalProperties": {
+        "anyOf": [
+              {
+                "$ref": "#/definitions/foreground_process"
+              },
+              {
+                "$ref": "#/definitions/background_process"
+              }
+            ]
+          }
+      },
+    "custom_attributes": {
+        "$comment": "Custom attributes for the activity, for example 'phase' or 'subphase'. This is useful to split impact assessment results.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "attribute": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": ["attribute", "value"]
+        }
+      },
+    "model": {
+      "$comment": "Definition of an LCA model",
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/foreground_process"
+          },
+          {
+            "$ref": "#/definitions/background_process"
+          }
+        ]
+      }
+    },
+    "float_or_ndarray": {
+      "$comment": "Definition of value that accepts float or list of floats",
+      "type": [
+        "number",
+        "array"
+      ],
+      "items": {
+        "type": "number"
+      }
+    },
+    "scenarios": {
+        "$comment": "List of Premise scenarios to generate prospective databases",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "pathway": {
+              "type": "string"
+            },
+            "year": {
+              "type": "number"
+            }
+          },
+          "required": ["model", "pathway", "year"]
+        }
+    }
+  },
+  "properties": {
+    "project": {
+      "type": "string"
+    },
+    "ecoinvent": {
+      "$comment": "Declaration of the background database ecoinvent",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "model"
+      ]
+    },
+    "premise" : {
+      "$comment": "Declaration of Premise parameters",
+      "type": "object",
+      "properties": {
+        "scenarios": {
+          "$ref": "#/definitions/scenarios"
+        },
+        "update": {
+          "type": [
+            "array",
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "scenarios"
+      ]
+    },
+    "model": {
+      "$ref": "#/definitions/model"
+    },
+    "methods": {
+      "type": [
+        "array",
+        "string",
+        "null"
+      ],
+      "default": null
+    },
+    "normalisation": {
+      "type": "boolean",
+      "default": true
+    },
+    "weighting": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project",
+    "ecoinvent",
+    "model"
+  ],
+  "additionalProperties": true
+}
+

@@ -97,6 +97,7 @@ class create_process(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
+        self.data["lca_outputs"] = pd.DataFrame()
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
 
@@ -212,6 +213,7 @@ class create_process(object):
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
             self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+            # TODO: add lca_outputs
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
@@ -304,7 +306,6 @@ class create_process(object):
                         [self.data["vector_outputs"], disc.model.df], axis=1
                     )
                 else:
-
                     self.data["vector_outputs"].update(disc.model.df)
             if hasattr(disc.model, "df_climate") and disc.model.df_climate.columns.size != 0:
                 if first_computation:
@@ -313,6 +314,13 @@ class create_process(object):
                     )
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
+            if hasattr(disc.model, "multi_df_lca") and disc.model.multi_df_lca.columns.size != 0:
+                if first_computation:
+                    self.data["lca_outputs"] = pd.concat(
+                        [self.data["lca_outputs"], disc.model.multi_df_lca], axis=1
+                    )
+                else:
+                    self.data["lca_outputs"].update(disc.model.multi_df_lca)
 
             self.data["float_outputs"].update(disc.model.float_outputs)
 
@@ -344,6 +352,10 @@ class create_process(object):
         self.climate_outputs_df = self.data["climate_outputs"]
         self.climate_outputs_df.sort_index(axis=1, inplace=True)
 
+        # Vector lca dataframe
+        self.lca_outputs_df = self.data["lca_outputs"]
+        self.lca_outputs_df.sort_index(axis=1, inplace=True)
+
         # Variable information
         self._read_data_information()
 
@@ -371,6 +383,11 @@ class create_process(object):
         # Climate outputs
         self.json["climate_outputs"] = convert_values_from_array_to_list(
             self.data["climate_outputs"].to_dict("list")
+        )
+
+        # LCA outputs
+        self.json["lca_outputs"] = convert_values_from_array_to_list(
+            self.data["lca_outputs"].to_dict("list")
         )
 
     def _read_data_information(self, file_name=None):

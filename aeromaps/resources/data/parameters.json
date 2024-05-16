@@ -464,7 +464,7 @@
     "amount_elec_h2_reference_years_values": [1.0, 2.0, 1.0, 1.0, 1.0],
     "amount_h2_reference_years": [2010, 2020, 2030, 2040, 2050],
     "amount_h2_reference_years_values": [1.0, 1.0, 2.0, 1.0, 1.0],
-    "electricity_switch_param_reference_years": [2010, 2020, 2030, 2040, 2050],
+    "electricity_switch_param_reference_years": [],
     "electricity_switch_param_reference_years_values": ["pv"],
     "energy_density_h2_reference_years": [2010, 2020, 2030, 2040, 2050],
     "energy_density_h2_reference_years_values": [1.0, 2.0, 1.0, 1.0, 1.0],
@@ -475,5 +475,9 @@
     "n_airports_reference_years": [2010, 2020, 2030, 2040, 2050],
     "n_airports_reference_years_values": [1.0, 2.0, 1.0, 1.0, 1.0],
     "total_energy_reference_years": [2010, 2020, 2030, 2040, 2050],
-    "total_energy_reference_years_values": [1.0, 2.0, 1.0, 1.0, 1.0]
+    "total_energy_reference_years_values": [1.0, 2.0, 1.0, 1.0, 1.0],
+    "model_reference_years": [],
+    "model_reference_years_values": ["remind"],
+    "pathway_reference_years": [],
+    "pathway_reference_years_values": ["SSP2_Base"]
 }
