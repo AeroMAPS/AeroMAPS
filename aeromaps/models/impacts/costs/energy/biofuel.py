@@ -9,6 +9,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 import timeit
 
+
 class BiofuelCost(AeroMAPSModel):
     def __init__(self, name="biofuel_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -123,7 +124,7 @@ class BiofuelCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        t0=timeit.default_timer()
+        t0 = timeit.default_timer()
         ### HEFA FOG
         # print('HEFOG')
         (
@@ -441,7 +442,7 @@ class BiofuelCost(AeroMAPSModel):
 
         self.df.loc[:, "biofuel_mean_carbon_tax_per_l"] = biofuel_mean_carbon_tax_per_l
 
-        print('Total BIO TIME:', timeit.default_timer()-t0)
+        print("Total BIO TIME:", timeit.default_timer() - t0)
         return (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
@@ -558,7 +559,6 @@ class BiofuelCost(AeroMAPSModel):
 
         indexes = demand_scenario.index
 
-
         # Additional plant capacity building needed (in ton/day output capacity) for a given year
         plant_building_scenario = pd.Series(np.zeros(len(indexes)), indexes)
         # Relative CAPEX cost to build the new facilities in M€2020
@@ -597,15 +597,12 @@ class BiofuelCost(AeroMAPSModel):
         exogenous_carbon_price_trajectory_array = exogenous_carbon_price_trajectory.values
         avoided_emission_factor_array = avoided_emission_factor.values
 
-
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
-            t1=timeit.default_timer()
             # Production missing in year n+1 must be supplied by plant built in year n
-
-            if (year + 1) <= self.end_year and biofuel_production[year - self.historic_start_year + 1] < demand_scenario[
-                year + 1
-            ]:
+            if (year + 1) <= self.end_year and biofuel_production[
+                year - self.historic_start_year + 1
+            ] < demand_scenario[year + 1]:
                 # Getting the production not matched by plants already commissioned
                 # by creating plants with actual year data technical data*
 
@@ -622,10 +619,12 @@ class BiofuelCost(AeroMAPSModel):
                     lhv_biofuel,
                     density_biofuel,
                 )
-                t2=timeit.default_timer()
 
                 # Getting the production not matched by plants already commissioned [MJ]
-                missing_production = demand_scenario[year + 1] - biofuel_production[year - self.historic_start_year + 1]
+                missing_production = (
+                    demand_scenario[year + 1]
+                    - biofuel_production[year - self.historic_start_year + 1]
+                )
 
                 # Converting the missing production to a capacity [in kg/day capacity], including availability of plant
                 missing_production_kg = missing_production / lhv_biofuel
@@ -654,12 +653,10 @@ class BiofuelCost(AeroMAPSModel):
                 generic_discounted_cumul_em = 0
 
 
-                t3 = timeit.default_timer()
-
-                biofuel_mfsp_slice = biofuel_mfsp[0:end_bound-year, :] / 1e6
-
+                biofuel_mfsp_slice = biofuel_mfsp[0 : end_bound - year, :]
                 # Vectorized operation
-                biofuel_cost = missing_production_litres * biofuel_mfsp_slice
+                # # €/L and production in litres => /1000000 for M€
+                biofuel_cost = missing_production_litres * biofuel_mfsp_slice / 1e6
 
                 biofuel_total_cost[future_years] += biofuel_cost[:, 0]
                 biofuel_capex_cost[future_years] += biofuel_cost[:, 1]
@@ -667,9 +664,9 @@ class BiofuelCost(AeroMAPSModel):
                 biofuel_feedstock_cost[future_years] += biofuel_cost[:, 3]
                 biofuel_production[future_years] += missing_production
 
-                t4 = timeit.default_timer()
 
-                # # €/L and production in litres => /1000000 for M€
+
+
                 # biofuel_cost = missing_production_litres * biofuel_mfsp.loc[range(year + 1, end_bound + 1), :] / 1e6
                 #
                 # biofuel_total_cost += biofuel_cost["TOTAL"]
@@ -679,41 +676,48 @@ class BiofuelCost(AeroMAPSModel):
                 #
                 # biofuel_production.loc[range(year + 1, end_bound + 1)] += missing_production
 
-
-                scc_0_year=exogenous_carbon_price_trajectory_array[year-self.historic_start_year]
+                scc_0_year = exogenous_carbon_price_trajectory_array[
+                    year - self.historic_start_year
+                ]
                 for i in range(year, year + int(plant_lifespan)):
-                    discount_factor =  (1 + social_discount_rate) ** (i - year)
+                    discount_factor = (1 + social_discount_rate) ** (i - year)
                     if i < (self.end_year + 1):
                         discounted_cumul_cost += (
-                            biofuel_mfsp[i-year,0] - kerosene_market_price_array[i-self.historic_start_year]
+                            biofuel_mfsp[i - year, 0]
+                            - kerosene_market_price_array[i - self.historic_start_year]
                         ) / discount_factor
 
-                        avoided_emission_year=avoided_emission_factor_array[i-self.historic_start_year] * (lhv_biofuel * density_biofuel) / 1000000
-                        cumul_em += (
-                            avoided_emission_year
+                        avoided_emission_year = (
+                            avoided_emission_factor_array[i - self.historic_start_year]
+                            * (lhv_biofuel * density_biofuel)
+                            / 1000000
                         )
+                        cumul_em += avoided_emission_year
                         # discounting emissions for non-hotelling scc
                         generic_discounted_cumul_em += (
                             avoided_emission_year
-                            * exogenous_carbon_price_trajectory_array[i-self.historic_start_year]
+                            * exogenous_carbon_price_trajectory_array[i - self.historic_start_year]
                             / scc_0_year
                             / discount_factor
                         )
 
                     else:
                         discounted_cumul_cost += (
-                            biofuel_mfsp[self.end_year-year,0]
-                            - kerosene_market_price_array[-1]
+                            biofuel_mfsp[self.end_year - year, 0] - kerosene_market_price_array[-1]
                         ) / discount_factor
 
-                        avoided_emission_year=avoided_emission_factor_array[-1] * (lhv_biofuel * density_biofuel) / 1000000
-                        cumul_em += (
-                            avoided_emission_year
+                        avoided_emission_year = (
+                            avoided_emission_factor_array[-1]
+                            * (lhv_biofuel * density_biofuel)
+                            / 1000000
                         )
+                        cumul_em += avoided_emission_year
                         # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
                         future_scc_growth = (
                             exogenous_carbon_price_trajectory_array[-1]
-                            / exogenous_carbon_price_trajectory_array[self.end_year-1-self.historic_start_year]
+                            / exogenous_carbon_price_trajectory_array[
+                                self.end_year - 1 - self.historic_start_year
+                            ]
                         )
 
                         generic_discounted_cumul_em += (
@@ -732,12 +736,11 @@ class BiofuelCost(AeroMAPSModel):
                 generic_specific_carbon_abatement_cost[year] = (
                     discounted_cumul_cost / generic_discounted_cumul_em
                 )
-                t5 = timeit.default_timer()
-
-                print(year, (t2-t1)/(t5-t1)*100,(t3-t2)/(t5-t1)*100,(t4 - t3)/(t5-t1)*100,(t5 - t4)/(t5-t1)*100, (t5-t1))
 
             elif (year == self.end_year) or (
-                biofuel_production[year - self.historic_start_year + 1] >= demand_scenario[year + 1] > 0
+                biofuel_production[year - self.historic_start_year + 1]
+                >= demand_scenario[year + 1]
+                > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
                 generic_specific_carbon_abatement_cost[
@@ -748,6 +751,8 @@ class BiofuelCost(AeroMAPSModel):
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
         # Stranded asset literature could be valuable to model this better.
         # Proportional production scaling
+
+        biofuel_production = pd.Series(biofuel_production, indexes)
 
         scaling_factor = demand_scenario / biofuel_production
 
@@ -826,7 +831,7 @@ class BiofuelCost(AeroMAPSModel):
         Overall plant conversion efficiency
         Biofuel MFSP returned in €/L
         """
-        biofuel_prices = {}
+        # biofuel_prices = {}
 
         # modification to base year not to use undefined technology costs => either base year or start of prospection year
         technology_year = max(base_year, self.prospection_start_year)
@@ -837,20 +842,32 @@ class BiofuelCost(AeroMAPSModel):
         var_op_cost_npv = 0
         biofuel_npv = 0
 
-        biofuel_eis_capex_year=biofuel_eis_capex[technology_year]
-        plant_eis_efficiency_year=plant_eis_efficiency[technology_year]
+        biofuel_eis_capex_year = biofuel_eis_capex[technology_year]
+        plant_eis_efficiency_year = plant_eis_efficiency[technology_year]
 
-        # Construction of the facility
-        for i in range(0, construction_time):
-            # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (
-                biofuel_eis_capex_year * density_biofuel / construction_time
-            ) / (1 + private_discount_rate) ** i
+        # # Construction of the facility
+        # for i in range(0, construction_time):
+        #     #
+        #     cap_cost_npv += (biofuel_eis_capex_year * density_biofuel / construction_time) / (
+        #         1 + private_discount_rate
+        #     ) ** i
+        #
+        # # Commissioning of the facility
+        # for i in range(construction_time, plant_lifespan + construction_time):
+        #     var_op_cost_npv += real_var_opex / (1 + private_discount_rate) ** i
+        #     biofuel_npv += real_year_days / (1 + private_discount_rate) ** i
 
-        # Commissioning of the facility
-        for i in range(construction_time, plant_lifespan + construction_time):
-            var_op_cost_npv += real_var_opex / (1 + private_discount_rate) ** i
-            biofuel_npv += real_year_days / (1 + private_discount_rate) ** i
+
+        # Calculate NPV for capital costs during construction.
+        # The construction is supposed to span over x years, with a uniform cost repartition
+        years_construction = np.arange(construction_time)
+        cap_cost_npv = np.sum((biofuel_eis_capex_year * density_biofuel / construction_time) / (
+                    1 + private_discount_rate) ** years_construction)
+
+        # Calculate NPV for variable operating costs and biofuel production
+        years_operation = np.arange(construction_time, plant_lifespan + construction_time)
+        var_op_cost_npv = np.sum(real_var_opex / (1 + private_discount_rate) ** years_operation)
+        biofuel_npv = np.sum(real_year_days / (1 + private_discount_rate) ** years_operation)
 
         cap_cost_lc = cap_cost_npv / biofuel_npv
         var_op_cost_lc = var_op_cost_npv / biofuel_npv
@@ -862,9 +879,9 @@ class BiofuelCost(AeroMAPSModel):
         num_years = end_bound + 1 - (base_year + construction_time)
         biofuel_prices_array = np.zeros((num_years, 4))
 
-        feedstock_costs=biomass_feedstock_cost.loc[base_year + construction_time:end_bound].values * ( lhv_biofuel
-                    * density_biofuel
-                    / plant_eis_efficiency_year)
+        feedstock_costs = biomass_feedstock_cost.loc[
+            base_year + construction_time : end_bound
+        ].values * (lhv_biofuel * density_biofuel / plant_eis_efficiency_year)
 
         biofuel_prices_array[:, 0] = cap_cost_lc + var_op_cost_lc + feedstock_costs  # TOTAL
         biofuel_prices_array[:, 1] = cap_cost_lc  # CAPEX
