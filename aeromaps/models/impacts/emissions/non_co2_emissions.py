@@ -1,11 +1,7 @@
 from typing import Tuple
 import pandas as pd
-from pandas import read_csv
-import os.path as pth
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.resources import climate_data
-
 
 class NOxEmissionIndex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index", *args, **kwargs):
@@ -329,12 +325,7 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 class NonCO2Emissions(AeroMAPSModel):
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        # Load dataset
-        historical_dataset_path = pth.join(
-            climate_data.__path__[0], "temperature_historical_dataset.csv"
-        )
-        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
-        self.historical_dataset = historical_dataset_df.values
+        self.climate_historical_data = None
 
     def compute(
         self,
@@ -366,10 +357,10 @@ class NonCO2Emissions(AeroMAPSModel):
         """Non-CO2 emissions calculation."""
 
         ## Initialization
-        historical_nox_emissions_for_temperature = self.historical_dataset[:, 2]
-        historical_h2o_emissions_for_temperature = self.historical_dataset[:, 3]
-        historical_soot_emissions_for_temperature = self.historical_dataset[:, 4]
-        historical_sulfur_emissions_for_temperature = self.historical_dataset[:, 5]
+        historical_nox_emissions_for_temperature = self.climate_historical_data[:, 2]
+        historical_h2o_emissions_for_temperature = self.climate_historical_data[:, 3]
+        historical_soot_emissions_for_temperature = self.climate_historical_data[:, 4]
+        historical_sulfur_emissions_for_temperature = self.climate_historical_data[:, 5]
 
         # Calculation
         for k in range(self.climate_historic_start_year, self.historic_start_year):

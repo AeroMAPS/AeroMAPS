@@ -36,6 +36,9 @@ default_config_path = os.path.join(current_dir, "config.json")
 # Construct the path to the parameters.json file
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
+# Construct the path to the climate data .csv file
+default_climate_historical_data_path = os.path.join(current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv")
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -62,6 +65,8 @@ class AeroMAPSProcess(object):
         self.json = {}
 
         self._initialize_years()
+
+        self._initialize_climate_historical_data()
 
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
@@ -205,6 +210,8 @@ class AeroMAPSProcess(object):
                     model._initialize_df()
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
+                    if hasattr(model, "climate_historical_data"):
+                        model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
                         model = AeroMAPSModelWrapper(model=model)
                         self.disciplines.append(model)
@@ -254,11 +261,19 @@ class AeroMAPSProcess(object):
             # If an alternative file is provided overwrite values
             if new_input_file_path != default_parameters_path:
                 self.parameters.read_json(file_name=new_input_file_path)
+        # TODO: think refactoring to a dedicated method
 
+    def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
-            pass
+            configuration_directory = os.path.dirname(self.configuration_file)
+            climate_historical_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_CLIMATE_DATA_FILE"]
+            )
         else:
-            pass
+            climate_historical_data_file_path = default_climate_historical_data_path
+
+        historical_dataset_df = pd.read_csv(climate_historical_data_file_path, delimiter=";", header=None)
+        self.climate_historical_data = historical_dataset_df.values
 
     def _set_inputs(self):
 
