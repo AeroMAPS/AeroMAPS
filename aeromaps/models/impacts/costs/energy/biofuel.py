@@ -664,18 +664,6 @@ class BiofuelCost(AeroMAPSModel):
                 biofuel_feedstock_cost[future_years] += biofuel_cost[:, 3]
                 biofuel_production[future_years] += missing_production
 
-
-
-
-                # biofuel_cost = missing_production_litres * biofuel_mfsp.loc[range(year + 1, end_bound + 1), :] / 1e6
-                #
-                # biofuel_total_cost += biofuel_cost["TOTAL"]
-                # biofuel_capex_cost += biofuel_cost["CAPEX"]
-                # biofuel_opex_cost += biofuel_cost["VAR_OPEX"]
-                # biofuel_feedstock_cost += biofuel_cost["FEEDSTOCK"]
-                #
-                # biofuel_production.loc[range(year + 1, end_bound + 1)] += missing_production
-
                 scc_0_year = exogenous_carbon_price_trajectory_array[
                     year - self.historic_start_year
                 ]
