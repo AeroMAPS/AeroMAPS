@@ -550,291 +550,138 @@ class FleetModel(AeroMAPSModel):
         for category in self.fleet.categories.values():
             # Reference aircraft information
             ref_old_aircraft_share = self.df[
-                category.name
-                + ":"
-                + category.subcategories[0].name
-                + ":"
-                + "old_reference:aircraft_share"
+                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
             ]
             ref_recent_aircraft_share = self.df[
-                category.name
-                + ":"
-                + category.subcategories[0].name
-                + ":"
-                + "recent_reference:aircraft_share"
+                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
             ]
 
+            # Use the first subcategory's recent reference aircraft emission indices
             recent_reference_aircraft_emission_index_nox = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_nox
+                0].recent_reference_aircraft.emission_index_nox
             recent_reference_aircraft_emission_index_soot = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_soot
+                0].recent_reference_aircraft.emission_index_soot
 
             for i, subcategory in category.subcategories.items():
-                # Initialization
+                subcategory_key = f"{category.name}:{subcategory.name}"
                 if i == 0:
-                    self.df[category.name + ":" + subcategory.name + ":emission_index_nox"] = (
-                        subcategory.old_reference_aircraft.emission_index_nox
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.emission_index_nox
-                        * ref_recent_aircraft_share
-                        / 100
+                    initial_nox = (
+                            subcategory.old_reference_aircraft.emission_index_nox * ref_old_aircraft_share / 100 +
+                            subcategory.recent_reference_aircraft.emission_index_nox * ref_recent_aircraft_share / 100
                     )
-                    self.df[category.name + ":" + subcategory.name + ":emission_index_soot"] = (
-                        subcategory.old_reference_aircraft.emission_index_soot
-                        * ref_old_aircraft_share
-                        / 100
-                        + subcategory.recent_reference_aircraft.emission_index_soot
-                        * ref_recent_aircraft_share
-                        / 100
+                    initial_soot = (
+                            subcategory.old_reference_aircraft.emission_index_soot * ref_old_aircraft_share / 100 +
+                            subcategory.recent_reference_aircraft.emission_index_soot * ref_recent_aircraft_share / 100
                     )
-                    # Initial emission index
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_nox"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:hydrogen"
-                    ] = 0.0
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:electric"
-                    ] = 0.0
-                    self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":emission_index_nox:hybrid_electric"
-                    ] = 0.0
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_soot"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:hydrogen"
-                    ] = 0.0
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:electric"
-                    ] = 0.0
-                    self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":emission_index_soot:hybrid_electric"
-                    ] = 0.0
-
                 else:
-                    self.df[category.name + ":" + subcategory.name + ":emission_index_nox"] = 0.0
-                    self.df[category.name + ":" + subcategory.name + ":emission_index_soot"] = 0.0
-                    # Initial emission index
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_nox"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:hydrogen"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_nox"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_nox:electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_nox"]
-                    self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":emission_index_nox:hybrid_electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_nox"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:dropin_fuel"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_soot"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:hydrogen"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_soot"]
-                    self.df[
-                        category.name + ":" + subcategory.name + ":emission_index_soot:electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_soot"]
-                    self.df[
-                        category.name
-                        + ":"
-                        + subcategory.name
-                        + ":emission_index_soot:hybrid_electric"
-                    ] = self.df[category.name + ":" + subcategory.name + ":emission_index_soot"]
+                    initial_nox = np.zeros_like(ref_old_aircraft_share)
+                    initial_soot = np.zeros_like(ref_old_aircraft_share)
+
+                # Initialize emission index columns
+                self.df[f"{subcategory_key}:emission_index_nox"] = initial_nox
+                self.df[f"{subcategory_key}:emission_index_soot"] = initial_soot
+                self.df[f"{subcategory_key}:emission_index_nox:dropin_fuel"] = initial_nox.copy()
+                self.df[f"{subcategory_key}:emission_index_nox:hydrogen"] = np.zeros_like(ref_old_aircraft_share)
+                self.df[f"{subcategory_key}:emission_index_nox:electric"] = np.zeros_like(ref_old_aircraft_share)
+                self.df[f"{subcategory_key}:emission_index_nox:hybrid_electric"] = np.zeros_like(ref_old_aircraft_share)
+                self.df[f"{subcategory_key}:emission_index_soot:dropin_fuel"] = initial_soot.copy()
+                self.df[f"{subcategory_key}:emission_index_soot:hydrogen"] = np.zeros_like(ref_old_aircraft_share)
+                self.df[f"{subcategory_key}:emission_index_soot:electric"] = np.zeros_like(ref_old_aircraft_share)
+                self.df[f"{subcategory_key}:emission_index_soot:hybrid_electric"] = np.zeros_like(
+                    ref_old_aircraft_share)
 
                 for aircraft in subcategory.aircraft.values():
+                    aircraft_share_key = f"{subcategory_key}:{aircraft.name}:aircraft_share"
+                    if aircraft_share_key in self.df.columns:
+                        for idx in self.df.index:
+                            aircraft_share = self.df.at[idx, aircraft_share_key]
+                            if aircraft_share != 0.0:
+                                evolution_nox = 1 + float(aircraft.parameters.nox_evolution) / 100
+                                evolution_soot = 1 + float(aircraft.parameters.soot_evolution) / 100
 
-                    for k in self.df.index:
-
-                        if (
-                            self.df.loc[
-                                k,
-                                category.name
-                                + ":"
-                                + subcategory.name
-                                + ":"
-                                + aircraft.name
-                                + ":aircraft_share",
-                            ]
-                            != 0.0
-                        ):
-
-                            self.df.loc[
-                                k, category.name + ":" + subcategory.name + ":emission_index_nox"
-                            ] += (
-                                recent_reference_aircraft_emission_index_nox
-                                * (1 + float(aircraft.parameters.nox_evolution) / 100)
-                                * self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
-                                / 100
-                            )
-
-                            self.df.loc[
-                                k, category.name + ":" + subcategory.name + ":emission_index_soot"
-                            ] += (
-                                recent_reference_aircraft_emission_index_soot
-                                * (1 + float(aircraft.parameters.soot_evolution) / 100)
-                                * self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":"
-                                    + aircraft.name
-                                    + ":aircraft_share",
-                                ]
-                                / 100
-                            )
-
-                            if aircraft.energy_type == "DROP_IN_FUEL":
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_nox:dropin_fuel",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * (1 + float(aircraft.parameters.nox_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
+                                self.df.at[idx, f"{subcategory_key}:emission_index_nox"] += (
+                                        recent_reference_aircraft_emission_index_nox * evolution_nox * aircraft_share / 100
                                 )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_soot:dropin_fuel",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_soot
-                                    * (1 + float(aircraft.parameters.soot_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
+                                self.df.at[idx, f"{subcategory_key}:emission_index_soot"] += (
+                                        recent_reference_aircraft_emission_index_soot * evolution_soot * aircraft_share / 100
                                 )
 
-                            if aircraft.energy_type == "HYDROGEN":
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_nox:hydrogen",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * (1 + float(aircraft.parameters.nox_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+                                if aircraft.energy_type == "DROP_IN_FUEL":
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_nox:dropin_fuel"] += (
+                                            recent_reference_aircraft_emission_index_nox * evolution_nox * aircraft_share / 100
+                                    )
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_soot:dropin_fuel"] += (
+                                            recent_reference_aircraft_emission_index_soot * evolution_soot * aircraft_share / 100
+                                    )
+                                elif aircraft.energy_type == "HYDROGEN":
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_nox:hydrogen"] += (
+                                            recent_reference_aircraft_emission_index_nox * evolution_nox * aircraft_share / 100
+                                    )
+                                elif aircraft.energy_type == "ELECTRIC":
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_nox:electric"] += (
+                                            recent_reference_aircraft_emission_index_nox * evolution_nox * aircraft_share / 100
+                                    )
+                                elif aircraft.energy_type == "HYBRID_ELECTRIC":
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_nox:hybrid_electric"] += (
+                                            recent_reference_aircraft_emission_index_nox * evolution_nox * aircraft_share / 100
+                                    )
+                                    self.df.at[idx, f"{subcategory_key}:emission_index_soot:hybrid_electric"] += (
+                                            recent_reference_aircraft_emission_index_soot * evolution_soot * aircraft_share / 100
+                                    )
 
-                            if aircraft.energy_type == "ELECTRIC":
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_nox:electric",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * (1 + float(aircraft.parameters.nox_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+            # Aggregating results for each category
+            temp_dict = {key: np.zeros_like(self.df.index, dtype=float) for key in [
+                f"{category.name}:emission_index_nox",
+                f"{category.name}:emission_index_soot",
+                f"{category.name}:emission_index_nox:dropin_fuel",
+                f"{category.name}:emission_index_nox:hydrogen",
+                f"{category.name}:emission_index_nox:electric",
+                f"{category.name}:emission_index_nox:hybrid_electric",
+                f"{category.name}:emission_index_soot:dropin_fuel",
+                f"{category.name}:emission_index_soot:hydrogen",
+                f"{category.name}:emission_index_soot:electric",
+                f"{category.name}:emission_index_soot:hybrid_electric"
+            ]}
 
-                            if aircraft.energy_type == "HYBRID_ELECTRIC":
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_nox:hybrid_electric",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * (1 + float(aircraft.parameters.nox_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
-                                self.df.loc[
-                                    k,
-                                    category.name
-                                    + ":"
-                                    + subcategory.name
-                                    + ":emission_index_soot:hybrid_electric",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_soot
-                                    * (1 + float(aircraft.parameters.soot_evolution) / 100)
-                                    * self.df.loc[
-                                        k,
-                                        category.name
-                                        + ":"
-                                        + subcategory.name
-                                        + ":"
-                                        + aircraft.name
-                                        + ":aircraft_share",
-                                    ]
-                                    / 100
-                                )
+            for subcategory in category.subcategories.values():
+                subcategory_key = f"{category.name}:{subcategory.name}"
+                for idx in self.df.index:
+                    for emission_type in ["nox", "soot"]:
+                        for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
+                            key = f"{subcategory_key}:emission_index_{emission_type}:{energy_type}"
+                            if key in self.df.columns:
+                                temp_dict[f"{category.name}:emission_index_{emission_type}:{energy_type}"][
+                                    self.df.index.get_loc(idx)] += self.df.at[idx, key]
+
+            # Final aggregation
+            for idx in self.df.index:
+                dropin_fuel_share = self.df.at[idx, f"{category.name}:share:dropin_fuel"]
+                hydrogen_share = self.df.at[idx, f"{category.name}:share:hydrogen"]
+                electric_share = self.df.at[idx, f"{category.name}:share:electric"]
+                hybrid_electric_share = self.df.at[idx, f"{category.name}:share:hybrid_electric"]
+
+                total_share = dropin_fuel_share + hydrogen_share + electric_share + hybrid_electric_share
+                if total_share > 0:
+                    self.df.at[idx, f"{category.name}:emission_index_nox"] = (
+                            temp_dict[f"{category.name}:emission_index_nox:dropin_fuel"][self.df.index.get_loc(idx)] * (
+                                dropin_fuel_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_nox:hydrogen"][self.df.index.get_loc(idx)] * (
+                                        hydrogen_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_nox:electric"][self.df.index.get_loc(idx)] * (
+                                        electric_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_nox:hybrid_electric"][
+                                self.df.index.get_loc(idx)] * (hybrid_electric_share / 100)
+                    )
+                    self.df.at[idx, f"{category.name}:emission_index_soot"] = (
+                            temp_dict[f"{category.name}:emission_index_soot:dropin_fuel"][
+                                self.df.index.get_loc(idx)] * (dropin_fuel_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_soot:hydrogen"][self.df.index.get_loc(idx)] * (
+                                        hydrogen_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_soot:electric"][self.df.index.get_loc(idx)] * (
+                                        electric_share / 100)
+                            + temp_dict[f"{category.name}:emission_index_soot:hybrid_electric"][
+                                self.df.index.get_loc(idx)] * (hybrid_electric_share / 100)
+                    )
 
     def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
         for category in self.fleet.categories.values():
