@@ -266,7 +266,7 @@ class ElectrofuelCost(AeroMAPSModel):
                 )  # capacity to build in kg/day production, taking into account load_factor
 
                 electrolyser_capex_year = (
-                        electrofuel_capacity_to_build * electrofuel_eis_capex[year] / 1000000
+                    electrofuel_capacity_to_build * electrofuel_eis_capex[year] / 1000000
                 )  # electrolyzer capex is in €/kg/day => M€
                 plant_building_scenario[year] = electrofuel_capacity_to_build  # in ton/day capacity
 
@@ -287,13 +287,13 @@ class ElectrofuelCost(AeroMAPSModel):
                 electrofuel_mfsp_slice =   electrofuel_mfsp[0: end_bound - year, :]
                 # Vectorized operation
                 # # €/L and production in litres => /1000000 for M€
-                electrofuel_cost = missing_production_litres * electrofuel_mfsp_slice / 1e6
+                electrofuel_cost = missing_production_litres * electrofuel_mfsp_slice / 1000000
 
                 electrofuel_total_cost[future_years] += electrofuel_cost[:, 0]
                 electrofuel_capex_cost[future_years] += electrofuel_cost[:, 1]
-                electrofuel_opex_cost[future_years] += electrofuel_cost[:, 2]
-                electrofuel_elec_cost[future_years] += electrofuel_cost[:, 3]
-                electrofuel_co2_cost[future_years] += electrofuel_cost[:, 4]
+                electrofuel_opex_cost[future_years] += electrofuel_cost[:, 2] +electrofuel_cost[:, 3]
+                electrofuel_elec_cost[future_years] += electrofuel_cost[:, 4]
+                electrofuel_co2_cost[future_years] += electrofuel_cost[:, 5]
                 electrofuel_production[future_years] += missing_production
 
                 scc_0_year = exogenous_carbon_price_trajectory_array[

@@ -2,8 +2,7 @@
 # @Author : a.salgas
 # @File : liquid_hydrogen.py
 # @Software: PyCharm
-
-
+import timeit
 from typing import Tuple, Union, Any
 
 import numpy as np
@@ -151,7 +150,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         pd.Series,
     ]:
         ######## HYDROGEN PRODUCTION ########
-
+        t0 = timeit.default_timer()
         #### ELECTROLYSIS ####
         (
             electrolysis_plant_building_scenario,
@@ -939,7 +938,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         self.df.loc[
             :, "coal_h2_generic_specific_abatement_cost"
         ] = coal_h2_generic_specific_abatement_cost
-
+        print("Total H TIME:", timeit.default_timer() - t0)
         return (
             electrolysis_plant_building_scenario,
             electrolysis_plant_building_cost,
@@ -1061,25 +1060,29 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Relative CAPEX cost to build the new facilities in M€2020
         plant_building_cost = pd.Series(np.zeros(len(indexes)), indexes)
         # Annual production in tons
-        hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
+        # hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
+        hydrogen_production = np.zeros(len(indexes))
 
         specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
-        h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_opex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_elec_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # h2_opex_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # h2_elec_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        h2_total_cost = np.zeros(len(indexes))
+        h2_capex_cost = np.zeros(len(indexes))
+        h2_opex_cost = np.zeros(len(indexes))
+        h2_elec_cost = np.zeros(len(indexes))
+
 
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant build in year n
-            if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[
-                year + 1
-            ]:
+            if(year + 1) <= self.end_year and hydrogen_production[year + 1 - self.historic_start_year] < demand_scenario[year + 1]:
 
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
-                hydrogen_cost = self._compute_electrolyser_year_lcoh(
+                hydrogen_mfsp = self._compute_electrolyser_year_lcoh(
                     int(construction_time),
                     int(plant_lifespan),
                     year - construction_time,
@@ -1094,7 +1097,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )
 
                 # Getting the production not matched by plants already commissioned
-                missing_production = demand_scenario[year + 1] - hydrogen_production[year + 1]
+                missing_production = demand_scenario[year + 1] - hydrogen_production[year + 1 - self.historic_start_year]
 
                 # Converting the missing production to a capacity (in t/day)
                 electrolyser_capacity_to_build = (
@@ -1118,39 +1121,32 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
 
                 discounted_cumul_cost = 0
-                # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
-                    h2_total_cost[i] = (
-                        h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
-                    )  # €/kg and production in tons => /1000 for M€
-                    h2_capex_cost[i] = (
-                        h2_capex_cost[i] + (missing_production * hydrogen_cost[i]["CAPEX"]) / 1000
-                    )  # M€
-                    h2_opex_cost[i] = (
-                        h2_opex_cost[i]
-                        + (missing_production * hydrogen_cost[i]["FIX_OPEX"]) / 1000
-                        + (missing_production * hydrogen_cost[i]["VAR_OPEX"]) / 1000
-                    )  # M€
-                    h2_elec_cost[i] = (
-                        h2_elec_cost[i]
-                        + (missing_production * hydrogen_cost[i]["ELECTRICITY"]) / 1000
-                    )  # M€
-                    hydrogen_production[i] = hydrogen_production[i] + missing_production
+
+                future_years = np.arange(year + 1, end_bound + 1) - self.historic_start_year
+
+                hydrogen_cost_slice = hydrogen_mfsp[0: end_bound - year, :]
+
+                # Vectorized operation for cost calculation
+                h2_cost = missing_production * hydrogen_cost_slice / 1000  # €/kg and production in tons =&gt; /1000 for M€
+
+                h2_total_cost[future_years] += h2_cost[:, 0]
+                h2_capex_cost[future_years] += h2_cost[:, 1]
+                h2_opex_cost[future_years] += h2_cost[:, 2] + h2_cost[:, 3]
+                h2_elec_cost[future_years] += h2_cost[:, 4]
+                hydrogen_production[future_years] += missing_production
+
 
                 for i in range(year, year + int(plant_lifespan)):
+                    discount_factor = (1 + social_discount_rate) ** (i - year)
                     if i < (self.end_year + 1):
-                        discounted_cumul_cost += (hydrogen_cost[i]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += hydrogen_mfsp[i - year, 0] / discount_factor
                     else:
-                        discounted_cumul_cost += (hydrogen_cost[self.end_year]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += hydrogen_mfsp[self.end_year - year, 0] / discount_factor
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
             elif (year == self.end_year) or (
-                hydrogen_production[year + 1] >= demand_scenario[year + 1] > 0
+                hydrogen_production[year - self.historic_start_year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
 
@@ -1159,7 +1155,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Stranded asset literature could be valuable to model this better.
         # Proportional production scaling
 
+        h2_total_cost = pd.Series(h2_total_cost, indexes)
+
         scaling_factor = demand_scenario / hydrogen_production
+
 
         if not all(scaling_factor.isna()):
             h2_total_cost = h2_total_cost * scaling_factor
@@ -1208,42 +1207,32 @@ class LiquidHydrogenCost(AeroMAPSModel):
         Hydrogen price returned in €/kg
         """
 
-        hydrogen_prices = {}
-
-        # modification to base year not to use undefined technology costs => either base year or start of prospection year
         technology_year = max(base_year, self.prospection_start_year)
-
-        hydrogen_specific_energy = lhv_hydrogen / 3.6  # convert MJ per kg in kWh/kg
-
-        # compute plant specific energy #kWh energy/kg h2
-        # Average efficiency evolves with scenario, used for consistency but potentially introduces errors.
-        # Plants comissioned in year n are likely to stay with a frozen EIS efficiency.
-        electrolyser_specific_electricity = hydrogen_specific_energy / plant_efficiency
-
         load_fact = min(0.95, electricity_load_factor[technology_year])
         real_year_days = 365.25 * load_fact
         real_var_opex = electrolyser_var_opex[technology_year] * real_year_days
 
-        cap_cost_npv = 0
-        fix_op_cost_npv = 0
-        var_op_cost_npv = 0
-        hydrogen_npv = 0
+        hydrogen_specific_energy = lhv_hydrogen / 3.6  # convert MJ/kg to kWh/kg
+        electrolyser_specific_electricity = hydrogen_specific_energy / plant_efficiency[technology_year]
 
-        # Construction
-        for i in range(0, construction_time):
-            # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (electrolyser_capex[technology_year] / construction_time) / (
-                1 + private_discount_rate
-            ) ** (i)
+        years_construction = np.arange(construction_time)
+        years_operation = np.arange(construction_time, plant_lifespan + construction_time)
 
-        # commissioning
-        for i in range(construction_time, plant_lifespan + construction_time):
-            fix_op_cost_npv += electrolyser_fixed_opex[technology_year] / (
-                1 + private_discount_rate
-            ) ** (i)
-            var_op_cost_npv += real_var_opex / (1 + private_discount_rate) ** (i)
-            hydrogen_npv += real_year_days / (1 + private_discount_rate) ** (i)
+        # Calculate NPV for capital costs during construction.
+        cap_cost_npv = np.sum(
+            (electrolyser_capex[technology_year] / construction_time) /
+            (1 + private_discount_rate) ** years_construction
+        )
 
+        # Calculate NPV for fixed and variable operating costs, and hydrogen production during operation.
+        fix_op_cost_npv = np.sum(
+            electrolyser_fixed_opex[technology_year] /
+            (1 + private_discount_rate) ** years_operation
+        )
+        var_op_cost_npv = np.sum(real_var_opex / (1 + private_discount_rate) ** years_operation)
+        hydrogen_npv = np.sum(real_year_days / (1 + private_discount_rate) ** years_operation)
+
+        # Calculate the levelized costs.
         cap_cost_lc = cap_cost_npv / hydrogen_npv
         fix_op_cost_lc = fix_op_cost_npv / hydrogen_npv
         var_op_cost_lc = var_op_cost_npv / hydrogen_npv
@@ -1252,17 +1241,21 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
-            elec_price = electricity_market_price[year]
-            elec_cost = elec_price * electrolyser_specific_electricity[technology_year]
-            hydrogen_prices[year] = {
-                "TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + elec_cost,
-                "CAPEX": cap_cost_lc,
-                "FIX_OPEX": fix_op_cost_lc,
-                "VAR_OPEX": var_op_cost_lc,
-                "ELECTRICITY": elec_cost,
-            }
-        return hydrogen_prices
+        num_years = end_bound + 1 - (base_year + construction_time)
+        hydrogen_prices_array = np.zeros((num_years, 5))
+
+        # Electricity cost for each year
+        elec_prices = electricity_market_price.loc[
+                      base_year + construction_time:end_bound
+                      ].values * electrolyser_specific_electricity
+
+        # Total hydrogen prices for each year
+        hydrogen_prices_array[:, 0] = cap_cost_lc + fix_op_cost_lc + var_op_cost_lc + elec_prices
+        hydrogen_prices_array[:, 1] = cap_cost_lc  # CAPEX
+        hydrogen_prices_array[:, 2] = fix_op_cost_lc  # FIX_OPEX
+        hydrogen_prices_array[:, 3] = var_op_cost_lc  # VAR_OPEX
+        hydrogen_prices_array[:, 4] = elec_prices  # ELECTRICITY
+        return hydrogen_prices_array
 
     def _fossil_computation(
         self,
@@ -1301,7 +1294,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         # Convert hydrogen demand from MJ to tons.
         demand_scenario = energy_consumption_hydrogen / lhv_hydrogen / 1000 * pathway_share / 100
-        plant_life = 25
 
         # Catching the indexes from the demand scenario
         indexes = demand_scenario.index
@@ -1311,26 +1303,24 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Relative CAPEX cost to build the new facilities in M€2020
         plant_building_cost = pd.Series(np.zeros(len(indexes)), indexes)
         # Annual production in tons
-        hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
+        hydrogen_production = np.zeros(len(indexes))
 
         specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
-        h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_opex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_fuel_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_ccs_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        h2_total_cost = np.zeros(len(indexes))
+        h2_capex_cost = np.zeros(len(indexes))
+        h2_opex_cost = np.zeros(len(indexes))
+        h2_fuel_cost = np.zeros(len(indexes))
+        h2_ccs_cost = np.zeros(len(indexes))
 
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant build in year n
-            if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[
-                year + 1
-            ]:
+            if (year + 1) <= self.end_year and hydrogen_production[year + 1 - self.historic_start_year] < demand_scenario[year + 1]:
 
-                # Getting the production not matched by plants already commissioned by creating an plant with EIS year technical data
-                hydrogen_cost = self._compute_fossil_year_lcoh(
+                # Getting the production not matched by plants already commissioned by creating a plant with EIS year technical data
+                hydrogen_mfsp = self._compute_fossil_year_lcoh(
                     int(construction_time),
                     int(plant_lifespan),
                     year - construction_time,
@@ -1341,68 +1331,58 @@ class LiquidHydrogenCost(AeroMAPSModel):
                     plant_load_factor,
                     plant_eis_capex,
                     plant_eis_fixed_opex,
-                    # plant_eis_var_opex,
                     plant_efficiency,
                     private_discount_rate,
                     lhv_hydrogen,
                 )
 
                 # Getting the production not matched by plants already commissioned
-                missing_production = demand_scenario[year + 1] - hydrogen_production[year + 1]
+                missing_production = demand_scenario[year + 1] - hydrogen_production[
+                    year + 1 - self.historic_start_year]
 
                 # Converting the missing production to a capacity (in t/day)
                 plant_capacity_to_build = (
-                    missing_production / 365.25 / plant_load_factor
+                        missing_production / 365.25 / plant_load_factor
                 )  # capacity to build in t/day production, taking into account load_factor
 
-                plant_capex_year = plant_capacity_to_build * plant_eis_capex[year] / 1000
-                # plant capex is in €/kg/day or m€/ton/day ==> M€/ton/day
+                plant_capex_year = plant_capacity_to_build * plant_eis_capex[
+                    year] / 1000  # plant capex is in €/kg/day or m€/ton/day ==&gt; M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
                     plant_building_cost[construction_year] += plant_capex_year / construction_time
-                plant_building_scenario[year] = plant_capacity_to_build
-                # in ton/day capacity
+
+                plant_building_scenario[year] = plant_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;
-                end_bound = min(list(demand_scenario.index)[-1], year + plant_life)
+                end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
 
-                discounted_cumul_cost = 0
-                # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
-                    h2_total_cost[i] = (
-                        h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
-                    )  # €/kg and production in tons => /1000 for M€
-                    h2_capex_cost[i] = (
-                        h2_capex_cost[i] + (missing_production * hydrogen_cost[i]["CAPEX"]) / 1000
-                    )  # M€
-                    h2_opex_cost[i] = (
-                        h2_opex_cost[i]
-                        + (missing_production * hydrogen_cost[i]["FIX_OPEX"]) / 1000
-                        + (missing_production * hydrogen_cost[i]["VAR_OPEX"]) / 1000
-                    )  # M€
-                    h2_fuel_cost[i] = (
-                        h2_fuel_cost[i] + (missing_production * hydrogen_cost[i]["FUEL"]) / 1000
-                    )  # M€
-                    h2_ccs_cost[i] = (
-                        h2_ccs_cost[i] + (missing_production * hydrogen_cost[i]["CCS"]) / 1000
-                    )  # M€
+                future_years = np.arange(year + 1, end_bound + 1) - self.historic_start_year
 
-                    hydrogen_production[i] = hydrogen_production[i] + missing_production
+                hydrogen_cost_slice = hydrogen_mfsp[0: end_bound - year, :]
+
+                # Vectorized operation for cost calculation
+                h2_cost = missing_production * hydrogen_cost_slice / 1000  # €/kg and production in tons =&gt; /1000 for M€
+
+                h2_total_cost[future_years] += h2_cost[:, 0]
+                h2_capex_cost[future_years] += h2_cost[:, 1]
+                h2_opex_cost[future_years] += h2_cost[:, 2] + h2_cost[:, 3]
+                h2_fuel_cost[future_years] += h2_cost[:, 4]
+                h2_ccs_cost[future_years] += h2_cost[:, 5]
+                hydrogen_production[future_years] += missing_production
+
+                discounted_cumul_cost=0
 
                 for i in range(year, year + int(plant_lifespan)):
+                    discount_factor = (1 + social_discount_rate) ** (i - year)
                     if i < (self.end_year + 1):
-                        discounted_cumul_cost += (hydrogen_cost[i]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += hydrogen_mfsp[i - year, 0] / discount_factor
                     else:
-                        discounted_cumul_cost += (hydrogen_cost[self.end_year]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += hydrogen_mfsp[self.end_year - year, 0] / discount_factor
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
             elif (year == self.end_year) or (
-                hydrogen_production[year + 1] >= demand_scenario[year + 1] > 0
+                hydrogen_production[year - self.historic_start_year + 1]>= demand_scenario[year + 1] > 0
             ):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
 
@@ -1412,6 +1392,8 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / hydrogen_production
+
+        h2_total_cost=pd.Series(h2_total_cost, indexes)
 
         if not all(scaling_factor.isna()):
             h2_total_cost = h2_total_cost * scaling_factor
@@ -1468,68 +1450,73 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         Hydrogen price returned in €/kg
         """
-        # modification to base year not to use undefined technology costs => either base year or start of prospection year
+        # modification to base year not to use undefined technology costs =&gt; either base year or start of prospection year
         technology_year = max(base_year, self.prospection_start_year)
 
         hydrogen_specific_energy = lhv_hydrogen / 3.6  # kWh/kg
         # compute plant specific energy #kWh energy/kg h2
-        plant_specific_energy = hydrogen_specific_energy / plant_efficiency
+        plant_specific_energy = hydrogen_specific_energy / plant_efficiency[technology_year]
 
         emission_factor_kg = emission_factor * hydrogen_specific_energy * 3.6 / 1000
-        emission_factor_without_ccs_kg = (
-            emission_factor_without_ccs * hydrogen_specific_energy * 3.6 / 1000
-        )
+        emission_factor_without_ccs_kg = emission_factor_without_ccs * hydrogen_specific_energy * 3.6 / 1000
 
         # compute the carbon captured per kg h2
         carbon_captured_kg = emission_factor_without_ccs_kg - emission_factor_kg
-
-        hydrogen_prices = {}
 
         load_fact = plant_load_factor
         real_year_days = 365.25 * load_fact
         real_var_opex = 0  # plant_var_opex[base_year] * real_year_days
 
-        cap_cost_npv = 0
-        fix_op_cost_npv = 0
-        var_op_cost_npv = 0
-        hydrogen_npv = 0
+        years_construction = np.arange(construction_time)
+        years_operation = np.arange(construction_time, plant_lifespan + construction_time)
 
-        # Construction
-        for i in range(0, construction_time):
-            # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (plant_capex[technology_year] / construction_time) / (
-                1 + private_discount_rate
-            ) ** (i)
+        # Calculate NPV for capital costs during construction.
+        cap_cost_npv = np.sum(
+            (plant_capex[technology_year] / construction_time) /
+            (1 + private_discount_rate) ** years_construction
+        )
 
-        # commissioning
-        for i in range(construction_time, plant_lifespan + construction_time):
-            fix_op_cost_npv += plant_fixed_opex[technology_year] / (1 + private_discount_rate) ** (
-                i
-            )
-            var_op_cost_npv += real_var_opex / (1 + private_discount_rate) ** (i)
-            hydrogen_npv += real_year_days / (1 + private_discount_rate) ** (i)
+        # Calculate NPV for fixed operating costs and hydrogen production during operation.
+        fix_op_cost_npv = np.sum(
+            plant_fixed_opex[technology_year] /
+            (1 + private_discount_rate) ** years_operation
+        )
+        hydrogen_npv = np.sum(real_year_days / (1 + private_discount_rate) ** years_operation)
+        var_op_cost_npv = np.sum(real_var_opex / (1 + private_discount_rate) ** years_operation)
 
+        # Calculate the levelized costs.
         cap_cost_lc = cap_cost_npv / hydrogen_npv
         fix_op_cost_lc = fix_op_cost_npv / hydrogen_npv
-        var_op_cost_lc = var_op_cost_npv / hydrogen_npv
+        var_op_cost_lc= var_op_cost_npv / hydrogen_npv
 
         end_bound = min(
             max(fuel_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
-            fuel_price = fuel_market_price[year]
-            fuel_cost = fuel_price * plant_specific_energy[technology_year]
-            co2_ccs_cost = ccs_cost[year] * carbon_captured_kg[year]
-            hydrogen_prices[year] = {
-                "TOTAL": cap_cost_lc + var_op_cost_lc + fix_op_cost_lc + fuel_cost,
-                "CAPEX": cap_cost_lc,
-                "FIX_OPEX": fix_op_cost_lc,
-                "VAR_OPEX": var_op_cost_lc,
-                "FUEL": fuel_cost,
-                "CCS": co2_ccs_cost,
-            }
-        return hydrogen_prices
+        num_years = end_bound + 1 - (base_year + construction_time)
+        hydrogen_prices_array = np.zeros((num_years, 6))
+
+        # Fuel cost for each year
+        fuel_prices = fuel_market_price.loc[
+                      base_year + construction_time:end_bound
+                      ].values * plant_specific_energy
+
+        # CCS cost for each year
+        co2_ccs_costs = ccs_cost.loc[
+                        base_year + construction_time:end_bound
+                        ].values * carbon_captured_kg.loc[
+                        base_year + construction_time:end_bound
+                        ].values
+
+        # Total hydrogen prices for each year
+        hydrogen_prices_array[:, 0] = cap_cost_lc + fix_op_cost_lc + fuel_prices + co2_ccs_costs
+        hydrogen_prices_array[:, 1] = cap_cost_lc  # CAPEX
+        hydrogen_prices_array[:, 2] = fix_op_cost_lc  # FIX_OPEX
+        hydrogen_prices_array[:, 3] = var_op_cost_lc  # FIX_OPEX
+        hydrogen_prices_array[:, 4] = fuel_prices  # FUEL
+        hydrogen_prices_array[:, 5] = co2_ccs_costs  # CCS
+
+        return hydrogen_prices_array
 
     def _liquefaction_computation(
         self,
@@ -1546,6 +1533,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         construction_time = 3
 
+        # Convert hydrogen demand from MJ to tons.
         demand_scenario = energy_consumption_hydrogen / lhv_hydrogen / 1000
 
         plant_load_factor = 0.95
@@ -1558,24 +1546,22 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Relative CAPEX cost to build the new facilities in M€2020
         plant_building_cost = pd.Series(np.zeros(len(indexes)), indexes)
         # Annual production in tons
-        hydrogen_production = pd.Series(np.zeros(len(indexes)), indexes)
+        hydrogen_production = np.zeros(len(indexes))
 
         specific_discounted_cost = pd.Series(np.nan, indexes)
 
         # Annual cost and cost components of hydrogen production in M€
-        h2_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_capex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_opex_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        h2_elec_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        h2_total_cost = np.zeros(len(indexes))
+        h2_capex_cost = np.zeros(len(indexes))
+        h2_opex_cost = np.zeros(len(indexes))
+        h2_elec_cost = np.zeros(len(indexes))
 
         # For each year of the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
             # Production missing in year n+1 must be supplied by plant build in year n
-            if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[
-                year + 1
-            ]:
-                # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
+            if (year + 1)<= self.end_year and hydrogen_production[year + 1 - self.historic_start_year] < demand_scenario[year + 1]:
 
+                # Getting the production not matched by plants already commissioned by creating a liquefier with year data technical data
                 liquefaction_cost = self._compute_liquefier_year_lcoh(
                     int(construction_time),
                     int(plant_lifespan),
@@ -1588,62 +1574,50 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )
 
                 # Getting the production not matched by plants already commissioned
-                missing_production = demand_scenario[year + 1] - hydrogen_production[year + 1]
+                missing_production = demand_scenario[year + 1] - hydrogen_production[
+                    year + 1 - self.historic_start_year]
 
                 # Converting the missing production to a capacity (in t/day)
                 liquefier_capacity_to_build = missing_production / 365.25 / plant_load_factor
                 # capacity to build in t/day production, taking into account plant load_factor
-                # However, considering electricity load factor is not relevant if we assume a GH2 buffer.
 
-                liquefier_capex_year = (
-                    liquefier_capacity_to_build * liquefier_eis_capex[year] / 1000
-                )  # liquefier capex is in €/kg/day or m€/ton/day ==> M€/ton/day
+                liquefier_capex_year = liquefier_capacity_to_build * liquefier_eis_capex[
+                    year] / 1000  # liquefier capex is in €/kg/day or m€/ton/day ==&gt; M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        liquefier_capex_year / construction_time
-                    )
+                    plant_building_cost[construction_year] += liquefier_capex_year / construction_time
+
                 plant_building_scenario[year] = liquefier_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
 
+                future_years = np.arange(year + 1, end_bound + 1) - self.historic_start_year
+
+                liquefaction_cost_slice = liquefaction_cost[0: end_bound - year, :]
+
+                # Vectorized operation for cost calculation
+                h2_cost = missing_production * liquefaction_cost_slice / 1000  # €/kg and production in tons =&gt; /1000 for M€
+
+                h2_total_cost[future_years] += h2_cost[:, 0]
+                h2_capex_cost[future_years] += h2_cost[:, 1]
+                h2_opex_cost[future_years] += h2_cost[:, 2] + h2_cost[:, 3]
+                h2_elec_cost[future_years] += h2_cost[:, 4]
+                hydrogen_production[future_years] += missing_production
+
                 discounted_cumul_cost = 0
-                # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
-                    h2_total_cost[i] = (
-                        h2_total_cost[i]
-                        + (missing_production * liquefaction_cost[i]["TOTAL"]) / 1000
-                    )  # M€
-                    h2_capex_cost[i] = (
-                        h2_capex_cost[i]
-                        + (missing_production * liquefaction_cost[i]["CAPEX"]) / 1000
-                    )  # M€
-                    h2_opex_cost[i] = (
-                        h2_opex_cost[i]
-                        + (missing_production * liquefaction_cost[i]["FIX_OPEX"]) / 1000
-                        + (missing_production * liquefaction_cost[i]["VAR_OPEX"]) / 1000
-                    )  # M€
-                    h2_elec_cost[i] = (
-                        h2_elec_cost[i]
-                        + (missing_production * liquefaction_cost[i]["ELECTRICITY"]) / 1000
-                    )  # M€
-                    hydrogen_production[i] = hydrogen_production[i] + missing_production
 
                 for i in range(year, year + int(plant_lifespan)):
+                    discount_factor = (1 + social_discount_rate) ** (i - year)
                     if i < (self.end_year + 1):
-                        discounted_cumul_cost += (liquefaction_cost[i]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += liquefaction_cost[i - year, 0] / discount_factor
                     else:
-                        discounted_cumul_cost += (liquefaction_cost[self.end_year]["TOTAL"]) / (
-                            1 + social_discount_rate
-                        ) ** (i - year)
+                        discounted_cumul_cost += liquefaction_cost[self.end_year - year, 0] / discount_factor
 
                 specific_discounted_cost[year] = discounted_cumul_cost
 
             elif (year == self.end_year) or (
-                hydrogen_production[year + 1] >= demand_scenario[year + 1] > 0
+                hydrogen_production[year - self.historic_start_year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_discounted_cost[year] = specific_discounted_cost[year - 1]
 
@@ -1653,6 +1627,8 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # Proportional production scaling
 
         scaling_factor = demand_scenario / hydrogen_production
+
+        h2_total_cost = pd.Series(h2_total_cost, indexes)
 
         if not all(scaling_factor.isna()):
             h2_total_cost = h2_total_cost * scaling_factor
@@ -1689,38 +1665,37 @@ class LiquidHydrogenCost(AeroMAPSModel):
         Costs are discounted to find a constant MFSP, excepted electricity, whose price is directly evolving
         from a year to another.
         """
-        liquefaction_prices = {}
-
-        # modification to base year not to use undefined technology costs => either base year or start of prospection year
+        # modification to base year not to use undefined technology costs =&gt; either base year or start of prospection year
         technology_year = max(base_year, self.prospection_start_year)
 
         hydrogen_specific_energy = lhv_hydrogen / 3.6  # kWh/kg
         # compute plant specific energy #kWh energy/kg h2
         liquefier_specific_electricity = (
-            hydrogen_specific_energy / liquefaction_efficiency - hydrogen_specific_energy
+                hydrogen_specific_energy / liquefaction_efficiency[technology_year] - hydrogen_specific_energy
         )
 
         load_fact = 0.95
         real_year_days = 365.25 * load_fact
 
-        cap_cost_npv = 0
-        fix_op_cost_npv = 0
-        hydrogen_npv = 0
+        years_construction = np.arange(construction_time)
+        years_operation = np.arange(construction_time, plant_lifespan + construction_time)
 
         fixed_opex = 0.04 * liquefier_capex[technology_year]
 
-        # Construction
-        for i in range(0, construction_time):
-            # The construction is supposed to span over x years, with a uniform cost repartition
-            cap_cost_npv += (liquefier_capex[technology_year] / construction_time) / (
-                1 + private_discount_rate
-            ) ** (i)
+        # Calculate NPV for capital costs during construction.
+        cap_cost_npv = np.sum(
+            (liquefier_capex[technology_year] / construction_time) /
+            (1 + private_discount_rate) ** years_construction
+        )
 
-        # commissioning
-        for i in range(construction_time, plant_lifespan + construction_time):
-            fix_op_cost_npv += fixed_opex / (1 + private_discount_rate) ** (i)
-            hydrogen_npv += real_year_days / (1 + private_discount_rate) ** (i)
+        # Calculate NPV for fixed operating costs and hydrogen production during operation.
+        fix_op_cost_npv = np.sum(
+            fixed_opex /
+            (1 + private_discount_rate) ** years_operation
+        )
+        hydrogen_npv = np.sum(real_year_days / (1 + private_discount_rate) ** years_operation)
 
+        # Calculate the levelized costs.
         cap_cost_lc = cap_cost_npv / hydrogen_npv
         fix_op_cost_lc = fix_op_cost_npv / hydrogen_npv
 
@@ -1728,19 +1703,25 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year, end_bound + 1):
-            elec_price = electricity_market_price[year]
-            elec_cost = elec_price * liquefier_specific_electricity[technology_year]
-            opex_var_cost = 0.05 * elec_cost
-            liquefaction_prices[year] = {
-                "TOTAL": cap_cost_lc + opex_var_cost + fix_op_cost_lc + elec_cost,
-                "CAPEX": cap_cost_lc,
-                "FIX_OPEX": fix_op_cost_lc,
-                "VAR_OPEX": opex_var_cost,
-                "ELECTRICITY": elec_cost,
-            }
+        num_years = end_bound + 1 - (base_year + construction_time)
+        liquefaction_prices_array = np.zeros((num_years, 5))
 
-        return liquefaction_prices
+        # Electricity cost for each year
+        elec_prices = electricity_market_price.loc[
+                      base_year + construction_time:end_bound
+                      ].values * liquefier_specific_electricity
+
+        # Variable OPEX cost for each year
+        opex_var_costs = 0.05 * elec_prices
+
+        # Total liquefaction prices for each year
+        liquefaction_prices_array[:, 0] = cap_cost_lc + fix_op_cost_lc + elec_prices + opex_var_costs
+        liquefaction_prices_array[:, 1] = cap_cost_lc  # CAPEX
+        liquefaction_prices_array[:, 2] = fix_op_cost_lc  # FIX_OPEX
+        liquefaction_prices_array[:, 3] = opex_var_costs  # VAR_OPEX
+        liquefaction_prices_array[:, 4] = elec_prices  # ELECTRICITY
+
+        return liquefaction_prices_array
 
     def _unit_kerozene_discounted_cumul_costs(
         self,
@@ -1749,7 +1730,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         social_discount_rate: float = 0.0,
     ) -> Tuple[pd.Series,]:
         # Constants:
-
+        # TODO VECTORIZE
         indexes = kerosene_market_price.index
 
         specific_cost = pd.Series(np.nan, indexes)
@@ -1780,47 +1761,61 @@ class LiquidHydrogenCost(AeroMAPSModel):
         social_discount_rate: float = 0.0,
     ) -> Tuple[pd.Series, pd.Series,]:
         # Constants:
-
+        # TODO VECTORIZE
         indexes = avoided_emission_factor.index
 
         specific_em = pd.Series(np.nan, indexes)
         generic_discounted_specific_em = pd.Series(np.nan, indexes)
 
+
+        exogenous_carbon_price_trajectory_array = exogenous_carbon_price_trajectory.values
+        avoided_emission_factor_array = avoided_emission_factor.values
+
         for year in list(avoided_emission_factor.index):
             cumul_em = 0
             generic_discounted_cumul_em = 0
-            for i in range(year, year + int(plant_lifespan)):
-                if i < (self.end_year + 1):
-                    cumul_em += avoided_emission_factor[i] * (lhv_hydrogen) / 1000000
 
+            scc_0_year = exogenous_carbon_price_trajectory_array[
+                year - self.historic_start_year
+                ]
+            for i in range(year, year + int(plant_lifespan)):
+                discount_factor = (1 + social_discount_rate) ** (i - year)
+                if i < (self.end_year + 1):
+
+                    avoided_emission_year=avoided_emission_factor_array[i - self.historic_start_year]* (lhv_hydrogen) / 1000000
+
+                    cumul_em += avoided_emission_year
                     # discounting emissions for non-hotelling scc
                     generic_discounted_cumul_em += (
-                        avoided_emission_factor[i]
-                        * (lhv_hydrogen)
-                        / 1000000
+                        avoided_emission_year
                         * exogenous_carbon_price_trajectory[i]
-                        / exogenous_carbon_price_trajectory[year]
-                        / (1 + social_discount_rate) ** (i - year)
+                        / scc_0_year
+                        / discount_factor
                     )
 
                 else:
-                    cumul_em += avoided_emission_factor[self.end_year] * (lhv_hydrogen) / 1000000
+                    avoided_emission_year = (
+                            avoided_emission_factor_array[-1]
+                            * (lhv_hydrogen)
+                            / 1000000
+                    )
+                    cumul_em += avoided_emission_year
                     # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
                     future_scc_growth = (
-                        exogenous_carbon_price_trajectory[self.end_year]
-                        / exogenous_carbon_price_trajectory[self.end_year - 1]
+                        exogenous_carbon_price_trajectory_array[-1]
+                        / exogenous_carbon_price_trajectory_array[
+                                    self.end_year - 1 - self.historic_start_year
+                                    ]
                     )
 
                     generic_discounted_cumul_em += (
-                        avoided_emission_factor[self.end_year]
-                        * (lhv_hydrogen)
-                        / 1000000
+                        avoided_emission_year
                         * (
-                            exogenous_carbon_price_trajectory[self.end_year]
-                            / exogenous_carbon_price_trajectory[year]
+                            exogenous_carbon_price_trajectory_array[-1]
+                            / scc_0_year
                             * (future_scc_growth) ** (i - self.end_year)
                         )
-                        / (1 + social_discount_rate) ** (i - year)
+                        / discount_factor
                     )
 
             specific_em[year] = cumul_em
