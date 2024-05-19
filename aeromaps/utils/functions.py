@@ -30,6 +30,13 @@ def _dict_from_json(file_name="parameters.json") -> dict:
 
 
 def _dict_to_df(data, orient="index") -> pd.DataFrame:
+
+    # Check if values from data have the same length or else populate with NaN
+    max_len = max([len(v) for v in data.values()])
+    for key, value in data.items():
+        if len(value) < max_len:
+            data[key] = np.append(value, np.full(max_len - len(value), np.nan))
+
     df = pd.DataFrame.from_dict(data, orient=orient)
     return df
 
