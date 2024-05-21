@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Examples &#8212; AeroMAPS documentation</title>
+    <title>Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data &#8212; AeroMAPS documentation</title>
   
   
   
@@ -62,11 +62,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'books/examples';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'books/examples_partitioning';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example for creating a custom process in AeroMAPS" href="examples_custom_process.html" />
-    <link rel="prev" title="Bibliography" href="bibliography.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Example for using climate models - Application submitted for publication in a journal" href="examples_climate_application.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -174,7 +174,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="examples_custom_process.html">Example for creating a custom process in AeroMAPS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
@@ -182,7 +182,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="examples_mea_application.html">Application for the More Electric Aircraft (MEA) conference</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="examples_climate_application.html">Example for using climate models - Application submitted for publication in a journal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples_partitioning.html">Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -255,7 +255,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/books/examples.md" target="_blank"
+      <li><a href="../_sources/books/examples_partitioning.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -265,7 +265,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
 </li>
       
@@ -326,7 +326,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -337,11 +339,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Examples</h1>
+    <h1>Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-of-a-corrected-input-file-for-the-studied-scope">1. Generation of a corrected input file for the studied scope</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-aeromaps-on-this-studied-scope">2. Run AeroMAPS on this studied scope</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -351,22 +362,106 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
-<p>In addition to the direct use of the graphical user interface of AeroMAPS, different examples are provided using
-Jupyter notebooks for achieving more complete scenario analyses.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples_custom_process.html">Example for creating a custom process in AeroMAPS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_joas_application.html">Application for the Journal of Open Aviation Science</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_mea_application.html">Application for the More Electric Aircraft (MEA) conference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_mea_application.html#all-results">All results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_climate_application.html">Example for using climate models - Application submitted for publication in a journal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples_partitioning.html">Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data</a></li>
-</ul>
+  <section class="tex2jax_ignore mathjax_ignore" id="example-for-partitioning-the-scope-of-the-aeromaps-scenario-using-aeroscope-data">
+<h1>Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data<a class="headerlink" href="#example-for-partitioning-the-scope-of-the-aeromaps-scenario-using-aeroscope-data" title="Permalink to this heading">#</a></h1>
+<p>This notebook serves as an example for producing analyses on a reduced scope (e.g. regional) using AeroSCOPE data.</p>
+<section id="generation-of-a-corrected-input-file-for-the-studied-scope">
+<h2>1. Generation of a corrected input file for the studied scope<a class="headerlink" href="#generation-of-a-corrected-input-file-for-the-studied-scope" title="Permalink to this heading">#</a></h2>
+<p>Base values for calibrating a scenario can be obtained using <span class="xref myst">AeroSCOPE</span>.
+The file is downloaded from the “AeroMAPS Export” tab, using the available filtering options.</p>
+<p><strong>Please refer to <a class="reference external" href="https://github.com/AeroMAPS/AeroSCOPE">AeroSCOPE description</a> to understand the limitaions of the tool.</strong>
+<img src="attachment:ed93cd8b-9206-47ad-a81c-398e796a81bb.png" alt="Image" width="1400"/></p>
+<p>Click on “Download File” to generate the input files for 2019, and place the <em>.csv</em> file in data_partitioning folder as below. This folder is used to store the calibration <em>.csv</em>, but also a custom input file.</p>
+<p>Here, an example is provided considering domestic and international flights departing from France (overseas not included).
+A dedicated function of AeroMAPS calibrates historical parameters by calibrating AeroMAPS values using AeroSCOPE partitionned file.<br />
+A set of transformations is necessary to match a similar coverage as AeroSCOPE does not cover dedicated cargo flights.</p>
+<p><strong>⚠ Historical values are calibrated based on the comparision of AeroSCOPE 2019 values with AeroMAPS 2019 reference. Historical trajectories (RPK, energy consumption, emissions, …) are scaled using this ratio and are NOT REPRESENTATIVE of actual historical values for the partition made, which can result in significant differences, in particular for climate models ⚠</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aeromaps.utils.functions</span> <span class="kn">import</span> <span class="n">create_partitioning</span>
+</pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">aeromaps.utils.functions</span> <span class="kn">import</span> <span class="n">create_partitioning</span>
+
+<span class="ne">ImportError</span>: cannot import name &#39;create_partitioning&#39; from &#39;aeromaps.utils.functions&#39; (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/utils/functions.py)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">create_partitioning</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">&quot;data_partitioning/aeroscope_france_data.csv&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data_partitioning&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="run-aeromaps-on-this-studied-scope">
+<h2>2. Run AeroMAPS on this studied scope<a class="headerlink" href="#run-aeromaps-on-this-studied-scope" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> widget
+<span class="kn">from</span> <span class="nn">aeromaps</span> <span class="kn">import</span> <span class="n">create_process</span>
+<span class="kn">from</span> <span class="nn">aeromaps.core.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">models_traffic</span><span class="p">,</span>
+    <span class="n">models_efficiency_top_down</span><span class="p">,</span>
+    <span class="n">models_efficiency_bottom_up</span><span class="p">,</span>
+    <span class="n">models_energy_without_fuel_effect</span><span class="p">,</span>
+    <span class="n">models_offset</span><span class="p">,</span>
+    <span class="n">models_climate_simple_gwpstar</span><span class="p">,</span>
+    <span class="n">models_sustainability</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;models_traffic&quot;</span><span class="p">:</span> <span class="n">models_traffic</span><span class="p">,</span>
+    <span class="s2">&quot;models_efficiency_top_down&quot;</span><span class="p">:</span> <span class="n">models_efficiency_top_down</span><span class="p">,</span>
+    <span class="s2">&quot;models_energy_without_fuel_effect&quot;</span><span class="p">:</span> <span class="n">models_energy_without_fuel_effect</span><span class="p">,</span>
+    <span class="s2">&quot;models_offset&quot;</span><span class="p">:</span> <span class="n">models_offset</span><span class="p">,</span>
+    <span class="s2">&quot;models_climate_simple_gwpstar&quot;</span><span class="p">:</span> <span class="n">models_climate_simple_gwpstar</span><span class="p">,</span>
+    <span class="s2">&quot;models_sustainability&quot;</span><span class="p">:</span> <span class="n">models_sustainability</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create process as usual, the partitionning is recuperated as specified in the config file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="n">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;data_partitioning/config.json&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;air_transport_co2_emissions&quot;</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;aeromaps.plots.main.AirTransportCO2EmissionsPlot at 0x1e19020bf10&gt;
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e122e0c5ad624739a7908e489285bf38", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -400,20 +495,20 @@ Jupyter notebooks for achieving more complete scenario analyses.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="bibliography.html"
+       href="examples_climate_application.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Bibliography</p>
+        <p class="prev-next-title">Example for using climate models - Application submitted for publication in a journal</p>
       </div>
     </a>
     <a class="right-next"
-       href="examples_custom_process.html"
+       href="api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Example for creating a custom process in AeroMAPS</p>
+        <p class="prev-next-title">API Reference</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -423,6 +518,21 @@ Jupyter notebooks for achieving more complete scenario analyses.</p>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-of-a-corrected-input-file-for-the-studied-scope">1. Generation of a corrected input file for the studied scope</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-aeromaps-on-this-studied-scope">2. Run AeroMAPS on this studied scope</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
