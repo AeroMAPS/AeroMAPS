@@ -24,6 +24,7 @@ AIRCRAFT_COLUMNS = [
     "Average ASK per year",
     "Manufacturing Cost [M€]",
     "Non Recurring Costs [M€]",
+    "Operational Empty Weight [t]"
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
@@ -40,6 +41,7 @@ class AircraftParameters:
     ask_year: float = None
     nrc_cost: float = None
     rc_cost: float = None
+    oew: float = None
     full_name: str = None
 
 
@@ -55,6 +57,7 @@ class ReferenceAircraftParameters:
     ask_year: float = None
     nrc_cost: float = None
     rc_cost: float = None
+    oew: float = None
     full_name: str = None
 
 
@@ -1050,6 +1053,7 @@ class Aircraft(object):
         self.parameters.ask_year = row[AIRCRAFT_COLUMNS[9]]
         self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[10]]
         self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[11]]
+        self.parameters.oew = row[AIRCRAFT_COLUMNS[12]]
 
         return self
 
@@ -1085,6 +1089,7 @@ class SubCategory(object):
                     406000000.0,
                     80000000.0,
                     10000000000.0,
+                    40.0,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
         else:
@@ -1102,6 +1107,7 @@ class SubCategory(object):
                     aircraft.parameters.ask_year,
                     aircraft.parameters.rc_cost,
                     aircraft.parameters.nrc_cost,
+                    aircraft.parameters.oew,
                 ]
             ).reshape((1, len(AIRCRAFT_COLUMNS)))
 
@@ -1468,6 +1474,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=80000000.0,
             nrc_cost=10000000000.0,
+            oew=40.0,
         )
 
         sr_nb_aircraft_1 = Aircraft(
@@ -1484,6 +1491,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
+            oew=40.0,
         )
 
         sr_nb_aircraft_2 = Aircraft(
@@ -1501,6 +1509,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
+            oew=15.0,
         )
 
         sr_tp_aircraft_1 = Aircraft(
@@ -1519,6 +1528,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=30000000.0,
             nrc_cost=5000000000.0,
+            oew=15.0,
         )
 
         sr_tp_aircraft_2 = Aircraft(
@@ -1538,6 +1548,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=30000000.0,
             nrc_cost=5000000000.0,
+            oew=15.0,
         )
 
         sr_tf_aircraft_1 = Aircraft(
@@ -1556,6 +1567,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=40000000.0,
             nrc_cost=5000000000.0,
+            oew=15.0,
         )
 
         sr_tf_aircraft_2 = Aircraft(
@@ -1576,6 +1588,7 @@ class Fleet(object):
             ask_year=280000000.0,
             rc_cost=40000000.0,
             nrc_cost=5000000000.0,
+            oew=40.0,
         )
 
         sr_aircraft_hydrogen = Aircraft(
@@ -1593,6 +1606,7 @@ class Fleet(object):
             ask_year=352000000.0,
             rc_cost=50000000.0,
             nrc_cost=10000000000.0,
+            oew=40.0,
         )
 
         mr_aircraft_1 = Aircraft(
@@ -1609,6 +1623,7 @@ class Fleet(object):
             ask_year=352000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
+            oew=40.0,
         )
 
         mr_aircraft_2 = Aircraft(
@@ -1626,6 +1641,7 @@ class Fleet(object):
             ask_year=912000000.0,
             rc_cost=60000000.0,
             nrc_cost=10000000000.0,
+            oew=130.0,
         )
 
         lr_aircraft_1 = Aircraft(
@@ -1642,6 +1658,7 @@ class Fleet(object):
             ask_year=912000000.0,
             rc_cost=150000000.0,
             nrc_cost=25000000000.0,
+            oew=130.0,
         )
 
         lr_aircraft_2 = Aircraft(
@@ -1669,6 +1686,7 @@ class Fleet(object):
         sr_nb_cat.old_reference_aircraft.ask_year = 280000000.0
         sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
+        sr_nb_cat.old_reference_aircraft.oew = 37.0
 
         # Recent
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2007.13
@@ -1680,6 +1698,7 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.ask_year = 280000000
         sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
+        sr_nb_cat.recent_reference_aircraft.oew = 43.0
 
         #TODO CAUTION energy_consumption_init[19] is a weak fix => type of the variable changes if multiple runs! Linked to Utils/function.py?
 
@@ -1815,6 +1834,7 @@ class Fleet(object):
         mr_subcat.old_reference_aircraft.ask_year = 352000000.0
         mr_subcat.old_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.old_reference_aircraft.nrc_cost = 10000000000.0
+        mr_subcat.old_reference_aircraft.oew = 37.0
 
         # Recent
         mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
@@ -1826,6 +1846,7 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.ask_year = 352000000.0
         mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
         mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
+        mr_subcat.recent_reference_aircraft.oew = 43.0
 
         mean_energy_init_ask_medium_range = (
             self.parameters.energy_consumption_init[19]
@@ -1900,6 +1921,7 @@ class Fleet(object):
         lr_subcat.old_reference_aircraft.ask_year = 912000000.0
         lr_subcat.old_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.old_reference_aircraft.nrc_cost = 25000000000.0
+        lr_subcat.old_reference_aircraft.oew = 135.0
 
         # Recent
         lr_subcat.recent_reference_aircraft.entry_into_service_year = 2009.36
@@ -1911,6 +1933,7 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.ask_year = 912000000.0
         lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.recent_reference_aircraft.nrc_cost = 25000000000.0
+        lr_subcat.recent_reference_aircraft.oew = 129.0
 
         mean_energy_init_ask_long_range = (
             self.parameters.energy_consumption_init[19]
