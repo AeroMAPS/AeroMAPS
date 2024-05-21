@@ -1,11 +1,8 @@
 from typing import Tuple
 
 import pandas as pd
-from pandas import read_csv
-import os.path as pth
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.resources import climate_data
 
 
 class KayaFactors(AeroMAPSModel):
@@ -147,12 +144,7 @@ class KayaFactors(AeroMAPSModel):
 class CO2Emissions(AeroMAPSModel):
     def __init__(self, name="co2_emissions", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        # Load dataset
-        historical_dataset_path = pth.join(
-            climate_data.__path__[0], "temperature_historical_dataset.csv"
-        )
-        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
-        self.historical_dataset = historical_dataset_df.values
+        self.climate_historical_data = None
 
     def compute(
         self,
@@ -374,7 +366,7 @@ class CO2Emissions(AeroMAPSModel):
             )
 
         # Total
-        historical_co2_emissions_for_temperature = self.historical_dataset[:, 1]
+        historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
         for k in range(self.climate_historic_start_year, self.historic_start_year):
             self.df_climate.loc[k, "co2_emissions"] = historical_co2_emissions_for_temperature[
                 k - self.climate_historic_start_year

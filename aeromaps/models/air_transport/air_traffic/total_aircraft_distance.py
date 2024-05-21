@@ -1,21 +1,12 @@
 from typing import Tuple
 import pandas as pd
-from pandas import read_csv
-import os.path as pth
-
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.resources import climate_data
 
 
 class TotalAircraftDistance(AeroMAPSModel):
     def __init__(self, name="total_aircraft_distance", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        # Load dataset
-        historical_dataset_path = pth.join(
-            climate_data.__path__[0], "temperature_historical_dataset.csv"
-        )
-        historical_dataset_df = read_csv(historical_dataset_path, delimiter=";", header=None)
-        self.historical_dataset = historical_dataset_df.values
+        self.climate_historical_data = None
 
     def compute(
         self,
@@ -28,7 +19,7 @@ class TotalAircraftDistance(AeroMAPSModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Total aircraft distance calculation."""
 
-        historical_distance_for_temperature = self.historical_dataset[:, 6]
+        historical_distance_for_temperature = self.climate_historical_data[:, 6]
 
         for k in range(self.climate_historic_start_year, self.historic_start_year):
             self.df_climate.loc[k, "total_aircraft_distance"] = historical_distance_for_temperature[
