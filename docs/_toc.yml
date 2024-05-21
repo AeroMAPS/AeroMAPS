@@ -24,5 +24,6 @@ chapters:
     - file: books/examples_joas_application
     - file: books/examples_mea_application
     - file: books/examples_climate_application
+    - file: books/examples_partitioning
 - file: books/api
 
