@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class PassengerAircraftEfficiencySimple(AeromapsModel):
+class PassengerAircraftEfficiencySimple(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_efficiency_simple", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -524,7 +524,7 @@ class PassengerAircraftEfficiencySimple(AeromapsModel):
         )
 
 
-class PassengerAircraftEfficiencyComplex(AeromapsModel):
+class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -860,7 +860,7 @@ class PassengerAircraftEfficiencyComplex(AeromapsModel):
         )
 
 
-class FreightAircraftEfficiency(AeromapsModel):
+class FreightAircraftEfficiency(AeroMAPSModel):
     def __init__(self, name="freight_aircraft_efficiency", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

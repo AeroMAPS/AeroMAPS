@@ -1,12 +1,12 @@
 from typing import Tuple
 import pandas as pd
 from aeromaps.models.base import (
-    AeromapsModel,
+    AeroMAPSModel,
     AeromapsInterpolationFunction,
 )
 
 
-class MeanDistancePerInhabitantFlyer(AeromapsModel):
+class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
     def __init__(self, name="mean_distance_per_inhabitant_flyer", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

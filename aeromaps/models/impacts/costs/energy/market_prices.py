@@ -6,10 +6,10 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class ElectricityCost(AeromapsModel):
+class ElectricityCost(AeroMAPSModel):
     def __init__(self, name="electricity_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -31,7 +31,29 @@ class ElectricityCost(AeromapsModel):
         return electricity_market_price
 
 
-class CoalCost(AeromapsModel):
+class ElectricityLoadFactor(AeroMAPSModel):
+    def __init__(self, name="electricity_load_factor", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        electricity_load_factor_reference_years: list = [],
+        electricity_load_factor_reference_years_values: list = [],
+    ) -> Tuple[pd.Series]:
+        """LCOE"""
+
+        electricity_load_factor = AeromapsInterpolationFunction(
+            self,
+            electricity_load_factor_reference_years,
+            electricity_load_factor_reference_years_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "electricity_load_factor"] = electricity_load_factor
+
+        return electricity_load_factor
+
+
+class CoalCost(AeroMAPSModel):
     def __init__(self, name="coal_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -49,7 +71,7 @@ class CoalCost(AeromapsModel):
         return coal_market_price
 
 
-class GasCost(AeromapsModel):
+class GasCost(AeroMAPSModel):
     def __init__(self, name="gas_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -67,7 +89,7 @@ class GasCost(AeromapsModel):
         return gas_market_price
 
 
-class Co2Cost(AeromapsModel):
+class Co2Cost(AeroMAPSModel):
     def __init__(self, name="co2_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -85,7 +107,7 @@ class Co2Cost(AeromapsModel):
         return co2_market_price
 
 
-class CarbonTax(AeromapsModel):
+class CarbonTax(AeroMAPSModel):
     def __init__(self, name="carbon_tax", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -109,7 +131,7 @@ class CarbonTax(AeromapsModel):
         return carbon_tax
 
 
-class KerosenePrice(AeromapsModel):
+class KerosenePrice(AeroMAPSModel):
     def __init__(self, name="kerosene_market_price", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -135,7 +157,7 @@ class KerosenePrice(AeromapsModel):
         return kerosene_market_price
 
 
-class KeroseneCost(AeromapsModel):
+class KeroseneCost(AeroMAPSModel):
     def __init__(self, name="kerosene_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -174,10 +196,10 @@ class KeroseneCost(AeromapsModel):
             :, "kerosene_price_supplement_carbon_tax"
         ] = kerosene_price_supplement_carbon_tax
 
-        return (kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax)
+        return kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax
 
 
-class KeroseneBAUCost(AeromapsModel):
+class KeroseneBAUCost(AeroMAPSModel):
     def __init__(self, name="kerosene_BAU_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -185,9 +207,10 @@ class KeroseneBAUCost(AeromapsModel):
         self,
         kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
         non_discounted_BAU_energy_expenses: pd.Series = pd.Series(dtype="float64"),
+        non_discounted_full_kero_energy_expenses: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series]:
         # kerosene_market_price €/L
         # fuel lower heating value in MJ/L at 15 degrees
         fuel_lhv = 35.3
@@ -204,6 +227,23 @@ class KeroseneBAUCost(AeromapsModel):
             kerosene_consumption_BAU * carbon_tax * kerosene_emission_factor / 1000000 / 1000000
         )
 
+        # Quantity of kerosene used in BAU "full_kero" including efficiceny and ops (virtual)
+
+        kerosene_consumption_full_kero = (
+            non_discounted_full_kero_energy_expenses / kerosene_market_price * 1000000 * fuel_lhv
+        )
+
+        # Carbon tax that would be paid in full_kero
+
+        kerosene_carbon_tax_full_kero = (
+            kerosene_consumption_full_kero
+            * carbon_tax
+            * kerosene_emission_factor
+            / 1000000
+            / 1000000
+        )
+
+        self.df.loc[:, "kerosene_carbon_tax_full_kero"] = kerosene_carbon_tax_full_kero
         self.df.loc[:, "kerosene_carbon_tax_BAU"] = kerosene_carbon_tax_BAU
 
-        return kerosene_carbon_tax_BAU
+        return kerosene_carbon_tax_BAU, kerosene_consumption_full_kero

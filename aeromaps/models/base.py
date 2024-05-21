@@ -6,7 +6,7 @@ from fair import FAIR
 from fair.interface import fill, initialise
 
 
-class AeromapsModel(object):
+class AeroMAPSModel(object):
     def __init__(
         self,
         name,
@@ -549,4 +549,7 @@ def RunFair(self, species_quantities, without="None"):
     # Run
     f.run()
 
-    return f.temperature.loc[dict(layer=0, config=f.configs[0])].data
+    return (
+        f.temperature.loc[dict(config=f.configs[0], layer=0)].data,
+        f.forcing_sum.loc[dict(config=f.configs[0])].data,
+    )

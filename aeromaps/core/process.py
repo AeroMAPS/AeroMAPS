@@ -1,29 +1,31 @@
+# Standard library imports
 import os
 from json import load, dump
+
+# Third-party imports
 import numpy as np
 import pandas as pd
-
-from aeromaps.models.base import AeromapsModel
-
-pd.options.display.max_rows = 150
-pd.set_option("display.max_columns", 150)
-pd.set_option("max_colwidth", 200)
-pd.options.mode.chained_assignment = None
-
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
 
 
-from aeromaps.core.gemseo import AeromapsModelWrapper
+# Local application imports
+from aeromaps.models.base import AeroMAPSModel
+from aeromaps.core.gemseo import AeroMAPSModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
-from aeromaps.plots import available_plots
+from aeromaps.plots import available_plots, available_plots_fleet
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
     FleetModel,
 )
 
+# Settings
+pd.options.display.max_rows = 150
+pd.set_option("display.max_columns", 150)
+pd.set_option("max_colwidth", 200)
+pd.options.mode.chained_assignment = None
 
 # Get the directory of the current script
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,7 +37,7 @@ default_config_path = os.path.join(current_dir, "config.json")
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 
-class create_process(object):
+class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
@@ -70,6 +72,84 @@ class create_process(object):
         )
         self._initialize_data()
         self._update_variables()
+
+    def compute(self):
+
+        if self.fleet is not None:
+            self.fleet_model.compute()
+
+        input_data = self._set_inputs()
+
+        if self.fleet is not None:
+            # This is needed since fleet model is particular discipline
+            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
+
+        self.process.execute(input_data=input_data)
+
+        self._update_variables()
+
+        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_output_file_path = os.path.join(
+                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
+            )
+            file_name = new_output_file_path
+        else:
+            file_name = None
+        self.write_json(file_name=file_name)
+
+    def write_json(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
+        with open(file_name, "w", encoding="utf-8") as f:
+            dump(self.json, f, ensure_ascii=False, indent=4)
+
+    def write_excel(self, file_name=None):
+        if file_name is None:
+            file_name = self.config["EXCEL_DATA_FILE"]
+        with pd.ExcelWriter(file_name) as writer:
+            self.data_information_df.to_excel(writer, sheet_name="Data Information")
+            self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
+            self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
+            self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
+            self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
+            self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+
+    def generate_n2(self):
+        generate_n2_plot(self.disciplines)
+
+    def update_parameters(self):
+        for name, model in self.models.items():
+            model.parameters = self.parameters
+
+    def list_available_plots(self):
+        return list(available_plots.keys())
+
+    def list_float_inputs(self):
+        return self.data["float_inputs"]
+
+    def plot(self, name, save=False, size_inches=None, remove_title=False):
+        if name in available_plots_fleet:
+            fig = available_plots_fleet[name](self.data, self.fleet_model)
+            if save:
+                if size_inches is not None:
+                    fig.fig.set_size_inches(size_inches)
+                if remove_title:
+                    fig.fig.gca().set_title("")
+                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+        elif name in available_plots:
+            fig = available_plots[name](self.data)
+            if save:
+                if size_inches is not None:
+                    fig.fig.set_size_inches(size_inches)
+                if remove_title:
+                    fig.fig.gca().set_title("")
+                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+        else:
+            raise NameError(
+                f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
+            )
+        return fig
 
     def _initialize_configuration(self):
         # Load the default configuration file
@@ -115,7 +195,7 @@ class create_process(object):
             for key, value in d.items():
                 if isinstance(value, dict):
                     check_instance_in_dict(value)
-                elif isinstance(value, AeromapsModel):
+                elif isinstance(value, AeroMAPSModel):
                     model = value
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
@@ -123,12 +203,12 @@ class create_process(object):
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "compute"):
-                        model = AeromapsModelWrapper(model=model)
+                        model = AeroMAPSModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
                         print(model.name)
                 else:
-                    print(f"{key} is not an instance of AeromapsModel")
+                    print(f"{key} is not an instance of AeroMAPSModel")
 
         check_instance_in_dict(self.models)
 

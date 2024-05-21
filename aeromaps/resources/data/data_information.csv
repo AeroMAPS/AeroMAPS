@@ -97,6 +97,10 @@ energy_per_ask_short_range_dropin_fuel_gain_reference_years_values;List;%;Mean a
 erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_short_term_o3_increase;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to short-term O3 increase;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_long_term_o3_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to long-term O3 decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_ch4_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to methane decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
+erf_coefficient_nox_stratospheric_water_vapor_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to stratospheric water vapor decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet;Assuming the default value for calibrating the fleet renewal models
@@ -114,19 +118,19 @@ cagr_freight_reference_periods_values;List;%;Compound annual growth rate for fre
 reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
 reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
 historic_start_year;Float;yr;Historic start year for the data
-hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_ccs_share_reference_years_values;List;%;Share of hydrogen production from coal pathway with carbon capture and storage for the reference years
-hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from coal pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_coal_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_electrolysis_share_reference_years;List;yr;Reference years for the share of hydrogen production from electrolysis pathway
 hydrogen_electrolysis_share_reference_years_values;List;%;Share of hydrogen production from electrolysis pathway for the reference years
 hydrogen_final_market_share_long_range;Float;%;Share of hydrogen aircraft in the passenger long-range market
 hydrogen_final_market_share_medium_range;Float;%;Share of hydrogen aircraft in the passenger medium-range market
 hydrogen_final_market_share_short_range;Float;%;Share of hydrogen aircraft in the passenger short-range market
-hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway with carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_gas_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from gas pathway with carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway with carbon capture and storage
 hydrogen_gas_ccs_share_reference_years_values;List;%;Share of hydrogen production from gas pathway with carbon capture and storage for the reference years
-hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of hydrogen from gas pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
+gaseous_hydrogen_gas_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from gas pathway without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_gas_share_reference_years;List;yr;Reference years for the share of hydrogen production from gas pathway without carbon capture and storage
 hydrogen_gas_share_reference_years_values;List;%;Share of hydrogen production from gas pathway without carbon capture and storage for the reference years
 hydrogen_introduction_year_long_range;Float;yr;Entry-Into-Service year of hydrogen aircraft for long-range market
@@ -136,9 +140,12 @@ hydrogen_oil_hefa;Float;-;Energy share of hydrogen needed for biofuel production
 kerosene_emission_factor_reference_years;List;yr;Reference years for the emission factor of fossil kerosene
 kerosene_emission_factor_reference_years_values;List;gCO2/MJ;Emission factor of fossil kerosene for the reference years
 lhv_biofuel;Float;MJ/kg;Lower Heating Value of biofuel
+density_biofuel;Float;kg/L;Density of biofuel
 lhv_electrofuel;Float;MJ/kg;Lower Heating Value of electrofuel
+density_electrofuel;Float;kg/L;Density of electrofuel
 lhv_hydrogen;Float;MJ/kg;Lower Heating Value of hydrogen
 lhv_kerosene;Float;MJ/kg;Lower Heating Value of kerosene
+density_kerosene;Float;kg/L;Density of kerosene
 lignocellulosic_crops_biomass_share;Float;%;Share of energy crops biomass from lignocellulose;Statistical analysis of a literature review (see resources/energy_data)
 liquefaction_efficiency_reference_years;List;yr;Reference years for the liquefaction efficiency for hydrogen;
 liquefaction_efficiency_reference_years_values;List;-;Liquefaction efficiency for hydrogen for the reference years;Statistical analysis of a literature review (see resources/energy_data)
@@ -276,6 +283,8 @@ electricity_consumption;Vector;EJ;Electricity consumption from electrofuel and h
 electricity_electrofuel_consumption;Vector;EJ;Electricity consumption from electrofuel production
 electricity_emission_factor;Vector;gCO2/kWh;Electricity emission factor
 electricity_hydrogen_consumption;Vector;EJ;Electricity consumption from hydrogen production
+electricity_hydrogen_electrolysis_consumption;Vector;EJ;Electricity consumption from hydrogen production from electrolysis pathway
+electricity_hydrogen_non_electrolysis_consumption;Vector;EJ;Electricity consumption from hydrogen production from non-electrolysis pathway (due to liquefaction)
 electrofuel_emission_factor;Vector;gCO2/MJ;Emission factor of electrofuel
 electrofuel_hydrogen_efficiency;Vector;-;Conversion efficiency for producing electrofuel from hydrogen
 electrofuel_share;Vector;%;Share of electrofuel in drop-in fuel
@@ -398,7 +407,11 @@ h2o_emissions;Vector;MtH2O;Water vapor emissions from all commercial air transpo
 h2o_erf;Vector;mW/m²;Effective radiative forcing due to water vapor emissions
 hydrogen_coal_ccs_share;Vector;%;Share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_share;Vector;%;Share of hydrogen production from coal pathway without carbon capture and storage
-hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of hydrogen from electrolysis pathway
+liquid_hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from electrolysis pathway
+liquid_hydrogen_gas_ccs_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from gas pathway with carbon capture and storage
+liquid_hydrogen_coal_ccs_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from coal pathway with carbon capture and storage
+liquid_hydrogen_gas_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from gas pathway without carbon capture and storage
+liquid_hydrogen_coal_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from coal pathway without carbon capture and storage
 hydrogen_electrolysis_share;Vector;%;Share of hydrogen production from electrolysis pathway
 hydrogen_gas_ccs_share;Vector;%;Share of hydrogen production from gas pathway with carbon capture and storage
 hydrogen_gas_share;Vector;%;Share of hydrogen production from gas pathway without carbon capture and storage
@@ -527,12 +540,13 @@ electrofuel_capex_reference_years_values;List;€/(kg/day);Capital expenditures 
 electrofuel_fixed_opex_reference_years;List;yr;Reference years for the annual operational (fixed) expenditures for electrofuel plant built
 electrofuel_fixed_opex_reference_years_values;List;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_var_opex_reference_years;List;yr;Reference years for the variable operational expenditures (energy excluded) for electrolysis plant built
-electrofuel_var_opex_reference_years_values;List;€/kg;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+electrofuel_var_opex_reference_years_values;List;€/L;Variable operational expenditures (energy excluded) for electrolysis plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electrofuel_specific_co2_reference_years;List;yr;Reference years for the CO2 required per kg of of e-fuel produced for plant built
-electrofuel_specific_co2_reference_years_values;List;kg/kg;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+electrofuel_specific_co2_reference_years_values;List;kg/L;CO2 required per kg of of e-fuel produced for plant built for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 electricity_cost_reference_years;List;yr;Reference years for the industrial wholesale electricity market price
 electricity_cost_reference_years_values;List;€/kWh;Industrial wholesale electricity market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-electricity_load_factor;Float;%;Electricity input load factor
+electricity_load_factor_reference_years;List;yr;Reference yearsElectricity input load factor
+electricity_load_factor_referenc_years_values;List;%;Electricity input load factor for reference years
 co2_cost_reference_years;List;yr;Reference years for the CO2 market price for e-fuel operations procurement
 co2_cost_reference_years_values;List;€/kg;CO2 market price for e-fuel operations procurement for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 carbon_tax_reference_years;List;yr;Reference years for the carbon flat tax applied
@@ -599,15 +613,35 @@ biofuel_mfsp_carbon_tax_supplement_ft_others;Vector;€/L;Biofuel (FT-Others) ca
 biofuel_mfsp_carbon_tax_supplement_hefa_fog;Vector;€/L;Biofuel (HEFA-FOG) carbon tax per L evolution
 biofuel_mfsp_carbon_tax_supplement_hefa_others;Vector;€/L;Biofuel (HEFA-Others) carbon tax per L evolution
 carbon_abatement_cost_atj;Vector;€/tCO2e;Carbon abatement cost (ATJ) evolution
+specific_carbon_abatement_cost_atj;Vector;€/tCO2e;Specific carbon abatement cost (ATJ) evolution
+generic_specific_carbon_abatement_cost_atj;Vector;€/tCO2e;generic_specific carbon abatement cost (ATJ) evolution
 carbon_abatement_cost_ft_msw;Vector;€/tCO2e;Carbon abatement cost (FT-MSW) evolution
+specific_carbon_abatement_cost_ft_msw;Vector;€/tCO2e;Specific carbon abatement cost (FT-MSW) evolution
+generic_specific_carbon_abatement_cost_ft_msw;Vector;€/tCO2e;generic_specific carbon abatement cost (FT-MSW) evolution
 carbon_abatement_cost_ft_others;Vector;€/tCO2e;Carbon abatement cost (FT-Others) evolution
+specific_carbon_abatement_cost_ft_others;Vector;€/tCO2e;Specific carbon abatement cost (FT-Others) evolution
+generic_specific_carbon_abatement_cost_ft_others;Vector;€/tCO2e;generic_specific carbon abatement cost (FT-Others) evolution
 carbon_abatement_cost_h2_coal;Vector;€/tCO2e;Carbon abatement cost (H2 Coal gasification without CCS) evolution
+specific_carbon_abatement_cost_h2_coal;Vector;€/tCO2e;Specific carbon abatement cost (H2 Coal gasification without CCS) evolution
+generic_specific_carbon_abatement_cost_h2_coal;Vector;€/tCO2e;generic_specific carbon abatement cost (H2 Coal gasification without CCS) evolution
 carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Coal Gasification with CCS) evolution
+specific_carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;Specific carbon abatement cost (H2 Coal Gasification with CCS) evolution
+generic_specific_carbon_abatement_cost_h2_coal_ccs;Vector;€/tCO2e;generic_specific carbon abatement cost (H2 Coal Gasification with CCS) evolution
 carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;Carbon abatement cost (H2 Electrolysis) evolution
+specific_carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;Specific carbon abatement cost (H2 Electrolysis) evolution
+generic_specific_carbon_abatement_cost_h2_electrolysis;Vector;€/tCO2e;generic_specific carbon abatement cost (H2 Electrolysis) evolution
 carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
+specific_carbon_abatement_cost_h2_gas;Vector;€/tCO2e;Specific carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
+generic_specific_carbon_abatement_cost_h2_gas;Vector;€/tCO2e;generic_specific carbon abatement cost (H2 Steam Methane Reforming without CCS) evolution
 carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
+specific_carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;Specific carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
+generic_specific_carbon_abatement_cost_h2_gas_ccs;Vector;€/tCO2e;generic_specific carbon abatement cost (H2 Steam Methane Reforming with CCS) evolution
 carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Carbon abatement cost (HEFA-FOG) evolution
+specific_carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;Specific carbon abatement cost (HEFA-FOG) evolution
+generic_specific_carbon_abatement_cost_hefa_fog;Vector;€/tCO2e;generic_specific carbon abatement cost (HEFA-FOG) evolution
 carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Carbon abatement cost (HEFA-Others) evolution
+specific_carbon_abatement_cost_hefa_others;Vector;€/tCO2e;Specific carbon abatement cost (HEFA-Others) evolution
+generic_specific_carbon_abatement_cost_hefa_others;Vector;€/tCO2e;generic_specific carbon abatement cost (HEFA-Others) evolution
 carbon_tax;Vector;€/tCO2e;Uniform carbon tax applied on CO2 emissions evolution;
 ccs_cost;Vector;€/kgCO2e;Cost of carbon capture and storage for pure CO2 on fossil based hydrogen production plants (evolution);
 abatement_potential_atj;Vector;tCO2e;Total carbon abatement potential of ATJ if allocated resource is used to 100% (evolution)
@@ -618,26 +652,25 @@ abatement_potential_hefa_fog;Vector;tCO2e;Total carbon abatement potential of He
 abatement_potential_hefa_others;Vector;tCO2e;Total carbon abatement potential of Hefa-Others if allocated resource is used to 100% (evolution)
 abatement_potential_hydrogen_electrolysis;Vector;tCO2e;Total carbon abatement potential of hydrogen with electrolysis if allocated resource is used to 100% (evolution)
 co2_market_price;Vector;€/kgCO2e;CO2 market price is used as en input for electrofuel production, evolution (evolution);
-coal_ccs_efficiency;Vector;%;coal coal gasification (with CCS) energy conversion efficiency (evolution for EIS date);
 coal_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 coal_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (with CCS) plant EIS date (evolution for EIS date);
-coal_ccs_h2_capex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex;
+coal_ccs_h2_mean_capex_share;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Capex;
 coal_ccs_h2_carbon_tax;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to carbon tax;
-coal_ccs_h2_ccs_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS;
-coal_ccs_h2_fuel_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement;
+coal_ccs_h2_mean_ccs_cost_share;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to CCS;
+coal_ccs_h2_mean_fuel_cost_share;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Coal procurement;
 coal_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal CCS carbon tax per kg of h2 (evolution);
-coal_ccs_h2_opex_cost;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex;
+coal_ccs_h2_mean_opex_share;Vector;M€;Annual Coal CCS Hydrogen production cost attributable to Opex;
 coal_ccs_h2_total_cost;Vector;M€;Annual Coal CCS Hydrogen production cost;
 coal_ccs_plant_building_cost;Vector;M€;Annual expenses for Coal CCS plants built each year;
 coal_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for Coal CCS plants built each year;
 coal_efficiency;Vector;%;coal coal gasification (without CCS) energy conversion efficiency (evolution for EIS date);
 coal_eis_capex;Vector;€/(kg/day);Capital expenditures for coal coal gasification plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 coal_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for coal coal gasification plant (without CCS) plant EIS date (evolution for EIS date);
-coal_h2_capex_cost;Vector;M€;Annual Coal  Hydrogen production cost attributable to Capex
+coal_h2_mean_capex_share;Vector;M€;Annual Coal  Hydrogen production cost attributable to Capex
 coal_h2_carbon_tax;Vector;M€;Annual Coal  Hydrogen production cost attributable to carbon tax
-coal_h2_fuel_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Coal procurement
+coal_h2_mean_fuel_cost_share;Vector;M€;Annual Coal Hydrogen production cost attributable to Coal procurement
 coal_h2_mfsp_carbon_tax_supplement;Vector;€/kg;Coal carbon tax per kg of h2 (evolution)
-coal_h2_opex_cost;Vector;M€;Annual Coal Hydrogen production cost attributable to Opex
+coal_h2_mean_opex_share;Vector;M€;Annual Coal Hydrogen production cost attributable to Opex
 coal_h2_total_cost;Vector;M€;Annual Coal Hydrogen production cost
 coal_plant_building_cost;Vector;M€;Annual expenses for Coal plants built each year
 coal_plant_building_scenario;Vector;t/day;Annual capacity built for Coal plants built each year
@@ -687,73 +720,74 @@ dropin_mean_mfsp;Vector;€/L;Drop-in fuel average MFSP evolution (market price 
 dropin_mfsp_carbon_tax_supplement;Vector;€/L;Drop-in fuel carbon tax per L (evolution)
 electricity_market_price;Vector;€/kWh;Industrial wholesale electricity market price (evolution);
 carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Carbon abatement cost for electrofuel (evolution)
-electrofuel_avg_cost_per_l;Vector;€/L;Average electrofuel production cost year by year (evolution)
-electrofuel_capex_cost;Vector;M€;Annual electrofuel production cost attributable to Capex
+specific_carbon_abatement_cost_electrofuel;Vector;€/tCO2e;Specific carbon abatement cost for electrofuel (evolution)
+generic_specific_carbon_abatement_cost_electrofuel;Vector;€/tCO2e;generic_specific carbon abatement cost for electrofuel (evolution)
+electrofuel_mean_mfsp_litre;Vector;€/L;Average electrofuel production cost year by year (evolution)
+electrofuel_mean_capex_share;Vector;M€;Annual electrofuel production cost attributable to Capex
 electrofuel_carbon_tax;Vector;M€;Annual electrofuel production cost attributable to carbon tax
-electrofuel_co2_cost;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
+electrofuel_mean_co2_share;Vector;M€;Annual electrofuel production cost attributable to co2 procurement
 electrofuel_cost_premium;Vector;M€;Electrofuel cost premium over fossil kerosene (without carbon tax);
 electrofuel_eis_capex;Vector;€/(kg/day);Capital expenditures for electrofuel plant building in € per kg/day of nominal efuel production capacity (evolution for EIS date);
 electrofuel_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for electrofuel plant EIS date (evolution for EIS date);
 electrofuel_eis_specific_co2;Vector;kgCO2/kgfuel;Specific CO2 consumption (evolution for EIS date);
 electrofuel_eis_var_opex;Vector;€/kg;Variable operational expenditures for electrofuel plant EIS date (evolution for EIS date);
-electrofuel_elec_cost;Vector;M€;Annual electrofuel production cost attributable to electricity procurement;
+electrofuel_mean_elec_share;Vector;M€;Annual electrofuel production cost attributable to electricity procurement;
 electrofuel_mfsp_carbon_tax_supplement;Vector;€/L;Electrofuel carbon tax per L evolution
-electrofuel_opex_cost;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
+electrofuel_mean_opex_share;Vector;M€;Annual electrofuel production cost attributable to operational expenditures (other than CO2 and electricity procurement)
 electrofuel_plant_building_cost;Vector;M€;Annual expenses for electrofuel plants built each year
 electrofuel_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year
 electrofuel_total_cost;Vector;M€;Annual electrofuel total production cost
-electrolysis_h2_capex_cost;Vector;M€;Annual H2 electrolysis production cost attributable to Capex
+electrolysis_h2_mean_capex_share;Vector;M€;Annual H2 electrolysis production cost attributable to Capex
 electrolysis_h2_carbon_tax;Vector;M€;Annual H2 electrolysis production cost attributable to carbon tax
-electrolysis_h2_elec_cost;Vector;M€;Annual H2 electrolysis production cost attributable to electricity procurement
+electrolysis_h2_mean_elec_share;Vector;M€;Annual H2 electrolysis production cost attributable to electricity procurement
 electrolysis_h2_mfsp_carbon_tax_supplement;Vector;€/kg;H2 electrolysis carbon tax per kg evolution
-electrolysis_h2_opex_cost;Vector;M€;Annual H2 electrolysis production cost attributable to operational expenditures (other than electricity procurement)
+electrolysis_h2_mean_opex_share;Vector;M€;Annual H2 electrolysis production cost attributable to operational expenditures (other than electricity procurement)
 electrolysis_h2_total_cost;Vector;M€;Annual h2 electrolysis total production cost
 electrolysis_plant_building_cost;Vector;M€;Annual expenses for electrolysis plants built each year
 electrolysis_plant_building_scenario;Vector;t/day;Annual capacity for electrofuel plants built each year;
-gas_ccs_efficiency;Vector;%;gas steam methane reforming (with CCS) energy conversion efficiency (evolution for EIS date);
 gas_ccs_eis_capex;Vector;€/(kg/day);Capital expenditures for methane steam methane reforming plant (with CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 gas_ccs_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (with CCS) plant EIS date (evolution for EIS date);
-gas_ccs_h2_capex_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
+gas_ccs_h2_mean_capex_share;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to Capex
 gas_ccs_h2_carbon_tax;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon tax
-gas_ccs_h2_ccs_cost;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon capture
+gas_ccs_h2_mean_ccs_cost_share;Vector;M€;Annual gas_ccs  Hydrogen production cost attributable to carbon capture
 gas_ccs_h2_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to CCS
-gas_ccs_h2_fuel_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to gas procurement
+gas_ccs_h2_mean_fuel_cost_share;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to gas procurement
 gas_ccs_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas_ccs hydrogen carbon tax per kg of h2 (evolution)
-gas_ccs_h2_opex_cost;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to Opex
+gas_ccs_h2_mean_opex_share;Vector;M€;Annual gas_ccs Hydrogen production cost attributable to Opex
 gas_ccs_h2_total_cost;Vector;M€;Annual gas_ccs Hydrogen production cost
 gas_ccs_plant_building_cost;Vector;M€;Annual expenses for gas_ccs plants built each year
 gas_ccs_plant_building_scenario;Vector;t/day;Annual capacity built for gas_ccs plants built each year
 gas_efficiency;Vector;%;gas steam methane reforming (without CCS) energy conversion efficiency (evolution for EIS date);
 gas_eis_capex;Vector;€/(kg/day);Capital expenditures for gas steam methane reforming plant (without CCS) building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
 gas_eis_fixed_opex;Vector;€/(kg/day)/year;Annual operational (fixed) expenditures for gas smr plant (without CCS) plant EIS date (evolution for EIS date);
-gas_h2_capex_cost;Vector;M€;Annual gas  Hydrogen production cost attributable to Capex
+gas_h2_mean_capex_share;Vector;M€;Annual gas  Hydrogen production cost attributable to Capex
 gas_h2_carbon_tax;Vector;M€;Annual gas  Hydrogen production cost attributable to carbon tax
-gas_h2_fuel_cost;Vector;M€;Annual gas Hydrogen production cost attributable to gas procurement
+gas_h2_mean_fuel_cost_share;Vector;M€;Annual gas Hydrogen production cost attributable to gas procurement
 gas_h2_mfsp_carbon_tax_supplement;Vector;€/kg;gas hydrogen carbon tax per kg of h2 (evolution)
-gas_h2_opex_cost;Vector;M€;Annual gas Hydrogen production cost attributable to Opex
+gas_h2_mean_opex_share;Vector;M€;Annual gas Hydrogen production cost attributable to Opex
 gas_h2_total_cost;Vector;M€;Annual gas Hydrogen production cost
 gas_plant_building_cost;Vector;M€;Annual expenses for gas plants built each year
 gas_plant_building_scenario;Vector;t/day;Annual capacity built for gas plants built each year
 h2_avg_carbon_tax_per_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
 h2_avg_cost_per_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
-h2_avg_cost_per_kg_coal;Vector;€/kg;Average coal gasification (without ccs) hydrogen MFSP, without carbon tax (evolution)
-h2_avg_cost_per_kg_coal_ccs;Vector;€/kg;Average coal gasification (with ccs) hydrogen MFSP, without carbon tax (evolution)
-h2_avg_cost_per_kg_electrolysis;Vector;€/kg;Average electrolysis hydrogen MFSP, without carbon tax (evolution)
-h2_avg_cost_per_kg_gas;Vector;€/kg;Average steam methane reforming (without ccs) hydrogen MFSP, without carbon tax (evolution)
-h2_avg_cost_per_kg_gas_ccs;Vector;€/kg;Average steam methane reforming (with ccs) hydrogen MFSP, without carbon tax (evolution)
-h2_cost_premium_coal;Vector;M€;H2 produced by coal gasification without CCS cost premium over fossil kerosene (without carbon tax)
-h2_cost_premium_coal_ccs;Vector;M€;H2 produced by coal gasification withCCS cost premium over fossil kerosene (without carbon tax)
-h2_cost_premium_electrolysis;Vector;M€;H2 produced by water electrolysis cost premium over fossil kerosene (without carbon tax)
-h2_cost_premium_gas;Vector;M€;H2 produced by steam methane reforming without CCS cost premium over fossil kerosene (without carbon tax)
-h2_cost_premium_gas_ccs;Vector;M€;H2 produced by steam methane reforming with CCS cost premium over fossil kerosene (without carbon tax)
+coal_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (without ccs) hydrogen MFSP, without carbon tax (evolution)
+coal_ccs_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (with ccs) hydrogen MFSP, without carbon tax (evolution)
+electrolysis_h2_mean_mfsp_kg;Vector;€/kg;Average electrolysis hydrogen MFSP, without carbon tax (evolution)
+gas_h2_mean_mfsp_kg;Vector;€/kg;Average steam methane reforming (without ccs) hydrogen MFSP, without carbon tax (evolution)
+gas_ccs_h2_mean_mfsp_kg;Vector;€/kg;Average steam methane reforming (with ccs) hydrogen MFSP, without carbon tax (evolution)
+coal_h2_cost_premium;Vector;M€;H2 produced by coal gasification without CCS cost premium over fossil kerosene (without carbon tax)
+coal_ccs_h2_cost_premium;Vector;M€;H2 produced by coal gasification withCCS cost premium over fossil kerosene (without carbon tax)
+electrolysis_h2_cost_premium;Vector;M€;H2 produced by water electrolysis cost premium over fossil kerosene (without carbon tax)
+gas_h2_cost_premium;Vector;M€;H2 produced by steam methane reforming without CCS cost premium over fossil kerosene (without carbon tax)
+gas_ccs_h2_cost_premium;Vector;M€;H2 produced by steam methane reforming with CCS cost premium over fossil kerosene (without carbon tax)
 kerosene_carbon_tax_cost;Vector;M€;Annual kerosene cost attributable to carbon tax
 kerosene_carbon_tax_BAU;Vector;M€;Annual kerosene cost attributable to carbon tax in a full kerosene scenario
 kerosene_cost;Vector;M€;Annual kerosene procurement cost without carbon tax
 kerosene_market_price;Vector;€/L;Kerosene (fossil) market price evolution
 kerosene_price_supplement_carbon_tax;Vector;€/L;Kerosene (fossil) supplement to market price due to carbon tax
-liquefaction_h2_capex_cost;Vector;M€;Annual liquefaction cost attributable to capex
-liquefaction_h2_elec_cost;Vector;M€;Annual liquefaction cost attributable to electricity procurement
-liquefaction_h2_opex_cost;Vector;M€;Annual liquefaction cost attributable to operational expenditures
+liquefaction_h2_mean_capex_share;Vector;M€;Annual liquefaction cost attributable to capex
+liquefaction_h2_mean_elec_share;Vector;M€;Annual liquefaction cost attributable to electricity procurement
+liquefaction_h2_mean_opex_share;Vector;M€;Annual liquefaction cost attributable to operational expenditures
 liquefaction_h2_total_cost;Vector;M€;Annual liquefaction total cost
 liquefaction_plant_building_cost;Vector;M€;Annual building expenses for liquefaction plants built each year
 liquefaction_plant_building_scenario;Vector;t/day;Annual capacity built for liquefaction plants built each year
@@ -829,3 +863,29 @@ h2o_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model
 h2o_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for H2O
 sulfur_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for sulfur
 sulfur_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for sulfur
+noc_reference_years;List;yr;Reference years for airline non-operating costs (NOC)
+noc_reference_years_values;List;€/ASK;Reference years values for airline non-operating costs (NOC); cost_data/IATA_cost_data.xlsx
+non_operating_cost_per_ask;Vector;€/ASK;Values for airlines non-operating costs (NOC)
+passenger_tax_reference_years;List;yr;Reference years for a passenger tax per ask
+passenger_tax_reference_years_values;List;€/ASK;Reference years for a passenger tax per ask; cost_data/IATA_cost_data.xlsx
+passenger_tax_per_ask;Vector;€/ASK;Values for a passenger tax per ask
+ioc_reference_years;List;yr;Reference years for airline indirect-operating costs (IOC)
+ioc_reference_years_values;List;€/ASK;Reference years values for airline indirect-operating costs (IOC); cost_data/IATA_cost_data.xlsx
+indirect_operating_cost_per_ask;Vector;€/ASK;Values for airlines indirect-operating costs (IOC)
+operational_profit_reference_years;List;yr;Reference years for airline operating profits
+operational_profit_reference_years_values;List;€/ASK;Reference years values for airline operating profits; cost_data/IATA_cost_data.xlsx
+operational_profit_per_ask;Vector;€/ASK;Values for airlines operating profits
+total_cost_per_ask_without_extra_tax;Vector;€/ASK;Total costs without new taxes (DOC+NOC+IOC+Offsets)
+total_extra_tax_per_ask;Vector;€/ASK;Total new taxes levied (Carbon tax + passenger tax per ask)
+total_cost_per_ask;Vector;€/ASK;Total cost per ask (DOC+NOC+IOC+Offsets+Taxes)
+airfare_per_ask;Vector;€/ASK;Airfare (Total costs + operational profits)
+operational_efficiency_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of operational efficiency measures
+load_factor_cost_non_energy_per_ask_final_value;Vector;€/ASK;extra cost related to implementation of load factor measures
+operations_abatement_cost;Vector;€/tCO2;Carbon abatement cost related to Operations
+operations_abatement_effective;Vector;tCO2;Abatement related to operations
+operations_specific_abatement_cost;Vector;€/tCO2;Specific carbon abatement cost related to Operations
+operations_generic_specific_abatement_cost;Vector;€/tCO2;generic_specific carbon abatement cost related to Operations
+load_factor_abatement_cost;Vector;€/tCO2;Carbon abatement cost related to Loaf Factor
+load_factor_abatement_effective;Vector;tCO2;Abatement related to load factor
+load_factor_specific_abatement_cost;Vector;€/tCO2;Specific carbon abatement cost related to Load Factor
+load_factor_generic_specific_abatement_cost;Vector;€/tCO2;generic_specific carbon abatement cost related to Load Factor

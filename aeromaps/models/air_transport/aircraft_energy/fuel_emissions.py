@@ -2,10 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
-class BiofuelEmissionFactor(AeromapsModel):
+class BiofuelEmissionFactor(AeroMAPSModel):
     def __init__(self, name="biofuel_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -95,7 +95,7 @@ class BiofuelEmissionFactor(AeromapsModel):
         )
 
 
-class ElectricityEmissionFactor(AeromapsModel):
+class ElectricityEmissionFactor(AeroMAPSModel):
     def __init__(self, name="electricity_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -117,7 +117,7 @@ class ElectricityEmissionFactor(AeromapsModel):
         return electricity_emission_factor
 
 
-class HydrogenEmissionFactor(AeromapsModel):
+class HydrogenEmissionFactor(AeroMAPSModel):
     def __init__(self, name="hydrogen_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -126,39 +126,79 @@ class HydrogenEmissionFactor(AeromapsModel):
         electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
         electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
         liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_ccs_emission_factor: float = 0.0,
-        hydrogen_coal_ccs_emission_factor: float = 0.0,
-        hydrogen_gas_emission_factor: float = 0.0,
-        hydrogen_coal_emission_factor: float = 0.0,
+        gaseous_hydrogen_gas_ccs_emission_factor: float = 0.0,
+        gaseous_hydrogen_coal_ccs_emission_factor: float = 0.0,
+        gaseous_hydrogen_gas_emission_factor: float = 0.0,
+        gaseous_hydrogen_coal_emission_factor: float = 0.0,
         hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen CO2 emission factor calculation."""
 
-        hydrogen_electrolysis_emission_factor = (
+        liquid_hydrogen_electrolysis_emission_factor = (
             electricity_emission_factor / 3.6 / electrolysis_efficiency / liquefaction_efficiency
         )
 
-        hydrogen_mean_emission_factor = (
-            hydrogen_electrolysis_emission_factor * hydrogen_electrolysis_share / 100
-            + hydrogen_gas_ccs_emission_factor * hydrogen_gas_ccs_share / 100
-            + hydrogen_coal_ccs_emission_factor * hydrogen_coal_ccs_share / 100
-            + hydrogen_gas_emission_factor * hydrogen_gas_share / 100
-            + hydrogen_coal_emission_factor * hydrogen_coal_share / 100
+        liquefaction_hydrogen_non_electrolysis_emission_factor = (
+            electricity_emission_factor / 3.6 * (1 / liquefaction_efficiency - 1)
+        )
+
+        liquid_hydrogen_gas_ccs_emission_factor = (
+            gaseous_hydrogen_gas_ccs_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_coal_ccs_emission_factor = (
+            gaseous_hydrogen_coal_ccs_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_gas_emission_factor = (
+            gaseous_hydrogen_gas_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+        liquid_hydrogen_coal_emission_factor = (
+            gaseous_hydrogen_coal_emission_factor
+            + liquefaction_hydrogen_non_electrolysis_emission_factor
+        )
+
+        liquid_hydrogen_mean_emission_factor = (
+            liquid_hydrogen_electrolysis_emission_factor * hydrogen_electrolysis_share / 100
+            + liquid_hydrogen_gas_ccs_emission_factor * hydrogen_gas_ccs_share / 100
+            + liquid_hydrogen_coal_ccs_emission_factor * hydrogen_coal_ccs_share / 100
+            + liquid_hydrogen_gas_emission_factor * hydrogen_gas_share / 100
+            + liquid_hydrogen_coal_emission_factor * hydrogen_coal_share / 100
         )
 
         self.df.loc[
-            :, "hydrogen_electrolysis_emission_factor"
-        ] = hydrogen_electrolysis_emission_factor
-        self.df.loc[:, "hydrogen_mean_emission_factor"] = hydrogen_mean_emission_factor
+            :, "liquid_hydrogen_electrolysis_emission_factor"
+        ] = liquid_hydrogen_electrolysis_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_gas_ccs_emission_factor"
+        ] = liquid_hydrogen_gas_ccs_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_coal_ccs_emission_factor"
+        ] = liquid_hydrogen_coal_ccs_emission_factor
+        self.df.loc[:, "liquid_hydrogen_gas_emission_factor"] = liquid_hydrogen_gas_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_coal_emission_factor"
+        ] = liquid_hydrogen_coal_emission_factor
+        self.df.loc[
+            :, "liquid_hydrogen_mean_emission_factor"
+        ] = liquid_hydrogen_mean_emission_factor
 
-        return hydrogen_electrolysis_emission_factor, hydrogen_mean_emission_factor
+        return (
+            liquid_hydrogen_electrolysis_emission_factor,
+            liquid_hydrogen_gas_ccs_emission_factor,
+            liquid_hydrogen_coal_ccs_emission_factor,
+            liquid_hydrogen_gas_emission_factor,
+            liquid_hydrogen_coal_emission_factor,
+            liquid_hydrogen_mean_emission_factor,
+        )
 
 
-class ElectrofuelEmissionFactor(AeromapsModel):
+class ElectrofuelEmissionFactor(AeroMAPSModel):
     def __init__(self, name="electrofuel_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -182,7 +222,7 @@ class ElectrofuelEmissionFactor(AeromapsModel):
         return electrofuel_emission_factor
 
 
-class KeroseneEmissionFactor(AeromapsModel):
+class KeroseneEmissionFactor(AeroMAPSModel):
     def __init__(self, name="kerosene_emission_factor", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

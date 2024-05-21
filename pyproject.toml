@@ -21,27 +21,36 @@ license = "GPL-3.0-only"
 homepage = "https://github.com/AeroMAPS/AeroMAPS"
 
 [tool.poetry.dependencies]
+# Core and standard libraries
 python = "^3.8.0, <3.11"
 numpy = "^1.20.3"
 scipy = "^1.4.1"
 pandas = "^1.1.0"
 xlrd = "1.2.0"
 openpyxl = "^3.1.2"
-voila = "^0.5.0"
-jupyterlab = "^3.3.0"
-matplotlib = "^3.7"
-ipywidgets = "^8.0.6"
-ipysheet = ">=0.5.0, <1"
-plotly = "^5.0.0"
-markdown = "^3.4.3"
-ipympl = "^0.9.3"
 gemseo = "^5.0"
+
+# Data visualization
+matplotlib = "^3.7"
+ipympl = "^0.9.3"
+plotly = "^5.0.0"
+
+# Graphical User Interface
+markdown = "^3.4.3"
 aenum = "^3.1.12"
-ipydatagrid = "^1.1.14"
-ipytree = "^0.2.2"
 docstring-inheritance = "^1.0.0"
 dacite = "^1.8.0"
 fair = "2.1.4"
+jupyterlab = "^3.3.0"
+ipywidgets = "^8.0.6"
+ipysheet = ">=0.5.0, <1"
+ipydatagrid = "^1.1.14"
+ipytree = "^0.2.2"
+
+# Web deployment
+voila = "^0.5.0"
+
+# Life cycle assessment
 lca-algebraic = "1.1"
 "ruamel.yaml" = "^0.18.5"
 ensure = "^1.0.0"

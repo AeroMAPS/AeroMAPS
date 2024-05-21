@@ -3,10 +3,10 @@ from typing import Tuple
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeromapsModel, AeromapsLevelingFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
 
 
-class RTK(AeromapsModel):
+class RTK(AeroMAPSModel):
     def __init__(self, name="rtk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -89,7 +89,7 @@ class RTK(AeromapsModel):
         )
 
 
-class RTKReference(AeromapsModel):
+class RTKReference(AeroMAPSModel):
     def __init__(self, name="rtk_reference", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

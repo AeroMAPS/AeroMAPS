@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class CarbonBudgetConsumedShare(AeromapsModel):
+class CarbonBudgetConsumedShare(AeroMAPSModel):
     def __init__(self, name="carbon_budget_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -26,14 +26,13 @@ class CarbonBudgetConsumedShare(AeromapsModel):
         return carbon_budget_consumed_share
 
 
-class EquivalentCarbonBudgetConsumedShare(AeromapsModel):
+class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
     def __init__(self, name="equivalent_carbon_budget_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
         self,
         cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
-        gross_carbon_budget_2050: float = 0.0,
         equivalent_gross_carbon_budget_2050: float = 0.0,
     ) -> Tuple[float]:
         """Equivalent Carbon budget consumption share calculation."""
@@ -51,7 +50,7 @@ class EquivalentCarbonBudgetConsumedShare(AeromapsModel):
         return equivalent_carbon_budget_consumed_share
 
 
-class ResourcesConsumedShare(AeromapsModel):
+class ResourcesConsumedShare(AeroMAPSModel):
     def __init__(self, name="resources_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 

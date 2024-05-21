@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.8', '3.9', '3.10' ]
-        os: [ ubuntu-20.04, windows-latest, macos-latest ]
+        os: [ ubuntu-20.04, windows-latest ]
 
     steps:
       - uses: actions/checkout@v3
@@ -34,5 +34,5 @@ jobs:
           poetry install
 
       - name: Notebook tests
-        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps/notebooks
+        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps
         shell: bash

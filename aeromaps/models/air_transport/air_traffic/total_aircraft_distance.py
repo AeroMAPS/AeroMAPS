@@ -3,11 +3,11 @@ import pandas as pd
 from pandas import read_csv
 import os.path as pth
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 from aeromaps.resources import climate_data
 
 
-class TotalAircraftDistance(AeromapsModel):
+class TotalAircraftDistance(AeroMAPSModel):
     def __init__(self, name="total_aircraft_distance", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         # Load dataset

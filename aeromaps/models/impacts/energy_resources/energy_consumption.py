@@ -2,10 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from aeromaps.models.base import AeromapsModel
+from aeromaps.models.base import AeroMAPSModel
 
 
-class DropInFuelConsumption(AeromapsModel):
+class DropInFuelConsumption(AeroMAPSModel):
     def __init__(self, name="drop_in_fuel_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -461,7 +461,7 @@ class DropInFuelConsumption(AeromapsModel):
         )
 
 
-class HydrogenConsumption(AeromapsModel):
+class HydrogenConsumption(AeroMAPSModel):
     def __init__(self, name="hydrogen_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -594,7 +594,7 @@ class HydrogenConsumption(AeromapsModel):
         )
 
 
-class ElectricConsumption(AeromapsModel):
+class ElectricConsumption(AeroMAPSModel):
     def __init__(self, name="electric_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -727,7 +727,7 @@ class ElectricConsumption(AeromapsModel):
         )
 
 
-class EnergyConsumption(AeromapsModel):
+class EnergyConsumption(AeroMAPSModel):
     def __init__(self, name="energy_consumption", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
