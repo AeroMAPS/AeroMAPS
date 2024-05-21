@@ -37,7 +37,9 @@ default_config_path = os.path.join(current_dir, "config.json")
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 # Construct the path to the climate data .csv file
-default_climate_historical_data_path = os.path.join(current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv")
+default_climate_historical_data_path = os.path.join(
+    current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
+)
 
 
 class AeroMAPSProcess(object):
@@ -272,7 +274,9 @@ class AeroMAPSProcess(object):
         else:
             climate_historical_data_file_path = default_climate_historical_data_path
 
-        historical_dataset_df = pd.read_csv(climate_historical_data_file_path, delimiter=";", header=None)
+        historical_dataset_df = pd.read_csv(
+            climate_historical_data_file_path, delimiter=";", header=None
+        )
         self.climate_historical_data = historical_dataset_df.values
 
     def _set_inputs(self):

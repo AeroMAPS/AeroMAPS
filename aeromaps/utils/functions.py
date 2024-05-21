@@ -42,7 +42,7 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
 
 
 def create_partitioning(file, path=""):
-    """Generation of a JSON input file for running an AeroMAPS process for a partitioned scope."""
+    """Generation of a JSON input file (air transport data) and a CSV file (climate data) for running an AeroMAPS process for a partitioned scope."""
 
     # World input data recovery
     world_data_path = pth.join(data.__path__[0], "parameters.json")

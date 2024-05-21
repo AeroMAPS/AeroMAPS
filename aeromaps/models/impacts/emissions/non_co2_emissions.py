@@ -3,6 +3,7 @@ import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 
+
 class NOxEmissionIndex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
