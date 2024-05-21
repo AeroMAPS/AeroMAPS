@@ -55,18 +55,20 @@ def create_partitioning(file, path=""):
     short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
     medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
     long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
-    total_energy_consumption_2019 = total_energy_consumption_per_ask_2019 * total_ask_2019 / (
-                1 - freight_energy_share_2019_partitioned / 2 / 100
-            )  # Dedicated freight (half of total freight) not included in AeroSCOPE
+    total_energy_consumption_2019 = (
+        total_energy_consumption_per_ask_2019
+        * total_ask_2019
+        / (1 - freight_energy_share_2019_partitioned / 2 / 100)
+    )  # Dedicated freight (half of total freight) not included in AeroSCOPE
     short_range_energy_consumption_2019 = (
         short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
     medium_range_energy_consumption_2019 = (
         medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
     long_range_energy_consumption_2019 = (
         long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - 0.075/(1-0.075))
+    ) * (1 - 0.075 / (1 - 0.075))
 
     # Calculation of the partitioned input values
 

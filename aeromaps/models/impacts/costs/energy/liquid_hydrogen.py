@@ -1761,7 +1761,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         social_discount_rate: float = 0.0,
     ) -> Tuple[pd.Series, pd.Series,]:
         # Constants:
-        # TODO VECTORIZE
+
         indexes = avoided_emission_factor.index
 
         specific_em = pd.Series(np.nan, indexes)
