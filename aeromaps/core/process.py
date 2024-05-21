@@ -114,6 +114,7 @@ class AeroMAPSProcess(object):
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
             self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+            # TODO: add lca_outputs
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
@@ -251,74 +252,6 @@ class AeroMAPSProcess(object):
             # If an alternative file is provided overwrite values
             if new_input_file_path != default_parameters_path:
                 self.parameters.read_json(file_name=new_input_file_path)
-
-    def compute(self):
-
-        if self.fleet is not None:
-            self.fleet_model.compute()
-
-        input_data = self._set_inputs()
-
-        if self.fleet is not None:
-            # This is needed since fleet model is particular discipline
-            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
-
-        self.process.execute(input_data=input_data)
-
-        self._update_variables()
-
-        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(
-                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
-            )
-            file_name = new_output_file_path
-        else:
-            file_name = None
-        self.write_json(file_name=file_name)
-
-    def write_json(self, file_name=None):
-        if file_name is None:
-            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
-        with open(file_name, "w", encoding="utf-8") as f:
-            dump(self.json, f, ensure_ascii=False, indent=4)
-
-    def write_excel(self, file_name=None):
-        if file_name is None:
-            file_name = self.config["EXCEL_DATA_FILE"]
-        with pd.ExcelWriter(file_name) as writer:
-            self.data_information_df.to_excel(writer, sheet_name="Data Information")
-            self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
-            self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
-            self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
-            self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
-            self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
-            # TODO: add lca_outputs
-
-    def generate_n2(self):
-        generate_n2_plot(self.disciplines)
-
-    def update_parameters(self):
-        for name, model in self.models.items():
-            model.parameters = self.parameters
-
-    def list_available_plots(self):
-        return list(available_plots.keys())
-
-    def list_float_inputs(self):
-        return self.data["float_inputs"]
-
-    def plot(self, name, save=False):
-
-        if name in available_plots:
-            fig = available_plots[name](self.data)
-            if save:
-                fig.fig.savefig(f"{name}.pdf")
-        else:
-            raise NameError(
-                f"Plot {name} is not available. List of available plots: {list(available_plots.keys())}"
-            )
-        return fig
 
     def _set_inputs(self):
 
