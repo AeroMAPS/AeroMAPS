@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 0.7.0-beta
+
+Changed:
+- Add the capability of handling a custom model. (#67)
+- Add the capability of handling a custom input file. (#69)
+- Update climate models. (#72)
+- Update cost models and add MACC models. (#74)
+- Integrate scope partitioning using AeroSCOPE data. (#79)
+
+Fixed:
+- Improvement of basic notebooks. (#69)
+- Electricity consumption of hydrogen liquefaction. (#74)
+- Improvement of the creation of a process. (#76)
+- Fleet refactoring. (#79)
+
 ## Version 0.6.2-beta
 
 Changed:
