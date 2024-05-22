@@ -249,7 +249,7 @@ class LCAProblemConfigurator:
 
         if len(bw.databases) > 0 and not reset:
             print("Initial setup of EcoInvent/Premise already done, skipping. "
-                  "To reset the project use option generate(reset=True).")
+                  "To reset the project use option `reset=True`.")
 
         else:  ### Import Ecoinvent DB
             # User must create a file named .env, that he will not share /commit, and contains the following :
@@ -291,6 +291,8 @@ class LCAProblemConfigurator:
         ### Set up the project
         project_name = self._setup_project(reset=reset)
 
+        ### Build the model
+        print("Building LCA model from configuration file...")
         # Get model definition from configuration file
         model_definition = self._serializer.data.get(KEY_MODEL)
         model = agb.newActivity(
@@ -336,6 +338,7 @@ class LCAProblemConfigurator:
         #        exchanges={model: functional_value}
         #    )
         #    problem.model = normalized_model
+        print("LCA model successfully built.")
 
         return project_name, model
 

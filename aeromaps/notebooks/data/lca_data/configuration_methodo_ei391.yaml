@@ -13,19 +13,25 @@ premise:
     scenarios:
         - model: "remind"
           pathway: "SSP2-Base"
+          year: 2020
+        - model: "remind"
+          pathway: "SSP2-Base"
+          year: 2025
+        - model: "remind"
+          pathway: "SSP2-Base"
           year: 2030
         - model: "remind"
           pathway: "SSP2-Base"
+          year: 2035
+        - model: "remind"
+          pathway: "SSP2-Base"
           year: 2040
+        - model: "remind"
+          pathway: "SSP2-Base"
+          year: 2045
         - model: "remind"
           pathway: "SSP2-Base"
           year: 2050
-        - model: "remind"
-          pathway: "SSP1-Base"
-          year: 2035
-        - model: "image"
-          pathway: "SSP2-Base"
-          year: 2040
     update: 'all'  # all sectors
         # Or a list of individual sectors to be updated
         # - 'electricity'
@@ -35,13 +41,6 @@ premise:
 
 model:
 
-    aircraft_production:
-        name: 'aircraft production, passenger aircraft, long haul'
-        exchange: n_aircraft / aircraft_lifetime
-        custom_attributes:
-            - attribute: "phase"
-              value: "aircraft production"
-
     airports:
         name: 'market for airport'
         exchange: n_airports / airport_lifetime
@@ -49,24 +48,71 @@ model:
             - attribute: "phase"
               value: "airport"
 
-    energy:
-        exchange: total_energy
-        unit: kilowatt hour
+    aicraft:
+        name: 'aircraft production, passenger aircraft, long haul'
+        exchange: n_aircraft / aircraft_lifetime
+        custom_attributes:
+            - attribute: "phase"
+              value: "aircraft production"
+
+    fuel:
+        unit: MJ
 
         kerosene:
-            exchange: (1 - share_efuel) / energy_density_kero
+            exchange: energy_consumption_kerosene / 43.2  # conversion MJ to kg
+            unit: kilogram
 
             production:
-                name: 'market for kerosene'
-                loc: 'Europe without Switzerland'
+                unit: kilogram
                 custom_attributes:
-                    - attribute: "phase"
-                      value: "kerosene_production"
+                        - attribute: "phase"
+                          value: "fuel production kero"
+                
+                market_row:
+                    exchange: 0.719396
+                    name: 'market for kerosene'
+                    loc: 'RoW'
+                    
+                market_europe:
+                    exchange: 0.147226
+                    name: 'market for kerosene'
+                    loc: 'Europe without Switzerland'
+                    
+                market_india:
+                    exchange: 0.080849
+                    name: 'market for kerosene'
+                    loc: 'IN'
+                    
+                market_brazil:
+                    exchange: 0.025484
+                    name: 'market for kerosene'
+                    loc: 'BR'
+                    
+                market_south_africa:
+                    exchange: 0.010466
+                    name: 'market for kerosene'
+                    loc: 'ZA'
+                    
+                market_switzerland:
+                    exchange: 0.006927
+                    name: 'market for kerosene'
+                    loc: 'CH'
+                    
+                market_columbia:
+                    exchange: 0.005400
+                    name: 'market for kerosene'
+                    loc: 'CO'
+                
+                market_peru:
+                    exchange: 0.004253
+                    name: 'market for kerosene'
+                    loc: 'PE'
+                    
 
             combustion:
                 custom_attributes:
                     - attribute: "phase"
-                      value: "combustion"
+                      value: "fuel combustion kero"
             
                 chemicals:
                     CO2:
@@ -175,24 +221,24 @@ model:
                             - 'lower stratosphere + upper troposphere'
                             
 
-        efuel:
-            exchange: share_efuel
-            unit: kilowatt hour
-            
-            production:
-                electricity:
-                    exchange: amount_elec_h2
-                    is_switch: True
-                    pv:
-                        name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
-                        loc: 'FR'
-                    wind:
-                        name: 'electricity production, wind, <1MW turbine, onshore'
-                        loc: 'FR'
-                hydrogen_production:
-                    name: 'hydrogen production, steam reforming'
-                    loc: 'RER'
-                    exchange: amount_h2 / energy_density_h2
+        #efuel:
+        #    exchange: share_efuel / 3.6  # conversion kWh to MJ for parent process
+        #    unit: kilowatt hour
+        #    
+        #    production:
+        #        electricity:
+        #            exchange: amount_elec_h2
+        #            is_switch: True
+        #            pv:
+        #                name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
+        #                loc: 'FR'
+        #            wind:
+        #                name: 'electricity production, wind, <1MW turbine, onshore'
+        #                loc: 'FR'
+        #        hydrogen_production:
+        #            name: 'hydrogen production, steam reforming'
+        #            loc: 'RER'
+        #            exchange: amount_h2 / energy_density_h2
 
 
 

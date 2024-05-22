@@ -14,19 +14,35 @@ from typing import Tuple
 KEY_YEAR = 'year'
 KEY_AXIS = 'phase'
 KEY_METHOD = 'method'
+from aeromaps.core.process import default_parameters_path
+from aeromaps.models.parameters import Parameters
 
 
 class LifeCycleAssessment(AeroMAPSModel):
-    def __init__(self, name="life_cycle_assessment", *args, **kwargs):
+    def __init__(self, name="life_cycle_assessment", reset: bool = False, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
-        _, model, methods = LCAProblemConfigurator(CONFIGURATION_FILE).generate()
+        _, model, methods = LCAProblemConfigurator(CONFIGURATION_FILE).generate(reset=reset)
         self.model = model
         self.methods = methods
 
         self.params_names = agb.all_params().keys()
         self.params_dict = dict()
-        self.custom_inputs = [item for x in agb.all_params().keys() for item in
-                              (x + '_reference_years', x + '_reference_years_values') if x not in [KEY_YEAR]]  # For gemseo inputs
+
+        # Automatically add LCA parameters as inputs of this AeroMAPSModel. See gemseo.py for more details.
+        self.custom_inputs = list()
+        json_file_parameters = Parameters()
+        json_file_parameters.read_json(file_name=default_parameters_path)
+        for x in agb.all_params().keys():
+            if x == KEY_YEAR:
+                continue
+            if x + '_reference_years' in json_file_parameters.to_dict().keys():
+                self.custom_inputs += [x + '_reference_years', x + '_reference_years_values']
+            else:
+                self.custom_inputs += [x]
+
+
+        #    [item for x in agb.all_params().keys() for item in
+        #                      (x + '_reference_years', x + '_reference_years_values') if x not in [KEY_YEAR]]
 
     def compute(
             self,
@@ -35,20 +51,29 @@ class LifeCycleAssessment(AeroMAPSModel):
 
         # Parameters interpolation and assignment
         for name in self.params_names:
-            if name == KEY_YEAR:
-                self.params_dict[name] = [year for year in range(self.prospection_start_year, self.end_year + 1)]
-            elif any(isinstance(elem, str) for elem in kwargs[f'{name}_reference_years_values']):
-                # TODO: expand list of non-float values to match the length of interpolated years?
+            if name == KEY_YEAR:  # temporal parameter
+                self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))  # replace by self.data["years"]["prospective_years"] ?
+
+            # TODO: better handling of non-float parameters
+            elif any(isinstance(elem, str) for elem in kwargs.get(f'{name}_reference_years_values', [])):  # non-float parameters
                 self.params_dict[name] = kwargs[f'{name}_reference_years_values']
+
             else:
-                param_values = AeromapsInterpolationFunction(
-                    self,
-                    kwargs[f'{name}_reference_years'],
-                    kwargs[f'{name}_reference_years_values'],
-                    model_name=self.name,
-                )
-                param_values = param_values[self.prospection_start_year - self.historic_start_year:]  # remove interpolated values before the start of prospective start year (these are NaNs)
-                self.params_dict[name] = np.nan_to_num(param_values)
+                if f'{name}_reference_years' in kwargs and f'{name}_reference_years_values' in kwargs:  # input data provided in parameters.json
+                    param_values = AeromapsInterpolationFunction(
+                        self,
+                        kwargs[f'{name}_reference_years'],
+                        kwargs[f'{name}_reference_years_values'],
+                        model_name=self.name,
+                    )
+                    # param_values = param_values[self.prospection_start_year - self.historic_start_year:]  # remove interpolated values before the start of prospective start year (these are NaNs)
+                    # self.params_dict[name] = np.nan_to_num(param_values)
+                else:  # data calculated by previous AeroMAPS models
+                    param_values = kwargs[name]
+                if len(param_values) != self.end_year - self.prospection_start_year + 1:
+                    param_values = param_values[self.prospection_start_year - self.historic_start_year:]
+                param_values = np.nan_to_num(param_values)
+                self.params_dict[name] = param_values
 
         # LCIA calculation
         multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year
