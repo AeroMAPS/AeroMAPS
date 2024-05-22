@@ -243,7 +243,7 @@ model:
             production:
                 custom_attributes:
                     - attribute: "phase"
-                      value: "electrofuel production"
+                      value: "production electrofuel"
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation'
                 loc: 'World'
@@ -256,7 +256,131 @@ model:
                 chemicals:
                     CO2:
                         exchange: 3.15818
-                        name: 'carbon dioxide, fossil'  # this is a biosphere process   
+                        name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CO:
+                        exchange: 0.00278982792508569
+                        name: 'carbon monoxide, fossil'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NOx:
+                        exchange: 0.0138567068171911
+                        name: 'nitrogen oxides'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    SOx:
+                        exchange: 0.00102
+                        name: 'sulfur dioxide'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    H2O:
+                        exchange: 0.00123
+                        name: 'water'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    PM:
+                        exchange: 0.000309885409990546
+                        name: 'Particulate Matter, < 2.5 um'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NMVOC:
+                        exchange: 0.000134838256440604
+                        name: 'NMVOC, non-methane volatile organic compounds'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CH4:
+                        exchange: 0.0000149820284934004
+                        name: 'methane, fossil'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                    N2O:
+                        exchange: 0.0001
+                        name: 'dinitrogen monoxide'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                        
+                heavy_metals:
+                    Cadmium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Cadmium II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Chromium:
+                        exchange: 4.99993497838031e-8
+                        name: 'Chromium III'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Copper:
+                        exchange: 1.70001625540492e-6
+                        name: 'Copper ion'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Lead:
+                        exchange: 0.00002
+                        name: 'Lead II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Mercury:
+                        exchange: 6.99993497838031e-11
+                        name: 'Mercury II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Nickel:
+                        exchange: 6.99993497838031e-8
+                        name: 'Nickel II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Selenium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Selenium IV'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Zinc:
+                        exchange: 9.99990246757047e-6
+                        name: 'Zinc II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                            
+                            
+        biofuel:
+            exchange: energy_consumption_biofuel / 43.2  # conversion MJ to kg
+            unit: kilogram
+            
+            production:
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "production biofuel"
+                      
+                name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
+                loc: 'RER'
+                
+            combustion:
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "combustion biofuel"
+            
+                chemicals:
+                    CO2:
+                        exchange: 3.15818
+                        name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
                         categories:
                             - 'air'
                             - 'lower stratosphere + upper troposphere'
@@ -404,6 +528,8 @@ methods:  # tip: you can search for methods with lca_algebraic function agb.find
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
-
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: natural resources', 'natural resources')"
 
     

@@ -62,7 +62,7 @@ def _get_unique_activity_name(key):
     Returns a unique activity name by incrementing a suffix number.
     """
     i = 1
-    while agb.findActivity(key + str(i), db_name=USER_DB, single=False):
+    while agb.findActivity(f'{key}_{i}', db_name=USER_DB, single=False):
         i += 1
     new_key = f'{key}_{i}'
     return new_key

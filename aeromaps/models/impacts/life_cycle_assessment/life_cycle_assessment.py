@@ -16,6 +16,7 @@ KEY_AXIS = 'phase'
 KEY_METHOD = 'method'
 from aeromaps.core.process import default_parameters_path
 from aeromaps.models.parameters import Parameters
+import time
 
 
 class LifeCycleAssessment(AeroMAPSModel):
