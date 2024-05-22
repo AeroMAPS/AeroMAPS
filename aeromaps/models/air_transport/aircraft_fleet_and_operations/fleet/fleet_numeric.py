@@ -23,7 +23,7 @@ class FleetEvolution(AeroMAPSModel):
         rpk_long_range: pd.Series = pd.Series(dtype="float64"),
         covid_start_year: int = 0,
         covid_end_year: int = 0,
-    ) -> Tuple[dict, dict, dict, dict, dict]:
+    ) -> Tuple[dict, dict, dict, dict, dict, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
 
         ask_aircraft_value_dict = {}
         rpk_aircraft_value_dict = {}
@@ -127,10 +127,62 @@ class FleetEvolution(AeroMAPSModel):
                 ] = aircraft_in_fleet_value_covid_levelling
                 aircraft_in_out_value_dict[aircraft_var_name] = aircraft_in_out_value
 
+        # Aggregate results by range category and aircraft production vs. disposal
+        # Filter columns and calculate sums for Short Range
+        short_range_cols = filter_columns(self.fleet_model.df, 'Short Range:', suffix=':aircraft_in_out')
+        df_short_range = self.fleet_model.df[short_range_cols]
+        aircraft_production_short_range = self.fleet_model.df[
+            'Short Range: Aircraft Production'] = df_short_range.apply(sum_positive, axis=1)
+        aircraft_disposal_short_range = self.fleet_model.df[
+            'Short Range: Aircraft Disposal'] = df_short_range.apply(sum_negative, axis=1)
+
+        # Filter columns and calculate sums for Medium Range
+        medium_range_cols = filter_columns(self.fleet_model.df, 'Medium Range:', suffix=':aircraft_in_out')
+        df_medium_range = self.fleet_model.df[medium_range_cols]
+        aircraft_production_medium_range = self.fleet_model.df[
+            'Medium Range: Aircraft Production'] = df_medium_range.apply(sum_positive, axis=1)
+        aircraft_disposal_medium_range = self.fleet_model.df[
+            'Medium Range: Aircraft Disposal'] = df_medium_range.apply(sum_negative, axis=1)
+
+        # Filter columns and calculate sums for Long Range
+        long_range_cols = filter_columns(self.fleet_model.df, 'Long Range:', suffix=':aircraft_in_out')
+        df_long_range = self.fleet_model.df[long_range_cols]
+        aircraft_production_long_range = self.fleet_model.df[
+            'Long Range: Aircraft Production'] = df_long_range.apply(sum_positive, axis=1)
+        aircraft_disposal_long_range = self.fleet_model.df[
+            'Long Range: Aircraft Disposal'] = df_long_range.apply(sum_negative, axis=1)
+
         return (
             ask_aircraft_value_dict,
             rpk_aircraft_value_dict,
             aircraft_in_fleet_value_dict,
             aircraft_in_fleet_value_covid_levelling_dict,
             aircraft_in_out_value_dict,
+            aircraft_production_short_range,
+            aircraft_disposal_short_range,
+            aircraft_production_medium_range,
+            aircraft_disposal_medium_range,
+            aircraft_production_long_range,
+            aircraft_disposal_long_range
         )
+
+
+def filter_columns(df, prefix, suffix):
+    """
+    Filters columns of a dataframe by prefix and suffix
+    """
+    return [col for col in df.columns if col.startswith(prefix) and col.endswith(suffix)]
+
+
+def sum_positive(row):
+    """
+    Calculates the sum of positive values in a row of a dataframe
+    """
+    return row[row > 0].sum()
+
+
+def sum_negative(row):
+    """
+    Calculates the absolute sum of negative values in a row of a dataframe
+    """
+    return abs(row[row < 0].sum())

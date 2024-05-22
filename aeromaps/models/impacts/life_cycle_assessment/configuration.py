@@ -292,7 +292,7 @@ class LCAProblemConfigurator:
         project_name = self._setup_project(reset=reset)
 
         ### Build the model
-        print("Building LCA model from configuration file...")
+        print("Building LCA model from configuration file...", end=' ')
         # Get model definition from configuration file
         model_definition = self._serializer.data.get(KEY_MODEL)
         model = agb.newActivity(
@@ -338,7 +338,7 @@ class LCAProblemConfigurator:
         #        exchanges={model: functional_value}
         #    )
         #    problem.model = normalized_model
-        print("LCA model successfully built.")
+        print("Done.")
 
         return project_name, model
 

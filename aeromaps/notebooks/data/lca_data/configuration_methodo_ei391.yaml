@@ -42,18 +42,33 @@ premise:
 model:
 
     airports:
-        name: 'market for airport'
-        exchange: n_airports / airport_lifetime
         custom_attributes:
             - attribute: "phase"
               value: "airport"
+              
+        name: 'market for airport'
+        exchange: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range
+        
 
-    aicraft:
-        name: 'aircraft production, passenger aircraft, long haul'
-        exchange: n_aircraft / aircraft_lifetime
-        custom_attributes:
-            - attribute: "phase"
-              value: "aircraft production"
+    aircraft:
+    
+        aircraft_production:
+            custom_attributes:
+                - attribute: "phase"
+                  value: "aircraft production"
+
+            long_range:
+                name: 'aircraft production, passenger aircraft, long haul'
+                exchange: aircraft_production_long_range
+
+            medium_range:
+                name: 'aircraft production, passenger aircraft, medium haul'
+                exchange: aircraft_production_medium_range
+
+            short_range:
+                name: 'aircraft production, passenger aircraft, short haul'
+                exchange: aircraft_production_short_range
+        
 
     fuel:
         unit: MJ
@@ -66,7 +81,7 @@ model:
                 unit: kilogram
                 custom_attributes:
                         - attribute: "phase"
-                          value: "fuel production kero"
+                          value: "production kerosene"
                 
                 market_row:
                     exchange: 0.719396
@@ -112,7 +127,7 @@ model:
             combustion:
                 custom_attributes:
                     - attribute: "phase"
-                      value: "fuel combustion kero"
+                      value: "combustion kerosene"
             
                 chemicals:
                     CO2:
@@ -220,6 +235,130 @@ model:
                             - 'air'
                             - 'lower stratosphere + upper troposphere'
                             
+        
+        efuel:
+            exchange: energy_consumption_electrofuel / 43.2  # conversion MJ to kg
+            unit: kilogram
+            
+            production:
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "electrofuel production"
+                      
+                name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation'
+                loc: 'World'
+                
+            combustion:
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "combustion electrofuel"
+            
+                chemicals:
+                    CO2:
+                        exchange: 3.15818
+                        name: 'carbon dioxide, fossil'  # this is a biosphere process   
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CO:
+                        exchange: 0.00278982792508569
+                        name: 'carbon monoxide, fossil'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NOx:
+                        exchange: 0.0138567068171911
+                        name: 'nitrogen oxides'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    SOx:
+                        exchange: 0.00102
+                        name: 'sulfur dioxide'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    H2O:
+                        exchange: 0.00123
+                        name: 'water'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    PM:
+                        exchange: 0.000309885409990546
+                        name: 'Particulate Matter, < 2.5 um'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    NMVOC:
+                        exchange: 0.000134838256440604
+                        name: 'NMVOC, non-methane volatile organic compounds'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CH4:
+                        exchange: 0.0000149820284934004
+                        name: 'methane, fossil'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                    N2O:
+                        exchange: 0.0001
+                        name: 'dinitrogen monoxide'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                        
+                heavy_metals:
+                    Cadmium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Cadmium II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Chromium:
+                        exchange: 4.99993497838031e-8
+                        name: 'Chromium III'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Copper:
+                        exchange: 1.70001625540492e-6
+                        name: 'Copper ion'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Lead:
+                        exchange: 0.00002
+                        name: 'Lead II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Mercury:
+                        exchange: 6.99993497838031e-11
+                        name: 'Mercury II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Nickel:
+                        exchange: 6.99993497838031e-8
+                        name: 'Nickel II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Selenium:
+                        exchange: 9.99990246757047e-9
+                        name: 'Selenium IV'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    Zinc:
+                        exchange: 9.99990246757047e-6
+                        name: 'Zinc II'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+
 
         #efuel:
         #    exchange: share_efuel / 3.6  # conversion kWh to MJ for parent process
@@ -242,9 +381,29 @@ model:
 
 
 
-methods:
-    - "('EF v3.1', 'acidification', 'accumulated exceedance (AE)')"
-    - "('EF v3.1', 'climate change', 'global warming potential (GWP100)')"
-    - "('EF v3.1', 'water use', 'user deprivation potential (deprivation-weighted water consumption)')"
-    - "('EF v3.1', 'land use', 'soil quality index')"
+methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods()
+    #- "('EF v3.1', 'acidification', 'accumulated exceedance (AE)')"
+    #- "('EF v3.1', 'climate change', 'global warming potential (GWP100)')"
+    #- "('EF v3.1', 'water use', 'user deprivation potential (deprivation-weighted water consumption)')"
+    #- "('EF v3.1', 'land use', 'soil quality index')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'acidification: terrestrial', 'terrestrial acidification potential (TAP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: freshwater', 'freshwater ecotoxicity potential (FETP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: marine', 'marine ecotoxicity potential (METP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: terrestrial', 'terrestrial ecotoxicity potential (TETP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'energy resources: non-renewable, fossil', 'fossil fuel potential (FFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: freshwater', 'freshwater eutrophication potential (FEP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: marine', 'marine eutrophication potential (MEP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: carcinogenic', 'human toxicity potential (HTPc)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: non-carcinogenic', 'human toxicity potential (HTPnc)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ionising radiation', 'ionising radiation potential (IRP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'land use', 'agricultural land occupation (LOP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'material resources: metals/minerals', 'surplus ore potential (SOP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ozone depletion', 'ozone depletion potential (ODPinfinite)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'particulate matter formation', 'particulate matter formation potential (PMFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
+
+
     

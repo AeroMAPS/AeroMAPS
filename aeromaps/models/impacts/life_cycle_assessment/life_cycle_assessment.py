@@ -21,10 +21,11 @@ from aeromaps.models.parameters import Parameters
 class LifeCycleAssessment(AeroMAPSModel):
     def __init__(self, name="life_cycle_assessment", reset: bool = False, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
+
+        # Get LCA model and LCIA methods
         _, model, methods = LCAProblemConfigurator(CONFIGURATION_FILE).generate(reset=reset)
         self.model = model
         self.methods = methods
-
         self.params_names = agb.all_params().keys()
         self.params_dict = dict()
 
@@ -40,9 +41,10 @@ class LifeCycleAssessment(AeroMAPSModel):
             else:
                 self.custom_inputs += [x]
 
-
-        #    [item for x in agb.all_params().keys() for item in
-        #                      (x + '_reference_years', x + '_reference_years_values') if x not in [KEY_YEAR]]
+        # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
+        print('Parametrizing LCIA impacts...', end=' ')
+        _ = agb.compute_impacts(self.model, self.methods)
+        print('Done.')
 
     def compute(
             self,
@@ -79,7 +81,7 @@ class LifeCycleAssessment(AeroMAPSModel):
         multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year
 
         # Calculate impacts for each year
-        # (this is a temporary solution waiting for lca_algebraic to handle both 'axis' and multi params simultaneously)
+        # FIXME: this is a temporary solution waiting for lca_algebraic to handle both 'axis' and multi params simultaneously)
         for i, year in enumerate(self.params_dict[KEY_YEAR]):
             parameters_tmp = self.params_dict.copy()
             # Get the value of each parameter for the current year
