@@ -4,6 +4,7 @@
 # @Software: PyCharm
 import warnings
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -12,7 +13,8 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, widgets
+from ipywidgets import interact, Dropdown, widgets
+from matplotlib.ticker import FuncFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .constants import plot_3_x, plot_3_y
@@ -80,7 +82,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_ylabel("Annual Capital Investment [M€]")
         # self.ax = plt.gca()
 
-        self.ax.legend(
+        legend = self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -149,7 +151,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_xlim(2020, max(self.prospective_years) - 1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
 
-        self.ax.legend(
+        legend = self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -716,8 +718,8 @@ class ScenarioEnergyCarbonTaxPlot:
         (self.line_bau_energy_expenses_carbon_tax,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                    self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
             ),
             label="Business as usual energy expenses incl. carbon tax",
             linestyle="--",
@@ -734,8 +736,8 @@ class ScenarioEnergyCarbonTaxPlot:
         (self.line_full_kero_energy_expenses_carbon_tax,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_full_kero"]
+                    self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_full_kero"]
             ),
             label="Efficiency only energy expenses incl. carbon tax",
             linestyle="--",
@@ -788,8 +790,8 @@ class ScenarioEnergyCarbonTaxPlot:
 
         self.line_bau_energy_expenses_carbon_tax.set_ydata(
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                    self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
+                    + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
             )
         )
 
@@ -879,9 +881,9 @@ class ScenarioEnergyUnitCostPlot:
         (self.line_hydrogen_electrolysis_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"]
-                + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
-                + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    self.df.loc[self.prospective_years, "electrolysis_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
             color="#0075A3",
@@ -893,9 +895,9 @@ class ScenarioEnergyUnitCostPlot:
         (self.line_hydrogen_gas_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"]
-                + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
-                + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    self.df.loc[self.prospective_years, "gas_ccs_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
             color="#0075A3",
@@ -907,9 +909,9 @@ class ScenarioEnergyUnitCostPlot:
         (self.line_hydrogen_gas_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"]
-                + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
-                + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    self.df.loc[self.prospective_years, "gas_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
             color="#0075A3",
@@ -921,9 +923,9 @@ class ScenarioEnergyUnitCostPlot:
         (self.line_hydrogen_coal_ccs_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"]
-                + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
-                + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    self.df.loc[self.prospective_years, "coal_ccs_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
             color="#0075A3",
@@ -935,9 +937,9 @@ class ScenarioEnergyUnitCostPlot:
         (self.line_hydrogen_coal_mfsp,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"]
-                + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
-                + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    self.df.loc[self.prospective_years, "coal_h2_mean_mfsp_kg"]
+                    + self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
+                    + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
             color="#0075A3",
@@ -948,7 +950,10 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_electricity,) = self.ax.plot(
             self.prospective_years,
-            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+            )
+            / 3.6,
             color="#7D3C98",
             label="Electricity",
             linewidth=2,
@@ -1036,7 +1041,9 @@ class ScenarioEnergyUnitCostPlot:
         )
 
         self.line_electricity.set_ydata(
-            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+            )/3.6,
         )
 
         for collection in self.ax.collections:
@@ -1364,8 +1371,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
 
         self.line_electricity.set_ydata(
             (
-                self.df.loc[self.prospective_years, "electricity_market_price"]
-                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+                    + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
             )
             / 3.6,
         )
@@ -1578,7 +1585,7 @@ class DropInMACC:
 
         self.ax2.axhline(
             y=self.df.energy_consumption_dropin_fuel[year] / 1e12
-            - self.df.energy_consumption_kerosene[year] / 1e12,
+              - self.df.energy_consumption_kerosene[year] / 1e12,
             color="black",
             linewidth=1,
             linestyle="-.",
@@ -1587,8 +1594,8 @@ class DropInMACC:
             0,
             1.02
             * (
-                self.df.energy_consumption_dropin_fuel[year] / 1e12
-                - self.df.energy_consumption_kerosene[year] / 1e12
+                    self.df.energy_consumption_dropin_fuel[year] / 1e12
+                    - self.df.energy_consumption_kerosene[year] / 1e12
             ),
             "Air transport sustainable drop-in fuels use, final year",
         )
@@ -1762,7 +1769,7 @@ class DropInMACC:
 
         self.ax2.axhline(
             y=self.df.energy_consumption_dropin_fuel[year] / 1e12
-            - self.df.energy_consumption_kerosene[year] / 1e12,
+              - self.df.energy_consumption_kerosene[year] / 1e12,
             color="black",
             linewidth=1,
             linestyle="-.",
@@ -1771,8 +1778,8 @@ class DropInMACC:
             0,
             1.02
             * (
-                self.df.energy_consumption_dropin_fuel[year] / 1e12
-                - self.df.energy_consumption_kerosene[year] / 1e12
+                    self.df.energy_consumption_dropin_fuel[year] / 1e12
+                    - self.df.energy_consumption_kerosene[year] / 1e12
             ),
             "Air transport sustainable drop-in fuels use, final year",
         )
@@ -2470,6 +2477,7 @@ class AnnualMACC:
             ) from e
 
     def plot_interact(self):
+
         year_widget = widgets.IntSlider(
             min=self.prospective_years[0],
             max=self.prospective_years[-1],
@@ -2777,6 +2785,9 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
+        # custom_annotation_height_for_nice_plot = [100, 100, 130,100,100,130,150,180,100,100,100,150,200,220,300,380,380,420,600,720,800,840,10]
+
+
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
             y_position = min(heights_pos[i + 1], 2000)
@@ -2790,10 +2801,11 @@ class AnnualMACC:
                     (x_position, y_position),
                     xycoords="data",
                     xytext=(x_position, y_position + 50),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -2803,10 +2815,11 @@ class AnnualMACC:
                     (x_position, 0),
                     xycoords="data",
                     xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -2860,20 +2873,23 @@ class AnnualMACC:
             zorder=9,
         )
 
+        # custom_annotation_height_for_nice_plot = [15,70,120,170,220]
+
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
-                cumwidths_effective_neg[-1]
-                - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
+                    cumwidths_effective_neg[-1]
+                    - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
             self.ax.annotate(
                 f"{names_neg[i]}",
                 (x_position, 0),
                 xycoords="data",
                 xytext=(x_position, 50 + 30 * (i % 3)),
+                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                 textcoords="data",
                 arrowprops=dict(width=0.5, headwidth=0),
                 rotation=-60,
-                fontsize=7,
+                fontsize=9,
                 ha="right",
                 va="bottom",
             )
@@ -2930,9 +2946,10 @@ class AnnualMACC:
 
         self.ax.add_artist(
             self.ax.legend(
-                handles=legend_patches_1, fontsize=8, title="Type of lever", loc="upper left"
+                handles=legend_patches_1, fontsize=9, title="Type of lever", loc="upper left",bbox_to_anchor = (60 / self.ax.figure.bbox.width, 1)
             )
         )
+
 
         self.ax.set_xlim(
             cumwidths_effective_neg[-1] - 100,
@@ -2940,7 +2957,7 @@ class AnnualMACC:
         )
         self.ax.set_ylim(
             max(-300, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 230),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 300),
         )
 
         # Add abatement and emission zones
@@ -2963,22 +2980,22 @@ class AnnualMACC:
 
         self.ax.text(
             -1,
-            self.ax.get_ylim()[1] / 3.5,
+            self.ax.get_ylim()[1] / 2.8,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
         self.ax.text(
             5,
-            self.ax.get_ylim()[1] / 3.5,
+            self.ax.get_ylim()[1] / 2.8,
             "Carbon abatement",
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
 
@@ -3032,14 +3049,14 @@ class CumulativeMACC:
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
-        # macc_dict = {}
+        macc_dict = {}
 
         name_list = []
         cumvol_list = []
         cumcost_list = []
         discounted_cumcost_list = []
-        # undiscounted_cac_list = []
-        # discounted_cac_list = []
+        undiscounted_cac_list = []
+        discounted_cac_list = []
 
         colors_list = []
 
@@ -3055,24 +3072,24 @@ class CumulativeMACC:
                 discountedcumcost = 0
                 for year in range(start_year, end_year + 1):
                     year_vol = (
-                        self.fleet_model.df.loc[
-                            year, aircraft_var_name + ":aircraft_carbon_abatement_volume"
-                        ]
-                        / 1000000
+                            self.fleet_model.df.loc[
+                                year, aircraft_var_name + ":aircraft_carbon_abatement_volume"
+                            ]
+                            / 1000000
                     )
 
                     year_cost = (
-                        year_vol
-                        * 1000000
-                        * self.fleet_model.df.loc[
-                            year, aircraft_var_name + ":aircraft_carbon_abatement_cost"
-                        ]
+                            year_vol
+                            * 1000000
+                            * self.fleet_model.df.loc[
+                                year, aircraft_var_name + ":aircraft_carbon_abatement_cost"
+                            ]
                     )
 
                     cumvol += year_vol
                     cumcost += year_cost
                     discountedcumcost += year_cost / (1 + social_discount_rate) ** (
-                        year - start_year
+                            year - start_year
                     )
                 cumvol_list.append(cumvol)
                 cumcost_list.append(cumcost)
@@ -3090,24 +3107,24 @@ class CumulativeMACC:
             [
                 el
                 for el in [
-                    "Freighter - Dropin",
-                    "Freighter - Hydrogen",
-                    "Freighter - Electric",
-                    "Bio - HEFA FOG",
-                    "Bio - HEFA Others",
-                    "Bio - Alcohol to Jet",
-                    "Bio - FT MSW",
-                    "Bio - FT Others",
-                    "H2C",
-                    "H2CCCS",
-                    "H2G",
-                    "H2GCCS",
-                    "H2E",
-                    "Electrofuel",
-                    "OPS",
-                    "OPS - Freighter",
-                    "LF",
-                ]
+                "Freighter - Dropin",
+                "Freighter - Hydrogen",
+                "Freighter - Electric",
+                "Bio - HEFA FOG",
+                "Bio - HEFA Others",
+                "Bio - Alcohol to Jet",
+                "Bio - FT MSW",
+                "Bio - FT Others",
+                "H2C",
+                "H2CCCS",
+                "H2G",
+                "H2GCCS",
+                "H2E",
+                "Electrofuel",
+                "OPS",
+                "OPS - Freighter",
+                "LF",
+            ]
             ]
         )
 
@@ -3116,32 +3133,32 @@ class CumulativeMACC:
             [
                 elt / 1000000
                 for elt in [
-                    self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.abatement_effective_hefa_fog.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hefa_others.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_atj.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_ft_msw.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_ft_others.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hydrogen_coal.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hydrogen_coal_ccs.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hydrogen_gas.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hydrogen_gas_ccs.loc[start_year:end_year].sum(),
-                    self.df.abatement_effective_hydrogen_electrolysis.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.abatement_effective_electrofuel.loc[start_year:end_year].sum(),
-                    self.df.operations_abatement_effective.loc[start_year:end_year].sum(),
-                    self.df.operations_abatement_effective_freight.loc[start_year:end_year].sum(),
-                    self.df.load_factor_abatement_effective.loc[start_year:end_year].sum(),
-                ]
+                self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_hefa_fog.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hefa_others.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_atj.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_ft_msw.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_ft_others.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_coal.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_coal_ccs.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_gas.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_gas_ccs.loc[start_year:end_year].sum(),
+                self.df.abatement_effective_hydrogen_electrolysis.loc[
+                start_year:end_year
+                ].sum(),
+                self.df.abatement_effective_electrofuel.loc[start_year:end_year].sum(),
+                self.df.operations_abatement_effective.loc[start_year:end_year].sum(),
+                self.df.operations_abatement_effective_freight.loc[start_year:end_year].sum(),
+                self.df.load_factor_abatement_effective.loc[start_year:end_year].sum(),
+            ]
             ]
         )
 
@@ -3150,87 +3167,87 @@ class CumulativeMACC:
             [
                 el
                 for el in [
-                    (
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                            start_year:end_year
-                        ]
-                    ).sum(),
-                    (
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
-                    ).sum(),
-                    (
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_electric.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                            start_year:end_year
-                        ]
-                    ).sum(),
-                    (
+                          start_year:end_year
+                          ]
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_hefa_fog.loc[start_year:end_year]
                         * self.df.abatement_effective_hefa_fog.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_hefa_others.loc[start_year:end_year]
                         * self.df.abatement_effective_hefa_others.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_atj.loc[start_year:end_year]
                         * self.df.abatement_effective_atj.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_ft_msw.loc[start_year:end_year]
                         * self.df.abatement_effective_ft_msw.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_ft_others.loc[start_year:end_year]
                         * self.df.abatement_effective_ft_others.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_coal.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_coal.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_coal_ccs.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_coal_ccs.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_gas.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_gas.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_gas_ccs.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_gas_ccs.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_electrolysis.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_electrolysis.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_electrofuel.loc[start_year:end_year]
                         * self.df.abatement_effective_electrofuel.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.operations_abatement_cost.loc[start_year:end_year]
                         * self.df.operations_abatement_effective.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.operations_abatement_cost_freight.loc[start_year:end_year]
                         * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.load_factor_abatement_cost.loc[start_year:end_year]
                         * self.df.load_factor_abatement_effective.loc[start_year:end_year]
-                    ).sum(),
-                ]
+                ).sum(),
+            ]
             ]
         )
 
@@ -3246,104 +3263,104 @@ class CumulativeMACC:
             [
                 el
                 for el in [
-                    (
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                            start_year:end_year
-                        ]
+                          start_year:end_year
+                          ]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
+                          start_year:end_year
+                          ]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.aircraft_carbon_abatement_cost_freight_electric.loc[
-                            start_year:end_year
+                        start_year:end_year
                         ]
                         * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                            start_year:end_year
-                        ]
+                          start_year:end_year
+                          ]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_hefa_fog.loc[start_year:end_year]
                         * self.df.abatement_effective_hefa_fog.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_hefa_others.loc[start_year:end_year]
                         * self.df.abatement_effective_hefa_others.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_atj.loc[start_year:end_year]
                         * self.df.abatement_effective_atj.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_ft_msw.loc[start_year:end_year]
                         * self.df.abatement_effective_ft_msw.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_ft_others.loc[start_year:end_year]
                         * self.df.abatement_effective_ft_others.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_coal.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_coal.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_coal_ccs.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_coal_ccs.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_gas.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_gas.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_gas_ccs.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_gas_ccs.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_h2_electrolysis.loc[start_year:end_year]
                         * self.df.abatement_effective_hydrogen_electrolysis.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.carbon_abatement_cost_electrofuel.loc[start_year:end_year]
                         * self.df.abatement_effective_electrofuel.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.operations_abatement_cost.loc[start_year:end_year]
                         * self.df.operations_abatement_effective.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.operations_abatement_cost_freight.loc[start_year:end_year]
                         * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                    (
+                ).sum(),
+                (
                         self.df.load_factor_abatement_cost.loc[start_year:end_year]
                         * self.df.load_factor_abatement_effective.loc[start_year:end_year]
                         / power_series
-                    ).sum(),
-                ]
+                ).sum(),
+            ]
             ]
         )
 
@@ -3351,24 +3368,24 @@ class CumulativeMACC:
             [
                 el
                 for el in [
-                    "khaki",
-                    "khaki",
-                    "khaki",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "yellowgreen",
-                    "orange",
-                    "orange",
-                    "orange",
-                ]
+                "khaki",
+                "khaki",
+                "khaki",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "yellowgreen",
+                "orange",
+                "orange",
+                "orange",
+            ]
             ]
         )
 
@@ -3438,6 +3455,9 @@ class CumulativeMACC:
             zorder=10,  # ensure top level
         )
 
+        # custom_annotation_height_for_nice_plot = [100, 80, 80, 80, 80, 80, 80, 80, 20, 20, 50, 100, 120, 140, 170, 200,
+        #                                           180, 180, 250, 300, 350, 400]
+
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
             y_position = min(heights_pos[i + 1], 2000)
@@ -3451,10 +3471,11 @@ class CumulativeMACC:
                     (x_position, y_position),
                     xycoords="data",
                     xytext=(x_position, y_position + 50),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
+                    arrowprops=dict(width=0.3, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -3464,10 +3485,11 @@ class CumulativeMACC:
                     (x_position, 0),
                     xycoords="data",
                     xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
+                    arrowprops=dict(width=0.3, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -3521,20 +3543,23 @@ class CumulativeMACC:
             zorder=9,
         )
 
+        # custom_annotation_height_for_nice_plot = [20,45,70,95,120]
+
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
-                cumwidths_effective_neg[-1]
-                - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
+                    cumwidths_effective_neg[-1]
+                    - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
             self.ax.annotate(
                 f"{names_neg[i]}",
                 (x_position, 0),
                 xycoords="data",
+                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                 xytext=(x_position, 50 + 30 * (i % 3)),
                 textcoords="data",
-                arrowprops=dict(width=0.5, headwidth=0),
+                arrowprops=dict(width=0.3, headwidth=0),
                 rotation=-60,
-                fontsize=7,
+                fontsize=9,
                 ha="right",
                 va="bottom",
             )
@@ -3583,10 +3608,10 @@ class CumulativeMACC:
             mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
         ]
 
-        self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper left")
+        self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper left", bbox_to_anchor=(90/self.ax.figure.bbox.width, 1))
 
         self.ax.set_xlim(
-            cumwidths_effective_neg[-1] - 1000,
+            cumwidths_effective_neg[-1] - 1500,
             cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 500,
         )
         self.ax.set_ylim(
@@ -3613,29 +3638,29 @@ class CumulativeMACC:
         )
 
         self.ax.text(
-            -1,
-            self.ax.get_ylim()[1] / 3.5,
+            -5,
+            self.ax.get_ylim()[1] / 2.4,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
         self.ax.text(
-            5,
-            self.ax.get_ylim()[1] / 3.5,
+            30,
+            self.ax.get_ylim()[1] / 2.4,
             "Carbon abatement",
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
 
         self.ax.grid()
         self.ax.set_title(
-            f"Marginal abatement cost curve, for starting year {self.prospective_years[1]}"
+            f"Cumulative marginal abatement cost curve, for starting year {self.prospective_years[1]}"
         )
 
         self.ax2.xaxis.set_label_position("bottom")
@@ -3769,24 +3794,24 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        "Freighter - Drop in",
-                        "Freighter - Hydrogen",
-                        "Freighter - Electric",
-                        "Bio - HEFA FOG",
-                        "Bio - HEFA Others",
-                        "Bio - Alcohol to Jet",
-                        "Bio - FT MSW",
-                        "Bio - FT Others",
-                        "H2C",
-                        "H2CCCS",
-                        "H2G",
-                        "H2GCCS",
-                        "H2E",
-                        "Electrofuel",
-                        "OPS",
-                        "OPS - Freight",
-                        "LF",
-                    ]
+                    "Freighter - Drop in",
+                    "Freighter - Hydrogen",
+                    "Freighter - Electric",
+                    "Bio - HEFA FOG",
+                    "Bio - HEFA Others",
+                    "Bio - Alcohol to Jet",
+                    "Bio - FT MSW",
+                    "Bio - FT Others",
+                    "H2C",
+                    "H2CCCS",
+                    "H2G",
+                    "H2GCCS",
+                    "H2E",
+                    "Electrofuel",
+                    "OPS",
+                    "OPS - Freight",
+                    "LF",
+                ]
                 ]
             )
 
@@ -3795,24 +3820,24 @@ class ScenarioMACC:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.abatement_effective_hefa_fog[year],
-                        self.df.abatement_effective_hefa_others[year],
-                        self.df.abatement_effective_atj[year],
-                        self.df.abatement_effective_ft_msw[year],
-                        self.df.abatement_effective_ft_others[year],
-                        self.df.abatement_effective_hydrogen_coal[year],
-                        self.df.abatement_effective_hydrogen_coal_ccs[year],
-                        self.df.abatement_effective_hydrogen_gas[year],
-                        self.df.abatement_effective_hydrogen_gas_ccs[year],
-                        self.df.abatement_effective_hydrogen_electrolysis[year],
-                        self.df.abatement_effective_electrofuel[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
-                    ]
+                    self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
+                    self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
+                    self.df.aircraft_carbon_abatement_volume_freight_electric[year],
+                    self.df.abatement_effective_hefa_fog[year],
+                    self.df.abatement_effective_hefa_others[year],
+                    self.df.abatement_effective_atj[year],
+                    self.df.abatement_effective_ft_msw[year],
+                    self.df.abatement_effective_ft_others[year],
+                    self.df.abatement_effective_hydrogen_coal[year],
+                    self.df.abatement_effective_hydrogen_coal_ccs[year],
+                    self.df.abatement_effective_hydrogen_gas[year],
+                    self.df.abatement_effective_hydrogen_gas_ccs[year],
+                    self.df.abatement_effective_hydrogen_electrolysis[year],
+                    self.df.abatement_effective_electrofuel[year],
+                    self.df.operations_abatement_effective[year],
+                    self.df.operations_abatement_effective_freight[year],
+                    self.df.load_factor_abatement_effective[year],
+                ]
                 ]
             )
 
@@ -3821,24 +3846,24 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.carbon_abatement_cost_hefa_fog[year],
-                        self.df.carbon_abatement_cost_hefa_others[year],
-                        self.df.carbon_abatement_cost_atj[year],
-                        self.df.carbon_abatement_cost_ft_msw[year],
-                        self.df.carbon_abatement_cost_ft_others[year],
-                        self.df.carbon_abatement_cost_h2_coal[year],
-                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
-                        self.df.carbon_abatement_cost_h2_gas[year],
-                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
-                        self.df.carbon_abatement_cost_h2_electrolysis[year],
-                        self.df.carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
-                    ]
+                    self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
+                    self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
+                    self.df.aircraft_carbon_abatement_cost_freight_electric[year],
+                    self.df.carbon_abatement_cost_hefa_fog[year],
+                    self.df.carbon_abatement_cost_hefa_others[year],
+                    self.df.carbon_abatement_cost_atj[year],
+                    self.df.carbon_abatement_cost_ft_msw[year],
+                    self.df.carbon_abatement_cost_ft_others[year],
+                    self.df.carbon_abatement_cost_h2_coal[year],
+                    self.df.carbon_abatement_cost_h2_coal_ccs[year],
+                    self.df.carbon_abatement_cost_h2_gas[year],
+                    self.df.carbon_abatement_cost_h2_gas_ccs[year],
+                    self.df.carbon_abatement_cost_h2_electrolysis[year],
+                    self.df.carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_abatement_cost[year],
+                    self.df.operations_abatement_cost_freight[year],
+                    self.df.load_factor_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -3846,24 +3871,24 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.specific_carbon_abatement_cost_atj[year],
-                        self.df.specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_specific_abatement_cost[year],
-                        self.df.gas_h2_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_specific_abatement_cost[year],
-                        self.df.specific_carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
-                    ]
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
+                    self.df.specific_carbon_abatement_cost_hefa_fog[year],
+                    self.df.specific_carbon_abatement_cost_hefa_others[year],
+                    self.df.specific_carbon_abatement_cost_atj[year],
+                    self.df.specific_carbon_abatement_cost_ft_msw[year],
+                    self.df.specific_carbon_abatement_cost_ft_others[year],
+                    self.df.coal_h2_specific_abatement_cost[year],
+                    self.df.coal_ccs_h2_specific_abatement_cost[year],
+                    self.df.gas_h2_specific_abatement_cost[year],
+                    self.df.gas_ccs_h2_specific_abatement_cost[year],
+                    self.df.electrolysis_h2_specific_abatement_cost[year],
+                    self.df.specific_carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_specific_abatement_cost[year],
+                    self.df.operations_specific_abatement_cost_freight[year],
+                    self.df.load_factor_specific_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -3871,30 +3896,30 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.generic_specific_carbon_abatement_cost_atj[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_generic_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_generic_specific_abatement_cost[year],
-                        self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
-                    ]
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
+                        year
+                    ],
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
+                        year
+                    ],
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
+                        year
+                    ],
+                    self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
+                    self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
+                    self.df.generic_specific_carbon_abatement_cost_atj[year],
+                    self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
+                    self.df.generic_specific_carbon_abatement_cost_ft_others[year],
+                    self.df.coal_h2_generic_specific_abatement_cost[year],
+                    self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
+                    self.df.gas_h2_generic_specific_abatement_cost[year],
+                    self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
+                    self.df.electrolysis_h2_generic_specific_abatement_cost[year],
+                    self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_generic_specific_abatement_cost[year],
+                    self.df.operations_generic_specific_abatement_cost_freight[year],
+                    self.df.load_factor_generic_specific_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -3902,24 +3927,24 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        "khaki",
-                        "khaki",
-                        "khaki",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "orange",
-                        "orange",
-                        "orange",
-                    ]
+                    "khaki",
+                    "khaki",
+                    "khaki",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "orange",
+                    "orange",
+                    "orange",
+                ]
                 ]
             )
 
@@ -3947,6 +3972,7 @@ class ScenarioMACC:
         scc_list = []
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
+
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -3965,8 +3991,8 @@ class ScenarioMACC:
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
-                    ** (year - self.prospective_years[0])
+                        (1 + self.float_inputs["social_discount_rate"])
+                        ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
                 hatch_list = []
@@ -4181,24 +4207,24 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        "Freighter - Drop in",
-                        "Freighter - Hydrogen",
-                        "Freighter - Electric",
-                        "Bio - HEFA FOG",
-                        "Bio - HEFA Others",
-                        "Bio - Alcohol to Jet",
-                        "Bio - FT MSW",
-                        "Bio - FT Others",
-                        "H2C",
-                        "H2CCCS",
-                        "H2G",
-                        "H2GCCS",
-                        "H2E",
-                        "Electrofuel",
-                        "OPS",
-                        "OPS - Freight",
-                        "LF",
-                    ]
+                    "Freighter - Drop in",
+                    "Freighter - Hydrogen",
+                    "Freighter - Electric",
+                    "Bio - HEFA FOG",
+                    "Bio - HEFA Others",
+                    "Bio - Alcohol to Jet",
+                    "Bio - FT MSW",
+                    "Bio - FT Others",
+                    "H2C",
+                    "H2CCCS",
+                    "H2G",
+                    "H2GCCS",
+                    "H2E",
+                    "Electrofuel",
+                    "OPS",
+                    "OPS - Freight",
+                    "LF",
+                ]
                 ]
             )
 
@@ -4207,24 +4233,24 @@ class ShadowCarbonPrice:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.abatement_effective_hefa_fog[year],
-                        self.df.abatement_effective_hefa_others[year],
-                        self.df.abatement_effective_atj[year],
-                        self.df.abatement_effective_ft_msw[year],
-                        self.df.abatement_effective_ft_others[year],
-                        self.df.abatement_effective_hydrogen_coal[year],
-                        self.df.abatement_effective_hydrogen_coal_ccs[year],
-                        self.df.abatement_effective_hydrogen_gas[year],
-                        self.df.abatement_effective_hydrogen_gas_ccs[year],
-                        self.df.abatement_effective_hydrogen_electrolysis[year],
-                        self.df.abatement_effective_electrofuel[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
-                    ]
+                    self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
+                    self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
+                    self.df.aircraft_carbon_abatement_volume_freight_electric[year],
+                    self.df.abatement_effective_hefa_fog[year],
+                    self.df.abatement_effective_hefa_others[year],
+                    self.df.abatement_effective_atj[year],
+                    self.df.abatement_effective_ft_msw[year],
+                    self.df.abatement_effective_ft_others[year],
+                    self.df.abatement_effective_hydrogen_coal[year],
+                    self.df.abatement_effective_hydrogen_coal_ccs[year],
+                    self.df.abatement_effective_hydrogen_gas[year],
+                    self.df.abatement_effective_hydrogen_gas_ccs[year],
+                    self.df.abatement_effective_hydrogen_electrolysis[year],
+                    self.df.abatement_effective_electrofuel[year],
+                    self.df.operations_abatement_effective[year],
+                    self.df.operations_abatement_effective_freight[year],
+                    self.df.load_factor_abatement_effective[year],
+                ]
                 ]
             )
 
@@ -4233,24 +4259,24 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.carbon_abatement_cost_hefa_fog[year],
-                        self.df.carbon_abatement_cost_hefa_others[year],
-                        self.df.carbon_abatement_cost_atj[year],
-                        self.df.carbon_abatement_cost_ft_msw[year],
-                        self.df.carbon_abatement_cost_ft_others[year],
-                        self.df.carbon_abatement_cost_h2_coal[year],
-                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
-                        self.df.carbon_abatement_cost_h2_gas[year],
-                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
-                        self.df.carbon_abatement_cost_h2_electrolysis[year],
-                        self.df.carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
-                    ]
+                    self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
+                    self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
+                    self.df.aircraft_carbon_abatement_cost_freight_electric[year],
+                    self.df.carbon_abatement_cost_hefa_fog[year],
+                    self.df.carbon_abatement_cost_hefa_others[year],
+                    self.df.carbon_abatement_cost_atj[year],
+                    self.df.carbon_abatement_cost_ft_msw[year],
+                    self.df.carbon_abatement_cost_ft_others[year],
+                    self.df.carbon_abatement_cost_h2_coal[year],
+                    self.df.carbon_abatement_cost_h2_coal_ccs[year],
+                    self.df.carbon_abatement_cost_h2_gas[year],
+                    self.df.carbon_abatement_cost_h2_gas_ccs[year],
+                    self.df.carbon_abatement_cost_h2_electrolysis[year],
+                    self.df.carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_abatement_cost[year],
+                    self.df.operations_abatement_cost_freight[year],
+                    self.df.load_factor_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -4258,24 +4284,24 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.specific_carbon_abatement_cost_atj[year],
-                        self.df.specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_specific_abatement_cost[year],
-                        self.df.gas_h2_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_specific_abatement_cost[year],
-                        self.df.specific_carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
-                    ]
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
+                    self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
+                    self.df.specific_carbon_abatement_cost_hefa_fog[year],
+                    self.df.specific_carbon_abatement_cost_hefa_others[year],
+                    self.df.specific_carbon_abatement_cost_atj[year],
+                    self.df.specific_carbon_abatement_cost_ft_msw[year],
+                    self.df.specific_carbon_abatement_cost_ft_others[year],
+                    self.df.coal_h2_specific_abatement_cost[year],
+                    self.df.coal_ccs_h2_specific_abatement_cost[year],
+                    self.df.gas_h2_specific_abatement_cost[year],
+                    self.df.gas_ccs_h2_specific_abatement_cost[year],
+                    self.df.electrolysis_h2_specific_abatement_cost[year],
+                    self.df.specific_carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_specific_abatement_cost[year],
+                    self.df.operations_specific_abatement_cost_freight[year],
+                    self.df.load_factor_specific_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -4283,30 +4309,30 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.generic_specific_carbon_abatement_cost_atj[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_generic_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_generic_specific_abatement_cost[year],
-                        self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
-                    ]
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
+                        year
+                    ],
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
+                        year
+                    ],
+                    self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
+                        year
+                    ],
+                    self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
+                    self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
+                    self.df.generic_specific_carbon_abatement_cost_atj[year],
+                    self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
+                    self.df.generic_specific_carbon_abatement_cost_ft_others[year],
+                    self.df.coal_h2_generic_specific_abatement_cost[year],
+                    self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
+                    self.df.gas_h2_generic_specific_abatement_cost[year],
+                    self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
+                    self.df.electrolysis_h2_generic_specific_abatement_cost[year],
+                    self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
+                    self.df.operations_generic_specific_abatement_cost[year],
+                    self.df.operations_generic_specific_abatement_cost_freight[year],
+                    self.df.load_factor_generic_specific_abatement_cost[year],
+                ]
                 ]
             )
 
@@ -4314,24 +4340,24 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        "khaki",
-                        "khaki",
-                        "khaki",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "orange",
-                        "orange",
-                        "orange",
-                    ]
+                    "khaki",
+                    "khaki",
+                    "khaki",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "yellowgreen",
+                    "orange",
+                    "orange",
+                    "orange",
+                ]
                 ]
             )
 
@@ -4363,6 +4389,7 @@ class ShadowCarbonPrice:
         years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
         for year in years:
+
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4379,8 +4406,8 @@ class ShadowCarbonPrice:
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
-                    ** (year - self.prospective_years[0])
+                        (1 + self.float_inputs["social_discount_rate"])
+                        ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
             elif metric == "generic_specific_carbon_abatement_cost":
@@ -4468,6 +4495,7 @@ class DetailledMFSPBreakdownPerPathway:
             ) from e
 
     def plot_interact(self):
+
         pathway_widget = widgets.Dropdown(
             options=[
                 ("Bio - HEFA Fog", "hefa_fog"),
@@ -4499,7 +4527,10 @@ class DetailledMFSPBreakdownPerPathway:
         self.ax2.cla()
 
         if pathway in ["direct_electricity"]:
-            val = self.df.loc[self.prospective_years, "electricity_market_price"]
+
+            val = (
+                self.df.loc[self.prospective_years, "electricity_market_price"]
+            )
 
             carbon_tax_val = self.df.loc[
                 self.prospective_years, "electricity_direct_use_carbon_tax_kWh"
@@ -4578,8 +4609,10 @@ class DetailledMFSPBreakdownPerPathway:
 
             self.ax.set_ylim(0, None)
             self.ax2.set_ylim(
-                self.ax.get_ylim()[0] / 3.6,
-                self.ax.get_ylim()[1] / 3.6,
+                self.ax.get_ylim()[0]
+                / 3.6,
+                self.ax.get_ylim()[1]
+                / 3.6,
             )
 
             # Move the label for the second y-axis to the right
@@ -4587,20 +4620,21 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
+
             capex_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
-                / 100
+                    self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                    * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
+                    / 100
             )
             opex_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[self.prospective_years, "biofuel_mean_var_opex_share_" + pathway]
-                / 100
+                    self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                    * self.df.loc[self.prospective_years, "biofuel_mean_var_opex_share_" + pathway]
+                    / 100
             )
             feedstock_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[self.prospective_years, "biofuel_mean_feedstock_share_" + pathway]
-                / 100
+                    self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                    * self.df.loc[self.prospective_years, "biofuel_mean_feedstock_share_" + pathway]
+                    / 100
             )
             carbon_tax_val = self.df.loc[
                 self.prospective_years, "biofuel_mfsp_carbon_tax_supplement_" + pathway
@@ -4710,25 +4744,26 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         elif pathway == "electrofuel":
+
             capex_val = (
-                self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[self.prospective_years, "electrofuel_mean_capex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
+                    * self.df.loc[self.prospective_years, "electrofuel_mean_capex_share"]
+                    / 100
             )
             opex_val = (
-                self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[self.prospective_years, "electrofuel_mean_opex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
+                    * self.df.loc[self.prospective_years, "electrofuel_mean_opex_share"]
+                    / 100
             )
             energy_val = (
-                self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[self.prospective_years, "electrofuel_mean_elec_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
+                    * self.df.loc[self.prospective_years, "electrofuel_mean_elec_share"]
+                    / 100
             )
             co2_feed_val = (
-                self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[self.prospective_years, "electrofuel_mean_co2_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
+                    * self.df.loc[self.prospective_years, "electrofuel_mean_co2_share"]
+                    / 100
             )
             carbon_tax_val = self.df.loc[
                 self.prospective_years, "electrofuel_mfsp_carbon_tax_supplement"
@@ -4849,53 +4884,53 @@ class DetailledMFSPBreakdownPerPathway:
 
         elif pathway in ["electrolysis_h2", "gas_ccs_h2", "gas_h2", "coal_ccs_h2", "coal_h2"]:
             capex_val = (
-                self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
-                * self.df.loc[self.prospective_years, pathway + "_mean_capex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
+                    * self.df.loc[self.prospective_years, pathway + "_mean_capex_share"]
+                    / 100
             )
             opex_val = (
-                self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
-                * self.df.loc[self.prospective_years, pathway + "_mean_opex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
+                    * self.df.loc[self.prospective_years, pathway + "_mean_opex_share"]
+                    / 100
             )
 
             if pathway == "electrolysis_h2":
                 energy_val = (
-                    self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[self.prospective_years, pathway + "_mean_elec_share"]
-                    / 100
+                        self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
+                        * self.df.loc[self.prospective_years, pathway + "_mean_elec_share"]
+                        / 100
                 )
             else:
                 energy_val = (
-                    self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[self.prospective_years, pathway + "_mean_fuel_cost_share"]
-                    / 100
+                        self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
+                        * self.df.loc[self.prospective_years, pathway + "_mean_fuel_cost_share"]
+                        / 100
                 )
 
             if pathway in ["gas_ccs_h2", "coal_ccs_h2"]:
                 ccs_val = (
-                    self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[self.prospective_years, pathway + "_mean_ccs_cost_share"]
-                    / 100
+                        self.df.loc[self.prospective_years, pathway + "_mean_mfsp_kg"]
+                        * self.df.loc[self.prospective_years, pathway + "_mean_ccs_cost_share"]
+                        / 100
                 )
 
             else:
                 ccs_val = 0
 
             liquefaction_capex_val = (
-                self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[self.prospective_years, "liquefaction_h2_mean_capex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    * self.df.loc[self.prospective_years, "liquefaction_h2_mean_capex_share"]
+                    / 100
             )
             liquefaction_opex_val = (
-                self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[self.prospective_years, "liquefaction_h2_mean_opex_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    * self.df.loc[self.prospective_years, "liquefaction_h2_mean_opex_share"]
+                    / 100
             )
             liquefaction_energy_val = (
-                self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[self.prospective_years, "liquefaction_h2_mean_elec_share"]
-                / 100
+                    self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
+                    * self.df.loc[self.prospective_years, "liquefaction_h2_mean_elec_share"]
+                    / 100
             )
 
             transport = self.df.loc[self.prospective_years, "transport_h2_cost_per_kg"]
@@ -5233,7 +5268,7 @@ class DetailledMFSPBreakdownPerYear:
                 linewidth=0.5,
             )
 
-        for name, pathway in [
+        for (name, pathway) in [
             ("Bio - HEFA Fog", "hefa_fog"),
             ("Bio - HEFA Others", "hefa_others"),
             ("Bio - FT MSW", "ft_msw"),
@@ -5305,7 +5340,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for name, pathway in [("E-fuel", "electrofuel")]:
+        for (name, pathway) in [("E-fuel", "electrofuel")]:
             if not pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]):
                 capex_val = (
                     self.df.loc[year, "electrofuel_mean_mfsp_litre"]
@@ -5387,7 +5422,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for name, pathway in [
+        for (name, pathway) in [
             ("LH2 - Electrolysis", "electrolysis_h2"),
             ("LH2 - Gas CCS", "gas_ccs_h2"),
             ("LH2 - Gas", "gas_h2"),
@@ -5395,6 +5430,7 @@ class DetailledMFSPBreakdownPerYear:
             ("LH2 - Coal", "coal_h2"),
         ]:
             if not pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]):
+
                 capex_val = (
                     self.df.loc[year, pathway + "_mean_mfsp_kg"]
                     * self.df.loc[year, pathway + "_mean_capex_share"]
@@ -5527,7 +5563,7 @@ class DetailledMFSPBreakdownPerYear:
                     + energy_val
                     + ccs_val
                     + liquefaction_capex_val
-                    + +liquefaction_opex_val,
+                    + liquefaction_opex_val,
                     color="#F8961E",
                     label="Liquefaction Energy",
                     edgecolor="#212529",
@@ -5542,7 +5578,7 @@ class DetailledMFSPBreakdownPerYear:
                     + energy_val
                     + ccs_val
                     + liquefaction_capex_val
-                    + +liquefaction_opex_val
+                    + liquefaction_opex_val
                     + liquefaction_energy_val,
                     color="#C9A690",
                     label="Transport",
