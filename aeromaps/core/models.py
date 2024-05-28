@@ -16,13 +16,13 @@ from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cos
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
 )
-from aeromaps.models.impacts.costs.energy.biofuel import (
+from aeromaps.models.impacts.costs.energy.detailled.biofuel import (
     BiofuelCost,
     BiofuelVarOpex,
     BiofuelFeedstock,
     BiofuelCapex,
 )
-from aeromaps.models.impacts.costs.energy.biofuel_top_down import BiofuelCostSimple, BiofuelMfsp
+from aeromaps.models.impacts.costs.energy.simple.biofuel_simple import BiofuelCostSimple, BiofuelMfsp
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -156,14 +156,14 @@ from aeromaps.models.impacts.costs.energy.market_prices import (
     GasCost,
     ElectricityLoadFactor,
 )
-from aeromaps.models.impacts.costs.energy.power_to_liquid import (
+from aeromaps.models.impacts.costs.energy.detailled.power_to_liquid import (
     ElectrofuelCost,
     ElectrofuelCapex,
     ElectrofuelFixedOpex,
     ElectrofuelVarOpex,
     ElectrofuelSpecificCo2,
 )
-from aeromaps.models.impacts.costs.energy.liquid_hydrogen import (
+from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
     LiquidHydrogenCost,
     ElectrolyserCapex,
     ElectrolyserFixedOpex,
@@ -468,7 +468,6 @@ models_energy_top_down_cost = {
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
 }
-
 
 
 models_operation_cost = {
