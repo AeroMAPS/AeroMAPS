@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
-import  timeit
+
 class OperationsAbatementCost(AeroMAPSModel):
     def __init__(self, name="operations_abatement_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -49,7 +49,6 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        t1 = timeit.default_timer()
 
         fuel_lhv = lhv_kerosene * density_kerosene
 
@@ -215,8 +214,6 @@ class OperationsAbatementCost(AeroMAPSModel):
         load_factor_generic_specific_abatement_cost = self.df[
             "load_factor_generic_specific_abatement_cost"
         ]
-
-        print(timeit.default_timer()-t1, 'opabcost')
 
         return (
             operations_abatement_cost,

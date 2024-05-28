@@ -23,26 +23,31 @@ class ElectrofuelCostSimple(AeroMAPSModel):
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
         lhv_electrofuel: float = 0.0,
         density_electrofuel: float = 0.0,
-    ) -> tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        electrofuel_total_cost = electrofuel_mfsp * density_electrofuel / lhv_electrofuel * energy_consumption_electrofuel /1e6
+    ) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series,]:
+        electrofuel_total_cost = (
+            electrofuel_mfsp
+            * density_electrofuel
+            / lhv_electrofuel
+            * energy_consumption_electrofuel
+            / 1e6
+        )
         self.df.loc[:, "electrofuel_total_cost"] = electrofuel_total_cost
 
         electrofuel_carbon_tax = (
-                energy_consumption_electrofuel
-                * electrofuel_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_electrofuel
+            * electrofuel_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "electrofuel_carbon_tax"] = electrofuel_carbon_tax
 
         electrofuel_mfsp_carbon_tax_supplement = (
-                carbon_tax * electrofuel_emission_factor / 1000000 * lhv_electrofuel * density_electrofuel
+            carbon_tax
+            * electrofuel_emission_factor
+            / 1000000
+            * lhv_electrofuel
+            * density_electrofuel
         )
         self.df.loc[
             :, "electrofuel_mfsp_carbon_tax_supplement"
@@ -55,9 +60,8 @@ class ElectrofuelCostSimple(AeroMAPSModel):
             electrofuel_total_cost,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
-            electrofuel_mean_mfsp_litre
+            electrofuel_mean_mfsp_litre,
         )
-
 
 
 class ElectrofuelMfspSimple(AeroMAPSModel):
@@ -80,6 +84,4 @@ class ElectrofuelMfspSimple(AeroMAPSModel):
 
         self.df.loc[:, "electrofuel_mfsp"] = electrofuel_mfsp
 
-        return (
-            electrofuel_mfsp
-        )
+        return electrofuel_mfsp

@@ -7,7 +7,7 @@ import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 from typing import Tuple
-import timeit
+
 
 class RecurringCosts(AeroMAPSModel):
     def __init__(self, name="recurring_costs", fleet_model=None, *args, **kwargs):
@@ -18,8 +18,6 @@ class RecurringCosts(AeroMAPSModel):
         self,
         aircraft_in_out_value_dict: dict,
     ) -> Tuple[dict,]:
-
-        t1 = timeit.default_timer()
         rc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
 
@@ -52,5 +50,4 @@ class RecurringCosts(AeroMAPSModel):
                 )
 
                 rc_aircraft_value_dict[aircraft_var_name] = rc_aircraft_value
-        print(timeit.default_timer() - t1, 'rc computation time')
         return (rc_aircraft_value_dict,)

@@ -60,114 +60,158 @@ class BiofuelCostSimple(AeroMAPSModel):
         pd.Series,
     ]:
         ### HEFA FOG
-        
-        biofuel_cost_hefa_fog = biofuel_hefa_fog_mfsp * density_biofuel / lhv_biofuel * energy_consumption_biofuel * biofuel_hefa_fog_share /100 /1e6
+
+        biofuel_cost_hefa_fog = (
+            biofuel_hefa_fog_mfsp
+            * density_biofuel
+            / lhv_biofuel
+            * energy_consumption_biofuel
+            * biofuel_hefa_fog_share
+            / 100
+            / 1e6
+        )
         self.df.loc[:, "biofuel_cost_hefa_fog"] = biofuel_cost_hefa_fog
 
         biofuel_carbon_tax_hefa_fog = (
-                energy_consumption_biofuel
-                * biofuel_hefa_fog_share
-                / 100
-                * biofuel_hefa_fog_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_biofuel
+            * biofuel_hefa_fog_share
+            / 100
+            * biofuel_hefa_fog_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "biofuel_carbon_tax_hefa_fog"] = biofuel_carbon_tax_hefa_fog
 
         biofuel_mfsp_carbon_tax_supplement_hefa_fog = (
-                carbon_tax * biofuel_hefa_fog_emission_factor / 1000000 * lhv_biofuel * density_biofuel
+            carbon_tax * biofuel_hefa_fog_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
         self.df.loc[
             :, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_fog
 
         ### HEFA OTHERS
-        biofuel_cost_hefa_others = biofuel_hefa_others_mfsp * density_biofuel / lhv_biofuel * energy_consumption_biofuel * biofuel_hefa_others_share / 100 / 1e6
+        biofuel_cost_hefa_others = (
+            biofuel_hefa_others_mfsp
+            * density_biofuel
+            / lhv_biofuel
+            * energy_consumption_biofuel
+            * biofuel_hefa_others_share
+            / 100
+            / 1e6
+        )
         self.df.loc[:, "biofuel_cost_hefa_others"] = biofuel_cost_hefa_others
 
         biofuel_carbon_tax_hefa_others = (
-                energy_consumption_biofuel
-                * biofuel_hefa_others_share
-                / 100
-                * biofuel_hefa_others_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_biofuel
+            * biofuel_hefa_others_share
+            / 100
+            * biofuel_hefa_others_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "biofuel_carbon_tax_hefa_others"] = biofuel_carbon_tax_hefa_others
 
         biofuel_mfsp_carbon_tax_supplement_hefa_others = (
-                carbon_tax * biofuel_hefa_others_emission_factor / 1000000 * lhv_biofuel * density_biofuel
+            carbon_tax
+            * biofuel_hefa_others_emission_factor
+            / 1000000
+            * lhv_biofuel
+            * density_biofuel
         )
         self.df.loc[
-        :, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
+            :, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
         ] = biofuel_mfsp_carbon_tax_supplement_hefa_others
 
         ### FT OTHERS
-        biofuel_cost_ft_others = biofuel_ft_others_mfsp * density_biofuel / lhv_biofuel * energy_consumption_biofuel * biofuel_ft_others_share / 100 / 1e6
+        biofuel_cost_ft_others = (
+            biofuel_ft_others_mfsp
+            * density_biofuel
+            / lhv_biofuel
+            * energy_consumption_biofuel
+            * biofuel_ft_others_share
+            / 100
+            / 1e6
+        )
         self.df.loc[:, "biofuel_cost_ft_others"] = biofuel_cost_ft_others
 
         biofuel_carbon_tax_ft_others = (
-                energy_consumption_biofuel
-                * biofuel_ft_others_share
-                / 100
-                * biofuel_ft_others_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_biofuel
+            * biofuel_ft_others_share
+            / 100
+            * biofuel_ft_others_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "biofuel_carbon_tax_ft_others"] = biofuel_carbon_tax_ft_others
 
         biofuel_mfsp_carbon_tax_supplement_ft_others = (
-                carbon_tax * biofuel_ft_others_emission_factor / 1000000 * lhv_biofuel * density_biofuel
+            carbon_tax * biofuel_ft_others_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
         self.df.loc[
-        :, "biofuel_mfsp_carbon_tax_supplement_ft_others"
+            :, "biofuel_mfsp_carbon_tax_supplement_ft_others"
         ] = biofuel_mfsp_carbon_tax_supplement_ft_others
 
         ### FT MSW
-        biofuel_cost_ft_msw = biofuel_ft_msw_mfsp * density_biofuel / lhv_biofuel * energy_consumption_biofuel * biofuel_ft_msw_share / 100 / 1e6
+        biofuel_cost_ft_msw = (
+            biofuel_ft_msw_mfsp
+            * density_biofuel
+            / lhv_biofuel
+            * energy_consumption_biofuel
+            * biofuel_ft_msw_share
+            / 100
+            / 1e6
+        )
         self.df.loc[:, "biofuel_cost_ft_msw"] = biofuel_cost_ft_msw
 
         biofuel_carbon_tax_ft_msw = (
-                energy_consumption_biofuel
-                * biofuel_ft_msw_share
-                / 100
-                * biofuel_ft_msw_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_biofuel
+            * biofuel_ft_msw_share
+            / 100
+            * biofuel_ft_msw_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "biofuel_carbon_tax_ft_msw"] = biofuel_carbon_tax_ft_msw
 
         biofuel_mfsp_carbon_tax_supplement_ft_msw = (
-                carbon_tax * biofuel_ft_msw_emission_factor / 1000000 * lhv_biofuel * density_biofuel
+            carbon_tax * biofuel_ft_msw_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
         self.df.loc[
-        :, "biofuel_mfsp_carbon_tax_supplement_ft_msw"
+            :, "biofuel_mfsp_carbon_tax_supplement_ft_msw"
         ] = biofuel_mfsp_carbon_tax_supplement_ft_msw
 
         ### ATJ
-        biofuel_cost_atj = biofuel_atj_mfsp * density_biofuel / lhv_biofuel * energy_consumption_biofuel * biofuel_atj_share / 100 / 1e6
+        biofuel_cost_atj = (
+            biofuel_atj_mfsp
+            * density_biofuel
+            / lhv_biofuel
+            * energy_consumption_biofuel
+            * biofuel_atj_share
+            / 100
+            / 1e6
+        )
         self.df.loc[:, "biofuel_cost_atj"] = biofuel_cost_atj
 
         biofuel_carbon_tax_atj = (
-                energy_consumption_biofuel
-                * biofuel_atj_share
-                / 100
-                * biofuel_atj_emission_factor
-                / 1000000
-                * carbon_tax
-                / 1000000
+            energy_consumption_biofuel
+            * biofuel_atj_share
+            / 100
+            * biofuel_atj_emission_factor
+            / 1000000
+            * carbon_tax
+            / 1000000
         )
         self.df.loc[:, "biofuel_carbon_tax_atj"] = biofuel_carbon_tax_atj
 
         biofuel_mfsp_carbon_tax_supplement_atj = (
-                carbon_tax * biofuel_atj_emission_factor / 1000000 * lhv_biofuel * density_biofuel
+            carbon_tax * biofuel_atj_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
         self.df.loc[
-        :, "biofuel_mfsp_carbon_tax_supplement_atj"
+            :, "biofuel_mfsp_carbon_tax_supplement_atj"
         ] = biofuel_mfsp_carbon_tax_supplement_atj
 
         # MEAN tax
@@ -207,7 +251,6 @@ class BiofuelCostSimple(AeroMAPSModel):
             biofuel_mfsp_carbon_tax_supplement_atj,
             biofuel_mean_carbon_tax_per_l,
         )
-
 
 
 class BiofuelMfspSimple(AeroMAPSModel):

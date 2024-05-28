@@ -2,7 +2,6 @@
 # @Author : a.salgas
 # @File : biofuel.py
 # @Software: PyCharm
-import timeit
 from typing import Tuple
 
 import numpy as np
@@ -124,7 +123,6 @@ class BiofuelCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        t1 = timeit.default_timer()
         ### HEFA FOG
         # print('HEFOG')
         (
@@ -441,7 +439,6 @@ class BiofuelCost(AeroMAPSModel):
         )
 
         self.df.loc[:, "biofuel_mean_carbon_tax_per_l"] = biofuel_mean_carbon_tax_per_l
-        print(timeit.default_timer() - t1, "biofuel computation time")
         return (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
