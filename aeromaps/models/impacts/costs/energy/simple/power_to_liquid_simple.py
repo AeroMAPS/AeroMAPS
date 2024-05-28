@@ -24,15 +24,13 @@ class ElectrofuelCostSimple(AeroMAPSModel):
         lhv_electrofuel: float = 0.0,
         density_electrofuel: float = 0.0,
     ) -> tuple[
-        Series,
-        Series,
-        Series,
-
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
-        ### HEFA FOG
-        
-        electrofuel_cost = electrofuel_mfsp * density_electrofuel / lhv_electrofuel * energy_consumption_electrofuel /1e6
-        self.df.loc[:, "electrofuel_cost"] = electrofuel_cost
+        electrofuel_total_cost = electrofuel_mfsp * density_electrofuel / lhv_electrofuel * energy_consumption_electrofuel /1e6
+        self.df.loc[:, "electrofuel_total_cost"] = electrofuel_total_cost
 
         electrofuel_carbon_tax = (
                 energy_consumption_electrofuel
@@ -50,38 +48,38 @@ class ElectrofuelCostSimple(AeroMAPSModel):
             :, "electrofuel_mfsp_carbon_tax_supplement"
         ] = electrofuel_mfsp_carbon_tax_supplement
 
-        
+        electrofuel_mean_mfsp_litre = electrofuel_mfsp
+        self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
 
         return (
-            electrofuel_cost,
+            electrofuel_total_cost,
             electrofuel_carbon_tax,
             electrofuel_mfsp_carbon_tax_supplement,
+            electrofuel_mean_mfsp_litre
         )
 
 
 
-class ElectrofuelMfsp(AeroMAPSModel):
-    def __init__(self, name="biofuel_mfsp", *args, **kwargs):
+class ElectrofuelMfspSimple(AeroMAPSModel):
+    def __init__(self, name="electrofuel_mfsp_simple", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
         electrofuel_mfsp_reference_years: list = [],
         electrofuel_mfsp_reference_years_values: list = [],
-    ) -> Tuple[pd.Series,]:
+    ) -> Tuple[pd.Series]:
         """Electrofuel MFSP (Minimal fuel selling price) estimates"""
 
-        # HEFA FOG
         electrofuel_mfsp = AeromapsInterpolationFunction(
             self,
             electrofuel_mfsp_reference_years,
             electrofuel_mfsp_reference_years_values,
             model_name=self.name,
         )
+
         self.df.loc[:, "electrofuel_mfsp"] = electrofuel_mfsp
 
-       
-
         return (
-            electrofuel_mfsp,
+            electrofuel_mfsp
         )

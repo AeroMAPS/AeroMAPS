@@ -34,31 +34,30 @@ class BiofuelCostSimple(AeroMAPSModel):
         biofuel_ft_msw_mfsp: pd.Series = pd.Series(dtype="float64"),
         biofuel_atj_mfsp: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
         lhv_biofuel: float = 0.0,
         density_biofuel: float = 0.0,
     ) -> tuple[
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         ### HEFA FOG
         
@@ -211,8 +210,8 @@ class BiofuelCostSimple(AeroMAPSModel):
 
 
 
-class BiofuelMfsp(AeroMAPSModel):
-    def __init__(self, name="biofuel_mfsp", *args, **kwargs):
+class BiofuelMfspSimple(AeroMAPSModel):
+    def __init__(self, name="biofuel_mfsp_simple", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(

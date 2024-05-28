@@ -29,39 +29,39 @@ class HydrogenCostSimple(AeroMAPSModel):
         h2_gas_mfsp: pd.Series = pd.Series(dtype="float64"),
         h2_coal_ccs_mfsp: pd.Series = pd.Series(dtype="float64"),
         h2_coal_mfsp: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_mfsp: pd.Series = pd.Series(dtype="float64"),
+        h2_liquefaction_mfsp: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
         lhv_hydrogen: float = 0.0,
         transport_cost_ratio: float = 0.0,
     ) -> Tuple[
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
-        Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
 
         ### Electrolysis ####
@@ -226,7 +226,7 @@ class HydrogenCostSimple(AeroMAPSModel):
 
         self.df.loc[:, "coal_ccs_h2_total_cost"] = coal_ccs_h2_total_cost
 
-        liquefaction_h2_total_cost = liquefaction_mfsp / lhv_hydrogen * energy_consumption_hydrogen / 1e6
+        liquefaction_h2_total_cost = h2_liquefaction_mfsp / lhv_hydrogen * energy_consumption_hydrogen / 1e6
 
         self.df.loc[:, "liquefaction_h2_total_cost"] = liquefaction_h2_total_cost
 
@@ -363,7 +363,7 @@ class HydrogenCostSimple(AeroMAPSModel):
 
 
 class HydrogenMfspSimple(AeroMAPSModel):
-    def __init__(self, name="h2_mfsp", *args, **kwargs):
+    def __init__(self, name="hydrogen_mfsp_simple", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
@@ -380,11 +380,11 @@ class HydrogenMfspSimple(AeroMAPSModel):
         h2_coal_mfsp_reference_years_values: list = [],
         h2_liquefaction_mfsp_reference_years: list = [],
         h2_liquefaction_mfsp_reference_years_values: list = [],
-        h2_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
-        h2_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        h2_gas_share: pd.Series = pd.Series(dtype="float64"),
-        h2_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        h2_coal_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
         pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series
     ]:
@@ -446,11 +446,11 @@ class HydrogenMfspSimple(AeroMAPSModel):
 
         # MEAN
         h2_mean_mfsp = (
-            h2_electrolysis_mfsp * h2_electrolysis_share / 100
-            + h2_gas_ccs_mfsp * h2_gas_ccs_share / 100
-            + h2_gas_mfsp * h2_gas_share / 100
-            + h2_coal_ccs_mfsp * h2_coal_ccs_share / 100
-            + h2_coal_mfsp * h2_coal_share / 100
+                h2_electrolysis_mfsp * hydrogen_electrolysis_share / 100
+                + h2_gas_ccs_mfsp * hydrogen_gas_ccs_share / 100
+                + h2_gas_mfsp * hydrogen_gas_share / 100
+                + h2_coal_ccs_mfsp * hydrogen_coal_ccs_share / 100
+                + h2_coal_mfsp * hydrogen_coal_share / 100
         )
 
         self.df.loc[:, "h2_mean_mfsp"] = h2_mean_mfsp
