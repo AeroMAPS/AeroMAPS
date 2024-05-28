@@ -8,6 +8,8 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 from typing import Tuple
 
+import timeit
+
 
 class FleetCarbonAbatementCosts(AeroMAPSModel):
     def __init__(self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs):
@@ -39,6 +41,9 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         density_kerosene: float = 0.0,
         social_discount_rate: float = 0.0,
     ) -> Tuple[dict, dict, dict, dict]:
+
+        t1 = timeit.default_timer()
+
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
@@ -137,6 +142,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 scac_vals = []
                 scac_vals_prime = []
                 for k in range(self.prospection_start_year, self.end_year + 1):
+                    t2=timeit.default_timer()
                     scac, scac_prime = self._get_discounted_vals(
                         k,
                         social_discount_rate,
@@ -148,6 +154,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                         extra_emissions,
                         exogenous_carbon_price_trajectory,
                     )
+                    print(timeit.default_timer()-t2, 'cac')
                     scac_vals.append(scac)
                     scac_vals_prime.append(scac_prime)
 
@@ -211,6 +218,8 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict[
                     aircraft_var_name
                 ] = scac_prime_column
+
+        print(timeit.default_timer() - t1, 'fleet_abcost')
 
         return (
             dummy_carbon_abatement_cost_aircraft_value_dict,
@@ -329,6 +338,8 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+
+        t1 =timeit.default_timer()
 
         ### WARNING => Cargo DOC are not modelled so far in AeroMAPS (April 2024).
         # However, energy abatement are computed based on energy volumes used by the whole fleet.
@@ -528,6 +539,7 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             :, "aircraft_carbon_abatement_volume_freight_electric"
         ] = aircraft_carbon_abatement_volume_freight_electric
 
+        print(timeit.default_timer() - t1, 'cargo_abcost')
         return (
             aircraft_carbon_abatement_cost_freight_dropin,
             aircraft_carbon_abatement_cost_freight_hydrogen,

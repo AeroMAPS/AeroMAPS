@@ -12,6 +12,8 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
 
+import timeit
+
 class LiquidHydrogenCost(AeroMAPSModel):
     def __init__(self, name="liquid_hydrogen_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -150,6 +152,8 @@ class LiquidHydrogenCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+
+        t1 = timeit.default_timer()
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
@@ -940,6 +944,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             :, "coal_h2_generic_specific_abatement_cost"
         ] = coal_h2_generic_specific_abatement_cost
 
+        print(timeit.default_timer() - t1, 'h2 computation time')
         return (
             electrolysis_plant_building_scenario,
             electrolysis_plant_building_cost,
