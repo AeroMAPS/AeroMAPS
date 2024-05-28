@@ -479,5 +479,15 @@
     "load_factor_cost_non_energy_per_ask_final_value": 0.0,
     "contrails_relative_effect_hydrogen_wrt_kerosene": 1,
     "exogenous_carbon_price_reference_years": [2020, 2030, 2040, 2050],
-    "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775]
+    "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775],
+    "biofuel_hefa_fog_mfsp_reference_years": [],
+    "biofuel_hefa_fog_mfsp_reference_years_values": [1],
+    "biofuel_hefa_others_mfsp_reference_years": [],
+    "biofuel_hefa_others_mfsp_reference_years_values": [1],
+    "biofuel_ft_others_mfsp_reference_years": [],
+    "biofuel_ft_others_mfsp_reference_years_values": [1],
+    "biofuel_ft_msw_mfsp_reference_years": [],
+    "biofuel_ft_msw_mfsp_reference_years_values": [1],
+    "biofuel_atj_mfsp_reference_years": [],
+    "biofuel_atj_mfsp_reference_years_values": [1]
 }

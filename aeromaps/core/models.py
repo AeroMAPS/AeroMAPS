@@ -22,6 +22,7 @@ from aeromaps.models.impacts.costs.energy.biofuel import (
     BiofuelFeedstock,
     BiofuelCapex,
 )
+from aeromaps.models.impacts.costs.energy.biofuel_top_down import BiofuelCostSimple, BiofuelMfsp
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -427,6 +428,48 @@ models_energy_cost = {
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
 }
+
+models_energy_top_down_cost = {
+    "kerosene_market_price": KerosenePrice("kerosene_market_price"),
+    "kerosene_cost": KeroseneCost("kerosene_cost"),
+    "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
+    "biofuel_cost_simple": BiofuelCostSimple("biofuel_cost_simple"),
+    "co2_cost": Co2Cost("co2_cost"),
+    "carbon_tax": CarbonTax("carbon_tax"),
+    "electricity_cost": ElectricityCost("electricity_cost"),
+    "electricity_load_factor": ElectricityLoadFactor("electricity_load_factor"),
+    "coal_cost": CoalCost("coal_cost"),
+    "gas_cost": GasCost("coal_cost"),
+    "liquid_hydrogen_cost": LiquidHydrogenCost("liquid_hydrogen_cost"),
+    "electrolyser_capex": ElectrolyserCapex("electrolyser_capex"),
+    "electrolyser_fixed_opex": ElectrolyserFixedOpex("electrolyser_fixed_opex"),
+    "electrolyser_var_opex": ElectrolyserVarOpex("electrolyser_var_opex"),
+    "gas_ccs_capex": GasCcsCapex("gas_ccs_capex"),
+    "gas_ccs_fixed_opex": GasCcsFixedOpex("gas_ccs_fixed_opex"),
+    "gas_ccs_efficiency": GasCcsEfficiency("gas_ccs_efficiency"),
+    "gas_capex": GasCapex("gas_capex"),
+    "gas_fixed_opex": GasFixedOpex("gas_fixed_opex"),
+    "gas_efficiency": GasEfficiency("gas_efficiency"),
+    "coal_ccs_capex": CoalCcsCapex("coal_ccs_capex"),
+    "coal_ccs_fixed_opex": CoalCcsFixedOpex("coal_ccs_fixed_opex"),
+    "coal_ccs_efficiency": CoalCcsEfficiency("coal_ccs_efficiency"),
+    "coal_capex": CoalCapex("coal_capex"),
+    "coal_fixed_opex": CoalFixedOpex("coal_fixed_opex"),
+    "coal_efficiency": CoalEfficiency("coal_efficiency"),
+    "ccs_cost": CcsCost("ccs_cost"),
+    "liquefier_capex": LiquefierCapex("liquefier_capex"),
+    "electrofuel_cost": ElectrofuelCost("electrofuel_cost"),
+    "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
+    "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
+    "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
+    "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
+    "biofuel_mfsp": BiofuelMfsp("biofuel_mfsp"),
+    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
+    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
+    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+}
+
+
 
 models_operation_cost = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
