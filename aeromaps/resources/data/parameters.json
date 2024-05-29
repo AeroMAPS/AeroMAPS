@@ -502,6 +502,6 @@
     "gh2_coal_mfsp_simple_reference_years_values": [1],
     "liquefaction_mfsp_simple_reference_years": [],
     "liquefaction_mfsp_simple_reference_years_values": [1],
-    "electrofuel_mfsp_reference_years": [],
-    "electrofuel_mfsp_reference_years_values": [1]
+    "electrofuel_mfsp_simple_reference_years": [],
+    "electrofuel_mfsp_simple_reference_years_values": [1]
 }

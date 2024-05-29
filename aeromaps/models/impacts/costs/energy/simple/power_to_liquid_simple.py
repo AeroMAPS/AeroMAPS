@@ -23,7 +23,7 @@ class ElectrofuelCostSimple(AeroMAPSModel):
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
         lhv_electrofuel: float = 0.0,
         density_electrofuel: float = 0.0,
-    ) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series,]:
+    ) -> tuple[pd.Series, pd.Series, pd.Series,]:
         electrofuel_total_cost = (
             electrofuel_mfsp_simple
             * density_electrofuel
