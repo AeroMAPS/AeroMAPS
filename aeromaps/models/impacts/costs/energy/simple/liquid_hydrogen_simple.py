@@ -24,23 +24,16 @@ class HydrogenCostSimple(AeroMAPSModel):
         hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
         hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-        gh2_electrolysis_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
-        gh2_gas_ccs_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
-        gh2_gas_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
-        gh2_coal_ccs_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
-        gh2_coal_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_mfsp_simple: pd.Series = pd.Series(dtype="float64"),
+        electrolysis_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
+        gas_ccs_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
+        gas_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
+        coal_ccs_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
+        coal_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
+        liquefaction_h2_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
         carbon_tax: pd.Series = pd.Series(dtype="float64"),
         lhv_hydrogen: float = 0.0,
         transport_cost_ratio: float = 0.0,
     ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -67,13 +60,15 @@ class HydrogenCostSimple(AeroMAPSModel):
         ### Electrolysis ####
 
         electrolysis_h2_total_cost = (
-                gh2_electrolysis_mfsp_simple
+                electrolysis_h2_mean_mfsp_kg
                 / lhv_hydrogen
                 * energy_consumption_hydrogen
                 * hydrogen_electrolysis_share
                 / 100
                 / 1e6
         )
+
+
         electrolysis_h2_carbon_tax = (
             energy_consumption_hydrogen
             * hydrogen_electrolysis_share
@@ -99,7 +94,7 @@ class HydrogenCostSimple(AeroMAPSModel):
         ### gas ####
 
         gas_h2_total_cost = (
-                gh2_gas_mfsp_simple
+                gas_h2_mean_mfsp_kg
                 / lhv_hydrogen
                 * energy_consumption_hydrogen
                 * hydrogen_gas_share
@@ -129,7 +124,7 @@ class HydrogenCostSimple(AeroMAPSModel):
         ### gas_ccs ####
 
         gas_ccs_h2_total_cost = (
-                gh2_gas_ccs_mfsp_simple
+                gas_ccs_h2_mean_mfsp_kg
                 / lhv_hydrogen
                 * energy_consumption_hydrogen
                 * hydrogen_gas_ccs_share
@@ -161,7 +156,7 @@ class HydrogenCostSimple(AeroMAPSModel):
         ### coal ####
 
         coal_h2_total_cost = (
-                gh2_coal_mfsp_simple
+                coal_h2_mean_mfsp_kg
                 / lhv_hydrogen
                 * energy_consumption_hydrogen
                 * hydrogen_coal_share
@@ -191,7 +186,7 @@ class HydrogenCostSimple(AeroMAPSModel):
         ### coal_ccs ####
 
         coal_ccs_h2_total_cost = (
-                gh2_coal_ccs_mfsp_simple
+                coal_ccs_h2_mean_mfsp_kg
                 / lhv_hydrogen
                 * energy_consumption_hydrogen
                 * hydrogen_coal_ccs_share
@@ -221,7 +216,7 @@ class HydrogenCostSimple(AeroMAPSModel):
         self.df.loc[:, "coal_ccs_h2_total_cost"] = coal_ccs_h2_total_cost
 
         liquefaction_h2_total_cost = (
-                liquefaction_mfsp_simple / lhv_hydrogen * energy_consumption_hydrogen / 1e6
+                liquefaction_h2_mean_mfsp_kg / lhv_hydrogen * energy_consumption_hydrogen / 1e6
         )
 
         self.df.loc[:, "liquefaction_h2_total_cost"] = liquefaction_h2_total_cost
@@ -241,55 +236,8 @@ class HydrogenCostSimple(AeroMAPSModel):
             transport_h2_total_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
         )
 
-        liquefaction_h2_mean_mfsp_kg = (
-            liquefaction_h2_total_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
-        )
 
         self.df.loc[:, "transport_h2_cost_per_kg"] = transport_h2_cost_per_kg
-        self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"] = liquefaction_h2_mean_mfsp_kg
-
-        ######## SYNTHESIS ########
-        # compute average costs per kg for each pathway
-
-        electrolysis_h2_mean_mfsp_kg = (
-            electrolysis_h2_total_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_electrolysis_share / 100))
-        ) * 1000000
-
-        self.df.loc[:, "electrolysis_h2_mean_mfsp_kg"] = electrolysis_h2_mean_mfsp_kg
-        # €/kg
-
-        gas_ccs_h2_mean_mfsp_kg = (
-            gas_ccs_h2_total_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_gas_ccs_share / 100))
-        ) * 1000000
-
-        self.df.loc[:, "gas_ccs_h2_mean_mfsp_kg"] = gas_ccs_h2_mean_mfsp_kg
-        # €/kg
-
-        gas_h2_mean_mfsp_kg = (
-            gas_h2_total_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_gas_share / 100))
-        ) * 1000000
-
-        self.df.loc[:, "gas_h2_mean_mfsp_kg"] = gas_h2_mean_mfsp_kg
-        # €/kg
-
-        coal_ccs_h2_mean_mfsp_kg = (
-            coal_ccs_h2_total_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_coal_ccs_share / 100))
-        ) * 1000000
-
-        self.df.loc[:, "coal_ccs_h2_mean_mfsp_kg"] = coal_ccs_h2_mean_mfsp_kg
-        # €/kg
-
-        coal_h2_mean_mfsp_kg = (
-            coal_h2_total_cost
-            / (energy_consumption_hydrogen / lhv_hydrogen * (hydrogen_coal_share / 100))
-        ) * 1000000
-
-        self.df.loc[:, "coal_h2_mean_mfsp_kg"] = coal_h2_mean_mfsp_kg
-        # €/kg
 
         total_hydrogen_supply_cost = (
             electrolysis_h2_total_cost.fillna(0)
@@ -327,7 +275,6 @@ class HydrogenCostSimple(AeroMAPSModel):
             electrolysis_h2_total_cost,
             liquefaction_h2_total_cost,
             transport_h2_total_cost,
-            electrolysis_h2_mean_mfsp_kg,
             total_hydrogen_supply_cost,
             average_hydrogen_mean_mfsp_kg,
             electrolysis_h2_carbon_tax,
@@ -336,10 +283,6 @@ class HydrogenCostSimple(AeroMAPSModel):
             gas_h2_total_cost,
             coal_ccs_h2_total_cost,
             coal_h2_total_cost,
-            gas_ccs_h2_mean_mfsp_kg,
-            gas_h2_mean_mfsp_kg,
-            coal_ccs_h2_mean_mfsp_kg,
-            coal_h2_mean_mfsp_kg,
             gas_ccs_h2_carbon_tax,
             gas_ccs_h2_mfsp_carbon_tax_supplement,
             gas_h2_carbon_tax,
@@ -350,7 +293,6 @@ class HydrogenCostSimple(AeroMAPSModel):
             coal_h2_mfsp_carbon_tax_supplement,
             average_hydrogen_mean_carbon_tax_kg,
             transport_h2_cost_per_kg,
-            liquefaction_h2_mean_mfsp_kg,
         )
 
 
@@ -378,64 +320,64 @@ class HydrogenMfspSimple(AeroMAPSModel):
         """Hydrogen mfsp_simple (Minimal fuel selling price) estimates"""
 
         # Electrolysis
-        gh2_electrolysis_mfsp_simple = AeromapsInterpolationFunction(
+        electrolysis_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             gh2_electrolysis_mfsp_simple_reference_years,
             gh2_electrolysis_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "gh2_electrolysis_mfsp_simple"] = gh2_electrolysis_mfsp_simple
+        self.df.loc[:, "electrolysis_h2_mean_mfsp_kg"] = electrolysis_h2_mean_mfsp_kg
 
         # Gas CCS
-        gh2_gas_ccs_mfsp_simple = AeromapsInterpolationFunction(
+        gas_ccs_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             gh2_gas_ccs_mfsp_simple_reference_years,
             gh2_gas_ccs_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "gh2_gas_ccs_mfsp_simple"] = gh2_gas_ccs_mfsp_simple
+        self.df.loc[:, "gas_ccs_h2_mean_mfsp_kg"] = gas_ccs_h2_mean_mfsp_kg
 
         # Gas
-        gh2_gas_mfsp_simple = AeromapsInterpolationFunction(
+        gas_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             gh2_gas_mfsp_simple_reference_years,
             gh2_gas_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "gh2_gas_mfsp_simple"] = gh2_gas_mfsp_simple
+        self.df.loc[:, "gas_h2_mean_mfsp_kg"] = gas_h2_mean_mfsp_kg
 
         # Coal CCS
-        gh2_coal_ccs_mfsp_simple = AeromapsInterpolationFunction(
+        coal_ccs_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             gh2_coal_ccs_mfsp_simple_reference_years,
             gh2_coal_ccs_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "gh2_coal_ccs_mfsp_simple"] = gh2_coal_ccs_mfsp_simple
+        self.df.loc[:, "coal_ccs_h2_mean_mfsp_kg"] = coal_ccs_h2_mean_mfsp_kg
 
         # Coal
-        gh2_coal_mfsp_simple = AeromapsInterpolationFunction(
+        coal_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             gh2_coal_mfsp_simple_reference_years,
             gh2_coal_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "gh2_coal_mfsp_simple"] = gh2_coal_mfsp_simple
+        self.df.loc[:, "coal_h2_mean_mfsp_kg"] = coal_h2_mean_mfsp_kg
 
         # Liquefaction
-        liquefaction_mfsp_simple = AeromapsInterpolationFunction(
+        liquefaction_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
             self,
             liquefaction_mfsp_simple_reference_years,
             liquefaction_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[:, "liquefaction_mfsp_simple"] = liquefaction_mfsp_simple
+        self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"] = liquefaction_h2_mean_mfsp_kg
 
 
         return (
-            gh2_electrolysis_mfsp_simple,
-            gh2_gas_ccs_mfsp_simple,
-            gh2_gas_mfsp_simple,
-            gh2_coal_ccs_mfsp_simple,
-            gh2_coal_mfsp_simple,
-            liquefaction_mfsp_simple)
+            electrolysis_h2_mean_mfsp_kg,
+            gas_ccs_h2_mean_mfsp_kg,
+            gas_h2_mean_mfsp_kg,
+            coal_ccs_h2_mean_mfsp_kg,
+            coal_h2_mean_mfsp_kg,
+            liquefaction_h2_mean_mfsp_kg)
