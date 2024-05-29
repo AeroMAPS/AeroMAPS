@@ -1120,7 +1120,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1253,7 +1253,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * electrolyser_specific_electricity[technology_year]
             hydrogen_prices[year] = {
@@ -1369,7 +1369,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1518,7 +1518,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(fuel_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             fuel_price = fuel_market_price[year]
             fuel_cost = fuel_price * plant_specific_energy[technology_year]
             co2_ccs_cost = ccs_cost[year] * carbon_captured_kg[year]
@@ -1611,7 +1611,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i]
                         + (missing_production * liquefaction_cost[i]["TOTAL"]) / 1000
@@ -1729,7 +1729,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * liquefier_specific_electricity[technology_year]
             opex_var_cost = 0.05 * elec_cost

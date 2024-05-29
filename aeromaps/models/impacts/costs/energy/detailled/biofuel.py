@@ -825,7 +825,7 @@ class BiofuelCost(AeroMAPSModel):
             max(biomass_feedstock_cost.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year + construction_time, end_bound + 1):
+        for year in range(base_year + construction_time, int(end_bound) + 1):
             feedstock_price = biomass_feedstock_cost[year]
             feedstock_cost = (
                 feedstock_price
