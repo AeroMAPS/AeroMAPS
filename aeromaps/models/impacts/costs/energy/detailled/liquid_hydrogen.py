@@ -1107,9 +1107,8 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # electrolyzer capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        electrolyser_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += electrolyser_capex_year / construction_time
 
                 plant_building_scenario[
                     year
@@ -1359,8 +1358,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 plant_capex_year = plant_capacity_to_build * plant_eis_capex[year] / 1000
                 # plant capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
+
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += plant_capex_year / construction_time
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += plant_capex_year / construction_time
+
                 plant_building_scenario[year] = plant_capacity_to_build
                 # in ton/day capacity
 
@@ -1601,9 +1603,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # liquefier capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        liquefier_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            liquefier_capex_year / construction_time
+                        )
+
                 plant_building_scenario[year] = liquefier_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;

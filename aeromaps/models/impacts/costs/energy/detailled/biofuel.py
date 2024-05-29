@@ -622,7 +622,8 @@ class BiofuelCost(AeroMAPSModel):
                 plant_building_scenario[year] = capacity_to_build_kg_day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += capex_year / construction_time
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += capex_year / construction_time
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = int(min(list(demand_scenario.index)[-1], year + plant_lifespan))
