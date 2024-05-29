@@ -26,7 +26,7 @@ class ElectrofuelCostSimple(AeroMAPSModel):
     ) -> tuple[pd.Series, pd.Series, pd.Series,]:
         electrofuel_total_cost = (
             electrofuel_mean_mfsp_litre
-            * density_electrofuel
+            / density_electrofuel
             / lhv_electrofuel
             * energy_consumption_electrofuel
             / 1e6

@@ -63,7 +63,7 @@ class BiofuelCostSimple(AeroMAPSModel):
 
         biofuel_cost_hefa_fog = (
             biofuel_hefa_fog_mfsp
-            * density_biofuel
+            / density_biofuel
             / lhv_biofuel
             * energy_consumption_biofuel
             * biofuel_hefa_fog_share
@@ -93,7 +93,7 @@ class BiofuelCostSimple(AeroMAPSModel):
         ### HEFA OTHERS
         biofuel_cost_hefa_others = (
             biofuel_hefa_others_mfsp
-            * density_biofuel
+            / density_biofuel
             / lhv_biofuel
             * energy_consumption_biofuel
             * biofuel_hefa_others_share
@@ -127,7 +127,7 @@ class BiofuelCostSimple(AeroMAPSModel):
         ### FT OTHERS
         biofuel_cost_ft_others = (
             biofuel_ft_others_mfsp
-            * density_biofuel
+            / density_biofuel
             / lhv_biofuel
             * energy_consumption_biofuel
             * biofuel_ft_others_share
@@ -157,7 +157,7 @@ class BiofuelCostSimple(AeroMAPSModel):
         ### FT MSW
         biofuel_cost_ft_msw = (
             biofuel_ft_msw_mfsp
-            * density_biofuel
+            / density_biofuel
             / lhv_biofuel
             * energy_consumption_biofuel
             * biofuel_ft_msw_share
@@ -187,7 +187,7 @@ class BiofuelCostSimple(AeroMAPSModel):
         ### ATJ
         biofuel_cost_atj = (
             biofuel_atj_mfsp
-            * density_biofuel
+            / density_biofuel
             / lhv_biofuel
             * energy_consumption_biofuel
             * biofuel_atj_share
