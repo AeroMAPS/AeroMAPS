@@ -4,9 +4,7 @@
 # @Software: PyCharm
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
-from pandas import Series
 
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 
