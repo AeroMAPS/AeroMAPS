@@ -56,7 +56,7 @@ class ElectrofuelCostSimple(AeroMAPSModel):
         return (
             electrofuel_total_cost,
             electrofuel_carbon_tax,
-            electrofuel_mfsp_carbon_tax_supplement
+            electrofuel_mfsp_carbon_tax_supplement,
         )
 
 

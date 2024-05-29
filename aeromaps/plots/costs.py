@@ -35,8 +35,8 @@ class ScenarioEnergyCapitalPlot:
             self.create_plot()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
-                'Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
             ) from e
 
     def create_plot(self):
@@ -1405,10 +1405,9 @@ class DropInMACC:
             self.create_plot()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires complex energy cost and abatement models. '
-                'Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires complex energy cost and abatement models. "
+                "Be sure to select them in the scenario settings."
             ) from e
-
 
     def create_plot(self):
         # Select year at which the MACC is plotted
@@ -2377,8 +2376,8 @@ class AnnualMACC:
 
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
-                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
 
     def plot_interact(self):
@@ -2936,8 +2935,8 @@ class CumulativeMACC:
             self.update()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
-                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
 
     def create_plot_data(self):
@@ -3597,10 +3596,9 @@ class ScenarioMACC:
             self.plot_interact()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
-                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
-
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -4014,10 +4012,9 @@ class ShadowCarbonPrice:
             self.plot_interact()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
-                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
-
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -4382,8 +4379,8 @@ class DetailledMFSPBreakdownPerPathway:
             self.plot_interact()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
-                'Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
             ) from e
 
     def plot_interact(self):
@@ -4987,8 +4984,8 @@ class DetailledMFSPBreakdownPerYear:
             self.plot_interact()
         except Exception as e:
             raise RuntimeError(
-                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
-                'Be sure to select them in the scenario settings.'
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
             ) from e
 
     def plot_interact(self):

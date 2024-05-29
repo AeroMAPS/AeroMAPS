@@ -484,8 +484,8 @@ models_operation_cost_top_down = {
         "passenger_aircraft_total_cost_and_airfare"
     ),
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
-            "passenger_aircraft_doc_non_energy_simple"
-    )
+        "passenger_aircraft_doc_non_energy_simple"
+    ),
 }
 
 models_operation_cost_bottom_up = {
@@ -511,8 +511,8 @@ models_operation_cost_bottom_up = {
         "passenger_aircraft_total_cost_and_airfare"
     ),
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
-            "passenger_aircraft_doc_non_energy_complex"
-        ),
+        "passenger_aircraft_doc_non_energy_complex"
+    ),
     "fleet_numeric": FleetEvolution("fleet_numeric"),
     "recurring_costs": RecurringCosts("recurring_costs"),
     "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
