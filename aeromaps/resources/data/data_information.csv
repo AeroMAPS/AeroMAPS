@@ -557,16 +557,16 @@ coal_cost_reference_years;List;yr;Reference years for the industrial wholesale c
 coal_cost_reference_years_values;List;€/kWh;Industrial wholesale coal market price for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 kerosene_price_reference_years;List;yr;Reference years for the kerosene (fossil) market price
 kerosene_price_reference_years_values;List;€/L;Kerosene (fossil) market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_hefa_fog_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP
-biofuel_hefa_fog_mfsp_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_hefa_others_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP
-biofuel_hefa_others_mfsp_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_ft_others_mfsp_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP
-biofuel_ft_others_mfsp_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_ft_msw_mfsp_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP
-biofuel_ft_msw_mfsp_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_atj_mfsp_reference_years;List;yr;Reference years for the biofuel (AtJ) MFSP
-biofuel_atj_mfsp_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+biofuel_hefa_fog_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP
+biofuel_hefa_fog_mfsp_simple_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+biofuel_hefa_others_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP
+biofuel_hefa_others_mfsp_simple_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+biofuel_ft_others_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP
+biofuel_ft_others_mfsp_simple_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+biofuel_ft_msw_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP
+biofuel_ft_msw_mfsp_simple_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
+biofuel_atj_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (AtJ) MFSP
+biofuel_atj_mfsp_simple_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_fog_capex_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) capex
 biofuel_hefa_fog_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa FOG) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_others_capex_reference_years;List;yr;Reference years for the biofuel (Hefa Others) capex

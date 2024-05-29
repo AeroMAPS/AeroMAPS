@@ -259,16 +259,16 @@ class BiofuelMfspSimple(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_mfsp_reference_years: list = [],
-        biofuel_hefa_fog_mfsp_reference_years_values: list = [],
-        biofuel_hefa_others_mfsp_reference_years: list = [],
-        biofuel_hefa_others_mfsp_reference_years_values: list = [],
-        biofuel_ft_others_mfsp_reference_years: list = [],
-        biofuel_ft_others_mfsp_reference_years_values: list = [],
-        biofuel_ft_msw_mfsp_reference_years: list = [],
-        biofuel_ft_msw_mfsp_reference_years_values: list = [],
-        biofuel_atj_mfsp_reference_years: list = [],
-        biofuel_atj_mfsp_reference_years_values: list = [],
+        biofuel_hefa_fog_mfsp_simple_reference_years: list = [],
+        biofuel_hefa_fog_mfsp_simple_reference_years_values: list = [],
+        biofuel_hefa_others_mfsp_simple_reference_years: list = [],
+        biofuel_hefa_others_mfsp_simple_reference_years_values: list = [],
+        biofuel_ft_others_mfsp_simple_reference_years: list = [],
+        biofuel_ft_others_mfsp_simple_reference_years_values: list = [],
+        biofuel_ft_msw_mfsp_simple_reference_years: list = [],
+        biofuel_ft_msw_mfsp_simple_reference_years_values: list = [],
+        biofuel_atj_mfsp_simple_reference_years: list = [],
+        biofuel_atj_mfsp_simple_reference_years_values: list = [],
         biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
         biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
@@ -280,8 +280,8 @@ class BiofuelMfspSimple(AeroMAPSModel):
         # HEFA FOG
         biofuel_hefa_fog_mfsp = AeromapsInterpolationFunction(
             self,
-            biofuel_hefa_fog_mfsp_reference_years,
-            biofuel_hefa_fog_mfsp_reference_years_values,
+            biofuel_hefa_fog_mfsp_simple_reference_years,
+            biofuel_hefa_fog_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
@@ -289,8 +289,8 @@ class BiofuelMfspSimple(AeroMAPSModel):
         # HEFA OTHERS
         biofuel_hefa_others_mfsp = AeromapsInterpolationFunction(
             self,
-            biofuel_hefa_others_mfsp_reference_years,
-            biofuel_hefa_others_mfsp_reference_years_values,
+            biofuel_hefa_others_mfsp_simple_reference_years,
+            biofuel_hefa_others_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
@@ -298,8 +298,8 @@ class BiofuelMfspSimple(AeroMAPSModel):
         # FT OTHERS
         biofuel_ft_others_mfsp = AeromapsInterpolationFunction(
             self,
-            biofuel_ft_others_mfsp_reference_years,
-            biofuel_ft_others_mfsp_reference_years_values,
+            biofuel_ft_others_mfsp_simple_reference_years,
+            biofuel_ft_others_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
@@ -307,8 +307,8 @@ class BiofuelMfspSimple(AeroMAPSModel):
         # FT MSW
         biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
             self,
-            biofuel_ft_msw_mfsp_reference_years,
-            biofuel_ft_msw_mfsp_reference_years_values,
+            biofuel_ft_msw_mfsp_simple_reference_years,
+            biofuel_ft_msw_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
@@ -316,8 +316,8 @@ class BiofuelMfspSimple(AeroMAPSModel):
         # ATJ
         biofuel_atj_mfsp = AeromapsInterpolationFunction(
             self,
-            biofuel_atj_mfsp_reference_years,
-            biofuel_atj_mfsp_reference_years_values,
+            biofuel_atj_mfsp_simple_reference_years,
+            biofuel_atj_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
         self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
