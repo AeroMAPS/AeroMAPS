@@ -52,12 +52,7 @@ class BiofuelCostSimple(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
+        pd.Series
     ]:
         ### HEFA FOG
 
