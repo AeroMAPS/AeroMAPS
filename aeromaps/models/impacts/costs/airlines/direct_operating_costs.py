@@ -294,7 +294,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         energy_per_ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         dropin_mean_mfsp: pd.Series = pd.Series(dtype="float64"),
-        h2_avg_cost_per_kg: pd.Series = pd.Series(dtype="float64"),
+        average_hydrogen_mean_mfsp_kg: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
@@ -347,7 +347,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             if ask_long_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_long_range_hydrogen[k] = (
                     energy_per_ask_long_range_hydrogen[k]
-                    * h2_avg_cost_per_kg[k]
+                    * average_hydrogen_mean_mfsp_kg[k]
                     / hydrogen_specific_energy
                 )
             if ask_medium_range_dropin_fuel_share[k] > 0:
@@ -357,7 +357,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             if ask_medium_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_medium_range_hydrogen[k] = (
                     energy_per_ask_medium_range_hydrogen[k]
-                    * h2_avg_cost_per_kg[k]
+                    * average_hydrogen_mean_mfsp_kg[k]
                     / hydrogen_specific_energy
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
@@ -367,7 +367,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             if ask_short_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_short_range_hydrogen[k] = (
                     energy_per_ask_short_range_hydrogen[k]
-                    * h2_avg_cost_per_kg[k]
+                    * average_hydrogen_mean_mfsp_kg[k]
                     / hydrogen_specific_energy
                 )
 
@@ -452,7 +452,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
         energy_per_ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
         energy_per_ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         dropin_mfsp_carbon_tax_supplement: pd.Series = pd.Series(dtype="float64"),
-        h2_avg_carbon_tax_per_kg: pd.Series = pd.Series(dtype="float64"),
+        average_hydrogen_mean_carbon_tax_kg: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
@@ -510,7 +510,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_long_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_hydrogen[k] = (
                     energy_per_ask_long_range_hydrogen[k]
-                    * h2_avg_carbon_tax_per_kg[k]
+                    * average_hydrogen_mean_carbon_tax_kg[k]
                     / hydrogen_specific_energy
                 )
             if ask_medium_range_dropin_fuel_share[k] > 0:
@@ -522,7 +522,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_medium_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_hydrogen[k] = (
                     energy_per_ask_medium_range_hydrogen[k]
-                    * h2_avg_carbon_tax_per_kg[k]
+                    * average_hydrogen_mean_carbon_tax_kg[k]
                     / hydrogen_specific_energy
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
@@ -534,7 +534,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_short_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_hydrogen[k] = (
                     energy_per_ask_short_range_hydrogen[k]
-                    * h2_avg_carbon_tax_per_kg[k]
+                    * average_hydrogen_mean_carbon_tax_kg[k]
                     / hydrogen_specific_energy
                 )
 

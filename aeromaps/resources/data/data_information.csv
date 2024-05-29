@@ -768,8 +768,8 @@ gas_h2_mean_opex_share;Vector;M€;Annual gas Hydrogen production cost attributa
 gas_h2_total_cost;Vector;M€;Annual gas Hydrogen production cost
 gas_plant_building_cost;Vector;M€;Annual expenses for gas plants built each year
 gas_plant_building_scenario;Vector;t/day;Annual capacity built for gas plants built each year
-h2_avg_carbon_tax_per_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
-h2_avg_cost_per_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
+average_hydrogen_mean_carbon_tax_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
+average_hydrogen_mean_mfsp_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
 coal_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (without ccs) hydrogen MFSP, without carbon tax (evolution)
 coal_ccs_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (with ccs) hydrogen MFSP, without carbon tax (evolution)
 electrolysis_h2_mean_mfsp_kg;Vector;€/kg;Average electrolysis hydrogen MFSP, without carbon tax (evolution)

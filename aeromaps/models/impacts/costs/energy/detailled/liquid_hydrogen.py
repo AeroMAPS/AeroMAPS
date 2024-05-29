@@ -445,10 +445,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
         self.df.loc[:, "total_hydrogen_supply_cost"] = total_hydrogen_supply_cost
         # M€
 
-        h2_avg_cost_per_kg = (
+        average_hydrogen_mean_mfsp_kg = (
             total_hydrogen_supply_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
         )
-        self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
+        self.df.loc[:, "average_hydrogen_mean_mfsp_kg"] = average_hydrogen_mean_mfsp_kg
         # €/kg
 
         total_h2_building_cost = (
@@ -890,7 +890,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # €/kg_H2
         self.df.loc[:, "coal_h2_mfsp_carbon_tax_supplement"] = coal_h2_mfsp_carbon_tax_supplement
 
-        h2_avg_carbon_tax_per_kg = (
+        average_hydrogen_mean_carbon_tax_kg = (
             (
                 electrolysis_h2_carbon_tax.fillna(0)
                 + gas_h2_carbon_tax.fillna(0)
@@ -901,7 +901,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             / (energy_consumption_hydrogen / lhv_hydrogen)
             * 1000000
         )
-        self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
+        self.df.loc[:, "average_hydrogen_mean_carbon_tax_kg"] = average_hydrogen_mean_carbon_tax_kg
         # €/kg
 
         (
@@ -957,7 +957,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             transport_h2_total_cost,
             electrolysis_h2_mean_mfsp_kg,
             total_hydrogen_supply_cost,
-            h2_avg_cost_per_kg,
+            average_hydrogen_mean_mfsp_kg,
             total_h2_building_cost,
             electrolysis_h2_cost_premium,
             carbon_abatement_cost_h2_electrolysis,
@@ -1009,7 +1009,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_abatement_cost_h2_coal,
             coal_h2_carbon_tax,
             coal_h2_mfsp_carbon_tax_supplement,
-            h2_avg_carbon_tax_per_kg,
+            average_hydrogen_mean_carbon_tax_kg,
             electrolysis_h2_specific_abatement_cost,
             gas_ccs_h2_specific_abatement_cost,
             gas_h2_specific_abatement_cost,
