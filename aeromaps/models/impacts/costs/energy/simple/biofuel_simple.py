@@ -33,8 +33,23 @@ class BiofuelCostSimple(AeroMAPSModel):
             carbon_tax: pd.Series = pd.Series(dtype="float64"),
             lhv_biofuel: float = 0.0,
             density_biofuel: float = 0.0,
-    ) -> tuple[
-        pd.Series, ...
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         ### HEFA FOG
 
