@@ -53,15 +53,10 @@ class ElectrofuelCostSimple(AeroMAPSModel):
             :, "electrofuel_mfsp_carbon_tax_supplement"
         ] = electrofuel_mfsp_carbon_tax_supplement
 
-        #Affecting to standard mfsp variable the value of simple mfsp obtained with interpolation
-        electrofuel_mean_mfsp_litre = electrofuel_mfsp_simple
-        self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
-
         return (
             electrofuel_total_cost,
             electrofuel_carbon_tax,
-            electrofuel_mfsp_carbon_tax_supplement,
-            electrofuel_mean_mfsp_litre,
+            electrofuel_mfsp_carbon_tax_supplement
         )
 
 
@@ -76,13 +71,13 @@ class ElectrofuelMfspSimple(AeroMAPSModel):
     ) -> Tuple[pd.Series]:
         """Electrofuel MFSP (Minimal fuel selling price) estimates"""
 
-        electrofuel_mfsp_simple = AeromapsInterpolationFunction(
+        electrofuel_mean_mfsp_litre = AeromapsInterpolationFunction(
             self,
             electrofuel_mfsp_simple_reference_years,
             electrofuel_mfsp_simple_reference_years_values,
             model_name=self.name,
         )
 
-        self.df.loc[:, "electrofuel_mfsp_simple"] = electrofuel_mfsp_simple
+        self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
 
-        return electrofuel_mfsp_simple
+        return electrofuel_mean_mfsp_litre
