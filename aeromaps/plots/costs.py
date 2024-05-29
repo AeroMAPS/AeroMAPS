@@ -28,10 +28,16 @@ class ScenarioEnergyCapitalPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.create_plot()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
+                'Be sure to select them in the scenario settings.'
+            ) from e
 
     def create_plot(self):
         # mine
@@ -1392,10 +1398,17 @@ class DropInMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.create_plot()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires complex energy cost and abatement models. '
+                'Be sure to select them in the scenario settings.'
+            ) from e
+
 
     def create_plot(self):
         # Select year at which the MACC is plotted
@@ -2354,12 +2367,19 @@ class AnnualMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
-        )
-        self.ax2 = self.ax.twiny()
-        self.create_plot_data()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(10, 7),
+            )
+            self.ax2 = self.ax.twiny()
+            self.create_plot_data()
+            self.plot_interact()
+
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
+                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+            ) from e
 
     def plot_interact(self):
 
@@ -2907,12 +2927,18 @@ class CumulativeMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
-        )
-        self.ax2 = self.ax.twiny()
-        self.create_plot_data()
-        self.update()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(10, 7),
+            )
+            self.ax2 = self.ax.twiny()
+            self.create_plot_data()
+            self.update()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
+                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+            ) from e
 
     def create_plot_data(self):
         social_discount_rate = self.float_inputs["social_discount_rate"]
@@ -3560,14 +3586,21 @@ class ScenarioMACC:
         divider = make_axes_locatable(self.ax)
         dummy_divider = make_axes_locatable(self.ax_scc)
 
-        # Create ax2 for the colorbar
-        self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
-        # Create a dummy ax to keep sharex
-        self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
-        self.dummy_ax.set_visible(False)
+        try:
+            # Create ax2 for the colorbar
+            self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
+            # Create a dummy ax to keep sharex
+            self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
+            self.dummy_ax.set_visible(False)
 
-        self.create_plot_data()
-        self.plot_interact()
+            self.create_plot_data()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
+                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+            ) from e
+
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -3974,10 +4007,17 @@ class ShadowCarbonPrice:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 7))
+        try:
+            self.fig, self.ax = plt.subplots(figsize=(10, 7))
 
-        self.create_plot_data()
-        self.plot_interact()
+            self.create_plot_data()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires top-down fleet model, '
+                'abatement cost and complex energy cost models. Be sure to select them in the scenario settings.'
+            ) from e
+
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -4333,13 +4373,18 @@ class DetailledMFSPBreakdownPerPathway:
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.ax2 = self.ax.twinx()
-        self.create_plot()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.ax2 = self.ax.twinx()
+            self.create_plot()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
+                'Be sure to select them in the scenario settings.'
+            ) from e
 
     def plot_interact(self):
 
@@ -4932,13 +4977,19 @@ class DetailledMFSPBreakdownPerYear:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
-        )
-        self.ax2 = self.ax.twinx()
-        self.ax3 = self.ax.twinx()
-        self.create_plot()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                # figsize=(plot_3_x, plot_3_y),
+            )
+            self.ax2 = self.ax.twinx()
+            self.ax3 = self.ax.twinx()
+            self.create_plot()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                'Error in creating plot. Possible cause: this plot requires complex energy cost models. '
+                'Be sure to select them in the scenario settings.'
+            ) from e
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
