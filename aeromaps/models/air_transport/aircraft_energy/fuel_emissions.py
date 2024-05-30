@@ -21,11 +21,11 @@ class BiofuelEmissionFactor(AeroMAPSModel):
         biofuel_ft_msw_emission_factor_reference_years_values: list = [],
         biofuel_atj_emission_factor_reference_years: list = [],
         biofuel_atj_emission_factor_reference_years_values: list = [],
-        biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
+        biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        biofuel_atj_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel CO2 emission factor calculation using interpolation functions"""
 
@@ -123,18 +123,18 @@ class HydrogenEmissionFactor(AeroMAPSModel):
 
     def compute(
         self,
-        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
+        electricity_emission_factor: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
         gaseous_hydrogen_gas_ccs_emission_factor: float = 0.0,
         gaseous_hydrogen_coal_ccs_emission_factor: float = 0.0,
         gaseous_hydrogen_gas_emission_factor: float = 0.0,
         gaseous_hydrogen_coal_emission_factor: float = 0.0,
-        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
+        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen CO2 emission factor calculation."""
 
@@ -204,9 +204,9 @@ class ElectrofuelEmissionFactor(AeroMAPSModel):
 
     def compute(
         self,
-        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
+        electricity_emission_factor: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
     ) -> pd.Series:
         """Electrofuel CO2 emission factor calculation."""
 
