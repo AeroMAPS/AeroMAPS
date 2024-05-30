@@ -301,13 +301,14 @@ class AeroMAPSProcess(object):
         for field_name, field_value in self.parameters.__dict__.items():
             if not isinstance(field_value, (float, int, list)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
-                new_value = np.pad(
-                    field_value,
-                    (0, new_size - field_value.size),
-                    mode="constant",
-                    constant_values=np.nan,
-                )
-                setattr(self.parameters, field_name, new_value)
+                if field_value.size < new_size:
+                    new_value = np.pad(
+                        field_value,
+                        (0, new_size - field_value.size),
+                        mode="constant",
+                        constant_values=np.nan,
+                    )
+                    setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):
 
