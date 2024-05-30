@@ -42,16 +42,16 @@ from gemseo.core.discipline import MDODiscipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 
+import pandas as pd
+from aeromaps.models.base import AeroMAPSModel
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from collections.abc import Sequence
 
-from aeromaps.models.base import AeromapsModel
-
 DataType = Union[float, ndarray]
 
 LOGGER = logging.getLogger(__name__)
-
 
 
 class AutoPyDiscipline(MDODiscipline):
@@ -170,7 +170,6 @@ class AutoPyDiscipline(MDODiscipline):
             Whether type hints are used.
         """
         type_hints = get_type_hints(self.py_func)
-
         return_type = type_hints.pop("return", None)
 
         # First, determine if both the inputs and outputs have type hints, otherwise
@@ -427,12 +426,23 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
             data[key] = array([value])
     return data
 
-class AeromapsModelWrapper(AutoPyDiscipline):
-    def __init__(self, model):
-        self.model: AeromapsModel = model
 
-        super(AeromapsModelWrapper, self).__init__(
-            py_func=self.model.compute
+
+class AeroMAPSModelWrapper(AutoPyDiscipline):
+    def __init__(self, model):
+        self.model: AeroMAPSModel = model
+
+        super(AeroMAPSModelWrapper, self).__init__(
+            py_func=self.model.compute, grammar_type=MDODiscipline.GrammarType.SIMPLE
         )
 
         self.name = model.__class__.__name__
+
+        self.update_defaults()
+
+    def update_defaults(self):
+        for input in self.get_input_data_names():
+            # if self.model.parameters is None:
+            #     self.default_inputs[input] = array([0])
+            if hasattr(self.model.parameters, input):
+                self.default_inputs[input] = getattr(self.model.parameters, input)

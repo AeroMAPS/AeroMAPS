@@ -15,9 +15,9 @@ class LevelCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        carbon_offset_baseline_level_vs_2019_reference_periods: list = [],
-        carbon_offset_baseline_level_vs_2019_reference_periods_values: list = [],
+        co2_emissions: pd.Series,
+        carbon_offset_baseline_level_vs_2019_reference_periods: list,
+        carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
 
         carbon_offset_baseline_level_vs_2019 = AeromapsLevelingFunction(
@@ -60,10 +60,10 @@ class ResidualCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        level_carbon_offset: pd.Series = pd.Series(dtype="float64"),
-        residual_carbon_offset_share_reference_years: list = [],
-        residual_carbon_offset_share_reference_years_values: list = [],
+        co2_emissions: pd.Series,
+        level_carbon_offset: pd.Series,
+        residual_carbon_offset_share_reference_years: list,
+        residual_carbon_offset_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
 
         residual_carbon_offset_share_prospective = AeromapsInterpolationFunction(
@@ -95,8 +95,8 @@ class CarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        level_carbon_offset: pd.Series = pd.Series(dtype="float64"),
-        residual_carbon_offset: pd.Series = pd.Series(dtype="float64"),
+        level_carbon_offset: pd.Series,
+        residual_carbon_offset: pd.Series,
     ) -> pd.Series:
 
         carbon_offset = level_carbon_offset + residual_carbon_offset
@@ -112,8 +112,8 @@ class CumulativeCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_offset: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series]:
+        carbon_offset: pd.Series,
+    ) -> pd.Series:
 
         self.df.loc[self.prospection_start_year - 1, "cumulative_carbon_offset"] = 0.0
         for k in range(self.prospection_start_year, self.end_year + 1):

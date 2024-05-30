@@ -11,9 +11,9 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
 
     def compute(
         self,
-        noc_reference_years: list = [],
-        noc_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        noc_reference_years: list,
+        noc_reference_years_values: list,
+    ) -> pd.Series:
         # Simple computation of airline non-operating costs (NOC)
         noc_prospective = AeromapsInterpolationFunction(
             self,
@@ -36,9 +36,9 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
 
     def compute(
         self,
-        passenger_tax_reference_years: list = [],
-        passenger_tax_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        passenger_tax_reference_years: list,
+        passenger_tax_reference_years_values: list,
+    ) -> pd.Series:
         # Simple computation of airline non-operating costs (NOC)
 
         passenger_tax_prospective = AeromapsInterpolationFunction(

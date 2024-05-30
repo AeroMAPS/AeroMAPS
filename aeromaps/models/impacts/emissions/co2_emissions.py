@@ -11,60 +11,40 @@ class KayaFactors(AeroMAPSModel):
 
     def compute(
         self,
-        ask: pd.Series = pd.Series(dtype="float64"),
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        freight_energy_share_2019: float = 0.0,
-        energy_consumption_passenger_biofuel_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_passenger_electrofuel_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_passenger_kerosene_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_passenger_hydrogen_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_passenger_electric_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_passenger_biofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_kerosene: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_freight_biofuel_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_freight_electrofuel_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_freight_kerosene_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_freight_hydrogen_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_freight_electric_without_operations: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_consumption_freight_biofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_freight_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_freight_kerosene: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_freight_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_biofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        ask: pd.Series,
+        rtk: pd.Series,
+        freight_energy_share_2019: float,
+        energy_consumption_passenger_biofuel_without_operations: pd.Series,
+        energy_consumption_passenger_electrofuel_without_operations: pd.Series,
+        energy_consumption_passenger_kerosene_without_operations: pd.Series,
+        energy_consumption_passenger_hydrogen_without_operations: pd.Series,
+        energy_consumption_passenger_electric_without_operations: pd.Series,
+        energy_consumption_passenger_biofuel: pd.Series,
+        energy_consumption_passenger_electrofuel: pd.Series,
+        energy_consumption_passenger_kerosene: pd.Series,
+        energy_consumption_passenger_hydrogen: pd.Series,
+        energy_consumption_passenger_electric: pd.Series,
+        energy_consumption_freight_biofuel_without_operations: pd.Series,
+        energy_consumption_freight_electrofuel_without_operations: pd.Series,
+        energy_consumption_freight_kerosene_without_operations: pd.Series,
+        energy_consumption_freight_hydrogen_without_operations: pd.Series,
+        energy_consumption_freight_electric_without_operations: pd.Series,
+        energy_consumption_freight_biofuel: pd.Series,
+        energy_consumption_freight_electrofuel: pd.Series,
+        energy_consumption_freight_kerosene: pd.Series,
+        energy_consumption_freight_hydrogen: pd.Series,
+        energy_consumption_freight_electric: pd.Series,
+        energy_consumption_biofuel: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        energy_consumption_kerosene: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        energy_consumption_electric: pd.Series,
+        energy_consumption: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        biofuel_mean_emission_factor: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        liquid_hydrogen_mean_emission_factor: pd.Series,
+        electricity_emission_factor: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
 
         energy_per_ask_mean_without_operations = (
@@ -148,46 +128,46 @@ class CO2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
-        rpk_medium_range: pd.Series = pd.Series(dtype="float64"),
-        rpk_long_range: pd.Series = pd.Series(dtype="float64"),
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        load_factor: pd.Series = pd.Series(dtype="float64"),
-        biofuel_share: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_share: pd.Series = pd.Series(dtype="float64"),
-        kerosene_share: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_freight_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_medium_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_freight_electric: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        rtk_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        rtk_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_electric_share: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
-        rtk_electric_share: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        biofuel_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        liquid_hydrogen_mean_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
-        co2_per_energy_mean: pd.Series = pd.Series(dtype="float64"),
+        rpk_short_range: pd.Series,
+        rpk_medium_range: pd.Series,
+        rpk_long_range: pd.Series,
+        rtk: pd.Series,
+        load_factor: pd.Series,
+        biofuel_share: pd.Series,
+        electrofuel_share: pd.Series,
+        kerosene_share: pd.Series,
+        energy_per_ask_short_range_dropin_fuel: pd.Series,
+        energy_per_ask_medium_range_dropin_fuel: pd.Series,
+        energy_per_ask_long_range_dropin_fuel: pd.Series,
+        energy_per_rtk_freight_dropin_fuel: pd.Series,
+        energy_per_ask_short_range_hydrogen: pd.Series,
+        energy_per_ask_medium_range_hydrogen: pd.Series,
+        energy_per_ask_long_range_hydrogen: pd.Series,
+        energy_per_rtk_freight_hydrogen: pd.Series,
+        energy_per_ask_short_range_electric: pd.Series,
+        energy_per_ask_medium_range_electric: pd.Series,
+        energy_per_ask_long_range_electric: pd.Series,
+        energy_per_rtk_freight_electric: pd.Series,
+        ask_short_range_dropin_fuel_share: pd.Series,
+        ask_medium_range_dropin_fuel_share: pd.Series,
+        ask_long_range_dropin_fuel_share: pd.Series,
+        rtk_dropin_fuel_share: pd.Series,
+        ask_short_range_hydrogen_share: pd.Series,
+        ask_medium_range_hydrogen_share: pd.Series,
+        ask_long_range_hydrogen_share: pd.Series,
+        rtk_hydrogen_share: pd.Series,
+        ask_short_range_electric_share: pd.Series,
+        ask_medium_range_electric_share: pd.Series,
+        ask_long_range_electric_share: pd.Series,
+        rtk_electric_share: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        biofuel_mean_emission_factor: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        liquid_hydrogen_mean_emission_factor: pd.Series,
+        electricity_emission_factor: pd.Series,
+        energy_per_ask_mean: pd.Series,
+        energy_per_rtk_mean: pd.Series,
+        co2_per_energy_mean: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """CO2 emissions calculation."""
         # To be improved
@@ -399,8 +379,8 @@ class CumulativeCO2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series]:
+        co2_emissions: pd.Series,
+    ) -> pd.Series:
 
         self.df.loc[self.prospection_start_year - 1, "cumulative_co2_emissions"] = 0.0
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -419,16 +399,16 @@ class DetailedCo2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_reference: pd.Series = pd.Series(dtype="float64"),
-        rtk_reference: pd.Series = pd.Series(dtype="float64"),
-        rpk: pd.Series = pd.Series(dtype="float64"),
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        load_factor: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_mean_without_operations: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_mean_without_operations: pd.Series = pd.Series(dtype="float64"),
-        co2_per_energy_mean: pd.Series = pd.Series(dtype="float64"),
+        rpk_reference: pd.Series,
+        rtk_reference: pd.Series,
+        rpk: pd.Series,
+        rtk: pd.Series,
+        load_factor: pd.Series,
+        energy_per_ask_mean: pd.Series,
+        energy_per_rtk_mean: pd.Series,
+        energy_per_ask_mean_without_operations: pd.Series,
+        energy_per_rtk_mean_without_operations: pd.Series,
+        co2_per_energy_mean: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         for k in range(self.prospection_start_year - 1, self.end_year + 1):
             self.df.loc[k, "co2_emissions_2019technology_baseline3"] = (
@@ -575,10 +555,10 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions_2019technology_baseline3: pd.Series = pd.Series(dtype="float64"),
-        co2_emissions_2019technology: pd.Series = pd.Series(dtype="float64"),
-        co2_emissions_including_load_factor: pd.Series = pd.Series(dtype="float64"),
-        co2_emissions_including_energy: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions_2019technology_baseline3: pd.Series,
+        co2_emissions_2019technology: pd.Series,
+        co2_emissions_including_load_factor: pd.Series,
+        co2_emissions_including_energy: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
 
         self.df.loc[

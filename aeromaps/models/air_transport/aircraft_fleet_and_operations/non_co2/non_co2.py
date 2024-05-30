@@ -55,18 +55,18 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
 
     def compute(
         self,
-        total_aircraft_distance_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_electric: pd.Series = pd.Series(dtype="float64"),
-        biofuel_share: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_share: pd.Series = pd.Series(dtype="float64"),
-        kerosene_share: pd.Series = pd.Series(dtype="float64"),
-        emission_index_number_particles_biofuel: float = 0.0,
-        emission_index_number_particles_electrofuel: float = 0.0,
-        emission_index_number_particles_kerosene: float = 0.0,
-        contrails_relative_effect_hydrogen_wrt_kerosene: float = 0.0,
-    ) -> Tuple[pd.Series]:
+        total_aircraft_distance_dropin_fuel: pd.Series,
+        total_aircraft_distance: pd.Series,
+        total_aircraft_distance_hydrogen: pd.Series,
+        total_aircraft_distance_electric: pd.Series,
+        biofuel_share: pd.Series,
+        electrofuel_share: pd.Series,
+        kerosene_share: pd.Series,
+        emission_index_number_particles_biofuel: float,
+        emission_index_number_particles_electrofuel: float,
+        emission_index_number_particles_kerosene: float,
+        contrails_relative_effect_hydrogen_wrt_kerosene: float,
+    ) -> pd.Series:
 
         """Fuel effect on contrails for ERF calculation."""
 
@@ -110,7 +110,7 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
 
     def compute(
         self,
-    ) -> Tuple[pd.Series]:
+    ) -> pd.Series:
 
         """Fuel effect on contrails for ERF calculation."""
 

@@ -11,7 +11,7 @@ class SimplifiedERFCo2(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions: pd.Series,
     ) -> Tuple[pd.Series, pd.Series,]:
         """ERF calculation for CO2 emissions with a simplified method."""
 
@@ -43,9 +43,9 @@ class SimplifiedERFNox(AeroMAPSModel):
 
     def compute(
         self,
-        nox_emissions: pd.Series = pd.Series(dtype="float64"),
-        erf_coefficient_nox: float = 0.0,
-    ) -> Tuple[pd.Series,]:
+        nox_emissions: pd.Series,
+        erf_coefficient_nox: float,
+    ) -> pd.Series:
         """ERF calculation for NOx emissions with a simplified method."""
 
         # NOx
@@ -62,11 +62,11 @@ class ERFNox(AeroMAPSModel):
 
     def compute(
         self,
-        nox_emissions: pd.Series = pd.Series(dtype="float64"),
-        erf_coefficient_nox_short_term_o3_increase: float = 0.0,
-        erf_coefficient_nox_long_term_o3_decrease: float = 0.0,
-        erf_coefficient_nox_ch4_decrease: float = 0.0,
-        erf_coefficient_nox_stratospheric_water_vapor_decrease: float = 0.0,
+        nox_emissions: pd.Series,
+        erf_coefficient_nox_short_term_o3_increase: float,
+        erf_coefficient_nox_long_term_o3_decrease: float,
+        erf_coefficient_nox_ch4_decrease: float,
+        erf_coefficient_nox_stratospheric_water_vapor_decrease: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
         """ERF calculation for NOx emissions."""
 
@@ -111,16 +111,16 @@ class ERFOthers(AeroMAPSModel):
 
     def compute(
         self,
-        soot_emissions: pd.Series = pd.Series(dtype="float64"),
-        h2o_emissions: pd.Series = pd.Series(dtype="float64"),
-        sulfur_emissions: pd.Series = pd.Series(dtype="float64"),
-        erf_coefficient_contrails: float = 0.0,
-        erf_coefficient_soot: float = 0.0,
-        erf_coefficient_h2o: float = 0.0,
-        erf_coefficient_sulfur: float = 0.0,
-        total_aircraft_distance: pd.Series = pd.Series(dtype="float64"),
-        operations_contrails_gain: pd.Series = pd.Series(dtype="float64"),
-        fuel_effect_correction_contrails: pd.Series = pd.Series(dtype="float64"),
+        soot_emissions: pd.Series,
+        h2o_emissions: pd.Series,
+        sulfur_emissions: pd.Series,
+        erf_coefficient_contrails: float,
+        erf_coefficient_soot: float,
+        erf_coefficient_h2o: float,
+        erf_coefficient_sulfur: float,
+        total_aircraft_distance: pd.Series,
+        operations_contrails_gain: pd.Series,
+        fuel_effect_correction_contrails: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
         """ERF calculation for the other climate impacts of aviation."""
 
@@ -163,13 +163,13 @@ class ERFTotal(AeroMAPSModel):
 
     def compute(
         self,
-        co2_erf: pd.Series = pd.Series(dtype="float64"),
-        contrails_erf: pd.Series = pd.Series(dtype="float64"),
-        h2o_erf: pd.Series = pd.Series(dtype="float64"),
-        nox_erf: pd.Series = pd.Series(dtype="float64"),
-        soot_erf: pd.Series = pd.Series(dtype="float64"),
-        sulfur_erf: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series,]:
+        co2_erf: pd.Series,
+        contrails_erf: pd.Series,
+        h2o_erf: pd.Series,
+        nox_erf: pd.Series,
+        soot_erf: pd.Series,
+        sulfur_erf: pd.Series,
+    ) -> pd.Series:
         """ERF calculation for the total climate impact of aviation."""
 
         self.df_climate["total_erf"] = (
@@ -186,10 +186,10 @@ class ERFDetailed(AeroMAPSModel):
 
     def compute(
         self,
-        co2_erf: pd.Series = pd.Series(dtype="float64"),
-        contrails_erf: pd.Series = pd.Series(dtype="float64"),
-        h2o_erf: pd.Series = pd.Series(dtype="float64"),
-        nox_erf: pd.Series = pd.Series(dtype="float64"),
+        co2_erf: pd.Series,
+        contrails_erf: pd.Series,
+        h2o_erf: pd.Series,
+        nox_erf: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """ERF calculation for helping plot display."""
 

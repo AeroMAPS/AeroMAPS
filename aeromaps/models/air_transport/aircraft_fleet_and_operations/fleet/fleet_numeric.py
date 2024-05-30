@@ -15,14 +15,14 @@ class FleetEvolution(AeroMAPSModel):
 
     def compute(
         self,
-        ask_short_range: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range: pd.Series = pd.Series(dtype="float64"),
-        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
-        rpk_medium_range: pd.Series = pd.Series(dtype="float64"),
-        rpk_long_range: pd.Series = pd.Series(dtype="float64"),
-        covid_start_year: int = 0,
-        covid_end_year: int = 0,
+        ask_short_range: pd.Series,
+        ask_medium_range: pd.Series,
+        ask_long_range: pd.Series,
+        rpk_short_range: pd.Series,
+        rpk_medium_range: pd.Series,
+        rpk_long_range: pd.Series,
+        covid_start_year: float,
+        covid_end_year: float,
     ) -> Tuple[dict, dict, dict, dict, dict]:
 
         ask_aircraft_value_dict = {}
