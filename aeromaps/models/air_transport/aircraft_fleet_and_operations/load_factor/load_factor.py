@@ -14,8 +14,8 @@ class LoadFactor(AeroMAPSModel):
         self,
         load_factor_end_year: float = 0.0,
         covid_load_factor_2020: float = 0.0,
-        rpk: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        ask_init: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rpk: pd.Series = pd.Series(dtype="float64"),
+        ask_init: pd.Series = pd.Series(dtype="float64"),
     ) -> pd.Series:
         """Load factor calculation."""
 

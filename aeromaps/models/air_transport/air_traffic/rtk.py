@@ -12,7 +12,7 @@ class RTK(AeroMAPSModel):
 
     def compute(
         self,
-        rtk_init: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rtk_init: pd.Series = pd.Series(dtype="float64"),
         covid_start_year: int = 0,
         covid_rpk_drop_start_year: float = 0.0,
         covid_end_year: int = 0,
@@ -95,8 +95,8 @@ class RTKReference(AeroMAPSModel):
 
     def compute(
         self,
-        rtk: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        reference_annual_growth_rate_aviation: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rtk: pd.Series = pd.Series(dtype="float64"),
+        reference_annual_growth_rate_aviation: pd.Series = pd.Series(dtype="float64"),
         covid_start_year: int = 0,
         covid_rpk_drop_start_year: int = 0,
         covid_end_year: int = 0,

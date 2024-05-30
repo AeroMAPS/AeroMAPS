@@ -40,8 +40,8 @@ class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_offset: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        ask: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        carbon_offset: pd.Series = pd.Series(dtype="float64"),
+        ask: pd.Series = pd.Series(dtype="float64"),
         carbon_offset_price_reference_years: list = [],
         carbon_offset_price_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:

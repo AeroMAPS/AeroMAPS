@@ -12,7 +12,7 @@ class PriceElasticity(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_init: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rpk_init: pd.Series = pd.Series(dtype="float64"),
         short_range_rpk_share_2019: float = 0.0,
         medium_range_rpk_share_2019: float = 0.0,
         long_range_rpk_share_2019: float = 0.0,
@@ -26,10 +26,10 @@ class PriceElasticity(AeroMAPSModel):
         cagr_passenger_medium_range_reference_periods_values: list = [],
         cagr_passenger_long_range_reference_periods: list = [],
         cagr_passenger_long_range_reference_periods_values: list = [],
-        rpk_short_range_measures_impact: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk_medium_range_measures_impact: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk_long_range_measures_impact: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        airfare_per_ask: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rpk_short_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
+        rpk_medium_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
+        rpk_long_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
+        airfare_per_ask: pd.Series = pd.Series(dtype="float64"),
         price_elasticity: float = 0.0,
     ) -> Tuple[
         pd.Series,

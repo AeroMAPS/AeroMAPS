@@ -11,11 +11,11 @@ class ASK(AeroMAPSModel):
 
     def compute(
         self,
-        load_factor: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk_short_range: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk_medium_range: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        rpk_long_range: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        load_factor: pd.Series = pd.Series(dtype="float64"),
+        rpk: pd.Series = pd.Series(dtype="float64"),
+        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
+        rpk_medium_range: pd.Series = pd.Series(dtype="float64"),
+        rpk_long_range: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """ASK calculation."""
 

@@ -82,10 +82,10 @@ class RPKShortRange(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_short_range: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        short_range_basicturbofan_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        short_range_regionalturboprop_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        short_range_regionalturbofan_share: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
+        short_range_basicturbofan_share: pd.Series = pd.Series(dtype="float64"),
+        short_range_regionalturboprop_share: pd.Series = pd.Series(dtype="float64"),
+        short_range_regionalturbofan_share: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float, float, float, float, float, float,]:
         """RPK short range calculation."""
 

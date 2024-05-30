@@ -15,7 +15,7 @@ class LevelCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        co2_emissions: pd.Series = pd.Series(dtype="float64"),
         carbon_offset_baseline_level_vs_2019_reference_periods: list = [],
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
@@ -60,8 +60,8 @@ class ResidualCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        level_carbon_offset: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        co2_emissions: pd.Series = pd.Series(dtype="float64"),
+        level_carbon_offset: pd.Series = pd.Series(dtype="float64"),
         residual_carbon_offset_share_reference_years: list = [],
         residual_carbon_offset_share_reference_years_values: list = [],
     ) -> Tuple[pd.Series, pd.Series]:
@@ -95,8 +95,8 @@ class CarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        level_carbon_offset: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        residual_carbon_offset: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        level_carbon_offset: pd.Series = pd.Series(dtype="float64"),
+        residual_carbon_offset: pd.Series = pd.Series(dtype="float64"),
     ) -> pd.Series:
 
         carbon_offset = level_carbon_offset + residual_carbon_offset
@@ -112,7 +112,7 @@ class CumulativeCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_offset: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        carbon_offset: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
 
         self.df.loc[self.prospection_start_year - 1, "cumulative_carbon_offset"] = 0.0

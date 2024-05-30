@@ -163,10 +163,10 @@ class KeroseneCost(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        carbon_tax: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
+        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         # kerosene_market_price €/L
 
@@ -205,11 +205,11 @@ class KeroseneBAUCost(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        non_discounted_BAU_energy_expenses: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        non_discounted_full_kero_energy_expenses: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
-        carbon_tax: pd.Series = pd.Series(dtype="float64", index=list(range(2000, 2051))),
+        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
+        non_discounted_BAU_energy_expenses: pd.Series = pd.Series(dtype="float64"),
+        non_discounted_full_kero_energy_expenses: pd.Series = pd.Series(dtype="float64"),
+        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
+        carbon_tax: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series, pd.Series]:
         # kerosene_market_price €/L
         # fuel lower heating value in MJ/L at 15 degrees
