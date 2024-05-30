@@ -22,18 +22,10 @@ from aeromaps.models.impacts.costs.energy.detailled.biofuel import (
     BiofuelFeedstock,
     BiofuelCapex,
 )
-from aeromaps.models.impacts.costs.energy.simple.biofuel_simple import (
-    BiofuelCostSimple,
-    BiofuelMfspSimple,
-)
-from aeromaps.models.impacts.costs.energy.simple.liquid_hydrogen_simple import (
-    HydrogenCostSimple,
-    HydrogenMfspSimple,
-)
-from aeromaps.models.impacts.costs.energy.simple.power_to_liquid_simple import (
-    ElectrofuelCostSimple,
-    ElectrofuelMfspSimple,
-)
+from aeromaps.models.impacts.costs.energy.simple.biofuel_simple import BiofuelCostSimple, BiofuelMfspSimple
+from aeromaps.models.impacts.costs.energy.simple.liquid_hydrogen_simple import HydrogenCostSimple, HydrogenMfspSimple
+from aeromaps.models.impacts.costs.energy.simple.power_to_liquid_simple import ElectrofuelCostSimple, \
+    ElectrofuelMfspSimple
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -55,6 +47,7 @@ from aeromaps.models.air_transport.air_traffic.rpk import (
     RPKMeasures,
 )
 from aeromaps.models.air_transport.air_traffic.rtk import RTK, RTKReference
+from aeromaps.models.air_transport.air_traffic.price_elasticity import PriceElasticity
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
     LoadFactor,
@@ -486,6 +479,10 @@ models_operation_cost_top_down = {
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
         "passenger_aircraft_doc_non_energy_simple"
     ),
+}
+
+models_cost_feedback = {
+    "price_elasticity": PriceElasticity("price_elasticity"),
 }
 
 models_operation_cost_bottom_up = {
