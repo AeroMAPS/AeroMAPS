@@ -33,7 +33,7 @@ class RecurringCosts(AeroMAPSModel):
 
                 rc_aircraft_var_name = aircraft_var_name + ":aircraft_recurring_costs"
 
-                # TODO use dictionnary if possible once implementeed
+                # TODO use dictionary if possible once implemented
                 # rc_aircraft_value = max(0.0, aircraft_in_out_value_dict[aircraft_var_name] * rc_cost)
                 # For now: direct use of fleet model df
                 rc_aircraft_value = self.fleet_model.df.loc[
@@ -50,5 +50,4 @@ class RecurringCosts(AeroMAPSModel):
                 )
 
                 rc_aircraft_value_dict[aircraft_var_name] = rc_aircraft_value
-
         return (rc_aircraft_value_dict,)

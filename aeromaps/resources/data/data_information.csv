@@ -557,16 +557,6 @@ coal_cost_reference_years;List;yr;Reference years for the industrial wholesale c
 coal_cost_reference_years_values;List;€/kWh;Industrial wholesale coal market price for the reference years;After https://iea.blob.core.windows.net/assets/2ceb17b8-474f-4154-aab5-4d898f735c17/IEAGHRassumptions_final.pdf
 kerosene_price_reference_years;List;yr;Reference years for the kerosene (fossil) market price
 kerosene_price_reference_years_values;List;€/L;Kerosene (fossil) market price for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_hefa_fog_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP
-biofuel_hefa_fog_mfsp_reference_years_values;List;€/L;Biofuel (Hefa FOG) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_hefa_others_mfsp_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP
-biofuel_hefa_others_mfsp_reference_years_values;List;€/L;Biofuel (Hefa Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_ft_others_mfsp_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP
-biofuel_ft_others_mfsp_reference_years_values;List;€/L;Biofuel (FT Others) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_ft_msw_mfsp_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP
-biofuel_ft_msw_mfsp_reference_years_values;List;€/L;Biofuel (FT MSW) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
-biofuel_atj_mfsp_reference_years;List;yr;Reference years for the biofuel (AtJ) MFSP
-biofuel_atj_mfsp_reference_years_values;List;€/L;Biofuel (AtJ) MFSP for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_fog_capex_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) capex
 biofuel_hefa_fog_capex_reference_years_values;List;€/(kg/day);Biofuel (Hefa FOG) capex for the reference years;Statistical analysis of a literature review (see resources/cost_data)
 biofuel_hefa_others_capex_reference_years;List;yr;Reference years for the biofuel (Hefa Others) capex
@@ -768,8 +758,8 @@ gas_h2_mean_opex_share;Vector;M€;Annual gas Hydrogen production cost attributa
 gas_h2_total_cost;Vector;M€;Annual gas Hydrogen production cost
 gas_plant_building_cost;Vector;M€;Annual expenses for gas plants built each year
 gas_plant_building_scenario;Vector;t/day;Annual capacity built for gas plants built each year
-h2_avg_carbon_tax_per_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
-h2_avg_cost_per_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
+average_hydrogen_mean_carbon_tax_kg;Vector;€/kg;Average hydrogen carbon tax per kg of h2 (evolution)
+average_hydrogen_mean_mfsp_kg;Vector;€/kg;Average hydrogen MFSP, without carbon tax (evolution)
 coal_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (without ccs) hydrogen MFSP, without carbon tax (evolution)
 coal_ccs_h2_mean_mfsp_kg;Vector;€/kg;Average coal gasification (with ccs) hydrogen MFSP, without carbon tax (evolution)
 electrolysis_h2_mean_mfsp_kg;Vector;€/kg;Average electrolysis hydrogen MFSP, without carbon tax (evolution)
@@ -889,3 +879,28 @@ load_factor_abatement_cost;Vector;€/tCO2;Carbon abatement cost related to Loaf
 load_factor_abatement_effective;Vector;tCO2;Abatement related to load factor
 load_factor_specific_abatement_cost;Vector;€/tCO2;Specific carbon abatement cost related to Load Factor
 load_factor_generic_specific_abatement_cost;Vector;€/tCO2;generic_specific carbon abatement cost related to Load Factor
+biofuel_hefa_fog_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (Hefa FOG) MFSP simple models
+biofuel_hefa_fog_mfsp_simple_reference_years_values;List;€/L;Reference values for the biofuel (Hefa FOG) MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+biofuel_hefa_others_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (Hefa Others) MFSP simple models
+biofuel_hefa_others_mfsp_simple_reference_years_values;List;€/L;Reference values for the biofuel (Hefa Others) MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+biofuel_ft_others_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (FT Others) MFSP simple models
+biofuel_ft_others_mfsp_simple_reference_years_values;List;€/L;Reference values for the biofuel (FT Others) MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+biofuel_ft_msw_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (FT MSW) MFSP simple models
+biofuel_ft_msw_mfsp_simple_reference_years_values;List;€/L;Reference values for the biofuel (FT MSW) MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+biofuel_atj_mfsp_simple_reference_years;List;yr;Reference years for the biofuel (ATJ) MFSP simple models
+biofuel_atj_mfsp_simple_reference_years_values;List;€/L;Reference values for the biofuel (ATJ) MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+gh2_electrolysis_mfsp_simple_reference_years;List;yr;Reference years for the GH2 Electrolysis MFSP simple models
+gh2_electrolysis_mfsp_simple_reference_years_values;List;€/kg;Reference values for the GH2 Electrolysis MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+gh2_gas_ccs_mfsp_simple_reference_years;List;yr;Reference years for the GH2 Gas CCS MFSP simple models
+gh2_gas_ccs_mfsp_simple_reference_years_values;List;€/kg;Reference values for the GH2 Gas CCS MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+gh2_gas_mfsp_simple_reference_years;List;yr;Reference years for the GH2 Gas MFSP simple models
+gh2_gas_mfsp_simple_reference_years_values;List;€/kg;Reference values for the GH2 Gas MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+gh2_coal_ccs_mfsp_simple_reference_years;List;yr;Reference years for the GH2 Coal CCS MFSP simple models
+gh2_coal_ccs_mfsp_simple_reference_years_values;List;€/kg;Reference values for the GH2 Coal CCS MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+gh2_coal_mfsp_simple_reference_years;List;yr;Reference years for the GH2 Coal MFSP simple models
+gh2_coal_mfsp_simple_reference_years_values;List;€/kg;Reference values for the GH2 Coal MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+liquefaction_mfsp_simple_reference_years;List;yr;Reference years for the Liquefaction MFSP simple models
+liquefaction_mfsp_simple_reference_years_values;List;€/kg;Reference values for the Liquefaction MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+electrofuel_mfsp_simple_reference_years;List;yr;Reference years for the Electrofuel MFSP simple models
+electrofuel_mfsp_simple_reference_years_values;List;€/L;Reference values for the Electrofuel MFSP simple models; Calibrated with bottom-up models of AeroMAPS
+

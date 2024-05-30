@@ -150,6 +150,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
@@ -444,10 +445,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
         self.df.loc[:, "total_hydrogen_supply_cost"] = total_hydrogen_supply_cost
         # M€
 
-        h2_avg_cost_per_kg = (
+        average_hydrogen_mean_mfsp_kg = (
             total_hydrogen_supply_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
         )
-        self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
+        self.df.loc[:, "average_hydrogen_mean_mfsp_kg"] = average_hydrogen_mean_mfsp_kg
         # €/kg
 
         total_h2_building_cost = (
@@ -889,7 +890,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # €/kg_H2
         self.df.loc[:, "coal_h2_mfsp_carbon_tax_supplement"] = coal_h2_mfsp_carbon_tax_supplement
 
-        h2_avg_carbon_tax_per_kg = (
+        average_hydrogen_mean_carbon_tax_kg = (
             (
                 electrolysis_h2_carbon_tax.fillna(0)
                 + gas_h2_carbon_tax.fillna(0)
@@ -900,7 +901,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             / (energy_consumption_hydrogen / lhv_hydrogen)
             * 1000000
         )
-        self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
+        self.df.loc[:, "average_hydrogen_mean_carbon_tax_kg"] = average_hydrogen_mean_carbon_tax_kg
         # €/kg
 
         (
@@ -956,7 +957,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             transport_h2_total_cost,
             electrolysis_h2_mean_mfsp_kg,
             total_hydrogen_supply_cost,
-            h2_avg_cost_per_kg,
+            average_hydrogen_mean_mfsp_kg,
             total_h2_building_cost,
             electrolysis_h2_cost_premium,
             carbon_abatement_cost_h2_electrolysis,
@@ -1008,7 +1009,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_abatement_cost_h2_coal,
             coal_h2_carbon_tax,
             coal_h2_mfsp_carbon_tax_supplement,
-            h2_avg_carbon_tax_per_kg,
+            average_hydrogen_mean_carbon_tax_kg,
             electrolysis_h2_specific_abatement_cost,
             gas_ccs_h2_specific_abatement_cost,
             gas_h2_specific_abatement_cost,
@@ -1106,9 +1107,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # electrolyzer capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        electrolyser_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            electrolyser_capex_year / construction_time
+                        )
 
                 plant_building_scenario[
                     year
@@ -1119,7 +1121,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1252,7 +1254,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * electrolyser_specific_electricity[technology_year]
             hydrogen_prices[year] = {
@@ -1359,7 +1361,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 # plant capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += plant_capex_year / construction_time
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            plant_capex_year / construction_time
+                        )
+
                 plant_building_scenario[year] = plant_capacity_to_build
                 # in ton/day capacity
 
@@ -1368,7 +1374,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1517,7 +1523,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(fuel_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             fuel_price = fuel_market_price[year]
             fuel_cost = fuel_price * plant_specific_energy[technology_year]
             co2_ccs_cost = ccs_cost[year] * carbon_captured_kg[year]
@@ -1600,9 +1606,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # liquefier capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        liquefier_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            liquefier_capex_year / construction_time
+                        )
+
                 plant_building_scenario[year] = liquefier_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;
@@ -1610,7 +1618,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i]
                         + (missing_production * liquefaction_cost[i]["TOTAL"]) / 1000
@@ -1728,7 +1736,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * liquefier_specific_electricity[technology_year]
             opex_var_cost = 0.05 * elec_cost

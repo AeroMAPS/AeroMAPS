@@ -126,7 +126,6 @@ class FleetEvolution(AeroMAPSModel):
                     aircraft_var_name
                 ] = aircraft_in_fleet_value_covid_levelling
                 aircraft_in_out_value_dict[aircraft_var_name] = aircraft_in_out_value
-
         return (
             ask_aircraft_value_dict,
             rpk_aircraft_value_dict,

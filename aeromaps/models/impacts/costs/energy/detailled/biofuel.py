@@ -439,7 +439,6 @@ class BiofuelCost(AeroMAPSModel):
         )
 
         self.df.loc[:, "biofuel_mean_carbon_tax_per_l"] = biofuel_mean_carbon_tax_per_l
-
         return (
             plant_building_scenario_hefa_fog,
             plant_building_cost_hefa_fog,
@@ -623,7 +622,8 @@ class BiofuelCost(AeroMAPSModel):
                 plant_building_scenario[year] = capacity_to_build_kg_day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += capex_year / construction_time
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += capex_year / construction_time
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = int(min(list(demand_scenario.index)[-1], year + plant_lifespan))
@@ -826,7 +826,7 @@ class BiofuelCost(AeroMAPSModel):
             max(biomass_feedstock_cost.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year + construction_time, end_bound + 1):
+        for year in range(base_year + construction_time, int(end_bound) + 1):
             feedstock_price = biomass_feedstock_cost[year]
             feedstock_cost = (
                 feedstock_price

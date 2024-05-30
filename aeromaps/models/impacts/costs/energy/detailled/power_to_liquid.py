@@ -256,9 +256,10 @@ class ElectrofuelCost(AeroMAPSModel):
                 plant_building_scenario[year] = electrofuel_capacity_to_build  # in ton/day capacity
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        electrolyser_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            electrolyser_capex_year / construction_time
+                        )
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = int(min(list(demand_scenario.index)[-1], year + plant_lifespan))
@@ -507,7 +508,7 @@ class ElectrofuelCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year + construction_time, end_bound + 1):
+        for year in range(base_year + construction_time, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * electrofuel_specific_electricity[technology_year]
             CO2_cost = electrofuel_specific_co2[technology_year] * co2_market_price[year]

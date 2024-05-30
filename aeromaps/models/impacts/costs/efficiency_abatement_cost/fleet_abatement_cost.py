@@ -39,6 +39,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         density_kerosene: float = 0.0,
         social_discount_rate: float = 0.0,
     ) -> Tuple[dict, dict, dict, dict]:
+
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
