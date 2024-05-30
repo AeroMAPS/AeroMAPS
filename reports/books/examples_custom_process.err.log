@@ -31,17 +31,16 @@ from aeromaps.core.models import (
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mImportError[0m                               Traceback (most recent call last)
-Cell [0;32mIn[1], line 4[0m
+Cell [0;32mIn[1], line 3[0m
+[1;32m      1[0m get_ipython()[38;5;241m.[39mrun_line_magic([38;5;124m'[39m[38;5;124mmatplotlib[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mwidget[39m[38;5;124m'[39m)
 [1;32m      2[0m [38;5;28;01mimport[39;00m [38;5;21;01mpandas[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpd[39;00m
-[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m create_process
-[0;32m----> 4[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m (
+[0;32m----> 3[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mprocess[39;00m [38;5;28;01mimport[39;00m create_process
+[1;32m      4[0m [38;5;28;01mfrom[39;00m [38;5;21;01maeromaps[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcore[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmodels[39;00m [38;5;28;01mimport[39;00m (
 [1;32m      5[0m     models_traffic,
 [1;32m      6[0m     models_efficiency_top_down,
-[1;32m      7[0m     models_energy_without_fuel_effect,
-[1;32m      8[0m     models_offset,
-[1;32m      9[0m     models_climate_simple_gwpstar,
+[0;32m   (...)[0m
 [1;32m     10[0m     models_sustainability,
 [1;32m     11[0m )
 
-[0;31mImportError[0m: cannot import name 'models_traffic' from 'aeromaps.core.models' (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/core/models.py)
+[0;31mImportError[0m: cannot import name 'create_process' from 'aeromaps.core.process' (/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/aeromaps/core/process.py)
 
