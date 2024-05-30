@@ -15,16 +15,16 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
 
     def compute(
         self,
-        doc_non_energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        doc_energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        doc_carbon_tax_lowering_offset_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        noc_carbon_offset_per_ask: pd.Series = pd.Series(dtype="float64"),
-        non_operating_cost_per_ask: pd.Series = pd.Series(dtype="float64"),
-        indirect_operating_cost_per_ask: pd.Series = pd.Series(dtype="float64"),
-        passenger_tax_per_ask: pd.Series = pd.Series(dtype="float64"),
-        operational_profit_per_ask: pd.Series = pd.Series(dtype="float64"),
-        operational_efficiency_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
-        load_factor_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
+        doc_non_energy_per_ask_mean: pd.Series,
+        doc_energy_per_ask_mean: pd.Series,
+        doc_carbon_tax_lowering_offset_per_ask_mean: pd.Series,
+        noc_carbon_offset_per_ask: pd.Series,
+        non_operating_cost_per_ask: pd.Series,
+        indirect_operating_cost_per_ask: pd.Series,
+        passenger_tax_per_ask: pd.Series,
+        operational_profit_per_ask: pd.Series,
+        operational_efficiency_cost_non_energy_per_ask: pd.Series,
+        load_factor_cost_non_energy_per_ask: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series,]:
         # Cost without any tax
         total_cost_per_ask_without_extra_tax = (

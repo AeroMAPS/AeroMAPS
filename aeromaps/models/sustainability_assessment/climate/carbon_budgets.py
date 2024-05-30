@@ -10,10 +10,10 @@ class GrossCarbonBudget(AeroMAPSModel):
 
     def compute(
         self,
-        net_carbon_budget: float = 0.0,
-        carbon_dioxyde_removal_2100: float = 0.0,
-        world_co2_emissions_2019: float = 0.0,
-        aviation_carbon_budget_allocated_share: float = 0.0,
+        net_carbon_budget: float,
+        carbon_dioxyde_removal_2100: float,
+        world_co2_emissions_2019: float,
+        aviation_carbon_budget_allocated_share: float,
     ) -> Tuple[float, float, float]:
         """Gross carbon budget."""
 

@@ -10,12 +10,12 @@ class NOxEmissionIndex(AeroMAPSModel):
 
     def compute(
         self,
-        emission_index_nox_biofuel_2019: float = 0.0,
-        emission_index_nox_electrofuel_2019: float = 0.0,
-        emission_index_nox_kerosene_2019: float = 0.0,
-        emission_index_nox_hydrogen_2019: float = 0.0,
-        emission_index_nox_dropin_fuel_evolution: float = 0.0,
-        emission_index_nox_hydrogen_evolution: float = 0.0,
+        emission_index_nox_biofuel_2019: float,
+        emission_index_nox_electrofuel_2019: float,
+        emission_index_nox_kerosene_2019: float,
+        emission_index_nox_hydrogen_2019: float,
+        emission_index_nox_dropin_fuel_evolution: float,
+        emission_index_nox_hydrogen_evolution: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """NOx emission index calculation using simple method."""
 
@@ -61,16 +61,16 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
 
     def compute(
         self,
-        emission_index_nox_biofuel_2019: float = 0.0,
-        emission_index_nox_electrofuel_2019: float = 0.0,
-        emission_index_nox_kerosene_2019: float = 0.0,
-        emission_index_nox_hydrogen_2019: float = 0.0,
-        ask_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        emission_index_nox_biofuel_2019: float,
+        emission_index_nox_electrofuel_2019: float,
+        emission_index_nox_kerosene_2019: float,
+        emission_index_nox_hydrogen_2019: float,
+        ask_long_range_dropin_fuel: pd.Series,
+        ask_medium_range_dropin_fuel: pd.Series,
+        ask_short_range_dropin_fuel: pd.Series,
+        ask_long_range_hydrogen: pd.Series,
+        ask_medium_range_hydrogen: pd.Series,
+        ask_short_range_hydrogen: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """NOx emission index calculation using fleet renewal models."""
 
@@ -170,11 +170,11 @@ class SootEmissionIndex(AeroMAPSModel):
 
     def compute(
         self,
-        emission_index_soot_biofuel_2019: float = 0.0,
-        emission_index_soot_electrofuel_2019: float = 0.0,
-        emission_index_soot_kerosene_2019: float = 0.0,
-        emission_index_soot_hydrogen_2019: float = 0.0,
-        emission_index_soot_dropin_fuel_evolution: float = 0.0,
+        emission_index_soot_biofuel_2019: float,
+        emission_index_soot_electrofuel_2019: float,
+        emission_index_soot_kerosene_2019: float,
+        emission_index_soot_hydrogen_2019: float,
+        emission_index_soot_dropin_fuel_evolution: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Soot emission index calculation using simple method."""
 
@@ -218,16 +218,16 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 
     def compute(
         self,
-        emission_index_soot_biofuel_2019: float = 0.0,
-        emission_index_soot_electrofuel_2019: float = 0.0,
-        emission_index_soot_kerosene_2019: float = 0.0,
-        emission_index_soot_hydrogen_2019: float = 0.0,
-        ask_long_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_long_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        ask_medium_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        emission_index_soot_biofuel_2019: float,
+        emission_index_soot_electrofuel_2019: float,
+        emission_index_soot_kerosene_2019: float,
+        emission_index_soot_hydrogen_2019: float,
+        ask_long_range_dropin_fuel: pd.Series,
+        ask_medium_range_dropin_fuel: pd.Series,
+        ask_short_range_dropin_fuel: pd.Series,
+        ask_long_range_hydrogen: pd.Series,
+        ask_medium_range_hydrogen: pd.Series,
+        ask_short_range_hydrogen: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Soot emission index calculation using fleet renewal models."""
 
@@ -330,30 +330,30 @@ class NonCO2Emissions(AeroMAPSModel):
 
     def compute(
         self,
-        emission_index_nox_biofuel: pd.Series = pd.Series(dtype="float64"),
-        emission_index_nox_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        emission_index_nox_kerosene: pd.Series = pd.Series(dtype="float64"),
-        emission_index_nox_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        emission_index_soot_biofuel: pd.Series = pd.Series(dtype="float64"),
-        emission_index_soot_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        emission_index_soot_kerosene: pd.Series = pd.Series(dtype="float64"),
-        emission_index_soot_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        emission_index_h2o_biofuel: float = 0.0,
-        emission_index_h2o_electrofuel: float = 0.0,
-        emission_index_h2o_kerosene: float = 0.0,
-        emission_index_h2o_hydrogen: float = 0.0,
-        emission_index_sulfur_biofuel: float = 0.0,
-        emission_index_sulfur_electrofuel: float = 0.0,
-        emission_index_sulfur_kerosene: float = 0.0,
-        emission_index_sulfur_hydrogen: float = 0.0,
-        lhv_kerosene: float = 0.0,
-        lhv_biofuel: float = 0.0,
-        lhv_electrofuel: float = 0.0,
-        lhv_hydrogen: float = 0.0,
-        energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_biofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
+        emission_index_nox_biofuel: pd.Series,
+        emission_index_nox_electrofuel: pd.Series,
+        emission_index_nox_kerosene: pd.Series,
+        emission_index_nox_hydrogen: pd.Series,
+        emission_index_soot_biofuel: pd.Series,
+        emission_index_soot_electrofuel: pd.Series,
+        emission_index_soot_kerosene: pd.Series,
+        emission_index_soot_hydrogen: pd.Series,
+        emission_index_h2o_biofuel: float,
+        emission_index_h2o_electrofuel: float,
+        emission_index_h2o_kerosene: float,
+        emission_index_h2o_hydrogen: float,
+        emission_index_sulfur_biofuel: float,
+        emission_index_sulfur_electrofuel: float,
+        emission_index_sulfur_kerosene: float,
+        emission_index_sulfur_hydrogen: float,
+        lhv_kerosene: float,
+        lhv_biofuel: float,
+        lhv_electrofuel: float,
+        lhv_hydrogen: float,
+        energy_consumption_kerosene: pd.Series,
+        energy_consumption_biofuel: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Non-CO2 emissions calculation."""
 

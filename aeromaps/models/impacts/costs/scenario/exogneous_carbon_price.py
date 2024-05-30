@@ -15,8 +15,8 @@ class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
 
     def compute(
         self,
-        exogenous_carbon_price_reference_years: list = [],
-        exogenous_carbon_price_reference_years_values: list = [],
+        exogenous_carbon_price_reference_years: list,
+        exogenous_carbon_price_reference_years_values: list,
     ) -> Tuple[pd.Series]:
         exogenous_carbon_price_trajectory = AeromapsInterpolationFunction(
             self,

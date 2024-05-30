@@ -11,14 +11,14 @@ class BiofuelEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_ft_efficiency_reference_years: list = [],
-        biofuel_ft_efficiency_reference_years_values: list = [],
-        biofuel_atj_efficiency_reference_years: list = [],
-        biofuel_atj_efficiency_reference_years_values: list = [],
-        biofuel_hefa_oil_efficiency_reference_years: list = [],
-        biofuel_hefa_oil_efficiency_reference_years_values: list = [],
-        biofuel_hefa_fuel_efficiency_reference_years: list = [],
-        biofuel_hefa_fuel_efficiency_reference_years_values: list = [],
+        biofuel_ft_efficiency_reference_years: list,
+        biofuel_ft_efficiency_reference_years_values: list,
+        biofuel_atj_efficiency_reference_years: list,
+        biofuel_atj_efficiency_reference_years_values: list,
+        biofuel_hefa_oil_efficiency_reference_years: list,
+        biofuel_hefa_oil_efficiency_reference_years_values: list,
+        biofuel_hefa_fuel_efficiency_reference_years: list,
+        biofuel_hefa_fuel_efficiency_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel production efficiency calculation using interpolation functions"""
 
@@ -72,12 +72,12 @@ class ElectricityBasedFuelEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        electrolysis_efficiency_reference_years: list = [],
-        electrolysis_efficiency_reference_years_values: list = [],
-        liquefaction_efficiency_reference_years: list = [],
-        liquefaction_efficiency_reference_years_values: list = [],
-        electrofuel_hydrogen_efficiency_reference_years: list = [],
-        electrofuel_hydrogen_efficiency_reference_years_values: list = [],
+        electrolysis_efficiency_reference_years: list,
+        electrolysis_efficiency_reference_years_values: list,
+        liquefaction_efficiency_reference_years: list,
+        liquefaction_efficiency_reference_years_values: list,
+        electrofuel_hydrogen_efficiency_reference_years: list,
+        electrofuel_hydrogen_efficiency_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Hydrogen and electrofuel production efficiency calculation using interpolation functions"""
 

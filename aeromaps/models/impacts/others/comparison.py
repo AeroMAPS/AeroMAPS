@@ -12,8 +12,8 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        gross_carbon_budget_2050: float = 0.0,
+        cumulative_co2_emissions: pd.Series,
+        gross_carbon_budget_2050: float,
     ) -> Tuple[float]:
         """Carbon budget consumption share calculation."""
 
@@ -32,8 +32,8 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
-        equivalent_gross_carbon_budget_2050: float = 0.0,
+        cumulative_total_equivalent_emissions: pd.Series,
+        equivalent_gross_carbon_budget_2050: float,
     ) -> Tuple[float]:
         """Equivalent Carbon budget consumption share calculation."""
 
@@ -56,10 +56,10 @@ class ResourcesConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        biomass_consumption_end_year: float = 0.0,
-        electricity_consumption_end_year: float = 0.0,
-        available_biomass_total: float = 0.0,
-        available_electricity: float = 0.0,
+        biomass_consumption_end_year: float,
+        electricity_consumption_end_year: float,
+        available_biomass_total: float,
+        available_electricity: float,
     ) -> Tuple[float, float]:
         """Resources consumption share calculation."""
 

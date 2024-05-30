@@ -12,8 +12,8 @@ class EmissionsPerRPK(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions_passenger: pd.Series = pd.Series(dtype="float64"),
-        rpk: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions_passenger: pd.Series,
+        rpk: pd.Series,
     ) -> Tuple[pd.Series]:
         """CO2 emissions per Revenue Passenger Kilometer calculation."""
 
@@ -29,8 +29,8 @@ class EmissionsPerRTK(AeroMAPSModel):
 
     def compute(
         self,
-        co2_emissions_freight: pd.Series = pd.Series(dtype="float64"),
-        rtk: pd.Series = pd.Series(dtype="float64"),
+        co2_emissions_freight: pd.Series,
+        rtk: pd.Series,
     ) -> Tuple[pd.Series]:
         """CO2 emissions per Revenue Tonne Kilometer calculation."""
 
@@ -46,13 +46,13 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_passenger_kerosene: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_biofuel: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_passenger_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        lhv_kerosene: float = 0.0,
-        lhv_biofuel: float = 0.0,
-        lhv_electrofuel: float = 0.0,
-        rpk: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_passenger_kerosene: pd.Series,
+        energy_consumption_passenger_biofuel: pd.Series,
+        energy_consumption_passenger_electrofuel: pd.Series,
+        lhv_kerosene: float,
+        lhv_biofuel: float,
+        lhv_electrofuel: float,
+        rpk: pd.Series,
     ) -> Tuple[pd.Series]:
         """Drop-in fuel consumption in liter per passenger per 100 km calculation."""
 
