@@ -982,12 +982,14 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         )
         rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
         self.df.loc[:, "rtk_hydrogen_share"] = rtk_hydrogen_share
+        self.df.loc[:, "rtk_electric_share"] = rtk_hydrogen_share
         self.df.loc[:, "rtk_dropin_fuel_share"] = rtk_dropin_fuel_share
 
         rtk_hydrogen = rtk * rtk_hydrogen_share / 100
         rtk_electric = rtk * rtk_electric_share / 100
         rtk_dropin_fuel = rtk * rtk_dropin_fuel_share / 100
         self.df.loc[:, "rtk_hydrogen"] = rtk_hydrogen
+        self.df.loc[:, "rtk_electric"] = rtk_hydrogen
         self.df.loc[:, "rtk_dropin_fuel"] = rtk_dropin_fuel
 
         relative_energy_per_ask_hydrogen_wrt_dropin_short_range = (

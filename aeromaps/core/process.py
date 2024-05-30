@@ -131,6 +131,13 @@ class AeroMAPSProcess(object):
     def update_parameters(self):
         for name, model in self.models.items():
             model.parameters = self.parameters
+    def update_defaults_from_dict(self, data_dict):
+        self.parameters.from_dict(data_dict)
+        # TODO: make this more efficient
+        for disc in self.disciplines:
+            disc.model.parameters = self.parameters
+            disc.model._initialize_df()
+            disc.update_defaults()
 
     def list_available_plots(self):
         return list(available_plots.keys())

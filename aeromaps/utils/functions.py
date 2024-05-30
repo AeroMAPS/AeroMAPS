@@ -13,7 +13,13 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     with open(file_name, "r", encoding="utf-8") as f:
         parameters_dict = load(f)
 
-    for key, value in parameters_dict.items():
+    parameters_dict = _parameters_dict_from_dict(parameters_dict)
+
+    return parameters_dict
+
+
+def _parameters_dict_from_dict(data: dict) -> dict:
+    for key, value in data.items():
         # TODO: generic handling of timetables
         if isinstance(value, list) and key in [
             "rpk_init",
@@ -24,9 +30,8 @@ def _dict_from_json(file_name="parameters.json") -> dict:
             "energy_consumption_init",
             "total_aircraft_distance_init",
         ]:
-            parameters_dict[key] = pd.Series(value)
-
-    return parameters_dict
+            data[key] = pd.Series(value)
+    return data
 
 
 def _dict_to_df(data, orient="index") -> pd.DataFrame:
