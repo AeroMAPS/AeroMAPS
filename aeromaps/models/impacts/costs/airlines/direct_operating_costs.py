@@ -591,7 +591,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
         energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
         dropin_mfsp_carbon_tax_supplement: pd.Series = pd.Series(dtype="float64"),
         average_hydrogen_mean_carbon_tax_kg: pd.Series = pd.Series(dtype="float64"),
-        average_electric_mean_carbon_tax_kWh: pd.Series = pd.Series(dtype="float64"),
+        electricity_direct_use_carbon_tax_kWh: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
@@ -669,8 +669,8 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
                 )
             if ask_long_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_electric[k] = (
-                    energy_per_ask_long_range_electric[k]
-                    * average_electric_mean_carbon_tax_kWh[k]/3.6
+                        energy_per_ask_long_range_electric[k]
+                        * electricity_direct_use_carbon_tax_kWh[k] / 3.6
                 )
             if ask_medium_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_dropin_fuel[k] = (
@@ -687,7 +687,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_medium_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_electric[k] = (
                         energy_per_ask_medium_range_electric[k]
-                        * average_electric_mean_carbon_tax_kWh[k] / 3.6
+                        * electricity_direct_use_carbon_tax_kWh[k] / 3.6
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_dropin_fuel[k] = (
@@ -704,7 +704,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_short_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_electric[k] = (
                         energy_per_ask_short_range_electric[k]
-                        * average_electric_mean_carbon_tax_kWh[k] / 3.6
+                        * electricity_direct_use_carbon_tax_kWh[k] / 3.6
                 )
 
         doc_carbon_tax_per_ask_long_range_mean = (
