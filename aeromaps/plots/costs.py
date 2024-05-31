@@ -949,6 +949,17 @@ class ScenarioEnergyUnitCostPlot:
             linewidth=2,
         )
 
+        (self.line_electricity,) = self.ax.plot(
+            self.prospective_years,
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+            )
+            / 3.6,
+            color="#7D3C98",
+            label="Electricity",
+            linewidth=2,
+        )
+
         self.ax.grid(axis="y")
         self.ax.set_title("MFSP per pathway (kerosene: market price)")
         self.ax.set_ylabel("MFSP [€/MJ]")
@@ -1028,6 +1039,12 @@ class ScenarioEnergyUnitCostPlot:
                 + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
+        )
+
+        self.line_electricity.set_ydata(
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+            )/3.6,
         )
 
         for collection in self.ax.collections:
@@ -1223,6 +1240,18 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
             linewidth=2,
         )
 
+        (self.line_electricity,) = self.ax.plot(
+            self.prospective_years,
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+                    + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+            )
+            / 3.6,
+            color="#7D3C98",
+            label="Electricity",
+            linewidth=2,
+        )
+
         self.ax.grid(axis="y")
         self.ax.set_title("MFSP per pathway incl. carbon tax")
         self.ax.set_ylabel("MFSP [€/MJ]")
@@ -1339,6 +1368,14 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
                 + self.df.loc[self.prospective_years, "coal_h2_mfsp_carbon_tax_supplement"]
             )
             / 119.93,
+        )
+
+        self.line_electricity.set_ydata(
+            (
+                    self.df.loc[self.prospective_years, "electricity_market_price"]
+                    + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+            )
+            / 3.6,
         )
 
         for collection in self.ax.collections:
