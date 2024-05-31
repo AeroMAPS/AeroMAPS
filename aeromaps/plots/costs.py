@@ -533,6 +533,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "#0ABAFF",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -551,6 +552,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -574,6 +576,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "Coal CCS $H_2$ ",
             "Coal $H_2$ ",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
         ]
 
         self.ax.set_xlim(2020, self.years[-1])
@@ -606,6 +609,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "#0ABAFF",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -624,6 +628,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -647,6 +652,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "Coal CCS $H_2$ ",
             "Coal $H_2$ ",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
         ]
 
         self.ax.set_xlim(2020, self.years[-1])
@@ -697,6 +703,7 @@ class ScenarioEnergyCarbonTaxPlot:
                 + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"]
             ),
             label="Scenario energy expenses incl. carbon tax",
             linestyle="--",
@@ -774,6 +781,7 @@ class ScenarioEnergyCarbonTaxPlot:
                 + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"]
             )
         )
 
