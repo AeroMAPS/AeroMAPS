@@ -177,16 +177,31 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range: float = 0.0,
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range: float = 0.0,
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range: float = 0.0,
+        doc_non_energy_per_ask_short_range_electric_init: float = 0.0,
+        doc_non_energy_per_ask_medium_range_electric_init: float = 0.0,
+        doc_non_energy_per_ask_long_range_electric_init: float = 0.0,
+        doc_non_energy_per_ask_short_range_electric_gain: float = 0.0,
+        doc_non_energy_per_ask_medium_range_electric_gain: float = 0.0,
+        doc_non_energy_per_ask_long_range_electric_gain: float = 0.0,
+        relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range: float = 0.0,
+        relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range: float = 0.0,
+        relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range: float = 0.0,
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_short_range: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -236,6 +251,8 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             "doc_non_energy_per_ask_long_range_dropin_fuel"
         ]
 
+        # Hydrogen
+
         doc_non_energy_per_ask_short_range_hydrogen = (
             doc_non_energy_per_ask_short_range_dropin_fuel
             * relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range
@@ -259,9 +276,37 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             :, "doc_non_energy_per_ask_long_range_hydrogen"
         ] = doc_non_energy_per_ask_long_range_hydrogen
 
+        # Electric
+        doc_non_energy_per_ask_short_range_electric = (
+                doc_non_energy_per_ask_short_range_electric_init
+                + doc_non_energy_per_ask_short_range_electric_gain
+                * (self.df.index - self.historic_start_year)
+        )
+        doc_non_energy_per_ask_medium_range_electric = (
+                doc_non_energy_per_ask_medium_range_electric_init
+                + doc_non_energy_per_ask_medium_range_electric_gain
+                * (self.df.index - self.historic_start_year)
+        )
+        doc_non_energy_per_ask_long_range_electric = (
+                doc_non_energy_per_ask_long_range_electric_init
+                + doc_non_energy_per_ask_long_range_electric_gain
+                * (self.df.index - self.historic_start_year)
+        )
+
+        self.df.loc[
+        :, "doc_non_energy_per_ask_short_range_electric"
+        ] = doc_non_energy_per_ask_short_range_electric
+        self.df.loc[
+        :, "doc_non_energy_per_ask_medium_range_electric"
+        ] = doc_non_energy_per_ask_medium_range_electric
+        self.df.loc[
+        :, "doc_non_energy_per_ask_long_range_electric"
+        ] = doc_non_energy_per_ask_long_range_electric
+
         doc_non_energy_per_ask_long_range_mean = (
             doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
             + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
+            + doc_non_energy_per_ask_long_range_electric * ask_long_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_medium_range_mean = (
@@ -269,6 +314,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             + doc_non_energy_per_ask_medium_range_dropin_fuel
             * ask_medium_range_dropin_fuel_share
             / 100
+            + doc_non_energy_per_ask_medium_range_electric * ask_medium_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_short_range_mean = (
@@ -276,6 +322,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             + doc_non_energy_per_ask_short_range_dropin_fuel
             * ask_short_range_dropin_fuel_share
             / 100
+            + doc_non_energy_per_ask_short_range_electric * ask_short_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_mean = (
@@ -305,6 +352,9 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             doc_non_energy_per_ask_short_range_hydrogen,
             doc_non_energy_per_ask_medium_range_hydrogen,
             doc_non_energy_per_ask_long_range_hydrogen,
+            doc_non_energy_per_ask_short_range_electric,
+            doc_non_energy_per_ask_medium_range_electric,
+            doc_non_energy_per_ask_long_range_electric,
             doc_non_energy_per_ask_short_range_mean,
             doc_non_energy_per_ask_medium_range_mean,
             doc_non_energy_per_ask_long_range_mean,
