@@ -846,8 +846,20 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         doc_carbon_tax_per_ask_short_range_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
         doc_carbon_tax_per_ask_short_range_hydrogen: pd.Series = pd.Series(dtype="float64"),
         doc_carbon_tax_per_ask_short_range_mean: pd.Series = pd.Series(dtype="float64"),
+        doc_non_energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_non_energy_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_non_energy_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_energy_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_energy_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_energy_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_carbon_tax_per_ask_short_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_carbon_tax_per_ask_medium_range_electric: pd.Series = pd.Series(dtype="float64"),
+        doc_carbon_tax_per_ask_long_range_electric: pd.Series = pd.Series(dtype="float64"),
         doc_carbon_tax_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -897,6 +909,25 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             + doc_carbon_tax_per_ask_long_range_hydrogen
         )
 
+        # Electric
+        doc_total_per_ask_short_range_electric = (
+                doc_non_energy_per_ask_short_range_electric
+                + doc_energy_per_ask_short_range_electric
+                + doc_carbon_tax_per_ask_short_range_electric
+        )
+
+        doc_total_per_ask_medium_range_electric = (
+                doc_non_energy_per_ask_medium_range_electric
+                + doc_energy_per_ask_medium_range_electric
+                + doc_carbon_tax_per_ask_medium_range_electric
+        )
+
+        doc_total_per_ask_long_range_electric = (
+                doc_non_energy_per_ask_long_range_electric
+                + doc_energy_per_ask_long_range_electric
+                + doc_carbon_tax_per_ask_long_range_electric
+        )
+
         # Average per category
         doc_total_per_ask_short_range_mean = (
             doc_non_energy_per_ask_short_range_mean
@@ -940,6 +971,15 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         self.df.loc[
             :, "doc_total_per_ask_long_range_hydrogen"
         ] = doc_total_per_ask_long_range_hydrogen
+        self.df.loc[
+        :, "doc_total_per_ask_short_range_electric"
+        ] = doc_total_per_ask_short_range_electric
+        self.df.loc[
+        :, "doc_total_per_ask_medium_range_electric"
+        ] = doc_total_per_ask_medium_range_electric
+        self.df.loc[
+        :, "doc_total_per_ask_long_range_electric"
+        ] = doc_total_per_ask_long_range_electric
         self.df.loc[:, "doc_total_per_ask_short_range_mean"] = doc_total_per_ask_short_range_mean
         self.df.loc[:, "doc_total_per_ask_medium_range_mean"] = doc_total_per_ask_medium_range_mean
         self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean
@@ -952,6 +992,9 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             doc_total_per_ask_short_range_hydrogen,
             doc_total_per_ask_medium_range_hydrogen,
             doc_total_per_ask_long_range_hydrogen,
+            doc_total_per_ask_short_range_electric,
+            doc_total_per_ask_medium_range_electric,
+            doc_total_per_ask_long_range_electric,
             doc_total_per_ask_short_range_mean,
             doc_total_per_ask_medium_range_mean,
             doc_total_per_ask_long_range_mean,
