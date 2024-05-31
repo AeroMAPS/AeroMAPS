@@ -448,6 +448,9 @@
     "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range": 1.1,
     "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range": 1.1,
     "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range": 1.1,
+    "relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range": 1,
+    "relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range": 1,
+    "relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range": 1,
     "carbon_offset_baseline_level_vs_2019_reference_periods": [],
     "carbon_offset_baseline_level_vs_2019_reference_periods_values": [850000.0],
     "residual_carbon_offset_share_reference_years": [],
@@ -504,4 +507,5 @@
     "liquefaction_mfsp_simple_reference_years_values": [1.378511,1.378511,1.378511,1.378511],
     "electrofuel_mfsp_simple_reference_years": [],
     "electrofuel_mfsp_simple_reference_years_values": [3.504428]
+
 }

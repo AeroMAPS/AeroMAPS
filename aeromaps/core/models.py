@@ -455,6 +455,7 @@ models_energy_cost_simple = {
     "electrofuel_mfsp_simple": ElectrofuelMfspSimple("electrofuel_mfsp_simple"),
     "hydrogen_cost_simple": HydrogenCostSimple("hydrogen_cost_simple"),
     "hydrogen_mfsp_simple": HydrogenMfspSimple("hydrogen_mfsp_simple"),
+    "electricity_cost": ElectricityCost("electricity_cost"),
     "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
