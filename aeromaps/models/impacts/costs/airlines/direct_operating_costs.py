@@ -15,14 +15,20 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
         self,
         ask_long_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_long_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_medium_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_hydrogen_share: pd.Series = pd.Series(dtype="float64"),
         ask_short_range_dropin_fuel_share: pd.Series = pd.Series(dtype="float64"),
+        ask_short_range_electric_share: pd.Series = pd.Series(dtype="float64"),
         ask_long_range: pd.Series = pd.Series(dtype="float64"),
         ask_medium_range: pd.Series = pd.Series(dtype="float64"),
         ask_short_range: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -53,6 +59,15 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
         doc_non_energy_per_ask_long_range_hydrogen = self.fleet_model.df[
             "Long Range:doc_non_energy:hydrogen"
         ]
+        doc_non_energy_per_ask_short_range_electric = self.fleet_model.df[
+            "Short Range:doc_non_energy:electric"
+        ]
+        doc_non_energy_per_ask_medium_range_electric = self.fleet_model.df[
+            "Medium Range:doc_non_energy:electric"
+        ]
+        doc_non_energy_per_ask_long_range_electric = self.fleet_model.df[
+            "Long Range:doc_non_energy:electric"
+        ]
 
         # Drop-in - Projections
 
@@ -77,9 +92,21 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             :, "doc_non_energy_per_ask_long_range_hydrogen"
         ] = doc_non_energy_per_ask_long_range_hydrogen
 
+        # Electric
+        self.df.loc[
+        :, "doc_non_energy_per_ask_short_range_electric"
+        ] = doc_non_energy_per_ask_short_range_electric
+        self.df.loc[
+        :, "doc_non_energy_per_ask_medium_range_electric"
+        ] = doc_non_energy_per_ask_medium_range_electric
+        self.df.loc[
+        :, "doc_non_energy_per_ask_long_range_electric"
+        ] = doc_non_energy_per_ask_long_range_electric
+
         doc_non_energy_per_ask_long_range_mean = (
             doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
             + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
+            + doc_non_energy_per_ask_long_range_electric * ask_long_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_medium_range_mean = (
@@ -87,6 +114,7 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             + doc_non_energy_per_ask_medium_range_dropin_fuel
             * ask_medium_range_dropin_fuel_share
             / 100
+            + doc_non_energy_per_ask_medium_range_electric * ask_medium_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_short_range_mean = (
@@ -94,6 +122,7 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             + doc_non_energy_per_ask_short_range_dropin_fuel
             * ask_short_range_dropin_fuel_share
             / 100
+            + doc_non_energy_per_ask_short_range_electric * ask_short_range_electric_share / 100
         )
 
         doc_non_energy_per_ask_mean = (
@@ -123,6 +152,9 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             doc_non_energy_per_ask_short_range_hydrogen,
             doc_non_energy_per_ask_medium_range_hydrogen,
             doc_non_energy_per_ask_long_range_hydrogen,
+            doc_non_energy_per_ask_short_range_electric,
+            doc_non_energy_per_ask_medium_range_electric,
+            doc_non_energy_per_ask_long_range_electric,
             doc_non_energy_per_ask_short_range_mean,
             doc_non_energy_per_ask_medium_range_mean,
             doc_non_energy_per_ask_long_range_mean,
