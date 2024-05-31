@@ -216,6 +216,8 @@ class ScenarioEnergyExpensesPlot:
             "#8CAAB6",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -246,6 +248,8 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -281,6 +285,8 @@ class ScenarioEnergyExpensesPlot:
             "Coal $H_2$ ",
             "_nolegend_",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
+            "_nolegend_",
         ]
 
         stacks = self.annual_energy_expenses
@@ -311,6 +317,8 @@ class ScenarioEnergyExpensesPlot:
             "",
             "||",
             "",
+            "",
+            "||",
         ]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
@@ -369,6 +377,8 @@ class ScenarioEnergyExpensesPlot:
             "#8CAAB6",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -399,6 +409,8 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -434,6 +446,8 @@ class ScenarioEnergyExpensesPlot:
             "Coal $H_2$ ",
             "_nolegend_",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
+            "_nolegend_",
         ]
 
         stacks = self.annual_energy_expenses
@@ -464,6 +478,8 @@ class ScenarioEnergyExpensesPlot:
             "",
             "||",
             "",
+            "",
+            "||",
         ]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
