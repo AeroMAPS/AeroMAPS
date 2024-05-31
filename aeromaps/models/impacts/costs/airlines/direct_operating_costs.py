@@ -177,12 +177,6 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range: float = 0.0,
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range: float = 0.0,
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range: float = 0.0,
-        doc_non_energy_per_ask_short_range_electric_init: float = 0.0,
-        doc_non_energy_per_ask_medium_range_electric_init: float = 0.0,
-        doc_non_energy_per_ask_long_range_electric_init: float = 0.0,
-        doc_non_energy_per_ask_short_range_electric_gain: float = 0.0,
-        doc_non_energy_per_ask_medium_range_electric_gain: float = 0.0,
-        doc_non_energy_per_ask_long_range_electric_gain: float = 0.0,
         relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range: float = 0.0,
         relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range: float = 0.0,
         relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range: float = 0.0,
@@ -278,19 +272,16 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
         # Electric
         doc_non_energy_per_ask_short_range_electric = (
-                doc_non_energy_per_ask_short_range_electric_init
-                + doc_non_energy_per_ask_short_range_electric_gain
-                * (self.df.index - self.historic_start_year)
+                doc_non_energy_per_ask_short_range_dropin_fuel
+                * relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range
         )
         doc_non_energy_per_ask_medium_range_electric = (
-                doc_non_energy_per_ask_medium_range_electric_init
-                + doc_non_energy_per_ask_medium_range_electric_gain
-                * (self.df.index - self.historic_start_year)
+                doc_non_energy_per_ask_medium_range_dropin_fuel
+                * relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range
         )
         doc_non_energy_per_ask_long_range_electric = (
-                doc_non_energy_per_ask_long_range_electric_init
-                + doc_non_energy_per_ask_long_range_electric_gain
-                * (self.df.index - self.historic_start_year)
+                doc_non_energy_per_ask_long_range_dropin_fuel
+                * relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
         )
 
         self.df.loc[
