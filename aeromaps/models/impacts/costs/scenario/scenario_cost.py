@@ -23,6 +23,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         biofuel_cost_atj: pd.Series = pd.Series(dtype="float64"),
         electrofuel_total_cost: pd.Series = pd.Series(dtype="float64"),
         total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
+        electricity_direct_use_total_cost: pd.Series = pd.Series(dtype="float64"),
         co2_emissions_2019technology: pd.Series = pd.Series(dtype="float64"),
         co2_emissions_including_load_factor: pd.Series = pd.Series(dtype="float64"),
         kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
@@ -41,6 +42,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
             + biofuel_cost_atj.fillna(0)
             + electrofuel_total_cost.fillna(0)
             + total_hydrogen_supply_cost.fillna(0)
+            + electricity_direct_use_total_cost.fillna(0)
         )
 
         # Compute the business as usual energy expenses
@@ -98,6 +100,7 @@ class DicountedScenarioCost(AeroMAPSModel):
         biofuel_cost_atj: pd.Series = pd.Series(dtype="float64"),
         electrofuel_total_cost: pd.Series = pd.Series(dtype="float64"),
         total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
+        electricity_direct_use_total_cost: pd.Series = pd.Series(dtype="float64"),
     ) -> Tuple[pd.Series]:
 
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -114,6 +117,7 @@ class DicountedScenarioCost(AeroMAPSModel):
             biofuel_atj_discounted = biofuel_cost_atj.fillna(0)[k] / discount_k
             electrofuel_discounted = electrofuel_total_cost.fillna(0)[k] / discount_k
             hydrogen_discounted = total_hydrogen_supply_cost.fillna(0)[k] / discount_k
+            electricity_direct_use_discounted = electricity_direct_use_total_cost.fillna(0)[k] / discount_k
 
             self.df.loc[k, "discounted_energy_expenses"] = (
                 kerosene_discounted
@@ -124,6 +128,7 @@ class DicountedScenarioCost(AeroMAPSModel):
                 + biofuel_hefa_fog_discounted
                 + electrofuel_discounted
                 + hydrogen_discounted
+                + electricity_direct_use_discounted
             )
 
         discounted_energy_expenses = self.df.loc[:, "discounted_energy_expenses"]

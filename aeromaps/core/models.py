@@ -26,6 +26,7 @@ from aeromaps.models.impacts.costs.energy.simple.biofuel_simple import (
     BiofuelCostSimple,
     BiofuelMfspSimple,
 )
+from aeromaps.models.impacts.costs.energy.simple.electricity_direct_use import ElectricityDirectUse
 from aeromaps.models.impacts.costs.energy.simple.liquid_hydrogen_simple import (
     HydrogenCostSimple,
     HydrogenMfspSimple,
@@ -441,6 +442,7 @@ models_energy_cost_complex = {
     "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
         "exogenous_carbon_price_trajectory"
     ),
+    "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
 }
 
 models_energy_cost_simple = {
@@ -453,6 +455,8 @@ models_energy_cost_simple = {
     "electrofuel_mfsp_simple": ElectrofuelMfspSimple("electrofuel_mfsp_simple"),
     "hydrogen_cost_simple": HydrogenCostSimple("hydrogen_cost_simple"),
     "hydrogen_mfsp_simple": HydrogenMfspSimple("hydrogen_mfsp_simple"),
+    "electricity_cost": ElectricityCost("electricity_cost"),
+    "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
