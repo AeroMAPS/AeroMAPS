@@ -30,7 +30,7 @@ class OperationsAbatementCost(AeroMAPSModel):
         exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
         social_discount_rate: float = 0.0,
         operations_duration: float = 0.0,
-        operations_start_year: float = 0.0,
+        operations_start_year: int = 0.0,
         lhv_kerosene: float = 0.0,
         density_kerosene: float = 0.0,
     ) -> Tuple[

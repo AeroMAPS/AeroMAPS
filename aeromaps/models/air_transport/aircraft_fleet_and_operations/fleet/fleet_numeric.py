@@ -21,8 +21,8 @@ class FleetEvolution(AeroMAPSModel):
         rpk_short_range: pd.Series,
         rpk_medium_range: pd.Series,
         rpk_long_range: pd.Series,
-        covid_start_year: float,
-        covid_end_year: float,
+        covid_start_year: int,
+        covid_end_year: int,
     ) -> Tuple[dict, dict, dict, dict, dict]:
 
         ask_aircraft_value_dict = {}
