@@ -27,7 +27,7 @@
         "unit": {
           "type": "string"
         },
-        "exchange": {
+        "amount": {
           "type": [
             "string",
             "number"
@@ -35,6 +35,15 @@
         },
         "custom_attributes": {
           "$ref": "#/definitions/custom_attributes"
+        },
+        "update": {
+          "$ref": "#/definitions/update"
+        },
+        "add": {
+          "$ref": "#/definitions/add"
+        },
+        "delete": {
+          "$ref": "#/definitions/delete"
         }
       }
     },
@@ -42,7 +51,7 @@
       "$comment": "Definition of an LCA foreground process",
       "type": "object",
       "properties": {
-        "exchange": {
+        "amount": {
           "type": [
             "string",
             "number"
@@ -83,6 +92,49 @@
             }
           },
           "required": ["attribute", "value"]
+        }
+      },
+    "update": {
+        "$comment": "Update existing exchanges with new values. New value can be either an amount, an new activity name, or a dictionary of amount and activity name.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "input_activity": {
+              "type": "string"
+            },
+            "new_value": {
+              "type": "object"
+            }
+          },
+          "required": ["input_activity", "new_value"]
+        }
+      },
+    "add": {
+        "$comment": "Add exchanges to the activity",
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/foreground_process"
+            },
+            {
+              "$ref": "#/definitions/background_process"
+            }
+          ]
+        }
+      },
+    "delete": {
+        "$comment": "Delete exchanges for which names are provided. Names can contain wildcard '*'",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "input_activity": {
+              "type": "string"
+            }
+          },
+          "required": ["input_activity"]
         }
       },
     "model": {

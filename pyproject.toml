@@ -51,10 +51,11 @@ ipytree = "^0.2.2"
 voila = "^0.5.0"
 
 # Life cycle assessment
-lca-algebraic = "1.1"
+lca-algebraic = {git = "https://github.com/felixpollet/lca_algebraic.git"}  #"1.1"
 "ruamel.yaml" = "^0.18.5"
 ensure = "^1.0.0"
 premise = "2.0.2"
+pyvis = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

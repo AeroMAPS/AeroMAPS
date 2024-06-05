@@ -350,7 +350,10 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
                 if hasattr(self.model, "custom_inputs") and input in self.model.custom_inputs:
-                    self.default_inputs[input] = array(getattr(self.model.parameters, input))
+                    default_value = getattr(self.model.parameters, input)
+                    if not isinstance(default_value, list):
+                        default_value = [default_value]
+                    self.default_inputs[input] = array(default_value)
                 elif issubclass(self._get_input_types()[input], pd.Series):
                     self.default_inputs[input] = array(getattr(self.model.parameters, input))
                 else:
