@@ -10,12 +10,12 @@ class TotalAircraftDistance(AeroMAPSModel):
 
     def compute(
         self,
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        ask: pd.Series = pd.Series(dtype="float64"),
-        ask_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        ask_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        ask_electric: pd.Series = pd.Series(dtype="float64"),
-        total_aircraft_distance_init: pd.Series = pd.Series(dtype="float64"),
+        rtk: pd.Series,
+        ask: pd.Series,
+        ask_dropin_fuel: pd.Series,
+        ask_hydrogen: pd.Series,
+        ask_electric: pd.Series,
+        total_aircraft_distance_init: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Total aircraft distance calculation."""
 

@@ -11,40 +11,20 @@ class EnergyIntensity(AeroMAPSModel):
 
     def compute(
         self,
-        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_short_range_hydrogen: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_medium_range_hydrogen: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_long_range_hydrogen: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_rtk_without_operations_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_without_operations_short_range_electric: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_medium_range_electric: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_long_range_electric: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_rtk_without_operations_freight_electric: pd.Series = pd.Series(dtype="float64"),
-        operations_gain: pd.Series = pd.Series(dtype="float64"),
-        operations_contrails_overconsumption: pd.Series = pd.Series(dtype="float64"),
+        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
+        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
+        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
+        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series,
+        energy_per_ask_without_operations_short_range_hydrogen: pd.Series,
+        energy_per_ask_without_operations_medium_range_hydrogen: pd.Series,
+        energy_per_ask_without_operations_long_range_hydrogen: pd.Series,
+        energy_per_rtk_without_operations_freight_hydrogen: pd.Series,
+        energy_per_ask_without_operations_short_range_electric: pd.Series,
+        energy_per_ask_without_operations_medium_range_electric: pd.Series,
+        energy_per_ask_without_operations_long_range_electric: pd.Series,
+        energy_per_rtk_without_operations_freight_electric: pd.Series,
+        operations_gain: pd.Series,
+        operations_contrails_overconsumption: pd.Series,
     ) -> Tuple[
         pd.Series,
         pd.Series,

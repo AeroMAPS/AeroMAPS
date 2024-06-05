@@ -18,26 +18,20 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         self,
         ask_aircraft_value_dict: dict,
         rpk_aircraft_value_dict: dict,
-        load_factor: pd.Series = pd.Series(dtype="float64"),
-        doc_non_energy_per_ask_short_range_dropin_fuel_init: float = 0.0,
-        doc_non_energy_per_ask_medium_range_dropin_fuel_init: float = 0.0,
-        doc_non_energy_per_ask_long_range_dropin_fuel_init: float = 0.0,
-        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        covid_energy_intensity_per_ask_increase_2020: float = 0.0,
-        lhv_kerosene: float = 0.0,
-        density_kerosene: float = 0.0,
-        social_discount_rate: float = 0.0,
+        load_factor: pd.Series,
+        doc_non_energy_per_ask_short_range_dropin_fuel_init: float,
+        doc_non_energy_per_ask_medium_range_dropin_fuel_init: float,
+        doc_non_energy_per_ask_long_range_dropin_fuel_init: float,
+        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
+        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
+        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        covid_energy_intensity_per_ask_increase_2020: float,
+        lhv_kerosene: float,
+        density_kerosene: float,
+        social_discount_rate: float,
     ) -> Tuple[dict, dict, dict, dict]:
 
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
@@ -302,20 +296,18 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
 
     def compute(
         self,
-        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series = pd.Series(
-            dtype="float64"
-        ),
-        energy_per_rtk_without_operations_freight_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_without_operations_freight_electric: pd.Series = pd.Series(dtype="float64"),
-        rtk_dropin_fuel: pd.Series = pd.Series(dtype="float64"),
-        rtk_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        rtk_electric: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        lhv_kerosene: float = 0.0,
-        density_kerosene: float = 0.0,
-        social_discount_rate: float = 0.0,
+        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series,
+        energy_per_rtk_without_operations_freight_hydrogen: pd.Series,
+        energy_per_rtk_without_operations_freight_electric: pd.Series,
+        rtk_dropin_fuel: pd.Series,
+        rtk_hydrogen: pd.Series,
+        rtk_electric: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        lhv_kerosene: float,
+        density_kerosene: float,
+        social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
