@@ -49,7 +49,7 @@ class RPK(AeroMAPSModel):
         float,
     ]:
         """RPK calculation."""
-
+        print("rpk_init", rpk_init)
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
