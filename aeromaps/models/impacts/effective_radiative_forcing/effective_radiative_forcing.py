@@ -121,7 +121,7 @@ class ERFOthers(AeroMAPSModel):
         total_aircraft_distance: pd.Series,
         operations_contrails_gain: pd.Series,
         fuel_effect_correction_contrails: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """ERF calculation for the other climate impacts of aviation."""
 
         # Contrails
