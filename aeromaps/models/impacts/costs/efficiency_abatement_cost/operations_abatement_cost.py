@@ -46,8 +46,6 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series,
-        pd.Series,
     ]:
 
         fuel_lhv = lhv_kerosene * density_kerosene
