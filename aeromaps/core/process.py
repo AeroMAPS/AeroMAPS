@@ -301,7 +301,9 @@ class AeroMAPSProcess(object):
             disc.model.parameters = self.parameters
             disc.model._initialize_df()
             # disc.update_defaults()
-            all_inputs.update(disc.default_inputs)
+            # all_inputs.update(disc.default_inputs)
+
+        all_inputs.update(self.parameters.__dict__)
 
         return all_inputs
 
@@ -315,6 +317,8 @@ class AeroMAPSProcess(object):
                     mode="constant",
                     constant_values=np.nan,
                 )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):
