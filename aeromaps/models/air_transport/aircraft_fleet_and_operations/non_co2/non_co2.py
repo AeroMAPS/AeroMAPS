@@ -98,7 +98,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
             * contrails_relative_effect_hydrogen_wrt_kerosene
             + total_aircraft_distance_electric / total_aircraft_distance * 0
         )
-
+        print(type(fuel_effect_correction_contrails))
         self.df["fuel_effect_correction_contrails"] = fuel_effect_correction_contrails
 
         return fuel_effect_correction_contrails
@@ -110,6 +110,7 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
 
     def compute(
         self,
+        total_aircraft_distance: pd.Series,
     ) -> pd.Series:
 
         """Fuel effect on contrails for ERF calculation."""
@@ -118,5 +119,5 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
             self.df.loc[k, "fuel_effect_correction_contrails"] = 1
 
         fuel_effect_correction_contrails = self.df["fuel_effect_correction_contrails"]
-
+        print(type(fuel_effect_correction_contrails))
         return fuel_effect_correction_contrails
