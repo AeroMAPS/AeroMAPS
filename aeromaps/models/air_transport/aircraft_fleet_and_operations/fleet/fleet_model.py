@@ -1829,12 +1829,10 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
         sr_nb_cat.recent_reference_aircraft.oew = 43.0
 
-        # TODO CAUTION energy_consumption_init[19] is a weak fix => type of the variable changes if multiple runs! Linked to Utils/function.py?
-
         mean_energy_init_ask_short_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.short_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.short_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
 
         share_recent_short_range = (
             mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
@@ -1978,9 +1976,9 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.oew = 43.0
 
         mean_energy_init_ask_medium_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.medium_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.medium_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
 
         share_recent_medium_range = (
             mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
@@ -2064,9 +2062,9 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.oew = 129.0
 
         mean_energy_init_ask_long_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.long_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.long_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
 
         share_recent_long_range = (
             mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask
