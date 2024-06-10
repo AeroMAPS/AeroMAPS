@@ -274,11 +274,9 @@ class AeroMAPSProcess(object):
         for key, value in self.parameters.__dict__.items():
 
             if isinstance(value, pd.Series):
-                print(key, value, type(value), isinstance(value, pd.Series))
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
-                print(key, value, type(value), isinstance(value, pd.Series))
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:

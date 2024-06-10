@@ -24,7 +24,8 @@ def _dict_from_json(file_name="parameters.json") -> dict:
             "energy_consumption_init",
             "total_aircraft_distance_init",
         ]:
-            parameters_dict[key] = pd.Series(value)
+            new_index = range(parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"])
+            parameters_dict[key] = pd.Series(value, index=new_index)
 
     return parameters_dict
 
