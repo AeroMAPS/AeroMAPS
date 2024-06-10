@@ -49,7 +49,6 @@ class RPK(AeroMAPSModel):
         float,
     ]:
         """RPK calculation."""
-        print("rpk_init", rpk_init)
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
@@ -275,9 +274,9 @@ class RPKReference(AeroMAPSModel):
         rpk: pd.Series,
         reference_cagr_aviation_reference_periods: list,
         reference_cagr_aviation_reference_periods_values: list,
-        covid_start_year: float,
+        covid_start_year: int,
         covid_rpk_drop_start_year: float,
-        covid_end_year: float,
+        covid_end_year: int,
         covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """RPK reference calculation."""
