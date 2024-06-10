@@ -506,6 +506,6 @@
     "liquefaction_mfsp_simple_reference_years": [2020,2030,2040,2050],
     "liquefaction_mfsp_simple_reference_years_values": [1.378511,1.378511,1.378511,1.378511],
     "electrofuel_mfsp_simple_reference_years": [],
-    "electrofuel_mfsp_simple_reference_years_values": [3.504428]
-
+    "electrofuel_mfsp_simple_reference_years_values": [3.504428],
+    "energy_replacement_ratio": 1.0
 }
