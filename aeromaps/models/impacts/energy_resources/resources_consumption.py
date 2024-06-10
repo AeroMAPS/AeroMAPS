@@ -87,9 +87,9 @@ class ElectricityConsumption(AeroMAPSModel):
         energy_consumption_hydrogen: pd.Series,
         energy_consumption_electric: pd.Series,
         energy_consumption_electrofuel: pd.Series,
-        electrolysis_efficiency: float,
-        liquefaction_efficiency: float,
-        electrofuel_hydrogen_efficiency: float,
+        electrolysis_efficiency: pd.Series,
+        liquefaction_efficiency: pd.Series,
+        electrofuel_hydrogen_efficiency: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Electricity consumption calculation."""
 
