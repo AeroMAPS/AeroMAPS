@@ -101,7 +101,7 @@ class DicountedScenarioCost(AeroMAPSModel):
         electrofuel_total_cost: pd.Series,
         total_hydrogen_supply_cost: pd.Series,
         electricity_direct_use_total_cost: pd.Series,
-    ) -> Tuple[pd.Series]:
+    ) -> pd.Series:
 
         for k in range(self.prospection_start_year, self.end_year + 1):
 
