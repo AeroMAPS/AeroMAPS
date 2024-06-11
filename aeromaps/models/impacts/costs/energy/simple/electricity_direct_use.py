@@ -13,10 +13,10 @@ class ElectricityDirectUse(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
-        electricity_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_electric: pd.Series,
+        electricity_emission_factor: pd.Series,
+        electricity_market_price: pd.Series,
+        carbon_tax: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
 
 

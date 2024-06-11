@@ -12,7 +12,7 @@ class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
 
     def compute(
         self,
-        rpk: pd.Series = pd.Series(dtype="float64"),
+        rpk: pd.Series,
         world_inhabitant_number_reference_years: list = [],
         world_inhabitant_number_reference_years_values: list = [],
         inhabitant_flyer_share_reference_years: list = [],
