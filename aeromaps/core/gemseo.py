@@ -306,18 +306,13 @@ class AutoPyDiscipline(MDODiscipline):
             ]
             out_to_ns = self.output_grammar.to_namespaced
             self.__output_names_with_namespaces = [
-                out_to_ns.get(output_name, output_name)
-                for output_name in self.output_names
+                out_to_ns.get(output_name, output_name) for output_name in self.output_names
             ]
             self.__jac_shape = (
                 sum(
-                    self.__sizes[output_name]
-                    for output_name in self.__output_names_with_namespaces
+                    self.__sizes[output_name] for output_name in self.__output_names_with_namespaces
                 ),
-                sum(
-                    self.__sizes[input_name]
-                    for input_name in self.__input_names_with_namespaces
-                ),
+                sum(self.__sizes[input_name] for input_name in self.__input_names_with_namespaces),
             )
 
         func_jac = self.py_jac(**self.get_input_data(with_namespaces=False))
@@ -425,7 +420,6 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
         if not isinstance(value, ndarray):
             data[key] = array([value])
     return data
-
 
 
 class AeroMAPSModelWrapper(AutoPyDiscipline):
