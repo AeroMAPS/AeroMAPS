@@ -16,7 +16,7 @@
     "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [0.0],
     "operations_final_gain": 0.0,
     "load_factor_end_year": 82.399312,
-    "operations_contrails_final_gain": 80,
+    "operations_contrails_final_gain": 80.0,
     "operations_contrails_start_year": 2030,
     "operations_contrails_duration": 10.0,
     "operations_contrails_final_overconsumption": 2.0
