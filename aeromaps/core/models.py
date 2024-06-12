@@ -1,3 +1,4 @@
+from aeromaps.models.air_transport.air_traffic.price_elasticity import PriceElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -556,4 +557,8 @@ default_models_bottom_up = {
     "models_sustainability": models_sustainability,
     "models_energy_cost_complex": models_energy_cost_complex,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
+}
+
+models_cost_feedback = {
+    "price_elasticity": PriceElasticity("price_elasticity"),
 }
