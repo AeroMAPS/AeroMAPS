@@ -13,23 +13,23 @@ class RPK(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_init: pd.Series = pd.Series(dtype="float64"),
-        short_range_rpk_share_2019: float = 0.0,
-        medium_range_rpk_share_2019: float = 0.0,
-        long_range_rpk_share_2019: float = 0.0,
-        covid_start_year: int = 0,
-        covid_rpk_drop_start_year: float = 0.0,
-        covid_end_year: int = 0,
-        covid_end_year_reference_rpk_ratio: float = 0.0,
-        cagr_passenger_short_range_reference_periods: list = [],
-        cagr_passenger_short_range_reference_periods_values: list = [],
-        cagr_passenger_medium_range_reference_periods: list = [],
-        cagr_passenger_medium_range_reference_periods_values: list = [],
-        cagr_passenger_long_range_reference_periods: list = [],
-        cagr_passenger_long_range_reference_periods_values: list = [],
-        rpk_short_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
-        rpk_medium_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
-        rpk_long_range_measures_impact: pd.Series = pd.Series(dtype="float64"),
+        rpk_init: pd.Series,
+        short_range_rpk_share_2019: float,
+        medium_range_rpk_share_2019: float,
+        long_range_rpk_share_2019: float,
+        covid_start_year: int,
+        covid_rpk_drop_start_year: float,
+        covid_end_year: int,
+        covid_end_year_reference_rpk_ratio: float,
+        cagr_passenger_short_range_reference_periods: list,
+        cagr_passenger_short_range_reference_periods_values: list,
+        cagr_passenger_medium_range_reference_periods: list,
+        cagr_passenger_medium_range_reference_periods_values: list,
+        cagr_passenger_long_range_reference_periods: list,
+        cagr_passenger_long_range_reference_periods_values: list,
+        rpk_short_range_measures_impact: pd.Series,
+        rpk_medium_range_measures_impact: pd.Series,
+        rpk_long_range_measures_impact: pd.Series,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -49,7 +49,6 @@ class RPK(AeroMAPSModel):
         float,
     ]:
         """RPK calculation."""
-
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
@@ -272,13 +271,13 @@ class RPKReference(AeroMAPSModel):
 
     def compute(
         self,
-        rpk: pd.Series = pd.Series(dtype="float64"),
-        reference_cagr_aviation_reference_periods: list = [],
-        reference_cagr_aviation_reference_periods_values: list = [],
-        covid_start_year: int = 0,
-        covid_rpk_drop_start_year: int = 0,
-        covid_end_year: int = 0,
-        covid_end_year_reference_rpk_ratio: int = 0,
+        rpk: pd.Series,
+        reference_cagr_aviation_reference_periods: list,
+        reference_cagr_aviation_reference_periods_values: list,
+        covid_start_year: int,
+        covid_rpk_drop_start_year: float,
+        covid_end_year: int,
+        covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """RPK reference calculation."""
 
@@ -335,9 +334,9 @@ class RPKMeasures(AeroMAPSModel):
         rpk_short_range_measures_final_impact: float,
         rpk_medium_range_measures_final_impact: float,
         rpk_long_range_measures_final_impact: float,
-        rpk_short_range_measures_start_year: float,
-        rpk_medium_range_measures_start_year: float,
-        rpk_long_range_measures_start_year: float,
+        rpk_short_range_measures_start_year: int,
+        rpk_medium_range_measures_start_year: int,
+        rpk_long_range_measures_start_year: int,
         rpk_short_range_measures_duration: float,
         rpk_medium_range_measures_duration: float,
         rpk_long_range_measures_duration: float,

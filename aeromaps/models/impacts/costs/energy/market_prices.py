@@ -15,9 +15,9 @@ class ElectricityCost(AeroMAPSModel):
 
     def compute(
         self,
-        electricity_cost_reference_years: list = [],
-        electricity_cost_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electricity_cost_reference_years: list,
+        electricity_cost_reference_years_values: list,
+    ) -> pd.Series:
         """LCOE"""
 
         electricity_market_price = AeromapsInterpolationFunction(
@@ -37,9 +37,9 @@ class ElectricityLoadFactor(AeroMAPSModel):
 
     def compute(
         self,
-        electricity_load_factor_reference_years: list = [],
-        electricity_load_factor_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electricity_load_factor_reference_years: list,
+        electricity_load_factor_reference_years_values: list,
+    ) -> pd.Series:
         """LCOE"""
 
         electricity_load_factor = AeromapsInterpolationFunction(
@@ -59,9 +59,9 @@ class CoalCost(AeroMAPSModel):
 
     def compute(
         self,
-        coal_cost_reference_years: list = [],
-        coal_cost_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_cost_reference_years: list,
+        coal_cost_reference_years_values: list,
+    ) -> pd.Series:
 
         coal_market_price = AeromapsInterpolationFunction(
             self, coal_cost_reference_years, coal_cost_reference_years_values, model_name=self.name
@@ -77,9 +77,9 @@ class GasCost(AeroMAPSModel):
 
     def compute(
         self,
-        gas_cost_reference_years: list = [],
-        gas_cost_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_cost_reference_years: list,
+        gas_cost_reference_years_values: list,
+    ) -> pd.Series:
 
         gas_market_price = AeromapsInterpolationFunction(
             self, gas_cost_reference_years, gas_cost_reference_years_values, model_name=self.name
@@ -95,9 +95,9 @@ class Co2Cost(AeroMAPSModel):
 
     def compute(
         self,
-        co2_cost_reference_years: list = [],
-        co2_cost_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        co2_cost_reference_years: list,
+        co2_cost_reference_years_values: list,
+    ) -> pd.Series:
 
         co2_market_price = AeromapsInterpolationFunction(
             self, co2_cost_reference_years, co2_cost_reference_years_values, model_name=self.name
@@ -113,9 +113,9 @@ class CarbonTax(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_tax_reference_years: list = [],
-        carbon_tax_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        carbon_tax_reference_years: list,
+        carbon_tax_reference_years_values: list,
+    ) -> pd.Series:
 
         carbon_tax_prospective = AeromapsInterpolationFunction(
             self,
@@ -137,9 +137,9 @@ class KerosenePrice(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_price_reference_years: list = [],
-        kerosene_price_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        kerosene_price_reference_years: list,
+        kerosene_price_reference_years_values: list,
+    ) -> pd.Series:
 
         kerosene_market_price_prospective = AeromapsInterpolationFunction(
             self,
@@ -163,10 +163,10 @@ class KeroseneCost(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_kerosene: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
+        kerosene_market_price: pd.Series,
+        energy_consumption_kerosene: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        carbon_tax: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         # kerosene_market_price €/L
 
@@ -205,11 +205,11 @@ class KeroseneBAUCost(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        non_discounted_BAU_energy_expenses: pd.Series = pd.Series(dtype="float64"),
-        non_discounted_full_kero_energy_expenses: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
+        kerosene_market_price: pd.Series,
+        non_discounted_BAU_energy_expenses: pd.Series,
+        non_discounted_full_kero_energy_expenses: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        carbon_tax: pd.Series,
     ) -> Tuple[pd.Series, pd.Series]:
         # kerosene_market_price €/L
         # fuel lower heating value in MJ/L at 15 degrees

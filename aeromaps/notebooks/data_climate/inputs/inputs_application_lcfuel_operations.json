@@ -30,7 +30,7 @@
     "biofuel_ft_msw_share_reference_years_values": [0.0],
     "electricity_emission_factor_reference_years": [],
     "electricity_emission_factor_reference_years_values": [10.0],
-    "operations_contrails_final_gain": 80,
+    "operations_contrails_final_gain": 80.0,
     "operations_contrails_start_year": 2030,
     "operations_contrails_duration": 10.0,
     "operations_contrails_final_overconsumption": 2.0

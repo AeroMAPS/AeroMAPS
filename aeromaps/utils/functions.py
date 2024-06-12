@@ -24,7 +24,10 @@ def _dict_from_json(file_name="parameters.json") -> dict:
             "energy_consumption_init",
             "total_aircraft_distance_init",
         ]:
-            parameters_dict[key] = pd.Series(value)
+            new_index = range(
+                parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
+            )
+            parameters_dict[key] = pd.Series(value, index=new_index)
 
     return parameters_dict
 
@@ -141,6 +144,11 @@ def create_partitioning(file, path=""):
             / 100
         )
 
+    # TODO move historic and prospection start year out of custom input file
+
+    historic_start_year_partitioned = world_data_dict['historic_start_year']
+    prospection_start_year_partitioned = world_data_dict['prospection_start_year']
+
     # Generation of the JSON file
     partitioned_inputs_dict = {
         "rpk_init": rpk_init_partitioned,
@@ -158,6 +166,8 @@ def create_partitioning(file, path=""):
         "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
         "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
         "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
+        "historic_start_year": historic_start_year_partitioned,
+        "prospection_start_year": prospection_start_year_partitioned,
     }
     partitioned_inputs_path = pth.join(path, "partitioned_inputs.json")
     with open(partitioned_inputs_path, "w") as outfile:
@@ -209,5 +219,7 @@ def create_partitioning(file, path=""):
         partitioned_historical_climate_dataset[k, 6] = climate_partitioned_data_distance[k]
     climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
+
+
 
     return

@@ -12,14 +12,14 @@ class ShortRangeDistribution(AeroMAPSModel):
 
     def compute(
         self,
-        short_range_basicturbofan_share_2019: float = 0.0,
-        short_range_basicturbofan_share_2030: float = 0.0,
-        short_range_basicturbofan_share_2040: float = 0.0,
-        short_range_basicturbofan_share_2050: float = 0.0,
-        short_range_regionalturboprop_share_2019: float = 0.0,
-        short_range_regionalturboprop_share_2030: float = 0.0,
-        short_range_regionalturboprop_share_2040: float = 0.0,
-        short_range_regionalturboprop_share_2050: float = 0.0,
+        short_range_basicturbofan_share_2019: float,
+        short_range_basicturbofan_share_2030: float,
+        short_range_basicturbofan_share_2040: float,
+        short_range_basicturbofan_share_2050: float,
+        short_range_regionalturboprop_share_2019: float,
+        short_range_regionalturboprop_share_2030: float,
+        short_range_regionalturboprop_share_2040: float,
+        short_range_regionalturboprop_share_2050: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
         """Short range distribution calculation."""
 
@@ -82,10 +82,10 @@ class RPKShortRange(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
-        short_range_basicturbofan_share: pd.Series = pd.Series(dtype="float64"),
-        short_range_regionalturboprop_share: pd.Series = pd.Series(dtype="float64"),
-        short_range_regionalturbofan_share: pd.Series = pd.Series(dtype="float64"),
+        rpk_short_range: pd.Series,
+        short_range_basicturbofan_share: pd.Series,
+        short_range_regionalturboprop_share: pd.Series,
+        short_range_regionalturbofan_share: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float, float, float, float, float, float,]:
         """RPK short range calculation."""
 

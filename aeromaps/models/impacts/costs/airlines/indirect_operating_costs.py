@@ -14,9 +14,9 @@ class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
 
     def compute(
         self,
-        ioc_reference_years: list = [],
-        ioc_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        ioc_reference_years: list,
+        ioc_reference_years_values: list,
+    ) -> pd.Series:
         # Simple computation of airline indirect-operating costs (NOC)
 
         ioc_prospective = AeromapsInterpolationFunction(
@@ -40,10 +40,10 @@ class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_offset: pd.Series = pd.Series(dtype="float64"),
-        ask: pd.Series = pd.Series(dtype="float64"),
-        carbon_offset_price_reference_years: list = [],
-        carbon_offset_price_reference_years_values: list = [],
+        carbon_offset: pd.Series,
+        ask: pd.Series,
+        carbon_offset_price_reference_years: list,
+        carbon_offset_price_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
         carbon_offset_price_prospective = AeromapsInterpolationFunction(
             self,

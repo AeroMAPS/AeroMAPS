@@ -270,6 +270,14 @@ class AeroMAPSProcess(object):
                 self.parameters.read_json(file_name=new_input_file_path)
         # TODO: think refactoring to a dedicated method
 
+        # Check if parameter is pd.Series and update index
+        for key, value in self.parameters.__dict__.items():
+
+            if isinstance(value, pd.Series):
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                value = value.reindex(new_index, fill_value=np.nan)
+                setattr(self.parameters, key, value)
+
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -292,8 +300,10 @@ class AeroMAPSProcess(object):
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
             disc.model._initialize_df()
-            disc.update_defaults()
-            all_inputs.update(disc.default_inputs)
+            # disc.update_defaults()
+            # all_inputs.update(disc.default_inputs)
+
+        all_inputs.update(self.parameters.__dict__)
 
         return all_inputs
 
@@ -307,6 +317,8 @@ class AeroMAPSProcess(object):
                     mode="constant",
                     constant_values=np.nan,
                 )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):

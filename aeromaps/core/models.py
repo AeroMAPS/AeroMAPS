@@ -516,12 +516,14 @@ models_operation_cost_bottom_up = {
     ),
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
         "passenger_aircraft_doc_non_energy_complex"
-    ),
-    "fleet_numeric": FleetEvolution("fleet_numeric"),
-    "recurring_costs": RecurringCosts("recurring_costs"),
-    "non_recurring_costs": NonRecurringCosts("non_recurring_costs"),
+    )
 }
 
+models_production_cost = {
+    "fleet_numeric": FleetEvolution("fleet_numeric"),
+    "recurring_costs": RecurringCosts("recurring_costs"),
+    "non_recurring_costs": NonRecurringCosts("non_recurring_costs")
+}
 
 models_abatements_cost = {
     "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),

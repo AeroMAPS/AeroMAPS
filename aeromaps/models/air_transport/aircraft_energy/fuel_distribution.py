@@ -12,10 +12,10 @@ class DropinFuelDistribution(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_share_reference_years: list = [],
-        biofuel_share_reference_years_values: list = [],
-        electrofuel_share_reference_years: list = [],
-        electrofuel_share_reference_years_values: list = [],
+        biofuel_share_reference_years: list,
+        biofuel_share_reference_years_values: list,
+        electrofuel_share_reference_years: list,
+        electrofuel_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Fuel distribution calculation using interpolation functions"""
 

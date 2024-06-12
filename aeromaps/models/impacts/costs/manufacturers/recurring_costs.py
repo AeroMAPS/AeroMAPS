@@ -17,7 +17,7 @@ class RecurringCosts(AeroMAPSModel):
     def compute(
         self,
         aircraft_in_out_value_dict: dict,
-    ) -> Tuple[dict,]:
+    ) -> dict:
         rc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
 
@@ -50,4 +50,4 @@ class RecurringCosts(AeroMAPSModel):
                 )
 
                 rc_aircraft_value_dict[aircraft_var_name] = rc_aircraft_value
-        return (rc_aircraft_value_dict,)
+        return rc_aircraft_value_dict

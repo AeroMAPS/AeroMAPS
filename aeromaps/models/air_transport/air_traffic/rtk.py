@@ -12,13 +12,13 @@ class RTK(AeroMAPSModel):
 
     def compute(
         self,
-        rtk_init: pd.Series = pd.Series(dtype="float64"),
-        covid_start_year: int = 0,
-        covid_rpk_drop_start_year: float = 0.0,
-        covid_end_year: int = 0,
-        covid_end_year_reference_rpk_ratio: float = 0.0,
-        cagr_freight_reference_periods: list = [],
-        cagr_freight_reference_periods_values: list = [],
+        rtk_init: pd.Series,
+        covid_start_year: int,
+        covid_rpk_drop_start_year: float,
+        covid_end_year: int,
+        covid_end_year_reference_rpk_ratio: float,
+        cagr_freight_reference_periods: list,
+        cagr_freight_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series, float, float]:
         """RTK calculation."""
 
@@ -95,22 +95,17 @@ class RTKReference(AeroMAPSModel):
 
     def compute(
         self,
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        reference_annual_growth_rate_aviation: pd.Series = pd.Series(dtype="float64"),
-        covid_start_year: int = 0,
-        covid_rpk_drop_start_year: int = 0,
-        covid_end_year: int = 0,
-        covid_end_year_reference_rpk_ratio: int = 0,
+        rtk: pd.Series,
+        reference_annual_growth_rate_aviation: pd.Series,
+        covid_start_year: int,
+        covid_rpk_drop_start_year: float,
+        covid_end_year: int,
+        covid_end_year_reference_rpk_ratio: float,
     ) -> pd.Series:
         """RTK reference calculation."""
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk_reference"] = rtk.loc[k]
-
-        covid_start_year = int(covid_start_year)
-        covid_rpk_drop_start_year = int(covid_rpk_drop_start_year)
-        covid_end_year = int(covid_end_year)
-        covid_end_year_reference_rpk_ratio = int(covid_end_year_reference_rpk_ratio)
 
         self.df.loc[covid_start_year - 1, "rtk_reference"] = rtk.loc[covid_start_year - 1]
 

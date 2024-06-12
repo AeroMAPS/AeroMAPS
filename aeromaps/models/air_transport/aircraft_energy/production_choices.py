@@ -12,14 +12,14 @@ class BiofuelProduction(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_hefa_fog_share_reference_years: list = [],
-        biofuel_hefa_fog_share_reference_years_values: list = [],
-        biofuel_hefa_others_share_reference_years: list = [],
-        biofuel_hefa_others_share_reference_years_values: list = [],
-        biofuel_ft_others_share_reference_years: list = [],
-        biofuel_ft_others_share_reference_years_values: list = [],
-        biofuel_ft_msw_share_reference_years: list = [],
-        biofuel_ft_msw_share_reference_years_values: list = [],
+        biofuel_hefa_fog_share_reference_years: list,
+        biofuel_hefa_fog_share_reference_years_values: list,
+        biofuel_hefa_others_share_reference_years: list,
+        biofuel_hefa_others_share_reference_years_values: list,
+        biofuel_ft_others_share_reference_years: list,
+        biofuel_ft_others_share_reference_years_values: list,
+        biofuel_ft_msw_share_reference_years: list,
+        biofuel_ft_msw_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biomass production calculation using interpolation functions"""
 
@@ -88,14 +88,14 @@ class HydrogenProduction(AeroMAPSModel):
 
     def compute(
         self,
-        hydrogen_electrolysis_share_reference_years: list = [],
-        hydrogen_electrolysis_share_reference_years_values: list = [],
-        hydrogen_gas_ccs_share_reference_years: list = [],
-        hydrogen_gas_ccs_share_reference_years_values: list = [],
-        hydrogen_coal_ccs_share_reference_years: list = [],
-        hydrogen_coal_ccs_share_reference_years_values: list = [],
-        hydrogen_gas_share_reference_years: list = [],
-        hydrogen_gas_share_reference_years_values: list = [],
+        hydrogen_electrolysis_share_reference_years: list,
+        hydrogen_electrolysis_share_reference_years_values: list,
+        hydrogen_gas_ccs_share_reference_years: list,
+        hydrogen_gas_ccs_share_reference_years_values: list,
+        hydrogen_coal_ccs_share_reference_years: list,
+        hydrogen_coal_ccs_share_reference_years_values: list,
+        hydrogen_gas_share_reference_years: list,
+        hydrogen_gas_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen production calculation using interpolation functions"""
 

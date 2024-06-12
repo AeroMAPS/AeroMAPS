@@ -13,7 +13,7 @@ class OperationsSimple(AeroMAPSModel):
     def compute(
         self,
         operations_final_gain: float,
-        operations_start_year: float,
+        operations_start_year: int,
         operations_duration: float,
     ) -> pd.Series:
         """Operations gain for efficiency calculation."""

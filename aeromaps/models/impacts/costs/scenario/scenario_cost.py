@@ -15,21 +15,21 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
     def compute(
         self,
-        kerosene_cost: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_hefa_fog: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_hefa_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_ft_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_ft_msw: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_atj: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_total_cost: pd.Series = pd.Series(dtype="float64"),
-        total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
-        electricity_direct_use_total_cost: pd.Series = pd.Series(dtype="float64"),
-        co2_emissions_2019technology: pd.Series = pd.Series(dtype="float64"),
-        co2_emissions_including_load_factor: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        density_kerosene: float = 0.0,
-        lhv_kerosene: float = 0.0,
+        kerosene_cost: pd.Series,
+        biofuel_cost_hefa_fog: pd.Series,
+        biofuel_cost_hefa_others: pd.Series,
+        biofuel_cost_ft_others: pd.Series,
+        biofuel_cost_ft_msw: pd.Series,
+        biofuel_cost_atj: pd.Series,
+        electrofuel_total_cost: pd.Series,
+        total_hydrogen_supply_cost: pd.Series,
+        electricity_direct_use_total_cost: pd.Series,
+        co2_emissions_2019technology: pd.Series,
+        co2_emissions_including_load_factor: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        kerosene_market_price: pd.Series,
+        density_kerosene: float,
+        lhv_kerosene: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
 
         # Compute the total energy expenses of the scenario
@@ -91,17 +91,17 @@ class DicountedScenarioCost(AeroMAPSModel):
 
     def compute(
         self,
-        social_discount_rate: float = 0.0,
-        kerosene_cost: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_hefa_fog: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_hefa_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_ft_others: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_ft_msw: pd.Series = pd.Series(dtype="float64"),
-        biofuel_cost_atj: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_total_cost: pd.Series = pd.Series(dtype="float64"),
-        total_hydrogen_supply_cost: pd.Series = pd.Series(dtype="float64"),
-        electricity_direct_use_total_cost: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series]:
+        social_discount_rate: float,
+        kerosene_cost: pd.Series,
+        biofuel_cost_hefa_fog: pd.Series,
+        biofuel_cost_hefa_others: pd.Series,
+        biofuel_cost_ft_others: pd.Series,
+        biofuel_cost_ft_msw: pd.Series,
+        biofuel_cost_atj: pd.Series,
+        electrofuel_total_cost: pd.Series,
+        total_hydrogen_supply_cost: pd.Series,
+        electricity_direct_use_total_cost: pd.Series,
+    ) -> pd.Series:
 
         for k in range(self.prospection_start_year, self.end_year + 1):
 

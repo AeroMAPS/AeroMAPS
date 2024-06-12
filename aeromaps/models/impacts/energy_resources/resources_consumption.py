@@ -12,16 +12,16 @@ class BiomassConsumption(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_biofuel: pd.Series = pd.Series(dtype="float64"),
-        biofuel_hefa_fog_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_hefa_others_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_others_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_msw_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_atj_share: pd.Series = pd.Series(dtype="float64"),
-        biofuel_ft_efficiency: pd.Series = pd.Series(dtype="float64"),
-        biofuel_atj_efficiency: pd.Series = pd.Series(dtype="float64"),
-        biofuel_hefa_oil_efficiency: pd.Series = pd.Series(dtype="float64"),
-        biofuel_hefa_fuel_efficiency: pd.Series = pd.Series(dtype="float64"),
+        energy_consumption_biofuel: pd.Series,
+        biofuel_hefa_fog_share: pd.Series,
+        biofuel_hefa_others_share: pd.Series,
+        biofuel_ft_others_share: pd.Series,
+        biofuel_ft_msw_share: pd.Series,
+        biofuel_atj_share: pd.Series,
+        biofuel_ft_efficiency: pd.Series,
+        biofuel_atj_efficiency: pd.Series,
+        biofuel_hefa_oil_efficiency: pd.Series,
+        biofuel_hefa_fuel_efficiency: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Biomass consumption calculation."""
 
@@ -83,13 +83,13 @@ class ElectricityConsumption(AeroMAPSModel):
 
     def compute(
         self,
-        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electric: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: float = 0.0,
-        liquefaction_efficiency: float = 0.0,
-        electrofuel_hydrogen_efficiency: float = 0.0,
+        hydrogen_electrolysis_share: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        energy_consumption_electric: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        electrolysis_efficiency: pd.Series,
+        liquefaction_efficiency: pd.Series,
+        electrofuel_hydrogen_efficiency: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Electricity consumption calculation."""
 

@@ -14,12 +14,12 @@ class ElectrofuelCostSimple(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_mean_mfsp_litre: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
-        lhv_electrofuel: float = 0.0,
-        density_electrofuel: float = 0.0,
+        energy_consumption_electrofuel: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        electrofuel_mean_mfsp_litre: pd.Series,
+        carbon_tax: pd.Series,
+        lhv_electrofuel: float,
+        density_electrofuel: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
         electrofuel_total_cost = (
             electrofuel_mean_mfsp_litre
@@ -63,9 +63,9 @@ class ElectrofuelMfspSimple(AeroMAPSModel):
 
     def compute(
         self,
-        electrofuel_mfsp_simple_reference_years: list = [],
-        electrofuel_mfsp_simple_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrofuel_mfsp_simple_reference_years: list,
+        electrofuel_mfsp_simple_reference_years_values: list,
+    ) -> pd.Series:
         """Electrofuel MFSP (Minimal fuel selling price) estimates"""
 
         electrofuel_mean_mfsp_litre = AeromapsInterpolationFunction(
