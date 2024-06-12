@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "aeromaps"
-version = "0.1.0-beta"
+version = "0.7.0-beta"
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.md"
 authors = [
