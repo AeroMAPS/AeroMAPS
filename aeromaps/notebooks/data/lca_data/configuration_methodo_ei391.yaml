@@ -14,21 +14,21 @@ premise:
         - model: remind
           pathway: SSP2-Base
           year: 2020
-        - model: remind
-          pathway: SSP2-Base
-          year: 2025
+        #- model: remind
+        #  pathway: SSP2-Base
+        #  year: 2025
         - model: remind
           pathway: SSP2-Base
           year: 2030
-        - model: remind
-          pathway: SSP2-Base
-          year: 2035
+        #- model: remind
+        #  pathway: SSP2-Base
+        #  year: 2035
         - model: remind
           pathway: SSP2-Base
           year: 2040
-        - model: remind
-          pathway: SSP2-Base
-          year: 2045
+        #- model: remind
+        #  pathway: SSP2-Base
+        #  year: 2045
         - model: remind
           pathway: SSP2-Base
           year: 2050
@@ -99,7 +99,7 @@ model:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 H2O:
-                    amount: emission_index_h2o_kerosene
+                    amount: emission_index_h2o_kerosene  # TODO: fix water use LCIA method
                     name: 'water'
                     categories:
                         - 'air'
@@ -268,7 +268,7 @@ model:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 H2O:
-                    amount: emission_index_h2o_biofuel
+                    amount: emission_index_h2o_biofuel  # TODO: fix water use LCIA method
                     name: 'water'
                     categories:
                         - 'air'
@@ -349,7 +349,7 @@ model:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 H2O:
-                    amount: emission_index_h2o_electrofuel
+                    amount: emission_index_h2o_electrofuel  # TODO: fix water use LCIA method
                     name: 'water'
                     categories:
                         - 'air'
@@ -365,9 +365,9 @@ model:
                     name: '#others_combustion_non_kero'  # reference previously defined activity
             
             production:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'production electrofuel'
+                #custom_attributes:
+                #    - attribute: 'phase'
+                #      value: 'production electrofuel'
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
                 loc: 'World'
@@ -396,6 +396,9 @@ model:
                                   - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
                                     new_value:
                                         hydrogen updated:
+                                            custom_attributes:
+                                              - attribute: 'phase'
+                                                value: 'production electrofuel electrolysis'
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
                                             loc: 'World'
                                             add:
@@ -409,19 +412,19 @@ model:
                                                       
                                                 - input_activity: 'electrolyzer production, 1MWe, PEM, Balance of Plant#RER'
                                                   new_value:
-                                                      amount: old_amount / load_factor_photovoltaic
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                       
                                                 - input_activity: 'electrolyzer production, 1MWe, PEM, Stack#RER'
                                                   new_value:
-                                                      amount: old_amount / load_factor_photovoltaic
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                       
                                                 - input_activity:  'treatment of fuel cell balance of plant, 1MWe, PEM#RER'
                                                   new_value:
-                                                      amount: old_amount / load_factor_photovoltaic
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                       
                                                 - input_activity:  'treatment of fuel cell stack, 1MWe, PEM#RER'
                                                   new_value:
-                                                      amount: old_amount / load_factor_photovoltaic
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                                     
                                   - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#World'
                                     new_value:
@@ -435,6 +438,9 @@ model:
                                                 - input_activity: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity#World'
                                                   new_value:
                                                       direct air capture updated:
+                                                          custom_attributes:
+                                                              - attribute: 'phase'
+                                                                value: 'production electrofuel DAC'
                                                           name: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity'
                                                           loc: 'World'
                                                           add:
@@ -448,7 +454,7 @@ model:
                                                         
                                                               - input_activity: 'direct air capture system, solvent-based, 1MtCO2#RER'
                                                                 new_value:
-                                                                    amount: old_amount / load_factor_photovoltaic
+                                                                    amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                         
                                                         
 

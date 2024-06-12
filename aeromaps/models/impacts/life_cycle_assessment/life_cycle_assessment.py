@@ -87,6 +87,8 @@ class LifeCycleAssessment(AeroMAPSModel):
                 param_values = np.nan_to_num(param_values)
                 self.params_dict[name] = param_values
 
+        #print(self.params_dict)
+
         # LCIA calculation
         multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year
 
@@ -151,58 +153,57 @@ class LifeCycleAssessment(AeroMAPSModel):
         """
         dfs = dict()
 
-        # Gather all param values (even default and computed)
-        params_all = dict()
+        dbname = self.model.key[0]
+        with agb.DbContext(dbname):
+            # Check no params are passed for FixedParams
+            for key in params:
+                if key in agb.params._fixed_params():
+                    print("Param '%s' is marked as FIXED, but passed in parameters : ignored" % key)
 
-        # Check no params are passed for FixedParams
-        for key in params:
-            if key in agb.params._fixed_params():
-                print("Param '%s' is marked as FIXED, but passed in parameters : ignored" % key)
+            #lambdas = _preMultiLCAAlgebric(model, methods, alpha=alpha, axis=axis)  # <-- this is the time-consuming part
 
-        #lambdas = _preMultiLCAAlgebric(model, methods, alpha=alpha, axis=axis)
+            df = agb.lca._postMultiLCAAlgebric(self.methods, self.lambdas, **params)
 
-        df = agb.lca._postMultiLCAAlgebric(self.methods, self.lambdas, **params)
+            model_name = agb.base_utils._actName(self.model)
+            while model_name in dfs:
+                model_name += "'"
 
-        model_name = agb.base_utils._actName(self.model)
-        while model_name in dfs:
-            model_name += "'"
+            # param with several values
+            list_params = {k: vals for k, vals in params.items() if isinstance(vals, list)}
 
-        # param with several values
-        list_params = {k: vals for k, vals in params.items() if isinstance(vals, list)}
+            # Shapes the output / index according to the axis or multi param entry
+            if self.axis:
+                df[self.axis] = self.lambdas[0].axis_keys
+                df = df.set_index(self.axis)
+                df.index.set_names([self.axis])
 
-        # Shapes the output / index according to the axis or multi param entry
-        if self.axis:
-            df[self.axis] = self.lambdas[0].axis_keys
-            df = df.set_index(self.axis)
-            df.index.set_names([self.axis])
+                # Filter out line with zero output
+                df = df.loc[
+                    df.apply(
+                        lambda row: not (row.name is None and row.values[0] == 0.0),
+                        axis=1,
+                    )
+                ]
 
-            # Filter out line with zero output
-            df = df.loc[
-                df.apply(
-                    lambda row: not (row.name is None and row.values[0] == 0.0),
-                    axis=1,
-                )
-            ]
+                # Rename "None" to others
+                df = df.rename(index={None: "_other_"})
 
-            # Rename "None" to others
-            df = df.rename(index={None: "_other_"})
+                # Sort index
+                df.sort_index(inplace=True)
 
-            # Sort index
-            df.sort_index(inplace=True)
+                # Add "total" line
+                df.loc["*sum*"] = df.sum(numeric_only=True)
 
-            # Add "total" line
-            df.loc["*sum*"] = df.sum(numeric_only=True)
+            elif len(list_params) > 0:
+                for k, vals in list_params.items():
+                    df[k] = vals
+                df = df.set_index(list(list_params.keys()))
 
-        elif len(list_params) > 0:
-            for k, vals in list_params.items():
-                df[k] = vals
-            df = df.set_index(list(list_params.keys()))
+            else:
+                # Single output ? => give the single row the name of the model activity
+                df = df.rename(index={0: model_name})
 
-        else:
-            # Single output ? => give the single row the name of the model activity
-            df = df.rename(index={0: model_name})
-
-        dfs[model_name] = df
+            dfs[model_name] = df
 
         if len(dfs) == 1:
             df = list(dfs.values())[0]
