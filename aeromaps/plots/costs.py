@@ -5242,7 +5242,7 @@ class DetailledMFSPBreakdownPerYear:
             linewidth=0.5,
         )
 
-        if not pd.isna(self.df.loc[year, "electricity_direct_use_total_cost"]):
+        if not (pd.isna(self.df.loc[year, "electricity_direct_use_total_cost"]) or self.df.loc[year, "electricity_direct_use_total_cost"]==0):
             elec_val = self.df.loc[year, "electricity_market_price"] / 3.6
             elec_val_tax = self.df.loc[year, "electricity_direct_use_carbon_tax_kWh"] / 3.6
 
