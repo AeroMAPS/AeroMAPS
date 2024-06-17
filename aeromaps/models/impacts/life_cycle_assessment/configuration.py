@@ -226,12 +226,14 @@ class LCAProblemConfigurator:
             if key not in json_schema["properties"].keys():
                 _LOGGER.warning(f"Configuration file: {key} is not a key declared in LCAv.")
 
-    def _setup_premise(self):
+    def _setup_premise(self, new_premise_scenarios):
         """
         Generates the prospective databases with premise
         """
-        if not self.premise_scenarios:
+        if not new_premise_scenarios:
             return
+        else:
+            print("Generating new prospective databases with premise: \n" + ",\n".join([f"{s[KEY_MODEL]}_{s[KEY_PATHWAY]}_{s[KEY_YEAR]}" for s in new_premise_scenarios]))
         if "biosphere3" not in bw.databases:
             raise ValueError(
                 f"Biosphere database must be named 'biosphere3' for premise, or is missing. "
@@ -239,7 +241,7 @@ class LCAProblemConfigurator:
             )
         pm.clear_cache()  # fresh start
         ndb = pm.NewDatabase(
-            scenarios=self.premise_scenarios,
+            scenarios=new_premise_scenarios,
             source_type="brightway",
             source_db=self.source_ei_name,
             source_version=self.ei_version,
@@ -274,8 +276,8 @@ class LCAProblemConfigurator:
         premise_dict = self._serializer.data.get(KEY_PREMISE, dict())
         self.premise_scenarios = premise_dict.get(KEY_SCENARIOS)
 
-        if len(bw.databases) > 0 and not reset:
-            print("Initial setup of EcoInvent/Premise already done, skipping. "
+        if self.source_ei_name in bw.databases and not reset:  # TODO: enable to install only additional premise dbs not declared previously
+            print("Initial setup of EcoInvent already done, skipping. "
                   "To reset the project use option `reset=True`.")
 
         else:  ### Import Ecoinvent DB
@@ -299,8 +301,16 @@ class LCAProblemConfigurator:
                 password=os.environ["ECOINVENT_PASSWORD"],  # Read from .env file
                 use_mp=True)
 
-            ### Generate prospective databases with premise
-            self._setup_premise()
+        ### Generate prospective databases with premise
+        new_premise_scenarios = []
+        for scenario in self.premise_scenarios:
+            model = scenario[KEY_MODEL]
+            pathway = scenario[KEY_PATHWAY]
+            year = scenario[KEY_YEAR]
+            db_name = f"ecoinvent_{ei_model}_{ei_version.replace('3.9.1', '3.9')}_{model}_{pathway}_{year}"
+            if db_name not in bw.databases:
+                new_premise_scenarios.append(scenario)
+        self._setup_premise(new_premise_scenarios)
 
         ### Set the foreground database
         agb.resetDb(USER_DB)  # cleanup the whole foreground model to avoid errors
