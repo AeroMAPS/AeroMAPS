@@ -25,12 +25,8 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
         operational_profit_per_ask: pd.Series,
         operational_efficiency_cost_non_energy_per_ask: pd.Series,
         load_factor_cost_non_energy_per_ask: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+        load_factor: pd.Series,
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         # Cost without any tax
         total_cost_per_ask_without_extra_tax = (
             doc_non_energy_per_ask_mean
@@ -50,12 +46,15 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
         # Cost
         total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
 
-        # Airfare
+        # Airfare per ask
         airfare_per_ask = total_cost_per_ask + operational_profit_per_ask
 
-        self.df.loc[:, "total_cost_per_ask_without_extra_tax"] = (
-            total_cost_per_ask_without_extra_tax
-        )
+        # Airfare per rpk
+        airfare_per_rpk = airfare_per_ask / load_factor
+
+        self.df.loc[
+            :, "total_cost_per_ask_without_extra_tax"
+        ] = total_cost_per_ask_without_extra_tax
 
         self.df.loc[:, "total_extra_tax_per_ask"] = total_extra_tax_per_ask
 
@@ -63,9 +62,12 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
 
         self.df.loc[:, "airfare_per_ask"] = airfare_per_ask
 
+        self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
+
         return (
             total_cost_per_ask_without_extra_tax,
             total_extra_tax_per_ask,
             total_cost_per_ask,
             airfare_per_ask,
+            airfare_per_rpk
         )

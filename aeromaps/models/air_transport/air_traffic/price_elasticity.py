@@ -29,7 +29,7 @@ class PriceElasticity(AeroMAPSModel):
         rpk_short_range_measures_impact: pd.Series,
         rpk_medium_range_measures_impact: pd.Series,
         rpk_long_range_measures_impact: pd.Series,
-        airfare_per_ask: pd.Series,
+        airfare_per_rpk: pd.Series,
         price_elasticity: float,
     ) -> Tuple[
         pd.Series,
@@ -52,8 +52,8 @@ class PriceElasticity(AeroMAPSModel):
         """Update RPK based on cost increase calculation."""
 
         relative_change_airfare = (
-            airfare_per_ask - airfare_per_ask[self.prospection_start_year - 1]
-        ) / airfare_per_ask[self.prospection_start_year - 1]
+            airfare_per_rpk - airfare_per_rpk[self.prospection_start_year - 1]
+        ) / airfare_per_rpk[self.prospection_start_year - 1]
 
         price_elasticity = price_elasticity
 
