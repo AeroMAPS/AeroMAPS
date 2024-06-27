@@ -197,8 +197,8 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
     GasCcsCapex,
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
-    DicountedScenarioCost,
-    NonDiscountedScenarioCost,
+    DicountedEnergyCost,
+    NonDiscountedEnergyCost,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -438,8 +438,8 @@ models_energy_cost_complex = {
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "discounted_energy_cost": DicountedEnergyCost("discounted_energy_cost"),
+    "non_discounted_energy_cost": NonDiscountedEnergyCost("non_discounted_energy_cost"),
     "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
         "exogenous_carbon_price_trajectory"
     ),
@@ -461,8 +461,8 @@ models_energy_cost_simple = {
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "discounted_energy_cost": DicountedEnergyCost("discounted_energy_cost"),
+    "non_discounted_energy_cost": NonDiscountedEnergyCost("non_discounted_energy_cost"),
 }
 
 
