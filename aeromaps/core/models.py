@@ -198,7 +198,7 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedEnergyCost,
-    NonDiscountedEnergyCost,
+    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -561,4 +561,6 @@ default_models_bottom_up = {
 
 models_cost_feedback = {
     "price_elasticity": PriceElasticity("price_elasticity"),
+    "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
 }
