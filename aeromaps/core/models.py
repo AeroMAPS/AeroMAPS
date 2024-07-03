@@ -198,7 +198,7 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedEnergyCost,
-    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost, TotalAirlineProfit, TotalTaxRevenue,
+    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost, TotalAirlineProfit, TotalTaxRevenue, TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -565,4 +565,5 @@ models_cost_feedback = {
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "total_tax_revenue": TotalTaxRevenue("total_tax_revenue"),
     "total_airline_profit": TotalAirlineProfit("total_airline_profit"),
+    "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 }

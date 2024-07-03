@@ -306,3 +306,36 @@ class TotalSurplusLoss(AeroMAPSModel):
             cumulative_total_surplus_loss_discounted
         )
 
+class TotalWelfareLoss(AeroMAPSModel):
+    def __init__(self, name="total_welfare_loss", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+            self,
+            consumer_surplus_loss: pd.Series,
+            cumulative_total_surplus_loss: pd.Series,
+            cumulative_total_surplus_loss_discounted: pd.Series,
+            airline_profit_loss: pd.Series,
+            cumulative_airline_profit_loss: pd.Series,
+            cumulative_airline_profit_loss_discounted: pd.Series,
+            tax_revenue_loss: pd.Series,
+            cumulative_tax_revenue_loss: pd.Series,
+            cumulative_tax_revenue_loss_discounted: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        total_welfare_loss = consumer_surplus_loss + airline_profit_loss + tax_revenue_loss
+        cumulative_total_welfare_loss = cumulative_total_surplus_loss + cumulative_airline_profit_loss + cumulative_tax_revenue_loss
+        cumulative_total_welfare_loss_discounted = cumulative_total_surplus_loss_discounted + cumulative_airline_profit_loss_discounted + cumulative_tax_revenue_loss_discounted
+
+        self.df.loc[:, "total_welfare_loss"] = total_welfare_loss
+        self.df.loc[:, "cumulative_total_welfare_loss"] = cumulative_total_welfare_loss
+        self.df.loc[:, "cumulative_total_welfare_loss_discounted"] = cumulative_total_welfare_loss_discounted
+
+        return (
+            total_welfare_loss,
+            cumulative_total_welfare_loss,
+            cumulative_total_welfare_loss_discounted
+        )
