@@ -8,7 +8,7 @@ from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
 
 
 class PriceElasticityAndSurplus(AeroMAPSModel):
-    def __init__(self, name="price_elasticity", *args, **kwargs):
+    def __init__(self, name="price_elasticity_and_surplus", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
@@ -45,7 +45,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series,
         float,
         float,
         float,
@@ -69,8 +68,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             self.df.loc[k, "rpk_medium_range"] = medium_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_long_range"] = long_range_rpk_share_2019 / 100 * rpk_init.loc[k]
 
-        # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
-        beta = airfare_per_rpk[self.prospection_start_year - 1]  / rpk_init.loc[self.prospection_start_year - 1]
 
         # Covid functions
         reference_years = [covid_start_year, covid_end_year]
@@ -210,17 +207,7 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             )
         rpk_no_elasticity = self.df["rpk_no_elasticity"]
 
-        # Conusmer Surplus
 
-        if price_elasticity == -1:
-            # surplus delta extresssed by CS= beta * np.log(Qref/Qi)
-            consumer_surplus_loss = beta * np.log(rpk_no_elasticity / rpk)
-
-        else:
-            #surplus delta expressed by
-            consumer_surplus_loss = beta * (-1 / (1+price_elasticity)) * (rpk_no_elasticity**(1+1/price_elasticity) - rpk**(1+1/price_elasticity))
-
-        self.df.loc[:, "consumer_surplus_loss"] = consumer_surplus_loss
 
         # Annual growth rate
         for k in range(self.historic_start_year + 1, self.prospection_start_year):
@@ -340,5 +327,4 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             prospective_evolution_rpk_medium_range,
             prospective_evolution_rpk_long_range,
             prospective_evolution_rpk,
-            consumer_surplus_loss
         )

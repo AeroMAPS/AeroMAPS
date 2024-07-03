@@ -14,7 +14,9 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
         self,
         operational_profit_reference_years: list,
         operational_profit_reference_years_values: list,
-    ) -> pd.Series:
+        ask: pd.Series,
+        rpk: pd.Series,
+    ) -> Tuple[pd.Series, pd.Series]:
         # Simple computation of airline non-operating costs (NOC)
 
         operational_profit_prospective = AeromapsInterpolationFunction(
@@ -29,4 +31,9 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
                 self.prospection_start_year, "operational_profit_per_ask"
             ]
         operational_profit_per_ask = self.df["operational_profit_per_ask"]
-        return operational_profit_per_ask
+
+        operational_profit_per_rpk = operational_profit_per_ask * ask / rpk
+        return (
+            operational_profit_per_ask,
+            operational_profit_per_rpk
+        )

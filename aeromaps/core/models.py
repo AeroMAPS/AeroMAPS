@@ -1,4 +1,4 @@
-from aeromaps.models.air_transport.air_traffic.price_elasticity import PriceElasticity
+from aeromaps.models.air_transport.air_traffic.price_elasticity import PriceElasticityAndSurplus
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -198,7 +198,7 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedEnergyCost,
-    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost,
+    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost, TotalAirlineProfit, TotalTaxRevenue,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -560,7 +560,9 @@ default_models_bottom_up = {
 }
 
 models_cost_feedback = {
-    "price_elasticity": PriceElasticity("price_elasticity"),
+    "price_elasticity_and_surplus": PriceElasticityAndSurplus("price_elasticity_and_surplus"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+    "total_tax_revenue": TotalTaxRevenue("total_tax_revenue"),
+    "total_airline_profit": TotalAirlineProfit("total_airline_profit"),
 }
