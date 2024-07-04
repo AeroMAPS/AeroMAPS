@@ -1099,10 +1099,10 @@ class ElectricPathwayConsumptionAndGrowth(AeroMAPSModel):
     def compute(
         self,
         energy_consumption_electric: pd.Series,
-    ) -> Tuple[pd.Series,]:
+    ) -> pd.Series:
         """Electric pathway consumption and growth calculation."""
         # No need for pathway computation for electric aircraft they are already known: no sub-pathway.
         # Growth
         annual_growth_battery_electric = energy_consumption_electric.pct_change() * 100
         self.df.loc[:, "annual_growth_battery_electric"] = annual_growth_battery_electric
-        return (annual_growth_battery_electric,)
+        return annual_growth_battery_electric
