@@ -129,7 +129,9 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
     HydrogenConsumption,
     ElectricConsumption,
-    EnergyConsumption, DropinFuelPathwayConsumptionAndGrowth, HydrogenPathwayConsumptionAndGrowth,
+    EnergyConsumption,
+    DropinFuelPathwayConsumptionAndGrowth,
+    HydrogenPathwayConsumptionAndGrowth,
     ElectricPathwayConsumptionAndGrowth,
 )
 from aeromaps.models.impacts.energy_resources.resources_consumption import (
@@ -199,7 +201,12 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedEnergyCost,
-    NonDiscountedEnergyCost, TotalSurplusLoss, TotalAirlineCost, TotalAirlineProfit, TotalTaxRevenue, TotalWelfareLoss,
+    NonDiscountedEnergyCost,
+    TotalSurplusLoss,
+    TotalAirlineCost,
+    TotalAirlineProfit,
+    TotalTaxRevenue,
+    TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -274,9 +281,15 @@ models_energy_without_fuel_effect = {
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
-    "dropin_fuel_pathway_consumption_and_growth": DropinFuelPathwayConsumptionAndGrowth("dropin_fuel_pathway_consumption_and_growth"),
-    "hydrogen_pathway_consumption_and_growth": HydrogenPathwayConsumptionAndGrowth("hydrogen_pathway_consumption_and_growth"),
-    "electric_pathway_consumption_and_growth": ElectricPathwayConsumptionAndGrowth("electric_pathway_consumption_and_growth"),
+    "dropin_fuel_pathway_consumption_and_growth": DropinFuelPathwayConsumptionAndGrowth(
+        "dropin_fuel_pathway_consumption_and_growth"
+    ),
+    "hydrogen_pathway_consumption_and_growth": HydrogenPathwayConsumptionAndGrowth(
+        "hydrogen_pathway_consumption_and_growth"
+    ),
+    "electric_pathway_consumption_and_growth": ElectricPathwayConsumptionAndGrowth(
+        "electric_pathway_consumption_and_growth"
+    ),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
@@ -304,11 +317,14 @@ models_energy_with_fuel_effect = {
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "dropin_fuel_pathway_consumption_and_growth": DropinFuelPathwayConsumptionAndGrowth(
-        "dropin_fuel_pathway_consumption_and_growth"),
+        "dropin_fuel_pathway_consumption_and_growth"
+    ),
     "hydrogen_pathway_consumption_and_growth": HydrogenPathwayConsumptionAndGrowth(
-        "hydrogen_pathway_consumption_and_growth"),
+        "hydrogen_pathway_consumption_and_growth"
+    ),
     "electric_pathway_consumption_and_growth": ElectricPathwayConsumptionAndGrowth(
-        "electric_pathway_consumption_and_growth"),
+        "electric_pathway_consumption_and_growth"
+    ),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),

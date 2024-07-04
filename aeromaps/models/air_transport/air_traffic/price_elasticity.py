@@ -68,7 +68,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             self.df.loc[k, "rpk_medium_range"] = medium_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_long_range"] = long_range_rpk_share_2019 / 100 * rpk_init.loc[k]
 
-
         # Covid functions
         reference_years = [covid_start_year, covid_end_year]
         reference_values_covid = [
@@ -129,7 +128,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             + price_elasticity * relative_change_airfare.loc[covid_end_year + 1 : self.end_year + 1]
         )
 
-
         # Medium range
         for k in range(covid_start_year, covid_end_year + 1):
             self.df.loc[k, "rpk_medium_range"] = self.df.loc[
@@ -184,7 +182,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         self.df.loc[:, "rpk_medium_range_no_elasticity"] = rpk_medium_range_no_elasticity
         self.df.loc[:, "rpk_long_range_no_elasticity"] = rpk_long_range_no_elasticity
 
-
         # Total
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk"] = rpk_init.loc[k]
@@ -201,13 +198,11 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             self.df.loc[k, "rpk_no_elasticity"] = rpk_init.loc[k]
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "rpk_no_elasticity"] = (
-                    self.df.loc[k, "rpk_short_rang_no_elasticitye"]
-                    + self.df.loc[k, "rpk_medium_range_no_elasticity"]
-                    + self.df.loc[k, "rpk_long_range_no_elasticity"]
+                self.df.loc[k, "rpk_short_rang_no_elasticitye"]
+                + self.df.loc[k, "rpk_medium_range_no_elasticity"]
+                + self.df.loc[k, "rpk_long_range_no_elasticity"]
             )
         rpk_no_elasticity = self.df["rpk_no_elasticity"]
-
-
 
         # Annual growth rate
         for k in range(self.historic_start_year + 1, self.prospection_start_year):

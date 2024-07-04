@@ -919,173 +919,190 @@ class EnergyConsumption(AeroMAPSModel):
         )
 
 
-
 class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
     def __init__(self, name="dropin_fuel_pathway_consumption_and_growth", *args, **kwargs):
-            super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, *args, **kwargs)
 
     def compute(
-            self,
-            energy_consumption_biofuel: pd.Series,
-            energy_consumption_electrofuel: pd.Series,
-            energy_consumption_kerosene: pd.Series,
-            biofuel_hefa_fog_share: pd.Series,
-            biofuel_hefa_others_share: pd.Series,
-            biofuel_ft_others_share: pd.Series,
-            biofuel_ft_msw_share: pd.Series,
-            biofuel_atj_share: pd.Series,
-        ) -> Tuple[
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-        ]:
-            """Dropin fuel pathway consumption and growth calculation."""
+        self,
+        energy_consumption_biofuel: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        energy_consumption_kerosene: pd.Series,
+        biofuel_hefa_fog_share: pd.Series,
+        biofuel_hefa_others_share: pd.Series,
+        biofuel_ft_others_share: pd.Series,
+        biofuel_ft_msw_share: pd.Series,
+        biofuel_atj_share: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        """Dropin fuel pathway consumption and growth calculation."""
 
-            # Biofuel
-            energy_consumption_biofuel_hefa_fog = biofuel_hefa_fog_share / 100 * energy_consumption_biofuel
-            energy_consumption_biofuel_hefa_others = biofuel_hefa_others_share / 100 * energy_consumption_biofuel
-            energy_consumption_biofuel_ft_others = biofuel_ft_others_share / 100 * energy_consumption_biofuel
-            energy_consumption_biofuel_ft_msw = biofuel_ft_msw_share / 100 * energy_consumption_biofuel
-            energy_consumption_biofuel_atj = biofuel_atj_share / 100 * energy_consumption_biofuel
+        # Biofuel
+        energy_consumption_biofuel_hefa_fog = (
+            biofuel_hefa_fog_share / 100 * energy_consumption_biofuel
+        )
+        energy_consumption_biofuel_hefa_others = (
+            biofuel_hefa_others_share / 100 * energy_consumption_biofuel
+        )
+        energy_consumption_biofuel_ft_others = (
+            biofuel_ft_others_share / 100 * energy_consumption_biofuel
+        )
+        energy_consumption_biofuel_ft_msw = biofuel_ft_msw_share / 100 * energy_consumption_biofuel
+        energy_consumption_biofuel_atj = biofuel_atj_share / 100 * energy_consumption_biofuel
 
-            self.df.loc[:, "energy_consumption_biofuel_hefa_fog"] = energy_consumption_biofuel_hefa_fog
-            self.df.loc[:, "energy_consumption_biofuel_hefa_others"] = energy_consumption_biofuel_hefa_others
-            self.df.loc[:, "energy_consumption_biofuel_ft_others"] = energy_consumption_biofuel_ft_others
-            self.df.loc[:, "energy_consumption_biofuel_ft_msw"] = energy_consumption_biofuel_ft_msw
-            self.df.loc[:, "energy_consumption_biofuel_atj"] = energy_consumption_biofuel_atj
+        self.df.loc[:, "energy_consumption_biofuel_hefa_fog"] = energy_consumption_biofuel_hefa_fog
+        self.df.loc[
+            :, "energy_consumption_biofuel_hefa_others"
+        ] = energy_consumption_biofuel_hefa_others
+        self.df.loc[
+            :, "energy_consumption_biofuel_ft_others"
+        ] = energy_consumption_biofuel_ft_others
+        self.df.loc[:, "energy_consumption_biofuel_ft_msw"] = energy_consumption_biofuel_ft_msw
+        self.df.loc[:, "energy_consumption_biofuel_atj"] = energy_consumption_biofuel_atj
 
-            # No need for pathway computation for electrofuel and kerosene as they are already known: no sub-pathway.
+        # No need for pathway computation for electrofuel and kerosene as they are already known: no sub-pathway.
 
-            # Growth for each pathway
+        # Growth for each pathway
 
-            # Biofuel
-            annual_growth_biofuel_hefa_fog = energy_consumption_biofuel_hefa_fog.pct_change()*100
-            annual_growth_biofuel_hefa_others = energy_consumption_biofuel_hefa_others.pct_change()*100
-            annual_growth_biofuel_ft_others = energy_consumption_biofuel_ft_others.pct_change()*100
-            annual_growth_biofuel_ft_msw = energy_consumption_biofuel_ft_msw.pct_change()*100
-            annual_growth_biofuel_atj = energy_consumption_biofuel_atj.pct_change()*100
+        # Biofuel
+        annual_growth_biofuel_hefa_fog = energy_consumption_biofuel_hefa_fog.pct_change() * 100
+        annual_growth_biofuel_hefa_others = (
+            energy_consumption_biofuel_hefa_others.pct_change() * 100
+        )
+        annual_growth_biofuel_ft_others = energy_consumption_biofuel_ft_others.pct_change() * 100
+        annual_growth_biofuel_ft_msw = energy_consumption_biofuel_ft_msw.pct_change() * 100
+        annual_growth_biofuel_atj = energy_consumption_biofuel_atj.pct_change() * 100
 
-            self.df.loc[:, "annual_growth_biofuel_hefa_fog"] = annual_growth_biofuel_hefa_fog
-            self.df.loc[:, "annual_growth_biofuel_hefa_others"] = annual_growth_biofuel_hefa_others
-            self.df.loc[:, "annual_growth_biofuel_ft_others"] = annual_growth_biofuel_ft_others
-            self.df.loc[:, "annual_growth_biofuel_ft_msw"] = annual_growth_biofuel_ft_msw
-            self.df.loc[:, "annual_growth_biofuel_atj"] = annual_growth_biofuel_atj
+        self.df.loc[:, "annual_growth_biofuel_hefa_fog"] = annual_growth_biofuel_hefa_fog
+        self.df.loc[:, "annual_growth_biofuel_hefa_others"] = annual_growth_biofuel_hefa_others
+        self.df.loc[:, "annual_growth_biofuel_ft_others"] = annual_growth_biofuel_ft_others
+        self.df.loc[:, "annual_growth_biofuel_ft_msw"] = annual_growth_biofuel_ft_msw
+        self.df.loc[:, "annual_growth_biofuel_atj"] = annual_growth_biofuel_atj
 
-            # Electrofuel
-            annual_growth_electrofuel = energy_consumption_electrofuel.pct_change()*100
-            self.df.loc[:, "annual_growth_electrofuel"] = annual_growth_electrofuel
+        # Electrofuel
+        annual_growth_electrofuel = energy_consumption_electrofuel.pct_change() * 100
+        self.df.loc[:, "annual_growth_electrofuel"] = annual_growth_electrofuel
 
-            # Kerosene
-            annual_growth_kerosene = energy_consumption_kerosene.pct_change()*100
-            self.df.loc[:, "annual_growth_kerosene"] = annual_growth_kerosene
+        # Kerosene
+        annual_growth_kerosene = energy_consumption_kerosene.pct_change() * 100
+        self.df.loc[:, "annual_growth_kerosene"] = annual_growth_kerosene
 
-            return(
-                energy_consumption_biofuel_hefa_fog,
-                energy_consumption_biofuel_hefa_others,
-                energy_consumption_biofuel_ft_others,
-                energy_consumption_biofuel_ft_msw,
-                energy_consumption_biofuel_atj,
-                annual_growth_biofuel_hefa_fog,
-                annual_growth_biofuel_hefa_others,
-                annual_growth_biofuel_ft_others,
-                annual_growth_biofuel_ft_msw,
-                annual_growth_biofuel_atj,
-                annual_growth_electrofuel,
-                annual_growth_kerosene
-            )
+        return (
+            energy_consumption_biofuel_hefa_fog,
+            energy_consumption_biofuel_hefa_others,
+            energy_consumption_biofuel_ft_others,
+            energy_consumption_biofuel_ft_msw,
+            energy_consumption_biofuel_atj,
+            annual_growth_biofuel_hefa_fog,
+            annual_growth_biofuel_hefa_others,
+            annual_growth_biofuel_ft_others,
+            annual_growth_biofuel_ft_msw,
+            annual_growth_biofuel_atj,
+            annual_growth_electrofuel,
+            annual_growth_kerosene,
+        )
+
 
 class HydrogenPathwayConsumptionAndGrowth(AeroMAPSModel):
     def __init__(self, name="hydrogen_pathway_consumption_and_growth", *args, **kwargs):
-            super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, *args, **kwargs)
 
     def compute(
-            self,
-            energy_consumption_hydrogen: pd.Series,
-            hydrogen_electrolysis_share: pd.Series,
-            hydrogen_gas_ccs_share: pd.Series,
-            hydrogen_coal_ccs_share: pd.Series,
-            hydrogen_gas_share: pd.Series,
-            hydrogen_coal_share: pd.Series,
-        ) -> Tuple[
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            pd.Series,
-            ]:
-            """Hydrogen pathway consumption and growth calculation."""
-            energy_consumption_hydrogen_electrolysis = hydrogen_electrolysis_share / 100 * energy_consumption_hydrogen
-            energy_consumption_hydrogen_gas_ccs = hydrogen_gas_ccs_share / 100 * energy_consumption_hydrogen
-            energy_consumption_hydrogen_coal_ccs = hydrogen_coal_ccs_share / 100 * energy_consumption_hydrogen
-            energy_consumption_hydrogen_gas = hydrogen_gas_share / 100 * energy_consumption_hydrogen
-            energy_consumption_hydrogen_coal = hydrogen_coal_share / 100 * energy_consumption_hydrogen
+        self,
+        energy_consumption_hydrogen: pd.Series,
+        hydrogen_electrolysis_share: pd.Series,
+        hydrogen_gas_ccs_share: pd.Series,
+        hydrogen_coal_ccs_share: pd.Series,
+        hydrogen_gas_share: pd.Series,
+        hydrogen_coal_share: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        """Hydrogen pathway consumption and growth calculation."""
+        energy_consumption_hydrogen_electrolysis = (
+            hydrogen_electrolysis_share / 100 * energy_consumption_hydrogen
+        )
+        energy_consumption_hydrogen_gas_ccs = (
+            hydrogen_gas_ccs_share / 100 * energy_consumption_hydrogen
+        )
+        energy_consumption_hydrogen_coal_ccs = (
+            hydrogen_coal_ccs_share / 100 * energy_consumption_hydrogen
+        )
+        energy_consumption_hydrogen_gas = hydrogen_gas_share / 100 * energy_consumption_hydrogen
+        energy_consumption_hydrogen_coal = hydrogen_coal_share / 100 * energy_consumption_hydrogen
 
-            self.df.loc[:, "energy_consumption_hydrogen_electrolysis"] = energy_consumption_hydrogen_electrolysis
-            self.df.loc[:, "energy_consumption_hydrogen_gas_ccs"] = energy_consumption_hydrogen_gas_ccs
-            self.df.loc[:, "energy_consumption_hydrogen_coal_ccs"] = energy_consumption_hydrogen_coal_ccs
-            self.df.loc[:, "energy_consumption_hydrogen_gas"] = energy_consumption_hydrogen_gas
-            self.df.loc[:, "energy_consumption_hydrogen_coal"] = energy_consumption_hydrogen_coal
+        self.df.loc[
+            :, "energy_consumption_hydrogen_electrolysis"
+        ] = energy_consumption_hydrogen_electrolysis
+        self.df.loc[:, "energy_consumption_hydrogen_gas_ccs"] = energy_consumption_hydrogen_gas_ccs
+        self.df.loc[
+            :, "energy_consumption_hydrogen_coal_ccs"
+        ] = energy_consumption_hydrogen_coal_ccs
+        self.df.loc[:, "energy_consumption_hydrogen_gas"] = energy_consumption_hydrogen_gas
+        self.df.loc[:, "energy_consumption_hydrogen_coal"] = energy_consumption_hydrogen_coal
 
-            # Growth for each pathway
+        # Growth for each pathway
 
-            annual_growth_hydrogen_electrolysis = energy_consumption_hydrogen_electrolysis.pct_change()*100
-            annual_growth_hydrogen_gas_ccs = energy_consumption_hydrogen_gas_ccs.pct_change()*100
-            annual_growth_hydrogen_coal_ccs = energy_consumption_hydrogen_coal_ccs.pct_change()*100
-            annual_growth_hydrogen_gas = energy_consumption_hydrogen_gas.pct_change()*100
-            annual_growth_hydrogen_coal = energy_consumption_hydrogen_coal.pct_change()*100
+        annual_growth_hydrogen_electrolysis = (
+            energy_consumption_hydrogen_electrolysis.pct_change() * 100
+        )
+        annual_growth_hydrogen_gas_ccs = energy_consumption_hydrogen_gas_ccs.pct_change() * 100
+        annual_growth_hydrogen_coal_ccs = energy_consumption_hydrogen_coal_ccs.pct_change() * 100
+        annual_growth_hydrogen_gas = energy_consumption_hydrogen_gas.pct_change() * 100
+        annual_growth_hydrogen_coal = energy_consumption_hydrogen_coal.pct_change() * 100
 
-            self.df.loc[:, "annual_growth_hydrogen_electrolysis"] = annual_growth_hydrogen_electrolysis
-            self.df.loc[:, "annual_growth_hydrogen_gas_ccs"] = annual_growth_hydrogen_gas_ccs
-            self.df.loc[:, "annual_growth_hydrogen_coal_ccs"] = annual_growth_hydrogen_coal_ccs
-            self.df.loc[:, "annual_growth_hydrogen_gas"] = annual_growth_hydrogen_gas
-            self.df.loc[:, "annual_growth_hydrogen_coal"] = annual_growth_hydrogen_coal
+        self.df.loc[:, "annual_growth_hydrogen_electrolysis"] = annual_growth_hydrogen_electrolysis
+        self.df.loc[:, "annual_growth_hydrogen_gas_ccs"] = annual_growth_hydrogen_gas_ccs
+        self.df.loc[:, "annual_growth_hydrogen_coal_ccs"] = annual_growth_hydrogen_coal_ccs
+        self.df.loc[:, "annual_growth_hydrogen_gas"] = annual_growth_hydrogen_gas
+        self.df.loc[:, "annual_growth_hydrogen_coal"] = annual_growth_hydrogen_coal
 
-            return(
-                energy_consumption_hydrogen_electrolysis,
-                energy_consumption_hydrogen_gas_ccs,
-                energy_consumption_hydrogen_coal_ccs,
-                energy_consumption_hydrogen_gas,
-                energy_consumption_hydrogen_coal,
-                annual_growth_hydrogen_electrolysis,
-                annual_growth_hydrogen_gas_ccs,
-                annual_growth_hydrogen_coal_ccs,
-                annual_growth_hydrogen_gas,
-                annual_growth_hydrogen_coal
-            )
+        return (
+            energy_consumption_hydrogen_electrolysis,
+            energy_consumption_hydrogen_gas_ccs,
+            energy_consumption_hydrogen_coal_ccs,
+            energy_consumption_hydrogen_gas,
+            energy_consumption_hydrogen_coal,
+            annual_growth_hydrogen_electrolysis,
+            annual_growth_hydrogen_gas_ccs,
+            annual_growth_hydrogen_coal_ccs,
+            annual_growth_hydrogen_gas,
+            annual_growth_hydrogen_coal,
+        )
 
 
 class ElectricPathwayConsumptionAndGrowth(AeroMAPSModel):
     def __init__(self, name="electric_pathway_consumption_and_growth", *args, **kwargs):
-            super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, *args, **kwargs)
 
     def compute(
-            self,
-            energy_consumption_electric: pd.Series,
-        ) -> Tuple[
-        pd.Series,
-        ]:
+        self,
+        energy_consumption_electric: pd.Series,
+    ) -> Tuple[pd.Series,]:
         """Electric pathway consumption and growth calculation."""
         # No need for pathway computation for electric aircraft they are already known: no sub-pathway.
         # Growth
-        annual_growth_battery_electric = energy_consumption_electric.pct_change()*100
+        annual_growth_battery_electric = energy_consumption_electric.pct_change() * 100
         self.df.loc[:, "annual_growth_battery_electric"] = annual_growth_battery_electric
-        return (
-            annual_growth_battery_electric,
-        )
-
-
-
+        return (annual_growth_battery_electric,)

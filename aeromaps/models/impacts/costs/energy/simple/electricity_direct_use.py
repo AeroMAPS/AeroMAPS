@@ -8,6 +8,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
+
 class ElectricityDirectUse(AeroMAPSModel):
     def __init__(self, name="electricity_direct_use", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -18,16 +19,10 @@ class ElectricityDirectUse(AeroMAPSModel):
         electricity_emission_factor: pd.Series,
         electricity_market_price: pd.Series,
         carbon_tax: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+
         electricity_direct_use_total_cost = (
-            energy_consumption_electric
-            * electricity_market_price
-            / 3.6  # kWh to MJ
-            / 1000000
+            energy_consumption_electric * electricity_market_price / 3.6 / 1000000  # kWh to MJ
         )
         self.df.loc[:, "electricity_direct_use_total_cost"] = electricity_direct_use_total_cost
 
@@ -45,9 +40,9 @@ class ElectricityDirectUse(AeroMAPSModel):
             carbon_tax * electricity_emission_factor / 1000000 * 3.6
         )
 
-        self.df.loc[:, "electricity_direct_use_carbon_tax_kWh"] = (
-            electricity_direct_use_carbon_tax_kWh
-        )
+        self.df.loc[
+            :, "electricity_direct_use_carbon_tax_kWh"
+        ] = electricity_direct_use_carbon_tax_kWh
 
         return (
             electricity_direct_use_total_cost,

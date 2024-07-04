@@ -33,7 +33,4 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
         operational_profit_per_ask = self.df["operational_profit_per_ask"]
 
         operational_profit_per_rpk = operational_profit_per_ask * ask / rpk
-        return (
-            operational_profit_per_ask,
-            operational_profit_per_rpk
-        )
+        return (operational_profit_per_ask, operational_profit_per_rpk)
