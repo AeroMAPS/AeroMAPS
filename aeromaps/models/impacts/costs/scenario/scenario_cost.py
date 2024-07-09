@@ -147,7 +147,7 @@ class TotalAirlineCost(AeroMAPSModel):
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
         total_airline_cost = total_cost_per_ask * ask
-        cummulative_total_airline_cost = self.df["total_airline_cost"].cumsum()
+        cummulative_total_airline_cost = total_airline_cost.cumsum()
         cumulative_total_airline_cost_discounted = cummulative_total_airline_cost / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
@@ -176,8 +176,9 @@ class TotalAirlineProfit(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+
         total_airline_profit = operational_profit_per_rpk * rpk
-        cummulative_total_airline_profit = self.df["total_airline_profit"].cumsum()
+        cummulative_total_airline_profit = total_airline_profit.cumsum()
         cumulative_total_airline_profit_discounted = cummulative_total_airline_profit / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
