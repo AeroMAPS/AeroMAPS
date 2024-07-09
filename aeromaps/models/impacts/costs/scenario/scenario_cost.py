@@ -270,7 +270,7 @@ class TotalSurplusLoss(AeroMAPSModel):
         airfare_per_rpk: pd.Series,
         price_elasticity: float,
         social_discount_rate: float,
-    ) -> Tuple[pd.Series, pd.Series,]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
 
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = (
@@ -297,17 +297,19 @@ class TotalSurplusLoss(AeroMAPSModel):
 
         self.df.loc[:, "consumer_surplus_loss"] = consumer_surplus_loss
 
-        cummulative_total_surplus_loss = consumer_surplus_loss.cumsum()
-        cumulative_total_surplus_loss_discounted = cummulative_total_surplus_loss / (
+        cumulative_total_surplus_loss = consumer_surplus_loss.cumsum()
+        cumulative_total_surplus_loss_discounted = cumulative_total_surplus_loss / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
 
-        self.df.loc[:, "cummulative_total_surplus_loss"] = cummulative_total_surplus_loss
+        self.df.loc[:, "cumulative_total_surplus_loss"] = cumulative_total_surplus_loss
         self.df.loc[
             :, "cumulative_total_surplus_loss_discounted"
         ] = cumulative_total_surplus_loss_discounted
 
-        return (cummulative_total_surplus_loss, cumulative_total_surplus_loss_discounted)
+        return (consumer_surplus_loss,
+                cumulative_total_surplus_loss,
+                cumulative_total_surplus_loss_discounted)
 
 
 class TotalWelfareLoss(AeroMAPSModel):
