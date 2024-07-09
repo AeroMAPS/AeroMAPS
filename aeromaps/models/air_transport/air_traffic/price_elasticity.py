@@ -198,7 +198,7 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             self.df.loc[k, "rpk_no_elasticity"] = rpk_init.loc[k]
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "rpk_no_elasticity"] = (
-                self.df.loc[k, "rpk_short_rang_no_elasticitye"]
+                self.df.loc[k, "rpk_short_rang_no_elasticity"]
                 + self.df.loc[k, "rpk_medium_range_no_elasticity"]
                 + self.df.loc[k, "rpk_long_range_no_elasticity"]
             )
