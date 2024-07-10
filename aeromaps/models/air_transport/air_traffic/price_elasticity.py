@@ -61,7 +61,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             airfare_per_rpk - airfare_per_rpk[self.prospection_start_year - 1]
         ) / airfare_per_rpk[self.prospection_start_year - 1]
 
-        price_elasticity = price_elasticity
 
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):
