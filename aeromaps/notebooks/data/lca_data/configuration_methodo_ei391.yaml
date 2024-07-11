@@ -4,38 +4,38 @@ ecoinvent:
     version: 3.9.1
     model: cutoff
     # Note: import of ecoinvent requires to provide credentials.
-    # For privacy reasons, we ask you to create a file named .env in the notebook folder, that you will not share /commit,
+    # For privacy reasons, we ask you to create a file named .env, that you will not share /commit,
     # and contains the following :
-        # ECOINVENT_LOGIN='<your_login>'
-        # ECOINVENT_PASSWORD='<your_password>'
+        # ECOINVENT_LOGIN=<your_login>
+        # ECOINVENT_PASSWORD=<your_password>
 
 premise:
     scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
-        #- model: remind
-        #  pathway: SSP2-Base
-        #  year: 2020
-        #- model: remind
-        #  pathway: SSP2-Base
-        #  year: 2030
-        #- model: remind
-        #  pathway: SSP2-Base
-        #  year: 2040
-        #- model: remind
-        #  pathway: SSP2-Base
-        #  year: 2050
-          
-        - model: image
+        - model: remind
           pathway: SSP2-Base
           year: 2020
-        - model: image
+        - model: remind
           pathway: SSP2-Base
           year: 2030
-        - model: image
+        - model: remind
           pathway: SSP2-Base
           year: 2040
-        - model: image
+        - model: remind
           pathway: SSP2-Base
           year: 2050
+          
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2020
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2030
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2040
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2050
          
         #- model: remind
         #  pathway: SSP1-PkBudg1150

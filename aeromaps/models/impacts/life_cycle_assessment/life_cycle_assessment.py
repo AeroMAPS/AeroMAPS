@@ -6,7 +6,8 @@ from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
-from aeromaps.models.impacts.life_cycle_assessment.configuration import LCAProblemConfigurator
+#from aeromaps.models.impacts.life_cycle_assessment.configuration import LCAProblemConfigurator
+from lcav.io.configuration import LCAProblemConfigurator
 import os.path as pth
 DATA_FOLDER = './data/lca_data'
 CONFIGURATION_FILE = pth.join(DATA_FOLDER, 'configuration_methodo_ei391.yaml')

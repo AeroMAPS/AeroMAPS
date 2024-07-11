@@ -22,7 +22,7 @@ homepage = "https://github.com/AeroMAPS/AeroMAPS"
 
 [tool.poetry.dependencies]
 # Core and standard libraries
-python = "^3.8.0, <3.11"
+python = ">=3.10, <3.11"
 numpy = "^1.20.3"
 scipy = "^1.4.1"
 pandas = "^1.1.0"
@@ -51,11 +51,12 @@ ipytree = "^0.2.2"
 voila = "^0.5.0"
 
 # Life cycle assessment
-lca-algebraic = {git = "https://github.com/felixpollet/lca_algebraic.git"}  #"1.1"
-"ruamel.yaml" = "^0.18.5"
-ensure = "^1.0.0"
-premise = "2.0.2"
-pyvis = "^0.3.0"
+lcav = {git = "https://github.com/felixpollet/LCAv.git"}
+#lca-algebraic = {git = "https://github.com/felixpollet/lca_algebraic.git"}  #"1.1"
+#"ruamel.yaml" = "^0.18.5"
+#ensure = "^1.0.0"
+#premise = "2.0.2"
+#pyvis = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
