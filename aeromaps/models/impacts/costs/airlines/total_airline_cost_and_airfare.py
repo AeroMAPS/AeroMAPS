@@ -4,7 +4,7 @@
 # @Software: PyCharm
 from typing import Tuple
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftTotalCostAirfare(AeroMAPSModel):

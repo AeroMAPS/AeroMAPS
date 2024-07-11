@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
 
 
 class RPK(AeroMAPSModel):
@@ -65,7 +65,7 @@ class RPK(AeroMAPSModel):
 
         # CAGR function
         ## Short range
-        annual_growth_rate_passenger_short_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_short_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_short_range_reference_periods,
             cagr_passenger_short_range_reference_periods_values,
@@ -75,7 +75,7 @@ class RPK(AeroMAPSModel):
             annual_growth_rate_passenger_short_range_prospective
         )
         ## Medium range
-        annual_growth_rate_passenger_medium_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_medium_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_medium_range_reference_periods,
             cagr_passenger_medium_range_reference_periods_values,
@@ -85,7 +85,7 @@ class RPK(AeroMAPSModel):
             annual_growth_rate_passenger_medium_range_prospective
         )
         ## Long range
-        annual_growth_rate_passenger_long_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_long_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_long_range_reference_periods,
             cagr_passenger_long_range_reference_periods_values,
@@ -300,7 +300,7 @@ class RPKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_rate_aviation = AeromapsLevelingFunction(
+        reference_annual_growth_rate_aviation = aeromaps_leveling_function(
             self,
             reference_cagr_aviation_reference_periods,
             reference_cagr_aviation_reference_periods_values,

@@ -8,7 +8,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class ElectrofuelCost(AeroMAPSModel):
@@ -533,7 +533,7 @@ class ElectrofuelCapex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrofuel capital expenditures at eis using interpolation functions"""
 
-        electrofuel_eis_capex = AeromapsInterpolationFunction(
+        electrofuel_eis_capex = aeromaps_interpolation_function(
             self,
             electrofuel_capex_reference_years,
             electrofuel_capex_reference_years_values,
@@ -555,7 +555,7 @@ class ElectrofuelFixedOpex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
-        electrofuel_eis_fixed_opex = AeromapsInterpolationFunction(
+        electrofuel_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             electrofuel_fixed_opex_reference_years,
             electrofuel_fixed_opex_reference_years_values,
@@ -577,7 +577,7 @@ class ElectrofuelVarOpex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
-        electrofuel_eis_var_opex = AeromapsInterpolationFunction(
+        electrofuel_eis_var_opex = aeromaps_interpolation_function(
             self,
             electrofuel_var_opex_reference_years,
             electrofuel_var_opex_reference_years_values,
@@ -645,7 +645,7 @@ class ElectrofuelSpecificCo2(AeroMAPSModel):
     ) -> pd.Series:
         """Electrofuel efficiency at eis using interpolation functions"""
 
-        electrofuel_eis_specific_co2 = AeromapsInterpolationFunction(
+        electrofuel_eis_specific_co2 = aeromaps_interpolation_function(
             self,
             electrofuel_specific_co2_reference_years,
             electrofuel_specific_co2_reference_years_values,

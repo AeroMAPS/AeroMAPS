@@ -32,7 +32,7 @@ class AeroMAPSModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
-def AeromapsInterpolationFunction(
+def aeromaps_interpolation_function(
     self,
     reference_years,
     reference_years_values,
@@ -95,7 +95,7 @@ def AeromapsInterpolationFunction(
     return interpolation_function_values
 
 
-def AeromapsLevelingFunction(
+def aeromaps_leveling_function(
     self, reference_periods, reference_periods_values, model_name="Not provided"
 ):
     # Main

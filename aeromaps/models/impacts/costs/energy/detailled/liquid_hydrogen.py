@@ -9,7 +9,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class LiquidHydrogenCost(AeroMAPSModel):
@@ -1847,7 +1847,7 @@ class ElectrolyserCapex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrolyser capital expenditures at eis using interpolation functions"""
 
-        electrolysis_h2_eis_capex = AeromapsInterpolationFunction(
+        electrolysis_h2_eis_capex = aeromaps_interpolation_function(
             self,
             electrolyser_capex_reference_years,
             electrolyser_capex_reference_years_values,
@@ -1869,7 +1869,7 @@ class ElectrolyserFixedOpex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrolyser fixed operational expenditures at entry into service using interpolation functions"""
 
-        electrolysis_h2_eis_fixed_opex = AeromapsInterpolationFunction(
+        electrolysis_h2_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             electrolyser_fixed_opex_reference_years,
             electrolyser_fixed_opex_reference_years_values,
@@ -1891,7 +1891,7 @@ class ElectrolyserVarOpex(AeroMAPSModel):
     ) -> pd.Series:
         """Electrolyser variable operational expenditures at entry into service using interpolation functions"""
 
-        electrolysis_h2_eis_var_opex = AeromapsInterpolationFunction(
+        electrolysis_h2_eis_var_opex = aeromaps_interpolation_function(
             self,
             electrolyser_var_opex_reference_years,
             electrolyser_var_opex_reference_years_values,
@@ -1954,7 +1954,7 @@ class LiquefierCapex(AeroMAPSModel):
     ) -> pd.Series:
         """Liquefier capital expenditures at eis using interpolation functions"""
 
-        liquefier_eis_capex = AeromapsInterpolationFunction(
+        liquefier_eis_capex = aeromaps_interpolation_function(
             self,
             liquefier_capex_reference_years,
             liquefier_capex_reference_years_values,
@@ -2014,7 +2014,7 @@ class GasCcsCapex(AeroMAPSModel):
         gas_ccs_eis_capex_reference_years: list,
         gas_ccs_eis_capex_reference_years_values: list,
     ) -> pd.Series:
-        gas_ccs_eis_capex = AeromapsInterpolationFunction(
+        gas_ccs_eis_capex = aeromaps_interpolation_function(
             self,
             gas_ccs_eis_capex_reference_years,
             gas_ccs_eis_capex_reference_years_values,
@@ -2034,7 +2034,7 @@ class GasCcsFixedOpex(AeroMAPSModel):
         gas_ccs_eis_fixed_opex_reference_years: list,
         gas_ccs_eis_fixed_opex_reference_years_values: list,
     ) -> pd.Series:
-        gas_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
+        gas_ccs_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             gas_ccs_eis_fixed_opex_reference_years,
             gas_ccs_eis_fixed_opex_reference_years_values,
@@ -2054,7 +2054,7 @@ class GasCcsEfficiency(AeroMAPSModel):
         gas_ccs_efficiency_reference_years: list,
         gas_ccs_efficiency_reference_years_values: list,
     ) -> pd.Series:
-        gas_ccs_efficiency = AeromapsInterpolationFunction(
+        gas_ccs_efficiency = aeromaps_interpolation_function(
             self,
             gas_ccs_efficiency_reference_years,
             gas_ccs_efficiency_reference_years_values,
@@ -2074,7 +2074,7 @@ class GasCapex(AeroMAPSModel):
         gas_eis_capex_reference_years: list,
         gas_eis_capex_reference_years_values: list,
     ) -> pd.Series:
-        gas_eis_capex = AeromapsInterpolationFunction(
+        gas_eis_capex = aeromaps_interpolation_function(
             self,
             gas_eis_capex_reference_years,
             gas_eis_capex_reference_years_values,
@@ -2094,7 +2094,7 @@ class GasFixedOpex(AeroMAPSModel):
         gas_eis_fixed_opex_reference_years: list,
         gas_eis_fixed_opex_reference_years_values: list,
     ) -> pd.Series:
-        gas_eis_fixed_opex = AeromapsInterpolationFunction(
+        gas_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             gas_eis_fixed_opex_reference_years,
             gas_eis_fixed_opex_reference_years_values,
@@ -2114,7 +2114,7 @@ class GasEfficiency(AeroMAPSModel):
         gas_efficiency_reference_years: list,
         gas_efficiency_reference_years_values: list,
     ) -> pd.Series:
-        gas_efficiency = AeromapsInterpolationFunction(
+        gas_efficiency = aeromaps_interpolation_function(
             self,
             gas_efficiency_reference_years,
             gas_efficiency_reference_years_values,
@@ -2134,7 +2134,7 @@ class CoalCcsCapex(AeroMAPSModel):
         coal_ccs_eis_capex_reference_years: list,
         coal_ccs_eis_capex_reference_years_values: list,
     ) -> pd.Series:
-        coal_ccs_eis_capex = AeromapsInterpolationFunction(
+        coal_ccs_eis_capex = aeromaps_interpolation_function(
             self,
             coal_ccs_eis_capex_reference_years,
             coal_ccs_eis_capex_reference_years_values,
@@ -2154,7 +2154,7 @@ class CoalCcsFixedOpex(AeroMAPSModel):
         coal_ccs_eis_fixed_opex_reference_years: list,
         coal_ccs_eis_fixed_opex_reference_years_values: list,
     ) -> pd.Series:
-        coal_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
+        coal_ccs_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             coal_ccs_eis_fixed_opex_reference_years,
             coal_ccs_eis_fixed_opex_reference_years_values,
@@ -2174,7 +2174,7 @@ class CoalCcsEfficiency(AeroMAPSModel):
         coal_ccs_efficiency_reference_years: list,
         coal_ccs_efficiency_reference_years_values: list,
     ) -> pd.Series:
-        coal_ccs_efficiency = AeromapsInterpolationFunction(
+        coal_ccs_efficiency = aeromaps_interpolation_function(
             self,
             coal_ccs_efficiency_reference_years,
             coal_ccs_efficiency_reference_years_values,
@@ -2194,7 +2194,7 @@ class CoalCapex(AeroMAPSModel):
         coal_eis_capex_reference_years: list,
         coal_eis_capex_reference_years_values: list,
     ) -> pd.Series:
-        coal_eis_capex = AeromapsInterpolationFunction(
+        coal_eis_capex = aeromaps_interpolation_function(
             self,
             coal_eis_capex_reference_years,
             coal_eis_capex_reference_years_values,
@@ -2214,7 +2214,7 @@ class CoalFixedOpex(AeroMAPSModel):
         coal_eis_fixed_opex_reference_years: list,
         coal_eis_fixed_opex_reference_years_values: list,
     ) -> pd.Series:
-        coal_eis_fixed_opex = AeromapsInterpolationFunction(
+        coal_eis_fixed_opex = aeromaps_interpolation_function(
             self,
             coal_eis_fixed_opex_reference_years,
             coal_eis_fixed_opex_reference_years_values,
@@ -2234,7 +2234,7 @@ class CoalEfficiency(AeroMAPSModel):
         coal_efficiency_reference_years: list,
         coal_efficiency_reference_years_values: list,
     ) -> pd.Series:
-        coal_efficiency = AeromapsInterpolationFunction(
+        coal_efficiency = aeromaps_interpolation_function(
             self,
             coal_efficiency_reference_years,
             coal_efficiency_reference_years_values,
@@ -2254,7 +2254,7 @@ class CcsCost(AeroMAPSModel):
         ccs_cost_reference_years: list,
         ccs_cost_reference_years_values: list,
     ) -> pd.Series:
-        ccs_cost = AeromapsInterpolationFunction(
+        ccs_cost = aeromaps_interpolation_function(
             self, ccs_cost_reference_years, ccs_cost_reference_years_values, model_name=self.name
         )
         self.df.loc[:, "ccs_cost"] = ccs_cost

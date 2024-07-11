@@ -3,7 +3,7 @@
 # @File : operational_margin.py
 # @Software: PyCharm
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftOperationalProfit(AeroMAPSModel):
@@ -19,7 +19,7 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
     ) -> Tuple[pd.Series, pd.Series]:
         # Simple computation of airline non-operating costs (NOC)
 
-        operational_profit_prospective = AeromapsInterpolationFunction(
+        operational_profit_prospective = aeromaps_interpolation_function(
             self,
             operational_profit_reference_years,
             operational_profit_reference_years_values,
