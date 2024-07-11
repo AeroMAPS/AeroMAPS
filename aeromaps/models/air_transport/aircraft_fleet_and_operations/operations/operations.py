@@ -1,3 +1,5 @@
+from numbers import Number
+
 import numpy as np
 import pandas as pd
 
@@ -11,7 +13,7 @@ class OperationsSimple(AeroMAPSModel):
     def compute(
         self,
         operations_final_gain: float,
-        operations_start_year: int,
+        operations_start_year: Number,
         operations_duration: float,
     ) -> pd.Series:
         """Operations gain for efficiency calculation."""

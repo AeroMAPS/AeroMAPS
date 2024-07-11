@@ -1,4 +1,5 @@
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -17,9 +18,9 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         short_range_rpk_share_2019: float,
         medium_range_rpk_share_2019: float,
         long_range_rpk_share_2019: float,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year: int,
+        covid_end_year: Number,
         covid_end_year_reference_rpk_ratio: float,
         cagr_passenger_short_range_reference_periods: list,
         cagr_passenger_short_range_reference_periods_values: list,

@@ -1,4 +1,5 @@
 from typing import Tuple
+from numbers import Number
 
 import pandas as pd
 from scipy.interpolate import interp1d
@@ -13,9 +14,9 @@ class RTK(AeroMAPSModel):
     def compute(
         self,
         rtk_init: pd.Series,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year: int,
+        covid_end_year: Number,
         covid_end_year_reference_rpk_ratio: float,
         cagr_freight_reference_periods: list,
         cagr_freight_reference_periods_values: list,
@@ -97,9 +98,9 @@ class RTKReference(AeroMAPSModel):
         self,
         rtk: pd.Series,
         reference_annual_growth_rate_aviation: pd.Series,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year: int,
+        covid_end_year: Number,
         covid_end_year_reference_rpk_ratio: float,
     ) -> pd.Series:
         """RTK reference calculation."""

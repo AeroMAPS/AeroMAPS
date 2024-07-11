@@ -1,4 +1,5 @@
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -42,17 +43,17 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years: list,
         relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values: list,
         hydrogen_final_market_share_short_range: float,
-        hydrogen_introduction_year_short_range: int,
+        hydrogen_introduction_year_short_range: Number,
         hydrogen_final_market_share_medium_range: float,
-        hydrogen_introduction_year_medium_range: int,
+        hydrogen_introduction_year_medium_range: Number,
         hydrogen_final_market_share_long_range: float,
-        hydrogen_introduction_year_long_range: int,
+        hydrogen_introduction_year_long_range: Number,
         electric_final_market_share_short_range: float,
-        electric_introduction_year_short_range: int,
+        electric_introduction_year_short_range: Number,
         electric_final_market_share_medium_range: float,
-        electric_introduction_year_medium_range: int,
+        electric_introduction_year_medium_range: Number,
         electric_final_market_share_long_range: float,
-        electric_introduction_year_long_range: int,
+        electric_introduction_year_long_range: Number,
         fleet_renewal_duration: float,
         covid_energy_intensity_per_ask_increase_2020: float,
     ) -> Tuple[

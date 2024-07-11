@@ -3,7 +3,8 @@
 # @File : aircrfat_numbe.py
 # @Software: PyCharm
 from aeromaps.models.base import AeroMAPSModel
-from typing import Tuple
+from typing import Tuple, Dict, Any
+from numbers import Number
 import pandas as pd
 import numpy as np
 
@@ -21,9 +22,10 @@ class FleetEvolution(AeroMAPSModel):
         rpk_short_range: pd.Series,
         rpk_medium_range: pd.Series,
         rpk_long_range: pd.Series,
-        covid_start_year: int,
-        covid_end_year: int,
+        covid_start_year: Number,
+        covid_end_year: Number,
     ) -> Tuple[dict, dict, dict, dict, dict]:
+
         ask_aircraft_value_dict = {}
         rpk_aircraft_value_dict = {}
         aircraft_in_fleet_value_dict = {}
@@ -121,9 +123,9 @@ class FleetEvolution(AeroMAPSModel):
                 ask_aircraft_value_dict[aircraft_var_name] = ask_aircraft_value
                 rpk_aircraft_value_dict[aircraft_var_name] = rpk_aircraft_value
                 aircraft_in_fleet_value_dict[aircraft_var_name] = aircraft_in_fleet_value
-                aircraft_in_fleet_value_covid_levelling_dict[aircraft_var_name] = (
-                    aircraft_in_fleet_value_covid_levelling
-                )
+                aircraft_in_fleet_value_covid_levelling_dict[
+                    aircraft_var_name
+                ] = aircraft_in_fleet_value_covid_levelling
                 aircraft_in_out_value_dict[aircraft_var_name] = aircraft_in_out_value
         return (
             ask_aircraft_value_dict,
