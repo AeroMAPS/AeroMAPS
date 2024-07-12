@@ -19,14 +19,14 @@ class SimplifiedERFCo2(AeroMAPSModel):
 
         # CO2
         h = 100  # Climate time horizon
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
+        for k in range(self.climate_data_start_year, self.end_year + 1):
             self.df_climate.loc[k, "annual_co2_erf"] = (
                 co2_emissions.loc[k] * AbsoluteGlobalWarmingPotentialCO2Function(h) / h
             )
-        self.df_climate.loc[self.climate_historic_start_year, "co2_erf"] = self.df_climate.loc[
-            self.climate_historic_start_year, "annual_co2_erf"
+        self.df_climate.loc[self.climate_data_start_year, "co2_erf"] = self.df_climate.loc[
+            self.climate_data_start_year, "annual_co2_erf"
         ]
-        for k in range(self.climate_historic_start_year + 1, self.end_year + 1):
+        for k in range(self.climate_data_start_year + 1, self.end_year + 1):
             self.df_climate.loc[k, "co2_erf"] = (
                 self.df_climate.loc[k - 1, "co2_erf"] + self.df_climate.loc[k, "annual_co2_erf"]
             )
@@ -133,11 +133,11 @@ class ERFOthers(AeroMAPSModel):
         """ERF calculation for the other climate impacts of aviation."""
 
         # Contrails
-        for k in range(self.climate_historic_start_year, self.end_year + 1):
+        for k in range(self.climate_data_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
             )
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails

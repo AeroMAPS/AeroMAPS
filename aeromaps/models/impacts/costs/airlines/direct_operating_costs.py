@@ -210,7 +210,7 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
         # Initialization based on 2019 values
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[
                 k, "doc_non_energy_per_ask_short_range_dropin_fuel"
             ] = doc_non_energy_per_ask_short_range_dropin_fuel_init
@@ -404,33 +404,33 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         hydrogen_specific_energy = 119.93
 
         doc_energy_per_ask_long_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_long_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_long_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_medium_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_medium_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_medium_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_short_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_short_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_energy_per_ask_short_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_long_range_dropin_fuel[k] = (
                     energy_per_ask_long_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
@@ -624,33 +624,33 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
         hydrogen_specific_energy = 119.93
 
         doc_carbon_tax_per_ask_long_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_long_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_long_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_medium_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_medium_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_medium_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_short_range_dropin_fuel = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_short_range_hydrogen = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
         doc_carbon_tax_per_ask_short_range_electric = pd.Series(
-            np.nan, range(self.historic_start_year, self.end_year + 1)
+            np.nan, range(self.other_data_start_year, self.end_year + 1)
         )
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_dropin_fuel[k] = (
                     energy_per_ask_long_range_dropin_fuel[k]
@@ -748,7 +748,7 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             + doc_carbon_tax_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             self.df.loc[k, "doc_carbon_tax_lowering_offset_per_ask_mean"] = (
                 doc_carbon_tax_per_ask_mean.loc[k]
                 * (co2_emissions.loc[k] - carbon_offset.loc[k])

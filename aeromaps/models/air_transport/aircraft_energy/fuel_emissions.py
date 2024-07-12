@@ -240,7 +240,7 @@ class KeroseneEmissionFactor(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "kerosene_emission_factor"] = kerosene_emission_factor_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "kerosene_emission_factor"] = self.df.loc[
                 self.prospection_start_year, "kerosene_emission_factor"
             ]

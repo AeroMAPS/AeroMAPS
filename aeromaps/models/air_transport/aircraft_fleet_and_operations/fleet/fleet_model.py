@@ -1133,7 +1133,7 @@ class FleetModel(AeroMAPSModel):
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
         x = np.linspace(
-            self.historic_start_year, self.end_year, self.end_year - self.historic_start_year + 1
+            self.other_data_start_year, self.end_year, self.end_year - self.other_data_start_year + 1
         )
 
         # Intermediate variable for S-shaped function

@@ -21,12 +21,12 @@ class TotalAircraftDistance(AeroMAPSModel):
 
         historical_distance_for_temperature = self.climate_historical_data[:, 6]
 
-        for k in range(self.climate_historic_start_year, self.historic_start_year):
+        for k in range(self.climate_data_start_year, self.other_data_start_year):
             self.df_climate.loc[k, "total_aircraft_distance"] = historical_distance_for_temperature[
-                k - self.climate_historic_start_year
+                k - self.climate_data_start_year
             ]
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df_climate.loc[k, "total_aircraft_distance"] = total_aircraft_distance_init.loc[k]
 
         # Assumption: 1 RTK = 10 ASK

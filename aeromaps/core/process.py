@@ -234,20 +234,20 @@ class AeroMAPSProcess(object):
         # Years
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
-            range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+            range(self.parameters.climate_data_start_year, self.parameters.end_year + 1)
         )
         self.data["years"]["climate_full_years"] = list(
-            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
+            range(self.parameters.climate_data_start_year, self.parameters.end_year + 1)
         )
         self.data["years"]["historic_years"] = list(
             range(
-                self.parameters.historic_start_year,
+                self.parameters.other_data_start_year,
                 self.parameters.prospection_start_year,
             )
         )
         self.data["years"]["climate_historic_years"] = list(
             range(
-                self.parameters.climate_historic_start_year,
+                self.parameters.climate_data_start_year,
                 self.parameters.prospection_start_year,
             )
         )
@@ -273,7 +273,7 @@ class AeroMAPSProcess(object):
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
             if isinstance(value, pd.Series):
-                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_index = range(self.parameters.other_data_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
@@ -332,14 +332,14 @@ class AeroMAPSProcess(object):
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
             if not isinstance(field_value, (float, int, list)):
-                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
+                new_size = self.parameters.end_year - self.parameters.other_data_start_year + 1
                 new_value = np.pad(
                     field_value,
                     (0, new_size - field_value.size),
                     mode="constant",
                     constant_values=np.nan,
                 )
-                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_index = range(self.parameters.other_data_start_year, self.parameters.end_year + 1)
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 

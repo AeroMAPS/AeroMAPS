@@ -255,7 +255,7 @@ class ElectrofuelCost(AeroMAPSModel):
                 plant_building_scenario[year] = electrofuel_capacity_to_build  # in ton/day capacity
 
                 for construction_year in range(year - construction_time, year):
-                    if self.historic_start_year < construction_year < self.end_year:
+                    if self.other_data_start_year < construction_year < self.end_year:
                         plant_building_cost[construction_year] += (
                             electrolyser_capex_year / construction_time
                         )

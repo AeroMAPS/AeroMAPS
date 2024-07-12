@@ -54,9 +54,9 @@ class RTK(AeroMAPSModel):
             )
 
         # Historic values
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk"] = rtk_init.loc[k]
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_freight"] = (
                 self.df.loc[k, "rtk"] / self.df.loc[k - 1, "rtk"] - 1
             ) * 100
@@ -105,7 +105,7 @@ class RTKReference(AeroMAPSModel):
     ) -> pd.Series:
         """RTK reference calculation."""
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk_reference"] = rtk.loc[k]
 
         self.df.loc[covid_start_year - 1, "rtk_reference"] = rtk.loc[covid_start_year - 1]

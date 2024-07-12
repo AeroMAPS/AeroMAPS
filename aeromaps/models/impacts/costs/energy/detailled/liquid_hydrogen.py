@@ -1105,7 +1105,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # electrolyzer capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    if self.historic_start_year < construction_year < self.end_year:
+                    if self.other_data_start_year < construction_year < self.end_year:
                         plant_building_cost[construction_year] += (
                             electrolyser_capex_year / construction_time
                         )
@@ -1358,7 +1358,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 # plant capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    if self.historic_start_year < construction_year < self.end_year:
+                    if self.other_data_start_year < construction_year < self.end_year:
                         plant_building_cost[construction_year] += (
                             plant_capex_year / construction_time
                         )
@@ -1603,7 +1603,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # liquefier capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    if self.historic_start_year < construction_year < self.end_year:
+                    if self.other_data_start_year < construction_year < self.end_year:
                         plant_building_cost[construction_year] += (
                             liquefier_capex_year / construction_time
                         )

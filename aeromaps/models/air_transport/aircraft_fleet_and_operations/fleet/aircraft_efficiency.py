@@ -93,7 +93,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         # Initialization based on 2019 share
         energy_consumption_per_ask_init = energy_consumption_init / ask
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
                 energy_consumption_per_ask_init.loc[k]
                 * short_range_energy_share_2019
@@ -213,7 +213,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             :, "relative_energy_per_ask_hydrogen_wrt_dropin_long_range"
         ] = relative_energy_per_ask_hydrogen_wrt_dropin_long_range
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[
                 k, "energy_per_ask_without_operations_short_range_hydrogen"
             ] = energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
@@ -278,7 +278,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             :, "relative_energy_per_ask_electric_wrt_dropin_long_range"
         ] = relative_energy_per_ask_electric_wrt_dropin_long_range
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[
                 k, "energy_per_ask_without_operations_short_range_electric"
             ] = energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
@@ -319,7 +319,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = hydrogen_introduction_year_short_range + fleet_renewal_duration / 2
         hydrogen_share_limit = 0.02 * hydrogen_final_market_share_short_range
         hydrogen_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 hydrogen_final_market_share_short_range
                 / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
@@ -337,7 +337,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = hydrogen_introduction_year_medium_range + fleet_renewal_duration / 2
         hydrogen_share_limit = 0.02 * hydrogen_final_market_share_medium_range
         hydrogen_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 hydrogen_final_market_share_medium_range
                 / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
@@ -355,7 +355,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = hydrogen_introduction_year_long_range + fleet_renewal_duration / 2
         hydrogen_share_limit = 0.02 * hydrogen_final_market_share_long_range
         hydrogen_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 hydrogen_final_market_share_long_range
                 / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
@@ -386,7 +386,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = electric_introduction_year_short_range + fleet_renewal_duration / 2
         electric_share_limit = 0.02 * electric_final_market_share_short_range
         electric_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 electric_final_market_share_short_range
                 / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
@@ -404,7 +404,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = electric_introduction_year_medium_range + fleet_renewal_duration / 2
         electric_share_limit = 0.02 * electric_final_market_share_medium_range
         electric_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 electric_final_market_share_medium_range
                 / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
@@ -422,7 +422,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         transition_year = electric_introduction_year_long_range + fleet_renewal_duration / 2
         electric_share_limit = 0.02 * electric_final_market_share_long_range
         electric_share_parameter = np.log(100 / 2 - 1) / (fleet_renewal_duration / 2)
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if (
                 electric_final_market_share_long_range
                 / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
@@ -620,7 +620,7 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         # Drop-in - Initialization based on 2019 share - To check for consistency
         energy_consumption_per_ask_init = energy_consumption_init / ask
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
                 energy_consumption_per_ask_init.loc[k]
                 * short_range_energy_share_2019
@@ -907,7 +907,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         """Energy consumption per RTK (without operations) calculation."""
 
         # Initialization based on 2019 share: to correct to include load factor
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = (
                 energy_consumption_init.loc[k] / rtk.loc[k] * freight_energy_share_2019 / 100
             )
@@ -1019,7 +1019,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             / energy_per_ask_without_operations_long_range_dropin_fuel
         )
 
-        for k in range(self.historic_start_year, self.end_year + 1):
+        for k in range(self.other_data_start_year, self.end_year + 1):
             if rtk_hydrogen_share.loc[k] == 0:
                 self.df.loc[k, "energy_per_rtk_without_operations_freight_hydrogen"] = self.df.loc[
                     k, "energy_per_rtk_without_operations_freight_dropin_fuel"

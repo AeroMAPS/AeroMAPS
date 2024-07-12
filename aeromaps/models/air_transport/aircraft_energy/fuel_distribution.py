@@ -33,7 +33,7 @@ class DropinFuelDistribution(AeroMAPSModel):
         biofuel_share_prospective = np.round(biofuel_share_prospective, 15)
 
         self.df.loc[:, "biofuel_share"] = biofuel_share_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "biofuel_share"] = self.df.loc[
                 self.prospection_start_year, "biofuel_share"
             ]
@@ -53,7 +53,7 @@ class DropinFuelDistribution(AeroMAPSModel):
         electrofuel_share_prospective = np.round(electrofuel_share_prospective, 15)
 
         self.df.loc[:, "electrofuel_share"] = electrofuel_share_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "electrofuel_share"] = self.df.loc[
                 self.prospection_start_year, "electrofuel_share"
             ]

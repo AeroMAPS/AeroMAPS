@@ -20,7 +20,7 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "non_operating_cost_per_ask"] = noc_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "non_operating_cost_per_ask"] = self.df.loc[
                 self.prospection_start_year, "non_operating_cost_per_ask"
             ]
@@ -46,7 +46,7 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "passenger_tax_per_ask"] = passenger_tax_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "passenger_tax_per_ask"] = self.df.loc[
                 self.prospection_start_year, "passenger_tax_per_ask"
             ]

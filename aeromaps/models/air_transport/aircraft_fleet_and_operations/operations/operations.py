@@ -21,7 +21,7 @@ class OperationsSimple(AeroMAPSModel):
         transition_year = operations_start_year + operations_duration / 2
         operations_limit = 0.02 * operations_final_gain
         operations_parameter = np.log(100 / 2 - 1) / (operations_duration / 2)
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "operations_gain"] = 0
         for k in range(self.prospection_start_year - 1, self.end_year + 1):
             if (

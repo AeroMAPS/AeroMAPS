@@ -26,7 +26,7 @@ class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "indirect_operating_cost_per_ask"] = ioc_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "indirect_operating_cost_per_ask"] = self.df.loc[
                 self.prospection_start_year, "indirect_operating_cost_per_ask"
             ]
@@ -52,7 +52,7 @@ class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "carbon_offset_price"] = carbon_offset_price_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "carbon_offset_price"] = 0.0
         carbon_offset_price = self.df["carbon_offset_price"]
 

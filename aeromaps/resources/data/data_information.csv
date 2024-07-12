@@ -1,5 +1,5 @@
 ﻿Name;Type;Unit;Description;Reference for default input value (if applicable)
-climate_historic_start_year;Float;yr;Historic start year for the calculation of climate models
+climate_data_start_year;Float;yr;Historic start year for the calculation of climate models
 ask_init;Vector;ASK;Historical number of Available Seat Kilometer (ASK) over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
 energy_consumption_init;Vector;MJ;Historical energy consumption of aviation over 2000-2019;IEA Sankey tool
 freight_init;Vector;ton;Historical freight quantity in mass over 2000-2019;ICAO Annual Reports - https://www.icao.int/about-icao/Pages/annual-reports.aspx
@@ -117,7 +117,7 @@ cagr_freight_reference_periods;List;yr;Reference periods for the compound annual
 cagr_freight_reference_periods_values;List;%;Compound annual growth rate for freight market for the reference periods
 reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
 reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
-historic_start_year;Float;yr;Historic start year for the data
+other_data_start_year;Float;yr;Historic start year for the data
 gaseous_hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_ccs_share_reference_years_values;List;%;Share of hydrogen production from coal pathway with carbon capture and storage for the reference years

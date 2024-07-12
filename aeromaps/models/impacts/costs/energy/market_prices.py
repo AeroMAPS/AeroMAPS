@@ -124,7 +124,7 @@ class CarbonTax(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "carbon_tax"] = carbon_tax_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "carbon_tax"] = 5.0
         carbon_tax = self.df["carbon_tax"]
 
@@ -148,7 +148,7 @@ class KerosenePrice(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "kerosene_market_price"] = kerosene_market_price_prospective
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "kerosene_market_price"] = self.df.loc[
                 self.prospection_start_year, "kerosene_market_price"
             ]

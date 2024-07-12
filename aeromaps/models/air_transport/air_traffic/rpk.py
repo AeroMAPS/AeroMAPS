@@ -51,7 +51,7 @@ class RPK(AeroMAPSModel):
     ]:
         """RPK calculation."""
         # Initialization based on 2019 share
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_medium_range"] = medium_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_long_range"] = long_range_rpk_share_2019 / 100 * rpk_init.loc[k]
@@ -139,7 +139,7 @@ class RPK(AeroMAPSModel):
         self.df.loc[:, "rpk_long_range"] = rpk_long_range
 
         # Total
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk"] = rpk_init.loc[k]
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "rpk"] = (
@@ -150,19 +150,19 @@ class RPK(AeroMAPSModel):
         rpk = self.df["rpk"]
 
         # Annual growth rate
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
                 self.df.loc[k, "rpk_short_range"] / self.df.loc[k - 1, "rpk_short_range"] - 1
             ) * 100
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
                 self.df.loc[k, "rpk_medium_range"] / self.df.loc[k - 1, "rpk_medium_range"] - 1
             ) * 100
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_passenger_long_range"] = (
                 self.df.loc[k, "rpk_long_range"] / self.df.loc[k - 1, "rpk_long_range"] - 1
             ) * 100
-        for k in range(self.historic_start_year + 1, self.end_year + 1):
+        for k in range(self.other_data_start_year + 1, self.end_year + 1):
             self.df.loc[k, "annual_growth_rate_passenger"] = (
                 self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
             ) * 100
@@ -282,7 +282,7 @@ class RPKReference(AeroMAPSModel):
     ) -> Tuple[pd.Series, pd.Series]:
         """RPK reference calculation."""
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_reference"] = rpk.loc[k]
 
         covid_start_year = int(covid_start_year)
@@ -366,7 +366,7 @@ class RPKMeasures(AeroMAPSModel):
             rpk_long_range_measures_duration / 2
         )
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
+        for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range_measures_impact"] = 1
             self.df.loc[k, "rpk_medium_range_measures_impact"] = 1
             self.df.loc[k, "rpk_long_range_measures_impact"] = 1
