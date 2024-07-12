@@ -36,6 +36,9 @@ default_config_path = os.path.join(current_dir, "config.json")
 # Construct the path to the parameters.json file
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
+# Construct the path to the vector_inputs.csv file
+default_vector_inputs_data_path = os.path.join(current_dir, "..", "resources", "data", "vector_inputs.csv")
+
 # Construct the path to the climate data .csv file
 default_climate_historical_data_path = os.path.join(
     current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
@@ -67,7 +70,7 @@ class AeroMAPSProcess(object):
 
         self._initialize_years()
 
-        self._initialize_climate_historical_data()
+        self._initialize_input_data()
 
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
@@ -274,6 +277,30 @@ class AeroMAPSProcess(object):
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
+    def _initialize_input_data(self):
+        self._initialize_vector_inputs()
+        self._initialize_climate_historical_data()
+
+    def _initialize_vector_inputs(self):
+        if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            vector_inputs_data_file_path = os.path.join(
+                configuration_directory, self.config["VECTOR_INPUTS_DATA_FILE"]
+            )
+        else:
+            vector_inputs_data_file_path = default_vector_inputs_data_path
+
+        # Read .csv with first line column names
+        vector_inputs_df = pd.read_csv(
+            vector_inputs_data_file_path, delimiter=";", header=0
+        )
+
+        # Generate pd.Series for each column with index the year stored in first column
+        for column in vector_inputs_df.columns:
+            values = vector_inputs_df[column].values
+            index = vector_inputs_df.iloc[:, 0].values
+            setattr(self.parameters, column, pd.Series(values, index=index))
+
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -290,7 +317,7 @@ class AeroMAPSProcess(object):
 
     def _set_inputs(self):
         all_inputs = {}
-        self._format_input_vectors()
+        # self._format_input_vectors()
         # TODO: make this more efficient
         for disc in self.disciplines:
             disc.model.parameters = self.parameters

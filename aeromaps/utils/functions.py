@@ -12,23 +12,6 @@ from aeromaps.resources import climate_data
 def _dict_from_json(file_name="parameters.json") -> dict:
     with open(file_name, "r", encoding="utf-8") as f:
         parameters_dict = load(f)
-
-    for key, value in parameters_dict.items():
-        # TODO: generic handling of timetables
-        if isinstance(value, list) and key in [
-            "rpk_init",
-            "ask_init",
-            "rtk_init",
-            "pax_init",
-            "freight_init",
-            "energy_consumption_init",
-            "total_aircraft_distance_init",
-        ]:
-            new_index = range(
-                parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
-            )
-            parameters_dict[key] = pd.Series(value, index=new_index)
-
     return parameters_dict
 
 
