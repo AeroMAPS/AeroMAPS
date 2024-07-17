@@ -155,7 +155,7 @@ class RPK(AeroMAPSModel):
                 self.df.loc[k, "rpk_short_range"] / self.df.loc[k - 1, "rpk_short_range"] - 1
             ) * 100
         for k in range(self.other_data_start_year + 1, self.prospection_start_year):
-            self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
+            self.df.loc[k, "annual_growth_rate_passenger_medium_range"] = (
                 self.df.loc[k, "rpk_medium_range"] / self.df.loc[k - 1, "rpk_medium_range"] - 1
             ) * 100
         for k in range(self.other_data_start_year + 1, self.prospection_start_year):
