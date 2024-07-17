@@ -22,14 +22,14 @@ class AeroMAPSModel(object):
         self.climate_data_start_year = self.parameters.climate_data_start_year
         self.other_data_start_year = self.parameters.other_data_start_year
         self.prospection_start_year = self.parameters.prospection_start_year
-        self.start_year = min(self.other_data_start_year, self.climate_data_start_year)
+        self.start_year = self.other_data_start_year
         self.end_year = self.parameters.end_year
 
         self.df: pd.DataFrame = pd.DataFrame(
             index=range(self.start_year, self.end_year + 1)
         )
         self.df_climate: pd.DataFrame = pd.DataFrame(
-            index=range(self.start_year, self.end_year + 1)
+            index=range(self.climate_data_start_year, self.end_year + 1)
         )
         self.years = np.linspace(self.start_year, self.end_year, len(self.df.index))
 

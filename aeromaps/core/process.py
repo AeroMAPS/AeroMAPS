@@ -6,12 +6,12 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 from gemseo.core.discipline import MDODiscipline
-from gemseo import generate_n2_plot, create_mda
-
+from gemseo import generate_n2_plot
+# from gemseo.core.chain import create_mda
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.core.gemseo import AeroMAPSModelWrapper
+from aeromaps.core.gemseo import AeroMAPSModelWrapper, create_mda
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -77,7 +77,7 @@ class AeroMAPSProcess(object):
         )
         # Create GEMSEO process
         self.process = create_mda(
-            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
+            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE, initialize_defaults=True
         )
         self._initialize_data()
         self._update_variables()
