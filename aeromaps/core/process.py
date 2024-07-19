@@ -11,7 +11,7 @@ from gemseo import generate_n2_plot
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.core.gemseo import AeroMAPSModelWrapper, create_mda
+from aeromaps.core.gemseo import AeroMAPSModelWrapper, MDAChain
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -76,8 +76,7 @@ class AeroMAPSProcess(object):
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
         # Create GEMSEO process
-        self.process = create_mda(
-            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE, initialize_defaults=True
+        self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE, initialize_defaults=True
         )
         self._initialize_data()
         self._update_variables()
