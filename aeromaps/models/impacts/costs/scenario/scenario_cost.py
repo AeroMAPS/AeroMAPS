@@ -147,20 +147,20 @@ class TotalAirlineCost(AeroMAPSModel):
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
         total_airline_cost = total_cost_per_ask * ask
-        cummulative_total_airline_cost = total_airline_cost.cumsum()
-        cumulative_total_airline_cost_discounted = cummulative_total_airline_cost / (
+        cumulative_total_airline_cost = total_airline_cost.cumsum()
+        cumulative_total_airline_cost_discounted = cumulative_total_airline_cost / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
 
         self.df.loc[:, "total_airline_cost"] = total_airline_cost
-        self.df.loc[:, "cummulative_total_airline_cost"] = cummulative_total_airline_cost
+        self.df.loc[:, "cumulative_total_airline_cost"] = cumulative_total_airline_cost
         self.df.loc[
             :, "cumulative_total_airline_cost_discounted"
         ] = cumulative_total_airline_cost_discounted
 
         return (
             total_airline_cost,
-            cummulative_total_airline_cost,
+            cumulative_total_airline_cost,
             cumulative_total_airline_cost_discounted,
         )
 
@@ -178,8 +178,8 @@ class TotalAirlineProfit(AeroMAPSModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
 
         total_airline_profit = operational_profit_per_rpk * rpk
-        cummulative_total_airline_profit = total_airline_profit.cumsum()
-        cumulative_total_airline_profit_discounted = cummulative_total_airline_profit / (
+        cumulative_total_airline_profit = total_airline_profit.cumsum()
+        cumulative_total_airline_profit_discounted = cumulative_total_airline_profit / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
 
@@ -193,7 +193,7 @@ class TotalAirlineProfit(AeroMAPSModel):
         ) ** (self.df.index - self.prospection_start_year)
 
         self.df.loc[:, "total_airline_profit"] = total_airline_profit
-        self.df.loc[:, "cummulative_total_airline_profit"] = cummulative_total_airline_profit
+        self.df.loc[:, "cumulative_total_airline_profit"] = cumulative_total_airline_profit
         self.df.loc[
             :, "cumulative_total_airline_profit_discounted"
         ] = cumulative_total_airline_profit_discounted
@@ -205,7 +205,7 @@ class TotalAirlineProfit(AeroMAPSModel):
 
         return (
             total_airline_profit,
-            cummulative_total_airline_profit,
+            cumulative_total_airline_profit,
             cumulative_total_airline_profit_discounted,
             airline_profit_loss,
             cumulative_airline_profit_loss,

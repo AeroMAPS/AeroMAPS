@@ -3667,7 +3667,7 @@ class CumulativeMACC:
         )
 
         self.ax2.xaxis.set_label_position("bottom")
-        self.ax2.set_xlabel("Cummulative $\mathregular{CO_2}$ emissions (Mt)")
+        self.ax2.set_xlabel("cumulative $\mathregular{CO_2}$ emissions (Mt)")
 
         self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
         self.ax2.xaxis.set_ticks_position("bottom")
