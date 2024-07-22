@@ -617,6 +617,9 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         # Drop-in fuels lower heating value (MJ/L)
         fuel_lhv = 35.3
@@ -755,6 +758,26 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
                 / co2_emissions.loc[k]
             )
 
+        for k in range(self.other_data_start_year, self.end_year + 1):
+            self.df.loc[k, "doc_carbon_tax_lowering_offset_per_ask_short_range_mean"] = (
+                doc_carbon_tax_per_ask_short_range_mean.loc[k]
+                * (co2_emissions.loc[k] - carbon_offset.loc[k])
+                / co2_emissions.loc[k]
+            )
+
+        for k in range(self.other_data_start_year, self.end_year + 1):
+            self.df.loc[k, "doc_carbon_tax_lowering_offset_per_ask_medium_range_mean"] = (
+                doc_carbon_tax_per_ask_medium_range_mean.loc[k]
+                * (co2_emissions.loc[k] - carbon_offset.loc[k])
+                / co2_emissions.loc[k]
+            )
+        for k in range(self.other_data_start_year, self.end_year + 1):
+            self.df.loc[k, "doc_carbon_tax_lowering_offset_per_ask_long_range_mean"] = (
+                doc_carbon_tax_per_ask_long_range_mean.loc[k]
+                * (co2_emissions.loc[k] - carbon_offset.loc[k])
+                / co2_emissions.loc[k]
+            )
+
         self.df.loc[
             :, "doc_carbon_tax_per_ask_long_range_dropin_fuel"
         ] = doc_carbon_tax_per_ask_long_range_dropin_fuel
@@ -797,6 +820,18 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             "doc_carbon_tax_lowering_offset_per_ask_mean"
         ]
 
+        doc_carbon_tax_lowering_offset_per_ask_short_range_mean = self.df[
+            "doc_carbon_tax_lowering_offset_per_ask_short_range_mean"
+        ]
+
+        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean = self.df[
+            "doc_carbon_tax_lowering_offset_per_ask_medium_range_mean"
+        ]
+
+        doc_carbon_tax_lowering_offset_per_ask_long_range_mean = self.df[
+            "doc_carbon_tax_lowering_offset_per_ask_long_range_mean"
+        ]
+
         return (
             doc_carbon_tax_per_ask_long_range_dropin_fuel,
             doc_carbon_tax_per_ask_long_range_hydrogen,
@@ -812,6 +847,9 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             doc_carbon_tax_per_ask_short_range_mean,
             doc_carbon_tax_per_ask_mean,
             doc_carbon_tax_lowering_offset_per_ask_mean,
+            doc_carbon_tax_lowering_offset_per_ask_short_range_mean,
+            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean,
+            doc_carbon_tax_lowering_offset_per_ask_long_range_mean,
         )
 
 
