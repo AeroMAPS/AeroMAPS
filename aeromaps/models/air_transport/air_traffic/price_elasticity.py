@@ -135,15 +135,15 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         alpha_sr = rpk_short_range_no_elasticity / (
                     airfare_per_rpk_short_range[self.prospection_start_year - 1] ** price_elasticity)
 
-        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_short_range"] = self.df.loc[
-            covid_end_year + 1 : self.end_year + 1, "rpk_short_range"
-        ] * (
-            1
-            + price_elasticity * relative_change_airfare_short_range.loc[covid_end_year + 1 : self.end_year + 1]
-        )
-        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_short_range"] = alpha_sr * (
-        #     airfare_per_rpk_short_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_short_range"] = self.df.loc[
+        #     covid_end_year + 1 : self.end_year + 1, "rpk_short_range"
+        # ] * (
+        #     1
+        #     + price_elasticity * relative_change_airfare_short_range.loc[covid_end_year + 1 : self.end_year + 1]
         # )
+        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_short_range"] = alpha_sr * (
+            airfare_per_rpk_short_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        )
 
 
 
@@ -162,16 +162,16 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         alpha_mr = rpk_medium_range_no_elasticity / (
                     airfare_per_rpk_medium_range[self.prospection_start_year - 1] ** price_elasticity)
 
-        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"] = self.df.loc[
-            covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"
-        ] * (
-            1
-            + price_elasticity * relative_change_airfare_medium_range.loc[covid_end_year + 1 : self.end_year + 1]
-        )
-
-        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"] = alpha_mr * (
-        #     airfare_per_rpk_medium_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"] = self.df.loc[
+        #     covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"
+        # ] * (
+        #     1
+        #     + price_elasticity * relative_change_airfare_medium_range.loc[covid_end_year + 1 : self.end_year + 1]
         # )
+
+        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_medium_range"] = alpha_mr * (
+            airfare_per_rpk_medium_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        )
 
         # Long range
         for k in range(covid_start_year, covid_end_year + 1):
@@ -189,16 +189,16 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
                     airfare_per_rpk_long_range[self.prospection_start_year - 1] ** price_elasticity
         )
 
-        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_long_range"] = self.df.loc[
-            covid_end_year + 1 : self.end_year + 1, "rpk_long_range"
-        ] * (
-            1
-            + price_elasticity * relative_change_airfare_long_range.loc[covid_end_year + 1 : self.end_year + 1]
-        )
-
-        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_long_range"] = alpha_lr * (
-        #     airfare_per_rpk_long_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_long_range"] = self.df.loc[
+        #     covid_end_year + 1 : self.end_year + 1, "rpk_long_range"
+        # ] * (
+        #     1
+        #     + price_elasticity * relative_change_airfare_long_range.loc[covid_end_year + 1 : self.end_year + 1]
         # )
+
+        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_long_range"] = alpha_lr * (
+            airfare_per_rpk_long_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        )
 
         rpk_short_range = self.df["rpk_short_range"]
         rpk_medium_range = self.df["rpk_medium_range"]
