@@ -276,7 +276,7 @@ class TotalSurplusLoss(AeroMAPSModel):
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = (
             airfare_per_rpk[self.prospection_start_year - 1]
-            / (rpk.loc[self.prospection_start_year - 1]**(1/price_elasticity))
+            / (rpk_no_elasticity**(1/price_elasticity))
         )
 
 
