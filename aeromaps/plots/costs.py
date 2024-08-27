@@ -80,7 +80,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_ylabel("Annual Capital Investment [M€]")
         # self.ax = plt.gca()
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -149,7 +149,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_xlim(2020, max(self.prospective_years) - 1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",

@@ -200,7 +200,6 @@ class PassengerKayaFactorsPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
@@ -302,7 +301,6 @@ class FreightKayaFactorsPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
