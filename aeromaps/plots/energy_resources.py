@@ -73,7 +73,6 @@ class ElectricityConsumptionPlot:
         self.create_plot()
 
     def create_plot(self):
-
         (self.line_electricity_consumption,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "electricity_consumption"],

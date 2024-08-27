@@ -374,9 +374,9 @@ class NonCO2Emissions(AeroMAPSModel):
             self.df_climate.loc[k, "nox_emissions"] = historical_nox_emissions_for_temperature[
                 k - self.climate_historic_start_year
             ]
-            self.df_climate.loc[
-                k, "sulfur_emissions"
-            ] = historical_sulfur_emissions_for_temperature[k - self.climate_historic_start_year]
+            self.df_climate.loc[k, "sulfur_emissions"] = (
+                historical_sulfur_emissions_for_temperature[k - self.climate_historic_start_year]
+            )
 
         for k in range(self.historic_start_year, self.end_year + 1):
             self.df_climate.loc[k, "soot_emissions"] = (
@@ -398,10 +398,7 @@ class NonCO2Emissions(AeroMAPSModel):
                 / lhv_hydrogen
             )
             self.df_climate.loc[k, "h2o_emissions"] = (
-                emission_index_h2o_biofuel
-                / 10**9
-                * energy_consumption_biofuel.loc[k]
-                / lhv_biofuel
+                emission_index_h2o_biofuel / 10**9 * energy_consumption_biofuel.loc[k] / lhv_biofuel
                 + emission_index_h2o_electrofuel
                 / 10**9
                 * energy_consumption_electrofuel.loc[k]

@@ -103,26 +103,26 @@ class EnergyIntensity(AeroMAPSModel):
             * (1 + operations_contrails_overconsumption / 100)
         )
 
-        self.df.loc[
-            :, "energy_per_ask_short_range_dropin_fuel"
-        ] = energy_per_ask_short_range_dropin_fuel
-        self.df.loc[
-            :, "energy_per_ask_medium_range_dropin_fuel"
-        ] = energy_per_ask_medium_range_dropin_fuel
-        self.df.loc[
-            :, "energy_per_ask_long_range_dropin_fuel"
-        ] = energy_per_ask_long_range_dropin_fuel
+        self.df.loc[:, "energy_per_ask_short_range_dropin_fuel"] = (
+            energy_per_ask_short_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_per_ask_medium_range_dropin_fuel"] = (
+            energy_per_ask_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_per_ask_long_range_dropin_fuel"] = (
+            energy_per_ask_long_range_dropin_fuel
+        )
         self.df.loc[:, "energy_per_rtk_freight_dropin_fuel"] = energy_per_rtk_freight_dropin_fuel
         self.df.loc[:, "energy_per_ask_short_range_hydrogen"] = energy_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "energy_per_ask_medium_range_hydrogen"
-        ] = energy_per_ask_medium_range_hydrogen
+        self.df.loc[:, "energy_per_ask_medium_range_hydrogen"] = (
+            energy_per_ask_medium_range_hydrogen
+        )
         self.df.loc[:, "energy_per_ask_long_range_hydrogen"] = energy_per_ask_long_range_hydrogen
         self.df.loc[:, "energy_per_rtk_freight_hydrogen"] = energy_per_rtk_freight_hydrogen
         self.df.loc[:, "energy_per_ask_short_range_electric"] = energy_per_ask_short_range_electric
-        self.df.loc[
-            :, "energy_per_ask_medium_range_electric"
-        ] = energy_per_ask_medium_range_electric
+        self.df.loc[:, "energy_per_ask_medium_range_electric"] = (
+            energy_per_ask_medium_range_electric
+        )
         self.df.loc[:, "energy_per_ask_long_range_electric"] = energy_per_ask_long_range_electric
         self.df.loc[:, "energy_per_rtk_freight_electric"] = energy_per_rtk_freight_electric
 

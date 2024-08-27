@@ -20,7 +20,11 @@ class ElectrofuelCostSimple(AeroMAPSModel):
         carbon_tax: pd.Series,
         lhv_electrofuel: float,
         density_electrofuel: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         electrofuel_total_cost = (
             electrofuel_mean_mfsp_litre
             / density_electrofuel
@@ -46,9 +50,9 @@ class ElectrofuelCostSimple(AeroMAPSModel):
             * lhv_electrofuel
             * density_electrofuel
         )
-        self.df.loc[
-            :, "electrofuel_mfsp_carbon_tax_supplement"
-        ] = electrofuel_mfsp_carbon_tax_supplement
+        self.df.loc[:, "electrofuel_mfsp_carbon_tax_supplement"] = (
+            electrofuel_mfsp_carbon_tax_supplement
+        )
 
         return (
             electrofuel_total_cost,

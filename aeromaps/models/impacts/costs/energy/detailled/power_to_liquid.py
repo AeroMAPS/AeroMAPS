@@ -53,7 +53,6 @@ class ElectrofuelCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
@@ -106,16 +105,16 @@ class ElectrofuelCost(AeroMAPSModel):
         self.df.loc[:, "electrofuel_cost_premium"] = electrofuel_cost_premium
         self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
         self.df.loc[:, "carbon_abatement_cost_electrofuel"] = carbon_abatement_cost_electrofuel
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_electrofuel"
-        ] = specific_carbon_abatement_cost_electrofuel
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_electrofuel"
-        ] = generic_specific_carbon_abatement_cost_electrofuel
+        self.df.loc[:, "specific_carbon_abatement_cost_electrofuel"] = (
+            specific_carbon_abatement_cost_electrofuel
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_electrofuel"] = (
+            generic_specific_carbon_abatement_cost_electrofuel
+        )
         self.df.loc[:, "electrofuel_carbon_tax"] = electrofuel_carbon_tax
-        self.df.loc[
-            :, "electrofuel_mfsp_carbon_tax_supplement"
-        ] = electrofuel_mfsp_carbon_tax_supplement
+        self.df.loc[:, "electrofuel_mfsp_carbon_tax_supplement"] = (
+            electrofuel_mfsp_carbon_tax_supplement
+        )
 
         return (
             electrofuel_plant_building_scenario,
@@ -295,7 +294,6 @@ class ElectrofuelCost(AeroMAPSModel):
 
                 for i in range(year, year + int(plant_lifespan)):
                     if i < (self.end_year + 1):
-
                         discounted_cumul_cost += (
                             electrofuel_cost[i]["TOTAL"] - kerosene_market_price[i]
                         ) / (1 + social_discount_rate) ** (i - year)
@@ -354,9 +352,9 @@ class ElectrofuelCost(AeroMAPSModel):
                 electrofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
-                generic_specific_carbon_abatement_cost[
-                    year
-                ] = generic_specific_carbon_abatement_cost[year - 1]
+                generic_specific_carbon_abatement_cost[year] = (
+                    generic_specific_carbon_abatement_cost[year - 1]
+                )
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -635,7 +633,6 @@ class ElectrofuelVarOpex(AeroMAPSModel):
 
 
 class ElectrofuelSpecificCo2(AeroMAPSModel):
-
     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
     def __init__(self, name="electrofuel_specific_co2", *args, **kwargs):

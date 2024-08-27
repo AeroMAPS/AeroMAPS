@@ -17,15 +17,14 @@ class OperationalEfficiencyCost(AeroMAPSModel):
         operations_final_gain: float,
         operations_gain: pd.Series,
     ) -> pd.Series:
-
         operational_efficiency_cost_non_energy_per_ask = (
             operational_efficiency_cost_non_energy_per_ask_final_value
             * operations_gain
             / operations_final_gain
         )
-        self.df.loc[
-            :, "operational_efficiency_cost_non_energy_per_ask"
-        ] = operational_efficiency_cost_non_energy_per_ask
+        self.df.loc[:, "operational_efficiency_cost_non_energy_per_ask"] = (
+            operational_efficiency_cost_non_energy_per_ask
+        )
 
         return operational_efficiency_cost_non_energy_per_ask
 
@@ -40,7 +39,6 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
         load_factor_end_year: float,
         load_factor: pd.Series,
     ) -> pd.Series:
-
         load_factor_init = load_factor[self.prospection_start_year - 1]
         load_factor_cost_non_energy_per_ask = (
             load_factor_cost_non_energy_per_ask_final_value

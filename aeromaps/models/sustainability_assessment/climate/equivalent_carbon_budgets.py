@@ -42,9 +42,9 @@ class EquivalentGrossCarbonBudget(AeroMAPSModel):
         )
 
         self.float_outputs["equivalent_gross_carbon_budget"] = equivalent_gross_carbon_budget
-        self.float_outputs[
-            "equivalent_gross_carbon_budget_2050"
-        ] = equivalent_gross_carbon_budget_2050
+        self.float_outputs["equivalent_gross_carbon_budget_2050"] = (
+            equivalent_gross_carbon_budget_2050
+        )
         self.float_outputs["aviation_equivalent_carbon_budget"] = aviation_equivalent_carbon_budget
 
         return (

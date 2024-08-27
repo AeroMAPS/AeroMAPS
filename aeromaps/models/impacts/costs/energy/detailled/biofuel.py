@@ -162,26 +162,26 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "plant_building_scenario_hefa_fog"] = plant_building_scenario_hefa_fog
         self.df.loc[:, "plant_building_cost_hefa_fog"] = plant_building_cost_hefa_fog
         self.df.loc[:, "carbon_abatement_cost_hefa_fog"] = carbon_abatement_cost_hefa_fog
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_hefa_fog"
-        ] = specific_carbon_abatement_cost_hefa_fog
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_hefa_fog"
-        ] = generic_specific_carbon_abatement_cost_hefa_fog
+        self.df.loc[:, "specific_carbon_abatement_cost_hefa_fog"] = (
+            specific_carbon_abatement_cost_hefa_fog
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_hefa_fog"] = (
+            generic_specific_carbon_abatement_cost_hefa_fog
+        )
         self.df.loc[:, "biofuel_cost_hefa_fog"] = biofuel_cost_hefa_fog
         self.df.loc[:, "biofuel_mean_capex_share_hefa_fog"] = biofuel_mean_capex_share_hefa_fog
-        self.df.loc[
-            :, "biofuel_mean_var_opex_share_hefa_fog"
-        ] = biofuel_mean_var_opex_share_hefa_fog
-        self.df.loc[
-            :, "biofuel_mean_feedstock_share_hefa_fog"
-        ] = biofuel_mean_feedstock_share_hefa_fog
+        self.df.loc[:, "biofuel_mean_var_opex_share_hefa_fog"] = (
+            biofuel_mean_var_opex_share_hefa_fog
+        )
+        self.df.loc[:, "biofuel_mean_feedstock_share_hefa_fog"] = (
+            biofuel_mean_feedstock_share_hefa_fog
+        )
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
         self.df.loc[:, "biofuel_carbon_tax_hefa_fog"] = biofuel_carbon_tax_hefa_fog
         self.df.loc[:, "biofuel_cost_premium_hefa_fog"] = biofuel_cost_premium_hefa_fog
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"
-        ] = biofuel_mfsp_carbon_tax_supplement_hefa_fog
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"] = (
+            biofuel_mfsp_carbon_tax_supplement_hefa_fog
+        )
 
         ### HEFA OTHERS
         # print('HEFA OTHER')
@@ -222,28 +222,28 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "plant_building_scenario_hefa_others"] = plant_building_scenario_hefa_others
         self.df.loc[:, "plant_building_cost_hefa_others"] = plant_building_cost_hefa_others
         self.df.loc[:, "carbon_abatement_cost_hefa_others"] = carbon_abatement_cost_hefa_others
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_hefa_others"
-        ] = specific_carbon_abatement_cost_hefa_others
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_hefa_others"
-        ] = generic_specific_carbon_abatement_cost_hefa_others
+        self.df.loc[:, "specific_carbon_abatement_cost_hefa_others"] = (
+            specific_carbon_abatement_cost_hefa_others
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_hefa_others"] = (
+            generic_specific_carbon_abatement_cost_hefa_others
+        )
         self.df.loc[:, "biofuel_cost_hefa_others"] = biofuel_cost_hefa_others
-        self.df.loc[
-            :, "biofuel_mean_capex_share_hefa_others"
-        ] = biofuel_mean_capex_share_hefa_others
-        self.df.loc[
-            :, "biofuel_mean_var_opex_share_hefa_others"
-        ] = biofuel_mean_var_opex_share_hefa_others
-        self.df.loc[
-            :, "biofuel_mean_feedstock_share_hefa_others"
-        ] = biofuel_mean_feedstock_share_hefa_others
+        self.df.loc[:, "biofuel_mean_capex_share_hefa_others"] = (
+            biofuel_mean_capex_share_hefa_others
+        )
+        self.df.loc[:, "biofuel_mean_var_opex_share_hefa_others"] = (
+            biofuel_mean_var_opex_share_hefa_others
+        )
+        self.df.loc[:, "biofuel_mean_feedstock_share_hefa_others"] = (
+            biofuel_mean_feedstock_share_hefa_others
+        )
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
         self.df.loc[:, "biofuel_carbon_tax_hefa_others"] = biofuel_carbon_tax_hefa_others
         self.df.loc[:, "biofuel_cost_premium_hefa_others"] = biofuel_cost_premium_hefa_others
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
-        ] = biofuel_mfsp_carbon_tax_supplement_hefa_others
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_hefa_others"] = (
+            biofuel_mfsp_carbon_tax_supplement_hefa_others
+        )
 
         ### FT OTHERS
         # print('FT OTHERS')
@@ -284,26 +284,26 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "plant_building_scenario_ft_others"] = plant_building_scenario_ft_others
         self.df.loc[:, "plant_building_cost_ft_others"] = plant_building_cost_ft_others
         self.df.loc[:, "carbon_abatement_cost_ft_others"] = carbon_abatement_cost_ft_others
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_ft_others"
-        ] = specific_carbon_abatement_cost_ft_others
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_ft_others"
-        ] = generic_specific_carbon_abatement_cost_ft_others
+        self.df.loc[:, "specific_carbon_abatement_cost_ft_others"] = (
+            specific_carbon_abatement_cost_ft_others
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_ft_others"] = (
+            generic_specific_carbon_abatement_cost_ft_others
+        )
         self.df.loc[:, "biofuel_cost_ft_others"] = biofuel_cost_ft_others
         self.df.loc[:, "biofuel_mean_capex_share_ft_others"] = biofuel_mean_capex_share_ft_others
-        self.df.loc[
-            :, "biofuel_mean_var_opex_share_ft_others"
-        ] = biofuel_mean_var_opex_share_ft_others
-        self.df.loc[
-            :, "biofuel_mean_feedstock_share_ft_others"
-        ] = biofuel_mean_feedstock_share_ft_others
+        self.df.loc[:, "biofuel_mean_var_opex_share_ft_others"] = (
+            biofuel_mean_var_opex_share_ft_others
+        )
+        self.df.loc[:, "biofuel_mean_feedstock_share_ft_others"] = (
+            biofuel_mean_feedstock_share_ft_others
+        )
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
         self.df.loc[:, "biofuel_carbon_tax_ft_others"] = biofuel_carbon_tax_ft_others
         self.df.loc[:, "biofuel_cost_premium_ft_others"] = biofuel_cost_premium_ft_others
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_ft_others"
-        ] = biofuel_mfsp_carbon_tax_supplement_ft_others
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_ft_others"] = (
+            biofuel_mfsp_carbon_tax_supplement_ft_others
+        )
 
         ### FT MSW
         # print('FT MSW')
@@ -344,12 +344,12 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "plant_building_scenario_ft_msw"] = plant_building_scenario_ft_msw
         self.df.loc[:, "plant_building_cost_ft_msw"] = plant_building_cost_ft_msw
         self.df.loc[:, "carbon_abatement_cost_ft_msw"] = carbon_abatement_cost_ft_msw
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_ft_msw"
-        ] = specific_carbon_abatement_cost_ft_msw
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_ft_msw"
-        ] = generic_specific_carbon_abatement_cost_ft_msw
+        self.df.loc[:, "specific_carbon_abatement_cost_ft_msw"] = (
+            specific_carbon_abatement_cost_ft_msw
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_ft_msw"] = (
+            generic_specific_carbon_abatement_cost_ft_msw
+        )
         self.df.loc[:, "biofuel_cost_ft_msw"] = biofuel_cost_ft_msw
         self.df.loc[:, "biofuel_mean_capex_share_ft_msw"] = biofuel_mean_capex_share_ft_msw
         self.df.loc[:, "biofuel_mean_var_opex_share_ft_msw"] = biofuel_mean_var_opex_share_ft_msw
@@ -357,9 +357,9 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
         self.df.loc[:, "biofuel_carbon_tax_ft_msw"] = biofuel_carbon_tax_ft_msw
         self.df.loc[:, "biofuel_cost_premium_ft_msw"] = biofuel_cost_premium_ft_msw
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_ft_msw"
-        ] = biofuel_mfsp_carbon_tax_supplement_ft_msw
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_ft_msw"] = (
+            biofuel_mfsp_carbon_tax_supplement_ft_msw
+        )
 
         ### ATJ
         # print('ATJ')
@@ -401,9 +401,9 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "plant_building_cost_atj"] = plant_building_cost_atj
         self.df.loc[:, "carbon_abatement_cost_atj"] = carbon_abatement_cost_atj
         self.df.loc[:, "specific_carbon_abatement_cost_atj"] = specific_carbon_abatement_cost_atj
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_atj"
-        ] = generic_specific_carbon_abatement_cost_atj
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_atj"] = (
+            generic_specific_carbon_abatement_cost_atj
+        )
         self.df.loc[:, "biofuel_cost_atj"] = biofuel_cost_atj
         self.df.loc[:, "biofuel_mean_capex_share_atj"] = biofuel_mean_capex_share_atj
         self.df.loc[:, "biofuel_mean_var_opex_share_atj"] = biofuel_mean_var_opex_share_atj
@@ -411,9 +411,9 @@ class BiofuelCost(AeroMAPSModel):
         self.df.loc[:, "biofuel_atj_mfsp"] = biofuel_atj_mfsp
         self.df.loc[:, "biofuel_carbon_tax_atj"] = biofuel_carbon_tax_atj
         self.df.loc[:, "biofuel_cost_premium_atj"] = biofuel_cost_premium_atj
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_atj"
-        ] = biofuel_mfsp_carbon_tax_supplement_atj
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_atj"] = (
+            biofuel_mfsp_carbon_tax_supplement_atj
+        )
 
         biofuel_mean_mfsp = (
             (biofuel_hefa_fog_mfsp * biofuel_hefa_fog_share / 100).fillna(0)
@@ -634,7 +634,6 @@ class BiofuelCost(AeroMAPSModel):
                 generic_discounted_cumul_em = 0
 
                 for i in range(year + 1, end_bound + 1):
-
                     biofuel_total_cost[i] = (
                         biofuel_total_cost[i]
                         + (missing_production_litres * biofuel_mfsp[i]["TOTAL"]) / 1e6
@@ -710,9 +709,9 @@ class BiofuelCost(AeroMAPSModel):
                 biofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
-                generic_specific_carbon_abatement_cost[
-                    year
-                ] = generic_specific_carbon_abatement_cost[year - 1]
+                generic_specific_carbon_abatement_cost[year] = (
+                    generic_specific_carbon_abatement_cost[year - 1]
+                )
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.

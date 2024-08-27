@@ -123,12 +123,12 @@ class ElectricityConsumption(AeroMAPSModel):
             + energy_consumption_electric / 10**12
         )
 
-        self.df.loc[
-            :, "electricity_hydrogen_electrolysis_consumption"
-        ] = electricity_hydrogen_electrolysis_consumption
-        self.df.loc[
-            :, "electricity_hydrogen_non_electrolysis_consumption"
-        ] = electricity_hydrogen_non_electrolysis_consumption
+        self.df.loc[:, "electricity_hydrogen_electrolysis_consumption"] = (
+            electricity_hydrogen_electrolysis_consumption
+        )
+        self.df.loc[:, "electricity_hydrogen_non_electrolysis_consumption"] = (
+            electricity_hydrogen_non_electrolysis_consumption
+        )
         self.df.loc[:, "electricity_hydrogen_consumption"] = electricity_hydrogen_consumption
         self.df.loc[:, "electricity_electrofuel_consumption"] = electricity_electrofuel_consumption
         self.df.loc[:, "electricity_consumption"] = electricity_consumption

@@ -47,7 +47,6 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-
         fuel_lhv = lhv_kerosene * density_kerosene
 
         ############### PASSENGER OPERATIONS #############
@@ -136,9 +135,9 @@ class OperationsAbatementCost(AeroMAPSModel):
         self.df.loc[:, "operations_abatement_cost_freight"] = operations_abatement_cost_freight
 
         operations_abatement_effective_freight = emissions_reduction_operations_freight * rtk
-        self.df.loc[
-            :, "operations_abatement_effective_freight"
-        ] = operations_abatement_effective_freight
+        self.df.loc[:, "operations_abatement_effective_freight"] = (
+            operations_abatement_effective_freight
+        )
 
         # Definition of a specific abatement cost, comparable to a hotelling growth carbon value.
         # Discount the costs/benefits over the horizon necessary to deploy the incremental gains of a year

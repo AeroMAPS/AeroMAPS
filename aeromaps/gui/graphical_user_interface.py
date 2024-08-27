@@ -71,7 +71,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.update(None)
 
     def _build_ui(self, change=None):
-
         # Initialization of graph output
         self.out1 = None
         self.out2 = None
@@ -918,7 +917,6 @@ class GraphicalUserInterface(widgets.VBox):
         self._update_plots()
 
     def _update_controls(self):
-
         # DISCOVERY
 
         # Traffic

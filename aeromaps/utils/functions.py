@@ -33,7 +33,6 @@ def _dict_from_json(file_name="parameters.json") -> dict:
 
 
 def _dict_to_df(data, orient="index") -> pd.DataFrame:
-
     # Check if values from data have the same length or else populate with NaN
     max_len = max([len(v) for v in data.values()])
     for key, value in data.items():
@@ -146,8 +145,8 @@ def create_partitioning(file, path=""):
 
     # TODO move historic and prospection start year out of custom input file
 
-    historic_start_year_partitioned = world_data_dict['historic_start_year']
-    prospection_start_year_partitioned = world_data_dict['prospection_start_year']
+    historic_start_year_partitioned = world_data_dict["historic_start_year"]
+    prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
 
     # Generation of the JSON file
     partitioned_inputs_dict = {
@@ -219,7 +218,5 @@ def create_partitioning(file, path=""):
         partitioned_historical_climate_dataset[k, 6] = climate_partitioned_data_distance[k]
     climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
-
-
 
     return

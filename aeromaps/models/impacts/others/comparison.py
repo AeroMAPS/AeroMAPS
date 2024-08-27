@@ -42,9 +42,9 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
             * 100
         )
 
-        self.float_outputs[
-            "equivalent_carbon_budget_consumed_share"
-        ] = equivalent_carbon_budget_consumed_share
+        self.float_outputs["equivalent_carbon_budget_consumed_share"] = (
+            equivalent_carbon_budget_consumed_share
+        )
 
         return equivalent_carbon_budget_consumed_share
 

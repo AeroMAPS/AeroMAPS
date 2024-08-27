@@ -31,7 +31,6 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         density_kerosene: float,
         lhv_kerosene: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-
         # Compute the total energy expenses of the scenario
         non_discounted_energy_expenses = (
             kerosene_cost.fillna(0)
@@ -74,9 +73,9 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
         self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
         self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
-        self.df.loc[
-            :, "non_discounted_full_kero_energy_expenses"
-        ] = non_discounted_full_kero_energy_expenses
+        self.df.loc[:, "non_discounted_full_kero_energy_expenses"] = (
+            non_discounted_full_kero_energy_expenses
+        )
 
         return (
             non_discounted_energy_expenses,
@@ -102,9 +101,7 @@ class DicountedScenarioCost(AeroMAPSModel):
         total_hydrogen_supply_cost: pd.Series,
         electricity_direct_use_total_cost: pd.Series,
     ) -> pd.Series:
-
         for k in range(self.prospection_start_year, self.end_year + 1):
-
             # Compute the discounter at year k
             discount_k = (1 + social_discount_rate) ** (k - self.prospection_start_year)
 
@@ -117,7 +114,9 @@ class DicountedScenarioCost(AeroMAPSModel):
             biofuel_atj_discounted = biofuel_cost_atj.fillna(0)[k] / discount_k
             electrofuel_discounted = electrofuel_total_cost.fillna(0)[k] / discount_k
             hydrogen_discounted = total_hydrogen_supply_cost.fillna(0)[k] / discount_k
-            electricity_direct_use_discounted = electricity_direct_use_total_cost.fillna(0)[k] / discount_k
+            electricity_direct_use_discounted = (
+                electricity_direct_use_total_cost.fillna(0)[k] / discount_k
+            )
 
             self.df.loc[k, "discounted_energy_expenses"] = (
                 kerosene_discounted

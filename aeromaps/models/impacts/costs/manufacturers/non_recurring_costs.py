@@ -19,7 +19,6 @@ class NonRecurringCosts(AeroMAPSModel):
     ) -> dict:
         nrc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
                 # Check if it's a reference aircraft or a normal aircraft...
