@@ -1665,43 +1665,43 @@ class Fleet(object):
         )
 
         # Short range regional turbofan
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=-15.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=30000000.0,
-            nrc_cost=5000000000.0,
-            oew=15.0,
-        )
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2035,
+        #     consumption_evolution=-15.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=30000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
 
-        sr_tf_aircraft_1 = Aircraft(
-            "New Regional turbofan 1",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
+        # sr_tf_aircraft_1 = Aircraft(
+        #     "New Regional turbofan 1",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
 
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-30.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=40000000.0,
-            nrc_cost=5000000000.0,
-            oew=15.0,
-        )
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2045,
+        #     consumption_evolution=-30.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=40000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
 
-        sr_tf_aircraft_2 = Aircraft(
-            "New Regional turbofan 2",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
+        # sr_tf_aircraft_2 = Aircraft(
+        #     "New Regional turbofan 2",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
 
         # Short range hydrogen aircraft
 
@@ -1917,8 +1917,8 @@ class Fleet(object):
             sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
 
         # Short range regional turbofan
-        subcat_params = SubcategoryParameters(share=0.0)
-        sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
+        # subcat_params = SubcategoryParameters(share=0.0)
+        # sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
         # Reference aircraft
         # Old
         # sr_tf_cat.old_reference_aircraft.entry_into_service_year = 1970

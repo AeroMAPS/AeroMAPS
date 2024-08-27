@@ -3039,14 +3039,14 @@ class CumulativeMACC:
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
-        macc_dict = {}
+        # macc_dict = {}
 
         name_list = []
         cumvol_list = []
         cumcost_list = []
         discounted_cumcost_list = []
-        undiscounted_cac_list = []
-        discounted_cac_list = []
+        # undiscounted_cac_list = []
+        # discounted_cac_list = []
 
         colors_list = []
 
@@ -4023,8 +4023,8 @@ class ScenarioMACC:
                     year,
                     -widths_effective_neg[i],
                     color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=np.cumsum(widths_effective_neg)[-1]
-                    - np.cumsum(widths_effective_neg)[i]
+                    bottom=cumwidths_neg[-1]
+                    - cumwidths_neg[i]
                     + widths_effective_neg[i],
                     edgecolor="black",
                     hatch="xx",
@@ -4070,7 +4070,7 @@ class ScenarioMACC:
             sm, cax=self.ax2, label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", norm=norm
         )
 
-        # Hatch legedn
+        # Hatch legend
 
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Abatement Effective (Mt)")

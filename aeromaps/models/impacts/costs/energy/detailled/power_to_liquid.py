@@ -191,7 +191,7 @@ class ElectrofuelCost(AeroMAPSModel):
         electrofuel_production = pd.Series(np.zeros(len(indexes)), indexes)
 
         # carbon abatement cost in €/ton
-        carbon_abatement_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # carbon_abatement_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
         generic_specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
@@ -204,12 +204,12 @@ class ElectrofuelCost(AeroMAPSModel):
         electrofuel_co2_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         # Total extra cost linked to carbon tax in M€2020
-        electrofuel_carbon_tax_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # electrofuel_carbon_tax_cost = pd.Series(np.zeros(len(indexes)), indexes)
         # Total annual cost premium in M€2020
-        electrofuel_cost_premium = pd.Series(np.zeros(len(indexes)), indexes)
+        # electrofuel_cost_premium = pd.Series(np.zeros(len(indexes)), indexes)
 
         # Extra cost on mfsp linked to carbon tax in €/L
-        mfsp_supplement_carbon_tax = pd.Series(np.zeros(len(indexes)), indexes)
+        # mfsp_supplement_carbon_tax = pd.Series(np.zeros(len(indexes)), indexes)
 
         # For each year o²f the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
