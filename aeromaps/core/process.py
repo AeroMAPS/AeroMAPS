@@ -345,7 +345,7 @@ class AeroMAPSProcess(object):
                         if not np.isnan(val):
                             new_values.append(val)
                     self.data["vector_inputs"][name] = new_values
-            except:
+            except AttributeError:
                 pass
 
         # Outputs
