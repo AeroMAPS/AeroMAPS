@@ -6,7 +6,8 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 from gemseo.core.discipline import MDODiscipline
-from gemseo import generate_n2_plot
+from gemseo.algos.design_space import DesignSpace
+from gemseo import generate_n2_plot, create_scenario
 # from gemseo.core.chain import create_mda
 
 # Local application imports
@@ -75,11 +76,31 @@ class AeroMAPSProcess(object):
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
-        # Create GEMSEO process
-        self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE, initialize_defaults=True
-        )
+        self._initialize_gemseo_process()
         self._initialize_data()
         self._update_variables()
+
+    def _initialize_gemseo_process(self):
+
+        self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
+                                initialize_defaults=True
+                                )
+
+        design_space = DesignSpace()
+        design_space.add_variable("load_factor_end_year", size=4, l_b=0.0, u_b=60.0, value=[0.0, 0.0, 0.0, 0.0])
+
+        objective_name = "cummulative_total_airline_cost"
+
+        # Create GEMSEO process
+        self.process = create_scenario(
+            disciplines=self.mda_chain,
+            formulation="DisciplinaryOpt",
+            objective_name=objective_name,
+            design_space=design_space,
+            scenario_type="MDO",
+            grammar_type=MDODiscipline.GrammarType.SIMPLE
+        )
+
 
     def compute(self):
         if self.fleet is not None:
@@ -95,7 +116,16 @@ class AeroMAPSProcess(object):
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
 
+        # config_algo = {"algo": "L-BFGS-B", "max_iter": 100}
+        # input_data.update(config_algo)
+
+        self.mda_chain.execute(input_data=input_data)
+
+        self.process = MDAChain(disciplines=self.mda_chain.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
+                                initialize_defaults=False)
+
         self.process.execute(input_data=input_data)
+        # self.process.execute(config_algo)
 
         self._update_variables()
 
@@ -351,7 +381,7 @@ class AeroMAPSProcess(object):
 
     def _update_data_from_model(self):
         # Inputs
-        all_inputs = self.process.get_input_data_names()
+        all_inputs = self.mda_chain.get_input_data_names()
 
         for name in all_inputs:
             try:
