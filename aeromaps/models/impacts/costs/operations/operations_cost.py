@@ -2,10 +2,9 @@
 # @Author : a.salgas
 # @File : operations_cost.py
 # @Software: PyCharm
-from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel
 
 
 class OperationalEfficiencyCost(AeroMAPSModel):

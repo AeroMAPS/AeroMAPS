@@ -3,7 +3,6 @@
 # @File : exogneous_carbon_price.py
 # @Software: PyCharm
 
-from typing import Tuple
 
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction

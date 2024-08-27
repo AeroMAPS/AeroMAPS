@@ -4,7 +4,6 @@
 # @Software: PyCharm
 import warnings
 
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -13,8 +12,7 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, Dropdown, widgets
-from matplotlib.ticker import FuncFormatter
+from ipywidgets import interact, widgets
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .constants import plot_3_x, plot_3_y

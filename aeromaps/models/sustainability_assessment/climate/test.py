@@ -10,7 +10,7 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
     ElectricityAvailability,
 )
 from aeromaps.core.gemseo import AeroMAPSModelWrapper
-from gemseo.api import create_discipline, generate_n2_plot, create_mda
+from gemseo.api import create_mda
 
 disc1 = AeroMAPSModelWrapper(model=GrossCarbonBudget(parameters=AllParameters()))
 disc2 = AeroMAPSModelWrapper(model=EquivalentGrossCarbonBudget(parameters=AllParameters()))

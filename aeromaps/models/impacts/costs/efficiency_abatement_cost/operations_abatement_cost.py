@@ -6,7 +6,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel
 
 
 class OperationsAbatementCost(AeroMAPSModel):

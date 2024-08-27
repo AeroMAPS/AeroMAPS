@@ -2,7 +2,6 @@
 # @Author : a.salgas
 # @File : fleet_abatement_cost.py
 # @Software: PyCharm
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel

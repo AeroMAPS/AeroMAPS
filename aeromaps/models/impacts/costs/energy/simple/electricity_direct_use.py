@@ -5,7 +5,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel
 
 class ElectricityDirectUse(AeroMAPSModel):
     def __init__(self, name="electricity_direct_use", *args, **kwargs):

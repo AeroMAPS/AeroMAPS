@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from typing import Tuple
 
 
 class NonRecurringCosts(AeroMAPSModel):

@@ -3,7 +3,7 @@
 # @File : aircrfat_numbe.py
 # @Software: PyCharm
 from aeromaps.models.base import AeroMAPSModel
-from typing import Tuple, Dict, Any
+from typing import Tuple
 import pandas as pd
 import numpy as np
 
