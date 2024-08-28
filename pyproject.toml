@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aeromaps"
-version = "0.7.0-beta"
+version = "0.7.0-beta" # This is directly modified by the poetry dynamic versioning
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.md"
 authors = [
@@ -46,7 +46,6 @@ ipytree = "^0.2.2"
 
 # Web deployment
 voila = "^0.5.0"
-
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0"
