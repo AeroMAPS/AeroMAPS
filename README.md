@@ -2,7 +2,7 @@
 [![image](https://img.shields.io/pypi/pyversions/aeromaps.svg)](https://pypi.python.org/pypi/aeromaps)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![Tests](https://github.com/AeroMAPS/AeroMAPS/workflows/test-notebooks/badge.svg)
+![Tests](https://github.com/AeroMAPS/AeroMAPS/workflows/tests/badge.svg)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD)
