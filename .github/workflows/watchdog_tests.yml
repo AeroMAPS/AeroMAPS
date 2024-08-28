@@ -35,6 +35,7 @@ jobs:
         run: |
           poetry env use ${{ matrix.python-version }}
           poetry update
+          poetry install
 
       - name: Notebook tests
         run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps
