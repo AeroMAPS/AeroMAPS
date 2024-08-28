@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    branches: [ 'master', 'master-v*' ]
+    branches: [ 'main', 'main-v*' ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ 'master', 'master-v*' ]
+    branches: [ 'main', 'main-v*' ]
   schedule:
     - cron: '00 4 * * *'
 
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.11' ]
-        os: [ ubuntu-20.04, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
 
     steps:
       - uses: actions/checkout@v3
