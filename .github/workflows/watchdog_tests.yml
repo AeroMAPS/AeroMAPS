@@ -4,10 +4,12 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    branches:
-      - '**'
-    tags-ignore:
-      - '**'
+    branches: [ 'master', 'master-v*' ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ 'master', 'master-v*' ]
+  schedule:
+    - cron: '00 4 * * *'
 
 jobs:
   tests:
