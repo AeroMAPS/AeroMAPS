@@ -71,7 +71,6 @@ ruff = "0.5.4"
 line-length = 100
 target-version = "py39"
 extend-include = ["*.ipynb"]
-exclude = ["tests/dummy_plugins/"]
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
