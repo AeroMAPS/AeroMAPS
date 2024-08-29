@@ -19,16 +19,15 @@ class LevelCarbonOffset(AeroMAPSModel):
         carbon_offset_baseline_level_vs_2019_reference_periods: list,
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-
         carbon_offset_baseline_level_vs_2019 = AeromapsLevelingFunction(
             self,
             carbon_offset_baseline_level_vs_2019_reference_periods,
             carbon_offset_baseline_level_vs_2019_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "carbon_offset_baseline_level_vs_2019"
-        ] = carbon_offset_baseline_level_vs_2019
+        self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = (
+            carbon_offset_baseline_level_vs_2019
+        )
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "level_carbon_offset"] = 0.0
@@ -65,7 +64,6 @@ class ResidualCarbonOffset(AeroMAPSModel):
         residual_carbon_offset_share_reference_years: list,
         residual_carbon_offset_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-
         residual_carbon_offset_share_prospective = AeromapsInterpolationFunction(
             self,
             residual_carbon_offset_share_reference_years,
@@ -98,7 +96,6 @@ class CarbonOffset(AeroMAPSModel):
         level_carbon_offset: pd.Series,
         residual_carbon_offset: pd.Series,
     ) -> pd.Series:
-
         carbon_offset = level_carbon_offset + residual_carbon_offset
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
@@ -114,7 +111,6 @@ class CumulativeCarbonOffset(AeroMAPSModel):
         self,
         carbon_offset: pd.Series,
     ) -> pd.Series:
-
         self.df.loc[self.prospection_start_year - 1, "cumulative_carbon_offset"] = 0.0
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "cumulative_carbon_offset"] = (

@@ -103,24 +103,24 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_freight_dropin_fuel_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_dropin_fuel_without_operations"
-        ] = energy_consumption_short_range_dropin_fuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_dropin_fuel_without_operations"
-        ] = energy_consumption_medium_range_dropin_fuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_dropin_fuel_without_operations"
-        ] = energy_consumption_long_range_dropin_fuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_dropin_fuel_without_operations"
-        ] = energy_consumption_passenger_dropin_fuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_dropin_fuel_without_operations"
-        ] = energy_consumption_freight_dropin_fuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_dropin_fuel_without_operations"
-        ] = energy_consumption_dropin_fuel_without_operations
+        self.df.loc[:, "energy_consumption_short_range_dropin_fuel_without_operations"] = (
+            energy_consumption_short_range_dropin_fuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel_without_operations"] = (
+            energy_consumption_medium_range_dropin_fuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_dropin_fuel_without_operations"] = (
+            energy_consumption_long_range_dropin_fuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_dropin_fuel_without_operations"] = (
+            energy_consumption_passenger_dropin_fuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_dropin_fuel_without_operations"] = (
+            energy_consumption_freight_dropin_fuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_dropin_fuel_without_operations"] = (
+            energy_consumption_dropin_fuel_without_operations
+        )
 
         # Biofuel
         energy_consumption_short_range_biofuel_without_operations = (
@@ -145,24 +145,24 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_freight_biofuel_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_biofuel_without_operations"
-        ] = energy_consumption_short_range_biofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_biofuel_without_operations"
-        ] = energy_consumption_medium_range_biofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_biofuel_without_operations"
-        ] = energy_consumption_long_range_biofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_biofuel_without_operations"
-        ] = energy_consumption_passenger_biofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_biofuel_without_operations"
-        ] = energy_consumption_freight_biofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_biofuel_without_operations"
-        ] = energy_consumption_biofuel_without_operations
+        self.df.loc[:, "energy_consumption_short_range_biofuel_without_operations"] = (
+            energy_consumption_short_range_biofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_biofuel_without_operations"] = (
+            energy_consumption_medium_range_biofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_biofuel_without_operations"] = (
+            energy_consumption_long_range_biofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_biofuel_without_operations"] = (
+            energy_consumption_passenger_biofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_biofuel_without_operations"] = (
+            energy_consumption_freight_biofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_biofuel_without_operations"] = (
+            energy_consumption_biofuel_without_operations
+        )
 
         # Electrofuel
         energy_consumption_short_range_electrofuel_without_operations = (
@@ -187,24 +187,24 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_freight_electrofuel_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_electrofuel_without_operations"
-        ] = energy_consumption_short_range_electrofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_electrofuel_without_operations"
-        ] = energy_consumption_medium_range_electrofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_electrofuel_without_operations"
-        ] = energy_consumption_long_range_electrofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_electrofuel_without_operations"
-        ] = energy_consumption_passenger_electrofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_electrofuel_without_operations"
-        ] = energy_consumption_freight_electrofuel_without_operations
-        self.df.loc[
-            :, "energy_consumption_electrofuel_without_operations"
-        ] = energy_consumption_electrofuel_without_operations
+        self.df.loc[:, "energy_consumption_short_range_electrofuel_without_operations"] = (
+            energy_consumption_short_range_electrofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_electrofuel_without_operations"] = (
+            energy_consumption_medium_range_electrofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_electrofuel_without_operations"] = (
+            energy_consumption_long_range_electrofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_electrofuel_without_operations"] = (
+            energy_consumption_passenger_electrofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_electrofuel_without_operations"] = (
+            energy_consumption_freight_electrofuel_without_operations
+        )
+        self.df.loc[:, "energy_consumption_electrofuel_without_operations"] = (
+            energy_consumption_electrofuel_without_operations
+        )
 
         # Kerosene
         energy_consumption_short_range_kerosene_without_operations = (
@@ -229,24 +229,24 @@ class DropInFuelConsumption(AeroMAPSModel):
             + energy_consumption_freight_kerosene_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_kerosene_without_operations"
-        ] = energy_consumption_short_range_kerosene_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_kerosene_without_operations"
-        ] = energy_consumption_medium_range_kerosene_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_kerosene_without_operations"
-        ] = energy_consumption_long_range_kerosene_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_kerosene_without_operations"
-        ] = energy_consumption_passenger_kerosene_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_kerosene_without_operations"
-        ] = energy_consumption_freight_kerosene_without_operations
-        self.df.loc[
-            :, "energy_consumption_kerosene_without_operations"
-        ] = energy_consumption_kerosene_without_operations
+        self.df.loc[:, "energy_consumption_short_range_kerosene_without_operations"] = (
+            energy_consumption_short_range_kerosene_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_kerosene_without_operations"] = (
+            energy_consumption_medium_range_kerosene_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_kerosene_without_operations"] = (
+            energy_consumption_long_range_kerosene_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_kerosene_without_operations"] = (
+            energy_consumption_passenger_kerosene_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_kerosene_without_operations"] = (
+            energy_consumption_freight_kerosene_without_operations
+        )
+        self.df.loc[:, "energy_consumption_kerosene_without_operations"] = (
+            energy_consumption_kerosene_without_operations
+        )
 
         # WITH OPERATIONS
         # Drop-in fuel
@@ -271,21 +271,21 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_dropin_fuel"
-        ] = energy_consumption_short_range_dropin_fuel
-        self.df.loc[
-            :, "energy_consumption_medium_range_dropin_fuel"
-        ] = energy_consumption_medium_range_dropin_fuel
-        self.df.loc[
-            :, "energy_consumption_long_range_dropin_fuel"
-        ] = energy_consumption_long_range_dropin_fuel
-        self.df.loc[
-            :, "energy_consumption_passenger_dropin_fuel"
-        ] = energy_consumption_passenger_dropin_fuel
-        self.df.loc[
-            :, "energy_consumption_freight_dropin_fuel"
-        ] = energy_consumption_freight_dropin_fuel
+        self.df.loc[:, "energy_consumption_short_range_dropin_fuel"] = (
+            energy_consumption_short_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel"] = (
+            energy_consumption_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_long_range_dropin_fuel"] = (
+            energy_consumption_long_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_passenger_dropin_fuel"] = (
+            energy_consumption_passenger_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_freight_dropin_fuel"] = (
+            energy_consumption_freight_dropin_fuel
+        )
         self.df.loc[:, "energy_consumption_dropin_fuel"] = energy_consumption_dropin_fuel
 
         # Biofuel
@@ -310,18 +310,18 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_passenger_biofuel + energy_consumption_freight_biofuel
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_biofuel"
-        ] = energy_consumption_short_range_biofuel
-        self.df.loc[
-            :, "energy_consumption_medium_range_biofuel"
-        ] = energy_consumption_medium_range_biofuel
-        self.df.loc[
-            :, "energy_consumption_long_range_biofuel"
-        ] = energy_consumption_long_range_biofuel
-        self.df.loc[
-            :, "energy_consumption_passenger_biofuel"
-        ] = energy_consumption_passenger_biofuel
+        self.df.loc[:, "energy_consumption_short_range_biofuel"] = (
+            energy_consumption_short_range_biofuel
+        )
+        self.df.loc[:, "energy_consumption_medium_range_biofuel"] = (
+            energy_consumption_medium_range_biofuel
+        )
+        self.df.loc[:, "energy_consumption_long_range_biofuel"] = (
+            energy_consumption_long_range_biofuel
+        )
+        self.df.loc[:, "energy_consumption_passenger_biofuel"] = (
+            energy_consumption_passenger_biofuel
+        )
         self.df.loc[:, "energy_consumption_freight_biofuel"] = energy_consumption_freight_biofuel
         self.df.loc[:, "energy_consumption_biofuel"] = energy_consumption_biofuel
 
@@ -347,21 +347,21 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_passenger_electrofuel + energy_consumption_freight_electrofuel
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_electrofuel"
-        ] = energy_consumption_short_range_electrofuel
-        self.df.loc[
-            :, "energy_consumption_medium_range_electrofuel"
-        ] = energy_consumption_medium_range_electrofuel
-        self.df.loc[
-            :, "energy_consumption_long_range_electrofuel"
-        ] = energy_consumption_long_range_electrofuel
-        self.df.loc[
-            :, "energy_consumption_passenger_electrofuel"
-        ] = energy_consumption_passenger_electrofuel
-        self.df.loc[
-            :, "energy_consumption_freight_electrofuel"
-        ] = energy_consumption_freight_electrofuel
+        self.df.loc[:, "energy_consumption_short_range_electrofuel"] = (
+            energy_consumption_short_range_electrofuel
+        )
+        self.df.loc[:, "energy_consumption_medium_range_electrofuel"] = (
+            energy_consumption_medium_range_electrofuel
+        )
+        self.df.loc[:, "energy_consumption_long_range_electrofuel"] = (
+            energy_consumption_long_range_electrofuel
+        )
+        self.df.loc[:, "energy_consumption_passenger_electrofuel"] = (
+            energy_consumption_passenger_electrofuel
+        )
+        self.df.loc[:, "energy_consumption_freight_electrofuel"] = (
+            energy_consumption_freight_electrofuel
+        )
         self.df.loc[:, "energy_consumption_electrofuel"] = energy_consumption_electrofuel
 
         # Kerosene
@@ -386,18 +386,18 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_passenger_kerosene + energy_consumption_freight_kerosene
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_kerosene"
-        ] = energy_consumption_short_range_kerosene
-        self.df.loc[
-            :, "energy_consumption_medium_range_kerosene"
-        ] = energy_consumption_medium_range_kerosene
-        self.df.loc[
-            :, "energy_consumption_long_range_kerosene"
-        ] = energy_consumption_long_range_kerosene
-        self.df.loc[
-            :, "energy_consumption_passenger_kerosene"
-        ] = energy_consumption_passenger_kerosene
+        self.df.loc[:, "energy_consumption_short_range_kerosene"] = (
+            energy_consumption_short_range_kerosene
+        )
+        self.df.loc[:, "energy_consumption_medium_range_kerosene"] = (
+            energy_consumption_medium_range_kerosene
+        )
+        self.df.loc[:, "energy_consumption_long_range_kerosene"] = (
+            energy_consumption_long_range_kerosene
+        )
+        self.df.loc[:, "energy_consumption_passenger_kerosene"] = (
+            energy_consumption_passenger_kerosene
+        )
         self.df.loc[:, "energy_consumption_freight_kerosene"] = energy_consumption_freight_kerosene
         self.df.loc[:, "energy_consumption_kerosene"] = energy_consumption_kerosene
 
@@ -510,24 +510,24 @@ class HydrogenConsumption(AeroMAPSModel):
             + energy_consumption_freight_hydrogen_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_hydrogen_without_operations"
-        ] = energy_consumption_short_range_hydrogen_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_hydrogen_without_operations"
-        ] = energy_consumption_medium_range_hydrogen_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_hydrogen_without_operations"
-        ] = energy_consumption_long_range_hydrogen_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_hydrogen_without_operations"
-        ] = energy_consumption_passenger_hydrogen_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_hydrogen_without_operations"
-        ] = energy_consumption_freight_hydrogen_without_operations
-        self.df.loc[
-            :, "energy_consumption_hydrogen_without_operations"
-        ] = energy_consumption_hydrogen_without_operations
+        self.df.loc[:, "energy_consumption_short_range_hydrogen_without_operations"] = (
+            energy_consumption_short_range_hydrogen_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_hydrogen_without_operations"] = (
+            energy_consumption_medium_range_hydrogen_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_hydrogen_without_operations"] = (
+            energy_consumption_long_range_hydrogen_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_hydrogen_without_operations"] = (
+            energy_consumption_passenger_hydrogen_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_hydrogen_without_operations"] = (
+            energy_consumption_freight_hydrogen_without_operations
+        )
+        self.df.loc[:, "energy_consumption_hydrogen_without_operations"] = (
+            energy_consumption_hydrogen_without_operations
+        )
 
         # WITH OPERATIONS
         energy_consumption_short_range_hydrogen = (
@@ -549,18 +549,18 @@ class HydrogenConsumption(AeroMAPSModel):
             energy_consumption_passenger_hydrogen + energy_consumption_freight_hydrogen
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_hydrogen"
-        ] = energy_consumption_short_range_hydrogen
-        self.df.loc[
-            :, "energy_consumption_medium_range_hydrogen"
-        ] = energy_consumption_medium_range_hydrogen
-        self.df.loc[
-            :, "energy_consumption_long_range_hydrogen"
-        ] = energy_consumption_long_range_hydrogen
-        self.df.loc[
-            :, "energy_consumption_passenger_hydrogen"
-        ] = energy_consumption_passenger_hydrogen
+        self.df.loc[:, "energy_consumption_short_range_hydrogen"] = (
+            energy_consumption_short_range_hydrogen
+        )
+        self.df.loc[:, "energy_consumption_medium_range_hydrogen"] = (
+            energy_consumption_medium_range_hydrogen
+        )
+        self.df.loc[:, "energy_consumption_long_range_hydrogen"] = (
+            energy_consumption_long_range_hydrogen
+        )
+        self.df.loc[:, "energy_consumption_passenger_hydrogen"] = (
+            energy_consumption_passenger_hydrogen
+        )
         self.df.loc[:, "energy_consumption_freight_hydrogen"] = energy_consumption_freight_hydrogen
         self.df.loc[:, "energy_consumption_hydrogen"] = energy_consumption_hydrogen
 
@@ -637,24 +637,24 @@ class ElectricConsumption(AeroMAPSModel):
             + energy_consumption_freight_electric_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_electric_without_operations"
-        ] = energy_consumption_short_range_electric_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_electric_without_operations"
-        ] = energy_consumption_medium_range_electric_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_electric_without_operations"
-        ] = energy_consumption_long_range_electric_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_electric_without_operations"
-        ] = energy_consumption_passenger_electric_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_electric_without_operations"
-        ] = energy_consumption_freight_electric_without_operations
-        self.df.loc[
-            :, "energy_consumption_electric_without_operations"
-        ] = energy_consumption_electric_without_operations
+        self.df.loc[:, "energy_consumption_short_range_electric_without_operations"] = (
+            energy_consumption_short_range_electric_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_electric_without_operations"] = (
+            energy_consumption_medium_range_electric_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_electric_without_operations"] = (
+            energy_consumption_long_range_electric_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_electric_without_operations"] = (
+            energy_consumption_passenger_electric_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_electric_without_operations"] = (
+            energy_consumption_freight_electric_without_operations
+        )
+        self.df.loc[:, "energy_consumption_electric_without_operations"] = (
+            energy_consumption_electric_without_operations
+        )
 
         # WITH OPERATIONS
         energy_consumption_short_range_electric = (
@@ -676,18 +676,18 @@ class ElectricConsumption(AeroMAPSModel):
             energy_consumption_passenger_electric + energy_consumption_freight_electric
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_electric"
-        ] = energy_consumption_short_range_electric
-        self.df.loc[
-            :, "energy_consumption_medium_range_electric"
-        ] = energy_consumption_medium_range_electric
-        self.df.loc[
-            :, "energy_consumption_long_range_electric"
-        ] = energy_consumption_long_range_electric
-        self.df.loc[
-            :, "energy_consumption_passenger_electric"
-        ] = energy_consumption_passenger_electric
+        self.df.loc[:, "energy_consumption_short_range_electric"] = (
+            energy_consumption_short_range_electric
+        )
+        self.df.loc[:, "energy_consumption_medium_range_electric"] = (
+            energy_consumption_medium_range_electric
+        )
+        self.df.loc[:, "energy_consumption_long_range_electric"] = (
+            energy_consumption_long_range_electric
+        )
+        self.df.loc[:, "energy_consumption_passenger_electric"] = (
+            energy_consumption_passenger_electric
+        )
         self.df.loc[:, "energy_consumption_freight_electric"] = energy_consumption_freight_electric
         self.df.loc[:, "energy_consumption_electric"] = energy_consumption_electric
 
@@ -833,24 +833,24 @@ class EnergyConsumption(AeroMAPSModel):
             + energy_consumption_electric_without_operations
         )
 
-        self.df.loc[
-            :, "energy_consumption_short_range_without_operations"
-        ] = energy_consumption_short_range_without_operations
-        self.df.loc[
-            :, "energy_consumption_medium_range_without_operations"
-        ] = energy_consumption_medium_range_without_operations
-        self.df.loc[
-            :, "energy_consumption_long_range_without_operations"
-        ] = energy_consumption_long_range_without_operations
-        self.df.loc[
-            :, "energy_consumption_passenger_without_operations"
-        ] = energy_consumption_passenger_without_operations
-        self.df.loc[
-            :, "energy_consumption_freight_without_operations"
-        ] = energy_consumption_freight_without_operations
-        self.df.loc[
-            :, "energy_consumption_without_operations"
-        ] = energy_consumption_without_operations
+        self.df.loc[:, "energy_consumption_short_range_without_operations"] = (
+            energy_consumption_short_range_without_operations
+        )
+        self.df.loc[:, "energy_consumption_medium_range_without_operations"] = (
+            energy_consumption_medium_range_without_operations
+        )
+        self.df.loc[:, "energy_consumption_long_range_without_operations"] = (
+            energy_consumption_long_range_without_operations
+        )
+        self.df.loc[:, "energy_consumption_passenger_without_operations"] = (
+            energy_consumption_passenger_without_operations
+        )
+        self.df.loc[:, "energy_consumption_freight_without_operations"] = (
+            energy_consumption_freight_without_operations
+        )
+        self.df.loc[:, "energy_consumption_without_operations"] = (
+            energy_consumption_without_operations
+        )
 
         # WITH OPERATIONS
         energy_consumption_short_range = (

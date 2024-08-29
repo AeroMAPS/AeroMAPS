@@ -5,7 +5,6 @@
 
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -363,17 +362,17 @@ class EnergyAbatementEffective(AeroMAPSModel):
         self.df.loc[:, "abatement_effective_hefa_others"] = abatement_effective_hefa_others
         self.df.loc[:, "abatement_effective_ft_msw"] = abatement_effective_ft_msw
         self.df.loc[:, "abatement_effective_ft_others"] = abatement_effective_ft_others
-        self.df.loc[
-            :, "abatement_effective_hydrogen_electrolysis"
-        ] = abatement_effective_hydrogen_electrolysis
+        self.df.loc[:, "abatement_effective_hydrogen_electrolysis"] = (
+            abatement_effective_hydrogen_electrolysis
+        )
         self.df.loc[:, "abatement_effective_hydrogen_coal"] = abatement_effective_hydrogen_coal
-        self.df.loc[
-            :, "abatement_effective_hydrogen_coal_ccs"
-        ] = abatement_effective_hydrogen_coal_ccs
+        self.df.loc[:, "abatement_effective_hydrogen_coal_ccs"] = (
+            abatement_effective_hydrogen_coal_ccs
+        )
         self.df.loc[:, "abatement_effective_hydrogen_gas"] = abatement_effective_hydrogen_gas
-        self.df.loc[
-            :, "abatement_effective_hydrogen_gas_ccs"
-        ] = abatement_effective_hydrogen_gas_ccs
+        self.df.loc[:, "abatement_effective_hydrogen_gas_ccs"] = (
+            abatement_effective_hydrogen_gas_ccs
+        )
         self.df.loc[:, "abatement_effective_electrofuel"] = abatement_effective_electrofuel
 
         return (

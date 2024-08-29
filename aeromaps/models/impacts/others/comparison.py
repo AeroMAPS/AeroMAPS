@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -43,9 +42,9 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
             * 100
         )
 
-        self.float_outputs[
-            "equivalent_carbon_budget_consumed_share"
-        ] = equivalent_carbon_budget_consumed_share
+        self.float_outputs["equivalent_carbon_budget_consumed_share"] = (
+            equivalent_carbon_budget_consumed_share
+        )
 
         return equivalent_carbon_budget_consumed_share
 

@@ -42,7 +42,6 @@ from gemseo.core.discipline import MDODiscipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 
-import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 if TYPE_CHECKING:

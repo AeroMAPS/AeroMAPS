@@ -1,6 +1,5 @@
 from typing import Tuple
 import pandas as pd
-import numpy as np
 
 from aeromaps.models.base import AeroMAPSModel, AbsoluteGlobalWarmingPotentialCO2Function
 
@@ -12,7 +11,10 @@ class SimplifiedERFCo2(AeroMAPSModel):
     def compute(
         self,
         co2_emissions: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series,]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+    ]:
         """ERF calculation for CO2 emissions with a simplified method."""
 
         # CO2
@@ -67,7 +69,13 @@ class ERFNox(AeroMAPSModel):
         erf_coefficient_nox_long_term_o3_decrease: float,
         erf_coefficient_nox_ch4_decrease: float,
         erf_coefficient_nox_stratospheric_water_vapor_decrease: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         """ERF calculation for NOx emissions."""
 
         # NOx

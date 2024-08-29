@@ -71,7 +71,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.update(None)
 
     def _build_ui(self, change=None):
-
         # Initialization of graph output
         self.out1 = None
         self.out2 = None
@@ -918,11 +917,10 @@ class GraphicalUserInterface(widgets.VBox):
         self._update_plots()
 
     def _update_controls(self):
-
         # DISCOVERY
 
         # Traffic
-        if self.w_grouped_market.value == False:
+        if self.w_grouped_market.value is False:
             self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
             ]
@@ -958,7 +956,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.w_growth_freight_percent.disabled = True
             self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
 
-        if self.w_short_range_reduction.value == False and self.w_social_measure.value == False:
+        if self.w_short_range_reduction.value is False and self.w_social_measure.value is False:
             self.process.parameters.rpk_short_range_measures_final_impact = 0.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
             self.process.parameters.rpk_long_range_measures_final_impact = 0.0
@@ -968,7 +966,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.rpk_short_range_measures_duration = 5.0
             self.process.parameters.rpk_medium_range_measures_duration = 5.0
             self.process.parameters.rpk_long_range_measures_duration = 5.0
-        elif self.w_short_range_reduction.value == True and self.w_social_measure.value == False:
+        elif self.w_short_range_reduction.value and self.w_social_measure.value is False:
             self.process.parameters.rpk_short_range_measures_final_impact = 50.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
             self.process.parameters.rpk_long_range_measures_final_impact = 0.0
@@ -978,7 +976,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.rpk_short_range_measures_duration = 5.0
             self.process.parameters.rpk_medium_range_measures_duration = 5.0
             self.process.parameters.rpk_long_range_measures_duration = 5.0
-        elif self.w_short_range_reduction.value == False and self.w_social_measure.value == True:
+        elif self.w_short_range_reduction.value is False and self.w_social_measure.value:
             self.process.parameters.rpk_short_range_measures_final_impact = 25.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 25.0
             self.process.parameters.rpk_long_range_measures_final_impact = 25.0
@@ -1019,7 +1017,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1140,7 +1138,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1261,7 +1259,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1382,7 +1380,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1503,7 +1501,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1625,7 +1623,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1747,7 +1745,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         # Hydrogen
-        if self.w_turboprop.value == False:
+        if self.w_turboprop.value is False:
             if self.w_hydrogen_aircraft.value == "Limited":
                 self.process.fleet.categories["Short Range"].subcategories[
                     0
@@ -1859,7 +1857,7 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
                     aircraft=medium_range_aircraft_hydrogen
                 )
-        elif self.w_turboprop.value == True:
+        elif self.w_turboprop.value:
             if self.w_hydrogen_aircraft.value == "Limited":
                 self.process.fleet.categories["Short Range"].subcategories[
                     0
@@ -2005,7 +2003,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.operations_start_year = 2025
             self.process.parameters.operations_duration = 20.0
 
-        if self.w_contrails_avoidance.value == True:
+        if self.w_contrails_avoidance.value:
             self.process.parameters.operations_contrails_final_gain = 59.4  # [%]
             self.process.parameters.operations_contrails_final_overconsumption = 0.014  # [%]
             self.process.parameters.operations_contrails_start_year = 2030

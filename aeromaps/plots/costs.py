@@ -4,7 +4,6 @@
 # @Software: PyCharm
 import warnings
 
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -13,8 +12,7 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, Dropdown, widgets
-from matplotlib.ticker import FuncFormatter
+from ipywidgets import interact, widgets
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .constants import plot_3_x, plot_3_y
@@ -82,7 +80,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_ylabel("Annual Capital Investment [M€]")
         # self.ax = plt.gca()
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -151,7 +149,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_xlim(2020, max(self.prospective_years) - 1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -346,7 +344,6 @@ class ScenarioEnergyExpensesPlot:
         self.fig.tight_layout()
 
     def update(self, df_data):
-
         self.df = df_data["vector_outputs"]
 
         self.ax.clear()
@@ -951,10 +948,7 @@ class ScenarioEnergyUnitCostPlot:
 
         (self.line_electricity,) = self.ax.plot(
             self.prospective_years,
-            (
-                    self.df.loc[self.prospective_years, "electricity_market_price"]
-            )
-            / 3.6,
+            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
             color="#7D3C98",
             label="Electricity",
             linewidth=2,
@@ -1042,9 +1036,7 @@ class ScenarioEnergyUnitCostPlot:
         )
 
         self.line_electricity.set_ydata(
-            (
-                    self.df.loc[self.prospective_years, "electricity_market_price"]
-            )/3.6,
+            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
         )
 
         for collection in self.ax.collections:
@@ -1243,8 +1235,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
         (self.line_electricity,) = self.ax.plot(
             self.prospective_years,
             (
-                    self.df.loc[self.prospective_years, "electricity_market_price"]
-                    + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+                self.df.loc[self.prospective_years, "electricity_market_price"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
             )
             / 3.6,
             color="#7D3C98",
@@ -1372,8 +1364,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
 
         self.line_electricity.set_ydata(
             (
-                    self.df.loc[self.prospective_years, "electricity_market_price"]
-                    + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+                self.df.loc[self.prospective_years, "electricity_market_price"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
             )
             / 3.6,
         )
@@ -2478,7 +2470,6 @@ class AnnualMACC:
             ) from e
 
     def plot_interact(self):
-
         year_widget = widgets.IntSlider(
             min=self.prospective_years[0],
             max=self.prospective_years[-1],
@@ -3041,14 +3032,14 @@ class CumulativeMACC:
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
-        macc_dict = {}
+        # macc_dict = {}
 
         name_list = []
         cumvol_list = []
         cumcost_list = []
         discounted_cumcost_list = []
-        undiscounted_cac_list = []
-        discounted_cac_list = []
+        # undiscounted_cac_list = []
+        # discounted_cac_list = []
 
         colors_list = []
 
@@ -3956,7 +3947,6 @@ class ScenarioMACC:
         scc_list = []
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4025,9 +4015,7 @@ class ScenarioMACC:
                     year,
                     -widths_effective_neg[i],
                     color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=np.cumsum(widths_effective_neg)[-1]
-                    - np.cumsum(widths_effective_neg)[i]
-                    + widths_effective_neg[i],
+                    bottom=cumwidths_neg[-1] - cumwidths_neg[i] + widths_effective_neg[i],
                     edgecolor="black",
                     hatch="xx",
                     width=1,
@@ -4072,7 +4060,7 @@ class ScenarioMACC:
             sm, cax=self.ax2, label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", norm=norm
         )
 
-        # Hatch legedn
+        # Hatch legend
 
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Abatement Effective (Mt)")
@@ -4375,7 +4363,6 @@ class ShadowCarbonPrice:
         years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
         for year in years:
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4481,7 +4468,6 @@ class DetailledMFSPBreakdownPerPathway:
             ) from e
 
     def plot_interact(self):
-
         pathway_widget = widgets.Dropdown(
             options=[
                 ("Bio - HEFA Fog", "hefa_fog"),
@@ -4495,7 +4481,7 @@ class DetailledMFSPBreakdownPerPathway:
                 ("LH2 - Coal CCS", "coal_ccs_h2"),
                 ("LH2 - Coal", "coal_h2"),
                 ("E-fuel", "electrofuel"),
-                ("Direct electricity", 'direct_electricity')
+                ("Direct electricity", "direct_electricity"),
             ],
             description="Pathway:",
         )
@@ -4513,10 +4499,7 @@ class DetailledMFSPBreakdownPerPathway:
         self.ax2.cla()
 
         if pathway in ["direct_electricity"]:
-
-            val = (
-                self.df.loc[self.prospective_years, "electricity_market_price"]
-            )
+            val = self.df.loc[self.prospective_years, "electricity_market_price"]
 
             carbon_tax_val = self.df.loc[
                 self.prospective_years, "electricity_direct_use_carbon_tax_kWh"
@@ -4595,10 +4578,8 @@ class DetailledMFSPBreakdownPerPathway:
 
             self.ax.set_ylim(0, None)
             self.ax2.set_ylim(
-                self.ax.get_ylim()[0]
-                / 3.6,
-                self.ax.get_ylim()[1]
-                / 3.6,
+                self.ax.get_ylim()[0] / 3.6,
+                self.ax.get_ylim()[1] / 3.6,
             )
 
             # Move the label for the second y-axis to the right
@@ -4606,7 +4587,6 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
-
             capex_val = (
                 self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
@@ -4730,7 +4710,6 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         elif pathway == "electrofuel":
-
             capex_val = (
                 self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
                 * self.df.loc[self.prospective_years, "electrofuel_mean_capex_share"]
@@ -5254,7 +5233,7 @@ class DetailledMFSPBreakdownPerYear:
                 linewidth=0.5,
             )
 
-        for (name, pathway) in [
+        for name, pathway in [
             ("Bio - HEFA Fog", "hefa_fog"),
             ("Bio - HEFA Others", "hefa_others"),
             ("Bio - FT MSW", "ft_msw"),
@@ -5326,7 +5305,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for (name, pathway) in [("E-fuel", "electrofuel")]:
+        for name, pathway in [("E-fuel", "electrofuel")]:
             if not pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]):
                 capex_val = (
                     self.df.loc[year, "electrofuel_mean_mfsp_litre"]
@@ -5408,7 +5387,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for (name, pathway) in [
+        for name, pathway in [
             ("LH2 - Electrolysis", "electrolysis_h2"),
             ("LH2 - Gas CCS", "gas_ccs_h2"),
             ("LH2 - Gas", "gas_h2"),
@@ -5416,7 +5395,6 @@ class DetailledMFSPBreakdownPerYear:
             ("LH2 - Coal", "coal_h2"),
         ]:
             if not pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]):
-
                 capex_val = (
                     self.df.loc[year, pathway + "_mean_mfsp_kg"]
                     * self.df.loc[year, pathway + "_mean_capex_share"]

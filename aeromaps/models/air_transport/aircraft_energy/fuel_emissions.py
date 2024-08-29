@@ -171,22 +171,22 @@ class HydrogenEmissionFactor(AeroMAPSModel):
             + liquid_hydrogen_coal_emission_factor * hydrogen_coal_share / 100
         )
 
-        self.df.loc[
-            :, "liquid_hydrogen_electrolysis_emission_factor"
-        ] = liquid_hydrogen_electrolysis_emission_factor
-        self.df.loc[
-            :, "liquid_hydrogen_gas_ccs_emission_factor"
-        ] = liquid_hydrogen_gas_ccs_emission_factor
-        self.df.loc[
-            :, "liquid_hydrogen_coal_ccs_emission_factor"
-        ] = liquid_hydrogen_coal_ccs_emission_factor
+        self.df.loc[:, "liquid_hydrogen_electrolysis_emission_factor"] = (
+            liquid_hydrogen_electrolysis_emission_factor
+        )
+        self.df.loc[:, "liquid_hydrogen_gas_ccs_emission_factor"] = (
+            liquid_hydrogen_gas_ccs_emission_factor
+        )
+        self.df.loc[:, "liquid_hydrogen_coal_ccs_emission_factor"] = (
+            liquid_hydrogen_coal_ccs_emission_factor
+        )
         self.df.loc[:, "liquid_hydrogen_gas_emission_factor"] = liquid_hydrogen_gas_emission_factor
-        self.df.loc[
-            :, "liquid_hydrogen_coal_emission_factor"
-        ] = liquid_hydrogen_coal_emission_factor
-        self.df.loc[
-            :, "liquid_hydrogen_mean_emission_factor"
-        ] = liquid_hydrogen_mean_emission_factor
+        self.df.loc[:, "liquid_hydrogen_coal_emission_factor"] = (
+            liquid_hydrogen_coal_emission_factor
+        )
+        self.df.loc[:, "liquid_hydrogen_mean_emission_factor"] = (
+            liquid_hydrogen_mean_emission_factor
+        )
 
         return (
             liquid_hydrogen_electrolysis_emission_factor,

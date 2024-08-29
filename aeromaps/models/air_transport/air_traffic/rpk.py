@@ -71,9 +71,9 @@ class RPK(AeroMAPSModel):
             cagr_passenger_short_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_short_range"
-        ] = annual_growth_rate_passenger_short_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_short_range"] = (
+            annual_growth_rate_passenger_short_range_prospective
+        )
         ## Medium range
         annual_growth_rate_passenger_medium_range_prospective = AeromapsLevelingFunction(
             self,
@@ -81,9 +81,9 @@ class RPK(AeroMAPSModel):
             cagr_passenger_medium_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_medium_range"
-        ] = annual_growth_rate_passenger_medium_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_medium_range"] = (
+            annual_growth_rate_passenger_medium_range_prospective
+        )
         ## Long range
         annual_growth_rate_passenger_long_range_prospective = AeromapsLevelingFunction(
             self,
@@ -91,9 +91,9 @@ class RPK(AeroMAPSModel):
             cagr_passenger_long_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_long_range"
-        ] = annual_growth_rate_passenger_long_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_long_range"] = (
+            annual_growth_rate_passenger_long_range_prospective
+        )
 
         # Short range
         for k in range(covid_start_year, covid_end_year + 1):
@@ -234,15 +234,15 @@ class RPK(AeroMAPSModel):
         self.float_outputs["cagr_rpk_medium_range"] = cagr_rpk_medium_range
         self.float_outputs["cagr_rpk_long_range"] = cagr_rpk_long_range
         self.float_outputs["cagr_rpk"] = cagr_rpk
-        self.float_outputs[
-            "prospective_evolution_rpk_short_range"
-        ] = prospective_evolution_rpk_short_range
-        self.float_outputs[
-            "prospective_evolution_rpk_medium_range"
-        ] = prospective_evolution_rpk_medium_range
-        self.float_outputs[
-            "prospective_evolution_rpk_long_range"
-        ] = prospective_evolution_rpk_long_range
+        self.float_outputs["prospective_evolution_rpk_short_range"] = (
+            prospective_evolution_rpk_short_range
+        )
+        self.float_outputs["prospective_evolution_rpk_medium_range"] = (
+            prospective_evolution_rpk_medium_range
+        )
+        self.float_outputs["prospective_evolution_rpk_long_range"] = (
+            prospective_evolution_rpk_long_range
+        )
         self.float_outputs["prospective_evolution_rpk"] = prospective_evolution_rpk
 
         return (
@@ -306,9 +306,9 @@ class RPKReference(AeroMAPSModel):
             reference_cagr_aviation_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "reference_annual_growth_rate_aviation"
-        ] = reference_annual_growth_rate_aviation
+        self.df.loc[:, "reference_annual_growth_rate_aviation"] = (
+            reference_annual_growth_rate_aviation
+        )
 
         # Main
         for k in range(covid_start_year, covid_end_year + 1):
@@ -383,12 +383,15 @@ class RPKMeasures(AeroMAPSModel):
             ):
                 self.df.loc[k, "rpk_short_range_measures_impact"] = 1
             else:
-                self.df.loc[
-                    k, "rpk_short_range_measures_impact"
-                ] = 1 - rpk_short_range_measures_final_impact / 100 / (
+                self.df.loc[k, "rpk_short_range_measures_impact"] = (
                     1
-                    + np.exp(
-                        -rpk_short_range_measures_parameter * (k - short_range_transition_year)
+                    - rpk_short_range_measures_final_impact
+                    / 100
+                    / (
+                        1
+                        + np.exp(
+                            -rpk_short_range_measures_parameter * (k - short_range_transition_year)
+                        )
                     )
                 )
             if (
@@ -403,12 +406,16 @@ class RPKMeasures(AeroMAPSModel):
             ):
                 self.df.loc[k, "rpk_medium_range_measures_impact"] = 1
             else:
-                self.df.loc[
-                    k, "rpk_medium_range_measures_impact"
-                ] = 1 - rpk_medium_range_measures_final_impact / 100 / (
+                self.df.loc[k, "rpk_medium_range_measures_impact"] = (
                     1
-                    + np.exp(
-                        -rpk_medium_range_measures_parameter * (k - medium_range_transition_year)
+                    - rpk_medium_range_measures_final_impact
+                    / 100
+                    / (
+                        1
+                        + np.exp(
+                            -rpk_medium_range_measures_parameter
+                            * (k - medium_range_transition_year)
+                        )
                     )
                 )
             if (
@@ -421,11 +428,16 @@ class RPKMeasures(AeroMAPSModel):
             ):
                 self.df.loc[k, "rpk_long_range_measures_impact"] = 1
             else:
-                self.df.loc[
-                    k, "rpk_long_range_measures_impact"
-                ] = 1 - rpk_long_range_measures_final_impact / 100 / (
+                self.df.loc[k, "rpk_long_range_measures_impact"] = (
                     1
-                    + np.exp(-rpk_long_range_measures_parameter * (k - long_range_transition_year))
+                    - rpk_long_range_measures_final_impact
+                    / 100
+                    / (
+                        1
+                        + np.exp(
+                            -rpk_long_range_measures_parameter * (k - long_range_transition_year)
+                        )
+                    )
                 )
 
         rpk_short_range_measures_impact = self.df["rpk_short_range_measures_impact"]

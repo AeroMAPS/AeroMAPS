@@ -64,7 +64,6 @@ from aeromaps.plots.costs import (
     AirfareEvolutionBreakdown,
     AnnualMACC,
     ScenarioMACC,
-    CumulativeMACC,
     DetailledMFSPBreakdownPerPathway,
     DetailledMFSPBreakdownPerYear,
     ScenarioEnergyExpensesPlotWithoutCarbonTax,

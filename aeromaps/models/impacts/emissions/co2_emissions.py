@@ -46,7 +46,6 @@ class KayaFactors(AeroMAPSModel):
         liquid_hydrogen_mean_emission_factor: pd.Series,
         electricity_emission_factor: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
-
         energy_per_ask_mean_without_operations = (
             energy_consumption_passenger_biofuel_without_operations
             + energy_consumption_passenger_electrofuel_without_operations
@@ -102,12 +101,12 @@ class KayaFactors(AeroMAPSModel):
             )
             co2_per_energy_mean.loc[k] = kerosene_emission_factor.loc[k]
 
-        self.df.loc[
-            :, "energy_per_ask_mean_without_operations"
-        ] = energy_per_ask_mean_without_operations
-        self.df.loc[
-            :, "energy_per_rtk_mean_without_operations"
-        ] = energy_per_rtk_mean_without_operations
+        self.df.loc[:, "energy_per_ask_mean_without_operations"] = (
+            energy_per_ask_mean_without_operations
+        )
+        self.df.loc[:, "energy_per_rtk_mean_without_operations"] = (
+            energy_per_rtk_mean_without_operations
+        )
         self.df.loc[:, "energy_per_ask_mean"] = energy_per_ask_mean
         self.df.loc[:, "energy_per_rtk_mean"] = energy_per_rtk_mean
         self.df.loc[:, "co2_per_energy_mean"] = co2_per_energy_mean
@@ -381,7 +380,6 @@ class CumulativeCO2Emissions(AeroMAPSModel):
         self,
         co2_emissions: pd.Series,
     ) -> pd.Series:
-
         self.df.loc[self.prospection_start_year - 1, "cumulative_co2_emissions"] = 0.0
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "cumulative_co2_emissions"] = (
@@ -433,15 +431,9 @@ class DetailedCo2Emissions(AeroMAPSModel):
                 self.prospection_start_year - 1
             ] * energy_per_ask_mean.loc[
                 self.prospection_start_year - 1
-            ] / energy_per_ask_mean_without_operations.loc[
-                self.prospection_start_year - 1
-            ] / (
+            ] / energy_per_ask_mean_without_operations.loc[self.prospection_start_year - 1] / (
                 load_factor.loc[self.prospection_start_year - 1] / 100
-            ) * co2_per_energy_mean.loc[
-                self.prospection_start_year - 1
-            ] * 10 ** (
-                -12
-            ) + (
+            ) * co2_per_energy_mean.loc[self.prospection_start_year - 1] * 10 ** (-12) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[self.prospection_start_year - 1]
                 * energy_per_rtk_mean.loc[self.prospection_start_year - 1]
@@ -453,15 +445,9 @@ class DetailedCo2Emissions(AeroMAPSModel):
                 k
             ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
                 self.prospection_start_year - 1
-            ] / energy_per_ask_mean_without_operations.loc[
-                self.prospection_start_year - 1
-            ] / (
+            ] / energy_per_ask_mean_without_operations.loc[self.prospection_start_year - 1] / (
                 load_factor.loc[self.prospection_start_year - 1] / 100
-            ) * co2_per_energy_mean.loc[
-                self.prospection_start_year - 1
-            ] * 10 ** (
-                -12
-            ) + (
+            ) * co2_per_energy_mean.loc[self.prospection_start_year - 1] * 10 ** (-12) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
                 * energy_per_rtk_mean.loc[self.prospection_start_year - 1]
@@ -473,15 +459,9 @@ class DetailedCo2Emissions(AeroMAPSModel):
                 k
             ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
                 k
-            ] / energy_per_ask_mean_without_operations.loc[
-                k
-            ] / (
+            ] / energy_per_ask_mean_without_operations.loc[k] / (
                 load_factor.loc[self.prospection_start_year - 1] / 100
-            ) * co2_per_energy_mean.loc[
-                self.prospection_start_year - 1
-            ] * 10 ** (
-                -12
-            ) + (
+            ) * co2_per_energy_mean.loc[self.prospection_start_year - 1] * 10 ** (-12) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
                 * energy_per_rtk_mean.loc[k]
@@ -493,15 +473,9 @@ class DetailedCo2Emissions(AeroMAPSModel):
                 k
             ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
                 k
-            ] / energy_per_ask_mean_without_operations.loc[
-                k
-            ] / (
+            ] / energy_per_ask_mean_without_operations.loc[k] / (
                 load_factor.loc[k] / 100
-            ) * co2_per_energy_mean.loc[
-                self.prospection_start_year - 1
-            ] * 10 ** (
-                -12
-            ) + (
+            ) * co2_per_energy_mean.loc[self.prospection_start_year - 1] * 10 ** (-12) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
                 * energy_per_rtk_mean.loc[k]
@@ -513,15 +487,9 @@ class DetailedCo2Emissions(AeroMAPSModel):
                 k
             ] * energy_per_ask_mean_without_operations.loc[k] * energy_per_ask_mean.loc[
                 k
-            ] / energy_per_ask_mean_without_operations.loc[
-                k
-            ] / (
+            ] / energy_per_ask_mean_without_operations.loc[k] / (
                 load_factor.loc[k] / 100
-            ) * co2_per_energy_mean.loc[
-                k
-            ] * 10 ** (
-                -12
-            ) + (
+            ) * co2_per_energy_mean.loc[k] * 10 ** (-12) + (
                 rtk.loc[k]
                 * energy_per_rtk_mean_without_operations.loc[k]
                 * energy_per_rtk_mean.loc[k]
@@ -560,13 +528,12 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
         co2_emissions_including_load_factor: pd.Series,
         co2_emissions_including_energy: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-
         self.df.loc[
             self.prospection_start_year - 1, "cumulative_co2_emissions_2019technology_baseline3"
         ] = 0.0
-        self.df.loc[
-            self.prospection_start_year - 1, "cumulative_co2_emissions_2019technology"
-        ] = 0.0
+        self.df.loc[self.prospection_start_year - 1, "cumulative_co2_emissions_2019technology"] = (
+            0.0
+        )
         self.df.loc[
             self.prospection_start_year - 1, "cumulative_co2_emissions_including_load_factor"
         ] = 0.0

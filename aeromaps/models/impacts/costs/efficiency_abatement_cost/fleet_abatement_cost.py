@@ -2,7 +2,6 @@
 # @Author : a.salgas
 # @File : fleet_abatement_cost.py
 # @Software: PyCharm
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -33,13 +32,11 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[dict, dict, dict, dict]:
-
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_carbon_abatement_volume_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-
             category_recent_reference = self.fleet_model.fleet.all_aircraft_elements[category][1]
 
             if category == "Short Range":
@@ -75,10 +72,8 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                     ) * category_recent_reference.energy_per_ask - category_reference_energy
 
                     aircraft_doc_ne_delta = (
-                        (1 + float(aircraft_var.parameters.doc_non_energy_evolution) / 100)
-                        * category_recent_reference.doc_non_energy_base
-                        - category_reference_doc_ne
-                    )
+                        1 + float(aircraft_var.parameters.doc_non_energy_evolution) / 100
+                    ) * category_recent_reference.doc_non_energy_base - category_reference_doc_ne
 
                 else:
                     aircraft_var_name = aircraft_var.full_name
@@ -192,16 +187,16 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                     axis=1,
                 )
 
-                dummy_carbon_abatement_cost_aircraft_value_dict[
-                    aircraft_var_name
-                ] = aircraft_carbon_abatement_cost
-                dummy_carbon_abatement_volume_aircraft_value_dict[
-                    aircraft_var_name
-                ] = aircraft_carbon_abatement_volume
+                dummy_carbon_abatement_cost_aircraft_value_dict[aircraft_var_name] = (
+                    aircraft_carbon_abatement_cost
+                )
+                dummy_carbon_abatement_volume_aircraft_value_dict[aircraft_var_name] = (
+                    aircraft_carbon_abatement_volume
+                )
 
-                dummy_specific_carbon_abatement_cost_aircraft_value_dict[
-                    aircraft_var_name
-                ] = scac_column
+                dummy_specific_carbon_abatement_cost_aircraft_value_dict[aircraft_var_name] = (
+                    scac_column
+                )
 
                 dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict[
                     aircraft_var_name
@@ -226,7 +221,6 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
-
         discounted_cumul_cost = 0
         cumul_em = 0
         generic_discounted_cumul_em = 0
@@ -322,7 +316,6 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-
         ### WARNING => Cargo DOC are not modelled so far in AeroMAPS (April 2024).
         # However, energy abatement are computed based on energy volumes used by the whole fleet.
         # For consistency, we compute a cargo abatement cost based on the hypothesis that
@@ -386,15 +379,15 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             extra_cost_fuel_electric + aircraft_doc_ne_delta_electric
         ) / extra_emissions_electric  # €/ton
 
-        self.df.loc[
-            :, "aircraft_carbon_abatement_cost_freight_dropin"
-        ] = aircraft_carbon_abatement_cost_freight_dropin
-        self.df.loc[
-            :, "aircraft_carbon_abatement_cost_freight_hydrogen"
-        ] = aircraft_carbon_abatement_cost_freight_hydrogen
-        self.df.loc[
-            :, "aircraft_carbon_abatement_cost_freight_electric"
-        ] = aircraft_carbon_abatement_cost_freight_electric
+        self.df.loc[:, "aircraft_carbon_abatement_cost_freight_dropin"] = (
+            aircraft_carbon_abatement_cost_freight_dropin
+        )
+        self.df.loc[:, "aircraft_carbon_abatement_cost_freight_hydrogen"] = (
+            aircraft_carbon_abatement_cost_freight_hydrogen
+        )
+        self.df.loc[:, "aircraft_carbon_abatement_cost_freight_electric"] = (
+            aircraft_carbon_abatement_cost_freight_electric
+        )
 
         # aircraft_life = (self.fleet_model.fleet.categories['Short Range'].parameters.life +
         #                  self.fleet_model.fleet.categories['Medium Range'].parameters.life +
@@ -511,15 +504,15 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             rtk_electric * aircraft_energy_delta_electric * kerosene_emission_factor / 1000000
         )
 
-        self.df.loc[
-            :, "aircraft_carbon_abatement_volume_freight_dropin"
-        ] = aircraft_carbon_abatement_volume_freight_dropin
-        self.df.loc[
-            :, "aircraft_carbon_abatement_volume_freight_hydrogen"
-        ] = aircraft_carbon_abatement_volume_freight_hydrogen
-        self.df.loc[
-            :, "aircraft_carbon_abatement_volume_freight_electric"
-        ] = aircraft_carbon_abatement_volume_freight_electric
+        self.df.loc[:, "aircraft_carbon_abatement_volume_freight_dropin"] = (
+            aircraft_carbon_abatement_volume_freight_dropin
+        )
+        self.df.loc[:, "aircraft_carbon_abatement_volume_freight_hydrogen"] = (
+            aircraft_carbon_abatement_volume_freight_hydrogen
+        )
+        self.df.loc[:, "aircraft_carbon_abatement_volume_freight_electric"] = (
+            aircraft_carbon_abatement_volume_freight_electric
+        )
 
         return (
             aircraft_carbon_abatement_cost_freight_dropin,
@@ -548,7 +541,6 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
-
         discounted_cumul_cost = 0
         cumul_em = 0
         generic_discounted_cumul_em = 0

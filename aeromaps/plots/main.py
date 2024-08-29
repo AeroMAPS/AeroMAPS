@@ -140,7 +140,6 @@ class AirTransportCO2EmissionsPlot:
         self.ax.set_title("Evolution of annual CO₂ emissions from air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Annual CO₂ emissions [MtCO₂]")
-        ax = plt.gca()
         self.ax.legend(loc=2)
         self.ax.set_xlim(self.years[0], self.years[-1])
 

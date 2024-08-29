@@ -53,7 +53,6 @@ class HydrogenCostSimple(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-
         ### Electrolysis ####
 
         electrolysis_h2_total_cost = (
@@ -81,9 +80,9 @@ class HydrogenCostSimple(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_electrolysis_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "electrolysis_h2_mfsp_carbon_tax_supplement"
-        ] = electrolysis_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "electrolysis_h2_mfsp_carbon_tax_supplement"] = (
+            electrolysis_h2_mfsp_carbon_tax_supplement
+        )
 
         self.df.loc[:, "electrolysis_h2_total_cost"] = electrolysis_h2_total_cost
 
@@ -143,9 +142,9 @@ class HydrogenCostSimple(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_gas_ccs_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "gas_ccs_h2_mfsp_carbon_tax_supplement"
-        ] = gas_ccs_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "gas_ccs_h2_mfsp_carbon_tax_supplement"] = (
+            gas_ccs_h2_mfsp_carbon_tax_supplement
+        )
 
         self.df.loc[:, "gas_ccs_h2_total_cost"] = gas_ccs_h2_total_cost
 
@@ -205,9 +204,9 @@ class HydrogenCostSimple(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_coal_ccs_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "coal_ccs_h2_mfsp_carbon_tax_supplement"
-        ] = coal_ccs_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "coal_ccs_h2_mfsp_carbon_tax_supplement"] = (
+            coal_ccs_h2_mfsp_carbon_tax_supplement
+        )
 
         self.df.loc[:, "coal_ccs_h2_total_cost"] = coal_ccs_h2_total_cost
 
@@ -309,7 +308,14 @@ class HydrogenMfspSimple(AeroMAPSModel):
         gh2_coal_mfsp_simple_reference_years_values: list,
         liquefaction_mfsp_simple_reference_years: list,
         liquefaction_mfsp_simple_reference_years_values: list,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         """Hydrogen mfsp_simple (Minimal fuel selling price) estimates"""
 
         # Electrolysis

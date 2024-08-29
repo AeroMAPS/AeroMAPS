@@ -200,7 +200,6 @@ class PassengerKayaFactorsPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
@@ -302,7 +301,6 @@ class FreightKayaFactorsPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
         self.ax.set_yscale("log")
 
@@ -522,7 +520,6 @@ class LeversOfActionDistributionPlot:
             - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
             > 0
         ):
-
             if (
                 self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
                 - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
@@ -648,7 +645,6 @@ class LeversOfActionDistributionPlot:
             self.fig.canvas.draw()
 
         else:
-
             sizes = [1, 0, 0]
 
             self.ax.clear()

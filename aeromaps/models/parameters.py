@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from json import dump
 import pandas as pd
 
@@ -24,7 +23,6 @@ class Parameters:
             dump(self.to_dict(), f, ignore_nan=True, ensure_ascii=False, indent=4)
 
     def read_json(self, file_name="parameters.json"):
-
         data = _dict_from_json(file_name=file_name)
 
         # Old reference data is kept

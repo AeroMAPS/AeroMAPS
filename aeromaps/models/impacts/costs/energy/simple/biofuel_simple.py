@@ -78,9 +78,9 @@ class BiofuelCostSimple(AeroMAPSModel):
         biofuel_mfsp_carbon_tax_supplement_hefa_fog = (
             carbon_tax * biofuel_hefa_fog_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"
-        ] = biofuel_mfsp_carbon_tax_supplement_hefa_fog
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_hefa_fog"] = (
+            biofuel_mfsp_carbon_tax_supplement_hefa_fog
+        )
 
         ### HEFA OTHERS
         biofuel_cost_hefa_others = (
@@ -112,9 +112,9 @@ class BiofuelCostSimple(AeroMAPSModel):
             * lhv_biofuel
             * density_biofuel
         )
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_hefa_others"
-        ] = biofuel_mfsp_carbon_tax_supplement_hefa_others
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_hefa_others"] = (
+            biofuel_mfsp_carbon_tax_supplement_hefa_others
+        )
 
         ### FT OTHERS
         biofuel_cost_ft_others = (
@@ -142,9 +142,9 @@ class BiofuelCostSimple(AeroMAPSModel):
         biofuel_mfsp_carbon_tax_supplement_ft_others = (
             carbon_tax * biofuel_ft_others_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_ft_others"
-        ] = biofuel_mfsp_carbon_tax_supplement_ft_others
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_ft_others"] = (
+            biofuel_mfsp_carbon_tax_supplement_ft_others
+        )
 
         ### FT MSW
         biofuel_cost_ft_msw = (
@@ -172,9 +172,9 @@ class BiofuelCostSimple(AeroMAPSModel):
         biofuel_mfsp_carbon_tax_supplement_ft_msw = (
             carbon_tax * biofuel_ft_msw_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_ft_msw"
-        ] = biofuel_mfsp_carbon_tax_supplement_ft_msw
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_ft_msw"] = (
+            biofuel_mfsp_carbon_tax_supplement_ft_msw
+        )
 
         ### ATJ
         biofuel_cost_atj = (
@@ -202,9 +202,9 @@ class BiofuelCostSimple(AeroMAPSModel):
         biofuel_mfsp_carbon_tax_supplement_atj = (
             carbon_tax * biofuel_atj_emission_factor / 1000000 * lhv_biofuel * density_biofuel
         )
-        self.df.loc[
-            :, "biofuel_mfsp_carbon_tax_supplement_atj"
-        ] = biofuel_mfsp_carbon_tax_supplement_atj
+        self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_atj"] = (
+            biofuel_mfsp_carbon_tax_supplement_atj
+        )
 
         # MEAN tax
         biofuel_mean_carbon_tax_per_l = (
