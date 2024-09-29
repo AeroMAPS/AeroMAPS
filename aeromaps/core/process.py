@@ -89,7 +89,7 @@ class AeroMAPSProcess(object):
         design_space = DesignSpace()
         design_space.add_variable("load_factor_end_year", size=4, l_b=0.0, u_b=60.0, value=[0.0, 0.0, 0.0, 0.0])
 
-        objective_name = "cummulative_total_airline_cost"
+        objective_name = "cumulative_total_airline_cost"
 
         # Create GEMSEO process
         self.process = create_scenario(
