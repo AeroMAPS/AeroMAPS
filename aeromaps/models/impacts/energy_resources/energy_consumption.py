@@ -946,6 +946,7 @@ class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
     ]:
         """Dropin fuel pathway consumption and growth calculation."""
 
@@ -977,6 +978,8 @@ class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
         # Growth for each pathway
 
         # Biofuel
+        annual_growth_biofuel = energy_consumption_biofuel.pct_change() * 100
+
         annual_growth_biofuel_hefa_fog = energy_consumption_biofuel_hefa_fog.pct_change() * 100
         annual_growth_biofuel_hefa_others = (
             energy_consumption_biofuel_hefa_others.pct_change() * 100
@@ -985,6 +988,7 @@ class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
         annual_growth_biofuel_ft_msw = energy_consumption_biofuel_ft_msw.pct_change() * 100
         annual_growth_biofuel_atj = energy_consumption_biofuel_atj.pct_change() * 100
 
+        self.df.loc[:, "annual_growth_biofuel"] = annual_growth_biofuel
         self.df.loc[:, "annual_growth_biofuel_hefa_fog"] = annual_growth_biofuel_hefa_fog
         self.df.loc[:, "annual_growth_biofuel_hefa_others"] = annual_growth_biofuel_hefa_others
         self.df.loc[:, "annual_growth_biofuel_ft_others"] = annual_growth_biofuel_ft_others
@@ -999,12 +1003,15 @@ class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
         annual_growth_kerosene = energy_consumption_kerosene.pct_change() * 100
         self.df.loc[:, "annual_growth_kerosene"] = annual_growth_kerosene
 
+        # absolute difference
+
         return (
             energy_consumption_biofuel_hefa_fog,
             energy_consumption_biofuel_hefa_others,
             energy_consumption_biofuel_ft_others,
             energy_consumption_biofuel_ft_msw,
             energy_consumption_biofuel_atj,
+            annual_growth_biofuel,
             annual_growth_biofuel_hefa_fog,
             annual_growth_biofuel_hefa_others,
             annual_growth_biofuel_ft_others,
@@ -1106,3 +1113,36 @@ class ElectricPathwayConsumptionAndGrowth(AeroMAPSModel):
         annual_growth_battery_electric = energy_consumption_electric.pct_change() * 100
         self.df.loc[:, "annual_growth_battery_electric"] = annual_growth_battery_electric
         return annual_growth_battery_electric
+
+
+class SustainableFuelConsumption(AeroMAPSModel):
+    def __init__(self, name="sustainable_fuel_consumption", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        energy_consumption_biofuel: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        energy_consumption_kerosene: pd.Series,
+        energy_consumption_electric: pd.Series,
+    ) -> Tuple[
+         pd.Series,
+         pd.Series,
+         pd.Series]:
+        """gather all pathways to monitor the enforcement of a saf mandate"""
+        total_energy_consumption= (energy_consumption_biofuel + energy_consumption_electrofuel + energy_consumption_hydrogen + energy_consumption_kerosene + energy_consumption_electric)
+
+        saf_biological_share = energy_consumption_biofuel/total_energy_consumption*100
+        saf_non_biological_share = (energy_consumption_hydrogen+energy_consumption_electric+energy_consumption_electrofuel)/total_energy_consumption*100
+        saf_total_share = (energy_consumption_biofuel+energy_consumption_hydrogen+energy_consumption_electric+energy_consumption_electrofuel)/total_energy_consumption*100
+
+        self.df.loc[:, "saf_biological_share"] = saf_biological_share
+        self.df.loc[:, "saf_non_biological_share"] = saf_non_biological_share
+        self.df.loc[:, "saf_total_share"] = saf_total_share
+
+        return (
+            saf_biological_share,
+            saf_non_biological_share,
+            saf_total_share
+        )
