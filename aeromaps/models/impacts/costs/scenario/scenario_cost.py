@@ -145,10 +145,24 @@ class TotalAirlineCost(AeroMAPSModel):
         total_cost_per_ask: pd.Series,
         ask: pd.Series,
         social_discount_rate: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+    ) -> Tuple[pd.Series,
+    pd.Series,
+    pd.Series,
+    pd.Series,
+    pd.Series,]:
+
+        initial_airline_cost = total_cost_per_ask[self.prospection_start_year - 1] * ask
         total_airline_cost = total_cost_per_ask * ask
+        total_airline_cost_increase  = total_airline_cost - initial_airline_cost
+
+
         cumulative_total_airline_cost = total_airline_cost.cumsum()
         cumulative_total_airline_cost_discounted = cumulative_total_airline_cost / (
+            1 + social_discount_rate
+        ) ** (self.df.index - self.prospection_start_year)
+
+        cumulative_total_airline_cost_increase = total_airline_cost_increase.cumsum()
+        cumulative_total_airline_cost_increase_discounted = cumulative_total_airline_cost_increase / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
 
@@ -157,11 +171,15 @@ class TotalAirlineCost(AeroMAPSModel):
         self.df.loc[
             :, "cumulative_total_airline_cost_discounted"
         ] = cumulative_total_airline_cost_discounted
+        self.df.loc[:, "total_airline_cost_increase"] = total_airline_cost_increase
+        self.df.loc[:, "cumulative_total_airline_cost_increase"] = cumulative_total_airline_cost_increase
 
         return (
             total_airline_cost,
             cumulative_total_airline_cost,
             cumulative_total_airline_cost_discounted,
+            cumulative_total_airline_cost_increase,
+            cumulative_total_airline_cost_increase_discounted
         )
 
 
@@ -176,6 +194,9 @@ class TotalAirlineProfit(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+
+
+        # TODO: to deprecate
 
         total_airline_profit = operational_profit_per_rpk * rpk
         cumulative_total_airline_profit = total_airline_profit.cumsum()
@@ -224,6 +245,10 @@ class TotalTaxRevenue(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+
+        # TODO: to deprecate
+
+
         total_tax_revenue = total_extra_tax_per_rpk * rpk
         cumulative_total_tax_revenue = total_tax_revenue.cumsum()
         cumulative_total_tax_revenue_discounted = cumulative_total_tax_revenue / (
@@ -268,6 +293,8 @@ class TotalSurplusLoss(AeroMAPSModel):
         self,
         rpk: pd.Series,
         rpk_no_elasticity: pd.Series,
+        cumulative_total_airline_cost_increase: pd.Series,
+        cumulative_total_airline_cost_increase_discounted: pd.Series,
         airfare_per_rpk: pd.Series,
         price_elasticity: float,
         social_discount_rate: float,
@@ -299,7 +326,7 @@ class TotalSurplusLoss(AeroMAPSModel):
 
         self.df.loc[:, "consumer_surplus_loss"] = consumer_surplus_loss
 
-        cumulative_total_surplus_loss = consumer_surplus_loss.cumsum()
+        cumulative_total_surplus_loss = consumer_surplus_loss.cumsum() + cumulative_total_airline_cost_increase
         cumulative_total_surplus_loss_discounted = cumulative_total_surplus_loss / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
@@ -330,6 +357,9 @@ class TotalWelfareLoss(AeroMAPSModel):
         cumulative_tax_revenue_loss: pd.Series,
         cumulative_tax_revenue_loss_discounted: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+
+        # TODO: to deprecate
+
         total_welfare_loss = consumer_surplus_loss + airline_profit_loss + tax_revenue_loss
         cumulative_total_welfare_loss = (
             cumulative_total_surplus_loss
@@ -353,3 +383,5 @@ class TotalWelfareLoss(AeroMAPSModel):
             cumulative_total_welfare_loss,
             cumulative_total_welfare_loss_discounted,
         )
+
+

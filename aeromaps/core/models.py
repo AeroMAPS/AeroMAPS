@@ -224,7 +224,7 @@ from aeromaps.models.impacts.costs.airlines.operational_profit import (
 )
 
 from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
-    PassengerAircraftTotalCostAirfare,
+    PassengerAircraftTotalCostAirfare, PassengerAircraftTotalCost, PassengerAircraftMarginalCost,
 )
 
 models_traffic = {
@@ -588,9 +588,11 @@ default_models_bottom_up = {
 
 models_cost_feedback = {
     "price_elasticity_and_surplus": PriceElasticityAndSurplus("price_elasticity_and_surplus"),
+    "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
+    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost("passenger_aircraft_marginal_cost"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
-    "total_tax_revenue": TotalTaxRevenue("total_tax_revenue"),
-    "total_airline_profit": TotalAirlineProfit("total_airline_profit"),
-    "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
+    # "total_tax_revenue": TotalTaxRevenue("total_tax_revenue"),
+    # "total_airline_profit": TotalAirlineProfit("total_airline_profit"),
+    # "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 }
