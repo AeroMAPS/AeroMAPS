@@ -151,6 +151,7 @@ class TotalAirlineCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        float,
     ]:
 
         initial_airline_cost = total_cost_per_ask[self.prospection_start_year - 1] * ask
@@ -176,12 +177,17 @@ class TotalAirlineCost(AeroMAPSModel):
         self.df.loc[:, "total_airline_cost_increase"] = total_airline_cost_increase
         self.df.loc[:, "cumulative_total_airline_cost_increase"] = cumulative_total_airline_cost_increase
 
+        print(cumulative_total_airline_cost_discounted[self.end_year])
+        cumulative_total_airline_cost_discounted_obj = cumulative_total_airline_cost_discounted[self.end_year]
+        print(cumulative_total_airline_cost_discounted_obj)
+
         return (
             total_airline_cost,
             cumulative_total_airline_cost,
             cumulative_total_airline_cost_discounted,
             cumulative_total_airline_cost_increase,
-            cumulative_total_airline_cost_increase_discounted
+            cumulative_total_airline_cost_increase_discounted,
+            cumulative_total_airline_cost_discounted_obj
         )
 
 
