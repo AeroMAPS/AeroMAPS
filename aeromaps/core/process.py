@@ -83,7 +83,7 @@ class AeroMAPSProcess(object):
                                 initialize_defaults=False)
 
         self._initialize_data()
-        self._update_variables()
+        # self._update_variables()
 
     def _initialize_gemseo_process(self):
 
