@@ -204,9 +204,6 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedEnergyCost,
     TotalSurplusLoss,
     TotalAirlineCost,
-    TotalAirlineProfit,
-    TotalTaxRevenue,
-    TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
