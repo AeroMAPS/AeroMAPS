@@ -294,7 +294,7 @@ class TotalSurplusLoss(AeroMAPSModel):
         rpk: pd.Series,
         rpk_no_elasticity: pd.Series,
         cumulative_total_airline_cost_increase: pd.Series,
-        cumulative_total_airline_cost_increase_discounted: pd.Series,
+        # cumulative_total_airline_cost_increase_discounted: pd.Series,
         airfare_per_rpk: pd.Series,
         price_elasticity: float,
         social_discount_rate: float,

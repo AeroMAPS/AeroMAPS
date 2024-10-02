@@ -435,6 +435,8 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk
         a = 2 * (intial_total_cost_per_rpk_without_extra_tax - total_cost_per_rpk_without_extra_tax)/rpk_no_elasticity
 
+
+        # For latter update replace total cost by the step component of the marginal cost.
         marginal_cost_per_rpk = a * rpk + b + total_cost_per_rpk_without_extra_tax - intial_total_cost_per_rpk_without_extra_tax
 
         airfare_per_rpk = marginal_cost_per_rpk + total_extra_tax_per_rpk
