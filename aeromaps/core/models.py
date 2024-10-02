@@ -593,10 +593,12 @@ models_cost_feedback = {
 }
 
 models_optim_simple = {
+    "default_models_top_down": default_models_top_down,
     "total_airline_cost": TotalAirlineCost("total_airline_cost")
 }
 
 models_optim_complex = {
+    "default_models_bottom_up": default_models_bottom_up,
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
