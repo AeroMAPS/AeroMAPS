@@ -145,11 +145,13 @@ class TotalAirlineCost(AeroMAPSModel):
         total_cost_per_ask: pd.Series,
         ask: pd.Series,
         social_discount_rate: float,
-    ) -> Tuple[pd.Series,
-    pd.Series,
-    pd.Series,
-    pd.Series,
-    pd.Series,]:
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
 
         initial_airline_cost = total_cost_per_ask[self.prospection_start_year - 1] * ask
         total_airline_cost = total_cost_per_ask * ask
@@ -183,106 +185,106 @@ class TotalAirlineCost(AeroMAPSModel):
         )
 
 
-class TotalAirlineProfit(AeroMAPSModel):
-    def __init__(self, name="total_airline_profit", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
-
-    def compute(
-        self,
-        operational_profit_per_rpk: pd.Series,
-        rpk: pd.Series,
-        rpk_no_elasticity: pd.Series,
-        social_discount_rate: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
-
-
-        # TODO: to deprecate
-
-        total_airline_profit = operational_profit_per_rpk * rpk
-        cumulative_total_airline_profit = total_airline_profit.cumsum()
-        cumulative_total_airline_profit_discounted = cumulative_total_airline_profit / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
-
-        airline_profit_loss = (
-            operational_profit_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
-            - operational_profit_per_rpk * rpk
-        )
-        cumulative_airline_profit_loss = airline_profit_loss.cumsum()
-        cumulative_airline_profit_loss_discounted = cumulative_airline_profit_loss / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
-
-        self.df.loc[:, "total_airline_profit"] = total_airline_profit
-        self.df.loc[:, "cumulative_total_airline_profit"] = cumulative_total_airline_profit
-        self.df.loc[
-            :, "cumulative_total_airline_profit_discounted"
-        ] = cumulative_total_airline_profit_discounted
-        self.df.loc[:, "airline_profit_loss"] = airline_profit_loss
-        self.df.loc[:, "cumulative_airline_profit_loss"] = cumulative_airline_profit_loss
-        self.df.loc[
-            :, "cumulative_airline_profit_loss_discounted"
-        ] = cumulative_airline_profit_loss_discounted
-
-        return (
-            total_airline_profit,
-            cumulative_total_airline_profit,
-            cumulative_total_airline_profit_discounted,
-            airline_profit_loss,
-            cumulative_airline_profit_loss,
-            cumulative_airline_profit_loss_discounted,
-        )
-
-
-class TotalTaxRevenue(AeroMAPSModel):
-    def __init__(self, name="total_tax_revenue", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
-
-    def compute(
-        self,
-        total_extra_tax_per_rpk: pd.Series,
-        rpk: pd.Series,
-        rpk_no_elasticity: pd.Series,
-        social_discount_rate: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
-
-        # TODO: to deprecate
+# class TotalAirlineProfit(AeroMAPSModel):
+#     def __init__(self, name="total_airline_profit", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#         self,
+#         operational_profit_per_rpk: pd.Series,
+#         rpk: pd.Series,
+#         rpk_no_elasticity: pd.Series,
+#         social_discount_rate: float,
+#     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+#
+#
+#         # TODO: to deprecate
+#
+#         total_airline_profit = operational_profit_per_rpk * rpk
+#         cumulative_total_airline_profit = total_airline_profit.cumsum()
+#         cumulative_total_airline_profit_discounted = cumulative_total_airline_profit / (
+#             1 + social_discount_rate
+#         ) ** (self.df.index - self.prospection_start_year)
+#
+#         airline_profit_loss = (
+#             operational_profit_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+#             - operational_profit_per_rpk * rpk
+#         )
+#         cumulative_airline_profit_loss = airline_profit_loss.cumsum()
+#         cumulative_airline_profit_loss_discounted = cumulative_airline_profit_loss / (
+#             1 + social_discount_rate
+#         ) ** (self.df.index - self.prospection_start_year)
+#
+#         self.df.loc[:, "total_airline_profit"] = total_airline_profit
+#         self.df.loc[:, "cumulative_total_airline_profit"] = cumulative_total_airline_profit
+#         self.df.loc[
+#             :, "cumulative_total_airline_profit_discounted"
+#         ] = cumulative_total_airline_profit_discounted
+#         self.df.loc[:, "airline_profit_loss"] = airline_profit_loss
+#         self.df.loc[:, "cumulative_airline_profit_loss"] = cumulative_airline_profit_loss
+#         self.df.loc[
+#             :, "cumulative_airline_profit_loss_discounted"
+#         ] = cumulative_airline_profit_loss_discounted
+#
+#         return (
+#             total_airline_profit,
+#             cumulative_total_airline_profit,
+#             cumulative_total_airline_profit_discounted,
+#             airline_profit_loss,
+#             cumulative_airline_profit_loss,
+#             cumulative_airline_profit_loss_discounted,
+#         )
 
 
-        total_tax_revenue = total_extra_tax_per_rpk * rpk
-        cumulative_total_tax_revenue = total_tax_revenue.cumsum()
-        cumulative_total_tax_revenue_discounted = cumulative_total_tax_revenue / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
-
-        tax_revenue_loss = (
-            total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
-            - total_extra_tax_per_rpk * rpk
-        )
-        cumulative_tax_revenue_loss = tax_revenue_loss.cumsum()
-        cumulative_tax_revenue_loss_discounted = cumulative_tax_revenue_loss / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
-
-        self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
-        self.df.loc[:, "cumulative_total_tax_revenue"] = cumulative_total_tax_revenue
-        self.df.loc[
-            :, "cumulative_total_tax_revenue_discounted"
-        ] = cumulative_total_tax_revenue_discounted
-        self.df.loc[:, "tax_revenue_loss"] = tax_revenue_loss
-        self.df.loc[:, "cumulative_tax_revenue_loss"] = cumulative_tax_revenue_loss
-        self.df.loc[
-            :, "cumulative_tax_revenue_loss_discounted"
-        ] = cumulative_tax_revenue_loss_discounted
-
-        return (
-            total_tax_revenue,
-            cumulative_total_tax_revenue,
-            cumulative_total_tax_revenue_discounted,
-            tax_revenue_loss,
-            cumulative_tax_revenue_loss,
-            cumulative_tax_revenue_loss_discounted,
-        )
+# class TotalTaxRevenue(AeroMAPSModel):
+#     def __init__(self, name="total_tax_revenue", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#         self,
+#         total_extra_tax_per_rpk: pd.Series,
+#         rpk: pd.Series,
+#         rpk_no_elasticity: pd.Series,
+#         social_discount_rate: float,
+#     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
+#
+#         # TODO: to deprecate
+#
+#
+#         total_tax_revenue = total_extra_tax_per_rpk * rpk
+#         cumulative_total_tax_revenue = total_tax_revenue.cumsum()
+#         cumulative_total_tax_revenue_discounted = cumulative_total_tax_revenue / (
+#             1 + social_discount_rate
+#         ) ** (self.df.index - self.prospection_start_year)
+#
+#         tax_revenue_loss = (
+#             total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+#             - total_extra_tax_per_rpk * rpk
+#         )
+#         cumulative_tax_revenue_loss = tax_revenue_loss.cumsum()
+#         cumulative_tax_revenue_loss_discounted = cumulative_tax_revenue_loss / (
+#             1 + social_discount_rate
+#         ) ** (self.df.index - self.prospection_start_year)
+#
+#         self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
+#         self.df.loc[:, "cumulative_total_tax_revenue"] = cumulative_total_tax_revenue
+#         self.df.loc[
+#             :, "cumulative_total_tax_revenue_discounted"
+#         ] = cumulative_total_tax_revenue_discounted
+#         self.df.loc[:, "tax_revenue_loss"] = tax_revenue_loss
+#         self.df.loc[:, "cumulative_tax_revenue_loss"] = cumulative_tax_revenue_loss
+#         self.df.loc[
+#             :, "cumulative_tax_revenue_loss_discounted"
+#         ] = cumulative_tax_revenue_loss_discounted
+#
+#         return (
+#             total_tax_revenue,
+#             cumulative_total_tax_revenue,
+#             cumulative_total_tax_revenue_discounted,
+#             tax_revenue_loss,
+#             cumulative_tax_revenue_loss,
+#             cumulative_tax_revenue_loss_discounted,
+#         )
 
 
 class TotalSurplusLoss(AeroMAPSModel):
@@ -307,15 +309,15 @@ class TotalSurplusLoss(AeroMAPSModel):
         )
 
 
-        # Conusmer Surplus
+        # Gloabl Surplus before removing total costs
 
         if price_elasticity == -1:
             # surplus delta extresssed by CS= beta * np.log(Qref/Qi)
-            consumer_surplus_loss = beta * np.log(rpk_no_elasticity / rpk)
+            area_loss = beta * np.log(rpk_no_elasticity / rpk)
 
         else:
             # surplus delta expressed by
-            consumer_surplus_loss = (
+            area_loss = (
                 beta
                 * (-1 / (1 + price_elasticity))
                 * (
@@ -324,9 +326,9 @@ class TotalSurplusLoss(AeroMAPSModel):
                 )
             )
 
-        self.df.loc[:, "consumer_surplus_loss"] = consumer_surplus_loss
+        self.df.loc[:, "area_loss"] = area_loss
 
-        cumulative_total_surplus_loss = consumer_surplus_loss.cumsum() + cumulative_total_airline_cost_increase
+        cumulative_total_surplus_loss = area_loss.cumsum() + cumulative_total_airline_cost_increase
         cumulative_total_surplus_loss_discounted = cumulative_total_surplus_loss / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
@@ -336,52 +338,52 @@ class TotalSurplusLoss(AeroMAPSModel):
             :, "cumulative_total_surplus_loss_discounted"
         ] = cumulative_total_surplus_loss_discounted
 
-        return (consumer_surplus_loss,
+        return (area_loss,
                 cumulative_total_surplus_loss,
                 cumulative_total_surplus_loss_discounted)
 
 
-class TotalWelfareLoss(AeroMAPSModel):
-    def __init__(self, name="total_welfare_loss", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
-
-    def compute(
-        self,
-        consumer_surplus_loss: pd.Series,
-        cumulative_total_surplus_loss: pd.Series,
-        cumulative_total_surplus_loss_discounted: pd.Series,
-        airline_profit_loss: pd.Series,
-        cumulative_airline_profit_loss: pd.Series,
-        cumulative_airline_profit_loss_discounted: pd.Series,
-        tax_revenue_loss: pd.Series,
-        cumulative_tax_revenue_loss: pd.Series,
-        cumulative_tax_revenue_loss_discounted: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
-
-        # TODO: to deprecate
-
-        total_welfare_loss = consumer_surplus_loss + airline_profit_loss + tax_revenue_loss
-        cumulative_total_welfare_loss = (
-            cumulative_total_surplus_loss
-            + cumulative_airline_profit_loss
-            + cumulative_tax_revenue_loss
-        )
-        cumulative_total_welfare_loss_discounted = (
-            cumulative_total_surplus_loss_discounted
-            + cumulative_airline_profit_loss_discounted
-            + cumulative_tax_revenue_loss_discounted
-        )
-
-        self.df.loc[:, "total_welfare_loss"] = total_welfare_loss
-        self.df.loc[:, "cumulative_total_welfare_loss"] = cumulative_total_welfare_loss
-        self.df.loc[
-            :, "cumulative_total_welfare_loss_discounted"
-        ] = cumulative_total_welfare_loss_discounted
-
-        return (
-            total_welfare_loss,
-            cumulative_total_welfare_loss,
-            cumulative_total_welfare_loss_discounted,
-        )
+# class TotalWelfareLoss(AeroMAPSModel):
+#     def __init__(self, name="total_welfare_loss", *args, **kwargs):
+#         super().__init__(name, *args, **kwargs)
+#
+#     def compute(
+#         self,
+#         consumer_surplus_loss: pd.Series,
+#         cumulative_total_surplus_loss: pd.Series,
+#         cumulative_total_surplus_loss_discounted: pd.Series,
+#         airline_profit_loss: pd.Series,
+#         cumulative_airline_profit_loss: pd.Series,
+#         cumulative_airline_profit_loss_discounted: pd.Series,
+#         tax_revenue_loss: pd.Series,
+#         cumulative_tax_revenue_loss: pd.Series,
+#         cumulative_tax_revenue_loss_discounted: pd.Series,
+#     ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+#
+#         # TODO: to deprecate
+#
+#         total_welfare_loss = consumer_surplus_loss + airline_profit_loss + tax_revenue_loss
+#         cumulative_total_welfare_loss = (
+#             cumulative_total_surplus_loss
+#             + cumulative_airline_profit_loss
+#             + cumulative_tax_revenue_loss
+#         )
+#         cumulative_total_welfare_loss_discounted = (
+#             cumulative_total_surplus_loss_discounted
+#             + cumulative_airline_profit_loss_discounted
+#             + cumulative_tax_revenue_loss_discounted
+#         )
+#
+#         self.df.loc[:, "total_welfare_loss"] = total_welfare_loss
+#         self.df.loc[:, "cumulative_total_welfare_loss"] = cumulative_total_welfare_loss
+#         self.df.loc[
+#             :, "cumulative_total_welfare_loss_discounted"
+#         ] = cumulative_total_welfare_loss_discounted
+#
+#         return (
+#             total_welfare_loss,
+#             cumulative_total_welfare_loss,
+#             cumulative_total_welfare_loss_discounted,
+#         )
 
 
