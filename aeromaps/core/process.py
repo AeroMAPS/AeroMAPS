@@ -8,11 +8,12 @@ import pandas as pd
 from gemseo.core.discipline import MDODiscipline
 from gemseo.algos.design_space import DesignSpace
 from gemseo import generate_n2_plot, create_scenario
+from gemseo.mda.mda_chain import MDAChain
 # from gemseo.core.chain import create_mda
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.core.gemseo import AeroMAPSModelWrapper, MDAChain
+from aeromaps.core.gemseo import AeroMAPSModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -76,7 +77,11 @@ class AeroMAPSProcess(object):
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
-        self._initialize_gemseo_process()
+        # self._initialize_gemseo_process()
+
+        self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
+                                initialize_defaults=False)
+
         self._initialize_data()
         self._update_variables()
 
@@ -87,7 +92,7 @@ class AeroMAPSProcess(object):
                                 )
 
         design_space = DesignSpace()
-        design_space.add_variable("load_factor_end_year", size=4, l_b=0.0, u_b=60.0, value=[0.0, 0.0, 0.0, 0.0])
+        design_space.add_variable("load_factor_end_year", size=4, lower_bound=0.0, upper_bound=60.0, value=[0.0, 0.0, 0.0, 0.0])
 
         objective_name = "cumulative_total_airline_cost"
 
@@ -119,10 +124,9 @@ class AeroMAPSProcess(object):
         # config_algo = {"algo": "L-BFGS-B", "max_iter": 100}
         # input_data.update(config_algo)
 
-        self.mda_chain.execute(input_data=input_data)
+        # self.mda_chain.execute(input_data=input_data)
 
-        self.process = MDAChain(disciplines=self.mda_chain.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                initialize_defaults=False)
+
 
         self.process.execute(input_data=input_data)
         # self.process.execute(config_algo)
@@ -381,7 +385,7 @@ class AeroMAPSProcess(object):
 
     def _update_data_from_model(self):
         # Inputs
-        all_inputs = self.mda_chain.get_input_data_names()
+        all_inputs = self.process.get_input_data_names()
 
         for name in all_inputs:
             try:
