@@ -95,8 +95,8 @@ class AeroMAPSProcess(object):
 
 
         design_space = DesignSpace()
-        design_space.add_variable("load_factor_end_year", size=1, lower_bound=89.0, upper_bound=89.5, value=89.2)
-        # design_space.add_variable("electrofuel_share_reference_years_values", size=7, lower_bound=[0, 0, 0,0, 0, 0, 0], upper_bound=[100, 100, 100,100, 100, 100, 100], value=[0, 0, 1.2, 5, 10, 15, 35])
+        # design_space.add_variable("load_factor_end_year", size=1, lower_bound=89.0, upper_bound=89.5, value=89.2)
+        design_space.add_variable("electrofuel_share_reference_years_values", size=7, lower_bound=[0, 0, 0, 0, 0, 0, 0], upper_bound=[100, 100, 100,100, 100, 100, 100], value=[0, 0, 1.2, 5, 10, 15, 35])
         # design_space.add_variable("biofuel_share_reference_years_values", size=7, lower_bound=np.array([0, 0, 0,0, 0, 0, 0]), upper_bound=np.array([100, 100, 100,100, 100, 100, 100]), value=np.array([0, 0, 1.2, 5, 10, 15, 35]))
         # design_space.add_variable("biofuel_share_reference_years_values", size=1, lower_bound=1, upper_bound=100, value=5)
 
@@ -115,7 +115,7 @@ class AeroMAPSProcess(object):
         self.process.set_differentiation_method("finite_differences")
 
         # Add constraints
-        # self.process.add_constraint('c_1', 'ineq')
+        self.process.add_constraint('aviation_carbon_budget_constraint', 'ineq')
 
         # self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
         #                         initialize_defaults=True

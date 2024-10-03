@@ -13,16 +13,20 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
         self,
         cumulative_co2_emissions: pd.Series,
         gross_carbon_budget_2050: float,
-    ) -> float:
+        aviation_carbon_budget_objective: float,
+    ) -> Tuple[float, float]:
         """Carbon budget consumption share calculation."""
 
         carbon_budget_consumed_share = (
             cumulative_co2_emissions.loc[self.end_year] / gross_carbon_budget_2050 * 100
         )
 
-        self.float_outputs["carbon_budget_consumed_share"] = carbon_budget_consumed_share
+        aviation_carbon_budget_constraint = -(carbon_budget_consumed_share - aviation_carbon_budget_objective)
 
-        return carbon_budget_consumed_share
+        self.float_outputs["carbon_budget_consumed_share"] = carbon_budget_consumed_share
+        self.float_outputs["aviation_carbon_budget_constraint"] = aviation_carbon_budget_constraint
+
+        return carbon_budget_consumed_share, aviation_carbon_budget_constraint
 
 
 class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
