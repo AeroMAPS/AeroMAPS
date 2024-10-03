@@ -13,7 +13,7 @@ class DropinFuelDistribution(AeroMAPSModel):
     def compute(
         self,
         biofuel_share_reference_years: list,
-        biofuel_share_reference_years_values: list,
+        biofuel_share_reference_years_values: np.ndarray,
         electrofuel_share_reference_years: list,
         electrofuel_share_reference_years_values: np.ndarray,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
@@ -24,7 +24,7 @@ class DropinFuelDistribution(AeroMAPSModel):
             self,
             biofuel_share_reference_years,
             biofuel_share_reference_years_values,
-            method="quadratic",
+            method="linear",
             positive_constraint=True,
             model_name=self.name,
         )
@@ -44,7 +44,7 @@ class DropinFuelDistribution(AeroMAPSModel):
             self,
             electrofuel_share_reference_years,
             electrofuel_share_reference_years_values,
-            method="quadratic",
+            method="linear",
             positive_constraint=True,
             model_name=self.name,
         )

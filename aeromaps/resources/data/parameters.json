@@ -158,7 +158,7 @@
         56199000000.0
     ],
     "commercial_aviation_coefficient": 0.88,
-    "aviation_carbon_budget_objective": 4.0,
+    "aviation_carbon_budget_objective": 2.40,
     "load_factor_end_year": 85.0,
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [2.0],
@@ -220,9 +220,9 @@
     "electric_final_market_share_long_range": 0.0,
     "electric_introduction_year_long_range": 2051,
     "fleet_renewal_duration": 25.0,
-    "biofuel_share_reference_years": [],
+    "biofuel_share_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050],
     "biofuel_share_reference_years_values": [0.0],
-    "electrofuel_share_reference_years": [],
+    "electrofuel_share_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050],
     "electrofuel_share_reference_years_values": [0.0],
     "kerosene_emission_factor_reference_years": [],
     "kerosene_emission_factor_reference_years_values": [88.7],
@@ -326,7 +326,7 @@
     "biofuel_ft_msw_share_reference_years": [],
     "biofuel_ft_msw_share_reference_years_values": [0.0],
     "electricity_emission_factor_reference_years": [],
-    "electricity_emission_factor_reference_years_values": [429.0],
+    "electricity_emission_factor_reference_years_values": [2.0],
     "electrolysis_efficiency_reference_years": [],
     "electrolysis_efficiency_reference_years_values": [0.59],
     "liquefaction_efficiency_reference_years": [],
@@ -509,5 +509,9 @@
     "electrofuel_mfsp_simple_reference_years": [],
     "electrofuel_mfsp_simple_reference_years_values": [3.504428],
     "energy_replacement_ratio": 1.0,
-    "initial_price_per_rpk": 0.082949239
+    "initial_price_per_rpk": 0.082949239,
+    "biomass_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
+    "biomass_availability_constraint_trajectory_reference_years_values": [62.8,72.1,97.8,101.8],
+    "electricity_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
+    "electricity_availability_constraint_trajectory_reference_years_values": [102.0456,137.5452,212.7996,276.6168]
 }

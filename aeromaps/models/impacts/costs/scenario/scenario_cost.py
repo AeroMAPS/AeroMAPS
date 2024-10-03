@@ -101,7 +101,7 @@ class DicountedEnergyCost(AeroMAPSModel):
         electrofuel_total_cost: pd.Series,
         total_hydrogen_supply_cost: pd.Series,
         electricity_direct_use_total_cost: pd.Series,
-    ) -> pd.Series:
+    ) -> Tuple[pd.Series, float]:
         for k in range(self.prospection_start_year, self.end_year + 1):
             # Compute the discounter at year k
             discount_k = (1 + social_discount_rate) ** (k - self.prospection_start_year)
@@ -133,7 +133,9 @@ class DicountedEnergyCost(AeroMAPSModel):
 
         discounted_energy_expenses = self.df.loc[:, "discounted_energy_expenses"]
 
-        return discounted_energy_expenses
+        discounted_energy_expenses_obj = discounted_energy_expenses.cumsum()[self.end_year]
+
+        return discounted_energy_expenses, discounted_energy_expenses_obj
 
 
 class TotalAirlineCost(AeroMAPSModel):
@@ -158,16 +160,19 @@ class TotalAirlineCost(AeroMAPSModel):
         total_airline_cost = total_cost_per_ask * ask
         total_airline_cost_increase  = total_airline_cost - initial_airline_cost
 
+        total_airline_cost_discounted = total_airline_cost / (
+            1 + social_discount_rate
+        ) ** (self.df.index - self.prospection_start_year)
+
+        total_airline_cost_increase_discounted= total_airline_cost_increase / (
+            1 + social_discount_rate
+        ) ** (self.df.index - self.prospection_start_year)
 
         cumulative_total_airline_cost = total_airline_cost.cumsum()
-        cumulative_total_airline_cost_discounted = cumulative_total_airline_cost / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
+        cumulative_total_airline_cost_discounted = total_airline_cost_discounted.cumsum()
 
         cumulative_total_airline_cost_increase = total_airline_cost_increase.cumsum()
-        cumulative_total_airline_cost_increase_discounted = cumulative_total_airline_cost_increase / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
+        cumulative_total_airline_cost_increase_discounted = total_airline_cost_increase_discounted.cumsum()
 
         self.df.loc[:, "total_airline_cost"] = total_airline_cost
         self.df.loc[:, "cumulative_total_airline_cost"] = cumulative_total_airline_cost
