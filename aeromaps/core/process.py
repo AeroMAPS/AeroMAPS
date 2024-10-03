@@ -78,52 +78,45 @@ class AeroMAPSProcess(object):
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
 
-        self._initialize_gemseo_process()
+        self._initialize_gemseo()
 
         self._initialize_data()
         # self._update_variables()
 
-    def _initialize_gemseo_process(self):
+    def _initialize_gemseo(self):
 
         self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
                                 initialize_defaults=True
                                 )
 
+        self.scenario = None
 
-        # self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-        #                         initialize_defaults=False)
+        self.gemseo_settings = {}
 
+        # Mandatory settings
+        self.gemseo_settings["design_space"] = None
+        self.gemseo_settings["objective_name"] = None
 
-        design_space = DesignSpace()
-        # design_space.add_variable("load_factor_end_year", size=1, lower_bound=89.0, upper_bound=89.5, value=89.2)
-        design_space.add_variable("electrofuel_share_reference_years_values", size=7, lower_bound=[0, 0, 0, 0, 0, 0, 0], upper_bound=[100, 100, 100,100, 100, 100, 100], value=[0, 0, 1.2, 5, 10, 15, 35])
-        # design_space.add_variable("biofuel_share_reference_years_values", size=7, lower_bound=np.array([0, 0, 0,0, 0, 0, 0]), upper_bound=np.array([100, 100, 100,100, 100, 100, 100]), value=np.array([0, 0, 1.2, 5, 10, 15, 35]))
-        # design_space.add_variable("biofuel_share_reference_years_values", size=1, lower_bound=1, upper_bound=100, value=5)
+        # Optional settings
+        self.gemseo_settings["formulation"] = "MDF"
+        self.gemseo_settings["scenario_type"] = "MDO"
+        self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
 
-        objective_name = "cumulative_total_airline_cost_discounted_obj"
+    def create_gemseo_scenario(self):
 
         # Create GEMSEO process
-        self.process = create_scenario(
+        self.scenario = create_scenario(
             disciplines=self.mda_chain,
-            formulation="DisciplinaryOpt",
-            objective_name=objective_name,
-            design_space=design_space,
-            scenario_type="MDO",
-            grammar_type=MDODiscipline.GrammarType.SIMPLE
+            formulation=self.gemseo_settings["formulation"],
+            objective_name=self.gemseo_settings["objective_name"],
+            design_space=self.gemseo_settings["design_space"],
+            scenario_type=self.gemseo_settings["scenario_type"],
+            grammar_type=self.gemseo_settings["grammar_type"]
         )
 
-        self.process.set_differentiation_method("finite_differences")
 
-        # Add constraints
-        self.process.add_constraint('aviation_carbon_budget_constraint', 'ineq')
+    def _pre_compute(self):
 
-        # self.process = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-        #                         initialize_defaults=True
-        #                         )
-
-
-
-    def compute(self):
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (
@@ -131,22 +124,13 @@ class AeroMAPSProcess(object):
             )
             self.fleet_model.compute()
 
-        input_data = self._set_inputs()
+        self.input_data.update(self._set_inputs())
 
         if self.fleet is not None:
             # This is needed since fleet model is particular discipline
-            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
+            self.input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
 
-        config_algo = {"algo": "SLSQP", "max_iter": 100}
-        input_data.update(config_algo)
-
-        # self.mda_chain.execute(input_data=input_data)
-
-
-
-        self.process.execute(input_data=input_data)
-        # self.process.execute(config_algo)
-
+    def _post_compute(self):
         self._update_variables()
 
         if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
@@ -158,6 +142,18 @@ class AeroMAPSProcess(object):
         else:
             file_name = None
         self.write_json(file_name=file_name)
+
+    def compute(self):
+
+        self._pre_compute()
+
+        if self.scenario is not None:
+            self.scenario.execute(input_data=self.input_data)
+
+        else:
+            self.mda_chain.execute(input_data=self.input_data)
+
+        self._post_compute()
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -327,6 +323,7 @@ class AeroMAPSProcess(object):
                 setattr(self.parameters, key, value)
 
     def _initialize_input_data(self):
+        self.input_data = {}
         self._initialize_vector_inputs()
         self._initialize_climate_historical_data()
 
