@@ -158,6 +158,7 @@
         56199000000.0
     ],
     "commercial_aviation_coefficient": 0.88,
+    "aviation_carbon_budget_objective": 4.0,
     "load_factor_end_year": 85.0,
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [2.0],
