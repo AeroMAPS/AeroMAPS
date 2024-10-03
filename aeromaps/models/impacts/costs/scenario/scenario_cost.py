@@ -177,9 +177,7 @@ class TotalAirlineCost(AeroMAPSModel):
         self.df.loc[:, "total_airline_cost_increase"] = total_airline_cost_increase
         self.df.loc[:, "cumulative_total_airline_cost_increase"] = cumulative_total_airline_cost_increase
 
-        print(cumulative_total_airline_cost_discounted[self.end_year])
         cumulative_total_airline_cost_discounted_obj = cumulative_total_airline_cost_discounted[self.end_year]
-        print(cumulative_total_airline_cost_discounted_obj)
 
         return (
             total_airline_cost,
