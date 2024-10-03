@@ -26,7 +26,7 @@ pandas = "^1.1.0"
 xlrd = "1.2.0"
 openpyxl = "^3.1.2"
 gemseo = { git = "https://gitlab.com/gemseo/dev/gemseo.git", branch = "develop" }
-
+nlopt = "^2.7.0"
 
 # Data visualization
 matplotlib = "^3.7"
