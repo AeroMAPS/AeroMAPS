@@ -171,11 +171,6 @@ class AeroMAPSProcess(object):
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
 
-    # TODO: check if this is still needed
-    def update_parameters(self):
-        for name, model in self.models.items():
-            model.parameters = self.parameters
-
     def list_available_plots(self):
         return list(available_plots.keys())
 
