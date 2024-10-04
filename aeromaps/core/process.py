@@ -83,9 +83,6 @@ class AeroMAPSProcess(object):
 
     def _initialize_gemseo(self):
 
-        self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                initialize_defaults=True
-                                )
 
         self.scenario = None
 
@@ -101,6 +98,10 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
 
     def create_gemseo_scenario(self):
+
+        self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
+                                initialize_defaults=True
+                                )
 
         # Create GEMSEO process
         self.scenario = create_scenario(
