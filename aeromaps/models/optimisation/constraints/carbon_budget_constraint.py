@@ -24,7 +24,7 @@ class CarbonBudgetConstraint(AeroMAPSModel):
         """Carbon budget consumption share calculation."""
 
 
-        aviation_carbon_budget_constraint = +(carbon_budget_consumed_share - aviation_carbon_budget_objective)
+        aviation_carbon_budget_constraint = +(carbon_budget_consumed_share - aviation_carbon_budget_objective)/aviation_carbon_budget_objective
 
         self.float_outputs["aviation_carbon_budget_constraint"] = aviation_carbon_budget_constraint
 

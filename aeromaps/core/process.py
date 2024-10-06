@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_scenario
+from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
 # from gemseo.core.chain import create_mda
 
@@ -85,7 +86,7 @@ class AeroMAPSProcess(object):
 
 
         self.scenario = None
-
+        self.scenario_doe = None
         self.gemseo_settings = {}
 
         # Mandatory settings
@@ -110,8 +111,31 @@ class AeroMAPSProcess(object):
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
+            grammar_type=self.gemseo_settings["grammar_type"],
+            input_data=self.input_data
+        )
+
+    def create_gemseo_doe(self):
+        # dv_names = self.scenario.formulation.design_variables.keys()
+        self.adapter = MDOScenarioAdapter(
+            #TODO make generic
+            self.scenario,
+            ['electrofuel_share_reference_years_values', 'biofuel_share_reference_years_values'],
+            output_names=['cumulative_total_airline_cost_discounted_obj'],
+            grammar_type=self.gemseo_settings["grammar_type"],
+            set_x0_before_opt=True
+        )
+
+        self.scenario_doe = create_scenario(
+            self.adapter,
+            formulation=self.gemseo_settings["formulation"],
+            objective_name=self.gemseo_settings["objective_name"],
+            design_space=self.gemseo_settings["design_space"],
+            scenario_type="DOE",
             grammar_type=self.gemseo_settings["grammar_type"]
         )
+
+
 
 
     def _pre_compute(self):
@@ -146,8 +170,21 @@ class AeroMAPSProcess(object):
 
         self._pre_compute()
         if self.scenario is not None:
-            self.scenario.execute(input_data=self.input_data)
-
+            if self.scenario_doe is not None:
+                # TODO: handle input_data
+                algo_options = {
+                    "ftol_rel": 0.001,
+                    "ftol_abs": 0.001,
+                    "normalize_design_space": True,
+                    "init_step": 1
+                }
+                self.scenario.default_inputs = {
+                    "algo": "NLOPT_COBYLA",
+                    "max_iter": 500,
+                    "algo_options": algo_options                    }
+                self.scenario_doe.execute(input_data={"algo": "LHS", "n_samples": 50})
+            else:
+                self.scenario.execute(input_data=self.input_data)
         else:
             self.mda_chain.execute(input_data=self.input_data)
         self._post_compute()

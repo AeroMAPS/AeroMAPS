@@ -79,8 +79,8 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_
     EnergyIntensity,
 )
 from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import DropinFuelDistribution
-from aeromaps.models.optimisation.cosntraints.carbon_budget_constraint import CarbonBudgetConstraint
-from aeromaps.models.optimisation.cosntraints.energy_constraint import BlendCompletenessConstraint, \
+from aeromaps.models.optimisation.constraints.carbon_budget_constraint import CarbonBudgetConstraint
+from aeromaps.models.optimisation.constraints.energy_constraint import BlendCompletenessConstraint, \
     ElectricityAvailabilityConstraintTrajectory, BiomassAvailabilityConstraintTrajectory, \
     ElectrofuelUseGrowthConstraint, BiofuelUseGrowthConstraint
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
