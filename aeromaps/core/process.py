@@ -181,8 +181,24 @@ class AeroMAPSProcess(object):
                 self.scenario.default_inputs = {
                     "algo": "NLOPT_COBYLA",
                     "max_iter": 500,
-                    "algo_options": algo_options                    }
-                self.scenario_doe.execute(input_data={"algo": "LHS", "n_samples": 50})
+                    "algo_options": algo_options
+                }
+                # self.scenario_doe.execute(input_data={"algo": "LHS", "n_samples": 50})
+
+                sample_1 = [0.05, 0.05, 1.2, 5, 10, 15, 35,
+                            0.05, 2, 4.8, 15, 24, 27, 35]
+                sample_2 = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+                            0.05, 2, 6, 20, 34, 42, 70]
+                sample_3 = [0.05, 2, 6, 20, 34, 42, 70,
+                            0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+                sample_4 = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+                            0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+                sample_5 = [0.05,20,20,30,30,40,40,
+                            0.05,20,20,30,30,40,40]
+
+                samples = np.array([sample_1, sample_2, sample_3, sample_4, sample_5])
+
+                self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": samples}})
             else:
                 self.scenario.execute(input_data=self.input_data)
         else:
