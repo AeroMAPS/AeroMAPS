@@ -19,11 +19,27 @@ class DropinFuelDistribution(AeroMAPSModel):
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Fuel distribution calculation using interpolation functions"""
 
+        ######### MOD FOR OPTIM ###########
+
+        # TODO remove if not optim // make generic
+        #Reduce number of optim varaibales and fixes 2020 values to zero
+        biofuel_share_reference_years_local = biofuel_share_reference_years.copy()
+        biofuel_share_reference_years_local.insert(0,2020)
+        biofuel_share_reference_years_values_local = np.insert(biofuel_share_reference_years_values,0,0)
+
+        electrofuel_share_reference_years_local = electrofuel_share_reference_years.copy()
+        electrofuel_share_reference_years_local.insert(0,2020)
+        electrofuel_share_reference_years_values_local = np.insert(electrofuel_share_reference_years_values,0,0)
+
+
+
+        ######### END MOD FOR OPTIM ###########
+
         # Biofuel
         biofuel_share_prospective = aeromaps_interpolation_function(
             self,
-            biofuel_share_reference_years,
-            biofuel_share_reference_years_values,
+            biofuel_share_reference_years_local,
+            biofuel_share_reference_years_values_local,
             method="linear",
             positive_constraint=True,
             model_name=self.name,
@@ -42,8 +58,8 @@ class DropinFuelDistribution(AeroMAPSModel):
         # Electrofuel
         electrofuel_share_prospective = aeromaps_interpolation_function(
             self,
-            electrofuel_share_reference_years,
-            electrofuel_share_reference_years_values,
+            electrofuel_share_reference_years_local,
+            electrofuel_share_reference_years_values_local,
             method="linear",
             positive_constraint=True,
             model_name=self.name,
