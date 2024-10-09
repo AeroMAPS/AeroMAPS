@@ -85,12 +85,20 @@ class AeroMAPSProcess(object):
         # Initialize the data structures
         self._initialize_data()
 
+    def setup(self):
+        # Initialize the default inputs of disciplines
+        self._set_inputs()
 
-    def create_gemseo_scenario(self):
-
+        # Create MDA chain
         self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
                                 initialize_defaults=True
                                 )
+
+    def create_gemseo_scenario(self):
+
+        # if no mda_chain is created raise an error setup needs to be called first
+        if self.mda_chain is None:
+            raise ValueError("MDA chain not created. Please call setup() first.")
 
         # Create GEMSEO process
         self.scenario = create_scenario(
@@ -104,12 +112,17 @@ class AeroMAPSProcess(object):
         )
 
     def create_gemseo_doe(self):
+
+        # if no scenario is created raise an error create_gemseo_scenario needs to be called first
+        if self.scenario is None:
+            raise ValueError("GEMSEO scenario not created. Please call create_gemseo_scenario() first.")
+
         # dv_names = self.scenario.formulation.design_variables.keys()
         self.adapter = MDOScenarioAdapter(
             #TODO make generic
             self.scenario,
-            ['electrofuel_share_reference_years_values', 'biofuel_share_reference_years_values'],
-            output_names=['cumulative_total_airline_cost_discounted_obj'],
+            input_names=self.gemseo_settings["doe_input_names"],
+            output_names=self.gemseo_settings["doe_output_names"],
             grammar_type=self.gemseo_settings["grammar_type"],
             set_x0_before_opt=True
         )
@@ -123,8 +136,6 @@ class AeroMAPSProcess(object):
             grammar_type=self.gemseo_settings["grammar_type"]
         )
 
-
-
     def compute(self):
         import time
         # Start the timer
@@ -136,10 +147,9 @@ class AeroMAPSProcess(object):
         pre_compute_time = time.time()
         print(f"Pre-compute time: {pre_compute_time - start_time} seconds")
 
-
         if self.scenario is not None:
             if self.scenario_doe is not None:
-
+                self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
             else:
                 self.scenario.execute(input_data=self.scenario.options)
@@ -154,7 +164,6 @@ class AeroMAPSProcess(object):
         # Time for _post_compute
         post_compute_time = time.time()
         print(f"Post-compute time: {post_compute_time - compute_time} seconds")
-
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -224,6 +233,8 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["formulation"] = "MDF"
         self.gemseo_settings["scenario_type"] = "MDO"
         self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
+        self.gemseo_settings["doe_input_names"] = None
+        self.gemseo_settings["doe_output_names"] = None
 
     def _pre_compute(self):
 
@@ -416,11 +427,10 @@ class AeroMAPSProcess(object):
         all_inputs = {}
         # self._format_input_vectors()
         # TODO: make this more efficient
-        for disc in self.mda_chain.disciplines:
+        for disc in self.disciplines:
             disc.model.parameters = self.parameters
             disc.model._initialize_df()
-            # disc.update_defaults()
-            # all_inputs.update(disc.default_inputs)
+            disc.update_defaults()
 
         all_inputs.update(self.parameters.__dict__)
 
