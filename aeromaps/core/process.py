@@ -50,53 +50,41 @@ default_climate_historical_data_path = os.path.join(
 class AeroMAPSProcess(object):
     def __init__(
         self,
-        configuration_file=None,
-        models=default_models_top_down,
-        use_fleet_model=False,
-        add_examples_aircraft_and_subcategory=True,
+        configuration_file: str = None,
+        models: dict = default_models_top_down,
+        use_fleet_model: bool = False,
+        add_examples_aircraft_and_subcategory: bool = True,
     ):
 
         self.configuration_file = configuration_file
-        self._initialize_configuration()
-
         self.use_fleet_model = use_fleet_model
-        self.models = models
 
-        self._initialize_inputs()
-        self.setup(add_examples_aircraft_and_subcategory)
-
-    def setup(self, add_examples_aircraft_and_subcategory=True):
         self.disciplines = []
         self.data = {}
         self.json = {}
+        self.models = models
 
+        self._initialization(add_examples_aircraft_and_subcategory)
 
+    def _initialization(self, add_examples_aircraft_and_subcategory=True):
+        # Initialize the configuration settings
+        self._initialize_configuration()
+
+        # Initialize the input data
+        self._initialize_inputs()
+
+        # Initialize the years data
         self._initialize_years()
 
-        self._initialize_disciplines(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
-        )
+        # Initialize the disciplines, optionally adding example aircraft and subcategories
+        self._initialize_disciplines(add_examples_aircraft_and_subcategory)
 
+        # Initialize the GEMSEO settings
         self._initialize_gemseo()
 
+        # Initialize the data structures
         self._initialize_data()
-        # self._update_variables()
 
-    def _initialize_gemseo(self):
-
-
-        self.scenario = None
-        self.scenario_doe = None
-        self.gemseo_settings = {}
-
-        # Mandatory settings
-        self.gemseo_settings["design_space"] = None
-        self.gemseo_settings["objective_name"] = None
-
-        # Optional settings
-        self.gemseo_settings["formulation"] = "MDF"
-        self.gemseo_settings["scenario_type"] = "MDO"
-        self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
 
     def create_gemseo_scenario(self):
 
@@ -137,73 +125,36 @@ class AeroMAPSProcess(object):
 
 
 
-
-    def _pre_compute(self):
-
-        if self.fleet is not None:
-            # Necessary when user hard coded the fleet
-            self.fleet_model.fleet.all_aircraft_elements = (
-                self.fleet_model.fleet.get_all_aircraft_elements()
-            )
-            self.fleet_model.compute()
-
-        self.input_data.update(self._set_inputs())
-
-        if self.fleet is not None:
-            # This is needed since fleet model is particular discipline
-            self.input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
-
-    def _post_compute(self):
-        self._update_variables()
-
-        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(
-                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
-            )
-            file_name = new_output_file_path
-        else:
-            file_name = None
-        self.write_json(file_name=file_name)
-
     def compute(self):
+        import time
+        # Start the timer
+        start_time = time.time()
 
         self._pre_compute()
+
+        # Time for _pre_compute
+        pre_compute_time = time.time()
+        print(f"Pre-compute time: {pre_compute_time - start_time} seconds")
+
+
         if self.scenario is not None:
             if self.scenario_doe is not None:
-                # TODO: handle input_data
-                algo_options = {
-                    "ftol_rel": 0.001,
-                    "ftol_abs": 0.001,
-                    "normalize_design_space": True,
-                    "init_step": 1
-                }
-                self.scenario.default_inputs = {
-                    "algo": "NLOPT_COBYLA",
-                    "max_iter": 500,
-                    "algo_options": algo_options
-                }
-                # self.scenario_doe.execute(input_data={"algo": "LHS", "n_samples": 50})
 
-                sample_1 = [0.05, 1.2, 5, 10, 15, 35,
-                             2, 4.8, 15, 24, 27, 35]
-                sample_2 = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
-                             2, 6, 20, 34, 42, 70]
-                sample_3 = [2, 6, 20, 34, 42, 70,
-                             0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
-                sample_4 = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
-                             0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
-                sample_5 = [20,20,30,30,40,40,
-                            20,20,30,30,40,40]
-
-                samples = np.array([sample_1, sample_2, sample_3, sample_4, sample_5])
-
-                self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": samples}})
+                self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
             else:
-                self.scenario.execute(input_data=self.input_data)
+                self.scenario.execute(input_data=self.scenario.options)
         else:
             self.mda_chain.execute(input_data=self.input_data)
+
+        # Time for compute
+        compute_time   = time.time()
+        print(f"Compute time: {compute_time - pre_compute_time} seconds")
+
         self._post_compute()
+        # Time for _post_compute
+        post_compute_time = time.time()
+        print(f"Post-compute time: {post_compute_time - compute_time} seconds")
+
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -258,6 +209,50 @@ class AeroMAPSProcess(object):
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
+
+    def _initialize_gemseo(self):
+
+        self.scenario = None
+        self.scenario_doe = None
+        self.gemseo_settings = {}
+
+        # Mandatory settings
+        self.gemseo_settings["design_space"] = None
+        self.gemseo_settings["objective_name"] = None
+
+        # Optional settings
+        self.gemseo_settings["formulation"] = "MDF"
+        self.gemseo_settings["scenario_type"] = "MDO"
+        self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
+
+    def _pre_compute(self):
+
+        if self.fleet is not None:
+            # Necessary when user hard coded the fleet
+            self.fleet_model.fleet.all_aircraft_elements = (
+                self.fleet_model.fleet.get_all_aircraft_elements()
+            )
+            self.fleet_model.compute()
+
+        self.input_data.update(self._set_inputs())
+
+        if self.fleet is not None:
+            # This is needed since fleet model is particular discipline
+            self.input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
+
+    def _post_compute(self):
+        self._update_variables()
+
+        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            new_output_file_path = os.path.join(
+                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
+            )
+            file_name = new_output_file_path
+        else:
+            file_name = None
+        self.write_json(file_name=file_name)
+
 
     def _initialize_configuration(self):
         # Load the default configuration file
