@@ -127,6 +127,7 @@ class AeroMAPSProcess(object):
             set_x0_before_opt=True
         )
 
+
         self.scenario_doe = create_scenario(
             self.adapter,
             formulation=self.gemseo_settings["formulation"],

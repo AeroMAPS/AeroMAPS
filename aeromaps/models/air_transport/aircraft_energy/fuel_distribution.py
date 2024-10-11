@@ -24,13 +24,16 @@ class DropinFuelDistribution(AeroMAPSModel):
         # TODO remove if not optim // make generic
         #Reduce number of optim varaibales and fixes 2020 values to zero
         biofuel_share_reference_years_local = biofuel_share_reference_years.copy()
+        biofuel_share_reference_years_local.insert(0, 2025)
         biofuel_share_reference_years_local.insert(0,2020)
-        biofuel_share_reference_years_values_local = np.insert(biofuel_share_reference_years_values,0,0)
+        biofuel_share_reference_years_values_local = np.insert(biofuel_share_reference_years_values,0,2)
+        biofuel_share_reference_years_values_local = np.insert(biofuel_share_reference_years_values_local,0,0)
 
         electrofuel_share_reference_years_local = electrofuel_share_reference_years.copy()
+        electrofuel_share_reference_years_local.insert(0,2025)
         electrofuel_share_reference_years_local.insert(0,2020)
         electrofuel_share_reference_years_values_local = np.insert(electrofuel_share_reference_years_values,0,0)
-
+        electrofuel_share_reference_years_values_local = np.insert(electrofuel_share_reference_years_values_local,0,0)
 
 
         ######### END MOD FOR OPTIM ###########

@@ -606,8 +606,7 @@ models_optim_simple = {
 }
 
 models_optim_complex = {
-    # "default_models_bottom_up": default_models_bottom_up,
+    "model_optim_simple": models_optim_simple,
     "models_cost_feedback": models_cost_feedback,
-    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
