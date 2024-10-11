@@ -1,5 +1,5 @@
 {
     "PARAMETERS_JSON_DATA_FILE": "./parameters_elasticity.json",
-    "VECTOR_INPUTS_DATA_FILE": "./vector_inputs_elasticity.csv",
+    "VECTOR_INPUTS_DATA_FILE": "./vector_inputs_elasticity - Copie.csv",
     "OUTPUTS_JSON_DATA_FILE": "./outputs_elasticity.json"
 }

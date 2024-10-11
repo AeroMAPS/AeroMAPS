@@ -588,6 +588,7 @@ default_models_bottom_up = {
 }
 
 models_cost_feedback = {
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "price_elasticity_and_surplus": PriceElasticityAndSurplus("price_elasticity_and_surplus"),
     "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
     "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost("passenger_aircraft_marginal_cost"),

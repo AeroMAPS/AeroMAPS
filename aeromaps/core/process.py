@@ -91,7 +91,7 @@ class AeroMAPSProcess(object):
 
         # Create MDA chain
         self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                initialize_defaults=True
+                                initialize_defaults=True, inner_mda_name="MDAGaussSeidel"
                                 )
 
     def create_gemseo_scenario(self):
