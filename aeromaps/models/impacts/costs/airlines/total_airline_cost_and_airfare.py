@@ -433,20 +433,25 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
     ]:
         intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[self.prospection_start_year-1]
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk
-        a = 2 * (intial_total_cost_per_rpk_without_extra_tax - total_cost_per_rpk_without_extra_tax)/rpk_no_elasticity
-
+        a = 2 * (initial_price_per_rpk - intial_total_cost_per_rpk_without_extra_tax)/rpk_no_elasticity
 
         # For latter update replace total cost by the step component of the marginal cost.
         marginal_cost_per_rpk = a * rpk + b + total_cost_per_rpk_without_extra_tax - intial_total_cost_per_rpk_without_extra_tax
 
         airfare_per_rpk = marginal_cost_per_rpk + total_extra_tax_per_rpk
 
+        # print('a',a[self.end_year], 'b', b + total_cost_per_rpk_without_extra_tax[self.end_year] - intial_total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk[self.end_year])
+        # print('checker',marginal_cost_per_rpk[self.end_year], rpk[self.end_year], airfare_per_rpk[self.end_year])
+
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
         self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
+
+        # print('End PaxCostAF: Airfare 2050:{}, A{}'.format(airfare_per_rpk[self.end_year], a[self.end_year]))
 
         return (
             marginal_cost_per_rpk,
             airfare_per_rpk,
+
         )
 
 

@@ -223,6 +223,8 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
                 airfare_per_rpk.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
             )
 
+        # print('coef_dem',airfare_per_rpk[self.prospection_start_year - 1]/(rpk_no_elasticity[self.end_year]**(1/price_elasticity)))
+
 
         rpk_short_range = self.df["rpk_short_range"] * self.df['rpk']/rpk_no_elasticity
         rpk_medium_range = self.df["rpk_medium_range"] * self.df['rpk']/rpk_no_elasticity
@@ -348,6 +350,8 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             "prospective_evolution_rpk_long_range"
         ] = prospective_evolution_rpk_long_range
         self.float_outputs["prospective_evolution_rpk"] = prospective_evolution_rpk
+
+        # print('In PriceElasticity: Airfare 2050:{}, RPK 2050:{}'.format(airfare_per_rpk[self.end_year], rpk[self.end_year]))
 
         return (
             rpk_short_range,

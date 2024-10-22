@@ -91,8 +91,9 @@ class AeroMAPSProcess(object):
 
         # Create MDA chain
         self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                initialize_defaults=True, inner_mda_name="MDAGaussSeidel"
+                                initialize_defaults=True,
                                 )
+
 
     def create_gemseo_scenario(self):
 
@@ -153,6 +154,7 @@ class AeroMAPSProcess(object):
                 self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
             else:
+                self.mda_chain.execute(input_data=self.input_data)
                 self.scenario.execute(input_data=self.scenario.options)
         else:
             self.mda_chain.execute(input_data=self.input_data)
