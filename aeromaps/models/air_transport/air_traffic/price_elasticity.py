@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
+from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function, aeromaps_interpolation_function
 
 
 class PriceElasticityAndSurplus(AeroMAPSModel):
@@ -31,7 +31,7 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         rpk_short_range_measures_impact: pd.Series,
         rpk_medium_range_measures_impact: pd.Series,
         rpk_long_range_measures_impact: pd.Series,
-        airfare_per_rpk: pd.Series,
+        airfare_per_rpk: np.ndarray,
         # airfare_per_rpk_short_range: pd.Series,
         # airfare_per_rpk_medium_range: pd.Series,
         # airfare_per_rpk_long_range: pd.Series,
@@ -71,6 +71,20 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         # relative_change_airfare_long_range = (
         #     airfare_per_rpk_long_range - airfare_per_rpk_long_range[self.prospection_start_year - 1]
         # ) / airfare_per_rpk_long_range[self.prospection_start_year - 1]
+
+        #
+        interp_af= interp1d(
+            [2025,2030,2035,2040,2045,2050],
+            airfare_per_rpk,
+            kind='linear'
+        )
+        years_new = np.arange(2025, 2051, 1)
+        airfare_per_rpk = interp_af(years_new)
+        airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
+
+
+        airfare_per_rpk = airfare_per_rpk.loc[2025:self.end_year+1]
+
 
 
         # Initialization based on 2019 share
@@ -218,10 +232,17 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
 
         self.df.loc[self.other_data_start_year: covid_end_year, "rpk"] = rpk_no_elasticity.loc[self.other_data_start_year: covid_end_year]
 
+        airfare_init = 0.09196291936435226
+
         self.df.loc[covid_end_year + 1: self.end_year + 1, "rpk"] = rpk_no_elasticity / (
-                airfare_per_rpk[self.prospection_start_year - 1] ** price_elasticity) * (
-                airfare_per_rpk.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
-            )
+                airfare_init ** price_elasticity) * (
+                                                                            airfare_per_rpk.loc[
+                                                                            covid_end_year + 1: self.end_year + 1] ** price_elasticity
+                                                                    )
+        # self.df.loc[covid_end_year + 1: self.end_year + 1, "rpk"] = rpk_no_elasticity / (
+        #         airfare_per_rpk[self.prospection_start_year - 1] ** price_elasticity) * (
+        #         airfare_per_rpk.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
+        #     )
 
         # print('coef_dem',airfare_per_rpk[self.prospection_start_year - 1]/(rpk_no_elasticity[self.end_year]**(1/price_elasticity)))
 

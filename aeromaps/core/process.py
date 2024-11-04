@@ -154,7 +154,7 @@ class AeroMAPSProcess(object):
                 self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
             else:
-                self.mda_chain.execute(input_data=self.input_data)
+                # self.mda_chain.execute(input_data=self.input_data)
                 self.scenario.execute(input_data=self.scenario.options)
         else:
             self.mda_chain.execute(input_data=self.input_data)

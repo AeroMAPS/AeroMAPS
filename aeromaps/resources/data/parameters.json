@@ -509,7 +509,7 @@
     "electrofuel_mfsp_simple_reference_years": [],
     "electrofuel_mfsp_simple_reference_years_values": [3.504428],
     "energy_replacement_ratio": 1.0,
-    "initial_price_per_rpk": 0.092949239,
+    "initial_price_per_rpk": 0.082949239,
     "biomass_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
     "biomass_availability_constraint_trajectory_reference_years_values": [62.8,72.1,97.8,101.8],
     "electricity_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
