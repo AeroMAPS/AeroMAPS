@@ -5,11 +5,13 @@ from json import load, dump
 # Third-party imports
 import numpy as np
 import pandas as pd
-from gemseo.core.discipline import MDODiscipline
+
 from gemseo import generate_n2_plot, create_scenario
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
-# from gemseo.core.chain import create_mda
+from gemseo.mda.gauss_seidel import MDAGaussSeidel
+from gemseo.core.discipline import MDODiscipline
+
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
@@ -89,9 +91,13 @@ class AeroMAPSProcess(object):
         # Initialize the default inputs of disciplines
         self._set_inputs()
 
-        # Create MDA chain
-        self.mda_chain = MDAChain(disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                initialize_defaults=True,
+        # # Create MDA chain
+        self.mda_chain = MDAChain(disciplines=self.disciplines,
+                                  grammar_type=MDODiscipline.GrammarType.SIMPLE,
+                                  tolerance=1e-6,
+                                  initialize_defaults=True,
+                                  inner_mda_name="MDAGaussSeidel",
+                                  log_convergence=True
                                 )
 
 
@@ -151,12 +157,14 @@ class AeroMAPSProcess(object):
 
         if self.scenario is not None:
             if self.scenario_doe is not None:
+                print("Running DOE")
                 self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
             else:
-                # self.mda_chain.execute(input_data=self.input_data)
+                print("Running MDO")
                 self.scenario.execute(input_data=self.scenario.options)
         else:
+            print("Running MDA")
             self.mda_chain.execute(input_data=self.input_data)
 
         # Time for compute
@@ -367,7 +375,6 @@ class AeroMAPSProcess(object):
         self.parameters = Parameters()
         # First use main parameters.json as default values
         self.parameters.read_json(file_name=default_parameters_path)
-
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
             new_input_file_path = os.path.join(
@@ -377,7 +384,6 @@ class AeroMAPSProcess(object):
             if new_input_file_path != default_parameters_path:
                 self.parameters.read_json(file_name=new_input_file_path)
         # TODO: think refactoring to a dedicated method
-
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
 
@@ -385,11 +391,6 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.other_data_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
-
-    def _initialize_input_data(self):
-        self.input_data = {}
-        self._initialize_vector_inputs()
-        self._initialize_climate_historical_data()
 
     def _initialize_vector_inputs(self):
         if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:

@@ -41,6 +41,7 @@ from gemseo.core.data_processor import DataProcessor
 from gemseo.core.discipline import MDODiscipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
+from gemseo.disciplines.auto_py import AutoPyDiscipline
 
 from aeromaps.models.base import AeroMAPSModel
 
@@ -80,7 +81,7 @@ LOGGER = logging.getLogger(__name__)
 N_CPUS = cpu_count()
 
 
-class AutoPyDiscipline(MDODiscipline):
+class AutoPyDisciplineCustom(MDODiscipline):
     """Wrap a Python function into a discipline.
 
     A simplified and straightforward way of integrating a discipline
