@@ -272,8 +272,8 @@ class RPKReference(AeroMAPSModel):
     def compute(
         self,
         rpk: pd.Series,
-        reference_cagr_aviation_reference_periods: list,
-        reference_cagr_aviation_reference_periods_values: list,
+        reference_cagr_passenger_reference_periods: list,
+        reference_cagr_passenger_reference_periods_values: list,
         covid_start_year: int,
         covid_rpk_drop_start_year: float,
         covid_end_year: int,
@@ -302,8 +302,8 @@ class RPKReference(AeroMAPSModel):
         # CAGR function
         reference_annual_growth_rate_aviation = AeromapsLevelingFunction(
             self,
-            reference_cagr_aviation_reference_periods,
-            reference_cagr_aviation_reference_periods_values,
+            reference_cagr_passenger_reference_periods,
+            reference_cagr_passenger_reference_periods_values,
             model_name=self.name,
         )
         self.df.loc[:, "reference_annual_growth_rate_aviation"] = (

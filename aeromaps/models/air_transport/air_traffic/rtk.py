@@ -96,7 +96,8 @@ class RTKReference(AeroMAPSModel):
     def compute(
         self,
         rtk: pd.Series,
-        reference_annual_growth_rate_aviation: pd.Series,
+        reference_cagr_freight_reference_periods: list,
+        reference_cagr_freight_reference_periods_values: list,
         covid_start_year: int,
         covid_rpk_drop_start_year: float,
         covid_end_year: int,
@@ -106,6 +107,11 @@ class RTKReference(AeroMAPSModel):
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk_reference"] = rtk.loc[k]
+
+        covid_start_year = int(covid_start_year)
+        covid_rpk_drop_start_year = int(covid_rpk_drop_start_year)
+        covid_end_year = int(covid_end_year)
+        covid_end_year_reference_rpk_ratio = int(covid_end_year_reference_rpk_ratio)
 
         self.df.loc[covid_start_year - 1, "rtk_reference"] = rtk.loc[covid_start_year - 1]
 
@@ -117,13 +123,25 @@ class RTKReference(AeroMAPSModel):
         ]
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
+        # CAGR function
+        reference_annual_growth_rate_aviation = AeromapsLevelingFunction(
+            self,
+            reference_cagr_freight_reference_periods,
+            reference_cagr_freight_reference_periods_values,
+            model_name=self.name,
+        )
+        self.df.loc[:, "reference_annual_growth_rate_aviation"] = (
+            reference_annual_growth_rate_aviation
+        )
+
+        # Main
         for k in range(covid_start_year, covid_end_year + 1):
             self.df.loc[k, "rtk_reference"] = self.df.loc[
                 covid_start_year - 1, "rtk_reference"
             ] * covid_function(k)
         for k in range(covid_end_year + 1, self.end_year + 1):
             self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
-                1 + reference_annual_growth_rate_aviation.loc[k] / 100
+                1 + self.df.loc[k, "reference_annual_growth_rate_aviation"] / 100
             )
 
         rtk_reference = self.df["rtk_reference"]
