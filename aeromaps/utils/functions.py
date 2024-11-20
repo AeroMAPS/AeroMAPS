@@ -220,3 +220,16 @@ def create_partitioning(file, path=""):
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
+
+
+def merge_json_files(file1, file2, output_file):
+    with open(file1, "r") as f1, open(file2, "r") as f2:
+        data1 = json.load(f1)
+        data2 = json.load(f2)
+
+    # Fusionner les données (assume que les deux fichiers contiennent des dictionnaires)
+    merged_data = {**data1, **data2}
+
+    # Écrire dans un fichier de sortie
+    with open(output_file, "w") as outfile:
+        json.dump(merged_data, outfile, indent=4)
