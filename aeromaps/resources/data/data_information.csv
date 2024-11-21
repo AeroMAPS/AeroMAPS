@@ -165,6 +165,8 @@ operations_contrails_start_year;Float;yr;Start year for implementing contrail op
 operations_duration;Float;yr;Duration for implementing 98% of operational improvements to reduce fuel consumption
 operations_final_gain;Float;%;Final impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
 operations_start_year;Float;yr;Start year for implementing operational improvements to reduce fuel consumption
+operations_gain_reference_years;List;-;Reference years for the operations gain
+operations_gain_reference_years_values;List;%;Operations gain for the reference years
 prospection_start_year;Float;yr;Start year for the calculation
 relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market
 relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values;List;-;Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market for the reference years
