@@ -574,6 +574,25 @@
         0.25,
         0.74
     ],
+    "hydrogen_final_market_share_short_range": 50.0,
+    "hydrogen_introduction_year_short_range": 2035,
+    "relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years": [],
+    "relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years_values": [
+        1.15
+    ],
+    "hydrogen_final_market_share_medium_range": 50.0,
+    "hydrogen_introduction_year_medium_range": 2035,
+    "relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years": [],
+    "relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years_values": [
+        1.15
+    ],
+    "hydrogen_final_market_share_long_range": 70.0,
+    "hydrogen_introduction_year_long_range": 2050,
+    "relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years": [],
+    "relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values": [
+        1.0
+    ],
+    "fleet_renewal_duration": 20.0,
     "operations_gain_reference_years": [
         2020,
         2025,
