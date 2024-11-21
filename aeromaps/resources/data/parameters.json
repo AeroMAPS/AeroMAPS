@@ -208,6 +208,8 @@
     "operations_final_gain": 7.0,
     "operations_start_year": 2020,
     "operations_duration": 40.0,
+    "operations_gain_reference_years": [2020, 2050],
+    "operations_gain_reference_years_values": [0, 6],
     "hydrogen_final_market_share_short_range": 0.0,
     "hydrogen_introduction_year_short_range": 2051,
     "hydrogen_final_market_share_medium_range": 0.0,
