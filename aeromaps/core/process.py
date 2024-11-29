@@ -100,7 +100,6 @@ class AeroMAPSProcess(object):
                                   log_convergence=True
                                 )
 
-
     def create_gemseo_scenario(self):
 
         # if no mda_chain is created raise an error setup needs to be called first
