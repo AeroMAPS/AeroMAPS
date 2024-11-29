@@ -41,7 +41,9 @@ default_config_path = os.path.join(current_dir, "config.json")
 default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 # Construct the path to the vector_inputs.csv file
-default_vector_inputs_data_path = os.path.join(current_dir, "..", "resources", "data", "vector_inputs.csv")
+default_vector_inputs_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "vector_inputs.csv"
+)
 
 # Construct the path to the climate data .csv file
 default_climate_historical_data_path = os.path.join(
@@ -57,7 +59,6 @@ class AeroMAPSProcess(object):
         use_fleet_model: bool = False,
         add_examples_aircraft_and_subcategory: bool = True,
     ):
-
         self.configuration_file = configuration_file
         self.use_fleet_model = use_fleet_model
 
@@ -92,16 +93,16 @@ class AeroMAPSProcess(object):
         self._set_inputs()
 
         # # Create MDA chain
-        self.mda_chain = MDAChain(disciplines=self.disciplines,
-                                  grammar_type=MDODiscipline.GrammarType.SIMPLE,
-                                  tolerance=1e-6,
-                                  initialize_defaults=True,
-                                  inner_mda_name="MDAGaussSeidel",
-                                  log_convergence=True
-                                )
+        self.mda_chain = MDAChain(
+            disciplines=self.disciplines,
+            grammar_type=MDODiscipline.GrammarType.SIMPLE,
+            tolerance=1e-6,
+            initialize_defaults=True,
+            inner_mda_name="MDAGaussSeidel",
+            log_convergence=True,
+        )
 
     def create_gemseo_scenario(self):
-
         # if no mda_chain is created raise an error setup needs to be called first
         if self.mda_chain is None:
             raise ValueError("MDA chain not created. Please call setup() first.")
@@ -114,25 +115,25 @@ class AeroMAPSProcess(object):
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
             grammar_type=self.gemseo_settings["grammar_type"],
-            input_data=self.input_data
+            input_data=self.input_data,
         )
 
     def create_gemseo_doe(self):
-
         # if no scenario is created raise an error create_gemseo_scenario needs to be called first
         if self.scenario is None:
-            raise ValueError("GEMSEO scenario not created. Please call create_gemseo_scenario() first.")
+            raise ValueError(
+                "GEMSEO scenario not created. Please call create_gemseo_scenario() first."
+            )
 
         # dv_names = self.scenario.formulation.design_variables.keys()
         self.adapter = MDOScenarioAdapter(
-            #TODO make generic
+            # TODO make generic
             self.scenario,
             input_names=self.gemseo_settings["doe_input_names"],
             output_names=self.gemseo_settings["doe_output_names"],
             grammar_type=self.gemseo_settings["grammar_type"],
-            set_x0_before_opt=True
+            set_x0_before_opt=True,
         )
-
 
         self.scenario_doe = create_scenario(
             self.adapter,
@@ -140,11 +141,12 @@ class AeroMAPSProcess(object):
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type="DOE",
-            grammar_type=self.gemseo_settings["grammar_type"]
+            grammar_type=self.gemseo_settings["grammar_type"],
         )
 
     def compute(self):
         import time
+
         # Start the timer
         start_time = time.time()
 
@@ -158,7 +160,9 @@ class AeroMAPSProcess(object):
             if self.scenario_doe is not None:
                 print("Running DOE")
                 self.scenario.default_inputs.update(self.scenario.options)
-                self.scenario_doe.execute(input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}})
+                self.scenario_doe.execute(
+                    input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}}
+                )
             else:
                 print("Running MDO")
                 self.scenario.execute(input_data=self.scenario.options)
@@ -167,7 +171,7 @@ class AeroMAPSProcess(object):
             self.mda_chain.execute(input_data=self.input_data)
 
         # Time for compute
-        compute_time   = time.time()
+        compute_time = time.time()
         print(f"Compute time: {compute_time - pre_compute_time} seconds")
 
         self._post_compute()
@@ -230,7 +234,6 @@ class AeroMAPSProcess(object):
         return fig
 
     def _initialize_gemseo(self):
-
         self.scenario = None
         self.scenario_doe = None
         self.gemseo_settings = {}
@@ -247,7 +250,6 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["doe_output_names"] = None
 
     def _pre_compute(self):
-
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (
@@ -273,7 +275,6 @@ class AeroMAPSProcess(object):
         else:
             file_name = None
         self.write_json(file_name=file_name)
-
 
     def _initialize_configuration(self):
         # Load the default configuration file
@@ -303,7 +304,6 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-
         if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
@@ -364,7 +364,6 @@ class AeroMAPSProcess(object):
         )
 
     def _initialize_inputs(self):
-
         self.input_data = {}
         self._initialize_parameters()
         self._initialize_vector_inputs()
@@ -385,9 +384,10 @@ class AeroMAPSProcess(object):
         # TODO: think refactoring to a dedicated method
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
-
             if isinstance(value, pd.Series):
-                new_index = range(self.parameters.other_data_start_year, self.parameters.end_year + 1)
+                new_index = range(
+                    self.parameters.other_data_start_year, self.parameters.end_year + 1
+                )
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
@@ -401,9 +401,7 @@ class AeroMAPSProcess(object):
             vector_inputs_data_file_path = default_vector_inputs_data_path
 
         # Read .csv with first line column names
-        vector_inputs_df = pd.read_csv(
-            vector_inputs_data_file_path, delimiter=";", header=0
-        )
+        vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
 
         # Generate pd.Series for each column with index the year stored in first column
         for column in vector_inputs_df.columns:
@@ -426,7 +424,6 @@ class AeroMAPSProcess(object):
         self.climate_historical_data = historical_dataset_df.values
 
     def _set_inputs(self):
-
         all_inputs = {}
         # self._format_input_vectors()
         # TODO: make this more efficient
@@ -449,12 +446,13 @@ class AeroMAPSProcess(object):
                     mode="constant",
                     constant_values=np.nan,
                 )
-                new_index = range(self.parameters.other_data_start_year, self.parameters.end_year + 1)
+                new_index = range(
+                    self.parameters.other_data_start_year, self.parameters.end_year + 1
+                )
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):
-
         self._update_data_from_model()
 
         self._update_dataframes_from_data()
@@ -462,7 +460,6 @@ class AeroMAPSProcess(object):
         self._update_json_from_data()
 
     def _update_data_from_model(self):
-
         # Inputs
         all_inputs = self.mda_chain.get_input_data_names()
 
@@ -494,7 +491,6 @@ class AeroMAPSProcess(object):
                         [self.data["vector_outputs"], disc.model.df], axis=1
                     )
                 else:
-
                     self.data["vector_outputs"].update(disc.model.df)
             if hasattr(disc.model, "df_climate") and disc.model.df_climate.columns.size != 0:
                 if first_computation:
@@ -507,7 +503,6 @@ class AeroMAPSProcess(object):
             self.data["float_outputs"].update(disc.model.float_outputs)
 
     def _update_dataframes_from_data(self):
-
         # Float parameters
         data = {
             "Name": self.data["float_inputs"].keys(),
@@ -573,7 +568,6 @@ class AeroMAPSProcess(object):
             for variable in variables:
                 # If the variable exists in the csv we extract the information
                 if variable in df["Name"].values:
-
                     data = df.loc[df["Name"] == variable]
                     data["Type"] = data_type
                     var_infos_df = pd.concat([var_infos_df, data], ignore_index=True)

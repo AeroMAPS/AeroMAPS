@@ -62,7 +62,6 @@ class CoalCost(AeroMAPSModel):
         coal_cost_reference_years: list,
         coal_cost_reference_years_values: list,
     ) -> pd.Series:
-
         coal_market_price = aeromaps_interpolation_function(
             self, coal_cost_reference_years, coal_cost_reference_years_values, model_name=self.name
         )
@@ -80,7 +79,6 @@ class GasCost(AeroMAPSModel):
         gas_cost_reference_years: list,
         gas_cost_reference_years_values: list,
     ) -> pd.Series:
-
         gas_market_price = aeromaps_interpolation_function(
             self, gas_cost_reference_years, gas_cost_reference_years_values, model_name=self.name
         )
@@ -98,7 +96,6 @@ class Co2Cost(AeroMAPSModel):
         co2_cost_reference_years: list,
         co2_cost_reference_years_values: list,
     ) -> pd.Series:
-
         co2_market_price = aeromaps_interpolation_function(
             self, co2_cost_reference_years, co2_cost_reference_years_values, model_name=self.name
         )
@@ -116,7 +113,6 @@ class CarbonTax(AeroMAPSModel):
         carbon_tax_reference_years: list,
         carbon_tax_reference_years_values: list,
     ) -> pd.Series:
-
         carbon_tax_prospective = aeromaps_interpolation_function(
             self,
             carbon_tax_reference_years,
@@ -140,7 +136,6 @@ class KerosenePrice(AeroMAPSModel):
         kerosene_price_reference_years: list,
         kerosene_price_reference_years_values: list,
     ) -> pd.Series:
-
         kerosene_market_price_prospective = aeromaps_interpolation_function(
             self,
             kerosene_price_reference_years,
@@ -192,9 +187,9 @@ class KeroseneCost(AeroMAPSModel):
 
         self.df.loc[:, "kerosene_cost"] = kerosene_cost
         self.df.loc[:, "kerosene_carbon_tax_cost"] = kerosene_carbon_tax_cost
-        self.df.loc[
-            :, "kerosene_price_supplement_carbon_tax"
-        ] = kerosene_price_supplement_carbon_tax
+        self.df.loc[:, "kerosene_price_supplement_carbon_tax"] = (
+            kerosene_price_supplement_carbon_tax
+        )
 
         return kerosene_cost, kerosene_carbon_tax_cost, kerosene_price_supplement_carbon_tax
 

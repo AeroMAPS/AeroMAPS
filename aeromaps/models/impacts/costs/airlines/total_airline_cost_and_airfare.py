@@ -63,7 +63,7 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series
+        pd.Series,
     ]:
         ######## Overall #########
 
@@ -125,10 +125,15 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
 
         # Cost
         total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
-        total_cost_per_ask_short_range = total_cost_per_ask_without_extra_tax_short_range + total_extra_tax_per_ask_short_range
-        total_cost_per_ask_medium_range = total_cost_per_ask_without_extra_tax_medium_range + total_extra_tax_per_ask_medium_range
-        total_cost_per_ask_long_range = total_cost_per_ask_without_extra_tax_long_range + total_extra_tax_per_ask_long_range
-
+        total_cost_per_ask_short_range = (
+            total_cost_per_ask_without_extra_tax_short_range + total_extra_tax_per_ask_short_range
+        )
+        total_cost_per_ask_medium_range = (
+            total_cost_per_ask_without_extra_tax_medium_range + total_extra_tax_per_ask_medium_range
+        )
+        total_cost_per_ask_long_range = (
+            total_cost_per_ask_without_extra_tax_long_range + total_extra_tax_per_ask_long_range
+        )
 
         # Airfare per ask
         airfare_per_ask = total_cost_per_ask + operational_profit_per_ask
@@ -144,31 +149,41 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
 
         # Tax per rpk
         total_extra_tax_per_rpk = total_extra_tax_per_ask / (load_factor / 100)
-        total_extra_tax_per_rpk_short_range = total_extra_tax_per_ask_short_range / (load_factor / 100)
-        total_extra_tax_per_rpk_medium_range = total_extra_tax_per_ask_medium_range / (load_factor / 100)
-        total_extra_tax_per_rpk_long_range = total_extra_tax_per_ask_long_range / (load_factor / 100)
+        total_extra_tax_per_rpk_short_range = total_extra_tax_per_ask_short_range / (
+            load_factor / 100
+        )
+        total_extra_tax_per_rpk_medium_range = total_extra_tax_per_ask_medium_range / (
+            load_factor / 100
+        )
+        total_extra_tax_per_rpk_long_range = total_extra_tax_per_ask_long_range / (
+            load_factor / 100
+        )
 
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax"
-        ] = total_cost_per_ask_without_extra_tax
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_short_range"
-        ] = total_cost_per_ask_without_extra_tax_short_range
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_medium_range"
-        ] = total_cost_per_ask_without_extra_tax_medium_range
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_long_range"
-        ] = total_cost_per_ask_without_extra_tax_long_range
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax"] = (
+            total_cost_per_ask_without_extra_tax
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_short_range"] = (
+            total_cost_per_ask_without_extra_tax_short_range
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_medium_range"] = (
+            total_cost_per_ask_without_extra_tax_medium_range
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_long_range"] = (
+            total_cost_per_ask_without_extra_tax_long_range
+        )
 
         self.df.loc[:, "total_extra_tax_per_ask"] = total_extra_tax_per_ask
         self.df.loc[:, "total_extra_tax_per_ask_short_range"] = total_extra_tax_per_ask_short_range
-        self.df.loc[:, "total_extra_tax_per_ask_medium_range"] = total_extra_tax_per_ask_medium_range
+        self.df.loc[:, "total_extra_tax_per_ask_medium_range"] = (
+            total_extra_tax_per_ask_medium_range
+        )
         self.df.loc[:, "total_extra_tax_per_ask_long_range"] = total_extra_tax_per_ask_long_range
 
         self.df.loc[:, "total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
         self.df.loc[:, "total_extra_tax_per_rpk_short_range"] = total_extra_tax_per_rpk_short_range
-        self.df.loc[:, "total_extra_tax_per_rpk_medium_range"] = total_extra_tax_per_rpk_medium_range
+        self.df.loc[:, "total_extra_tax_per_rpk_medium_range"] = (
+            total_extra_tax_per_rpk_medium_range
+        )
         self.df.loc[:, "total_extra_tax_per_rpk_long_range"] = total_extra_tax_per_rpk_long_range
 
         self.df.loc[:, "total_cost_per_ask"] = total_cost_per_ask
@@ -215,9 +230,7 @@ class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
 
 
 class PassengerAircraftTotalCost(AeroMAPSModel):
-    def __init__(
-        self, name="passenger_aircraft_total_cost", fleet_model=None, *args, **kwargs
-    ):
+    def __init__(self, name="passenger_aircraft_total_cost", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
@@ -265,7 +278,7 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series
+        pd.Series,
     ]:
         ######## Overall #########
 
@@ -327,52 +340,79 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
 
         # Average Cost per ask
         total_cost_per_ask = total_cost_per_ask_without_extra_tax + total_extra_tax_per_ask
-        total_cost_per_ask_short_range = total_cost_per_ask_without_extra_tax_short_range + total_extra_tax_per_ask_short_range
-        total_cost_per_ask_medium_range = total_cost_per_ask_without_extra_tax_medium_range + total_extra_tax_per_ask_medium_range
-        total_cost_per_ask_long_range = total_cost_per_ask_without_extra_tax_long_range + total_extra_tax_per_ask_long_range
-
+        total_cost_per_ask_short_range = (
+            total_cost_per_ask_without_extra_tax_short_range + total_extra_tax_per_ask_short_range
+        )
+        total_cost_per_ask_medium_range = (
+            total_cost_per_ask_without_extra_tax_medium_range + total_extra_tax_per_ask_medium_range
+        )
+        total_cost_per_ask_long_range = (
+            total_cost_per_ask_without_extra_tax_long_range + total_extra_tax_per_ask_long_range
+        )
 
         # Cost per rpk
-        total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (load_factor / 100)
-        total_cost_per_rpk_without_extra_tax_short_range = total_cost_per_ask_without_extra_tax_short_range / (load_factor / 100)
-        total_cost_per_rpk_without_extra_tax_medium_range = total_cost_per_ask_without_extra_tax_medium_range / (load_factor / 100)
-        total_cost_per_rpk_without_extra_tax_long_range = total_cost_per_ask_without_extra_tax_long_range / (load_factor / 100)
-
+        total_cost_per_rpk_without_extra_tax = total_cost_per_ask_without_extra_tax / (
+            load_factor / 100
+        )
+        total_cost_per_rpk_without_extra_tax_short_range = (
+            total_cost_per_ask_without_extra_tax_short_range / (load_factor / 100)
+        )
+        total_cost_per_rpk_without_extra_tax_medium_range = (
+            total_cost_per_ask_without_extra_tax_medium_range / (load_factor / 100)
+        )
+        total_cost_per_rpk_without_extra_tax_long_range = (
+            total_cost_per_ask_without_extra_tax_long_range / (load_factor / 100)
+        )
 
         # Tax per rpk
         total_extra_tax_per_rpk = total_extra_tax_per_ask / (load_factor / 100)
-        total_extra_tax_per_rpk_short_range = total_extra_tax_per_ask_short_range / (load_factor / 100)
-        total_extra_tax_per_rpk_medium_range = total_extra_tax_per_ask_medium_range / (load_factor / 100)
-        total_extra_tax_per_rpk_long_range = total_extra_tax_per_ask_long_range / (load_factor / 100)
+        total_extra_tax_per_rpk_short_range = total_extra_tax_per_ask_short_range / (
+            load_factor / 100
+        )
+        total_extra_tax_per_rpk_medium_range = total_extra_tax_per_ask_medium_range / (
+            load_factor / 100
+        )
+        total_extra_tax_per_rpk_long_range = total_extra_tax_per_ask_long_range / (
+            load_factor / 100
+        )
 
         # Average Cost per rpk
         total_cost_per_rpk = total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk
-        total_cost_per_rpk_short_range = total_cost_per_rpk_without_extra_tax_short_range + total_extra_tax_per_rpk_short_range
-        total_cost_per_rpk_medium_range = total_cost_per_rpk_without_extra_tax_medium_range + total_extra_tax_per_rpk_medium_range
-        total_cost_per_rpk_long_range = total_cost_per_rpk_without_extra_tax_long_range + total_extra_tax_per_rpk_long_range
+        total_cost_per_rpk_short_range = (
+            total_cost_per_rpk_without_extra_tax_short_range + total_extra_tax_per_rpk_short_range
+        )
+        total_cost_per_rpk_medium_range = (
+            total_cost_per_rpk_without_extra_tax_medium_range + total_extra_tax_per_rpk_medium_range
+        )
+        total_cost_per_rpk_long_range = (
+            total_cost_per_rpk_without_extra_tax_long_range + total_extra_tax_per_rpk_long_range
+        )
 
-
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax"
-        ] = total_cost_per_ask_without_extra_tax
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_short_range"
-        ] = total_cost_per_ask_without_extra_tax_short_range
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_medium_range"
-        ] = total_cost_per_ask_without_extra_tax_medium_range
-        self.df.loc[
-            :, "total_cost_per_ask_without_extra_tax_long_range"
-        ] = total_cost_per_ask_without_extra_tax_long_range
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax"] = (
+            total_cost_per_ask_without_extra_tax
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_short_range"] = (
+            total_cost_per_ask_without_extra_tax_short_range
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_medium_range"] = (
+            total_cost_per_ask_without_extra_tax_medium_range
+        )
+        self.df.loc[:, "total_cost_per_ask_without_extra_tax_long_range"] = (
+            total_cost_per_ask_without_extra_tax_long_range
+        )
 
         self.df.loc[:, "total_extra_tax_per_ask"] = total_extra_tax_per_ask
         self.df.loc[:, "total_extra_tax_per_ask_short_range"] = total_extra_tax_per_ask_short_range
-        self.df.loc[:, "total_extra_tax_per_ask_medium_range"] = total_extra_tax_per_ask_medium_range
+        self.df.loc[:, "total_extra_tax_per_ask_medium_range"] = (
+            total_extra_tax_per_ask_medium_range
+        )
         self.df.loc[:, "total_extra_tax_per_ask_long_range"] = total_extra_tax_per_ask_long_range
 
         self.df.loc[:, "total_extra_tax_per_rpk"] = total_extra_tax_per_rpk
         self.df.loc[:, "total_extra_tax_per_rpk_short_range"] = total_extra_tax_per_rpk_short_range
-        self.df.loc[:, "total_extra_tax_per_rpk_medium_range"] = total_extra_tax_per_rpk_medium_range
+        self.df.loc[:, "total_extra_tax_per_rpk_medium_range"] = (
+            total_extra_tax_per_rpk_medium_range
+        )
         self.df.loc[:, "total_extra_tax_per_rpk_long_range"] = total_extra_tax_per_rpk_long_range
 
         self.df.loc[:, "total_cost_per_ask"] = total_cost_per_ask
@@ -380,10 +420,18 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
         self.df.loc[:, "total_cost_per_ask_medium_range"] = total_cost_per_ask_medium_range
         self.df.loc[:, "total_cost_per_ask_long_range"] = total_cost_per_ask_long_range
 
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax"] = total_cost_per_rpk_without_extra_tax
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_short_range"] = total_cost_per_rpk_without_extra_tax_short_range
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_medium_range"] = total_cost_per_rpk_without_extra_tax_medium_range
-        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_long_range"] = total_cost_per_rpk_without_extra_tax_long_range
+        self.df.loc[:, "total_cost_per_rpk_without_extra_tax"] = (
+            total_cost_per_rpk_without_extra_tax
+        )
+        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_short_range"] = (
+            total_cost_per_rpk_without_extra_tax_short_range
+        )
+        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_medium_range"] = (
+            total_cost_per_rpk_without_extra_tax_medium_range
+        )
+        self.df.loc[:, "total_cost_per_rpk_without_extra_tax_long_range"] = (
+            total_cost_per_rpk_without_extra_tax_long_range
+        )
 
         self.df.loc[:, "total_cost_per_rpk"] = total_cost_per_rpk
         self.df.loc[:, "total_cost_per_rpk_short_range"] = total_cost_per_rpk_short_range
@@ -419,9 +467,7 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
 
 
 class PassengerAircraftMarginalCost(AeroMAPSModel):
-    def __init__(
-        self, name="passenger_aircraft_marginal_cost", fleet_model=None, *args, **kwargs
-    ):
+    def __init__(self, name="passenger_aircraft_marginal_cost", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
@@ -438,33 +484,36 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         np.ndarray,
     ]:
         # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025,2051))
-        interp_af= interp1d(
-            [2025,2030,2035,2040,2045,2050],
-            airfare_per_rpk,
-            kind='linear'
-        )
+        interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
 
         years_new = np.arange(2025, 2051, 1)
         airfare_per_rpk = interp_af(years_new)
         airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
 
-
         intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[
-            self.prospection_start_year - 1]
-        initial_price_per_rpk_corrected = initial_price_per_rpk - 0.078692893 + intial_total_cost_per_rpk_without_extra_tax
-
+            self.prospection_start_year - 1
+        ]
+        initial_price_per_rpk_corrected = (
+            initial_price_per_rpk - 0.078692893 + intial_total_cost_per_rpk_without_extra_tax
+        )
 
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
-        a = 2 * (initial_price_per_rpk_corrected - intial_total_cost_per_rpk_without_extra_tax)/rpk_no_elasticity
+        a = (
+            2
+            * (initial_price_per_rpk_corrected - intial_total_cost_per_rpk_without_extra_tax)
+            / rpk_no_elasticity
+        )
 
         # For latter update replace total cost by the step component of the marginal cost.
-        marginal_cost_per_rpk = a * rpk + b + total_cost_per_rpk_without_extra_tax - intial_total_cost_per_rpk_without_extra_tax
-
+        marginal_cost_per_rpk = (
+            a * rpk
+            + b
+            + total_cost_per_rpk_without_extra_tax
+            - intial_total_cost_per_rpk_without_extra_tax
+        )
 
         airfare_per_rpk_true = marginal_cost_per_rpk + total_extra_tax_per_rpk
-        airfare_per_rpk_true = airfare_per_rpk_true.loc[2025:self.end_year + 1]
-
-
+        airfare_per_rpk_true = airfare_per_rpk_true.loc[2025 : self.end_year + 1]
 
         # print('a',a[self.end_year], 'b', b + total_cost_per_rpk_without_extra_tax[self.end_year] - intial_total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk[self.end_year])
         # print('checker',marginal_cost_per_rpk[self.end_year], rpk[self.end_year], airfare_per_rpk[self.end_year])
@@ -474,18 +523,18 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
 
         # print('End PaxCostAF: Airfare 2050:{}, A{}'.format(airfare_per_rpk[self.end_year], a[self.end_year]))
 
-        airfare_per_rpk_real_constraint_consistency=[]
+        airfare_per_rpk_real_constraint_consistency = []
         for year in [2025, 2030, 2035, 2040, 2045, 2050]:
-            airfare_per_rpk_real_constraint_consistency.append((airfare_per_rpk_true[year]-airfare_per_rpk[year])/airfare_per_rpk_true[year])
+            airfare_per_rpk_real_constraint_consistency.append(
+                (airfare_per_rpk_true[year] - airfare_per_rpk[year]) / airfare_per_rpk_true[year]
+            )
 
-        airfare_per_rpk_real_constraint_consistency=np.array(airfare_per_rpk_real_constraint_consistency)
+        airfare_per_rpk_real_constraint_consistency = np.array(
+            airfare_per_rpk_real_constraint_consistency
+        )
 
         return (
             marginal_cost_per_rpk,
             airfare_per_rpk_true,
             airfare_per_rpk_real_constraint_consistency,
         )
-
-
-
-

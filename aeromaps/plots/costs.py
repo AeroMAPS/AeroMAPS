@@ -346,7 +346,6 @@ class ScenarioEnergyExpensesPlot:
         self.fig.tight_layout()
 
     def update(self, df_data):
-
         self.df = df_data["vector_outputs"]
 
         self.ax.clear()
@@ -2473,7 +2472,6 @@ class AnnualMACC:
             ) from e
 
     def plot_interact(self):
-
         year_widget = widgets.IntSlider(
             min=self.prospective_years[0],
             max=self.prospective_years[-1],
@@ -3975,7 +3973,6 @@ class ScenarioMACC:
         scc_list = []
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4392,7 +4389,6 @@ class ShadowCarbonPrice:
         years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
         for year in years:
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4498,7 +4494,6 @@ class DetailledMFSPBreakdownPerPathway:
             ) from e
 
     def plot_interact(self):
-
         pathway_widget = widgets.Dropdown(
             options=[
                 ("Bio - HEFA Fog", "hefa_fog"),
@@ -4530,7 +4525,6 @@ class DetailledMFSPBreakdownPerPathway:
         self.ax2.cla()
 
         if pathway in ["direct_electricity"]:
-
             val = self.df.loc[self.prospective_years, "electricity_market_price"]
 
             carbon_tax_val = self.df.loc[
@@ -4619,7 +4613,6 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
-
             capex_val = (
                 self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
@@ -4743,7 +4736,6 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         elif pathway == "electrofuel":
-
             capex_val = (
                 self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
                 * self.df.loc[self.prospective_years, "electrofuel_mean_capex_share"]
@@ -5270,7 +5262,7 @@ class DetailledMFSPBreakdownPerYear:
                 linewidth=0.5,
             )
 
-        for (name, pathway) in [
+        for name, pathway in [
             ("Bio - HEFA Fog", "hefa_fog"),
             ("Bio - HEFA Others", "hefa_others"),
             ("Bio - FT MSW", "ft_msw"),
@@ -5342,7 +5334,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for (name, pathway) in [("E-fuel", "electrofuel")]:
+        for name, pathway in [("E-fuel", "electrofuel")]:
             if not pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]):
                 capex_val = (
                     self.df.loc[year, "electrofuel_mean_mfsp_litre"]
@@ -5424,7 +5416,7 @@ class DetailledMFSPBreakdownPerYear:
                     linewidth=0.5,
                 )
 
-        for (name, pathway) in [
+        for name, pathway in [
             ("LH2 - Electrolysis", "electrolysis_h2"),
             ("LH2 - Gas CCS", "gas_ccs_h2"),
             ("LH2 - Gas", "gas_h2"),
@@ -5432,7 +5424,6 @@ class DetailledMFSPBreakdownPerYear:
             ("LH2 - Coal", "coal_h2"),
         ]:
             if not pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]):
-
                 capex_val = (
                     self.df.loc[year, pathway + "_mean_mfsp_kg"]
                     * self.df.loc[year, pathway + "_mean_capex_share"]

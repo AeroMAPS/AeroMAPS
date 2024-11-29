@@ -120,54 +120,49 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             energy_per_ask_short_range_dropin_fuel_gain_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "energy_per_ask_short_range_dropin_fuel_gain"
-        ] = energy_per_ask_short_range_dropin_fuel_gain
+        self.df.loc[:, "energy_per_ask_short_range_dropin_fuel_gain"] = (
+            energy_per_ask_short_range_dropin_fuel_gain
+        )
         energy_per_ask_medium_range_dropin_fuel_gain = aeromaps_interpolation_function(
             self,
             energy_per_ask_medium_range_dropin_fuel_gain_reference_years,
             energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "energy_per_ask_medium_range_dropin_fuel_gain"
-        ] = energy_per_ask_medium_range_dropin_fuel_gain
+        self.df.loc[:, "energy_per_ask_medium_range_dropin_fuel_gain"] = (
+            energy_per_ask_medium_range_dropin_fuel_gain
+        )
         energy_per_ask_long_range_dropin_fuel_gain = aeromaps_interpolation_function(
             self,
             energy_per_ask_long_range_dropin_fuel_gain_reference_years,
             energy_per_ask_long_range_dropin_fuel_gain_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "energy_per_ask_long_range_dropin_fuel_gain"
-        ] = energy_per_ask_long_range_dropin_fuel_gain
+        self.df.loc[:, "energy_per_ask_long_range_dropin_fuel_gain"] = (
+            energy_per_ask_long_range_dropin_fuel_gain
+        )
 
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
-                1 - energy_per_ask_short_range_dropin_fuel_gain.loc[k] / 100
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+                self.df.loc[k - 1, "energy_per_ask_without_operations_short_range_dropin_fuel"]
+                * (1 - energy_per_ask_short_range_dropin_fuel_gain.loc[k] / 100)
             )
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
-                1 - energy_per_ask_medium_range_dropin_fuel_gain.loc[k] / 100
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+                self.df.loc[k - 1, "energy_per_ask_without_operations_medium_range_dropin_fuel"]
+                * (1 - energy_per_ask_medium_range_dropin_fuel_gain.loc[k] / 100)
             )
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_dropin_fuel"
-            ] = self.df.loc[k - 1, "energy_per_ask_without_operations_long_range_dropin_fuel"] * (
-                1 - energy_per_ask_long_range_dropin_fuel_gain.loc[k] / 100
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_dropin_fuel"] = (
+                self.df.loc[k - 1, "energy_per_ask_without_operations_long_range_dropin_fuel"]
+                * (1 - energy_per_ask_long_range_dropin_fuel_gain.loc[k] / 100)
             )
 
-        self.df.loc[
-            2020, "energy_per_ask_without_operations_short_range_dropin_fuel"
-        ] = self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
-            1 + covid_energy_intensity_per_ask_increase_2020 / 100
+        self.df.loc[2020, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+            self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"]
+            * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
         )
-        self.df.loc[
-            2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-        ] = self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
-            1 + covid_energy_intensity_per_ask_increase_2020 / 100
+        self.df.loc[2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+            self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"]
+            * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
         )
         self.df.loc[2020, "energy_per_ask_without_operations_long_range_dropin_fuel"] = self.df.loc[
             2019, "energy_per_ask_without_operations_long_range_dropin_fuel"
@@ -191,38 +186,38 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_hydrogen_wrt_dropin_short_range"
-        ] = relative_energy_per_ask_hydrogen_wrt_dropin_short_range
+        self.df.loc[:, "relative_energy_per_ask_hydrogen_wrt_dropin_short_range"] = (
+            relative_energy_per_ask_hydrogen_wrt_dropin_short_range
+        )
         relative_energy_per_ask_hydrogen_wrt_dropin_medium_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years,
             relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_hydrogen_wrt_dropin_medium_range"
-        ] = relative_energy_per_ask_hydrogen_wrt_dropin_medium_range
+        self.df.loc[:, "relative_energy_per_ask_hydrogen_wrt_dropin_medium_range"] = (
+            relative_energy_per_ask_hydrogen_wrt_dropin_medium_range
+        )
         relative_energy_per_ask_hydrogen_wrt_dropin_long_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years,
             relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_hydrogen_wrt_dropin_long_range"
-        ] = relative_energy_per_ask_hydrogen_wrt_dropin_long_range
+        self.df.loc[:, "relative_energy_per_ask_hydrogen_wrt_dropin_long_range"] = (
+            relative_energy_per_ask_hydrogen_wrt_dropin_long_range
+        )
 
         for k in range(self.other_data_start_year, self.prospection_start_year):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_hydrogen"
-            ] = energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_hydrogen"
-            ] = energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_hydrogen"
-            ] = energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_hydrogen"] = (
+                energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_hydrogen"] = (
+                energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_hydrogen"] = (
+                energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            )
 
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "energy_per_ask_without_operations_short_range_hydrogen"] = (
@@ -256,38 +251,38 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_electric_wrt_dropin_short_range"
-        ] = relative_energy_per_ask_electric_wrt_dropin_short_range
+        self.df.loc[:, "relative_energy_per_ask_electric_wrt_dropin_short_range"] = (
+            relative_energy_per_ask_electric_wrt_dropin_short_range
+        )
         relative_energy_per_ask_electric_wrt_dropin_medium_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years,
             relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_electric_wrt_dropin_medium_range"
-        ] = relative_energy_per_ask_electric_wrt_dropin_medium_range
+        self.df.loc[:, "relative_energy_per_ask_electric_wrt_dropin_medium_range"] = (
+            relative_energy_per_ask_electric_wrt_dropin_medium_range
+        )
         relative_energy_per_ask_electric_wrt_dropin_long_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years,
             relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "relative_energy_per_ask_electric_wrt_dropin_long_range"
-        ] = relative_energy_per_ask_electric_wrt_dropin_long_range
+        self.df.loc[:, "relative_energy_per_ask_electric_wrt_dropin_long_range"] = (
+            relative_energy_per_ask_electric_wrt_dropin_long_range
+        )
 
         for k in range(self.other_data_start_year, self.prospection_start_year):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_electric"
-            ] = energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_electric"
-            ] = energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_electric"
-            ] = energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_electric"] = (
+                energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_electric"] = (
+                energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_electric"] = (
+                energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            )
 
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "energy_per_ask_without_operations_short_range_electric"] = (
@@ -327,10 +322,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_short_range_hydrogen_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_short_range_hydrogen_share"
-                ] = hydrogen_final_market_share_short_range / (
-                    1 + np.exp(-hydrogen_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_short_range_hydrogen_share"] = (
+                    hydrogen_final_market_share_short_range
+                    / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
                 )
 
         ## Medium range
@@ -345,10 +339,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_medium_range_hydrogen_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_medium_range_hydrogen_share"
-                ] = hydrogen_final_market_share_medium_range / (
-                    1 + np.exp(-hydrogen_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_medium_range_hydrogen_share"] = (
+                    hydrogen_final_market_share_medium_range
+                    / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
                 )
 
         ## Long range
@@ -363,10 +356,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_long_range_hydrogen_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_long_range_hydrogen_share"
-                ] = hydrogen_final_market_share_long_range / (
-                    1 + np.exp(-hydrogen_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_long_range_hydrogen_share"] = (
+                    hydrogen_final_market_share_long_range
+                    / (1 + np.exp(-hydrogen_share_parameter * (k - transition_year)))
                 )
 
         ask_short_range_hydrogen_share = self.df["ask_short_range_hydrogen_share"]
@@ -394,10 +386,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_short_range_electric_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_short_range_electric_share"
-                ] = electric_final_market_share_short_range / (
-                    1 + np.exp(-electric_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_short_range_electric_share"] = (
+                    electric_final_market_share_short_range
+                    / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
                 )
 
         ## Medium range
@@ -412,10 +403,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_medium_range_electric_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_medium_range_electric_share"
-                ] = electric_final_market_share_medium_range / (
-                    1 + np.exp(-electric_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_medium_range_electric_share"] = (
+                    electric_final_market_share_medium_range
+                    / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
                 )
 
         ## Long range
@@ -430,10 +420,9 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
             ):
                 self.df.loc[k, "ask_long_range_electric_share"] = 0
             else:
-                self.df.loc[
-                    k, "ask_long_range_electric_share"
-                ] = electric_final_market_share_long_range / (
-                    1 + np.exp(-electric_share_parameter * (k - transition_year))
+                self.df.loc[k, "ask_long_range_electric_share"] = (
+                    electric_final_market_share_long_range
+                    / (1 + np.exp(-electric_share_parameter * (k - transition_year)))
                 )
 
         ask_short_range_electric_share = self.df["ask_short_range_electric_share"]
@@ -676,25 +665,23 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
         # Drop-in - Projections
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_dropin_fuel"
-            ] = energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-            ] = energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_dropin_fuel"
-            ] = energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+                energy_per_ask_without_operations_short_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+                energy_per_ask_without_operations_medium_range_dropin_fuel.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_dropin_fuel"] = (
+                energy_per_ask_without_operations_long_range_dropin_fuel.loc[k]
+            )
 
-        self.df.loc[
-            2020, "energy_per_ask_without_operations_short_range_dropin_fuel"
-        ] = self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"] * (
-            1 + covid_energy_intensity_per_ask_increase_2020 / 100
+        self.df.loc[2020, "energy_per_ask_without_operations_short_range_dropin_fuel"] = (
+            self.df.loc[2019, "energy_per_ask_without_operations_short_range_dropin_fuel"]
+            * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
         )
-        self.df.loc[
-            2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"
-        ] = self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"] * (
-            1 + covid_energy_intensity_per_ask_increase_2020 / 100
+        self.df.loc[2020, "energy_per_ask_without_operations_medium_range_dropin_fuel"] = (
+            self.df.loc[2019, "energy_per_ask_without_operations_medium_range_dropin_fuel"]
+            * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
         )
         self.df.loc[2020, "energy_per_ask_without_operations_long_range_dropin_fuel"] = self.df.loc[
             2019, "energy_per_ask_without_operations_long_range_dropin_fuel"
@@ -712,15 +699,15 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
         # Hydrogen
         for k in range(self.prospection_start_year + 1, self.end_year + 1):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_hydrogen"
-            ] = energy_per_ask_without_operations_short_range_hydrogen.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_hydrogen"
-            ] = energy_per_ask_without_operations_medium_range_hydrogen.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_hydrogen"
-            ] = energy_per_ask_without_operations_long_range_hydrogen.loc[k]
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_hydrogen"] = (
+                energy_per_ask_without_operations_short_range_hydrogen.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_hydrogen"] = (
+                energy_per_ask_without_operations_medium_range_hydrogen.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_hydrogen"] = (
+                energy_per_ask_without_operations_long_range_hydrogen.loc[k]
+            )
 
         energy_per_ask_without_operations_short_range_hydrogen = self.df[
             "energy_per_ask_without_operations_short_range_hydrogen"
@@ -734,15 +721,15 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
         # Electric
         for k in range(self.prospection_start_year + 1, self.end_year + 1):
-            self.df.loc[
-                k, "energy_per_ask_without_operations_short_range_electric"
-            ] = energy_per_ask_without_operations_short_range_electric.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_medium_range_electric"
-            ] = energy_per_ask_without_operations_medium_range_electric.loc[k]
-            self.df.loc[
-                k, "energy_per_ask_without_operations_long_range_electric"
-            ] = energy_per_ask_without_operations_long_range_electric.loc[k]
+            self.df.loc[k, "energy_per_ask_without_operations_short_range_electric"] = (
+                energy_per_ask_without_operations_short_range_electric.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_medium_range_electric"] = (
+                energy_per_ask_without_operations_medium_range_electric.loc[k]
+            )
+            self.df.loc[k, "energy_per_ask_without_operations_long_range_electric"] = (
+                energy_per_ask_without_operations_long_range_electric.loc[k]
+            )
 
         energy_per_ask_without_operations_short_range_electric = self.df[
             "energy_per_ask_without_operations_short_range_electric"
@@ -1025,21 +1012,22 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                     k, "energy_per_rtk_without_operations_freight_dropin_fuel"
                 ]
             else:
-                self.df.loc[
-                    k, "energy_per_rtk_without_operations_freight_hydrogen"
-                ] = energy_per_rtk_without_operations_freight_dropin_fuel.loc[k] * (
-                    relative_energy_per_ask_hydrogen_wrt_dropin_short_range.loc[k]
-                    * ask_short_range_hydrogen_share.loc[k]
-                    * (ask_short_range.loc[k] / ask.loc[k])
-                    / rtk_hydrogen_share.loc[k]
-                    + relative_energy_per_ask_hydrogen_wrt_dropin_medium_range.loc[k]
-                    * ask_medium_range_hydrogen_share.loc[k]
-                    * (ask_medium_range.loc[k] / ask.loc[k])
-                    / rtk_hydrogen_share.loc[k]
-                    + relative_energy_per_ask_hydrogen_wrt_dropin_long_range.loc[k]
-                    * ask_long_range_hydrogen_share.loc[k]
-                    * (ask_long_range.loc[k] / ask.loc[k])
-                    / rtk_hydrogen_share.loc[k]
+                self.df.loc[k, "energy_per_rtk_without_operations_freight_hydrogen"] = (
+                    energy_per_rtk_without_operations_freight_dropin_fuel.loc[k]
+                    * (
+                        relative_energy_per_ask_hydrogen_wrt_dropin_short_range.loc[k]
+                        * ask_short_range_hydrogen_share.loc[k]
+                        * (ask_short_range.loc[k] / ask.loc[k])
+                        / rtk_hydrogen_share.loc[k]
+                        + relative_energy_per_ask_hydrogen_wrt_dropin_medium_range.loc[k]
+                        * ask_medium_range_hydrogen_share.loc[k]
+                        * (ask_medium_range.loc[k] / ask.loc[k])
+                        / rtk_hydrogen_share.loc[k]
+                        + relative_energy_per_ask_hydrogen_wrt_dropin_long_range.loc[k]
+                        * ask_long_range_hydrogen_share.loc[k]
+                        * (ask_long_range.loc[k] / ask.loc[k])
+                        / rtk_hydrogen_share.loc[k]
+                    )
                 )
 
             if rtk_electric_share.loc[k] == 0:
@@ -1047,21 +1035,22 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                     k, "energy_per_rtk_without_operations_freight_dropin_fuel"
                 ]
             else:
-                self.df.loc[
-                    k, "energy_per_rtk_without_operations_freight_electric"
-                ] = energy_per_rtk_without_operations_freight_dropin_fuel.loc[k] * (
-                    relative_energy_per_ask_electric_wrt_dropin_short_range.loc[k]
-                    * ask_short_range_electric_share.loc[k]
-                    * (ask_short_range.loc[k] / ask.loc[k])
-                    / rtk_electric_share.loc[k]
-                    + relative_energy_per_ask_electric_wrt_dropin_medium_range.loc[k]
-                    * ask_medium_range_electric_share.loc[k]
-                    * (ask_medium_range.loc[k] / ask.loc[k])
-                    / rtk_electric_share.loc[k]
-                    + relative_energy_per_ask_electric_wrt_dropin_long_range.loc[k]
-                    * ask_long_range_electric_share.loc[k]
-                    * (ask_long_range.loc[k] / ask.loc[k])
-                    / rtk_electric_share.loc[k]
+                self.df.loc[k, "energy_per_rtk_without_operations_freight_electric"] = (
+                    energy_per_rtk_without_operations_freight_dropin_fuel.loc[k]
+                    * (
+                        relative_energy_per_ask_electric_wrt_dropin_short_range.loc[k]
+                        * ask_short_range_electric_share.loc[k]
+                        * (ask_short_range.loc[k] / ask.loc[k])
+                        / rtk_electric_share.loc[k]
+                        + relative_energy_per_ask_electric_wrt_dropin_medium_range.loc[k]
+                        * ask_medium_range_electric_share.loc[k]
+                        * (ask_medium_range.loc[k] / ask.loc[k])
+                        / rtk_electric_share.loc[k]
+                        + relative_energy_per_ask_electric_wrt_dropin_long_range.loc[k]
+                        * ask_long_range_electric_share.loc[k]
+                        * (ask_long_range.loc[k] / ask.loc[k])
+                        / rtk_electric_share.loc[k]
+                    )
                 )
 
         energy_per_rtk_without_operations_freight_hydrogen = self.df[

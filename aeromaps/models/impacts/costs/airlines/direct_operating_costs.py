@@ -70,37 +70,37 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
 
         # Drop-in - Projections
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_dropin_fuel"
-        ] = doc_non_energy_per_ask_short_range_dropin_fuel
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_dropin_fuel"
-        ] = doc_non_energy_per_ask_medium_range_dropin_fuel
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_dropin_fuel"
-        ] = doc_non_energy_per_ask_long_range_dropin_fuel
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_dropin_fuel"] = (
+            doc_non_energy_per_ask_short_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = (
+            doc_non_energy_per_ask_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_dropin_fuel"] = (
+            doc_non_energy_per_ask_long_range_dropin_fuel
+        )
 
         # Hydrogen
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_hydrogen"
-        ] = doc_non_energy_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_hydrogen"
-        ] = doc_non_energy_per_ask_medium_range_hydrogen
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_hydrogen"
-        ] = doc_non_energy_per_ask_long_range_hydrogen
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_hydrogen"] = (
+            doc_non_energy_per_ask_short_range_hydrogen
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_hydrogen"] = (
+            doc_non_energy_per_ask_medium_range_hydrogen
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_hydrogen"] = (
+            doc_non_energy_per_ask_long_range_hydrogen
+        )
 
         # Electric
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_electric"
-        ] = doc_non_energy_per_ask_short_range_electric
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_electric"
-        ] = doc_non_energy_per_ask_medium_range_electric
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_electric"
-        ] = doc_non_energy_per_ask_long_range_electric
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_electric"] = (
+            doc_non_energy_per_ask_short_range_electric
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_electric"] = (
+            doc_non_energy_per_ask_medium_range_electric
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_electric"] = (
+            doc_non_energy_per_ask_long_range_electric
+        )
 
         doc_non_energy_per_ask_long_range_mean = (
             doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
@@ -130,17 +130,17 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
             + doc_non_energy_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_mean"
-        ] = doc_non_energy_per_ask_long_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_mean"] = (
+            doc_non_energy_per_ask_long_range_mean
+        )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_mean"
-        ] = doc_non_energy_per_ask_medium_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_mean"] = (
+            doc_non_energy_per_ask_medium_range_mean
+        )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_mean"
-        ] = doc_non_energy_per_ask_short_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_mean"] = (
+            doc_non_energy_per_ask_short_range_mean
+        )
 
         self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
 
@@ -211,15 +211,15 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         # Initialization based on 2019 values
 
         for k in range(self.other_data_start_year, self.prospection_start_year):
-            self.df.loc[
-                k, "doc_non_energy_per_ask_short_range_dropin_fuel"
-            ] = doc_non_energy_per_ask_short_range_dropin_fuel_init
-            self.df.loc[
-                k, "doc_non_energy_per_ask_medium_range_dropin_fuel"
-            ] = doc_non_energy_per_ask_medium_range_dropin_fuel_init
-            self.df.loc[
-                k, "doc_non_energy_per_ask_long_range_dropin_fuel"
-            ] = doc_non_energy_per_ask_long_range_dropin_fuel_init
+            self.df.loc[k, "doc_non_energy_per_ask_short_range_dropin_fuel"] = (
+                doc_non_energy_per_ask_short_range_dropin_fuel_init
+            )
+            self.df.loc[k, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = (
+                doc_non_energy_per_ask_medium_range_dropin_fuel_init
+            )
+            self.df.loc[k, "doc_non_energy_per_ask_long_range_dropin_fuel"] = (
+                doc_non_energy_per_ask_long_range_dropin_fuel_init
+            )
 
         # Projections
 
@@ -259,15 +259,15 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             * relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range
         )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_hydrogen"
-        ] = doc_non_energy_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_hydrogen"
-        ] = doc_non_energy_per_ask_medium_range_hydrogen
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_hydrogen"
-        ] = doc_non_energy_per_ask_long_range_hydrogen
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_hydrogen"] = (
+            doc_non_energy_per_ask_short_range_hydrogen
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_hydrogen"] = (
+            doc_non_energy_per_ask_medium_range_hydrogen
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_hydrogen"] = (
+            doc_non_energy_per_ask_long_range_hydrogen
+        )
 
         # Electric
         doc_non_energy_per_ask_short_range_electric = (
@@ -283,15 +283,15 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
                 * relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
         )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_electric"
-        ] = doc_non_energy_per_ask_short_range_electric
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_electric"
-        ] = doc_non_energy_per_ask_medium_range_electric
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_electric"
-        ] = doc_non_energy_per_ask_long_range_electric
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_electric"] = (
+            doc_non_energy_per_ask_short_range_electric
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_electric"] = (
+            doc_non_energy_per_ask_medium_range_electric
+        )
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_electric"] = (
+            doc_non_energy_per_ask_long_range_electric
+        )
 
         doc_non_energy_per_ask_long_range_mean = (
             doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
@@ -321,17 +321,17 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             + doc_non_energy_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_long_range_mean"
-        ] = doc_non_energy_per_ask_long_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_long_range_mean"] = (
+            doc_non_energy_per_ask_long_range_mean
+        )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_medium_range_mean"
-        ] = doc_non_energy_per_ask_medium_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_medium_range_mean"] = (
+            doc_non_energy_per_ask_medium_range_mean
+        )
 
-        self.df.loc[
-            :, "doc_non_energy_per_ask_short_range_mean"
-        ] = doc_non_energy_per_ask_short_range_mean
+        self.df.loc[:, "doc_non_energy_per_ask_short_range_mean"] = (
+            doc_non_energy_per_ask_short_range_mean
+        )
 
         self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
 
@@ -519,37 +519,37 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             + doc_energy_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
-        self.df.loc[
-            :, "doc_energy_per_ask_long_range_dropin_fuel"
-        ] = doc_energy_per_ask_long_range_dropin_fuel
-        self.df.loc[
-            :, "doc_energy_per_ask_long_range_hydrogen"
-        ] = doc_energy_per_ask_long_range_hydrogen
-        self.df.loc[
-            :, "doc_energy_per_ask_long_range_electric"
-        ] = doc_energy_per_ask_long_range_electric
+        self.df.loc[:, "doc_energy_per_ask_long_range_dropin_fuel"] = (
+            doc_energy_per_ask_long_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_energy_per_ask_long_range_hydrogen"] = (
+            doc_energy_per_ask_long_range_hydrogen
+        )
+        self.df.loc[:, "doc_energy_per_ask_long_range_electric"] = (
+            doc_energy_per_ask_long_range_electric
+        )
         self.df.loc[:, "doc_energy_per_ask_long_range_mean"] = doc_energy_per_ask_long_range_mean
-        self.df.loc[
-            :, "doc_energy_per_ask_medium_range_dropin_fuel"
-        ] = doc_energy_per_ask_medium_range_dropin_fuel
-        self.df.loc[
-            :, "doc_energy_per_ask_medium_range_hydrogen"
-        ] = doc_energy_per_ask_medium_range_hydrogen
-        self.df.loc[
-            :, "doc_energy_per_ask_medium_range_electric"
-        ] = doc_energy_per_ask_medium_range_electric
-        self.df.loc[
-            :, "doc_energy_per_ask_medium_range_mean"
-        ] = doc_energy_per_ask_medium_range_mean
-        self.df.loc[
-            :, "doc_energy_per_ask_short_range_dropin_fuel"
-        ] = doc_energy_per_ask_short_range_dropin_fuel
-        self.df.loc[
-            :, "doc_energy_per_ask_short_range_hydrogen"
-        ] = doc_energy_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "doc_energy_per_ask_short_range_electric"
-        ] = doc_energy_per_ask_short_range_electric
+        self.df.loc[:, "doc_energy_per_ask_medium_range_dropin_fuel"] = (
+            doc_energy_per_ask_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_energy_per_ask_medium_range_hydrogen"] = (
+            doc_energy_per_ask_medium_range_hydrogen
+        )
+        self.df.loc[:, "doc_energy_per_ask_medium_range_electric"] = (
+            doc_energy_per_ask_medium_range_electric
+        )
+        self.df.loc[:, "doc_energy_per_ask_medium_range_mean"] = (
+            doc_energy_per_ask_medium_range_mean
+        )
+        self.df.loc[:, "doc_energy_per_ask_short_range_dropin_fuel"] = (
+            doc_energy_per_ask_short_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_energy_per_ask_short_range_hydrogen"] = (
+            doc_energy_per_ask_short_range_hydrogen
+        )
+        self.df.loc[:, "doc_energy_per_ask_short_range_electric"] = (
+            doc_energy_per_ask_short_range_electric
+        )
         self.df.loc[:, "doc_energy_per_ask_short_range_mean"] = doc_energy_per_ask_short_range_mean
         self.df.loc[:, "doc_energy_per_ask_mean"] = doc_energy_per_ask_mean
         return (
@@ -778,42 +778,42 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
                 / co2_emissions.loc[k]
             )
 
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_long_range_dropin_fuel"
-        ] = doc_carbon_tax_per_ask_long_range_dropin_fuel
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_long_range_hydrogen"
-        ] = doc_carbon_tax_per_ask_long_range_hydrogen
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_long_range_mean"
-        ] = doc_carbon_tax_per_ask_long_range_mean
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_medium_range_dropin_fuel"
-        ] = doc_carbon_tax_per_ask_medium_range_dropin_fuel
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_medium_range_hydrogen"
-        ] = doc_carbon_tax_per_ask_medium_range_hydrogen
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_medium_range_mean"
-        ] = doc_carbon_tax_per_ask_medium_range_mean
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_short_range_dropin_fuel"
-        ] = doc_carbon_tax_per_ask_short_range_dropin_fuel
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_short_range_hydrogen"
-        ] = doc_carbon_tax_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_short_range_mean"
-        ] = doc_carbon_tax_per_ask_short_range_mean
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_long_range_electric"
-        ] = doc_carbon_tax_per_ask_long_range_electric
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_medium_range_electric"
-        ] = doc_carbon_tax_per_ask_medium_range_electric
-        self.df.loc[
-            :, "doc_carbon_tax_per_ask_short_range_electric"
-        ] = doc_carbon_tax_per_ask_short_range_electric
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_dropin_fuel"] = (
+            doc_carbon_tax_per_ask_long_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_hydrogen"] = (
+            doc_carbon_tax_per_ask_long_range_hydrogen
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_mean"] = (
+            doc_carbon_tax_per_ask_long_range_mean
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_dropin_fuel"] = (
+            doc_carbon_tax_per_ask_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_hydrogen"] = (
+            doc_carbon_tax_per_ask_medium_range_hydrogen
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_mean"] = (
+            doc_carbon_tax_per_ask_medium_range_mean
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_dropin_fuel"] = (
+            doc_carbon_tax_per_ask_short_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_hydrogen"] = (
+            doc_carbon_tax_per_ask_short_range_hydrogen
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_mean"] = (
+            doc_carbon_tax_per_ask_short_range_mean
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_long_range_electric"] = (
+            doc_carbon_tax_per_ask_long_range_electric
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_medium_range_electric"] = (
+            doc_carbon_tax_per_ask_medium_range_electric
+        )
+        self.df.loc[:, "doc_carbon_tax_per_ask_short_range_electric"] = (
+            doc_carbon_tax_per_ask_short_range_electric
+        )
         self.df.loc[:, "doc_carbon_tax_per_ask_mean"] = doc_carbon_tax_per_ask_mean
 
         doc_carbon_tax_lowering_offset_per_ask_mean = self.df[
@@ -996,33 +996,33 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             doc_non_energy_per_ask_mean + doc_energy_per_ask_mean + doc_carbon_tax_per_ask_mean
         )
 
-        self.df.loc[
-            :, "doc_total_per_ask_short_range_dropin_fuel"
-        ] = doc_total_per_ask_short_range_dropin_fuel
-        self.df.loc[
-            :, "doc_total_per_ask_medium_range_dropin_fuel"
-        ] = doc_total_per_ask_medium_range_dropin_fuel
-        self.df.loc[
-            :, "doc_total_per_ask_long_range_dropin_fuel"
-        ] = doc_total_per_ask_long_range_dropin_fuel
-        self.df.loc[
-            :, "doc_total_per_ask_short_range_hydrogen"
-        ] = doc_total_per_ask_short_range_hydrogen
-        self.df.loc[
-            :, "doc_total_per_ask_medium_range_hydrogen"
-        ] = doc_total_per_ask_medium_range_hydrogen
-        self.df.loc[
-            :, "doc_total_per_ask_long_range_hydrogen"
-        ] = doc_total_per_ask_long_range_hydrogen
-        self.df.loc[
-            :, "doc_total_per_ask_short_range_electric"
-        ] = doc_total_per_ask_short_range_electric
-        self.df.loc[
-            :, "doc_total_per_ask_medium_range_electric"
-        ] = doc_total_per_ask_medium_range_electric
-        self.df.loc[
-            :, "doc_total_per_ask_long_range_electric"
-        ] = doc_total_per_ask_long_range_electric
+        self.df.loc[:, "doc_total_per_ask_short_range_dropin_fuel"] = (
+            doc_total_per_ask_short_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_total_per_ask_medium_range_dropin_fuel"] = (
+            doc_total_per_ask_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_total_per_ask_long_range_dropin_fuel"] = (
+            doc_total_per_ask_long_range_dropin_fuel
+        )
+        self.df.loc[:, "doc_total_per_ask_short_range_hydrogen"] = (
+            doc_total_per_ask_short_range_hydrogen
+        )
+        self.df.loc[:, "doc_total_per_ask_medium_range_hydrogen"] = (
+            doc_total_per_ask_medium_range_hydrogen
+        )
+        self.df.loc[:, "doc_total_per_ask_long_range_hydrogen"] = (
+            doc_total_per_ask_long_range_hydrogen
+        )
+        self.df.loc[:, "doc_total_per_ask_short_range_electric"] = (
+            doc_total_per_ask_short_range_electric
+        )
+        self.df.loc[:, "doc_total_per_ask_medium_range_electric"] = (
+            doc_total_per_ask_medium_range_electric
+        )
+        self.df.loc[:, "doc_total_per_ask_long_range_electric"] = (
+            doc_total_per_ask_long_range_electric
+        )
         self.df.loc[:, "doc_total_per_ask_short_range_mean"] = doc_total_per_ask_short_range_mean
         self.df.loc[:, "doc_total_per_ask_medium_range_mean"] = doc_total_per_ask_medium_range_mean
         self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean

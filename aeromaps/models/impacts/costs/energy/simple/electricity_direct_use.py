@@ -19,8 +19,11 @@ class ElectricityDirectUse(AeroMAPSModel):
         electricity_emission_factor: pd.Series,
         electricity_market_price: pd.Series,
         carbon_tax: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
-
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         electricity_direct_use_total_cost = (
             energy_consumption_electric * electricity_market_price / 3.6 / 1000000  # kWh to MJ
         )
@@ -40,9 +43,9 @@ class ElectricityDirectUse(AeroMAPSModel):
             carbon_tax * electricity_emission_factor / 1000000 * 3.6
         )
 
-        self.df.loc[
-            :, "electricity_direct_use_carbon_tax_kWh"
-        ] = electricity_direct_use_carbon_tax_kWh
+        self.df.loc[:, "electricity_direct_use_carbon_tax_kWh"] = (
+            electricity_direct_use_carbon_tax_kWh
+        )
 
         return (
             electricity_direct_use_total_cost,

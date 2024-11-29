@@ -5,7 +5,11 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function, aeromaps_interpolation_function
+from aeromaps.models.base import (
+    AeroMAPSModel,
+    aeromaps_leveling_function,
+    aeromaps_interpolation_function,
+)
 
 
 class PriceElasticityAndSurplus(AeroMAPSModel):
@@ -73,19 +77,12 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         # ) / airfare_per_rpk_long_range[self.prospection_start_year - 1]
 
         #
-        interp_af= interp1d(
-            [2025,2030,2035,2040,2045,2050],
-            airfare_per_rpk,
-            kind='linear'
-        )
+        interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
         years_new = np.arange(2025, 2051, 1)
         airfare_per_rpk = interp_af(years_new)
         airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
 
-
-        airfare_per_rpk = airfare_per_rpk.loc[2025:self.end_year+1]
-
-
+        airfare_per_rpk = airfare_per_rpk.loc[2025 : self.end_year + 1]
 
         # Initialization based on 2019 share
         for k in range(self.other_data_start_year, self.prospection_start_year):
@@ -109,9 +106,9 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             cagr_passenger_short_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_short_range"
-        ] = annual_growth_rate_passenger_short_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_short_range"] = (
+            annual_growth_rate_passenger_short_range_prospective
+        )
         ## Medium range
         annual_growth_rate_passenger_medium_range_prospective = aeromaps_leveling_function(
             self,
@@ -119,9 +116,9 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             cagr_passenger_medium_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_medium_range"
-        ] = annual_growth_rate_passenger_medium_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_medium_range"] = (
+            annual_growth_rate_passenger_medium_range_prospective
+        )
         ## Long range
         annual_growth_rate_passenger_long_range_prospective = aeromaps_leveling_function(
             self,
@@ -129,9 +126,9 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             cagr_passenger_long_range_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[
-            :, "annual_growth_rate_passenger_long_range"
-        ] = annual_growth_rate_passenger_long_range_prospective
+        self.df.loc[:, "annual_growth_rate_passenger_long_range"] = (
+            annual_growth_rate_passenger_long_range_prospective
+        )
 
         # Short range
         for k in range(covid_start_year, covid_end_year + 1):
@@ -158,8 +155,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         # self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk_short_range"] = alpha_sr * (
         #     airfare_per_rpk_short_range.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
         # )
-
-
 
         # Medium range
         for k in range(covid_start_year, covid_end_year + 1):
@@ -218,8 +213,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         self.df.loc[:, "rpk_medium_range_no_elasticity"] = rpk_medium_range_no_elasticity
         self.df.loc[:, "rpk_long_range_no_elasticity"] = rpk_long_range_no_elasticity
 
-
-
         for k in range(self.other_data_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_no_elasticity"] = rpk_init.loc[k]
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -230,15 +223,17 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
             )
         rpk_no_elasticity = self.df["rpk_no_elasticity"]
 
-        self.df.loc[self.other_data_start_year: covid_end_year, "rpk"] = rpk_no_elasticity.loc[self.other_data_start_year: covid_end_year]
+        self.df.loc[self.other_data_start_year : covid_end_year, "rpk"] = rpk_no_elasticity.loc[
+            self.other_data_start_year : covid_end_year
+        ]
 
         airfare_init = 0.09196291936435226
 
-        self.df.loc[covid_end_year + 1: self.end_year + 1, "rpk"] = rpk_no_elasticity / (
-                airfare_init ** price_elasticity) * (
-                                                                            airfare_per_rpk.loc[
-                                                                            covid_end_year + 1: self.end_year + 1] ** price_elasticity
-                                                                    )
+        self.df.loc[covid_end_year + 1 : self.end_year + 1, "rpk"] = (
+            rpk_no_elasticity
+            / (airfare_init**price_elasticity)
+            * (airfare_per_rpk.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity)
+        )
         # self.df.loc[covid_end_year + 1: self.end_year + 1, "rpk"] = rpk_no_elasticity / (
         #         airfare_per_rpk[self.prospection_start_year - 1] ** price_elasticity) * (
         #         airfare_per_rpk.loc[covid_end_year + 1 : self.end_year + 1] ** price_elasticity
@@ -246,11 +241,9 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
 
         # print('coef_dem',airfare_per_rpk[self.prospection_start_year - 1]/(rpk_no_elasticity[self.end_year]**(1/price_elasticity)))
 
-
-        rpk_short_range = self.df["rpk_short_range"] * self.df['rpk']/rpk_no_elasticity
-        rpk_medium_range = self.df["rpk_medium_range"] * self.df['rpk']/rpk_no_elasticity
-        rpk_long_range = self.df["rpk_long_range"] * self.df['rpk']/rpk_no_elasticity
-
+        rpk_short_range = self.df["rpk_short_range"] * self.df["rpk"] / rpk_no_elasticity
+        rpk_medium_range = self.df["rpk_medium_range"] * self.df["rpk"] / rpk_no_elasticity
+        rpk_long_range = self.df["rpk_long_range"] * self.df["rpk"] / rpk_no_elasticity
 
         # TODO discuss if that should be considered for surplus destruction. I think so => not inlcluded in rpk_no_elasticity
         rpk_short_range = rpk_short_range * rpk_short_range_measures_impact
@@ -260,8 +253,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         self.df.loc[:, "rpk_short_range"] = rpk_short_range
         self.df.loc[:, "rpk_medium_range"] = rpk_medium_range
         self.df.loc[:, "rpk_long_range"] = rpk_long_range
-
-
 
         # Total
         for k in range(self.other_data_start_year, self.prospection_start_year):
@@ -273,7 +264,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
                 + self.df.loc[k, "rpk_long_range"]
             )
         rpk = self.df["rpk"]
-
 
         # Annual growth rate
         for k in range(self.other_data_start_year + 1, self.prospection_start_year):
@@ -361,15 +351,15 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         self.float_outputs["cagr_rpk_medium_range"] = cagr_rpk_medium_range
         self.float_outputs["cagr_rpk_long_range"] = cagr_rpk_long_range
         self.float_outputs["cagr_rpk"] = cagr_rpk
-        self.float_outputs[
-            "prospective_evolution_rpk_short_range"
-        ] = prospective_evolution_rpk_short_range
-        self.float_outputs[
-            "prospective_evolution_rpk_medium_range"
-        ] = prospective_evolution_rpk_medium_range
-        self.float_outputs[
-            "prospective_evolution_rpk_long_range"
-        ] = prospective_evolution_rpk_long_range
+        self.float_outputs["prospective_evolution_rpk_short_range"] = (
+            prospective_evolution_rpk_short_range
+        )
+        self.float_outputs["prospective_evolution_rpk_medium_range"] = (
+            prospective_evolution_rpk_medium_range
+        )
+        self.float_outputs["prospective_evolution_rpk_long_range"] = (
+            prospective_evolution_rpk_long_range
+        )
         self.float_outputs["prospective_evolution_rpk"] = prospective_evolution_rpk
 
         # print('In PriceElasticity: Airfare 2050:{}, RPK 2050:{}'.format(airfare_per_rpk[self.end_year], rpk[self.end_year]))

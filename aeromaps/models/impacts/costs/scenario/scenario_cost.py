@@ -76,9 +76,9 @@ class NonDiscountedEnergyCost(AeroMAPSModel):
 
         self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
         self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
-        self.df.loc[
-            :, "non_discounted_full_kero_energy_expenses"
-        ] = non_discounted_full_kero_energy_expenses
+        self.df.loc[:, "non_discounted_full_kero_energy_expenses"] = (
+            non_discounted_full_kero_energy_expenses
+        )
 
         return (
             non_discounted_energy_expenses,
@@ -157,16 +157,15 @@ class TotalAirlineCost(AeroMAPSModel):
         pd.Series,
         float,
     ]:
-
         initial_airline_cost = total_cost_per_ask[self.prospection_start_year - 1] * ask
         total_airline_cost = total_cost_per_ask * ask
-        total_airline_cost_increase  = total_airline_cost - initial_airline_cost
+        total_airline_cost_increase = total_airline_cost - initial_airline_cost
 
-        total_airline_cost_discounted = total_airline_cost / (
-            1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
+        total_airline_cost_discounted = total_airline_cost / (1 + social_discount_rate) ** (
+            self.df.index - self.prospection_start_year
+        )
 
-        total_airline_cost_increase_discounted= total_airline_cost_increase / (
+        total_airline_cost_increase_discounted = total_airline_cost_increase / (
             1 + social_discount_rate
         ) ** (self.df.index - self.prospection_start_year)
 
@@ -174,17 +173,23 @@ class TotalAirlineCost(AeroMAPSModel):
         cumulative_total_airline_cost_discounted = total_airline_cost_discounted.cumsum()
 
         cumulative_total_airline_cost_increase = total_airline_cost_increase.cumsum()
-        cumulative_total_airline_cost_increase_discounted = total_airline_cost_increase_discounted.cumsum()
+        cumulative_total_airline_cost_increase_discounted = (
+            total_airline_cost_increase_discounted.cumsum()
+        )
 
         self.df.loc[:, "total_airline_cost"] = total_airline_cost
         self.df.loc[:, "cumulative_total_airline_cost"] = cumulative_total_airline_cost
-        self.df.loc[
-            :, "cumulative_total_airline_cost_discounted"
-        ] = cumulative_total_airline_cost_discounted
+        self.df.loc[:, "cumulative_total_airline_cost_discounted"] = (
+            cumulative_total_airline_cost_discounted
+        )
         self.df.loc[:, "total_airline_cost_increase"] = total_airline_cost_increase
-        self.df.loc[:, "cumulative_total_airline_cost_increase"] = cumulative_total_airline_cost_increase
+        self.df.loc[:, "cumulative_total_airline_cost_increase"] = (
+            cumulative_total_airline_cost_increase
+        )
 
-        cumulative_total_airline_cost_discounted_obj = cumulative_total_airline_cost_discounted[self.end_year]
+        cumulative_total_airline_cost_discounted_obj = cumulative_total_airline_cost_discounted[
+            self.end_year
+        ]
 
         return (
             total_airline_cost,
@@ -192,7 +197,7 @@ class TotalAirlineCost(AeroMAPSModel):
             cumulative_total_airline_cost_discounted,
             cumulative_total_airline_cost_increase,
             cumulative_total_airline_cost_increase_discounted,
-            cumulative_total_airline_cost_discounted_obj
+            cumulative_total_airline_cost_discounted_obj,
         )
 
 
@@ -313,21 +318,13 @@ class TotalSurplusLoss(AeroMAPSModel):
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
         # airfare_per_rpk = pd.Series(airfare_per_rpk, index= range(2025,2051))
-        interp_af= interp1d(
-            [2025,2030,2035,2040,2045,2050],
-            airfare_per_rpk,
-            kind='linear'
-        )
+        interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
         years_new = np.arange(2025, 2051, 1)
         airfare_per_rpk = interp_af(years_new)
         airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
 
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
-        beta = (
-            airfare_per_rpk[2025]
-            / (rpk_no_elasticity**(1/price_elasticity))
-        )
-
+        beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
 
         # Gloabl Surplus before removing total costs
 
@@ -348,25 +345,32 @@ class TotalSurplusLoss(AeroMAPSModel):
 
         self.df.loc[:, "area_loss"] = area_loss
 
-        area_loss_discounted = area_loss / (
-                1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
+        area_loss_discounted = area_loss / (1 + social_discount_rate) ** (
+            self.df.index - self.prospection_start_year
+        )
 
         cumulative_total_surplus_loss = area_loss.cumsum() + cumulative_total_airline_cost_increase
-        cumulative_total_surplus_loss_discounted = area_loss_discounted.cumsum() + cumulative_total_airline_cost_increase_discounted[self.end_year]-cumulative_total_airline_cost_increase_discounted[2025]
-
+        cumulative_total_surplus_loss_discounted = (
+            area_loss_discounted.cumsum()
+            + cumulative_total_airline_cost_increase_discounted[self.end_year]
+            - cumulative_total_airline_cost_increase_discounted[2025]
+        )
 
         self.df.loc[:, "cumulative_total_surplus_loss"] = cumulative_total_surplus_loss
-        self.df.loc[
-            :, "cumulative_total_surplus_loss_discounted"
-        ] = cumulative_total_surplus_loss_discounted
+        self.df.loc[:, "cumulative_total_surplus_loss_discounted"] = (
+            cumulative_total_surplus_loss_discounted
+        )
 
-        cumulative_total_surplus_loss_discounted_obj = cumulative_total_surplus_loss_discounted[self.end_year]
+        cumulative_total_surplus_loss_discounted_obj = cumulative_total_surplus_loss_discounted[
+            self.end_year
+        ]
 
-        return (area_loss,
-                cumulative_total_surplus_loss,
-                cumulative_total_surplus_loss_discounted,
-                cumulative_total_surplus_loss_discounted_obj)
+        return (
+            area_loss,
+            cumulative_total_surplus_loss,
+            cumulative_total_surplus_loss_discounted,
+            cumulative_total_surplus_loss_discounted_obj,
+        )
 
 
 # class TotalWelfareLoss(AeroMAPSModel):
@@ -411,5 +415,3 @@ class TotalSurplusLoss(AeroMAPSModel):
 #             cumulative_total_welfare_loss,
 #             cumulative_total_welfare_loss_discounted,
 #         )
-
-

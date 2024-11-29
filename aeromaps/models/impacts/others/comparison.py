@@ -69,7 +69,3 @@ class ResourcesConsumedShare(AeroMAPSModel):
         self.float_outputs["electricity_consumed_share"] = electricity_consumed_share
 
         return biomass_consumed_share, electricity_consumed_share
-
-
-
-

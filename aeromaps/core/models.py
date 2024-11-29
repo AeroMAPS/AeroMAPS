@@ -80,9 +80,13 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_
 )
 from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import DropinFuelDistribution
 from aeromaps.models.optimisation.constraints.carbon_budget_constraint import CarbonBudgetConstraint
-from aeromaps.models.optimisation.constraints.energy_constraint import BlendCompletenessConstraint, \
-    ElectricityAvailabilityConstraintTrajectory, BiomassAvailabilityConstraintTrajectory, \
-    ElectrofuelUseGrowthConstraint, BiofuelUseGrowthConstraint
+from aeromaps.models.optimisation.constraints.energy_constraint import (
+    BlendCompletenessConstraint,
+    ElectricityAvailabilityConstraintTrajectory,
+    BiomassAvailabilityConstraintTrajectory,
+    ElectrofuelUseGrowthConstraint,
+    BiofuelUseGrowthConstraint,
+)
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
@@ -225,7 +229,9 @@ from aeromaps.models.impacts.costs.airlines.operational_profit import (
 )
 
 from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
-    PassengerAircraftTotalCostAirfare, PassengerAircraftTotalCost, PassengerAircraftMarginalCost,
+    PassengerAircraftTotalCostAirfare,
+    PassengerAircraftTotalCost,
+    PassengerAircraftMarginalCost,
 )
 
 models_traffic = {
@@ -591,7 +597,9 @@ models_cost_feedback = {
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "price_elasticity_and_surplus": PriceElasticityAndSurplus("price_elasticity_and_surplus"),
     "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
-    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost("passenger_aircraft_marginal_cost"),
+    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost"
+    ),
 }
 
 models_optim_simple = {
@@ -599,11 +607,16 @@ models_optim_simple = {
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
-    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory("electricity_availability_constraint_trajectory"),
-    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory("biomass_availability_constraint_trajectory"),
-    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint("electrofuel_use_growth_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
-
 }
 
 models_optim_complex = {
@@ -611,10 +624,14 @@ models_optim_complex = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
-        "electricity_availability_constraint_trajectory"),
+        "electricity_availability_constraint_trajectory"
+    ),
     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
-        "biomass_availability_constraint_trajectory"),
-    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint("electrofuel_use_growth_constraint"),
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
     "models_cost_feedback": models_cost_feedback,
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),

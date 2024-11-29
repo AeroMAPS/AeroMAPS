@@ -964,12 +964,12 @@ class DropinFuelPathwayConsumptionAndGrowth(AeroMAPSModel):
         energy_consumption_biofuel_atj = biofuel_atj_share / 100 * energy_consumption_biofuel
 
         self.df.loc[:, "energy_consumption_biofuel_hefa_fog"] = energy_consumption_biofuel_hefa_fog
-        self.df.loc[
-            :, "energy_consumption_biofuel_hefa_others"
-        ] = energy_consumption_biofuel_hefa_others
-        self.df.loc[
-            :, "energy_consumption_biofuel_ft_others"
-        ] = energy_consumption_biofuel_ft_others
+        self.df.loc[:, "energy_consumption_biofuel_hefa_others"] = (
+            energy_consumption_biofuel_hefa_others
+        )
+        self.df.loc[:, "energy_consumption_biofuel_ft_others"] = (
+            energy_consumption_biofuel_ft_others
+        )
         self.df.loc[:, "energy_consumption_biofuel_ft_msw"] = energy_consumption_biofuel_ft_msw
         self.df.loc[:, "energy_consumption_biofuel_atj"] = energy_consumption_biofuel_atj
 
@@ -1059,13 +1059,13 @@ class HydrogenPathwayConsumptionAndGrowth(AeroMAPSModel):
         energy_consumption_hydrogen_gas = hydrogen_gas_share / 100 * energy_consumption_hydrogen
         energy_consumption_hydrogen_coal = hydrogen_coal_share / 100 * energy_consumption_hydrogen
 
-        self.df.loc[
-            :, "energy_consumption_hydrogen_electrolysis"
-        ] = energy_consumption_hydrogen_electrolysis
+        self.df.loc[:, "energy_consumption_hydrogen_electrolysis"] = (
+            energy_consumption_hydrogen_electrolysis
+        )
         self.df.loc[:, "energy_consumption_hydrogen_gas_ccs"] = energy_consumption_hydrogen_gas_ccs
-        self.df.loc[
-            :, "energy_consumption_hydrogen_coal_ccs"
-        ] = energy_consumption_hydrogen_coal_ccs
+        self.df.loc[:, "energy_consumption_hydrogen_coal_ccs"] = (
+            energy_consumption_hydrogen_coal_ccs
+        )
         self.df.loc[:, "energy_consumption_hydrogen_gas"] = energy_consumption_hydrogen_gas
         self.df.loc[:, "energy_consumption_hydrogen_coal"] = energy_consumption_hydrogen_coal
 
@@ -1126,23 +1126,39 @@ class SustainableFuelConsumption(AeroMAPSModel):
         energy_consumption_hydrogen: pd.Series,
         energy_consumption_kerosene: pd.Series,
         energy_consumption_electric: pd.Series,
-    ) -> Tuple[
-         pd.Series,
-         pd.Series,
-         pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """gather all pathways to monitor the enforcement of a saf mandate"""
-        total_energy_consumption= (energy_consumption_biofuel + energy_consumption_electrofuel + energy_consumption_hydrogen + energy_consumption_kerosene + energy_consumption_electric)
+        total_energy_consumption = (
+            energy_consumption_biofuel
+            + energy_consumption_electrofuel
+            + energy_consumption_hydrogen
+            + energy_consumption_kerosene
+            + energy_consumption_electric
+        )
 
-        saf_biological_share = energy_consumption_biofuel/total_energy_consumption*100
-        saf_non_biological_share = (energy_consumption_hydrogen+energy_consumption_electric+energy_consumption_electrofuel)/total_energy_consumption*100
-        saf_total_share = (energy_consumption_biofuel+energy_consumption_hydrogen+energy_consumption_electric+energy_consumption_electrofuel)/total_energy_consumption*100
+        saf_biological_share = energy_consumption_biofuel / total_energy_consumption * 100
+        saf_non_biological_share = (
+            (
+                energy_consumption_hydrogen
+                + energy_consumption_electric
+                + energy_consumption_electrofuel
+            )
+            / total_energy_consumption
+            * 100
+        )
+        saf_total_share = (
+            (
+                energy_consumption_biofuel
+                + energy_consumption_hydrogen
+                + energy_consumption_electric
+                + energy_consumption_electrofuel
+            )
+            / total_energy_consumption
+            * 100
+        )
 
         self.df.loc[:, "saf_biological_share"] = saf_biological_share
         self.df.loc[:, "saf_non_biological_share"] = saf_non_biological_share
         self.df.loc[:, "saf_total_share"] = saf_total_share
 
-        return (
-            saf_biological_share,
-            saf_non_biological_share,
-            saf_total_share
-        )
+        return (saf_biological_share, saf_non_biological_share, saf_total_share)

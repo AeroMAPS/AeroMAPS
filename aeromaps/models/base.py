@@ -25,9 +25,7 @@ class AeroMAPSModel(object):
         self.start_year = self.other_data_start_year
         self.end_year = self.parameters.end_year
 
-        self.df: pd.DataFrame = pd.DataFrame(
-            index=range(self.start_year, self.end_year + 1)
-        )
+        self.df: pd.DataFrame = pd.DataFrame(index=range(self.start_year, self.end_year + 1))
         self.df_climate: pd.DataFrame = pd.DataFrame(
             index=range(self.climate_data_start_year, self.end_year + 1)
         )
