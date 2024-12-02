@@ -37,8 +37,7 @@ from numpy import ndarray
 from typing_extensions import get_args
 from typing_extensions import get_origin
 
-from gemseo.core.data_processor import DataProcessor
-from gemseo.core.discipline import MDODiscipline
+from gemseo.core.discipline.data_processor import DataProcessor
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 from gemseo.disciplines.auto_py import AutoPyDiscipline
@@ -60,11 +59,11 @@ from typing import TYPE_CHECKING
 from numpy import array
 
 from gemseo import create_mda
-from gemseo.core.chain import MDOChain
-from gemseo.core.chain import MDOParallelChain
-from gemseo.core.discipline import MDODiscipline
-from gemseo.core.execution_sequence import SerialExecSequence
-from gemseo.mda.initialization_chain import MDOInitializationChain
+from gemseo.core.chains.chain import MDOChain
+from gemseo.core.chains.parallel_chain import MDOParallelChain
+from gemseo.core.discipline import Discipline
+# from gemseo.core.execution_sequence import SerialExecSequence
+from gemseo.core.chains.initialization_chain import MDOInitializationChain
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -73,7 +72,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from gemseo.core.coupling_structure import MDOCouplingStructure
-    from gemseo.core.discipline_data import DisciplineData
+    from gemseo.core.discipline.discipline_data import DisciplineData
     from gemseo.utils.matplotlib_figure import FigSizeType
 
 LOGGER = logging.getLogger(__name__)
@@ -81,7 +80,7 @@ LOGGER = logging.getLogger(__name__)
 N_CPUS = cpu_count()
 
 
-class AutoPyDisciplineCustom(MDODiscipline):
+class AutoPyDisciplineCustom(Discipline):
     """Wrap a Python function into a discipline.
 
     A simplified and straightforward way of integrating a discipline
@@ -143,7 +142,7 @@ class AutoPyDisciplineCustom(MDODiscipline):
         py_jac: Callable | None = None,
         name: str | None = None,
         use_arrays: bool = False,
-        grammar_type: MDODiscipline.GrammarType = MDODiscipline.GrammarType.JSON,
+        grammar_type: Discipline.GrammarType = Discipline.GrammarType.JSON,
     ) -> None:
         """
         Args:
@@ -395,8 +394,8 @@ class AutoDiscDataProcessor(DataProcessor):
         """Pre-process the input data.
 
         Execute a pre-processing of input data
-        after they are checked by :meth:`~MDODiscipline.check_input_data`,
-        and before the :meth:`~MDODiscipline._run` method of the discipline is called.
+        after they are checked by :meth:`~Discipline.check_input_data`,
+        and before the :meth:`~Discipline._run` method of the discipline is called.
 
         Args:
             data: The data to be processed.
@@ -416,8 +415,8 @@ class AutoDiscDataProcessor(DataProcessor):
         """Post-process the output data.
 
         Execute a post-processing of the output data
-        after the :meth:`~MDODiscipline._run` method of the discipline is called,
-        and before they are checked by :meth:`~MDODiscipline.check_output_data`.
+        after the :meth:`~Discipline._run` method of the discipline is called,
+        and before they are checked by :meth:`~Discipline.check_output_data`.
 
         Args:
             data: The data to be processed.
@@ -454,7 +453,7 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         self.model: AeroMAPSModel = model
 
         super(AeroMAPSModelWrapper, self).__init__(
-            py_func=self.model.compute, grammar_type=MDODiscipline.GrammarType.SIMPLE
+            py_func=self.model.compute, grammar_type=Discipline.GrammarType.SIMPLE
         )
 
         self.name = model.__class__.__name__

@@ -10,7 +10,7 @@ from gemseo import generate_n2_plot, create_scenario
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
 from gemseo.mda.gauss_seidel import MDAGaussSeidel
-from gemseo.core.discipline import MDODiscipline
+from gemseo.core.discipline import Discipline
 
 
 # Local application imports
@@ -95,7 +95,7 @@ class AeroMAPSProcess(object):
         # # Create MDA chain
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            grammar_type=MDODiscipline.GrammarType.SIMPLE,
+            grammar_type=Discipline.GrammarType.SIMPLE,
             tolerance=1e-6,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
@@ -245,7 +245,7 @@ class AeroMAPSProcess(object):
         # Optional settings
         self.gemseo_settings["formulation"] = "MDF"
         self.gemseo_settings["scenario_type"] = "MDO"
-        self.gemseo_settings["grammar_type"] = MDODiscipline.GrammarType.SIMPLE
+        self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
 
