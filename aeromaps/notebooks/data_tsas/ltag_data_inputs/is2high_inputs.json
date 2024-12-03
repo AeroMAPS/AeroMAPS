@@ -1,5 +1,6 @@
 {"end_year": 2070,
-  "covid_end_year": 2023,
+  "covid_end_year_passenger": 2023,
+  "covid_end_year_freight": 2021,
   "cagr_passenger_short_range_reference_periods": [2020, 2028, 2038, 2050, 2060, 2070],
   "cagr_passenger_short_range_reference_periods_values": [6.992, 4.6, 4.4, 3.4, 3.1],
   "cagr_passenger_medium_range_reference_periods": [2020, 2028, 2038, 2050, 2060, 2070],

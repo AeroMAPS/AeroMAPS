@@ -164,7 +164,8 @@
     "historic_start_year": 2000,
     "prospection_start_year": 2020,
     "end_year": 2070,
-    "covid_end_year": 2023,
+    "covid_end_year_passenger": 2023,
+    "covid_end_year_freight": 2021,
     "cagr_passenger_short_range_reference_periods": [
         2020,
         2028,
