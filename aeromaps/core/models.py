@@ -11,7 +11,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_num
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
     FleetCarbonAbatementCosts,
-    CargoEfficiencyCarbonAbatementCosts,
+    CargoEfficiencyCarbonAbatementCosts, FleetTopDownCarbonAbatementCost,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
@@ -544,6 +544,16 @@ models_abatements_cost = {
     "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
+    "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
+        "cargo_efficiency_carbon_abatement_cost"
+    ),
+}
+
+
+models_abatements_cost_simplified = {
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
+    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
+    "fleet_top_down_carbon_abatement_cost": FleetTopDownCarbonAbatementCost("fleet_top_down_carbon_abatement_cost"),
     "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
         "cargo_efficiency_carbon_abatement_cost"
     ),
