@@ -593,6 +593,9 @@
     "relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values": [
         1.0
     ],
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range": 1.0,
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range": 1.0,
+    "relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range": 1.0,
     "fleet_renewal_duration": 20.0,
     "operations_gain_reference_years": [
         2020,
