@@ -286,7 +286,6 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         self, name="cargo_efficiency_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):
         super().__init__(name, *args, **kwargs)
-        self.fleet_model = fleet_model
 
     def compute(
         self,
@@ -601,12 +600,11 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         )
 
 
-class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
+class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
     def __init__(
-        self, name="cargo_efficiency_carbon_abatement_cost", fleet_model=None, *args, **kwargs
+        self, name="fleet_top_down_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):
         super().__init__(name, *args, **kwargs)
-        self.fleet_model = fleet_model
 
     def compute(
         self,
@@ -668,8 +666,6 @@ class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
 
         aircraft_life = 25
 
-        scac_vals_mean = []
-        scac_vals_prime_mean = []
         for k in range(self.prospection_start_year, self.end_year + 1):
             scac, scac_prime = self._get_discounted_vals(
                 k,
@@ -682,24 +678,13 @@ class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
                 extra_emissions_dropin,
                 exogenous_carbon_price_trajectory,
             )
-            scac_vals_mean.append(scac)
-            scac_vals_prime_mean.append(scac_prime)
-        aircraft_specific_carbon_abatement_cost_passenger_mean = pd.Series(
-            scac_vals_mean,
-            index=range(self.prospection_start_year, self.end_year + 1),
-            name="aircraft_specific_carbon_abatement_cost_passenger_mean",
-        )
-        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = pd.Series(
-            scac_vals_prime_mean,
-            index=range(self.prospection_start_year, self.end_year + 1),
-            name="aircraft_generic_specific_carbon_abatement_cost_passenger_mean",
-        )
-        self.df = pd.concat(
-            [self.df, aircraft_specific_carbon_abatement_cost_passenger_mean], axis=1
-        )
-        self.df = pd.concat(
-            [self.df, aircraft_generic_specific_carbon_abatement_cost_passenger_mean], axis=1
-        )
+
+            self.df.loc[k, "aircraft_specific_carbon_abatement_cost_passenger_mean"] = scac
+            self.df.loc[k, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"] = scac_prime
+
+
+        aircraft_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_specific_carbon_abatement_cost_passenger_mean']
+        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_generic_specific_carbon_abatement_cost_passenger_mean']
 
 
         aircraft_carbon_abatement_volume_passenger_mean = -(
@@ -707,7 +692,7 @@ class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
         )
 
 
-        self.df.loc[:, "aircraft_carbon_abatement_volume_freight_dropin"] = (
+        self.df.loc[:, "aircraft_carbon_abatement_volume_passenger_mean"] = (
             aircraft_carbon_abatement_volume_passenger_mean
         )
 
@@ -736,7 +721,7 @@ class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
         for i in range(year, year + int(aircraft_life)):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
-                    extra_cost_non_fuel
+                    extra_cost_non_fuel[year]
                     + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
@@ -756,7 +741,7 @@ class FleetTopDownCarbonAbatementCosts(AeroMAPSModel):
                 )
             else:
                 discounted_cumul_cost += (
-                    extra_cost_non_fuel
+                    extra_cost_non_fuel[year]
                     + extra_cost_fuel[year]
                     * kerosene_market_price[self.end_year]
                     / kerosene_market_price[year]
