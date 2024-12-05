@@ -1207,7 +1207,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         Hydrogen price returned in €/kg
         """
-
         hydrogen_prices = {}
 
         # modification to base year not to use undefined technology costs => either base year or start of prospection year

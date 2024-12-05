@@ -5245,7 +5245,7 @@ class DetailledMFSPBreakdownPerYear:
 
         if not (
             pd.isna(self.df.loc[year, "electricity_direct_use_total_cost"])
-            or self.df.loc[year, "electricity_direct_use_total_cost"] == 0
+            or self.df.loc[year, "electricity_direct_use_total_cost"] < 1e-9
         ):
             elec_val = self.df.loc[year, "electricity_market_price"] / 3.6
             elec_val_tax = self.df.loc[year, "electricity_direct_use_carbon_tax_kWh"] / 3.6
@@ -5279,7 +5279,7 @@ class DetailledMFSPBreakdownPerYear:
             ("Bio - FT Others", "ft_others"),
             ("Bio - ATJ", "atj"),
         ]:
-            if not pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mfsp"]):
+            if not(pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mfsp"]) or self.df.loc[year, "biofuel_" + pathway + "_mfsp"] < 1e-9):
                 capex_val = (
                     self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
                     * self.df.loc[year, "biofuel_mean_capex_share_" + pathway]
@@ -5345,7 +5345,7 @@ class DetailledMFSPBreakdownPerYear:
                 )
 
         for (name, pathway) in [("E-fuel", "electrofuel")]:
-            if not pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]):
+            if not (pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]) or self.df.loc[year, "electrofuel_mean_mfsp_litre"]< 1e-9):
                 capex_val = (
                     self.df.loc[year, "electrofuel_mean_mfsp_litre"]
                     * self.df.loc[year, "electrofuel_mean_capex_share"]
@@ -5433,7 +5433,7 @@ class DetailledMFSPBreakdownPerYear:
             ("LH2 - Coal CCS", "coal_ccs_h2"),
             ("LH2 - Coal", "coal_h2"),
         ]:
-            if not pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]):
+            if not (pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]) or self.df.loc[year, pathway + "_mean_mfsp_kg"]<1e-9):
 
                 capex_val = (
                     self.df.loc[year, pathway + "_mean_mfsp_kg"]
