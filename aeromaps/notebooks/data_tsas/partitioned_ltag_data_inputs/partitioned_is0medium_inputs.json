@@ -653,5 +653,9 @@
         500,
         775,
         1869
+    ],
+    "kerosene_price_reference_years": [],
+    "kerosene_price_reference_years_values": [
+        0.54
     ]
 }

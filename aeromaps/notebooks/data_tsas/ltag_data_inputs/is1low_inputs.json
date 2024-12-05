@@ -64,5 +64,7 @@
   "carbon_tax_reference_years_values": [0, 0],
   "social_discount_rate": 0.045,
   "exogenous_carbon_price_reference_years": [2020, 2030, 2040, 2050, 2070],
-  "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775, 1869]
+  "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775, 1869],
+  "kerosene_price_reference_years": [],
+  "kerosene_price_reference_years_values": [0.54]
 }
