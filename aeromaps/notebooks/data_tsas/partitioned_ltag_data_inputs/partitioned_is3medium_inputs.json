@@ -1507,8 +1507,8 @@
     "electrolyser_fixed_opex_reference_years_values": [
         0.0
     ],
-    "electrolyser_variable_opex_reference_years": [],
-    "electrolyser_variable_opex_reference_years_values": [
+    "electrolyser_var_opex_reference_years": [],
+    "electrolyser_var_opex_reference_years_values": [
         0.0
     ],
     "electrofuel_var_opex_reference_years": [],

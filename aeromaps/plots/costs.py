@@ -5218,37 +5218,41 @@ class DetailledMFSPBreakdownPerYear:
         kero_vlhv = self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]
         hyrdogen_lhv = self.float_inputs["lhv_hydrogen"]
 
-        kerosene_val = self.df.loc[year, "kerosene_market_price"] / kero_vlhv
-        kerosene_tax_val = self.df.loc[year, "kerosene_price_supplement_carbon_tax"] / kero_vlhv
+        if not (
+                pd.isna(self.df.loc[year, "energy_consumption_kerosene"])
+                or self.df.loc[year, "energy_consumption_kerosene"] < 1e-9
+        ):
+            kerosene_val = self.df.loc[:, "kerosene_market_price"].fillna(0)[year] / kero_vlhv
+            kerosene_tax_val = self.df.loc[:, "kerosene_price_supplement_carbon_tax"].fillna(0)[year] / kero_vlhv
 
-        self.ax.bar(
-            "Kerosene",
-            kerosene_val,
-            bottom=0,
-            color="black",
-            label="Fossil kerosene",
-            edgecolor="#212529",
-            linewidth=0.5,
-        )
+            self.ax.bar(
+                "Kerosene",
+                kerosene_val,
+                bottom=0,
+                color="black",
+                label="Fossil kerosene",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
 
-        self.ax.bar(
-            "Kerosene",
-            kerosene_tax_val,
-            bottom=kerosene_val,
-            color="white",
-            facecolor="#9066D4",
-            hatch="//",
-            label="Fossil kerosene + carbon tax",
-            edgecolor="#212529",
-            linewidth=0.5,
-        )
+            self.ax.bar(
+                "Kerosene",
+                kerosene_tax_val,
+                bottom=kerosene_val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Fossil kerosene + carbon tax",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
 
         if not (
             pd.isna(self.df.loc[year, "electricity_direct_use_total_cost"])
             or self.df.loc[year, "electricity_direct_use_total_cost"] < 1e-9
         ):
-            elec_val = self.df.loc[year, "electricity_market_price"] / 3.6
-            elec_val_tax = self.df.loc[year, "electricity_direct_use_carbon_tax_kWh"] / 3.6
+            elec_val = self.df.loc[:,"electricity_market_price"].fillna(0)[year] / 3.6
+            elec_val_tax = self.df.loc[:, "electricity_direct_use_carbon_tax_kWh"].fillna(0)[year] / 3.6
 
             self.ax.bar(
                 "Direct Electricity",
@@ -5281,25 +5285,25 @@ class DetailledMFSPBreakdownPerYear:
         ]:
             if not(pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mfsp"]) or self.df.loc[year, "biofuel_" + pathway + "_mfsp"] < 1e-9):
                 capex_val = (
-                    self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                    * self.df.loc[year, "biofuel_mean_capex_share_" + pathway]
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_capex_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv
                 )
                 opex_val = (
-                    self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                    * self.df.loc[year, "biofuel_mean_var_opex_share_" + pathway]
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_var_opex_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv
                 )
                 feedstock_val = (
-                    self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                    * self.df.loc[year, "biofuel_mean_feedstock_share_" + pathway]
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_feedstock_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv
                 )
                 carbon_tax_val = (
-                    self.df.loc[year, "biofuel_mfsp_carbon_tax_supplement_" + pathway] / bio_vlhv
+                    self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_" + pathway].fillna(0)[year] / bio_vlhv
                 )
 
                 self.ax.bar(
@@ -5347,31 +5351,31 @@ class DetailledMFSPBreakdownPerYear:
         for (name, pathway) in [("E-fuel", "electrofuel")]:
             if not (pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"]) or self.df.loc[year, "electrofuel_mean_mfsp_litre"]< 1e-9):
                 capex_val = (
-                    self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                    * self.df.loc[year, "electrofuel_mean_capex_share"]
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_capex_share"].fillna(0)[year]
                     / 100
                     / efuel_vlhv
                 )
                 opex_val = (
-                    self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                    * self.df.loc[year, "electrofuel_mean_opex_share"]
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_opex_share"].fillna(0)[year]
                     / 100
                     / efuel_vlhv
                 )
                 energy_val = (
-                    self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                    * self.df.loc[year, "electrofuel_mean_elec_share"]
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_elec_share"].fillna(0)[year]
                     / 100
                     / efuel_vlhv
                 )
                 co2_feed_val = (
-                    self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                    * self.df.loc[year, "electrofuel_mean_co2_share"]
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_co2_share"].fillna(0)[year]
                     / 100
                     / efuel_vlhv
                 )
                 carbon_tax_val = (
-                    self.df.loc[year, "electrofuel_mfsp_carbon_tax_supplement"] / efuel_vlhv
+                    self.df.loc[:, "electrofuel_mfsp_carbon_tax_supplement"].fillna(0)[year] / efuel_vlhv
                 )
 
                 self.ax.bar(
@@ -5436,37 +5440,37 @@ class DetailledMFSPBreakdownPerYear:
             if not (pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"]) or self.df.loc[year, pathway + "_mean_mfsp_kg"]<1e-9):
 
                 capex_val = (
-                    self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[year, pathway + "_mean_capex_share"]
+                    self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, pathway + "_mean_capex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
                 opex_val = (
-                    self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[year, pathway + "_mean_opex_share"]
+                    self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, pathway + "_mean_opex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
 
                 if pathway == "electrolysis_h2":
                     energy_val = (
-                        self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                        * self.df.loc[year, pathway + "_mean_elec_share"]
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_elec_share"].fillna(0)[year]
                         / 100
                         / hyrdogen_lhv
                     )
                 else:
                     energy_val = (
-                        self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                        * self.df.loc[year, pathway + "_mean_fuel_cost_share"]
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_fuel_cost_share"].fillna(0)[year]
                         / 100
                         / hyrdogen_lhv
                     )
 
                 if pathway in ["gas_ccs_h2", "coal_ccs_h2"]:
                     ccs_val = (
-                        self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                        * self.df.loc[year, pathway + "_mean_ccs_cost_share"]
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_ccs_cost_share"].fillna(0)[year]
                         / 100
                         / hyrdogen_lhv
                     )
@@ -5475,28 +5479,28 @@ class DetailledMFSPBreakdownPerYear:
                     ccs_val = 0
 
                 liquefaction_capex_val = (
-                    self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                    * self.df.loc[year, "liquefaction_h2_mean_capex_share"]
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_capex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
                 liquefaction_opex_val = (
-                    self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                    * self.df.loc[year, "liquefaction_h2_mean_opex_share"]
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_opex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
                 liquefaction_energy_val = (
-                    self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                    * self.df.loc[year, "liquefaction_h2_mean_elec_share"]
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_elec_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
 
-                transport = self.df.loc[year, "transport_h2_cost_per_kg"] / hyrdogen_lhv
+                transport = self.df.loc[:, "transport_h2_cost_per_kg"].fillna(0)[year] / hyrdogen_lhv
 
                 carbon_tax_val = (
-                    self.df.loc[year, pathway + "_mfsp_carbon_tax_supplement"] / hyrdogen_lhv
+                    self.df.loc[:, pathway + "_mfsp_carbon_tax_supplement"].fillna(0)[year] / hyrdogen_lhv
                 )
 
                 self.ax.bar(
