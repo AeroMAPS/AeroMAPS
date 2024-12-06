@@ -31,14 +31,16 @@ from typing import Final
 from typing import Union
 from typing import get_type_hints
 
+from gemseo.disciplines.auto_py import AutoPyDiscipline
 from numpy import array
 from numpy import atleast_2d
 from numpy import ndarray
 from typing_extensions import get_args
 from typing_extensions import get_origin
 
-from gemseo.core.data_processor import DataProcessor
-from gemseo.core.discipline import MDODiscipline
+from gemseo.core.discipline.data_processor import DataProcessor
+from gemseo.core.discipline import Discipline
+
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 
@@ -53,7 +55,7 @@ DataType = Union[float, ndarray]
 LOGGER = logging.getLogger(__name__)
 
 
-class AutoPyDiscipline(MDODiscipline):
+class AutoPyDisciplineBis(Discipline):
     """Wrap a Python function into a discipline.
 
     A simplified and straightforward way of integrating a discipline
@@ -115,7 +117,7 @@ class AutoPyDiscipline(MDODiscipline):
         py_jac: Callable | None = None,
         name: str | None = None,
         use_arrays: bool = False,
-        grammar_type: MDODiscipline.GrammarType = MDODiscipline.GrammarType.JSON,
+        grammar_type: Discipline.GrammarType = Discipline.GrammarType.JSON,
     ) -> None:
         """
         Args:
@@ -367,8 +369,8 @@ class AutoDiscDataProcessor(DataProcessor):
         """Pre-process the input data.
 
         Execute a pre-processing of input data
-        after they are checked by :meth:`~MDODiscipline.check_input_data`,
-        and before the :meth:`~MDODiscipline._run` method of the discipline is called.
+        after they are checked by :meth:`~Discipline.check_input_data`,
+        and before the :meth:`~Discipline._run` method of the discipline is called.
 
         Args:
             data: The data to be processed.
@@ -388,8 +390,8 @@ class AutoDiscDataProcessor(DataProcessor):
         """Post-process the output data.
 
         Execute a post-processing of the output data
-        after the :meth:`~MDODiscipline._run` method of the discipline is called,
-        and before they are checked by :meth:`~MDODiscipline.check_output_data`.
+        after the :meth:`~Discipline._run` method of the discipline is called,
+        and before they are checked by :meth:`~Discipline.check_output_data`.
 
         Args:
             data: The data to be processed.
@@ -425,8 +427,11 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
+        # TODO: Explore possibility to use json grammar
+        self.default_grammar_type = Discipline.GrammarType.SIMPLE
+
         super(AeroMAPSModelWrapper, self).__init__(
-            py_func=self.model.compute, grammar_type=MDODiscipline.GrammarType.SIMPLE
+            py_func=self.model.compute,
         )
 
         self.name = model.__class__.__name__
@@ -434,7 +439,7 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         self.update_defaults()
 
     def update_defaults(self):
-        for input in self.get_input_data_names():
+        for input in self.get_input_data():
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):

@@ -5,7 +5,6 @@ from json import load, dump
 # Third-party imports
 import numpy as np
 import pandas as pd
-from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -73,11 +72,12 @@ class AeroMAPSProcess(object):
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
         # Create GEMSEO process
-        self.process = create_mda(
-            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
-        )
+        self.process = create_mda("MDAChain", disciplines=self.disciplines)
+
         self._initialize_data()
-        self._update_variables()
+
+        # TODO: check if we need to know inputs before computing
+        # self._update_variables()
 
     def compute(self):
         if self.fleet is not None:
@@ -325,7 +325,7 @@ class AeroMAPSProcess(object):
 
     def _update_data_from_model(self):
         # Inputs
-        all_inputs = self.process.get_input_data_names()
+        all_inputs = self.process.get_input_data()
 
         for name in all_inputs:
             try:
