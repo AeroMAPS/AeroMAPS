@@ -293,7 +293,17 @@ class OperationsAbatementCost(AeroMAPSModel):
                     / (1 + discount_rate) ** (i - year)
                 )
 
+        if cumul_em == 0:
+            scac = np.NaN
+        else:
+            scac = discounted_cumul_cost / cumul_em
+
+        if generic_discounted_cumul_em == 0:
+            scac_prime = np.NaN
+        else:
+            scac_prime = discounted_cumul_cost / generic_discounted_cumul_em
+
         return (
-            discounted_cumul_cost / cumul_em,
-            discounted_cumul_cost / generic_discounted_cumul_em,
+            scac,
+            scac_prime,
         )

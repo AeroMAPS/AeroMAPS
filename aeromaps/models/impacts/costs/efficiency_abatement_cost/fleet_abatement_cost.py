@@ -286,7 +286,6 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         self, name="cargo_efficiency_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):
         super().__init__(name, *args, **kwargs)
-        self.fleet_model = fleet_model
 
     def compute(
         self,
@@ -568,6 +567,181 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             else:
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
+                    + extra_cost_fuel[year]
+                    * kerosene_market_price[self.end_year]
+                    / kerosene_market_price[year]
+                ) / (1 + discount_rate) ** (i - year)
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[self.end_year]
+                    / kerosene_emission_factor[year]
+                )
+
+                # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
+                future_scc_growth = (
+                    exogenous_carbon_price_trajectory[self.end_year]
+                    / exogenous_carbon_price_trajectory[self.end_year - 1]
+                )
+
+                generic_discounted_cumul_em += (
+                    emissions_reduction[year]
+                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        exogenous_carbon_price_trajectory[self.end_year]
+                        / exogenous_carbon_price_trajectory[year]
+                        * (future_scc_growth) ** (i - self.end_year)
+                    )
+                    / (1 + discount_rate) ** (i - year)
+                )
+
+        return (
+            discounted_cumul_cost / cumul_em,
+            discounted_cumul_cost / generic_discounted_cumul_em,
+        )
+
+
+class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
+    def __init__(
+        self, name="fleet_top_down_carbon_abatement_cost", fleet_model=None, *args, **kwargs
+    ):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        energy_per_ask_mean_without_operations: pd.Series,
+        ask: pd.Series,
+        doc_non_energy_per_ask_mean: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        lhv_kerosene: float,
+        density_kerosene: float,
+        social_discount_rate: float,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        ### WARNING => VERY SIMPLIFIED CARBON ABATEMENT COST MODEL; IT IS NOT CONSISTENT WITH FULL IMPLEMENTATION PRESENTED WITH THE TOP-DOWN MODEL
+        # IT IS A TEMPORARY SOLUTION TO ENABLE PLOTTING MACC EVEN WHEN THE TOP DOWN MDOEL IS USED.
+        # In particular, only mean costs are used and not representative of aircraft entering in service in a given year.
+        # only a mean value is computed (no split between H2/Electric/Dropin)
+
+        aircraft_reference_energy = energy_per_ask_mean_without_operations.loc[
+            self.prospection_start_year - 1
+        ]
+
+        category_reference_doc_ne = doc_non_energy_per_ask_mean.loc[self.prospection_start_year - 1]
+
+        aircraft_energy_delta_mean = (
+            energy_per_ask_mean_without_operations - aircraft_reference_energy
+        )
+
+
+        aircraft_doc_ne_delta_mean = (doc_non_energy_per_ask_mean - category_reference_doc_ne)
+
+        # Assumption: 100% kerosene for cost calculation. Effect of SAFs/Hydrogen is accounted for downwards in
+        # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
+        # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
+
+        extra_cost_fuel_mean = (
+            aircraft_energy_delta_mean * kerosene_market_price / (lhv_kerosene * density_kerosene)
+        )
+
+
+        extra_emissions_dropin = (
+            -aircraft_energy_delta_mean * kerosene_emission_factor
+        ) / 1000000
+
+
+        aircraft_carbon_abatement_cost_passenger_mean = (
+            extra_cost_fuel_mean + aircraft_doc_ne_delta_mean
+        ) / extra_emissions_dropin  # €/ton
+
+
+        self.df.loc[:, "aircraft_carbon_abatement_cost_passenger_mean"] = (
+            aircraft_carbon_abatement_cost_passenger_mean
+        )
+
+        aircraft_life = 25
+
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            scac, scac_prime = self._get_discounted_vals(
+                k,
+                social_discount_rate,
+                aircraft_life,
+                aircraft_doc_ne_delta_mean,
+                extra_cost_fuel_mean,
+                kerosene_market_price,
+                kerosene_emission_factor,
+                extra_emissions_dropin,
+                exogenous_carbon_price_trajectory,
+            )
+
+            self.df.loc[k, "aircraft_specific_carbon_abatement_cost_passenger_mean"] = scac
+            self.df.loc[k, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"] = scac_prime
+
+
+        aircraft_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_specific_carbon_abatement_cost_passenger_mean']
+        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_generic_specific_carbon_abatement_cost_passenger_mean']
+
+
+        aircraft_carbon_abatement_volume_passenger_mean = -(
+            ask * aircraft_energy_delta_mean * kerosene_emission_factor / 1000000
+        )
+
+
+        self.df.loc[:, "aircraft_carbon_abatement_volume_passenger_mean"] = (
+            aircraft_carbon_abatement_volume_passenger_mean
+        )
+
+        return (
+            aircraft_carbon_abatement_cost_passenger_mean,
+            aircraft_generic_specific_carbon_abatement_cost_passenger_mean,
+            aircraft_specific_carbon_abatement_cost_passenger_mean,
+            aircraft_carbon_abatement_volume_passenger_mean,
+        )
+
+    def _get_discounted_vals(
+        self,
+        year,
+        discount_rate,
+        aircraft_life,
+        extra_cost_non_fuel,
+        extra_cost_fuel,
+        kerosene_market_price,
+        kerosene_emission_factor,
+        emissions_reduction,
+        exogenous_carbon_price_trajectory,
+    ):
+        discounted_cumul_cost = 0
+        cumul_em = 0
+        generic_discounted_cumul_em = 0
+        for i in range(year, year + int(aircraft_life)):
+            if i < (self.end_year + 1):
+                discounted_cumul_cost += (
+                    extra_cost_non_fuel[year]
+                    + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
+                ) / (1 + discount_rate) ** (i - year)
+                cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[i]
+                    / kerosene_emission_factor[year]
+                )
+
+                # discounting emissions for non-hotelling scc
+                generic_discounted_cumul_em += (
+                    emissions_reduction[year]
+                    * kerosene_emission_factor[i]
+                    / kerosene_emission_factor[year]
+                    * exogenous_carbon_price_trajectory[i]
+                    / exogenous_carbon_price_trajectory[year]
+                    / (1 + discount_rate) ** (i - year)
+                )
+            else:
+                discounted_cumul_cost += (
+                    extra_cost_non_fuel[year]
                     + extra_cost_fuel[year]
                     * kerosene_market_price[self.end_year]
                     / kerosene_market_price[year]

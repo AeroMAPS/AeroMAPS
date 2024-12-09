@@ -79,8 +79,7 @@ LOGGER = logging.getLogger(__name__)
 
 N_CPUS = cpu_count()
 
-
-class AutoPyDisciplineCustom(Discipline):
+class AutoPyDisciplineBis(Discipline):
     """Wrap a Python function into a discipline.
 
     A simplified and straightforward way of integrating a discipline
@@ -452,8 +451,11 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
+        # TODO: Explore possibility to use json grammar
+        self.default_grammar_type = Discipline.GrammarType.SIMPLE
+
         super(AeroMAPSModelWrapper, self).__init__(
-            py_func=self.model.compute, grammar_type=Discipline.GrammarType.SIMPLE
+            py_func=self.model.compute,
         )
 
         self.name = model.__class__.__name__
@@ -461,6 +463,8 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         self.update_defaults()
 
     def update_defaults(self):
-        for input in self.get_input_data_names():
+        for input in self.get_input_data():
+            # if self.model.parameters is None:
+            #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)

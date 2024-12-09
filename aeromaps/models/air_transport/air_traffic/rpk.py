@@ -20,7 +20,7 @@ class RPK(AeroMAPSModel):
         long_range_rpk_share_2019: float,
         covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year: Number,
+        covid_end_year_passenger: Number,
         covid_end_year_reference_rpk_ratio: float,
         cagr_passenger_short_range_reference_periods: list,
         cagr_passenger_short_range_reference_periods_values: list,
@@ -51,13 +51,13 @@ class RPK(AeroMAPSModel):
     ]:
         """RPK calculation."""
         # Initialization based on 2019 share
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_medium_range"] = medium_range_rpk_share_2019 / 100 * rpk_init.loc[k]
             self.df.loc[k, "rpk_long_range"] = long_range_rpk_share_2019 / 100 * rpk_init.loc[k]
 
         # Covid functions
-        reference_years = [covid_start_year, covid_end_year]
+        reference_years = [covid_start_year, covid_end_year_passenger]
         reference_values_covid = [
             1 - covid_rpk_drop_start_year / 100,
             covid_end_year_reference_rpk_ratio / 100,
@@ -97,31 +97,31 @@ class RPK(AeroMAPSModel):
         )
 
         # Short range
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(covid_start_year, covid_end_year_passenger + 1):
             self.df.loc[k, "rpk_short_range"] = self.df.loc[
                 covid_start_year - 1, "rpk_short_range"
             ] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_short_range"] = self.df.loc[k - 1, "rpk_short_range"] * (
                 1 + self.df.loc[k, "annual_growth_rate_passenger_short_range"] / 100
             )
 
         # Medium range
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(covid_start_year, covid_end_year_passenger + 1):
             self.df.loc[k, "rpk_medium_range"] = self.df.loc[
                 covid_start_year - 1, "rpk_medium_range"
             ] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_medium_range"] = self.df.loc[k - 1, "rpk_medium_range"] * (
                 1 + self.df.loc[k, "annual_growth_rate_passenger_medium_range"] / 100
             )
 
         # Long range
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(covid_start_year, covid_end_year_passenger + 1):
             self.df.loc[k, "rpk_long_range"] = self.df.loc[
                 covid_start_year - 1, "rpk_long_range"
             ] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_long_range"] = self.df.loc[k - 1, "rpk_long_range"] * (
                 1 + self.df.loc[k, "annual_growth_rate_passenger_long_range"] / 100
             )
@@ -139,7 +139,7 @@ class RPK(AeroMAPSModel):
         self.df.loc[:, "rpk_long_range"] = rpk_long_range
 
         # Total
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk"] = rpk_init.loc[k]
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "rpk"] = (
@@ -150,19 +150,19 @@ class RPK(AeroMAPSModel):
         rpk = self.df["rpk"]
 
         # Annual growth rate
-        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
+        for k in range(self.historic_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
                 self.df.loc[k, "rpk_short_range"] / self.df.loc[k - 1, "rpk_short_range"] - 1
             ) * 100
-        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
-            self.df.loc[k, "annual_growth_rate_passenger_medium_range"] = (
+        for k in range(self.historic_start_year + 1, self.prospection_start_year):
+            self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
                 self.df.loc[k, "rpk_medium_range"] / self.df.loc[k - 1, "rpk_medium_range"] - 1
             ) * 100
-        for k in range(self.other_data_start_year + 1, self.prospection_start_year):
+        for k in range(self.historic_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_passenger_long_range"] = (
                 self.df.loc[k, "rpk_long_range"] / self.df.loc[k - 1, "rpk_long_range"] - 1
             ) * 100
-        for k in range(self.other_data_start_year + 1, self.end_year + 1):
+        for k in range(self.historic_start_year + 1, self.end_year + 1):
             self.df.loc[k, "annual_growth_rate_passenger"] = (
                 self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
             ) * 100
@@ -273,27 +273,27 @@ class RPKReference(AeroMAPSModel):
     def compute(
         self,
         rpk: pd.Series,
-        reference_cagr_aviation_reference_periods: list,
-        reference_cagr_aviation_reference_periods_values: list,
+        reference_cagr_passenger_reference_periods: list,
+        reference_cagr_passenger_reference_periods_values: list,
         covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year: Number,
+        covid_end_year_passenger: Number,
         covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """RPK reference calculation."""
 
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_reference"] = rpk.loc[k]
 
         covid_start_year = int(covid_start_year)
         covid_rpk_drop_start_year = int(covid_rpk_drop_start_year)
-        covid_end_year = int(covid_end_year)
+        covid_end_year_passenger = int(covid_end_year_passenger)
         covid_end_year_reference_rpk_ratio = int(covid_end_year_reference_rpk_ratio)
 
         self.df.loc[covid_start_year - 1, "rpk_reference"] = rpk.loc[covid_start_year - 1]
 
         # Covid functions
-        reference_years = [covid_start_year, covid_end_year]
+        reference_years = [covid_start_year, covid_end_year_passenger]
         reference_values_covid = [
             1 - covid_rpk_drop_start_year / 100,
             covid_end_year_reference_rpk_ratio / 100,
@@ -303,8 +303,8 @@ class RPKReference(AeroMAPSModel):
         # CAGR function
         reference_annual_growth_rate_aviation = aeromaps_leveling_function(
             self,
-            reference_cagr_aviation_reference_periods,
-            reference_cagr_aviation_reference_periods_values,
+            reference_cagr_passenger_reference_periods,
+            reference_cagr_passenger_reference_periods_values,
             model_name=self.name,
         )
         self.df.loc[:, "reference_annual_growth_rate_aviation"] = (
@@ -312,11 +312,11 @@ class RPKReference(AeroMAPSModel):
         )
 
         # Main
-        for k in range(covid_start_year, covid_end_year + 1):
+        for k in range(covid_start_year, covid_end_year_passenger + 1):
             self.df.loc[k, "rpk_reference"] = self.df.loc[
                 covid_start_year - 1, "rpk_reference"
             ] * covid_function(k)
-        for k in range(covid_end_year + 1, self.end_year + 1):
+        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_reference"] = self.df.loc[k - 1, "rpk_reference"] * (
                 1 + self.df.loc[k, "reference_annual_growth_rate_aviation"] / 100
             )
@@ -366,7 +366,7 @@ class RPKMeasures(AeroMAPSModel):
             rpk_long_range_measures_duration / 2
         )
 
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range_measures_impact"] = 1
             self.df.loc[k, "rpk_medium_range_measures_impact"] = 1
             self.df.loc[k, "rpk_long_range_measures_impact"] = 1

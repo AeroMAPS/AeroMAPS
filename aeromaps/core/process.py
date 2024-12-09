@@ -6,7 +6,7 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 
-from gemseo import generate_n2_plot, create_scenario
+from gemseo import generate_n2_plot, create_scenario, create_mda
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
 from gemseo.mda.gauss_seidel import MDAGaussSeidel
@@ -88,6 +88,9 @@ class AeroMAPSProcess(object):
         # Initialize the data structures
         self._initialize_data()
 
+        # TODO: check if we need to know inputs before computing
+        # self._update_variables()
+
     def setup(self):
         # Initialize the default inputs of disciplines
         self._set_inputs()
@@ -145,17 +148,15 @@ class AeroMAPSProcess(object):
         )
 
     def compute(self):
-        import time
-
-        # Start the timer
-        start_time = time.time()
+        # import time
+        #
+        # # Start the timer
+        # start_time = time.time()
 
         self._pre_compute()
-
         # Time for _pre_compute
-        pre_compute_time = time.time()
-        print(f"Pre-compute time: {pre_compute_time - start_time} seconds")
-
+        # pre_compute_time = time.time()
+        # print(f"Pre-compute time: {pre_compute_time - start_time} seconds")
         if self.scenario is not None:
             if self.scenario_doe is not None:
                 print("Running DOE")
@@ -166,18 +167,17 @@ class AeroMAPSProcess(object):
             else:
                 print("Running MDO")
                 self.scenario.execute(input_data=self.scenario.options)
-        else:
             print("Running MDA")
             self.mda_chain.execute(input_data=self.input_data)
 
-        # Time for compute
-        compute_time = time.time()
-        print(f"Compute time: {compute_time - pre_compute_time} seconds")
+        # # Time for compute
+        # compute_time = time.time()
+        # print(f"Compute time: {compute_time - pre_compute_time} seconds")
 
         self._post_compute()
-        # Time for _post_compute
-        post_compute_time = time.time()
-        print(f"Post-compute time: {post_compute_time - compute_time} seconds")
+        # # Time for _post_compute
+        # post_compute_time = time.time()
+        # print(f"Post-compute time: {post_compute_time - compute_time} seconds")
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -198,6 +198,10 @@ class AeroMAPSProcess(object):
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
+
+    def update_parameters(self):
+        for name, model in self.models.items():
+            model.parameters = self.parameters
 
     def list_available_plots(self):
         return list(available_plots.keys())
@@ -342,20 +346,20 @@ class AeroMAPSProcess(object):
         # Years
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
-            range(self.parameters.climate_data_start_year, self.parameters.end_year + 1)
+            range(self.parameters.historic_start_year, self.parameters.end_year + 1)
         )
         self.data["years"]["climate_full_years"] = list(
-            range(self.parameters.climate_data_start_year, self.parameters.end_year + 1)
+            range(self.parameters.climate_historic_start_year, self.parameters.end_year + 1)
         )
         self.data["years"]["historic_years"] = list(
             range(
-                self.parameters.other_data_start_year,
+                self.parameters.historic_start_year,
                 self.parameters.prospection_start_year,
             )
         )
         self.data["years"]["climate_historic_years"] = list(
             range(
-                self.parameters.climate_data_start_year,
+                self.parameters.climate_historic_start_year,
                 self.parameters.prospection_start_year,
             )
         )
@@ -385,9 +389,7 @@ class AeroMAPSProcess(object):
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
             if isinstance(value, pd.Series):
-                new_index = range(
-                    self.parameters.other_data_start_year, self.parameters.end_year + 1
-                )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
@@ -439,16 +441,14 @@ class AeroMAPSProcess(object):
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
             if not isinstance(field_value, (float, int, list)):
-                new_size = self.parameters.end_year - self.parameters.other_data_start_year + 1
+                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
                     (0, new_size - field_value.size),
                     mode="constant",
                     constant_values=np.nan,
                 )
-                new_index = range(
-                    self.parameters.other_data_start_year, self.parameters.end_year + 1
-                )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 
@@ -461,7 +461,7 @@ class AeroMAPSProcess(object):
 
     def _update_data_from_model(self):
         # Inputs
-        all_inputs = self.mda_chain.get_input_data_names()
+        all_inputs = self.mda_chain.get_input_data()
 
         for name in all_inputs:
             try:
@@ -474,7 +474,7 @@ class AeroMAPSProcess(object):
                         if not np.isnan(val):
                             new_values.append(val)
                     self.data["vector_inputs"][name] = new_values
-            except:
+            except AttributeError:
                 pass
 
         # Outputs

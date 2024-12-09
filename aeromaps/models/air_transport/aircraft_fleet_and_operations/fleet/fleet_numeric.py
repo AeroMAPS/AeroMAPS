@@ -23,7 +23,7 @@ class FleetEvolution(AeroMAPSModel):
         rpk_medium_range: pd.Series,
         rpk_long_range: pd.Series,
         covid_start_year: Number,
-        covid_end_year: Number,
+        covid_end_year_passenger: Number,
     ) -> Tuple[dict, dict, dict, dict, dict]:
         ask_aircraft_value_dict = {}
         rpk_aircraft_value_dict = {}
@@ -45,12 +45,12 @@ class FleetEvolution(AeroMAPSModel):
             # Caculation of virtual fleet demand assuming that manufacturers/airlines adapt their production to be ready for traffic catchup after covid.
             category_ask_covid_levelling = category_ask.copy()
             category_ask_pre_covid = category_ask.loc[covid_start_year - 1]
-            category_ask_post_covid = category_ask.loc[covid_end_year]
+            category_ask_post_covid = category_ask.loc[covid_end_year_passenger]
 
-            for year in range(covid_start_year, covid_end_year + 1):
+            for year in range(covid_start_year, covid_end_year_passenger + 1):
                 category_ask_covid_levelling.loc[year] = (
                     (category_ask_pre_covid - category_ask_post_covid) / (covid_start_year - 1)
-                    - (covid_end_year)
+                    - (covid_end_year_passenger)
                 ) * (year - covid_start_year - 1) + category_ask_pre_covid
 
             # Calculating values of interest for each aircraft
