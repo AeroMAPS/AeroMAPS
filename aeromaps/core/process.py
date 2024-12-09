@@ -169,7 +169,6 @@ class AeroMAPSProcess(object):
                 self.scenario.execute(input_data=self.scenario.options)
         else:
             print("Running MDA")
-            print(self.input_data)
             self.mda_chain.execute(input_data=self.input_data)
 
         # # Time for compute
