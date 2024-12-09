@@ -128,7 +128,7 @@ def create_partitioning(file, path=""):
 
     # TODO move historic and prospection start year out of custom input file
 
-    other_data_start_year_partitioned = world_data_dict["other_data_start_year"]
+    historic_start_year_partitioned = world_data_dict["historic_start_year"]
     prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
 
     # Generation of the JSON file
@@ -148,7 +148,7 @@ def create_partitioning(file, path=""):
         "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
         "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
         "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
-        "other_data_start_year": other_data_start_year_partitioned,
+        "historic_start_year": historic_start_year_partitioned,
         "prospection_start_year": prospection_start_year_partitioned,
     }
     partitioned_inputs_path = pth.join(path, "partitioned_inputs.json")

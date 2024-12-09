@@ -19,17 +19,17 @@ class AeroMAPSModel(object):
             self._initialize_df()
 
     def _initialize_df(self):
-        self.climate_data_start_year = self.parameters.climate_data_start_year
-        self.other_data_start_year = self.parameters.other_data_start_year
+        self.climate_historic_start_year = self.parameters.climate_historic_start_year
+        self.historic_start_year = self.parameters.historic_start_year
         self.prospection_start_year = self.parameters.prospection_start_year
-        self.start_year = self.other_data_start_year
         self.end_year = self.parameters.end_year
-
-        self.df: pd.DataFrame = pd.DataFrame(index=range(self.start_year, self.end_year + 1))
-        self.df_climate: pd.DataFrame = pd.DataFrame(
-            index=range(self.climate_data_start_year, self.end_year + 1)
+        self.df: pd.DataFrame = pd.DataFrame(
+            index=range(self.historic_start_year, self.end_year + 1)
         )
-        self.years = np.linspace(self.start_year, self.end_year, len(self.df.index))
+        self.df_climate: pd.DataFrame = pd.DataFrame(
+            index=range(self.climate_historic_start_year, self.end_year + 1)
+        )
+        self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
 def aeromaps_interpolation_function(
@@ -112,7 +112,7 @@ def aeromaps_leveling_function(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsLevelingFunction:"
+                + " - Warning on aeromaps_leveling_function:"
                 + " The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.",
             )
             for i in range(0, len(reference_periods) - 1):
@@ -126,7 +126,7 @@ def aeromaps_leveling_function(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsLevelingFunction:"
+                + " - Warning on aeromaps_leveling_function:"
                 + " The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.",
             )
             for i in range(0, len(reference_periods) - 1):
@@ -191,8 +191,8 @@ def GWPStarEquivalentEmissionsFunction(
         ) / gwpstar_s_coefficient
 
     # Main
-    for k in range(self.climate_data_start_year, self.end_year + 1):
-        if k - self.climate_data_start_year >= gwpstar_variation_duration:
+    for k in range(self.climate_historic_start_year, self.end_year + 1):
+        if k - self.climate_historic_start_year >= gwpstar_variation_duration:
             self.df_climate.loc[k, "emissions_erf_variation"] = (
                 emissions_erf.loc[k] - emissions_erf.loc[k - gwpstar_variation_duration]
             ) / gwpstar_variation_duration
@@ -201,7 +201,7 @@ def GWPStarEquivalentEmissionsFunction(
                 emissions_erf.loc[k] / gwpstar_variation_duration
             )
 
-    for k in range(self.climate_data_start_year, self.end_year + 1):
+    for k in range(self.climate_historic_start_year, self.end_year + 1):
         self.df_climate.loc[k, "emissions_equivalent_emissions"] = (
             g_coefficient
             * (1 - gwpstar_s_coefficient)
