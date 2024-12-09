@@ -61,7 +61,7 @@ def aeromaps_interpolation_function(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
+                + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
             )
             for k in range(self.prospection_start_year, self.end_year + 1):
@@ -74,7 +74,7 @@ def aeromaps_interpolation_function(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
+                + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
             )
             for k in range(self.prospection_start_year, reference_years[-1] + 1):

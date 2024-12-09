@@ -3,7 +3,7 @@ from numbers import Number
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class OperationsLogistic(AeroMAPSModel):
@@ -50,7 +50,7 @@ class OperationsInterpolation(AeroMAPSModel):
     ) -> pd.Series:
         """Operations gain for efficiency calculation."""
 
-        operations_gain_prospective = AeromapsInterpolationFunction(
+        operations_gain_prospective = aeromaps_interpolation_function(
             self,
             operations_gain_reference_years,
             operations_gain_reference_years_values,
