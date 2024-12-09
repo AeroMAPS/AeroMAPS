@@ -463,8 +463,8 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         self.update_defaults()
 
     def update_defaults(self):
-        for input in self.get_input_data():
+        for input in self.input_names:
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
-                self.default_inputs[input] = getattr(self.model.parameters, input)
+                self.default_input_data[input] = getattr(self.model.parameters, input)

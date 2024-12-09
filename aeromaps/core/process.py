@@ -113,10 +113,10 @@ class AeroMAPSProcess(object):
         # Create GEMSEO process
         self.scenario = create_scenario(
             disciplines=self.mda_chain,
-            formulation_name=self.gemseo_settings["formulation"],
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
+            formulation_name=self.gemseo_settings["formulation"],
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
         )
@@ -148,15 +148,8 @@ class AeroMAPSProcess(object):
         )
 
     def compute(self):
-        # import time
-        #
-        # # Start the timer
-        # start_time = time.time()
 
         self._pre_compute()
-        # Time for _pre_compute
-        # pre_compute_time = time.time()
-        # print(f"Pre-compute time: {pre_compute_time - start_time} seconds")
         if self.scenario is not None:
             if self.scenario_doe is not None:
                 print("Running DOE")
@@ -166,19 +159,15 @@ class AeroMAPSProcess(object):
                 )
             else:
                 print("Running MDO")
-                self.scenario.execute(input_data=self.scenario.options)
+                self.scenario.execute(self.gemseo_settings['algorithm'])
         else:
             print("Running MDA")
             self.mda_chain.execute(input_data=self.input_data)
 
-        # # Time for compute
-        # compute_time = time.time()
-        # print(f"Compute time: {compute_time - pre_compute_time} seconds")
+
 
         self._post_compute()
-        # # Time for _post_compute
-        # post_compute_time = time.time()
-        # print(f"Post-compute time: {post_compute_time - compute_time} seconds")
+
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -246,6 +235,7 @@ class AeroMAPSProcess(object):
         # Mandatory settings
         self.gemseo_settings["design_space"] = None
         self.gemseo_settings["objective_name"] = None
+        self.gemseo_settings["algorithm"] = None
 
         # Optional settings
         self.gemseo_settings["formulation"] = "MDF"
@@ -253,6 +243,7 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
+
 
     def _pre_compute(self):
         if self.fleet is not None:
