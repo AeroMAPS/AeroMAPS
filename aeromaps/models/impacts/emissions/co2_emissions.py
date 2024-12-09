@@ -86,7 +86,7 @@ class KayaFactors(AeroMAPSModel):
             + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
 
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             energy_per_ask_mean_without_operations.loc[k] = (
                 energy_consumption.loc[k] / ask.loc[k] * (1 - freight_energy_share_2019 / 100)
             )
@@ -171,7 +171,7 @@ class CO2Emissions(AeroMAPSModel):
         """CO2 emissions calculation."""
         # To be improved
 
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "co2_emissions_short_range"] = (
                 rpk_short_range.loc[k]
                 / (load_factor.loc[k] / 100)
@@ -337,7 +337,7 @@ class CO2Emissions(AeroMAPSModel):
             )
 
         # Passenger
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "co2_emissions_passenger"] = (
                 self.df.loc[k, "co2_emissions_short_range"]
                 + self.df.loc[k, "co2_emissions_medium_range"]
@@ -346,11 +346,11 @@ class CO2Emissions(AeroMAPSModel):
 
         # Total
         historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
-        for k in range(self.climate_data_start_year, self.other_data_start_year):
+        for k in range(self.climate_data_start_year, self.historic_start_year):
             self.df_climate.loc[k, "co2_emissions"] = historical_co2_emissions_for_temperature[
                 k - self.climate_data_start_year
             ]
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df_climate.loc[k, "co2_emissions"] = (
                 self.df.loc[k, "co2_emissions_passenger"] + self.df.loc[k, "co2_emissions_freight"]
             )

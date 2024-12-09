@@ -77,7 +77,7 @@ class NonRecurringCosts(AeroMAPSModel):
         # Keep only teh indexes that are within the scope of scenario range to
         # avoid adding out of range nrc (for old aircraft for instance)
         filtered_nrc_distributed = nrc_distributed[
-            (nrc_distributed.index >= self.other_data_start_year)
+            (nrc_distributed.index >= self.historic_start_year)
             & (nrc_distributed.index <= self.end_year)
         ]
 

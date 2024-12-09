@@ -29,7 +29,7 @@ class LevelCarbonOffset(AeroMAPSModel):
             carbon_offset_baseline_level_vs_2019
         )
 
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "level_carbon_offset"] = 0.0
 
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -71,11 +71,11 @@ class ResidualCarbonOffset(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "residual_carbon_offset_share"] = residual_carbon_offset_share_prospective
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "residual_carbon_offset_share"] = 0.0
         residual_carbon_offset_share = self.df["residual_carbon_offset_share"]
 
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "residual_carbon_offset"] = (
                 self.df.loc[k, "residual_carbon_offset_share"]
                 / 100

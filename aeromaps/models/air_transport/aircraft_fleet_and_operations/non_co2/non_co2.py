@@ -23,7 +23,7 @@ class OperationsContrailsSimple(AeroMAPSModel):
         transition_year = operations_contrails_start_year + operations_contrails_duration / 2
         operations_contrails_limit = 0.02 * operations_contrails_final_gain
         operations_parameter = np.log(100 / 2 - 1) / (operations_contrails_duration / 2)
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "operations_contrails_gain"] = 0
             self.df.loc[k, "operations_contrails_overconsumption"] = 0
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -112,7 +112,7 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
     ) -> pd.Series:
         """Fuel effect on contrails for ERF calculation."""
 
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "fuel_effect_correction_contrails"] = 1
 
         fuel_effect_correction_contrails = self.df["fuel_effect_correction_contrails"]

@@ -24,17 +24,17 @@ class ASK(AeroMAPSModel):
         self.df.loc[:, "ask"] = ask
 
         # Short range
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "ask_short_range"] = rpk_short_range.loc[k] / (load_factor.loc[k] / 100)
 
         # Medium range
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "ask_medium_range"] = rpk_medium_range.loc[k] / (
                 load_factor.loc[k] / 100
             )
 
         # Long range
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "ask_long_range"] = rpk_long_range.loc[k] / (load_factor.loc[k] / 100)
 
         ask_short_range = self.df["ask_short_range"]

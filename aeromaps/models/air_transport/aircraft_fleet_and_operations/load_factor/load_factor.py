@@ -15,7 +15,7 @@ class LoadFactor(AeroMAPSModel):
         ask_init: pd.Series,
     ) -> pd.Series:
         """Load factor calculation."""
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "load_factor"] = rpk.loc[k] / ask_init.loc[k] * 100
 
         # Initialization for load factor

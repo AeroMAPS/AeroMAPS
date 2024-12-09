@@ -26,7 +26,7 @@ class PassengerAircraftOperationalProfit(AeroMAPSModel):
             model_name=self.name,
         )
         self.df.loc[:, "operational_profit_per_ask"] = operational_profit_prospective
-        for k in range(self.other_data_start_year, self.prospection_start_year):
+        for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "operational_profit_per_ask"] = self.df.loc[
                 self.prospection_start_year, "operational_profit_per_ask"
             ]

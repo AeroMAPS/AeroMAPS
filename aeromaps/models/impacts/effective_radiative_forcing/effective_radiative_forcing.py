@@ -137,7 +137,7 @@ class ERFOthers(AeroMAPSModel):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k] * erf_coefficient_contrails
             )
-        for k in range(self.other_data_start_year, self.end_year + 1):
+        for k in range(self.historic_start_year, self.end_year + 1):
             self.df_climate.loc[k, "contrails_erf"] = (
                 total_aircraft_distance.loc[k]
                 * erf_coefficient_contrails

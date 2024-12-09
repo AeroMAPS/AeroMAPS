@@ -98,7 +98,7 @@ class AeroMAPSProcess(object):
         # # Create MDA chain
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            grammar_type=Discipline.GrammarType.SIMPLE,
+            # grammar_type=Discipline.GrammarType.SIMPLE,
             tolerance=1e-6,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
@@ -113,12 +113,12 @@ class AeroMAPSProcess(object):
         # Create GEMSEO process
         self.scenario = create_scenario(
             disciplines=self.mda_chain,
-            formulation=self.gemseo_settings["formulation"],
+            formulation_name=self.gemseo_settings["formulation"],
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
-            grammar_type=self.gemseo_settings["grammar_type"],
-            input_data=self.input_data,
+            # grammar_type=self.gemseo_settings["grammar_type"],
+            # input_data=self.input_data,
         )
 
     def create_gemseo_doe(self):
@@ -134,17 +134,17 @@ class AeroMAPSProcess(object):
             self.scenario,
             input_names=self.gemseo_settings["doe_input_names"],
             output_names=self.gemseo_settings["doe_output_names"],
-            grammar_type=self.gemseo_settings["grammar_type"],
+            # grammar_type=self.gemseo_settings["grammar_type"],
             set_x0_before_opt=True,
         )
 
         self.scenario_doe = create_scenario(
             self.adapter,
-            formulation=self.gemseo_settings["formulation"],
+            formulation_name=self.gemseo_settings["formulation"],
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type="DOE",
-            grammar_type=self.gemseo_settings["grammar_type"],
+            # grammar_type=self.gemseo_settings["grammar_type"],
         )
 
     def compute(self):
@@ -167,7 +167,9 @@ class AeroMAPSProcess(object):
             else:
                 print("Running MDO")
                 self.scenario.execute(input_data=self.scenario.options)
+        else:
             print("Running MDA")
+            print(self.input_data)
             self.mda_chain.execute(input_data=self.input_data)
 
         # # Time for compute
