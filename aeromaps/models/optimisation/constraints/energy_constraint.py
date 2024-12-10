@@ -48,7 +48,7 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
         ) / aviation_available_biomass
 
         biomass_trajectory_constraint = np.max(
-            annual_constraint.loc[self.prospection_start_year : self.end_year]
+            annual_constraint.loc[self.prospection_start_year : 2050]
         )
 
         self.float_outputs["biomass_trajectory_constraint"] = biomass_trajectory_constraint
@@ -99,7 +99,7 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
         ) / aviation_available_electricity
 
         electricity_trajectory_constraint = np.max(
-            annual_constraint.loc[self.prospection_start_year : self.end_year]
+            annual_constraint.loc[self.prospection_start_year : 2050]
         )
 
         self.float_outputs["electricity_trajectory_constraint"] = electricity_trajectory_constraint
@@ -132,7 +132,7 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
         volume_ramp_up_constraint_biofuel: float,
         rate_ramp_up_constraint_biofuel: float,
     ) -> Tuple[float, float, pd.Series, pd.Series]:
-        annual_biofuel_growth = energy_consumption_biofuel.diff().loc[2026 : self.end_year]
+        annual_biofuel_growth = energy_consumption_biofuel.diff().loc[2026 : 2050]
         annual_biofuel_growth_constraint = annual_biofuel_growth.copy()
 
         ### Max ramp up constraint for visualisation. Do no maistake with actual rampup constraint !!!
@@ -140,13 +140,13 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
         annual_biofuel_growth_constraint_viz = annual_biofuel_growth.copy()
 
         biofuel_growth_constraint_theoretical_max_viz = pd.Series(
-            index=range(self.prospection_start_year, self.end_year + 1), dtype=float
+            index=range(self.prospection_start_year, 2050 + 1), dtype=float
         )
         biofuel_growth_constraint_theoretical_max_viz.loc[2025] = energy_consumption_biofuel.loc[
             2025
         ]
 
-        for t in range(2025 + 1, self.end_year + 1):
+        for t in range(2025 + 1, 2050 + 1):
             biofuel_growth_constraint_theoretical_max_viz.loc[t] = (
                 biofuel_growth_constraint_theoretical_max_viz.loc[t - 1]
                 + max(
@@ -202,7 +202,7 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
         volume_ramp_up_constraint_electrofuel: float,
         rate_ramp_up_constraint_electrofuel: float,
     ) -> Tuple[float, float, pd.Series, pd.Series]:
-        annual_electrofuel_growth = energy_consumption_electrofuel.diff().loc[2026 : self.end_year]
+        annual_electrofuel_growth = energy_consumption_electrofuel.diff().loc[2026 : 2050]
 
         annual_electrofuel_growth_constraint = annual_electrofuel_growth.copy()
         ### Max ramp up constraint for visualisation. Do no maistake with actual rampup constraint !!!
@@ -210,13 +210,13 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
         annual_electrofuel_growth_constraint_viz = annual_electrofuel_growth.copy()
 
         electrofuel_growth_constraint_theoretical_max_viz = pd.Series(
-            index=range(self.prospection_start_year, self.end_year + 1), dtype=float
+            index=range(self.prospection_start_year, 2050 + 1), dtype=float
         )
         electrofuel_growth_constraint_theoretical_max_viz.loc[2025] = (
             energy_consumption_electrofuel.loc[2025]
         )
 
-        for t in range(2025 + 1, self.end_year + 1):
+        for t in range(2025 + 1, 2050 + 1):
             electrofuel_growth_constraint_theoretical_max_viz.loc[t] = (
                 electrofuel_growth_constraint_theoretical_max_viz.loc[t - 1]
                 + max(

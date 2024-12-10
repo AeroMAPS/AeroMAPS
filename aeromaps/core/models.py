@@ -660,3 +660,20 @@ models_optim_complex = {
     "models_cost_feedback": models_cost_feedback,
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
+
+
+models_optim_tsas_custom = {
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
+    "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+}

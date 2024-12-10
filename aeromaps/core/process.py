@@ -366,6 +366,7 @@ class AeroMAPSProcess(object):
         self._initialize_climate_historical_data()
 
     def _initialize_parameters(self):
+        #TODO: Not possible to use folders fo inputs files as in tsas with these functions --> Make generic or refactor eerything to use folders
         self.parameters = Parameters()
         # First use main parameters.json as default values
         self.parameters.read_json(file_name=default_parameters_path)
