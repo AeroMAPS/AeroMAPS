@@ -155,6 +155,22 @@ def create_partitioning(file, path=""):
     with open(partitioned_inputs_path, "w") as outfile:
         json.dump(partitioned_inputs_dict, outfile)
 
+
+    # Create a CSV file for initialisation of vector inputs.
+    # TODO: not necessary without optim, check relevance of the process?
+    vector_inputs_df = pd.DataFrame({
+        "rpk_init": rpk_init_partitioned,
+        "ask_init": ask_init_partitioned,
+        "rtk_init": rtk_init_partitioned,
+        "pax_init": pax_init_partitioned,
+        "freight_init": freight_init_partitioned,
+        "energy_consumption_init": energy_consumption_init_partitioned,
+        "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
+    }, index=range(historic_start_year_partitioned, prospection_start_year_partitioned))
+
+    vector_inputs_path = pth.join(path, "vector_inputs_partitioned.csv")
+    vector_inputs_df.to_csv(vector_inputs_path, sep=";")
+
     # Generation of a CSV file for using climate models
     climate_world_data_path = pth.join(
         climate_data.__path__[0], "temperature_historical_dataset.csv"
