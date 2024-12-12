@@ -638,8 +638,7 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
             energy_per_ask_mean_without_operations - aircraft_reference_energy
         )
 
-
-        aircraft_doc_ne_delta_mean = (doc_non_energy_per_ask_mean - category_reference_doc_ne)
+        aircraft_doc_ne_delta_mean = doc_non_energy_per_ask_mean - category_reference_doc_ne
 
         # Assumption: 100% kerosene for cost calculation. Effect of SAFs/Hydrogen is accounted for downwards in
         # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
@@ -649,16 +648,11 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
             aircraft_energy_delta_mean * kerosene_market_price / (lhv_kerosene * density_kerosene)
         )
 
-
-        extra_emissions_dropin = (
-            -aircraft_energy_delta_mean * kerosene_emission_factor
-        ) / 1000000
-
+        extra_emissions_dropin = (-aircraft_energy_delta_mean * kerosene_emission_factor) / 1000000
 
         aircraft_carbon_abatement_cost_passenger_mean = (
             extra_cost_fuel_mean + aircraft_doc_ne_delta_mean
         ) / extra_emissions_dropin  # €/ton
-
 
         self.df.loc[:, "aircraft_carbon_abatement_cost_passenger_mean"] = (
             aircraft_carbon_abatement_cost_passenger_mean
@@ -680,17 +674,20 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
             )
 
             self.df.loc[k, "aircraft_specific_carbon_abatement_cost_passenger_mean"] = scac
-            self.df.loc[k, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"] = scac_prime
+            self.df.loc[k, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"] = (
+                scac_prime
+            )
 
-
-        aircraft_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_specific_carbon_abatement_cost_passenger_mean']
-        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = self.df.loc[:,'aircraft_generic_specific_carbon_abatement_cost_passenger_mean']
-
+        aircraft_specific_carbon_abatement_cost_passenger_mean = self.df.loc[
+            :, "aircraft_specific_carbon_abatement_cost_passenger_mean"
+        ]
+        aircraft_generic_specific_carbon_abatement_cost_passenger_mean = self.df.loc[
+            :, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"
+        ]
 
         aircraft_carbon_abatement_volume_passenger_mean = -(
             ask * aircraft_energy_delta_mean * kerosene_emission_factor / 1000000
         )
-
 
         self.df.loc[:, "aircraft_carbon_abatement_volume_passenger_mean"] = (
             aircraft_carbon_abatement_volume_passenger_mean
