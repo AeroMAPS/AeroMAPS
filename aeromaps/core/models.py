@@ -12,6 +12,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_num
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost import (
     FleetCarbonAbatementCosts,
     CargoEfficiencyCarbonAbatementCosts,
+    FleetTopDownCarbonAbatementCost,
 )
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
@@ -62,7 +63,8 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.loa
 )
 from aeromaps.models.air_transport.air_traffic.ask import ASK
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations import (
-    OperationsSimple,
+    OperationsLogistic,
+    OperationsInterpolation,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2 import (
     OperationsContrailsSimple,
@@ -230,7 +232,20 @@ models_traffic = {
 
 models_efficiency_top_down = {
     "load_factor": LoadFactor("load_factor"),
-    "operations_simple": OperationsSimple("operations_simple"),
+    "operations_logistic": OperationsLogistic("operations_logistic"),
+    "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
+    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
+        "passenger_aircraft_efficiency_simple"
+    ),
+    "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
+    "energy_intensity": EnergyIntensity("energy_intensity"),
+    "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
+    "soot_emission_index": SootEmissionIndex("soot_emission_index"),
+}
+
+models_efficiency_top_down_interp = {
+    "load_factor": LoadFactor("load_factor"),
+    "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
         "passenger_aircraft_efficiency_simple"
@@ -243,7 +258,7 @@ models_efficiency_top_down = {
 
 models_efficiency_bottom_up = {
     "load_factor": LoadFactor("load_factor"),
-    "operations_simple": OperationsSimple("operations_simple"),
+    "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
@@ -530,6 +545,18 @@ models_abatements_cost = {
     "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
+    "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
+        "cargo_efficiency_carbon_abatement_cost"
+    ),
+}
+
+
+models_abatements_cost_simplified = {
+    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
+    "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
+    "fleet_top_down_carbon_abatement_cost": FleetTopDownCarbonAbatementCost(
+        "fleet_top_down_carbon_abatement_cost"
+    ),
     "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(
         "cargo_efficiency_carbon_abatement_cost"
     ),

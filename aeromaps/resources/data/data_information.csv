@@ -115,8 +115,10 @@ cagr_passenger_long_range_reference_periods;List;yr;Reference periods for the co
 cagr_passenger_long_range_reference_periods_values;List;%;Compound annual growth rate for passenger long-range market for the reference periods
 cagr_freight_reference_periods;List;yr;Reference periods for the compound annual growth rate for freight market
 cagr_freight_reference_periods_values;List;%;Compound annual growth rate for freight market for the reference periods
-reference_cagr_aviation_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for aviation
-reference_cagr_aviation_reference_periods_values;List;%;Reference compound annual growth rate for aviation for the reference periods
+reference_cagr_passenger_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for passenger market
+reference_cagr_passenger_reference_periods_values;List;%;Reference compound annual growth rate for passenger market for the reference periods
+reference_cagr_freight_reference_periods;List;yr;Reference periods for the reference compound annual growth rate for freight market
+reference_cagr_freight_reference_periods_values;List;%;Reference compound annual growth rate for freight market for the reference periods
 historic_start_year;Float;yr;Historic start year for the data
 gaseous_hydrogen_coal_ccs_emission_factor;Float;gCO2/MJ;Emission factor of gaseous hydrogen from coal pathway with without carbon capture and storage;Statistical analysis of a literature review (see resources/energy_data)
 hydrogen_coal_ccs_share_reference_years;List;yr;Reference years for the share of hydrogen production from coal pathway with carbon capture and storage
@@ -163,6 +165,8 @@ operations_contrails_start_year;Float;yr;Start year for implementing contrail op
 operations_duration;Float;yr;Duration for implementing 98% of operational improvements to reduce fuel consumption
 operations_final_gain;Float;%;Final impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
 operations_start_year;Float;yr;Start year for implementing operational improvements to reduce fuel consumption
+operations_gain_reference_years;List;-;Reference years for the operations gain
+operations_gain_reference_years_values;List;%;Operations gain for the reference years
 prospection_start_year;Float;yr;Start year for the calculation
 relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years;List;-;Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market
 relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values;List;-;Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market for the reference years
