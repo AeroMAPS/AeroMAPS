@@ -102,7 +102,7 @@ class RTKReference(AeroMAPSModel):
         covid_rtk_drop_start_year: float,
         covid_end_year_freight: int,
         covid_end_year_reference_rtk_ratio: float,
-    ) -> pd.Series:
+    ) -> Tuple[pd.Series, pd.Series]:
         """RTK reference calculation."""
 
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -124,14 +124,14 @@ class RTKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_rate_aviation = AeromapsLevelingFunction(
+        reference_annual_growth_rate_freight = AeromapsLevelingFunction(
             self,
             reference_cagr_freight_reference_periods,
             reference_cagr_freight_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[:, "reference_annual_growth_rate_aviation"] = (
-            reference_annual_growth_rate_aviation
+        self.df.loc[:, "reference_annual_growth_rate_freight"] = (
+            reference_annual_growth_rate_freight
         )
 
         # Main
@@ -141,9 +141,9 @@ class RTKReference(AeroMAPSModel):
             ] * covid_function(k)
         for k in range(covid_end_year_freight + 1, self.end_year + 1):
             self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
-                1 + self.df.loc[k, "reference_annual_growth_rate_aviation"] / 100
+                1 + self.df.loc[k, "reference_annual_growth_rate_freight"] / 100
             )
 
         rtk_reference = self.df["rtk_reference"]
 
-        return rtk_reference
+        return (rtk_reference, reference_annual_growth_rate_freight)

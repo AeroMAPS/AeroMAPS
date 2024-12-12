@@ -300,14 +300,14 @@ class RPKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_rate_aviation = AeromapsLevelingFunction(
+        reference_annual_growth_rate_passenger = AeromapsLevelingFunction(
             self,
             reference_cagr_passenger_reference_periods,
             reference_cagr_passenger_reference_periods_values,
             model_name=self.name,
         )
-        self.df.loc[:, "reference_annual_growth_rate_aviation"] = (
-            reference_annual_growth_rate_aviation
+        self.df.loc[:, "reference_annual_growth_rate_passenger"] = (
+            reference_annual_growth_rate_passenger
         )
 
         # Main
@@ -317,12 +317,12 @@ class RPKReference(AeroMAPSModel):
             ] * covid_function(k)
         for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_reference"] = self.df.loc[k - 1, "rpk_reference"] * (
-                1 + self.df.loc[k, "reference_annual_growth_rate_aviation"] / 100
+                1 + self.df.loc[k, "reference_annual_growth_rate_passenger"] / 100
             )
 
         rpk_reference = self.df["rpk_reference"]
 
-        return (rpk_reference, reference_annual_growth_rate_aviation)
+        return (rpk_reference, reference_annual_growth_rate_passenger)
 
 
 class RPKMeasures(AeroMAPSModel):
