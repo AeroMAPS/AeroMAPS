@@ -1,3 +1,10 @@
+[![image](https://img.shields.io/pypi/v/aeromaps.svg)](https://pypi.python.org/pypi/aeromaps)
+[![image](https://img.shields.io/pypi/pyversions/aeromaps.svg)](https://pypi.python.org/pypi/aeromaps)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+![Tests](https://github.com/AeroMAPS/AeroMAPS/workflows/tests/badge.svg)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD)
 
 AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport
@@ -29,7 +36,7 @@ Quick installation
 The use of the Python Package Index ([PyPI](https://pypi.org/)) is the simplest method for installing AeroMAPS.
 More details and other solutions are provided in the documentation.
 
-**Prerequisite**: AeroMAPS needs at least Python 3.8.0.
+**Prerequisite**: AeroMAPS needs at least Python 3.9.0.
 
 You can install the latest version with this command:
 

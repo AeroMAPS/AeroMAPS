@@ -4,7 +4,7 @@
 # @Software: PyCharm
 import warnings
 
-import matplotlib
+# import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -13,8 +13,9 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, Dropdown, widgets
-from matplotlib.ticker import FuncFormatter
+from ipywidgets import interact, widgets
+
+# from matplotlib.ticker import FuncFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .constants import plot_3_x, plot_3_y
@@ -28,10 +29,16 @@ class ScenarioEnergyCapitalPlot:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.create_plot()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
+            ) from e
 
     def create_plot(self):
         # mine
@@ -76,7 +83,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_ylabel("Annual Capital Investment [M€]")
         # self.ax = plt.gca()
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -145,7 +152,7 @@ class ScenarioEnergyCapitalPlot:
         self.ax.set_xlim(2020, max(self.prospective_years) - 1)
         self.ax.set_ylabel("Annual Capital Investment [M€]")
 
-        legend = self.ax.legend(
+        self.ax.legend(
             [
                 "Bio - HEFA FOG",
                 "Bio - HEFA Others",
@@ -210,6 +217,8 @@ class ScenarioEnergyExpensesPlot:
             "#8CAAB6",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -240,6 +249,8 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -275,6 +286,8 @@ class ScenarioEnergyExpensesPlot:
             "Coal $H_2$ ",
             "_nolegend_",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
+            "_nolegend_",
         ]
 
         stacks = self.annual_energy_expenses
@@ -305,6 +318,8 @@ class ScenarioEnergyExpensesPlot:
             "",
             "||",
             "",
+            "",
+            "||",
         ]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
@@ -332,7 +347,6 @@ class ScenarioEnergyExpensesPlot:
         self.fig.tight_layout()
 
     def update(self, df_data):
-
         self.df = df_data["vector_outputs"]
 
         self.ax.clear()
@@ -363,6 +377,8 @@ class ScenarioEnergyExpensesPlot:
             "#8CAAB6",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -393,6 +409,8 @@ class ScenarioEnergyExpensesPlot:
             self.df.loc[self.prospective_years, "coal_h2_carbon_tax"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -428,6 +446,8 @@ class ScenarioEnergyExpensesPlot:
             "Coal $H_2$ ",
             "_nolegend_",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
+            "_nolegend_",
         ]
 
         stacks = self.annual_energy_expenses
@@ -458,6 +478,8 @@ class ScenarioEnergyExpensesPlot:
             "",
             "||",
             "",
+            "",
+            "||",
         ]
         for stack, hatch in zip(stacks, hatches):
             stack.set_hatch(hatch)
@@ -511,6 +533,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "#0ABAFF",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -529,6 +552,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -552,6 +576,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "Coal CCS $H_2$ ",
             "Coal $H_2$ ",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
         ]
 
         self.ax.set_xlim(2020, self.years[-1])
@@ -584,6 +609,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "#0ABAFF",
             "#8CAAB6",
             "#87AE87",
+            "#7D3C98",
         ]
 
         self.annual_energy_expenses = self.ax.stackplot(
@@ -602,6 +628,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             self.df.loc[self.prospective_years, "coal_h2_total_cost"].fillna(0),
             self.df.loc[self.prospective_years, "liquefaction_h2_total_cost"].fillna(0)
             + self.df.loc[self.prospective_years, "transport_h2_total_cost"].fillna(0),
+            self.df.loc[self.prospective_years, "electricity_direct_use_total_cost"].fillna(0),
             colors=colors,
             lw=0.5,
             edgecolor="black",
@@ -625,6 +652,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
             "Coal CCS $H_2$ ",
             "Coal $H_2$ ",
             "$H_2$ liq. & transport",
+            "Direct Electricity Use",
         ]
 
         self.ax.set_xlim(2020, self.years[-1])
@@ -675,6 +703,7 @@ class ScenarioEnergyCarbonTaxPlot:
                 + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"]
             ),
             label="Scenario energy expenses incl. carbon tax",
             linestyle="--",
@@ -752,6 +781,7 @@ class ScenarioEnergyCarbonTaxPlot:
                 + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
                 + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"]
             )
         )
 
@@ -919,6 +949,14 @@ class ScenarioEnergyUnitCostPlot:
             linewidth=2,
         )
 
+        (self.line_electricity,) = self.ax.plot(
+            self.prospective_years,
+            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
+            color="#7D3C98",
+            label="Electricity",
+            linewidth=2,
+        )
+
         self.ax.grid(axis="y")
         self.ax.set_title("MFSP per pathway (kerosene: market price)")
         self.ax.set_ylabel("MFSP [€/MJ]")
@@ -998,6 +1036,10 @@ class ScenarioEnergyUnitCostPlot:
                 + self.df.loc[self.prospective_years, "liquefaction_h2_mean_mfsp_kg"]
             )
             / 119.93,
+        )
+
+        self.line_electricity.set_ydata(
+            (self.df.loc[self.prospective_years, "electricity_market_price"]) / 3.6,
         )
 
         for collection in self.ax.collections:
@@ -1193,6 +1235,18 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
             linewidth=2,
         )
 
+        (self.line_electricity,) = self.ax.plot(
+            self.prospective_years,
+            (
+                self.df.loc[self.prospective_years, "electricity_market_price"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+            )
+            / 3.6,
+            color="#7D3C98",
+            label="Electricity",
+            linewidth=2,
+        )
+
         self.ax.grid(axis="y")
         self.ax.set_title("MFSP per pathway incl. carbon tax")
         self.ax.set_ylabel("MFSP [€/MJ]")
@@ -1311,6 +1365,14 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
             / 119.93,
         )
 
+        self.line_electricity.set_ydata(
+            (
+                self.df.loc[self.prospective_years, "electricity_market_price"]
+                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax_kWh"]
+            )
+            / 3.6,
+        )
+
         for collection in self.ax.collections:
             collection.remove()
 
@@ -1392,10 +1454,16 @@ class DropInMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.create_plot()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires complex energy cost and abatement models. "
+                "Be sure to select them in the scenario settings."
+            ) from e
 
     def create_plot(self):
         # Select year at which the MACC is plotted
@@ -1934,6 +2002,30 @@ class DOCEvolutionCategory:
             linewidth=2,
         )
 
+        (self.line_sre,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_electric"],
+            linestyle="-",
+            label="Short range-battery electric",
+            linewidth=2,
+        )
+
+        (self.line_mre,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_electric"],
+            linestyle="-",
+            label="Medium range-battery electric",
+            linewidth=2,
+        )
+
+        (self.line_lre,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_electric"],
+            linestyle="-",
+            label="Long range-battery electric",
+            linewidth=2,
+        )
+
         (self.line_tot,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
@@ -1970,6 +2062,10 @@ class DOCEvolutionCategory:
             self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_dropin_fuel"]
         )
 
+        self.line_lre.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_electric"]
+        )
+
         self.line_mrh.set_ydata(
             self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_hydrogen"]
         )
@@ -1978,12 +2074,20 @@ class DOCEvolutionCategory:
             self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_dropin_fuel"]
         )
 
+        self.line_mre.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_medium_range_electric"]
+        )
+
         self.line_srh.set_ydata(
             self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_hydrogen"]
         )
 
         self.line_srdi.set_ydata(
             self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_dropin_fuel"]
+        )
+
+        self.line_sre.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_short_range_electric"]
         )
 
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
@@ -2354,21 +2458,27 @@ class AnnualMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
-        )
-        self.ax2 = self.ax.twiny()
-        self.create_plot_data()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(10, 7),
+            )
+            self.ax2 = self.ax.twiny()
+            self.create_plot_data()
+            self.plot_interact()
+
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
+            ) from e
 
     def plot_interact(self):
-
         year_widget = widgets.IntSlider(
             min=self.prospective_years[0],
             max=self.prospective_years[-1],
             step=1,
             description="Year:",
-            value=2035,
+            value=2050,
         )
 
         metric_widget = widgets.Dropdown(
@@ -2670,6 +2780,8 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
+        # custom_annotation_height_for_nice_plot = [100, 100, 130,100,100,130,150,180,100,100,100,150,200,220,300,380,380,420,600,720,800,840,10]
+
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
             y_position = min(heights_pos[i + 1], 2000)
@@ -2683,10 +2795,11 @@ class AnnualMACC:
                     (x_position, y_position),
                     xycoords="data",
                     xytext=(x_position, y_position + 50),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -2696,10 +2809,11 @@ class AnnualMACC:
                     (x_position, 0),
                     xycoords="data",
                     xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -2753,6 +2867,8 @@ class AnnualMACC:
             zorder=9,
         )
 
+        # custom_annotation_height_for_nice_plot = [15,70,120,170,220]
+
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
                 cumwidths_effective_neg[-1]
@@ -2763,10 +2879,11 @@ class AnnualMACC:
                 (x_position, 0),
                 xycoords="data",
                 xytext=(x_position, 50 + 30 * (i % 3)),
+                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                 textcoords="data",
                 arrowprops=dict(width=0.5, headwidth=0),
                 rotation=-60,
-                fontsize=7,
+                fontsize=9,
                 ha="right",
                 va="bottom",
             )
@@ -2823,7 +2940,11 @@ class AnnualMACC:
 
         self.ax.add_artist(
             self.ax.legend(
-                handles=legend_patches_1, fontsize=8, title="Type of lever", loc="upper left"
+                handles=legend_patches_1,
+                fontsize=9,
+                title="Type of lever",
+                loc="upper left",
+                bbox_to_anchor=(60 / self.ax.figure.bbox.width, 1),
             )
         )
 
@@ -2833,7 +2954,7 @@ class AnnualMACC:
         )
         self.ax.set_ylim(
             max(-300, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 230),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 300),
         )
 
         # Add abatement and emission zones
@@ -2856,22 +2977,22 @@ class AnnualMACC:
 
         self.ax.text(
             -1,
-            self.ax.get_ylim()[1] / 3.5,
+            self.ax.get_ylim()[1] / 2.8,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
         self.ax.text(
             5,
-            self.ax.get_ylim()[1] / 3.5,
+            self.ax.get_ylim()[1] / 2.8,
             "Carbon abatement",
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
 
@@ -2907,26 +3028,32 @@ class CumulativeMACC:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
-        )
-        self.ax2 = self.ax.twiny()
-        self.create_plot_data()
-        self.update()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(10, 7),
+            )
+            self.ax2 = self.ax.twiny()
+            self.create_plot_data()
+            self.update()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
+            ) from e
 
     def create_plot_data(self):
         social_discount_rate = self.float_inputs["social_discount_rate"]
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
-        macc_dict = {}
+        # macc_dict = {}
 
         name_list = []
         cumvol_list = []
         cumcost_list = []
         discounted_cumcost_list = []
-        undiscounted_cac_list = []
-        discounted_cac_list = []
+        # undiscounted_cac_list = []
+        # discounted_cac_list = []
 
         colors_list = []
 
@@ -3325,6 +3452,9 @@ class CumulativeMACC:
             zorder=10,  # ensure top level
         )
 
+        # custom_annotation_height_for_nice_plot = [100, 80, 80, 80, 80, 80, 80, 80, 20, 20, 50, 100, 120, 140, 170, 200,
+        #                                           180, 180, 250, 300, 350, 400]
+
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
             y_position = min(heights_pos[i + 1], 2000)
@@ -3338,10 +3468,11 @@ class CumulativeMACC:
                     (x_position, y_position),
                     xycoords="data",
                     xytext=(x_position, y_position + 50),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
+                    arrowprops=dict(width=0.3, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -3351,10 +3482,11 @@ class CumulativeMACC:
                     (x_position, 0),
                     xycoords="data",
                     xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
+                    arrowprops=dict(width=0.3, headwidth=0),
                     rotation=-60,
-                    fontsize=7,
+                    fontsize=9,
                     ha="right",
                     va="bottom",
                 )
@@ -3408,6 +3540,8 @@ class CumulativeMACC:
             zorder=9,
         )
 
+        # custom_annotation_height_for_nice_plot = [20,45,70,95,120]
+
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
                 cumwidths_effective_neg[-1]
@@ -3417,11 +3551,12 @@ class CumulativeMACC:
                 f"{names_neg[i]}",
                 (x_position, 0),
                 xycoords="data",
+                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                 xytext=(x_position, 50 + 30 * (i % 3)),
                 textcoords="data",
-                arrowprops=dict(width=0.5, headwidth=0),
+                arrowprops=dict(width=0.3, headwidth=0),
                 rotation=-60,
-                fontsize=7,
+                fontsize=9,
                 ha="right",
                 va="bottom",
             )
@@ -3470,10 +3605,15 @@ class CumulativeMACC:
             mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
         ]
 
-        self.ax.legend(handles=legend_patches_1, title="Type of lever", loc="upper left")
+        self.ax.legend(
+            handles=legend_patches_1,
+            title="Type of lever",
+            loc="upper left",
+            bbox_to_anchor=(90 / self.ax.figure.bbox.width, 1),
+        )
 
         self.ax.set_xlim(
-            cumwidths_effective_neg[-1] - 1000,
+            cumwidths_effective_neg[-1] - 1500,
             cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 500,
         )
         self.ax.set_ylim(
@@ -3500,33 +3640,33 @@ class CumulativeMACC:
         )
 
         self.ax.text(
-            -1,
-            self.ax.get_ylim()[1] / 3.5,
+            -5,
+            self.ax.get_ylim()[1] / 2.4,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
         self.ax.text(
-            5,
-            self.ax.get_ylim()[1] / 3.5,
+            30,
+            self.ax.get_ylim()[1] / 2.4,
             "Carbon abatement",
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=8,
+            fontsize=10,
             color="dimgrey",
         )
 
         self.ax.grid()
         self.ax.set_title(
-            f"Marginal abatement cost curve, for starting year {self.prospective_years[1]}"
+            f"Cumulative marginal abatement cost curve, for starting year {self.prospective_years[1]}"
         )
 
         self.ax2.xaxis.set_label_position("bottom")
-        self.ax2.set_xlabel("Cummulative $\mathregular{CO_2}$ emissions (Mt)")
+        self.ax2.set_xlabel("cumulative $\mathregular{CO_2}$ emissions (Mt)")
 
         self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
         self.ax2.xaxis.set_ticks_position("bottom")
@@ -3560,14 +3700,20 @@ class ScenarioMACC:
         divider = make_axes_locatable(self.ax)
         dummy_divider = make_axes_locatable(self.ax_scc)
 
-        # Create ax2 for the colorbar
-        self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
-        # Create a dummy ax to keep sharex
-        self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
-        self.dummy_ax.set_visible(False)
+        try:
+            # Create ax2 for the colorbar
+            self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
+            # Create a dummy ax to keep sharex
+            self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
+            self.dummy_ax.set_visible(False)
 
-        self.create_plot_data()
-        self.plot_interact()
+            self.create_plot_data()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
+            ) from e
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -3828,7 +3974,6 @@ class ScenarioMACC:
         scc_list = []
 
         for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -3897,9 +4042,7 @@ class ScenarioMACC:
                     year,
                     -widths_effective_neg[i],
                     color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=np.cumsum(widths_effective_neg)[-1]
-                    - np.cumsum(widths_effective_neg)[i]
-                    + widths_effective_neg[i],
+                    bottom=cumwidths_neg[-1] - cumwidths_neg[i] + widths_effective_neg[i],
                     edgecolor="black",
                     hatch="xx",
                     width=1,
@@ -3974,10 +4117,16 @@ class ShadowCarbonPrice:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 7))
+        try:
+            self.fig, self.ax = plt.subplots(figsize=(10, 7))
 
-        self.create_plot_data()
-        self.plot_interact()
+            self.create_plot_data()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
+            ) from e
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -4241,7 +4390,6 @@ class ShadowCarbonPrice:
         years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
         for year in years:
-
             macc_df = self.macc_dict[year]
 
             macc_df = macc_df.sort_values(by=metric)
@@ -4333,16 +4481,20 @@ class DetailledMFSPBreakdownPerPathway:
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.ax2 = self.ax.twinx()
-        self.create_plot()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(plot_3_x, plot_3_y),
+            )
+            self.ax2 = self.ax.twinx()
+            self.create_plot()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
+            ) from e
 
     def plot_interact(self):
-
         pathway_widget = widgets.Dropdown(
             options=[
                 ("Bio - HEFA Fog", "hefa_fog"),
@@ -4356,6 +4508,7 @@ class DetailledMFSPBreakdownPerPathway:
                 ("LH2 - Coal CCS", "coal_ccs_h2"),
                 ("LH2 - Coal", "coal_h2"),
                 ("E-fuel", "electrofuel"),
+                ("Direct electricity", "direct_electricity"),
             ],
             description="Pathway:",
         )
@@ -4372,8 +4525,95 @@ class DetailledMFSPBreakdownPerPathway:
         self.ax.cla()
         self.ax2.cla()
 
-        if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
+        if pathway in ["direct_electricity"]:
+            val = self.df.loc[self.prospective_years, "electricity_market_price"]
 
+            carbon_tax_val = self.df.loc[
+                self.prospective_years, "electricity_direct_use_carbon_tax_kWh"
+            ]
+            kerosene_val = self.df.loc[self.prospective_years, "kerosene_market_price"]
+            kerosene_tax_val = self.df.loc[
+                self.prospective_years, "kerosene_price_supplement_carbon_tax"
+            ]
+
+            self.ax.fill_between(
+                self.prospective_years,
+                val,
+                np.zeros(len(self.prospective_years)),
+                color="#7D3C98",
+                label="Electricity Price",
+                edgecolor="#7D3C98",
+                linewidth=0.5,
+            )
+
+            (self.line_total,) = self.ax.plot(
+                self.prospective_years,
+                val,
+                color="#43AA8B",
+                linestyle="-",
+                label="Total mean MFSP",
+                linewidth=2,
+            )
+
+            self.ax.fill_between(
+                self.prospective_years,
+                val + carbon_tax_val,
+                val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Carbon Tax",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
+
+            (self.line_tax,) = self.ax.plot(
+                self.prospective_years,
+                val + carbon_tax_val,
+                color="#6414E5",
+                linestyle="--",
+                label="Total mean MFSP + carbon tax",
+                linewidth=2,
+            )
+
+            (self.line_fossil,) = self.ax.plot(
+                self.prospective_years,
+                kerosene_val
+                / (self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"])
+                * 3.6,
+                color="black",
+                linestyle="-",
+                label="Fossil kerosene",
+                linewidth=2,
+            )
+
+            (self.line_fossil_plus_tax,) = self.ax.plot(
+                self.prospective_years,
+                (kerosene_val + kerosene_tax_val)
+                / (self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"])
+                * 3.6,
+                color="black",
+                linestyle="--",
+                label="Fossil kerosene + carbon tax",
+                linewidth=2,
+            )
+
+            self.ax.grid()
+            self.ax.set_title("MFSP breakdown")
+            self.ax.set_xlabel("Year")
+            self.ax.set_ylabel("MFSP [€/kWh]")
+
+            self.ax.set_ylim(0, None)
+            self.ax2.set_ylim(
+                self.ax.get_ylim()[0] / 3.6,
+                self.ax.get_ylim()[1] / 3.6,
+            )
+
+            # Move the label for the second y-axis to the right
+            self.ax2.yaxis.set_label_position("right")
+            self.ax2.set_ylabel("MFSP [€/MJ]")
+
+        if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
             capex_val = (
                 self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
@@ -4497,7 +4737,6 @@ class DetailledMFSPBreakdownPerPathway:
             self.ax2.set_ylabel("MFSP [€/MJ]")
 
         elif pathway == "electrofuel":
-
             capex_val = (
                 self.df.loc[self.prospective_years, "electrofuel_mean_mfsp_litre"]
                 * self.df.loc[self.prospective_years, "electrofuel_mean_capex_share"]
@@ -4932,13 +5171,19 @@ class DetailledMFSPBreakdownPerYear:
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
 
-        self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
-        )
-        self.ax2 = self.ax.twinx()
-        self.ax3 = self.ax.twinx()
-        self.create_plot()
-        self.plot_interact()
+        try:
+            self.fig, self.ax = plt.subplots(
+                # figsize=(plot_3_x, plot_3_y),
+            )
+            self.ax2 = self.ax.twinx()
+            self.ax3 = self.ax.twinx()
+            self.create_plot()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires complex energy cost models. "
+                "Be sure to select them in the scenario settings."
+            ) from e
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -4964,364 +5209,417 @@ class DetailledMFSPBreakdownPerYear:
         kero_vlhv = self.float_inputs["lhv_kerosene"] * self.float_inputs["density_kerosene"]
         hyrdogen_lhv = self.float_inputs["lhv_hydrogen"]
 
-        kerosene_val = self.df.loc[year, "kerosene_market_price"] / kero_vlhv
-        kerosene_tax_val = self.df.loc[year, "kerosene_price_supplement_carbon_tax"] / kero_vlhv
+        if not (
+            pd.isna(self.df.loc[year, "energy_consumption_kerosene"])
+            or self.df.loc[year, "energy_consumption_kerosene"] < 1e-9
+        ):
+            kerosene_val = self.df.loc[:, "kerosene_market_price"].fillna(0)[year] / kero_vlhv
+            kerosene_tax_val = (
+                self.df.loc[:, "kerosene_price_supplement_carbon_tax"].fillna(0)[year] / kero_vlhv
+            )
 
-        self.ax.bar(
-            "Kerosene",
-            kerosene_val,
-            bottom=0,
-            color="black",
-            label="Fossil kerosene",
-            edgecolor="#212529",
-            linewidth=0.5,
-        )
+            self.ax.bar(
+                "Kerosene",
+                kerosene_val,
+                bottom=0,
+                color="black",
+                label="Fossil kerosene",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
 
-        self.ax.bar(
-            "Kerosene",
-            kerosene_tax_val,
-            bottom=kerosene_val,
-            color="white",
-            facecolor="#9066D4",
-            hatch="//",
-            label="Fossil kerosene + carbon tax",
-            edgecolor="#212529",
-            linewidth=0.5,
-        )
+            self.ax.bar(
+                "Kerosene",
+                kerosene_tax_val,
+                bottom=kerosene_val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Fossil kerosene + carbon tax",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
 
-        for (name, pathway) in [
+        if not (
+            pd.isna(self.df.loc[year, "electricity_direct_use_total_cost"])
+            or self.df.loc[year, "electricity_direct_use_total_cost"] < 1e-9
+        ):
+            elec_val = self.df.loc[:, "electricity_market_price"].fillna(0)[year] / 3.6
+            elec_val_tax = (
+                self.df.loc[:, "electricity_direct_use_carbon_tax_kWh"].fillna(0)[year] / 3.6
+            )
+
+            self.ax.bar(
+                "Direct Electricity",
+                elec_val,
+                bottom=0,
+                color="#7D3C98",
+                label="Fossil kerosene",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
+
+            self.ax.bar(
+                "Direct Electricity",
+                elec_val_tax,
+                bottom=elec_val,
+                color="white",
+                facecolor="#9066D4",
+                hatch="//",
+                label="Fossil kerosene + carbon tax",
+                edgecolor="#212529",
+                linewidth=0.5,
+            )
+
+        for name, pathway in [
             ("Bio - HEFA Fog", "hefa_fog"),
             ("Bio - HEFA Others", "hefa_others"),
             ("Bio - FT MSW", "ft_msw"),
             ("Bio - FT Others", "ft_others"),
             ("Bio - ATJ", "atj"),
         ]:
-            capex_val = (
-                self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[year, "biofuel_mean_capex_share_" + pathway]
-                / 100
-                / bio_vlhv
-            )
-            opex_val = (
-                self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[year, "biofuel_mean_var_opex_share_" + pathway]
-                / 100
-                / bio_vlhv
-            )
-            feedstock_val = (
-                self.df.loc[year, "biofuel_" + pathway + "_mfsp"]
-                * self.df.loc[year, "biofuel_mean_feedstock_share_" + pathway]
-                / 100
-                / bio_vlhv
-            )
-            carbon_tax_val = (
-                self.df.loc[year, "biofuel_mfsp_carbon_tax_supplement_" + pathway] / bio_vlhv
-            )
+            if not (
+                pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mfsp"])
+                or self.df.loc[year, "biofuel_" + pathway + "_mfsp"] < 1e-9
+            ):
+                capex_val = (
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_capex_share_" + pathway].fillna(0)[year]
+                    / 100
+                    / bio_vlhv
+                )
+                opex_val = (
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_var_opex_share_" + pathway].fillna(0)[year]
+                    / 100
+                    / bio_vlhv
+                )
+                feedstock_val = (
+                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    * self.df.loc[:, "biofuel_mean_feedstock_share_" + pathway].fillna(0)[year]
+                    / 100
+                    / bio_vlhv
+                )
+                carbon_tax_val = (
+                    self.df.loc[:, "biofuel_mfsp_carbon_tax_supplement_" + pathway].fillna(0)[year]
+                    / bio_vlhv
+                )
 
-            self.ax.bar(
-                name,
-                capex_val,
-                bottom=0,
-                color="#277DA1",
-                label="Capex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    capex_val,
+                    bottom=0,
+                    color="#277DA1",
+                    label="Capex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                opex_val,
-                bottom=capex_val,
-                color="#4D908E",
-                label="Opex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    opex_val,
+                    bottom=capex_val,
+                    color="#4D908E",
+                    label="Opex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                feedstock_val,
-                bottom=capex_val + opex_val,
-                color="#90BE6D",
-                label="Energy/Feedstock",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    feedstock_val,
+                    bottom=capex_val + opex_val,
+                    color="#90BE6D",
+                    label="Energy/Feedstock",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                carbon_tax_val,
-                bottom=capex_val + opex_val + feedstock_val,
-                color="white",
-                facecolor="#9066D4",
-                hatch="//",
-                label="Carbon Tax",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    carbon_tax_val,
+                    bottom=capex_val + opex_val + feedstock_val,
+                    color="white",
+                    facecolor="#9066D4",
+                    hatch="//",
+                    label="Carbon Tax",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-        for (name, pathway) in [("E-fuel", "electrofuel")]:
-            capex_val = (
-                self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[year, "electrofuel_mean_capex_share"]
-                / 100
-                / efuel_vlhv
-            )
-            opex_val = (
-                self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[year, "electrofuel_mean_opex_share"]
-                / 100
-                / efuel_vlhv
-            )
-            energy_val = (
-                self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[year, "electrofuel_mean_elec_share"]
-                / 100
-                / efuel_vlhv
-            )
-            co2_feed_val = (
-                self.df.loc[year, "electrofuel_mean_mfsp_litre"]
-                * self.df.loc[year, "electrofuel_mean_co2_share"]
-                / 100
-                / efuel_vlhv
-            )
-            carbon_tax_val = (
-                self.df.loc[year, "electrofuel_mfsp_carbon_tax_supplement"] / efuel_vlhv
-            )
+        for name, pathway in [("E-fuel", "electrofuel")]:
+            if not (
+                pd.isna(self.df.loc[year, "electrofuel_mean_mfsp_litre"])
+                or self.df.loc[year, "electrofuel_mean_mfsp_litre"] < 1e-9
+            ):
+                capex_val = (
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_capex_share"].fillna(0)[year]
+                    / 100
+                    / efuel_vlhv
+                )
+                opex_val = (
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_opex_share"].fillna(0)[year]
+                    / 100
+                    / efuel_vlhv
+                )
+                energy_val = (
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_elec_share"].fillna(0)[year]
+                    / 100
+                    / efuel_vlhv
+                )
+                co2_feed_val = (
+                    self.df.loc[:, "electrofuel_mean_mfsp_litre"].fillna(0)[year]
+                    * self.df.loc[:, "electrofuel_mean_co2_share"].fillna(0)[year]
+                    / 100
+                    / efuel_vlhv
+                )
+                carbon_tax_val = (
+                    self.df.loc[:, "electrofuel_mfsp_carbon_tax_supplement"].fillna(0)[year]
+                    / efuel_vlhv
+                )
 
-            self.ax.bar(
-                name,
-                capex_val,
-                bottom=0,
-                color="#277DA1",
-                label="Capex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    capex_val,
+                    bottom=0,
+                    color="#277DA1",
+                    label="Capex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                opex_val,
-                bottom=capex_val,
-                color="#4D908E",
-                label="Opex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    opex_val,
+                    bottom=capex_val,
+                    color="#4D908E",
+                    label="Opex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                energy_val,
-                bottom=capex_val + opex_val,
-                color="#90BE6D",
-                label="Energy/Feedstock",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    energy_val,
+                    bottom=capex_val + opex_val,
+                    color="#90BE6D",
+                    label="Energy/Feedstock",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                co2_feed_val,
-                bottom=capex_val + opex_val + energy_val,
-                color="#540b0e",
-                label="CO2 Feed",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    co2_feed_val,
+                    bottom=capex_val + opex_val + energy_val,
+                    color="#540b0e",
+                    label="CO2 Feed",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                carbon_tax_val,
-                bottom=capex_val + opex_val + energy_val + co2_feed_val,
-                color="white",
-                facecolor="#9066D4",
-                hatch="//",
-                label="Carbon Tax",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    carbon_tax_val,
+                    bottom=capex_val + opex_val + energy_val + co2_feed_val,
+                    color="white",
+                    facecolor="#9066D4",
+                    hatch="//",
+                    label="Carbon Tax",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-        for (name, pathway) in [
+        for name, pathway in [
             ("LH2 - Electrolysis", "electrolysis_h2"),
             ("LH2 - Gas CCS", "gas_ccs_h2"),
             ("LH2 - Gas", "gas_h2"),
             ("LH2 - Coal CCS", "coal_ccs_h2"),
             ("LH2 - Coal", "coal_h2"),
         ]:
-
-            capex_val = (
-                self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                * self.df.loc[year, pathway + "_mean_capex_share"]
-                / 100
-                / hyrdogen_lhv
-            )
-            opex_val = (
-                self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                * self.df.loc[year, pathway + "_mean_opex_share"]
-                / 100
-                / hyrdogen_lhv
-            )
-
-            if pathway == "electrolysis_h2":
-                energy_val = (
-                    self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[year, pathway + "_mean_elec_share"]
+            if not (
+                pd.isna(self.df.loc[year, pathway + "_mean_mfsp_kg"])
+                or self.df.loc[year, pathway + "_mean_mfsp_kg"] < 1e-9
+            ):
+                capex_val = (
+                    self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, pathway + "_mean_capex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
-            else:
-                energy_val = (
-                    self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[year, pathway + "_mean_fuel_cost_share"]
+                opex_val = (
+                    self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, pathway + "_mean_opex_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
 
-            if pathway in ["gas_ccs_h2", "coal_ccs_h2"]:
-                ccs_val = (
-                    self.df.loc[year, pathway + "_mean_mfsp_kg"]
-                    * self.df.loc[year, pathway + "_mean_ccs_cost_share"]
+                if pathway == "electrolysis_h2":
+                    energy_val = (
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_elec_share"].fillna(0)[year]
+                        / 100
+                        / hyrdogen_lhv
+                    )
+                else:
+                    energy_val = (
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_fuel_cost_share"].fillna(0)[year]
+                        / 100
+                        / hyrdogen_lhv
+                    )
+
+                if pathway in ["gas_ccs_h2", "coal_ccs_h2"]:
+                    ccs_val = (
+                        self.df.loc[:, pathway + "_mean_mfsp_kg"].fillna(0)[year]
+                        * self.df.loc[:, pathway + "_mean_ccs_cost_share"].fillna(0)[year]
+                        / 100
+                        / hyrdogen_lhv
+                    )
+
+                else:
+                    ccs_val = 0
+
+                liquefaction_capex_val = (
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_capex_share"].fillna(0)[year]
+                    / 100
+                    / hyrdogen_lhv
+                )
+                liquefaction_opex_val = (
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_opex_share"].fillna(0)[year]
+                    / 100
+                    / hyrdogen_lhv
+                )
+                liquefaction_energy_val = (
+                    self.df.loc[:, "liquefaction_h2_mean_mfsp_kg"].fillna(0)[year]
+                    * self.df.loc[:, "liquefaction_h2_mean_elec_share"].fillna(0)[year]
                     / 100
                     / hyrdogen_lhv
                 )
 
-            else:
-                ccs_val = 0
+                transport = (
+                    self.df.loc[:, "transport_h2_cost_per_kg"].fillna(0)[year] / hyrdogen_lhv
+                )
 
-            liquefaction_capex_val = (
-                self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[year, "liquefaction_h2_mean_capex_share"]
-                / 100
-                / hyrdogen_lhv
-            )
-            liquefaction_opex_val = (
-                self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[year, "liquefaction_h2_mean_opex_share"]
-                / 100
-                / hyrdogen_lhv
-            )
-            liquefaction_energy_val = (
-                self.df.loc[year, "liquefaction_h2_mean_mfsp_kg"]
-                * self.df.loc[year, "liquefaction_h2_mean_elec_share"]
-                / 100
-                / hyrdogen_lhv
-            )
+                carbon_tax_val = (
+                    self.df.loc[:, pathway + "_mfsp_carbon_tax_supplement"].fillna(0)[year]
+                    / hyrdogen_lhv
+                )
 
-            transport = self.df.loc[year, "transport_h2_cost_per_kg"] / hyrdogen_lhv
+                self.ax.bar(
+                    name,
+                    capex_val,
+                    bottom=0,
+                    color="#277DA1",
+                    label="Capex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            carbon_tax_val = (
-                self.df.loc[year, pathway + "_mfsp_carbon_tax_supplement"] / hyrdogen_lhv
-            )
+                self.ax.bar(
+                    name,
+                    opex_val,
+                    bottom=capex_val,
+                    color="#4D908E",
+                    label="Opex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                capex_val,
-                bottom=0,
-                color="#277DA1",
-                label="Capex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    energy_val,
+                    bottom=capex_val + opex_val,
+                    color="#90BE6D",
+                    label="Energy/Feedstock",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                opex_val,
-                bottom=capex_val,
-                color="#4D908E",
-                label="Opex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    ccs_val,
+                    bottom=capex_val + opex_val + energy_val,
+                    color="#F94144",
+                    label="Hydrogen CCS",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                energy_val,
-                bottom=capex_val + opex_val,
-                color="#90BE6D",
-                label="Energy/Feedstock",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    liquefaction_capex_val,
+                    bottom=capex_val + opex_val + energy_val + ccs_val,
+                    color="#F9C74F",
+                    label="Liquefaction Capex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                ccs_val,
-                bottom=capex_val + opex_val + energy_val,
-                color="#F94144",
-                label="Hydrogen CCS",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    liquefaction_opex_val,
+                    bottom=capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val,
+                    color="#F9844A",
+                    label="Liquefaction Opex",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                liquefaction_capex_val,
-                bottom=capex_val + opex_val + energy_val + ccs_val,
-                color="#F9C74F",
-                label="Liquefaction Capex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    liquefaction_energy_val,
+                    bottom=capex_val
+                    + opex_val
+                    + energy_val
+                    + ccs_val
+                    + liquefaction_capex_val
+                    + liquefaction_opex_val,
+                    color="#F8961E",
+                    label="Liquefaction Energy",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                liquefaction_opex_val,
-                bottom=capex_val + opex_val + energy_val + ccs_val + liquefaction_capex_val,
-                color="#F9844A",
-                label="Liquefaction Opex",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    transport,
+                    bottom=capex_val
+                    + opex_val
+                    + energy_val
+                    + ccs_val
+                    + liquefaction_capex_val
+                    + liquefaction_opex_val
+                    + liquefaction_energy_val,
+                    color="#C9A690",
+                    label="Transport",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
-            self.ax.bar(
-                name,
-                liquefaction_energy_val,
-                bottom=capex_val
-                + opex_val
-                + energy_val
-                + ccs_val
-                + liquefaction_capex_val
-                + +liquefaction_opex_val,
-                color="#F8961E",
-                label="Liquefaction Energy",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
-
-            self.ax.bar(
-                name,
-                transport,
-                bottom=capex_val
-                + opex_val
-                + energy_val
-                + ccs_val
-                + liquefaction_capex_val
-                + +liquefaction_opex_val
-                + liquefaction_energy_val,
-                color="#C9A690",
-                label="Transport",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
-
-            self.ax.bar(
-                name,
-                carbon_tax_val,
-                bottom=capex_val
-                + opex_val
-                + energy_val
-                + ccs_val
-                + liquefaction_capex_val
-                + liquefaction_opex_val
-                + liquefaction_energy_val
-                + transport,
-                color="white",
-                facecolor="#9066D4",
-                hatch="//",
-                label="Carbon Tax",
-                edgecolor="#212529",
-                linewidth=0.5,
-            )
+                self.ax.bar(
+                    name,
+                    carbon_tax_val,
+                    bottom=capex_val
+                    + opex_val
+                    + energy_val
+                    + ccs_val
+                    + liquefaction_capex_val
+                    + liquefaction_opex_val
+                    + liquefaction_energy_val
+                    + transport,
+                    color="white",
+                    facecolor="#9066D4",
+                    hatch="//",
+                    label="Carbon Tax",
+                    edgecolor="#212529",
+                    linewidth=0.5,
+                )
 
         self.ax.grid(axis="y")
         self.ax.set_title("Mean MFSP breakdown for year " + str(year))
@@ -5387,5 +5685,875 @@ class DetailledMFSPBreakdownPerYear:
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         self.fig.tight_layout()
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+
+class AnnualMACCSimple:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        try:
+            self.fig, self.ax = plt.subplots(
+                figsize=(10, 7),
+            )
+            self.ax2 = self.ax.twiny()
+            self.create_plot_data()
+            self.plot_interact()
+
+        except Exception as e:
+            raise RuntimeError("Error in creating plot") from e
+
+    def plot_interact(self):
+        year_widget = widgets.IntSlider(
+            min=self.prospective_years[0],
+            max=self.prospective_years[-1],
+            step=1,
+            description="Year:",
+            value=2050,
+        )
+
+        metric_widget = widgets.Dropdown(
+            options=[
+                ("Instantaneous Carbon Abatement Cost", "carbon_abatement_cost"),
+                ("Specific Carbon Abatement Cost", "specific_carbon_abatement_cost"),
+                (
+                    "Generic Specific Carbon Abatement Cost",
+                    "generic_specific_carbon_abatement_cost",
+                ),
+            ],
+            description="Metric:",
+        )
+
+        scc_widget = widgets.FloatText(description="Base year SCC (Specific CAC ONLY):")
+
+        def update_numeric_widget(change):
+            if change["new"] == "specific_carbon_abatement_cost":
+                scc_widget.disabled = False
+            else:
+                scc_widget.disabled = True
+                scc_widget.value = 0
+
+        metric_widget.observe(update_numeric_widget, names="value")
+
+        interact(self.update, year=year_widget, metric=metric_widget, scc_start=scc_widget)
+
+    def create_plot_data(self):
+        self.macc_dict = {}
+
+        for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
+            name = []
+            vol = []
+            cost = []
+            spe_cost = []
+            g_spe_cost = []
+
+            colors = []
+            name.extend(
+                [
+                    el
+                    for el in [
+                        "Passenger - Mean",
+                        "Freighter - Drop in",
+                        "Freighter - Hydrogen",
+                        "Freighter - Electric",
+                        "Bio - HEFA FOG",
+                        "Bio - HEFA Others",
+                        "Bio - Alcohol to Jet",
+                        "Bio - FT MSW",
+                        "Bio - FT Others",
+                        "H2C",
+                        "H2CCCS",
+                        "H2G",
+                        "H2GCCS",
+                        "H2E",
+                        "Electrofuel",
+                        "OPS",
+                        "OPS - Freight",
+                        "Load Factor",
+                    ]
+                ]
+            )
+
+            # Abatement effective in MtCO2e
+            vol.extend(
+                [
+                    elt / 1000000
+                    for elt in [
+                        self.df.aircraft_carbon_abatement_volume_passenger_mean[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
+                        self.df.abatement_effective_hefa_fog[year],
+                        self.df.abatement_effective_hefa_others[year],
+                        self.df.abatement_effective_atj[year],
+                        self.df.abatement_effective_ft_msw[year],
+                        self.df.abatement_effective_ft_others[year],
+                        self.df.abatement_effective_hydrogen_coal[year],
+                        self.df.abatement_effective_hydrogen_coal_ccs[year],
+                        self.df.abatement_effective_hydrogen_gas[year],
+                        self.df.abatement_effective_hydrogen_gas_ccs[year],
+                        self.df.abatement_effective_hydrogen_electrolysis[year],
+                        self.df.abatement_effective_electrofuel[year],
+                        self.df.operations_abatement_effective[year],
+                        self.df.operations_abatement_effective_freight[year],
+                        self.df.load_factor_abatement_effective[year],
+                    ]
+                ]
+            )
+
+            # carbon abatement cost in (€/tCO2e)
+            cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_carbon_abatement_cost_passenger_mean[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
+                        self.df.carbon_abatement_cost_hefa_fog[year],
+                        self.df.carbon_abatement_cost_hefa_others[year],
+                        self.df.carbon_abatement_cost_atj[year],
+                        self.df.carbon_abatement_cost_ft_msw[year],
+                        self.df.carbon_abatement_cost_ft_others[year],
+                        self.df.carbon_abatement_cost_h2_coal[year],
+                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
+                        self.df.carbon_abatement_cost_h2_gas[year],
+                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
+                        self.df.carbon_abatement_cost_h2_electrolysis[year],
+                        self.df.carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_abatement_cost[year],
+                        self.df.operations_abatement_cost_freight[year],
+                        self.df.load_factor_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            spe_cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_specific_carbon_abatement_cost_passenger_mean[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
+                        self.df.specific_carbon_abatement_cost_hefa_fog[year],
+                        self.df.specific_carbon_abatement_cost_hefa_others[year],
+                        self.df.specific_carbon_abatement_cost_atj[year],
+                        self.df.specific_carbon_abatement_cost_ft_msw[year],
+                        self.df.specific_carbon_abatement_cost_ft_others[year],
+                        self.df.coal_h2_specific_abatement_cost[year],
+                        self.df.coal_ccs_h2_specific_abatement_cost[year],
+                        self.df.gas_h2_specific_abatement_cost[year],
+                        self.df.gas_ccs_h2_specific_abatement_cost[year],
+                        self.df.electrolysis_h2_specific_abatement_cost[year],
+                        self.df.specific_carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_specific_abatement_cost[year],
+                        self.df.operations_specific_abatement_cost_freight[year],
+                        self.df.load_factor_specific_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            g_spe_cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_passenger_mean[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
+                            year
+                        ],
+                        self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
+                        self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
+                        self.df.generic_specific_carbon_abatement_cost_atj[year],
+                        self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
+                        self.df.generic_specific_carbon_abatement_cost_ft_others[year],
+                        self.df.coal_h2_generic_specific_abatement_cost[year],
+                        self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
+                        self.df.gas_h2_generic_specific_abatement_cost[year],
+                        self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
+                        self.df.electrolysis_h2_generic_specific_abatement_cost[year],
+                        self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_generic_specific_abatement_cost[year],
+                        self.df.operations_generic_specific_abatement_cost_freight[year],
+                        self.df.load_factor_generic_specific_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            colors.extend(
+                [
+                    el
+                    for el in [
+                        "goldenrod",
+                        "khaki",
+                        "khaki",
+                        "khaki",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "orange",
+                        "orange",
+                        "orange",
+                    ]
+                ]
+            )
+
+            macc_df = pd.DataFrame(
+                data=[vol, cost, spe_cost, g_spe_cost, colors],
+                columns=name,
+                index=[
+                    "abatement_effective",
+                    "carbon_abatement_cost",
+                    "specific_carbon_abatement_cost",
+                    "generic_specific_carbon_abatement_cost",
+                    "colors",
+                ],
+            )
+
+            macc_df = macc_df.transpose()
+
+            self.macc_dict[year] = macc_df
+
+    def update(self, year, scc_start, metric):
+        self.ax.cla()
+
+        macc_df = self.macc_dict[year]
+
+        macc_df = macc_df.sort_values(by=metric)
+
+        # dropping NaN on costs or abatements
+        macc_df = macc_df.dropna(subset=metric)
+
+        maccneg_df = macc_df[macc_df["abatement_effective"] < -0]
+        maccpos_df = macc_df[macc_df["abatement_effective"] > 0]
+
+        ##### POS ######
+
+        heights_pos = maccpos_df[metric].to_list()
+        names_pos = maccpos_df.index.to_list()
+        heights_pos.insert(0, 0)
+        heights_pos.append(0)
+
+        # # MAx effective maccpos
+        widths_effective_pos = maccpos_df["abatement_effective"].to_list()
+        widths_effective_pos.insert(0, 0)
+        widths_effective_pos.append(widths_effective_pos[-1])
+
+        cumwidths_effective_pos = np.cumsum(widths_effective_pos)
+
+        colors_pos = maccpos_df["colors"].to_list()
+
+        scc_year = None
+        if metric == "specific_carbon_abatement_cost":
+            scc_year = scc_start * (
+                (1 + self.float_inputs["social_discount_rate"])
+                ** (year - self.prospective_years[0])
+            )
+        elif metric == "generic_specific_carbon_abatement_cost":
+            scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
+
+        ### POS
+
+        self.ax.step(
+            cumwidths_effective_pos - widths_effective_pos,
+            heights_pos,
+            where="post",
+            color="black",
+            label="Marginal abatement cost",
+            linewidth=1,
+            zorder=10,  # ensure top level
+        )
+
+        # custom_annotation_height_for_nice_plot = [100, 100, 130,100,100,130,150,180,100,100,100,150,200,220,300,380,380,420,600,720,800,840,10]
+
+        for i in range(len(widths_effective_pos) - 2):
+            x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
+            y_position = min(heights_pos[i + 1], 2000)
+            if heights_pos[i + 1] >= 0:
+                if heights_pos[i + 1] >= 2000:
+                    text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+                else:
+                    text = f"{names_pos[i]}"
+                self.ax.annotate(
+                    text,
+                    (x_position, y_position),
+                    xycoords="data",
+                    xytext=(x_position, y_position + 50),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    textcoords="data",
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=9,
+                    ha="right",
+                    va="bottom",
+                )
+            else:
+                self.ax.annotate(
+                    f"{names_pos[i]}",
+                    (x_position, 0),
+                    xycoords="data",
+                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    textcoords="data",
+                    arrowprops=dict(width=0.5, headwidth=0),
+                    rotation=-60,
+                    fontsize=9,
+                    ha="right",
+                    va="bottom",
+                )
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0, (len(widths_effective_pos) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon(
+                [
+                    (cumwidths_effective_pos[i], 0),
+                    (cumwidths_effective_pos[i], heights_pos[i + 1]),
+                    (cumwidths_effective_pos[i + 1], heights_pos[i + 1]),
+                    (cumwidths_effective_pos[i + 1], 0),
+                ],
+                closed=True,
+                alpha=1,
+                facecolor=colors_pos[i],
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
+            )
+            self.ax.add_patch(polygon)
+
+        ### NEG
+
+        ##### NEG #####
+
+        heights_neg = maccneg_df[metric].to_list()
+        names_neg = maccneg_df.index.to_list()
+
+        heights_neg.append(0)
+        heights_neg.insert(0, 0)
+
+        # # MAx effective maccneg
+        widths_effective_neg = maccneg_df["abatement_effective"].to_list()
+
+        widths_effective_neg.insert(0, 0)
+        widths_effective_neg.append(0)
+
+        cumwidths_effective_neg = np.cumsum(widths_effective_neg)
+
+        colors_neg = maccneg_df["colors"].to_list()
+
+        self.ax.step(
+            cumwidths_effective_neg[-1] - cumwidths_effective_neg + widths_effective_neg,
+            heights_neg,
+            where="post",
+            color="#335C67",
+            label="Marginal emission cost",
+            linewidth=1,
+            zorder=9,
+        )
+
+        # custom_annotation_height_for_nice_plot = [15,70,120,170,220]
+
+        for i in range(len(widths_effective_neg) - 2):
+            x_position = (
+                cumwidths_effective_neg[-1]
+                - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
+            )
+            self.ax.annotate(
+                f"{names_neg[i]}",
+                (x_position, 0),
+                xycoords="data",
+                xytext=(x_position, 50 + 30 * (i % 3)),
+                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                textcoords="data",
+                arrowprops=dict(width=0.5, headwidth=0),
+                rotation=-60,
+                fontsize=9,
+                ha="right",
+                va="bottom",
+            )
+
+        # Fill under the step plot with different colors for each step
+        for i in range(0, (len(widths_effective_neg) - 2)):
+            # Create a polygon for each step
+            polygon = plt.Polygon(
+                [
+                    (cumwidths_effective_neg[-1] - cumwidths_effective_neg[i], 0),
+                    (
+                        cumwidths_effective_neg[-1] - cumwidths_effective_neg[i],
+                        heights_neg[i + 1],
+                    ),
+                    (
+                        cumwidths_effective_neg[-1] - cumwidths_effective_neg[i + 1],
+                        heights_neg[i + 1],
+                    ),
+                    (cumwidths_effective_neg[-1] - cumwidths_effective_neg[i + 1], 0),
+                ],
+                closed=True,
+                alpha=1,
+                facecolor=colors_neg[i],
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle="dotted",
+            )
+            self.ax.add_patch(polygon)
+
+        if scc_year:
+            self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
+            self.ax.text(
+                10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8
+            )
+
+        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
+        self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
+
+        self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
+
+        self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
+
+        legend_patches_1 = [
+            Line2D(
+                [0], [0], color="black", linewidth=1, linestyle="-", label="Marginal Abatement Cost"
+            ),
+            mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
+            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
+            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiency"),
+            mpatches.Patch(color="orange", alpha=1, label="Operations"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+        ]
+
+        self.ax.add_artist(
+            self.ax.legend(
+                handles=legend_patches_1,
+                fontsize=9,
+                title="Type of lever",
+                loc="upper left",
+                bbox_to_anchor=(60 / self.ax.figure.bbox.width, 1),
+            )
+        )
+
+        self.ax.set_xlim(
+            cumwidths_effective_neg[-1] - 100,
+            cumwidths_effective_pos[-1] - widths_effective_pos[-1] + 50,
+        )
+        self.ax.set_ylim(
+            max(-300, min(min(heights_pos), min(heights_neg)) - 50),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 300),
+        )
+
+        # Add abatement and emission zones
+        self.ax.axvspan(
+            xmin=self.ax.get_xlim()[0],
+            xmax=0,
+            facecolor="#ff70a6",
+            alpha=0.1,
+            clip_on=True,
+            zorder=-1,
+        )
+        self.ax.axvspan(
+            xmin=0,
+            xmax=self.ax.get_xlim()[1],
+            facecolor="#70d6ff",
+            alpha=0.15,
+            clip_on=True,
+            zorder=-1,
+        )
+
+        self.ax.text(
+            -1,
+            self.ax.get_ylim()[1] / 2.8,
+            "Extra carbon emissions",
+            rotation=90,
+            va="bottom",
+            ha="right",
+            fontsize=10,
+            color="dimgrey",
+        )
+        self.ax.text(
+            5,
+            self.ax.get_ylim()[1] / 2.8,
+            "Carbon abatement",
+            rotation=90,
+            va="bottom",
+            ha="left",
+            fontsize=10,
+            color="dimgrey",
+        )
+
+        self.ax.grid()
+        self.ax.set_title(f"Marginal abatement cost curve for year {year}")
+
+        self.ax2.xaxis.set_label_position("bottom")
+        self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
+
+        self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
+        self.ax2.xaxis.set_ticks_position("bottom")
+
+        self.ax2.set_xlim(
+            self.df.co2_emissions_2019technology[year]
+            - self.ax.get_xlim()[0]
+            - cumwidths_effective_neg[-1],
+            self.df.co2_emissions_2019technology[year]
+            - self.ax.get_xlim()[1]
+            - cumwidths_effective_neg[-1],
+        )
+
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+
+class ShadowCarbonPriceSimple:
+    def __init__(self, data):
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.float_inputs = data["float_inputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+
+        try:
+            self.fig, self.ax = plt.subplots(figsize=(10, 7))
+
+            self.create_plot_data()
+            self.plot_interact()
+        except Exception as e:
+            raise RuntimeError(
+                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
+                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
+            ) from e
+
+    def plot_interact(self):
+        metric_widget = widgets.Dropdown(
+            options=[
+                ("Specific Carbon Abatement Cost", "specific_carbon_abatement_cost"),
+                (
+                    "Generic Specific Carbon Abatement Cost",
+                    "generic_specific_carbon_abatement_cost",
+                ),
+            ],
+            value="generic_specific_carbon_abatement_cost",
+            description="Metric:",
+        )
+
+        scc_widget = widgets.FloatText(description="Base year SCC (Specific CAC ONLY):")
+
+        def update_numeric_widget(change):
+            if change["new"] == "specific_carbon_abatement_cost":
+                scc_widget.disabled = False
+            else:
+                scc_widget.disabled = True
+                scc_widget.value = 0
+
+        metric_widget.observe(update_numeric_widget, names="value")
+
+        interact(self.update, metric=metric_widget, scc_start=scc_widget)
+
+    def create_plot_data(self):
+        self.macc_dict = {}
+
+        for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
+            name = []
+            vol = []
+            cost = []
+            spe_cost = []
+            g_spe_cost = []
+
+            colors = []
+
+            name.extend(
+                [
+                    el
+                    for el in [
+                        "Passenger - Mean",
+                        "Freighter - Drop in",
+                        "Freighter - Hydrogen",
+                        "Freighter - Electric",
+                        "Bio - HEFA FOG",
+                        "Bio - HEFA Others",
+                        "Bio - Alcohol to Jet",
+                        "Bio - FT MSW",
+                        "Bio - FT Others",
+                        "H2C",
+                        "H2CCCS",
+                        "H2G",
+                        "H2GCCS",
+                        "H2E",
+                        "Electrofuel",
+                        "OPS",
+                        "OPS - Freight",
+                        "Load Factor",
+                    ]
+                ]
+            )
+
+            # Abatement effective in MtCO2e
+            vol.extend(
+                [
+                    elt / 1000000
+                    for elt in [
+                        self.df.aircraft_carbon_abatement_volume_passenger_mean[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
+                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
+                        self.df.abatement_effective_hefa_fog[year],
+                        self.df.abatement_effective_hefa_others[year],
+                        self.df.abatement_effective_atj[year],
+                        self.df.abatement_effective_ft_msw[year],
+                        self.df.abatement_effective_ft_others[year],
+                        self.df.abatement_effective_hydrogen_coal[year],
+                        self.df.abatement_effective_hydrogen_coal_ccs[year],
+                        self.df.abatement_effective_hydrogen_gas[year],
+                        self.df.abatement_effective_hydrogen_gas_ccs[year],
+                        self.df.abatement_effective_hydrogen_electrolysis[year],
+                        self.df.abatement_effective_electrofuel[year],
+                        self.df.operations_abatement_effective[year],
+                        self.df.operations_abatement_effective_freight[year],
+                        self.df.load_factor_abatement_effective[year],
+                    ]
+                ]
+            )
+
+            # carbon abatement cost in (€/tCO2e)
+            cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_carbon_abatement_cost_passenger_mean[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
+                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
+                        self.df.carbon_abatement_cost_hefa_fog[year],
+                        self.df.carbon_abatement_cost_hefa_others[year],
+                        self.df.carbon_abatement_cost_atj[year],
+                        self.df.carbon_abatement_cost_ft_msw[year],
+                        self.df.carbon_abatement_cost_ft_others[year],
+                        self.df.carbon_abatement_cost_h2_coal[year],
+                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
+                        self.df.carbon_abatement_cost_h2_gas[year],
+                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
+                        self.df.carbon_abatement_cost_h2_electrolysis[year],
+                        self.df.carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_abatement_cost[year],
+                        self.df.operations_abatement_cost_freight[year],
+                        self.df.load_factor_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            spe_cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_specific_carbon_abatement_cost_passenger_mean[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
+                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
+                        self.df.specific_carbon_abatement_cost_hefa_fog[year],
+                        self.df.specific_carbon_abatement_cost_hefa_others[year],
+                        self.df.specific_carbon_abatement_cost_atj[year],
+                        self.df.specific_carbon_abatement_cost_ft_msw[year],
+                        self.df.specific_carbon_abatement_cost_ft_others[year],
+                        self.df.coal_h2_specific_abatement_cost[year],
+                        self.df.coal_ccs_h2_specific_abatement_cost[year],
+                        self.df.gas_h2_specific_abatement_cost[year],
+                        self.df.gas_ccs_h2_specific_abatement_cost[year],
+                        self.df.electrolysis_h2_specific_abatement_cost[year],
+                        self.df.specific_carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_specific_abatement_cost[year],
+                        self.df.operations_specific_abatement_cost_freight[year],
+                        self.df.load_factor_specific_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            g_spe_cost.extend(
+                [
+                    el
+                    for el in [
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_passenger_mean[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
+                            year
+                        ],
+                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
+                            year
+                        ],
+                        self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
+                        self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
+                        self.df.generic_specific_carbon_abatement_cost_atj[year],
+                        self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
+                        self.df.generic_specific_carbon_abatement_cost_ft_others[year],
+                        self.df.coal_h2_generic_specific_abatement_cost[year],
+                        self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
+                        self.df.gas_h2_generic_specific_abatement_cost[year],
+                        self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
+                        self.df.electrolysis_h2_generic_specific_abatement_cost[year],
+                        self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
+                        self.df.operations_generic_specific_abatement_cost[year],
+                        self.df.operations_generic_specific_abatement_cost_freight[year],
+                        self.df.load_factor_generic_specific_abatement_cost[year],
+                    ]
+                ]
+            )
+
+            colors.extend(
+                [
+                    el
+                    for el in [
+                        "goldenrod",
+                        "khaki",
+                        "khaki",
+                        "khaki",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "yellowgreen",
+                        "orange",
+                        "orange",
+                        "orange",
+                    ]
+                ]
+            )
+
+            macc_df = pd.DataFrame(
+                data=[vol, cost, spe_cost, g_spe_cost, colors],
+                columns=name,
+                index=[
+                    "abatement_effective",
+                    "carbon_abatement_cost",
+                    "specific_carbon_abatement_cost",
+                    "generic_specific_carbon_abatement_cost",
+                    "colors",
+                ],
+            )
+
+            macc_df = macc_df.transpose()
+
+            self.macc_dict[year] = macc_df
+
+    def update(self, metric, scc_start):
+        self.ax.cla()
+        scc_list = []
+
+        marginal_cac = []
+        marginal_cac09 = []
+        marginal_cac08 = []
+        marginal_cac05 = []
+        scc_list = []
+        years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
+
+        for year in years:
+            macc_df = self.macc_dict[year]
+
+            macc_df = macc_df.sort_values(by=metric)
+
+            macc_df = macc_df.dropna(subset=metric)
+
+            # Plot only made for positive abatements
+            maccpos_df = macc_df[macc_df["abatement_effective"] > 0]
+
+            ##### POS ######
+
+            heights_pos = maccpos_df[metric].to_numpy()
+            widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
+
+            if metric == "specific_carbon_abatement_cost":
+                scc_year = scc_start * (
+                    (1 + self.float_inputs["social_discount_rate"])
+                    ** (year - self.prospective_years[0])
+                )
+                scc_list.append(scc_year)
+            elif metric == "generic_specific_carbon_abatement_cost":
+                scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
+                scc_list.append(scc_year)
+
+            if len(widths_effective_pos > 0):
+                cumwidths_pos = np.cumsum(widths_effective_pos)
+
+                target_value = 0.9 * cumwidths_pos[-1]
+                index_val = np.searchsorted(cumwidths_pos, target_value, side="right")
+                marginal_cac09.append(heights_pos[min(index_val, len(heights_pos))])
+
+                target_value = 0.8 * cumwidths_pos[-1]
+                index_val = np.searchsorted(cumwidths_pos, target_value, side="right")
+                marginal_cac08.append(heights_pos[min(index_val, len(heights_pos))])
+
+                target_value = 0.5 * cumwidths_pos[-1]
+                index_val = np.searchsorted(cumwidths_pos, target_value, side="right")
+                marginal_cac05.append(heights_pos[min(index_val, len(heights_pos))])
+
+                marginal_cac.append(max(heights_pos))
+
+            else:
+                marginal_cac.append(np.NaN)
+                marginal_cac09.append(np.NaN)
+                marginal_cac08.append(np.NaN)
+                marginal_cac05.append(np.NaN)
+
+        self.ax.plot(
+            years,
+            marginal_cac,
+            color="navy",
+            linestyle="-",
+            label="Initial Marginal Abatement Cost",
+        )
+        self.ax.plot(years, marginal_cac09, color="navy", linestyle="--", label="90% Abatement")
+        self.ax.plot(years, marginal_cac08, color="navy", linestyle="-.", label="80% Abatement")
+        self.ax.plot(years, marginal_cac05, color="navy", linestyle=":", label="50% Abatement")
+        self.ax.plot(
+            years,
+            scc_list,
+            color="orangered",
+            linestyle="-",
+            label="SCC",
+        )
+        # self.ax.plot(
+        #     [2020,2025,2050],
+        #     [43.3,51,108],
+        #     color="orangered",
+        #     linestyle="--",
+        #     label="SCC-Low",
+        # )
+
+        self.ax.set_title("Shadow carbon price in the scenario")
+
+        self.ax.set_ylabel("Carbon Abatement Cost (€/tCO$\mathregular{2}$)")
+        self.ax.set_xlabel("Year")
+
+        self.ax.grid()
+        self.ax.legend()
         self.fig.tight_layout()
         self.fig.canvas.draw()

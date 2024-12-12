@@ -17,26 +17,26 @@ class ElectrofuelCost(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        co2_market_price: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_electrofuel: float = 0.0,
-        density_electrofuel: float = 0.0,
+        energy_consumption_electrofuel: pd.Series,
+        electrofuel_eis_capex: pd.Series,
+        electrofuel_eis_fixed_opex: pd.Series,
+        electrofuel_eis_var_opex: pd.Series,
+        electrolysis_efficiency: pd.Series,
+        electrofuel_hydrogen_efficiency: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        electricity_market_price: pd.Series,
+        co2_market_price: pd.Series,
+        electrofuel_eis_specific_co2: pd.Series,
+        electricity_load_factor: pd.Series,
+        carbon_tax: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_electrofuel: float,
+        density_electrofuel: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -53,7 +53,6 @@ class ElectrofuelCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-
         ######## HYDROGEN PRODUCTION ########
 
         #### ELECTROLYSIS ####
@@ -106,16 +105,16 @@ class ElectrofuelCost(AeroMAPSModel):
         self.df.loc[:, "electrofuel_cost_premium"] = electrofuel_cost_premium
         self.df.loc[:, "electrofuel_mean_mfsp_litre"] = electrofuel_mean_mfsp_litre
         self.df.loc[:, "carbon_abatement_cost_electrofuel"] = carbon_abatement_cost_electrofuel
-        self.df.loc[
-            :, "specific_carbon_abatement_cost_electrofuel"
-        ] = specific_carbon_abatement_cost_electrofuel
-        self.df.loc[
-            :, "generic_specific_carbon_abatement_cost_electrofuel"
-        ] = generic_specific_carbon_abatement_cost_electrofuel
+        self.df.loc[:, "specific_carbon_abatement_cost_electrofuel"] = (
+            specific_carbon_abatement_cost_electrofuel
+        )
+        self.df.loc[:, "generic_specific_carbon_abatement_cost_electrofuel"] = (
+            generic_specific_carbon_abatement_cost_electrofuel
+        )
         self.df.loc[:, "electrofuel_carbon_tax"] = electrofuel_carbon_tax
-        self.df.loc[
-            :, "electrofuel_mfsp_carbon_tax_supplement"
-        ] = electrofuel_mfsp_carbon_tax_supplement
+        self.df.loc[:, "electrofuel_mfsp_carbon_tax_supplement"] = (
+            electrofuel_mfsp_carbon_tax_supplement
+        )
 
         return (
             electrofuel_plant_building_scenario,
@@ -136,27 +135,27 @@ class ElectrofuelCost(AeroMAPSModel):
 
     def _electrofuel_computation(
         self,
-        electrofuel_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-        # electrofuel_eis_specific_energy: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_hydrogen_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_electrofuel: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
-        co2_market_price: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_eis_specific_co2: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electrofuel_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_electrofuel: float = 0.0,
-        density_electrofuel: float = 0.0,
+        electrofuel_eis_capex: pd.Series,
+        electrofuel_eis_fixed_opex: pd.Series,
+        electrofuel_eis_var_opex: pd.Series,
+        # electrofuel_eis_specific_energy: pd.Series,
+        electrolysis_efficiency: pd.Series,
+        electrofuel_hydrogen_efficiency: pd.Series,
+        electricity_market_price: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        electricity_load_factor: pd.Series,
+        co2_market_price: pd.Series,
+        electrofuel_eis_specific_co2: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        kerosene_market_price: pd.Series,
+        carbon_tax: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_electrofuel: float,
+        density_electrofuel: float,
     ):
         """
         Computes the yearly costs to respect a given hydrogen electrolysis production scenario.
@@ -191,7 +190,7 @@ class ElectrofuelCost(AeroMAPSModel):
         electrofuel_production = pd.Series(np.zeros(len(indexes)), indexes)
 
         # carbon abatement cost in €/ton
-        carbon_abatement_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # carbon_abatement_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
         generic_specific_carbon_abatement_cost = pd.Series(np.nan, indexes)
@@ -204,12 +203,12 @@ class ElectrofuelCost(AeroMAPSModel):
         electrofuel_co2_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         # Total extra cost linked to carbon tax in M€2020
-        electrofuel_carbon_tax_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        # electrofuel_carbon_tax_cost = pd.Series(np.zeros(len(indexes)), indexes)
         # Total annual cost premium in M€2020
-        electrofuel_cost_premium = pd.Series(np.zeros(len(indexes)), indexes)
+        # electrofuel_cost_premium = pd.Series(np.zeros(len(indexes)), indexes)
 
         # Extra cost on mfsp linked to carbon tax in €/L
-        mfsp_supplement_carbon_tax = pd.Series(np.zeros(len(indexes)), indexes)
+        # mfsp_supplement_carbon_tax = pd.Series(np.zeros(len(indexes)), indexes)
 
         # For each year o²f the demand scenario the demand is matched by the production
         for year in list(demand_scenario.index):
@@ -256,9 +255,10 @@ class ElectrofuelCost(AeroMAPSModel):
                 plant_building_scenario[year] = electrofuel_capacity_to_build  # in ton/day capacity
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        electrolyser_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            electrolyser_capex_year / construction_time
+                        )
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = int(min(list(demand_scenario.index)[-1], year + plant_lifespan))
@@ -294,7 +294,6 @@ class ElectrofuelCost(AeroMAPSModel):
 
                 for i in range(year, year + int(plant_lifespan)):
                     if i < (self.end_year + 1):
-
                         discounted_cumul_cost += (
                             electrofuel_cost[i]["TOTAL"] - kerosene_market_price[i]
                         ) / (1 + social_discount_rate) ** (i - year)
@@ -353,9 +352,9 @@ class ElectrofuelCost(AeroMAPSModel):
                 electrofuel_production[year + 1] >= demand_scenario[year + 1] > 0
             ):
                 specific_carbon_abatement_cost[year] = specific_carbon_abatement_cost[year - 1]
-                generic_specific_carbon_abatement_cost[
-                    year
-                ] = generic_specific_carbon_abatement_cost[year - 1]
+                generic_specific_carbon_abatement_cost[year] = (
+                    generic_specific_carbon_abatement_cost[year - 1]
+                )
 
         # MOD -> Scaling down production for diminishing production scenarios.
         # Very weak model, assuming that production not anymore needed by aviation is used elsewhere in the industry.
@@ -507,7 +506,7 @@ class ElectrofuelCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year + construction_time, end_bound + 1):
+        for year in range(base_year + construction_time, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * electrofuel_specific_electricity[technology_year]
             CO2_cost = electrofuel_specific_co2[technology_year] * co2_market_price[year]
@@ -529,9 +528,9 @@ class ElectrofuelCapex(AeroMAPSModel):
 
     def compute(
         self,
-        electrofuel_capex_reference_years: list = [],
-        electrofuel_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrofuel_capex_reference_years: list,
+        electrofuel_capex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrofuel capital expenditures at eis using interpolation functions"""
 
         electrofuel_eis_capex = AeromapsInterpolationFunction(
@@ -551,9 +550,9 @@ class ElectrofuelFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        electrofuel_fixed_opex_reference_years: list = [],
-        electrofuel_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrofuel_fixed_opex_reference_years: list,
+        electrofuel_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrofuel fixed operational expenditures at entry into service using interpolation functions"""
 
         electrofuel_eis_fixed_opex = AeromapsInterpolationFunction(
@@ -573,9 +572,9 @@ class ElectrofuelVarOpex(AeroMAPSModel):
 
     def compute(
         self,
-        electrofuel_var_opex_reference_years: list = [],
-        electrofuel_var_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrofuel_var_opex_reference_years: list,
+        electrofuel_var_opex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrofuel variable operational expenditures at entry into service using interpolation functions"""
 
         electrofuel_eis_var_opex = AeromapsInterpolationFunction(
@@ -601,11 +600,11 @@ class ElectrofuelVarOpex(AeroMAPSModel):
 #
 #     def compute(
 #             self,
-#             electrofuel_specific_electricity_2020: float = 0.0,
-#             electrofuel_specific_electricity_2030: float = 0.0,
-#             electrofuel_specific_electricity_2040: float = 0.0,
-#             electrofuel_specific_electricity_2050: float = 0.0,
-#     ) -> Tuple[pd.Series]:
+#             electrofuel_specific_electricity_2020: float,
+#             electrofuel_specific_electricity_2030: float,
+#             electrofuel_specific_electricity_2040: float,
+#             electrofuel_specific_electricity_2050: float,
+#     ) -> pd.Series:
 #         """electrofuel efficiency at eis using interpolation functions"""
 #         # FT MSW
 #         reference_values_specific_electricity = [
@@ -634,7 +633,6 @@ class ElectrofuelVarOpex(AeroMAPSModel):
 
 
 class ElectrofuelSpecificCo2(AeroMAPSModel):
-
     # changement d'usage par rapport à CAST==> on utilise pas l'efficacité moyenne pour la cons d'élec, mais
     # l'efficacité de chaque année de mise en service de l'eclectolyseur. Permet de faire des choses plus détaillées.
     def __init__(self, name="electrofuel_specific_co2", *args, **kwargs):
@@ -642,9 +640,9 @@ class ElectrofuelSpecificCo2(AeroMAPSModel):
 
     def compute(
         self,
-        electrofuel_specific_co2_reference_years: list = [],
-        electrofuel_specific_co2_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrofuel_specific_co2_reference_years: list,
+        electrofuel_specific_co2_reference_years_values: list,
+    ) -> pd.Series:
         """Electrofuel efficiency at eis using interpolation functions"""
 
         electrofuel_eis_specific_co2 = AeromapsInterpolationFunction(

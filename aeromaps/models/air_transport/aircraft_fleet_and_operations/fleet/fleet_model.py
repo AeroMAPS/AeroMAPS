@@ -375,12 +375,12 @@ class FleetModel(AeroMAPSModel):
                     initial_energy_consumption = np.zeros_like(ref_old_aircraft_share)
                     initial_share = np.zeros_like(ref_old_aircraft_share)
 
-                temp_dict[
-                    f"{subcategory_key}:energy_consumption"
-                ] = initial_energy_consumption.copy()
-                temp_dict[
-                    f"{subcategory_key}:energy_consumption:dropin_fuel"
-                ] = initial_energy_consumption.copy()
+                temp_dict[f"{subcategory_key}:energy_consumption"] = (
+                    initial_energy_consumption.copy()
+                )
+                temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] = (
+                    initial_energy_consumption.copy()
+                )
                 temp_dict[f"{subcategory_key}:energy_consumption:hydrogen"] = np.zeros_like(
                     ref_old_aircraft_share
                 )
@@ -419,21 +419,21 @@ class FleetModel(AeroMAPSModel):
 
                     if aircraft.energy_type == "DROP_IN_FUEL":
                         temp_dict[f"{subcategory_key}:share:dropin_fuel"] += aircraft_share
-                        temp_dict[
-                            f"{subcategory_key}:energy_consumption:dropin_fuel"
-                        ] += energy_consumption
+                        temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] += (
+                            energy_consumption
+                        )
 
                     if aircraft.energy_type == "HYDROGEN":
                         temp_dict[f"{subcategory_key}:share:hydrogen"] += aircraft_share
-                        temp_dict[
-                            f"{subcategory_key}:energy_consumption:hydrogen"
-                        ] += energy_consumption
+                        temp_dict[f"{subcategory_key}:energy_consumption:hydrogen"] += (
+                            energy_consumption
+                        )
 
                     if aircraft.energy_type == "ELECTRIC":
                         temp_dict[f"{subcategory_key}:share:electric"] += aircraft_share
-                        temp_dict[
-                            f"{subcategory_key}:energy_consumption:electric"
-                        ] += energy_consumption
+                        temp_dict[f"{subcategory_key}:energy_consumption:electric"] += (
+                            energy_consumption
+                        )
 
                     if aircraft.energy_type == "HYBRID_ELECTRIC":
                         hybridization_factor = float(aircraft.parameters.hybridization_factor)
@@ -443,9 +443,9 @@ class FleetModel(AeroMAPSModel):
                         temp_dict[f"{subcategory_key}:share:electric"] += (
                             hybridization_factor * aircraft_share
                         )
-                        temp_dict[
-                            f"{subcategory_key}:energy_consumption:hybrid_electric"
-                        ] += energy_consumption
+                        temp_dict[f"{subcategory_key}:energy_consumption:hybrid_electric"] += (
+                            energy_consumption
+                        )
                         temp_dict[f"{subcategory_key}:energy_consumption:dropin_fuel"] += (
                             1 - hybridization_factor
                         ) * energy_consumption
@@ -500,9 +500,9 @@ class FleetModel(AeroMAPSModel):
                     initial_doc_non_energy = np.zeros_like(ref_old_aircraft_share)
 
                 temp_dict[f"{subcategory_key}:doc_non_energy"] = initial_doc_non_energy.copy()
-                temp_dict[
-                    f"{subcategory_key}:doc_non_energy:dropin_fuel"
-                ] = initial_doc_non_energy.copy()
+                temp_dict[f"{subcategory_key}:doc_non_energy:dropin_fuel"] = (
+                    initial_doc_non_energy.copy()
+                )
                 temp_dict[f"{subcategory_key}:doc_non_energy:hydrogen"] = np.zeros_like(
                     ref_old_aircraft_share
                 )
@@ -537,9 +537,9 @@ class FleetModel(AeroMAPSModel):
                         temp_dict[f"{subcategory_key}:doc_non_energy:electric"] += doc_non_energy
 
                     if aircraft.energy_type == "HYBRID_ELECTRIC":
-                        temp_dict[
-                            f"{subcategory_key}:doc_non_energy:hybrid_electric"
-                        ] += doc_non_energy
+                        temp_dict[f"{subcategory_key}:doc_non_energy:hybrid_electric"] += (
+                            doc_non_energy
+                        )
 
             # Summing up doc_non_energy for categories
             for energy_type in ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]:
@@ -794,55 +794,57 @@ class FleetModel(AeroMAPSModel):
                 # TODO: verify aircraft order
                 for k in self.df.index:
                     if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":energy_consumption:dropin_fuel"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":energy_consumption:dropin_fuel",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
+                        self.df.loc[k, category.name + ":energy_consumption:dropin_fuel"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":energy_consumption:dropin_fuel",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":energy_consumption:dropin_fuel"] = 0.0
 
                     if self.df.loc[k, category.name + ":share:hydrogen"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":energy_consumption:hydrogen"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":energy_consumption:hydrogen",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hydrogen"] / 100
+                        self.df.loc[k, category.name + ":energy_consumption:hydrogen"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":energy_consumption:hydrogen",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:hydrogen"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":energy_consumption:hydrogen"] = 0.0
 
                     if self.df.loc[k, category.name + ":share:electric"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":energy_consumption:electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":energy_consumption:electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:electric"] / 100
+                        self.df.loc[k, category.name + ":energy_consumption:electric"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":energy_consumption:electric",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:electric"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":energy_consumption:electric"] = 0.0
 
                     if self.df.loc[k, category.name + ":share:hybrid_electric"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":energy_consumption:hybrid_electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":energy_consumption:hybrid_electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hybrid_electric"] / 100
+                        self.df.loc[k, category.name + ":energy_consumption:hybrid_electric"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":energy_consumption:hybrid_electric",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":energy_consumption:hybrid_electric"] = 0.0
@@ -873,13 +875,15 @@ class FleetModel(AeroMAPSModel):
                 # TODO: verify aircraft order
                 for k in self.df.index:
                     if self.df.loc[k, category.name + ":share:dropin_fuel"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":doc_non_energy:dropin_fuel"
-                        ] += self.df.loc[
-                            k,
-                            category.name + ":" + subcategory.name + ":doc_non_energy:dropin_fuel",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:dropin_fuel"] / 100
+                        self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":doc_non_energy:dropin_fuel",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:dropin_fuel"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":doc_non_energy:dropin_fuel"] = 0.0
@@ -901,16 +905,15 @@ class FleetModel(AeroMAPSModel):
                         self.df.loc[k, category.name + ":doc_non_energy:electric"] = 0.0
 
                     if self.df.loc[k, category.name + ":share:hybrid_electric"] != 0.0:
-                        self.df.loc[
-                            k, category.name + ":doc_non_energy:hybrid_electric"
-                        ] += self.df.loc[
-                            k,
-                            category.name
-                            + ":"
-                            + subcategory.name
-                            + ":doc_non_energy:hybrid_electric",
-                        ] / (
-                            self.df.loc[k, category.name + ":share:hybrid_electric"] / 100
+                        self.df.loc[k, category.name + ":doc_non_energy:hybrid_electric"] += (
+                            self.df.loc[
+                                k,
+                                category.name
+                                + ":"
+                                + subcategory.name
+                                + ":doc_non_energy:hybrid_electric",
+                            ]
+                            / (self.df.loc[k, category.name + ":share:hybrid_electric"] / 100)
                         )
                     else:
                         self.df.loc[k, category.name + ":doc_non_energy:hybrid_electric"] = 0.0
@@ -991,16 +994,12 @@ class FleetModel(AeroMAPSModel):
                             k - self.df.index[0]
                         ] += self.df.at[
                             k, f"{subcategory_key}:emission_index_nox:hybrid_electric"
-                        ] / (
-                            hybrid_electric_share / 100
-                        )
+                        ] / (hybrid_electric_share / 100)
                         temp_dict[f"{category_name}:emission_index_soot:hybrid_electric"][
                             k - self.df.index[0]
                         ] += self.df.at[
                             k, f"{subcategory_key}:emission_index_soot:hybrid_electric"
-                        ] / (
-                            hybrid_electric_share / 100
-                        )
+                        ] / (hybrid_electric_share / 100)
 
             # Calculate mean emission index
             for k in self.df.index:
@@ -1091,7 +1090,6 @@ class FleetModel(AeroMAPSModel):
             )
 
             for j, subcategory in category.subcategories.items():
-
                 # New aircraft
                 for aircraft in subcategory.aircraft.values():
                     var_name = (
@@ -1200,7 +1198,6 @@ class SubCategory(object):
         self._setup_ui()
 
     def add_aircraft(self, change=None, aircraft: Aircraft = None):
-
         if aircraft is None:
             aircraft_data = np.array(
                 [
@@ -1258,7 +1255,6 @@ class SubCategory(object):
         self._update_parameters_from_grid()
 
     def remove_aircraft(self, change=None, aircraft_name: str = None):
-
         current_grid_df = self.datagrid.data
 
         if aircraft_name is not None:
@@ -1289,7 +1285,6 @@ class SubCategory(object):
         return self
 
     def _setup_datagrid(self):
-
         df = pd.DataFrame(columns=AIRCRAFT_COLUMNS)
 
         self.datagrid = dg.DataGrid(df, selection_mode="cell", editable=True)
@@ -1340,7 +1335,6 @@ class Category(object):
                 subcategory.compute()
 
     def add_subcategory(self, change=None, subcategory: SubCategory = None):
-
         if subcategory is None:
             subcategory_data = np.array(
                 [
@@ -1381,7 +1375,6 @@ class Category(object):
         self.datagrid.auto_fit_columns = True
 
     def remove_subcategory(self, change=None, subcategory_name: str = None):
-
         current_grid_df = self.datagrid.get_visible_data()
 
         if subcategory_name is not None:
@@ -1407,7 +1400,6 @@ class Category(object):
         self.datagrid.auto_fit_columns = True
 
     def _setup_datagrid(self):
-
         df = pd.DataFrame(columns=SUBCATEGORY_COLUMNS)
 
         self.datagrid = dg.DataGrid(df, selection_mode="cell", editable=True)
@@ -1492,7 +1484,6 @@ class Fleet(object):
         self.all_aircraft_elements = self.get_all_aircraft_elements()
 
     def get_all_aircraft_elements(self):
-
         all_aircraft_elements = {}
 
         for category in self.categories.values():
@@ -1665,43 +1656,43 @@ class Fleet(object):
         )
 
         # Short range regional turbofan
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=-15.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=30000000.0,
-            nrc_cost=5000000000.0,
-            oew=15.0,
-        )
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2035,
+        #     consumption_evolution=-15.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=30000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
 
-        sr_tf_aircraft_1 = Aircraft(
-            "New Regional turbofan 1",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
+        # sr_tf_aircraft_1 = Aircraft(
+        #     "New Regional turbofan 1",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
 
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-30.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=40000000.0,
-            nrc_cost=5000000000.0,
-            oew=15.0,
-        )
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2045,
+        #     consumption_evolution=-30.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=40000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
 
-        sr_tf_aircraft_2 = Aircraft(
-            "New Regional turbofan 2",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
+        # sr_tf_aircraft_2 = Aircraft(
+        #     "New Regional turbofan 2",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
 
         # Short range hydrogen aircraft
 
@@ -1829,12 +1820,10 @@ class Fleet(object):
         sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
         sr_nb_cat.recent_reference_aircraft.oew = 43.0
 
-        # TODO CAUTION energy_consumption_init[19] is a weak fix => type of the variable changes if multiple runs! Linked to Utils/function.py?
-
         mean_energy_init_ask_short_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.short_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.short_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
 
         share_recent_short_range = (
             mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
@@ -1855,7 +1844,6 @@ class Fleet(object):
 
         # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_short_range > 1:
-
             warnings.warn(
                 "Warning Message - "
                 + "Fleet Model: Short Range Aircraft: "
@@ -1919,8 +1907,8 @@ class Fleet(object):
             sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
 
         # Short range regional turbofan
-        subcat_params = SubcategoryParameters(share=0.0)
-        sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
+        # subcat_params = SubcategoryParameters(share=0.0)
+        # sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
         # Reference aircraft
         # Old
         # sr_tf_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1978,9 +1966,9 @@ class Fleet(object):
         mr_subcat.recent_reference_aircraft.oew = 43.0
 
         mean_energy_init_ask_medium_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.medium_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.medium_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
 
         share_recent_medium_range = (
             mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
@@ -2000,7 +1988,6 @@ class Fleet(object):
 
         # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_medium_range > 1:
-
             warnings.warn(
                 "Warning Message - "
                 + "Fleet Model: medium Range Aircraft: "
@@ -2064,9 +2051,9 @@ class Fleet(object):
         lr_subcat.recent_reference_aircraft.oew = 129.0
 
         mean_energy_init_ask_long_range = (
-            self.parameters.energy_consumption_init[19]
+            self.parameters.energy_consumption_init[2019]
             * self.parameters.long_range_energy_share_2019
-        ) / (self.parameters.ask_init[19] * self.parameters.long_range_rpk_share_2019)
+        ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
 
         share_recent_long_range = (
             mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask
@@ -2086,7 +2073,6 @@ class Fleet(object):
 
         # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_long_range > 1:
-
             warnings.warn(
                 "Warning Message - "
                 + "Fleet Model: long Range Aircraft: "

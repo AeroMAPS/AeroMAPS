@@ -8,16 +8,16 @@ class BiomassAvailability(AeroMAPSModel):
 
     def compute(
         self,
-        waste_biomass: float = 0.0,
-        crops_biomass: float = 0.0,
-        forest_residues_biomass: float = 0.0,
-        agricultural_residues_biomass: float = 0.0,
-        algae_biomass: float = 0.0,
-        fog_waste_biomass: float = 0.0,
-        oil_crops_biomass_share: float = 0.0,
-        sugarystarchy_crops_biomass_share: float = 0.0,
-        lignocellulosic_crops_biomass_share: float = 0.0,
-        aviation_biomass_allocated_share: float = 0.0,
+        waste_biomass: float,
+        crops_biomass: float,
+        forest_residues_biomass: float,
+        agricultural_residues_biomass: float,
+        algae_biomass: float,
+        fog_waste_biomass: float,
+        oil_crops_biomass_share: float,
+        sugarystarchy_crops_biomass_share: float,
+        lignocellulosic_crops_biomass_share: float,
+        aviation_biomass_allocated_share: float,
     ) -> Tuple[float, float, float, float, float, float, float, float, float, float, float]:
         """Biomass distribution for waste and crops, Biomass availability and Biomass for aviation."""
 
@@ -79,8 +79,8 @@ class ElectricityAvailability(AeroMAPSModel):
 
     def compute(
         self,
-        available_electricity: float = 0.0,
-        aviation_electricity_allocated_share: float = 0.0,
+        available_electricity: float,
+        aviation_electricity_allocated_share: float,
     ) -> float:
         """Aviation electricity availability."""
         aviation_available_electricity = (

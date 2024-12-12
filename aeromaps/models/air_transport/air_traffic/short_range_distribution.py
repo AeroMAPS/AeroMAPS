@@ -12,15 +12,19 @@ class ShortRangeDistribution(AeroMAPSModel):
 
     def compute(
         self,
-        short_range_basicturbofan_share_2019: float = 0.0,
-        short_range_basicturbofan_share_2030: float = 0.0,
-        short_range_basicturbofan_share_2040: float = 0.0,
-        short_range_basicturbofan_share_2050: float = 0.0,
-        short_range_regionalturboprop_share_2019: float = 0.0,
-        short_range_regionalturboprop_share_2030: float = 0.0,
-        short_range_regionalturboprop_share_2040: float = 0.0,
-        short_range_regionalturboprop_share_2050: float = 0.0,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series,]:
+        short_range_basicturbofan_share_2019: float,
+        short_range_basicturbofan_share_2030: float,
+        short_range_basicturbofan_share_2040: float,
+        short_range_basicturbofan_share_2050: float,
+        short_range_regionalturboprop_share_2019: float,
+        short_range_regionalturboprop_share_2030: float,
+        short_range_regionalturboprop_share_2040: float,
+        short_range_regionalturboprop_share_2050: float,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
         """Short range distribution calculation."""
 
         reference_years = [2019, 2030, 2040, self.end_year]
@@ -41,9 +45,9 @@ class ShortRangeDistribution(AeroMAPSModel):
             reference_years, reference_values_basicturbofan, kind="linear"
         )
         for k in range(self.prospection_start_year - 1, self.end_year + 1):
-            self.df.loc[
-                k, "short_range_basicturbofan_share"
-            ] = short_range_basicturbofan_share_function(k)
+            self.df.loc[k, "short_range_basicturbofan_share"] = (
+                short_range_basicturbofan_share_function(k)
+            )
 
         # Regional Turboprop
         reference_values_regionalturboprop = [
@@ -56,9 +60,9 @@ class ShortRangeDistribution(AeroMAPSModel):
             reference_years, reference_values_regionalturboprop, kind="linear"
         )
         for k in range(self.prospection_start_year - 1, self.end_year + 1):
-            self.df.loc[
-                k, "short_range_regionalturboprop_share"
-            ] = short_range_regionalturboprop_share_function(k)
+            self.df.loc[k, "short_range_regionalturboprop_share"] = (
+                short_range_regionalturboprop_share_function(k)
+            )
 
         short_range_basicturbofan_share = self.df["short_range_basicturbofan_share"]
         short_range_regionalturboprop_share = self.df["short_range_regionalturboprop_share"]
@@ -82,11 +86,21 @@ class RPKShortRange(AeroMAPSModel):
 
     def compute(
         self,
-        rpk_short_range: pd.Series = pd.Series(dtype="float64"),
-        short_range_basicturbofan_share: pd.Series = pd.Series(dtype="float64"),
-        short_range_regionalturboprop_share: pd.Series = pd.Series(dtype="float64"),
-        short_range_regionalturbofan_share: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, float, float, float, float, float, float,]:
+        rpk_short_range: pd.Series,
+        short_range_basicturbofan_share: pd.Series,
+        short_range_regionalturboprop_share: pd.Series,
+        short_range_regionalturbofan_share: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+    ]:
         """RPK short range calculation."""
 
         rpk_short_range_basicturbofan = rpk_short_range * short_range_basicturbofan_share / 100
@@ -144,24 +158,24 @@ class RPKShortRange(AeroMAPSModel):
             - 1
         )
 
-        self.float_outputs[
-            "cagr_rpk_short_range_basicturbofan"
-        ] = cagr_rpk_short_range_basicturbofan
-        self.float_outputs[
-            "cagr_rpk_short_range_regionalturboprop"
-        ] = cagr_rpk_short_range_regionalturboprop
-        self.float_outputs[
-            "cagr_rpk_short_range_regionalturbofan"
-        ] = cagr_rpk_short_range_regionalturbofan
-        self.float_outputs[
-            "prospective_evolution_rpk_short_range_basicturbofan"
-        ] = prospective_evolution_rpk_short_range_basicturbofan
-        self.float_outputs[
-            "prospective_evolution_rpk_short_range_regionalturboprop"
-        ] = prospective_evolution_rpk_short_range_regionalturboprop
-        self.float_outputs[
-            "prospective_evolution_rpk_short_range_regionalturbofan"
-        ] = prospective_evolution_rpk_short_range_regionalturbofan
+        self.float_outputs["cagr_rpk_short_range_basicturbofan"] = (
+            cagr_rpk_short_range_basicturbofan
+        )
+        self.float_outputs["cagr_rpk_short_range_regionalturboprop"] = (
+            cagr_rpk_short_range_regionalturboprop
+        )
+        self.float_outputs["cagr_rpk_short_range_regionalturbofan"] = (
+            cagr_rpk_short_range_regionalturbofan
+        )
+        self.float_outputs["prospective_evolution_rpk_short_range_basicturbofan"] = (
+            prospective_evolution_rpk_short_range_basicturbofan
+        )
+        self.float_outputs["prospective_evolution_rpk_short_range_regionalturboprop"] = (
+            prospective_evolution_rpk_short_range_regionalturboprop
+        )
+        self.float_outputs["prospective_evolution_rpk_short_range_regionalturbofan"] = (
+            prospective_evolution_rpk_short_range_regionalturbofan
+        )
 
         return (
             rpk_short_range_basicturbofan,

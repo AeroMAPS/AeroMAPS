@@ -11,7 +11,7 @@ It is available at the following address: https://aeromaps.isae-supaero.fr
 
 The Python Package Index ([PyPI](https://pypi.org/)) can be used for installing AeroMAPS.
 
-**Prerequisite**: AeroMAPS needs at least **Python 3.8.0**.
+**Prerequisite**: AeroMAPS needs at least **Python 3.9.0**.
 
 It is recommended (but not required) to install AeroMAPS in a virtual
 environment ([conda](https://docs.conda.io/en/latest/),

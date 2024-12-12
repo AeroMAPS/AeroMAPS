@@ -6,7 +6,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel
 
 
 class OperationsAbatementCost(AeroMAPSModel):
@@ -15,24 +15,24 @@ class OperationsAbatementCost(AeroMAPSModel):
 
     def compute(
         self,
-        operational_efficiency_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
-        operations_gain: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_mean_without_operations: pd.Series = pd.Series(dtype="float64"),
-        energy_per_ask_mean: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_mean_without_operations: pd.Series = pd.Series(dtype="float64"),
-        energy_per_rtk_mean: pd.Series = pd.Series(dtype="float64"),
-        rpk: pd.Series = pd.Series(dtype="float64"),
-        rtk: pd.Series = pd.Series(dtype="float64"),
-        load_factor: pd.Series = pd.Series(dtype="float64"),
-        load_factor_cost_non_energy_per_ask: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        social_discount_rate: float = 0.0,
-        operations_duration: float = 0.0,
-        operations_start_year: float = 0.0,
-        lhv_kerosene: float = 0.0,
-        density_kerosene: float = 0.0,
+        operational_efficiency_cost_non_energy_per_ask: pd.Series,
+        operations_gain: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        energy_per_ask_mean_without_operations: pd.Series,
+        energy_per_ask_mean: pd.Series,
+        energy_per_rtk_mean_without_operations: pd.Series,
+        energy_per_rtk_mean: pd.Series,
+        rpk: pd.Series,
+        rtk: pd.Series,
+        load_factor: pd.Series,
+        load_factor_cost_non_energy_per_ask: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        social_discount_rate: float,
+        operations_duration: float,
+        operations_start_year: int,
+        lhv_kerosene: float,
+        density_kerosene: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -46,10 +46,7 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
-        pd.Series,
-        pd.Series,
     ]:
-
         fuel_lhv = lhv_kerosene * density_kerosene
 
         ############### PASSENGER OPERATIONS #############
@@ -138,9 +135,9 @@ class OperationsAbatementCost(AeroMAPSModel):
         self.df.loc[:, "operations_abatement_cost_freight"] = operations_abatement_cost_freight
 
         operations_abatement_effective_freight = emissions_reduction_operations_freight * rtk
-        self.df.loc[
-            :, "operations_abatement_effective_freight"
-        ] = operations_abatement_effective_freight
+        self.df.loc[:, "operations_abatement_effective_freight"] = (
+            operations_abatement_effective_freight
+        )
 
         # Definition of a specific abatement cost, comparable to a hotelling growth carbon value.
         # Discount the costs/benefits over the horizon necessary to deploy the incremental gains of a year
@@ -295,7 +292,17 @@ class OperationsAbatementCost(AeroMAPSModel):
                     / (1 + discount_rate) ** (i - year)
                 )
 
+        if cumul_em == 0:
+            scac = np.NaN
+        else:
+            scac = discounted_cumul_cost / cumul_em
+
+        if generic_discounted_cumul_em == 0:
+            scac_prime = np.NaN
+        else:
+            scac_prime = discounted_cumul_cost / generic_discounted_cumul_em
+
         return (
-            discounted_cumul_cost / cumul_em,
-            discounted_cumul_cost / generic_discounted_cumul_em,
+            scac,
+            scac_prime,
         )

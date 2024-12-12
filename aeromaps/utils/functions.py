@@ -24,13 +24,15 @@ def _dict_from_json(file_name="parameters.json") -> dict:
             "energy_consumption_init",
             "total_aircraft_distance_init",
         ]:
-            parameters_dict[key] = pd.Series(value)
+            new_index = range(
+                parameters_dict["historic_start_year"], parameters_dict["prospection_start_year"]
+            )
+            parameters_dict[key] = pd.Series(value, index=new_index)
 
     return parameters_dict
 
 
 def _dict_to_df(data, orient="index") -> pd.DataFrame:
-
     # Check if values from data have the same length or else populate with NaN
     max_len = max([len(v) for v in data.values()])
     for key, value in data.items():
@@ -141,6 +143,11 @@ def create_partitioning(file, path=""):
             / 100
         )
 
+    # TODO move historic and prospection start year out of custom input file
+
+    historic_start_year_partitioned = world_data_dict["historic_start_year"]
+    prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
+
     # Generation of the JSON file
     partitioned_inputs_dict = {
         "rpk_init": rpk_init_partitioned,
@@ -158,6 +165,8 @@ def create_partitioning(file, path=""):
         "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
         "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
         "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
+        "historic_start_year": historic_start_year_partitioned,
+        "prospection_start_year": prospection_start_year_partitioned,
     }
     partitioned_inputs_path = pth.join(path, "partitioned_inputs.json")
     with open(partitioned_inputs_path, "w") as outfile:
@@ -211,3 +220,14 @@ def create_partitioning(file, path=""):
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
+
+
+def merge_json_files(file1, file2, output_file):
+    with open(file1, "r") as f1, open(file2, "r") as f2:
+        data1 = json.load(f1)
+        data2 = json.load(f2)
+
+    merged_data = {**data1, **data2}
+
+    with open(output_file, "w") as outfile:
+        json.dump(merged_data, outfile, indent=4)

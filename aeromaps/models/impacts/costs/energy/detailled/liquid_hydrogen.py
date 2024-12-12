@@ -4,7 +4,7 @@
 # @Software: PyCharm
 
 
-from typing import Tuple, Union, Any
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -18,56 +18,56 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_electrolysis_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_ccs_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_gas_share: pd.Series = pd.Series(dtype="float64"),
-        hydrogen_coal_share: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        gas_ccs_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        gas_ccs_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        gas_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
-        gas_ccs_load_factor: float = 0.0,
-        liquid_hydrogen_gas_ccs_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        gas_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        gas_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        gas_efficiency: pd.Series = pd.Series(dtype="float64"),
-        gas_load_factor: float = 0.0,
-        liquid_hydrogen_gas_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        coal_ccs_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        coal_ccs_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        coal_ccs_efficiency: pd.Series = pd.Series(dtype="float64"),
-        coal_ccs_load_factor: float = 0.0,
-        liquid_hydrogen_coal_ccs_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        coal_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        coal_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        coal_efficiency: pd.Series = pd.Series(dtype="float64"),
-        coal_load_factor: float = 0.0,
-        liquid_hydrogen_coal_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        liquefier_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        kerosene_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        liquid_hydrogen_electrolysis_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        gas_market_price: pd.Series = pd.Series(dtype="float64"),
-        coal_market_price: pd.Series = pd.Series(dtype="float64"),
-        ccs_cost: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
-        transport_cost_ratio: float = 0.0,
-        energy_replacement_ratio: float = 1.0,
-        carbon_tax: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_hydrogen: float = 0.0,
-        lhv_kerosene: float = 0.0,
-        density_kerosene: float = 0.0,
+        energy_consumption_hydrogen: pd.Series,
+        hydrogen_electrolysis_share: pd.Series,
+        hydrogen_gas_ccs_share: pd.Series,
+        hydrogen_coal_ccs_share: pd.Series,
+        hydrogen_gas_share: pd.Series,
+        hydrogen_coal_share: pd.Series,
+        electrolysis_h2_eis_capex: pd.Series,
+        electrolysis_h2_eis_fixed_opex: pd.Series,
+        electrolysis_h2_eis_var_opex: pd.Series,
+        electrolysis_efficiency: pd.Series,
+        gas_ccs_eis_capex: pd.Series,
+        gas_ccs_eis_fixed_opex: pd.Series,
+        gas_ccs_efficiency: pd.Series,
+        gas_ccs_load_factor: float,
+        liquid_hydrogen_gas_ccs_emission_factor: pd.Series,
+        gas_eis_capex: pd.Series,
+        gas_eis_fixed_opex: pd.Series,
+        gas_efficiency: pd.Series,
+        gas_load_factor: float,
+        liquid_hydrogen_gas_emission_factor: pd.Series,
+        coal_ccs_eis_capex: pd.Series,
+        coal_ccs_eis_fixed_opex: pd.Series,
+        coal_ccs_efficiency: pd.Series,
+        coal_ccs_load_factor: float,
+        liquid_hydrogen_coal_ccs_emission_factor: pd.Series,
+        coal_eis_capex: pd.Series,
+        coal_eis_fixed_opex: pd.Series,
+        coal_efficiency: pd.Series,
+        coal_load_factor: float,
+        liquid_hydrogen_coal_emission_factor: pd.Series,
+        liquefier_eis_capex: pd.Series,
+        liquefaction_efficiency: pd.Series,
+        kerosene_market_price: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        liquid_hydrogen_electrolysis_emission_factor: pd.Series,
+        electricity_market_price: pd.Series,
+        gas_market_price: pd.Series,
+        coal_market_price: pd.Series,
+        ccs_cost: pd.Series,
+        electricity_load_factor: pd.Series,
+        transport_cost_ratio: float,
+        energy_replacement_ratio: float,
+        carbon_tax: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_hydrogen: float,
+        lhv_kerosene: float,
+        density_kerosene: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -176,9 +176,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
             lhv_hydrogen,
         )
 
-        self.df.loc[
-            :, "electrolysis_plant_building_scenario"
-        ] = electrolysis_plant_building_scenario
+        self.df.loc[:, "electrolysis_plant_building_scenario"] = (
+            electrolysis_plant_building_scenario
+        )
         self.df.loc[:, "electrolysis_plant_building_cost"] = electrolysis_plant_building_cost
         self.df.loc[:, "electrolysis_h2_total_cost"] = electrolysis_h2_total_cost
         self.df.loc[:, "electrolysis_h2_mean_capex_share"] = electrolysis_h2_mean_capex_share
@@ -352,9 +352,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
             lhv_hydrogen,
         )
 
-        self.df.loc[
-            :, "liquefaction_plant_building_scenario"
-        ] = liquefaction_plant_building_scenario
+        self.df.loc[:, "liquefaction_plant_building_scenario"] = (
+            liquefaction_plant_building_scenario
+        )
         self.df.loc[:, "liquefaction_plant_building_cost"] = liquefaction_plant_building_cost
         self.df.loc[:, "liquefaction_h2_total_cost"] = liquefaction_h2_total_cost
         self.df.loc[:, "liquefaction_h2_mean_capex_share"] = liquefaction_h2_mean_capex_share
@@ -444,10 +444,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
         self.df.loc[:, "total_hydrogen_supply_cost"] = total_hydrogen_supply_cost
         # M€
 
-        h2_avg_cost_per_kg = (
+        average_hydrogen_mean_mfsp_kg = (
             total_hydrogen_supply_cost / (energy_consumption_hydrogen / lhv_hydrogen) * 1000000
         )
-        self.df.loc[:, "h2_avg_cost_per_kg"] = h2_avg_cost_per_kg
+        self.df.loc[:, "average_hydrogen_mean_mfsp_kg"] = average_hydrogen_mean_mfsp_kg
         # €/kg
 
         total_h2_building_cost = (
@@ -498,9 +498,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
         carbon_abatement_cost_h2_electrolysis = (
             electrolysis_h2_cost_premium * 1000000 / total_avoided_emissions
         )
-        self.df.loc[
-            :, "carbon_abatement_cost_h2_electrolysis"
-        ] = carbon_abatement_cost_h2_electrolysis
+        self.df.loc[:, "carbon_abatement_cost_h2_electrolysis"] = (
+            carbon_abatement_cost_h2_electrolysis
+        )
         # €/t
 
         electrolysis_h2_carbon_tax = (
@@ -519,9 +519,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_electrolysis_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "electrolysis_h2_mfsp_carbon_tax_supplement"
-        ] = electrolysis_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "electrolysis_h2_mfsp_carbon_tax_supplement"] = (
+            electrolysis_h2_mfsp_carbon_tax_supplement
+        )
 
         (discounted_cumul_kerosene_costs,) = self._unit_kerozene_discounted_cumul_costs(
             kerosene_market_price, plant_lifespan, social_discount_rate
@@ -558,13 +558,13 @@ class LiquidHydrogenCost(AeroMAPSModel):
             / energy_replacement_ratio
         ) / electrolysis_h2_generic_discounted_cumul_avoided_emissions
 
-        self.df.loc[
-            :, "electrolysis_h2_specific_abatement_cost"
-        ] = electrolysis_h2_specific_abatement_cost
+        self.df.loc[:, "electrolysis_h2_specific_abatement_cost"] = (
+            electrolysis_h2_specific_abatement_cost
+        )
 
-        self.df.loc[
-            :, "electrolysis_h2_generic_specific_abatement_cost"
-        ] = electrolysis_h2_generic_specific_abatement_cost
+        self.df.loc[:, "electrolysis_h2_generic_specific_abatement_cost"] = (
+            electrolysis_h2_generic_specific_abatement_cost
+        )
 
         #### GAS CCS ####
         gas_ccs_h2_cost_premium = (
@@ -617,9 +617,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_gas_ccs_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "gas_ccs_h2_mfsp_carbon_tax_supplement"
-        ] = gas_ccs_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "gas_ccs_h2_mfsp_carbon_tax_supplement"] = (
+            gas_ccs_h2_mfsp_carbon_tax_supplement
+        )
 
         (
             gas_ccs_h2_cumul_avoided_emissions,
@@ -654,9 +654,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         self.df.loc[:, "gas_ccs_h2_specific_abatement_cost"] = gas_ccs_h2_specific_abatement_cost
 
-        self.df.loc[
-            :, "gas_ccs_h2_generic_specific_abatement_cost"
-        ] = gas_ccs_h2_generic_specific_abatement_cost
+        self.df.loc[:, "gas_ccs_h2_generic_specific_abatement_cost"] = (
+            gas_ccs_h2_generic_specific_abatement_cost
+        )
 
         #### GAS ####
         gas_h2_cost_premium = (
@@ -742,9 +742,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         self.df.loc[:, "gas_h2_specific_abatement_cost"] = gas_h2_specific_abatement_cost
 
-        self.df.loc[
-            :, "gas_h2_generic_specific_abatement_cost"
-        ] = gas_h2_generic_specific_abatement_cost
+        self.df.loc[:, "gas_h2_generic_specific_abatement_cost"] = (
+            gas_h2_generic_specific_abatement_cost
+        )
 
         #### COAL CCS ####
         coal_ccs_h2_cost_premium = (
@@ -797,9 +797,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_tax * liquid_hydrogen_coal_ccs_emission_factor / 1000000 * lhv_hydrogen
         )
         # €/kg_H2
-        self.df.loc[
-            :, "coal_ccs_h2_mfsp_carbon_tax_supplement"
-        ] = coal_ccs_h2_mfsp_carbon_tax_supplement
+        self.df.loc[:, "coal_ccs_h2_mfsp_carbon_tax_supplement"] = (
+            coal_ccs_h2_mfsp_carbon_tax_supplement
+        )
 
         (
             coal_ccs_h2_cumul_avoided_emissions,
@@ -834,9 +834,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         self.df.loc[:, "coal_ccs_h2_specific_abatement_cost"] = coal_ccs_h2_specific_abatement_cost
 
-        self.df.loc[
-            :, "coal_ccs_h2_generic_specific_abatement_cost"
-        ] = coal_ccs_h2_generic_specific_abatement_cost
+        self.df.loc[:, "coal_ccs_h2_generic_specific_abatement_cost"] = (
+            coal_ccs_h2_generic_specific_abatement_cost
+        )
 
         #### COAL ####
         coal_h2_cost_premium = (
@@ -889,7 +889,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
         # €/kg_H2
         self.df.loc[:, "coal_h2_mfsp_carbon_tax_supplement"] = coal_h2_mfsp_carbon_tax_supplement
 
-        h2_avg_carbon_tax_per_kg = (
+        average_hydrogen_mean_carbon_tax_kg = (
             (
                 electrolysis_h2_carbon_tax.fillna(0)
                 + gas_h2_carbon_tax.fillna(0)
@@ -900,7 +900,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             / (energy_consumption_hydrogen / lhv_hydrogen)
             * 1000000
         )
-        self.df.loc[:, "h2_avg_carbon_tax_per_kg"] = h2_avg_carbon_tax_per_kg
+        self.df.loc[:, "average_hydrogen_mean_carbon_tax_kg"] = average_hydrogen_mean_carbon_tax_kg
         # €/kg
 
         (
@@ -936,9 +936,9 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         self.df.loc[:, "coal_h2_specific_abatement_cost"] = coal_h2_specific_abatement_cost
 
-        self.df.loc[
-            :, "coal_h2_generic_specific_abatement_cost"
-        ] = coal_h2_generic_specific_abatement_cost
+        self.df.loc[:, "coal_h2_generic_specific_abatement_cost"] = (
+            coal_h2_generic_specific_abatement_cost
+        )
 
         return (
             electrolysis_plant_building_scenario,
@@ -956,7 +956,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             transport_h2_total_cost,
             electrolysis_h2_mean_mfsp_kg,
             total_hydrogen_supply_cost,
-            h2_avg_cost_per_kg,
+            average_hydrogen_mean_mfsp_kg,
             total_h2_building_cost,
             electrolysis_h2_cost_premium,
             carbon_abatement_cost_h2_electrolysis,
@@ -1008,7 +1008,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             carbon_abatement_cost_h2_coal,
             coal_h2_carbon_tax,
             coal_h2_mfsp_carbon_tax_supplement,
-            h2_avg_carbon_tax_per_kg,
+            average_hydrogen_mean_carbon_tax_kg,
             electrolysis_h2_specific_abatement_cost,
             gas_ccs_h2_specific_abatement_cost,
             gas_h2_specific_abatement_cost,
@@ -1025,18 +1025,18 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def _electrolysis_computation(
         self,
-        electrolysis_h2_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_h2_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-        electrolysis_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        pathway_share: pd.Series = pd.Series(dtype="float64"),
-        electricity_load_factor: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_hydrogen: float = 0.0,
+        electrolysis_h2_eis_capex: pd.Series,
+        electrolysis_h2_eis_fixed_opex: pd.Series,
+        electrolysis_h2_eis_var_opex: pd.Series,
+        electrolysis_efficiency: pd.Series,
+        electricity_market_price: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        pathway_share: pd.Series,
+        electricity_load_factor: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_hydrogen: float,
     ):
         """
         Computes the yearly costs to respect a given hydrogen electrolysis production scenario.
@@ -1077,7 +1077,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
             if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[
                 year + 1
             ]:
-
                 # Getting the production not matched by plants already commissioned by creating an electrolyzer with year data technical data
                 hydrogen_cost = self._compute_electrolyser_year_lcoh(
                     int(construction_time),
@@ -1106,20 +1105,21 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # electrolyzer capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        electrolyser_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            electrolyser_capex_year / construction_time
+                        )
 
-                plant_building_scenario[
-                    year
-                ] = electrolyser_capacity_to_build  # in ton/day capacity
+                plant_building_scenario[year] = (
+                    electrolyser_capacity_to_build  # in ton/day capacity
+                )
 
                 # When production ends: either at the end of plant life or the end of the scenario;
                 end_bound = min(list(demand_scenario.index)[-1], year + plant_lifespan)
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1207,7 +1207,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
         Hydrogen price returned in €/kg
         """
-
         hydrogen_prices = {}
 
         # modification to base year not to use undefined technology costs => either base year or start of prospection year
@@ -1252,7 +1251,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * electrolyser_specific_electricity[technology_year]
             hydrogen_prices[year] = {
@@ -1266,21 +1265,21 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def _fossil_computation(
         self,
-        plant_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        plant_eis_fixed_opex: pd.Series = pd.Series(dtype="float64"),
-        # plant_eis_var_opex: pd.Series = pd.Series(dtype="float64"),
-        plant_efficiency: pd.Series = pd.Series(dtype="float64"),
-        fuel_market_price: pd.Series = pd.Series(dtype="float64"),
-        ccs_cost: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        pathway_share: pd.Series = pd.Series(dtype="float64"),
-        plant_load_factor: float = 0.0,
-        emission_factor: pd.Series = pd.Series(dtype="float64"),
-        emission_factor_without_ccs: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_hydrogen: float = 0.0,
+        plant_eis_capex: pd.Series,
+        plant_eis_fixed_opex: pd.Series,
+        # plant_eis_var_opex: pd.Series,
+        plant_efficiency: pd.Series,
+        fuel_market_price: pd.Series,
+        ccs_cost: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        pathway_share: pd.Series,
+        plant_load_factor: float,
+        emission_factor: pd.Series,
+        emission_factor_without_ccs: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_hydrogen: float,
     ):
         """
         Computes the yearly costs to respect a given hydrogen production scenario.
@@ -1328,7 +1327,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
             if (year + 1) <= self.end_year and hydrogen_production[year + 1] < demand_scenario[
                 year + 1
             ]:
-
                 # Getting the production not matched by plants already commissioned by creating an plant with EIS year technical data
                 hydrogen_cost = self._compute_fossil_year_lcoh(
                     int(construction_time),
@@ -1359,7 +1357,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 # plant capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += plant_capex_year / construction_time
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            plant_capex_year / construction_time
+                        )
+
                 plant_building_scenario[year] = plant_capacity_to_build
                 # in ton/day capacity
 
@@ -1368,7 +1370,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i] + (missing_production * hydrogen_cost[i]["TOTAL"]) / 1000
                     )  # €/kg and production in tons => /1000 for M€
@@ -1517,7 +1519,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(fuel_market_price.index), base_year + construction_time + plant_lifespan
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             fuel_price = fuel_market_price[year]
             fuel_cost = fuel_price * plant_specific_energy[technology_year]
             co2_ccs_cost = ccs_cost[year] * carbon_captured_kg[year]
@@ -1533,14 +1535,14 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def _liquefaction_computation(
         self,
-        liquefier_eis_capex: pd.Series = pd.Series(dtype="float64"),
-        liquefaction_efficiency: pd.Series = pd.Series(dtype="float64"),
-        electricity_market_price: pd.Series = pd.Series(dtype="float64"),
-        energy_consumption_hydrogen: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        private_discount_rate: float = 0.0,
-        social_discount_rate: float = 0.0,
-        lhv_hydrogen: float = 0.0,
+        liquefier_eis_capex: pd.Series,
+        liquefaction_efficiency: pd.Series,
+        electricity_market_price: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+        plant_lifespan: float,
+        private_discount_rate: float,
+        social_discount_rate: float,
+        lhv_hydrogen: float,
     ):
         # Convert hydrogen demand from MJ to tons.
 
@@ -1600,9 +1602,11 @@ class LiquidHydrogenCost(AeroMAPSModel):
                 )  # liquefier capex is in €/kg/day or m€/ton/day ==> M€/ton/day
 
                 for construction_year in range(year - construction_time, year):
-                    plant_building_cost[construction_year] += (
-                        liquefier_capex_year / construction_time
-                    )
+                    if self.historic_start_year < construction_year < self.end_year:
+                        plant_building_cost[construction_year] += (
+                            liquefier_capex_year / construction_time
+                        )
+
                 plant_building_scenario[year] = liquefier_capacity_to_build  # in ton/day capacity
 
                 # When production ends: either at the end of plant life or the end of the scenario;
@@ -1610,7 +1614,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
                 discounted_cumul_cost = 0
                 # Adding new plant production to future years
-                for i in range(year + 1, end_bound + 1):
+                for i in range(year + 1, int(end_bound) + 1):
                     h2_total_cost[i] = (
                         h2_total_cost[i]
                         + (missing_production * liquefaction_cost[i]["TOTAL"]) / 1000
@@ -1728,7 +1732,7 @@ class LiquidHydrogenCost(AeroMAPSModel):
             max(electricity_market_price.index), plant_lifespan + construction_time + base_year
         )
 
-        for year in range(base_year, end_bound + 1):
+        for year in range(base_year, int(end_bound) + 1):
             elec_price = electricity_market_price[year]
             elec_cost = elec_price * liquefier_specific_electricity[technology_year]
             opex_var_cost = 0.05 * elec_cost
@@ -1744,10 +1748,10 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def _unit_kerozene_discounted_cumul_costs(
         self,
-        kerosene_market_price: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        social_discount_rate: float = 0.0,
-    ) -> Tuple[pd.Series,]:
+        kerosene_market_price: pd.Series,
+        plant_lifespan: float,
+        social_discount_rate: float,
+    ) -> pd.Series:
         # Constants:
 
         indexes = kerosene_market_price.index
@@ -1755,7 +1759,6 @@ class LiquidHydrogenCost(AeroMAPSModel):
         specific_cost = pd.Series(np.nan, indexes)
 
         for year in list(kerosene_market_price.index):
-
             discounted_cumul_cost = 0
             for i in range(year, year + int(plant_lifespan)):
                 if i < (self.end_year + 1):
@@ -1773,12 +1776,15 @@ class LiquidHydrogenCost(AeroMAPSModel):
 
     def _unitary_avoided_cumul_emissions(
         self,
-        avoided_emission_factor: pd.Series = pd.Series(dtype="float64"),
-        exogenous_carbon_price_trajectory: pd.Series = pd.Series(dtype="float64"),
-        plant_lifespan: float = 0.0,
-        lhv_hydrogen: float = 0.0,
-        social_discount_rate: float = 0.0,
-    ) -> Tuple[pd.Series, pd.Series,]:
+        avoided_emission_factor: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        plant_lifespan: float,
+        lhv_hydrogen: float,
+        social_discount_rate: float,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+    ]:
         # Constants:
 
         indexes = avoided_emission_factor.index
@@ -1835,9 +1841,9 @@ class ElectrolyserCapex(AeroMAPSModel):
 
     def compute(
         self,
-        electrolyser_capex_reference_years: list = [],
-        electrolyser_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrolyser_capex_reference_years: list,
+        electrolyser_capex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrolyser capital expenditures at eis using interpolation functions"""
 
         electrolysis_h2_eis_capex = AeromapsInterpolationFunction(
@@ -1857,9 +1863,9 @@ class ElectrolyserFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        electrolyser_fixed_opex_reference_years: list = [],
-        electrolyser_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrolyser_fixed_opex_reference_years: list,
+        electrolyser_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrolyser fixed operational expenditures at entry into service using interpolation functions"""
 
         electrolysis_h2_eis_fixed_opex = AeromapsInterpolationFunction(
@@ -1879,9 +1885,9 @@ class ElectrolyserVarOpex(AeroMAPSModel):
 
     def compute(
         self,
-        electrolyser_var_opex_reference_years: list = [],
-        electrolyser_var_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        electrolyser_var_opex_reference_years: list,
+        electrolyser_var_opex_reference_years_values: list,
+    ) -> pd.Series:
         """Electrolyser variable operational expenditures at entry into service using interpolation functions"""
 
         electrolysis_h2_eis_var_opex = AeromapsInterpolationFunction(
@@ -1904,11 +1910,11 @@ class ElectrolyserVarOpex(AeroMAPSModel):
 #
 #     def compute(
 #             self,
-#             electrolyser_specific_electricity_2020: float = 0.0,
-#             electrolyser_specific_electricity_2030: float = 0.0,
-#             electrolyser_specific_electricity_2040: float = 0.0,
-#             electrolyser_specific_electricity_2050: float = 0.0,
-#     ) -> Tuple[pd.Series]:
+#             electrolyser_specific_electricity_2020: float,
+#             electrolyser_specific_electricity_2030: float,
+#             electrolyser_specific_electricity_2040: float,
+#             electrolyser_specific_electricity_2050: float,
+#     ) -> pd.Series:
 #         """Electrolyser efficiency at eis using interpolation functions"""
 #         # FT MSW
 #         reference_values_specific_electricity = [
@@ -1942,9 +1948,9 @@ class LiquefierCapex(AeroMAPSModel):
 
     def compute(
         self,
-        liquefier_capex_reference_years: list = [],
-        liquefier_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        liquefier_capex_reference_years: list,
+        liquefier_capex_reference_years_values: list,
+    ) -> pd.Series:
         """Liquefier capital expenditures at eis using interpolation functions"""
 
         liquefier_eis_capex = AeromapsInterpolationFunction(
@@ -1966,11 +1972,11 @@ class LiquefierCapex(AeroMAPSModel):
 #
 #     def compute(
 #             self,
-#             liquefier_specific_electricity_2020: float = 0.0,
-#             liquefier_specific_electricity_2030: float = 0.0,
-#             liquefier_specific_electricity_2040: float = 0.0,
-#             liquefier_specific_electricity_2050: float = 0.0,
-#     ) -> Tuple[pd.Series]:
+#             liquefier_specific_electricity_2020: float,
+#             liquefier_specific_electricity_2030: float,
+#             liquefier_specific_electricity_2040: float,
+#             liquefier_specific_electricity_2050: float,
+#     ) -> pd.Series:
 #         """liquefier efficiency at eis using interpolation functions"""
 #         # FT MSW
 #         reference_values_specific_electricity = [
@@ -2004,9 +2010,9 @@ class GasCcsCapex(AeroMAPSModel):
 
     def compute(
         self,
-        gas_ccs_eis_capex_reference_years: list = [],
-        gas_ccs_eis_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_ccs_eis_capex_reference_years: list,
+        gas_ccs_eis_capex_reference_years_values: list,
+    ) -> pd.Series:
         gas_ccs_eis_capex = AeromapsInterpolationFunction(
             self,
             gas_ccs_eis_capex_reference_years,
@@ -2024,9 +2030,9 @@ class GasCcsFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        gas_ccs_eis_fixed_opex_reference_years: list = [],
-        gas_ccs_eis_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_ccs_eis_fixed_opex_reference_years: list,
+        gas_ccs_eis_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         gas_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
             self,
             gas_ccs_eis_fixed_opex_reference_years,
@@ -2044,9 +2050,9 @@ class GasCcsEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        gas_ccs_efficiency_reference_years: list = [],
-        gas_ccs_efficiency_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_ccs_efficiency_reference_years: list,
+        gas_ccs_efficiency_reference_years_values: list,
+    ) -> pd.Series:
         gas_ccs_efficiency = AeromapsInterpolationFunction(
             self,
             gas_ccs_efficiency_reference_years,
@@ -2064,9 +2070,9 @@ class GasCapex(AeroMAPSModel):
 
     def compute(
         self,
-        gas_eis_capex_reference_years: list = [],
-        gas_eis_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_eis_capex_reference_years: list,
+        gas_eis_capex_reference_years_values: list,
+    ) -> pd.Series:
         gas_eis_capex = AeromapsInterpolationFunction(
             self,
             gas_eis_capex_reference_years,
@@ -2084,9 +2090,9 @@ class GasFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        gas_eis_fixed_opex_reference_years: list = [],
-        gas_eis_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_eis_fixed_opex_reference_years: list,
+        gas_eis_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         gas_eis_fixed_opex = AeromapsInterpolationFunction(
             self,
             gas_eis_fixed_opex_reference_years,
@@ -2104,9 +2110,9 @@ class GasEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        gas_efficiency_reference_years: list = [],
-        gas_efficiency_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        gas_efficiency_reference_years: list,
+        gas_efficiency_reference_years_values: list,
+    ) -> pd.Series:
         gas_efficiency = AeromapsInterpolationFunction(
             self,
             gas_efficiency_reference_years,
@@ -2124,9 +2130,9 @@ class CoalCcsCapex(AeroMAPSModel):
 
     def compute(
         self,
-        coal_ccs_eis_capex_reference_years: list = [],
-        coal_ccs_eis_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_ccs_eis_capex_reference_years: list,
+        coal_ccs_eis_capex_reference_years_values: list,
+    ) -> pd.Series:
         coal_ccs_eis_capex = AeromapsInterpolationFunction(
             self,
             coal_ccs_eis_capex_reference_years,
@@ -2144,9 +2150,9 @@ class CoalCcsFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        coal_ccs_eis_fixed_opex_reference_years: list = [],
-        coal_ccs_eis_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_ccs_eis_fixed_opex_reference_years: list,
+        coal_ccs_eis_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         coal_ccs_eis_fixed_opex = AeromapsInterpolationFunction(
             self,
             coal_ccs_eis_fixed_opex_reference_years,
@@ -2164,9 +2170,9 @@ class CoalCcsEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        coal_ccs_efficiency_reference_years: list = [],
-        coal_ccs_efficiency_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_ccs_efficiency_reference_years: list,
+        coal_ccs_efficiency_reference_years_values: list,
+    ) -> pd.Series:
         coal_ccs_efficiency = AeromapsInterpolationFunction(
             self,
             coal_ccs_efficiency_reference_years,
@@ -2184,9 +2190,9 @@ class CoalCapex(AeroMAPSModel):
 
     def compute(
         self,
-        coal_eis_capex_reference_years: list = [],
-        coal_eis_capex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_eis_capex_reference_years: list,
+        coal_eis_capex_reference_years_values: list,
+    ) -> pd.Series:
         coal_eis_capex = AeromapsInterpolationFunction(
             self,
             coal_eis_capex_reference_years,
@@ -2204,9 +2210,9 @@ class CoalFixedOpex(AeroMAPSModel):
 
     def compute(
         self,
-        coal_eis_fixed_opex_reference_years: list = [],
-        coal_eis_fixed_opex_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_eis_fixed_opex_reference_years: list,
+        coal_eis_fixed_opex_reference_years_values: list,
+    ) -> pd.Series:
         coal_eis_fixed_opex = AeromapsInterpolationFunction(
             self,
             coal_eis_fixed_opex_reference_years,
@@ -2224,9 +2230,9 @@ class CoalEfficiency(AeroMAPSModel):
 
     def compute(
         self,
-        coal_efficiency_reference_years: list = [],
-        coal_efficiency_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        coal_efficiency_reference_years: list,
+        coal_efficiency_reference_years_values: list,
+    ) -> pd.Series:
         coal_efficiency = AeromapsInterpolationFunction(
             self,
             coal_efficiency_reference_years,
@@ -2244,9 +2250,9 @@ class CcsCost(AeroMAPSModel):
 
     def compute(
         self,
-        ccs_cost_reference_years: list = [],
-        ccs_cost_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        ccs_cost_reference_years: list,
+        ccs_cost_reference_years_values: list,
+    ) -> pd.Series:
         ccs_cost = AeromapsInterpolationFunction(
             self, ccs_cost_reference_years, ccs_cost_reference_years_values, model_name=self.name
         )

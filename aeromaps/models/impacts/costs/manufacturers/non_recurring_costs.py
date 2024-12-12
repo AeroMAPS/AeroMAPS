@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from typing import Tuple
 
 
 class NonRecurringCosts(AeroMAPSModel):
@@ -17,10 +16,9 @@ class NonRecurringCosts(AeroMAPSModel):
     def compute(
         self,
         aircraft_in_out_value_dict: dict,
-    ) -> Tuple[dict,]:
+    ) -> dict:
         nrc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
                 # Check if it's a reference aircraft or a normal aircraft...
@@ -51,7 +49,7 @@ class NonRecurringCosts(AeroMAPSModel):
 
                 nrc_aircraft_value_dict[aircraft_var_name] = nrc_aircraft_value
 
-        return (nrc_aircraft_value_dict,)
+        return nrc_aircraft_value_dict
 
     def _compute_nrc(
         self,

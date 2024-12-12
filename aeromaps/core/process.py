@@ -5,7 +5,6 @@ from json import load, dump
 # Third-party imports
 import numpy as np
 import pandas as pd
-from gemseo.core.discipline import MDODiscipline
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -50,7 +49,6 @@ class AeroMAPSProcess(object):
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
-
         self.configuration_file = configuration_file
         self._initialize_configuration()
 
@@ -74,11 +72,12 @@ class AeroMAPSProcess(object):
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
         # Create GEMSEO process
-        self.process = create_mda(
-            "MDAChain", disciplines=self.disciplines, grammar_type=MDODiscipline.GrammarType.SIMPLE
-        )
+        self.process = create_mda("MDAChain", disciplines=self.disciplines)
+
         self._initialize_data()
-        self._update_variables()
+
+        # TODO: check if we need to know inputs before computing
+        # self._update_variables()
 
     def compute(self):
         if self.fleet is not None:
@@ -141,13 +140,18 @@ class AeroMAPSProcess(object):
 
     def plot(self, name, save=False, size_inches=None, remove_title=False):
         if name in available_plots_fleet:
-            fig = available_plots_fleet[name](self.data, self.fleet_model)
-            if save:
-                if size_inches is not None:
-                    fig.fig.set_size_inches(size_inches)
-                if remove_title:
-                    fig.fig.gca().set_title("")
-                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+            try:
+                fig = available_plots_fleet[name](self.data, self.fleet_model)
+                if save:
+                    if size_inches is not None:
+                        fig.fig.set_size_inches(size_inches)
+                    if remove_title:
+                        fig.fig.gca().set_title("")
+                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+            except AttributeError as e:
+                raise NameError(
+                    f"Plot {name} requires using bottom up fleet model. Original error: {e}"
+                )
         elif name in available_plots:
             fig = available_plots[name](self.data)
             if save:
@@ -191,7 +195,6 @@ class AeroMAPSProcess(object):
         self.data["lca_outputs"] = pd.DataFrame()
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
-
         if self.use_fleet_model:
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
@@ -252,7 +255,6 @@ class AeroMAPSProcess(object):
         )
 
     def _initialize_inputs(self):
-
         self.parameters = Parameters()
         # First use main parameters.json as default values
         self.parameters.read_json(file_name=default_parameters_path)
@@ -266,6 +268,13 @@ class AeroMAPSProcess(object):
             if new_input_file_path != default_parameters_path:
                 self.parameters.read_json(file_name=new_input_file_path)
         # TODO: think refactoring to a dedicated method
+
+        # Check if parameter is pd.Series and update index
+        for key, value in self.parameters.__dict__.items():
+            if isinstance(value, pd.Series):
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                value = value.reindex(new_index, fill_value=np.nan)
+                setattr(self.parameters, key, value)
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -282,15 +291,16 @@ class AeroMAPSProcess(object):
         self.climate_historical_data = historical_dataset_df.values
 
     def _set_inputs(self):
-
         all_inputs = {}
         self._format_input_vectors()
         # TODO: make this more efficient
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
             disc.model._initialize_df()
-            disc.update_defaults()
-            all_inputs.update(disc.default_inputs)
+            # disc.update_defaults()
+            # all_inputs.update(disc.default_inputs)
+
+        all_inputs.update(self.parameters.__dict__)
 
         return all_inputs
 
@@ -304,10 +314,11 @@ class AeroMAPSProcess(object):
                     mode="constant",
                     constant_values=np.nan,
                 )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
 
     def _update_variables(self):
-
         self._update_data_from_model()
 
         self._update_dataframes_from_data()
@@ -315,9 +326,8 @@ class AeroMAPSProcess(object):
         self._update_json_from_data()
 
     def _update_data_from_model(self):
-
         # Inputs
-        all_inputs = self.process.get_input_data_names()
+        all_inputs = self.process.get_input_data()
 
         for name in all_inputs:
             try:
@@ -330,7 +340,7 @@ class AeroMAPSProcess(object):
                         if not np.isnan(val):
                             new_values.append(val)
                     self.data["vector_inputs"][name] = new_values
-            except:
+            except AttributeError:
                 pass
 
         # Outputs
@@ -366,7 +376,6 @@ class AeroMAPSProcess(object):
             self.data["float_outputs"].update(disc.model.float_outputs)
 
     def _update_dataframes_from_data(self):
-
         # Float parameters
         data = {
             "Name": self.data["float_inputs"].keys(),
@@ -441,7 +450,6 @@ class AeroMAPSProcess(object):
             for variable in variables:
                 # If the variable exists in the csv we extract the information
                 if variable in df["Name"].values:
-
                     data = df.loc[df["Name"] == variable]
                     data["Type"] = data_type
                     var_infos_df = pd.concat([var_infos_df, data], ignore_index=True)

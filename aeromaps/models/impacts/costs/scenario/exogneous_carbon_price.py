@@ -3,7 +3,6 @@
 # @File : exogneous_carbon_price.py
 # @Software: PyCharm
 
-from typing import Tuple
 
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
@@ -15,9 +14,9 @@ class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
 
     def compute(
         self,
-        exogenous_carbon_price_reference_years: list = [],
-        exogenous_carbon_price_reference_years_values: list = [],
-    ) -> Tuple[pd.Series]:
+        exogenous_carbon_price_reference_years: list,
+        exogenous_carbon_price_reference_years_values: list,
+    ) -> pd.Series:
         exogenous_carbon_price_trajectory = AeromapsInterpolationFunction(
             self,
             exogenous_carbon_price_reference_years,

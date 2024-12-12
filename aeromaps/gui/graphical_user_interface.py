@@ -71,7 +71,6 @@ class GraphicalUserInterface(widgets.VBox):
         self.update(None)
 
     def _build_ui(self, change=None):
-
         # Initialization of graph output
         self.out1 = None
         self.out2 = None
@@ -918,11 +917,10 @@ class GraphicalUserInterface(widgets.VBox):
         self._update_plots()
 
     def _update_controls(self):
-
         # DISCOVERY
 
         # Traffic
-        if self.w_grouped_market.value == False:
+        if self.w_grouped_market.value is False:
             self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
                 self.w_growth_short_range_percent.value
             ]
@@ -958,7 +956,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.w_growth_freight_percent.disabled = True
             self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
 
-        if self.w_short_range_reduction.value == False and self.w_social_measure.value == False:
+        if self.w_short_range_reduction.value is False and self.w_social_measure.value is False:
             self.process.parameters.rpk_short_range_measures_final_impact = 0.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
             self.process.parameters.rpk_long_range_measures_final_impact = 0.0
@@ -968,7 +966,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.rpk_short_range_measures_duration = 5.0
             self.process.parameters.rpk_medium_range_measures_duration = 5.0
             self.process.parameters.rpk_long_range_measures_duration = 5.0
-        elif self.w_short_range_reduction.value == True and self.w_social_measure.value == False:
+        elif self.w_short_range_reduction.value and self.w_social_measure.value is False:
             self.process.parameters.rpk_short_range_measures_final_impact = 50.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 0.0
             self.process.parameters.rpk_long_range_measures_final_impact = 0.0
@@ -978,7 +976,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.rpk_short_range_measures_duration = 5.0
             self.process.parameters.rpk_medium_range_measures_duration = 5.0
             self.process.parameters.rpk_long_range_measures_duration = 5.0
-        elif self.w_short_range_reduction.value == False and self.w_social_measure.value == True:
+        elif self.w_short_range_reduction.value is False and self.w_social_measure.value:
             self.process.parameters.rpk_short_range_measures_final_impact = 25.0
             self.process.parameters.rpk_medium_range_measures_final_impact = 25.0
             self.process.parameters.rpk_long_range_measures_final_impact = 25.0
@@ -1019,7 +1017,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1140,7 +1138,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1261,7 +1259,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == False:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value is False:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1382,7 +1380,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1503,7 +1501,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
-        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
@@ -1625,7 +1623,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Medium Range"].parameters.life = 20
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
-        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value == True:
+        elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value:
             self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
@@ -1747,7 +1745,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         # Hydrogen
-        if self.w_turboprop.value == False:
+        if self.w_turboprop.value is False:
             if self.w_hydrogen_aircraft.value == "Limited":
                 self.process.fleet.categories["Short Range"].subcategories[
                     0
@@ -1859,7 +1857,7 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
                     aircraft=medium_range_aircraft_hydrogen
                 )
-        elif self.w_turboprop.value == True:
+        elif self.w_turboprop.value:
             if self.w_hydrogen_aircraft.value == "Limited":
                 self.process.fleet.categories["Short Range"].subcategories[
                     0
@@ -1976,36 +1974,36 @@ class GraphicalUserInterface(widgets.VBox):
         if self.w_load_factor.value == "Constant":
             self.process.parameters.load_factor_end_year = 82.4
         elif self.w_load_factor.value == "Unambitious":
-            self.process.parameters.load_factor_end_year = 85
+            self.process.parameters.load_factor_end_year = 85.0
         elif self.w_load_factor.value == "Trend":
-            self.process.parameters.load_factor_end_year = 89
+            self.process.parameters.load_factor_end_year = 89.0
         elif self.w_load_factor.value == "Ambitious":
-            self.process.parameters.load_factor_end_year = 92
+            self.process.parameters.load_factor_end_year = 92.0
         elif self.w_load_factor.value == "Very ambitious":
-            self.process.parameters.load_factor_end_year = 95
+            self.process.parameters.load_factor_end_year = 95.0
 
         if self.w_operations.value == "Constant":
-            self.process.parameters.operations_final_gain = 0
+            self.process.parameters.operations_final_gain = 0.0
             self.process.parameters.operations_start_year = 2025
-            self.process.parameters.operations_duration = 20
+            self.process.parameters.operations_duration = 20.0
         elif self.w_operations.value == "Pessimistic":
-            self.process.parameters.operations_final_gain = 4
+            self.process.parameters.operations_final_gain = 4.0
             self.process.parameters.operations_start_year = 2025
-            self.process.parameters.operations_duration = 20
+            self.process.parameters.operations_duration = 20.0
         elif self.w_operations.value == "Realistic":
-            self.process.parameters.operations_final_gain = 8
+            self.process.parameters.operations_final_gain = 8.0
             self.process.parameters.operations_start_year = 2025
-            self.process.parameters.operations_duration = 20
+            self.process.parameters.operations_duration = 20.0
         elif self.w_operations.value == "Optimistic":
-            self.process.parameters.operations_final_gain = 12
+            self.process.parameters.operations_final_gain = 12.0
             self.process.parameters.operations_start_year = 2025
-            self.process.parameters.operations_duration = 20
+            self.process.parameters.operations_duration = 20.0
         elif self.w_operations.value == "Idealistic":
-            self.process.parameters.operations_final_gain = 16
+            self.process.parameters.operations_final_gain = 16.0
             self.process.parameters.operations_start_year = 2025
-            self.process.parameters.operations_duration = 20
+            self.process.parameters.operations_duration = 20.0
 
-        if self.w_contrails_avoidance.value == True:
+        if self.w_contrails_avoidance.value:
             self.process.parameters.operations_contrails_final_gain = 59.4  # [%]
             self.process.parameters.operations_contrails_final_overconsumption = 0.014  # [%]
             self.process.parameters.operations_contrails_start_year = 2030
@@ -2188,7 +2186,7 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.rpk_medium_range_measures_duration = 5.0
                 self.process.parameters.rpk_long_range_measures_duration = 5.0
                 # Efficiency
-                self.process.parameters.load_factor_end_year = 89
+                self.process.parameters.load_factor_end_year = 89.0
                 self.process.parameters.energy_per_ask_short_range_dropin_fuel_gain = 1.5
                 self.process.parameters.energy_per_ask_medium_range_dropin_fuel_gain = 1.5
                 self.process.parameters.energy_per_ask_long_range_dropin_fuel_gain = 1.5
@@ -2255,121 +2253,121 @@ class GraphicalUserInterface(widgets.VBox):
         # Environment
         if self.w_temperature.value == "+1.5°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 900
+                self.process.parameters.net_carbon_budget = 900.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 650
+                self.process.parameters.net_carbon_budget = 650.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 500
+                self.process.parameters.net_carbon_budget = 500.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 400
+                self.process.parameters.net_carbon_budget = 400.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 300
+                self.process.parameters.net_carbon_budget = 300.0
         elif self.w_temperature.value == "+1.6°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 1200
+                self.process.parameters.net_carbon_budget = 1200.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 850
+                self.process.parameters.net_carbon_budget = 850.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 650
+                self.process.parameters.net_carbon_budget = 650.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 550
+                self.process.parameters.net_carbon_budget = 550.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 400
+                self.process.parameters.net_carbon_budget = 400.0
         elif self.w_temperature.value == "+1.7°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 1450
+                self.process.parameters.net_carbon_budget = 1450.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 1050
+                self.process.parameters.net_carbon_budget = 1050.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 850
+                self.process.parameters.net_carbon_budget = 850.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 700
+                self.process.parameters.net_carbon_budget = 700.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 550
+                self.process.parameters.net_carbon_budget = 550.0
         elif self.w_temperature.value == "+1.8°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 1750
+                self.process.parameters.net_carbon_budget = 1750.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 1250
+                self.process.parameters.net_carbon_budget = 1250.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 1000
+                self.process.parameters.net_carbon_budget = 1000.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 850
+                self.process.parameters.net_carbon_budget = 850.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 650
+                self.process.parameters.net_carbon_budget = 650.0
         elif self.w_temperature.value == "+1.9°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 2000
+                self.process.parameters.net_carbon_budget = 2000.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 1450
+                self.process.parameters.net_carbon_budget = 1450.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 1200
+                self.process.parameters.net_carbon_budget = 1200.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 1000
+                self.process.parameters.net_carbon_budget = 1000.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 800
+                self.process.parameters.net_carbon_budget = 800.0
         elif self.w_temperature.value == "+2.0°C":
             if self.w_success_percentage.value == "17%":
-                self.process.parameters.net_carbon_budget = 2300
+                self.process.parameters.net_carbon_budget = 2300.0
             elif self.w_success_percentage.value == "33%":
-                self.process.parameters.net_carbon_budget = 1700
+                self.process.parameters.net_carbon_budget = 1700.0
             elif self.w_success_percentage.value == "50%":
-                self.process.parameters.net_carbon_budget = 1350
+                self.process.parameters.net_carbon_budget = 1350.0
             elif self.w_success_percentage.value == "67%":
-                self.process.parameters.net_carbon_budget = 1150
+                self.process.parameters.net_carbon_budget = 1150.0
             elif self.w_success_percentage.value == "83%":
-                self.process.parameters.net_carbon_budget = 900
+                self.process.parameters.net_carbon_budget = 900.0
 
         if self.w_cdr.value == "Undeveloped":
-            self.process.parameters.carbon_dioxyde_removal_2100 = 0
+            self.process.parameters.carbon_dioxyde_removal_2100 = 0.0
         elif self.w_cdr.value == "Slightly developed":
-            self.process.parameters.carbon_dioxyde_removal_2100 = 285
+            self.process.parameters.carbon_dioxyde_removal_2100 = 285.0
         elif self.w_cdr.value == "Developed":
-            self.process.parameters.carbon_dioxyde_removal_2100 = 527
+            self.process.parameters.carbon_dioxyde_removal_2100 = 527.0
         elif self.w_cdr.value == "Highly developed":
-            self.process.parameters.carbon_dioxyde_removal_2100 = 733
+            self.process.parameters.carbon_dioxyde_removal_2100 = 733.0
 
         if self.w_biomass_available.value == "Very pessimistic":
-            self.process.parameters.waste_biomass = 9
-            self.process.parameters.crops_biomass = 8
-            self.process.parameters.forest_residues_biomass = 5
-            self.process.parameters.agricultural_residues_biomass = 10
-            self.process.parameters.algae_biomass = 5
+            self.process.parameters.waste_biomass = 9.0
+            self.process.parameters.crops_biomass = 8.0
+            self.process.parameters.forest_residues_biomass = 5.0
+            self.process.parameters.agricultural_residues_biomass = 10.0
+            self.process.parameters.algae_biomass = 5.0
         elif self.w_biomass_available.value == "Pessimistic":
-            self.process.parameters.waste_biomass = 10
-            self.process.parameters.crops_biomass = 37
-            self.process.parameters.forest_residues_biomass = 15
-            self.process.parameters.agricultural_residues_biomass = 30
-            self.process.parameters.algae_biomass = 8
+            self.process.parameters.waste_biomass = 10.0
+            self.process.parameters.crops_biomass = 37.0
+            self.process.parameters.forest_residues_biomass = 15.0
+            self.process.parameters.agricultural_residues_biomass = 30.0
+            self.process.parameters.algae_biomass = 8.0
         elif self.w_biomass_available.value == "Realistic":
-            self.process.parameters.waste_biomass = 12
-            self.process.parameters.crops_biomass = 63
-            self.process.parameters.forest_residues_biomass = 17
-            self.process.parameters.agricultural_residues_biomass = 57
-            self.process.parameters.algae_biomass = 15
+            self.process.parameters.waste_biomass = 12.0
+            self.process.parameters.crops_biomass = 63.0
+            self.process.parameters.forest_residues_biomass = 17.0
+            self.process.parameters.agricultural_residues_biomass = 57.0
+            self.process.parameters.algae_biomass = 15.0
         elif self.w_biomass_available.value == "Optimistic":
-            self.process.parameters.waste_biomass = 20
-            self.process.parameters.crops_biomass = 109
-            self.process.parameters.forest_residues_biomass = 39
-            self.process.parameters.agricultural_residues_biomass = 103
-            self.process.parameters.algae_biomass = 31
+            self.process.parameters.waste_biomass = 20.0
+            self.process.parameters.crops_biomass = 109.0
+            self.process.parameters.forest_residues_biomass = 39.0
+            self.process.parameters.agricultural_residues_biomass = 103.0
+            self.process.parameters.algae_biomass = 31.0
         elif self.w_biomass_available.value == "Very optimistic":
-            self.process.parameters.waste_biomass = 27
-            self.process.parameters.crops_biomass = 217
-            self.process.parameters.forest_residues_biomass = 59
-            self.process.parameters.agricultural_residues_biomass = 204
-            self.process.parameters.algae_biomass = 50
+            self.process.parameters.waste_biomass = 27.0
+            self.process.parameters.crops_biomass = 217.0
+            self.process.parameters.forest_residues_biomass = 59.0
+            self.process.parameters.agricultural_residues_biomass = 204.0
+            self.process.parameters.algae_biomass = 50.0
 
         if self.w_electricity_available.value == "Current":
-            self.process.parameters.available_electricity = 100
+            self.process.parameters.available_electricity = 100.0
         elif self.w_electricity_available.value == "Pessimistic":
-            self.process.parameters.available_electricity = 150
+            self.process.parameters.available_electricity = 150.0
         elif self.w_electricity_available.value == "Realistic":
-            self.process.parameters.available_electricity = 200
+            self.process.parameters.available_electricity = 200.0
         elif self.w_electricity_available.value == "Optimistic":
-            self.process.parameters.available_electricity = 250
+            self.process.parameters.available_electricity = 250.0
         elif self.w_electricity_available.value == "Very optimistic":
-            self.process.parameters.available_electricity = 300
+            self.process.parameters.available_electricity = 300.0
 
         # Allocations
         if self.w_carbon_budget_allocation.value == "2.3%":

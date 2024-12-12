@@ -1,4 +1,4 @@
-from gemseo.core.discipline import MDODiscipline
+from gemseo.core.discipline import Discipline
 
 from aeromaps.models.parameters import AllParameters
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
@@ -10,7 +10,7 @@ from aeromaps.models.sustainability_assessment.energy.resources_availability imp
     ElectricityAvailability,
 )
 from aeromaps.core.gemseo import AeroMAPSModelWrapper
-from gemseo.api import create_discipline, generate_n2_plot, create_mda
+from gemseo.api import create_mda
 
 disc1 = AeroMAPSModelWrapper(model=GrossCarbonBudget(parameters=AllParameters()))
 disc2 = AeroMAPSModelWrapper(model=EquivalentGrossCarbonBudget(parameters=AllParameters()))
@@ -22,10 +22,10 @@ disciplines = [disc1, disc2, disc3, disc4]
 # generate_n2_plot(disciplines)
 
 # process = create_discipline(
-#     "MDOChain", disciplines=disciplines, grammar_type=MDODiscipline.SIMPLE_GRAMMAR_TYPE
+#     "MDOChain", disciplines=disciplines, grammar_type=Discipline.SIMPLE_GRAMMAR_TYPE
 # )
 process = create_mda(
-    "MDAChain", disciplines=disciplines, grammar_type=MDODiscipline.SIMPLE_GRAMMAR_TYPE
+    "MDAChain", disciplines=disciplines, grammar_type=Discipline.SIMPLE_GRAMMAR_TYPE
 )
 
 outputs = process.execute()

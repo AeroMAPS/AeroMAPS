@@ -11,11 +11,11 @@ class EquivalentGrossCarbonBudget(AeroMAPSModel):
 
     def compute(
         self,
-        gross_carbon_budget: float = 0.0,
-        T_nonCO2: float = 0.0,
-        tcre_coefficient: float = 0.0,
-        world_ghg_emissions_2019: float = 0.0,
-        aviation_equivalentcarbonbudget_allocated_share: float = 0.0,
+        gross_carbon_budget: float,
+        T_nonCO2: float,
+        tcre_coefficient: float,
+        world_ghg_emissions_2019: float,
+        aviation_equivalentcarbonbudget_allocated_share: float,
     ) -> Tuple[float, float, float]:
         """Gross equivalent carbon budget."""
 
@@ -42,9 +42,9 @@ class EquivalentGrossCarbonBudget(AeroMAPSModel):
         )
 
         self.float_outputs["equivalent_gross_carbon_budget"] = equivalent_gross_carbon_budget
-        self.float_outputs[
-            "equivalent_gross_carbon_budget_2050"
-        ] = equivalent_gross_carbon_budget_2050
+        self.float_outputs["equivalent_gross_carbon_budget_2050"] = (
+            equivalent_gross_carbon_budget_2050
+        )
         self.float_outputs["aviation_equivalent_carbon_budget"] = aviation_equivalent_carbon_budget
 
         return (

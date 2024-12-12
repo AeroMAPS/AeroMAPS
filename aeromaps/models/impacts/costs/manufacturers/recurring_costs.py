@@ -2,11 +2,9 @@
 # @Author : a.salgas
 # @File : recurring_costs.py
 # @Software: PyCharm
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from typing import Tuple
 
 
 class RecurringCosts(AeroMAPSModel):
@@ -17,10 +15,9 @@ class RecurringCosts(AeroMAPSModel):
     def compute(
         self,
         aircraft_in_out_value_dict: dict,
-    ) -> Tuple[dict,]:
+    ) -> dict:
         rc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-
             # Calculating values of interest for each aircraft
             for aircraft_var in sets:
                 # Check if it's a reference aircraft or a normal aircraft...
@@ -33,7 +30,7 @@ class RecurringCosts(AeroMAPSModel):
 
                 rc_aircraft_var_name = aircraft_var_name + ":aircraft_recurring_costs"
 
-                # TODO use dictionnary if possible once implementeed
+                # TODO use dictionary if possible once implemented
                 # rc_aircraft_value = max(0.0, aircraft_in_out_value_dict[aircraft_var_name] * rc_cost)
                 # For now: direct use of fleet model df
                 rc_aircraft_value = self.fleet_model.df.loc[
@@ -50,5 +47,4 @@ class RecurringCosts(AeroMAPSModel):
                 )
 
                 rc_aircraft_value_dict[aircraft_var_name] = rc_aircraft_value
-
-        return (rc_aircraft_value_dict,)
+        return rc_aircraft_value_dict

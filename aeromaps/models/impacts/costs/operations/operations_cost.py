@@ -2,10 +2,9 @@
 # @Author : a.salgas
 # @File : operations_cost.py
 # @Software: PyCharm
-from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel
 
 
 class OperationalEfficiencyCost(AeroMAPSModel):
@@ -16,17 +15,16 @@ class OperationalEfficiencyCost(AeroMAPSModel):
         self,
         operational_efficiency_cost_non_energy_per_ask_final_value: float,
         operations_final_gain: float,
-        operations_gain: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series]:
-
+        operations_gain: pd.Series,
+    ) -> pd.Series:
         operational_efficiency_cost_non_energy_per_ask = (
             operational_efficiency_cost_non_energy_per_ask_final_value
             * operations_gain
             / operations_final_gain
         )
-        self.df.loc[
-            :, "operational_efficiency_cost_non_energy_per_ask"
-        ] = operational_efficiency_cost_non_energy_per_ask
+        self.df.loc[:, "operational_efficiency_cost_non_energy_per_ask"] = (
+            operational_efficiency_cost_non_energy_per_ask
+        )
 
         return operational_efficiency_cost_non_energy_per_ask
 
@@ -38,10 +36,9 @@ class LoadFactorEfficiencyCost(AeroMAPSModel):
     def compute(
         self,
         load_factor_cost_non_energy_per_ask_final_value: float,
-        load_factor_end_year: float = 0.0,
-        load_factor: pd.Series = pd.Series(dtype="float64"),
-    ) -> Tuple[pd.Series]:
-
+        load_factor_end_year: float,
+        load_factor: pd.Series,
+    ) -> pd.Series:
         load_factor_init = load_factor[self.prospection_start_year - 1]
         load_factor_cost_non_energy_per_ask = (
             load_factor_cost_non_energy_per_ask_final_value

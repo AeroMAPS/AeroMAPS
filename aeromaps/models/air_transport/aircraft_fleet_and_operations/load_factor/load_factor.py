@@ -1,6 +1,3 @@
-from typing import Tuple
-
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -12,12 +9,15 @@ class LoadFactor(AeroMAPSModel):
 
     def compute(
         self,
-        load_factor_end_year: float = 0.0,
-        covid_load_factor_2020: float = 0.0,
-        rpk: pd.Series = pd.Series(dtype="float64"),
-        ask_init: pd.Series = pd.Series(dtype="float64"),
+        load_factor_end_year: float,
+        covid_load_factor_2020: float,
+        rpk: pd.Series,
+        ask_init: pd.Series,
     ) -> pd.Series:
         """Load factor calculation."""
+        ask_init = pd.Series(
+            ask_init, index=range(self.historic_start_year, self.prospection_start_year)
+        )
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "load_factor"] = rpk.loc[k] / ask_init.loc[k] * 100

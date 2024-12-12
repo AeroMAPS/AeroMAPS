@@ -163,7 +163,6 @@ class DistributionEffectiveRadiativeForcingPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Share in %")
         self.ax.legend(loc=0)
-        ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False

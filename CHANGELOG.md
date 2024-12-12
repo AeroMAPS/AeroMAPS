@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 0.7.1-beta
+
+Changed:
+- Feature added: simplified energy models. (#81)
+- Gemseo upgrade. (#84)
+- Update DevOps. (#85)
+
+Fixed:
+- Bug on electric aircraft cost. (#82)
+- Corrections and updates for climate notebook. (#83)
+
+
 ## Version 0.7.0-beta
 
 Changed:

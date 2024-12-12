@@ -45,11 +45,10 @@ def AeromapsInterpolationFunction(
     positive_constraint=False,
     model_name="Not provided",
 ):
-
     # Main
     if len(reference_years) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "interpolation_function_values"] = reference_years_values
+            self.df.loc[k, "interpolation_function_values"] = reference_years_values[0]
     else:
         interpolation_function = interp1d(
             reference_years,
@@ -104,11 +103,10 @@ def AeromapsInterpolationFunction(
 def AeromapsLevelingFunction(
     self, reference_periods, reference_periods_values, model_name="Not provided"
 ):
-
     # Main
     if len(reference_periods) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "leveling_function_values"] = reference_periods_values
+            self.df.loc[k, "leveling_function_values"] = reference_periods_values[0]
     else:
         if reference_periods[-1] == self.end_year:
             for i in range(0, len(reference_periods) - 1):
@@ -153,7 +151,6 @@ def AeromapsLevelingFunction(
 
 
 def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
-
     # Reference: IPCC AR5 - https://www.ipcc.ch/site/assets/uploads/2018/07/WGI_AR5.Chap_.8_SM.pdf
 
     # Parameter: climate time horizon
@@ -185,7 +182,6 @@ def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
 def GWPStarEquivalentEmissionsFunction(
     self, emissions_erf, gwpstar_variation_duration, gwpstar_s_coefficient
 ):
-
     # Reference: Smith et al. (2021), https://doi.org/10.1038/s41612-021-00169-8
     # Global
     climate_time_horizon = 100
@@ -228,7 +224,6 @@ def GWPStarEquivalentEmissionsFunction(
 
 
 def RunFair(self, species_quantities, without="None"):
-
     # Creation of FaIR instance
     f = FAIR()
 

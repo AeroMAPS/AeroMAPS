@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -12,9 +11,9 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        cumulative_co2_emissions: pd.Series = pd.Series(dtype="float64"),
-        gross_carbon_budget_2050: float = 0.0,
-    ) -> Tuple[float]:
+        cumulative_co2_emissions: pd.Series,
+        gross_carbon_budget_2050: float,
+    ) -> float:
         """Carbon budget consumption share calculation."""
 
         carbon_budget_consumed_share = (
@@ -32,9 +31,9 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        cumulative_total_equivalent_emissions: pd.Series = pd.Series(dtype="float64"),
-        equivalent_gross_carbon_budget_2050: float = 0.0,
-    ) -> Tuple[float]:
+        cumulative_total_equivalent_emissions: pd.Series,
+        equivalent_gross_carbon_budget_2050: float,
+    ) -> float:
         """Equivalent Carbon budget consumption share calculation."""
 
         equivalent_carbon_budget_consumed_share = (
@@ -43,9 +42,9 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
             * 100
         )
 
-        self.float_outputs[
-            "equivalent_carbon_budget_consumed_share"
-        ] = equivalent_carbon_budget_consumed_share
+        self.float_outputs["equivalent_carbon_budget_consumed_share"] = (
+            equivalent_carbon_budget_consumed_share
+        )
 
         return equivalent_carbon_budget_consumed_share
 
@@ -56,10 +55,10 @@ class ResourcesConsumedShare(AeroMAPSModel):
 
     def compute(
         self,
-        biomass_consumption_end_year: float = 0.0,
-        electricity_consumption_end_year: float = 0.0,
-        available_biomass_total: float = 0.0,
-        available_electricity: float = 0.0,
+        biomass_consumption_end_year: float,
+        electricity_consumption_end_year: float,
+        available_biomass_total: float,
+        available_electricity: float,
     ) -> Tuple[float, float]:
         """Resources consumption share calculation."""
 

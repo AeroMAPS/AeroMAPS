@@ -12,11 +12,11 @@ class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
 
     def compute(
         self,
-        rpk: pd.Series = pd.Series(dtype="float64"),
-        world_inhabitant_number_reference_years: list = [],
-        world_inhabitant_number_reference_years_values: list = [],
-        inhabitant_flyer_share_reference_years: list = [],
-        inhabitant_flyer_share_reference_years_values: list = [],
+        rpk: pd.Series,
+        world_inhabitant_number_reference_years: list,
+        world_inhabitant_number_reference_years_values: list,
+        inhabitant_flyer_share_reference_years: list,
+        inhabitant_flyer_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
         """Mean distance per inhabitant reference calculation."""
         # Calculation of the mean distance per inhabitant
