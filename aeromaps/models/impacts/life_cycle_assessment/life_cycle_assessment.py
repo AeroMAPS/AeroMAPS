@@ -6,11 +6,7 @@ from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
-#from aeromaps.models.impacts.life_cycle_assessment.configuration import LCAProblemConfigurator
 from lcav.io.configuration import LCAProblemConfigurator
-import os.path as pth
-DATA_FOLDER = './data/lca_data'
-CONFIGURATION_FILE = pth.join(DATA_FOLDER, 'configuration_methodo_ei391.yaml')
 from typing import Tuple
 KEY_YEAR = 'year'
 KEY_METHOD = 'method'
@@ -20,14 +16,16 @@ from typing import Dict
 
 
 class LifeCycleAssessment(AeroMAPSModel):
-    def __init__(self, name="life_cycle_assessment", reset: bool = False, *args, **kwargs):
+    def __init__(self, name: str = "life_cycle_assessment", configuration_file: str = None, split_by: str = None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
         # Get LCA model and LCIA methods
-        _, model, methods = LCAProblemConfigurator(CONFIGURATION_FILE).generate(reset=reset)
+        if configuration_file is None:
+            raise ValueError("Configuration file is missing.")
+        _, model, methods = LCAProblemConfigurator(configuration_file).generate()
         self.model = model
         self.methods = methods
-        self.axis = 'phase'
+        self.axis = split_by
         self.params_names = agb.all_params().keys()
         self.params_dict = dict()
 
@@ -83,12 +81,13 @@ class LifeCycleAssessment(AeroMAPSModel):
                     param_values = kwargs[name]
                 # Check if the length of the parameter values is consistent with the years
                 if isinstance(param_values, (list, np.ndarray)):
-                    if len(param_values) != self.end_year - self.prospection_start_year + 1:
-                        param_values = param_values[self.prospection_start_year - self.historic_start_year:]
+                    if len(param_values) > self.end_year - self.prospection_start_year + 1:
+                        # param_values = param_values[self.prospection_start_year - self.historic_start_year:]
+                        param_values = param_values[-(self.end_year - self.prospection_start_year + 1):]
+                    elif len(param_values) < self.end_year - self.prospection_start_year + 1:
+                        raise ValueError(f"Parameter '{name}' has not enough values for the simulation period.")
                 param_values = np.nan_to_num(param_values)
                 self.params_dict[name] = param_values
-
-        #print(self.params_dict)
 
         # LCIA calculation
         multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year

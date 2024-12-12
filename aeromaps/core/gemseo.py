@@ -348,6 +348,7 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         for input in self.get_input_data_names():
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
+            # THIS IS FOR LCA MODULE
             if hasattr(self.model.parameters, input):
                 if hasattr(self.model, "custom_inputs") and input in self.model.custom_inputs:
                     default_value = getattr(self.model.parameters, input)
