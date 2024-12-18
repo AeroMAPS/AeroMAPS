@@ -29,65 +29,104 @@ class LifeCycleAssessment(AeroMAPSModel):
         self.params_names = agb.all_params().keys()
         self.params_dict = dict()
 
-        # Automatically add LCA parameters as inputs of this AeroMAPSModel. See gemseo.py for more details.
-        self.custom_inputs = list()
+        # Automatically add LCA parameters (except strings) as inputs of this AeroMAPSModel.
+        # See gemseo.py for more details about addition of auto-generated inputs.
+        self.auto_inputs = dict()
         json_file_parameters = Parameters()
         json_file_parameters.read_json(file_name=default_parameters_path)
-        for x in agb.all_params().keys():
+        json_parameters_dict = json_file_parameters.to_dict()
+
+        for x in self.params_names:
+
+            # KEY_YEAR is a special parameter treated separately
             if x == KEY_YEAR:
                 continue
-            if x + '_reference_years' in json_file_parameters.to_dict().keys():
-                self.custom_inputs += [x + '_reference_years', x + '_reference_years_values']
+
+            # Inputs provided in parameters.json
+            elif x in json_parameters_dict.keys():
+                value = json_parameters_dict[x]
+
+                # String inputs are directly stored in the params_dict
+                if isinstance(value, str):
+                    self.params_dict[x] = value
+                elif isinstance(value, list) and any(isinstance(elem, str) for elem in value):
+                    self.params_dict[x] = value
+
+                # Float parameters are stored in the auto_inputs dict
+                # to be automatically added as inputs of the AeroMAPSModel
+                else:
+                    self.auto_inputs[x] = type(value)
+
+            # Parameters that should be interpolated from multiple values provided in parameters.json
+            # (reference years and corresponding values)
+            elif x + '_reference_years' in json_parameters_dict.keys():
+                self.auto_inputs[x + '_reference_years'] = type(json_parameters_dict[x + '_reference_years'])
+                self.auto_inputs[x + '_reference_years_values'] = type(json_parameters_dict[x + '_reference_years_values'])
+
+            # Parameters that are not in parameters.json are assumed to be outputs from other AeroMAPS models
             else:
-                self.custom_inputs += [x]
+                self.auto_inputs[x] = pd.Series  # TODO: is their a way to robustify this assumption?
 
         # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
         print('Parametrizing LCIA impacts...', end=' ')
         self.lambdas = agb.lca._preMultiLCAAlgebric(self.model, self.methods, axis=self.axis)
         print('Done.')
 
+        # Add the auto-generated outputs to the AeroMAPSModel
+        self.auto_outputs = dict()
+        self.auto_outputs["series_list"] = tuple
+
+        # TODO: explicitly define the outputs (with their types, e.g. pd.Series) of the model
+        #for i, method in enumerate(self.methods):
+        #    if self.lambdas[0].axis_keys:
+        #        for j, phase in enumerate(self.lambdas[0].axis_keys):
+        #            self.auto_outputs[f"ImpactScore_Method_{i}_Phase_{j}"] = pd.Series
+        #    else:
+        #        self.auto_outputs[f"ImpactScore_Method_{i}"] = pd.Series
+            #TODO: change names to be pythonic (no spaces, no special characters, etc.)
+
     def compute(
             self,
             **kwargs
     ) -> Tuple[pd.Series, ...]:  # Python 3.9+: use builtins tuple instead of Tuple from typing lib
 
-        # Parameters interpolation and assignment
+        # Assign values to parameters
         for name in self.params_names:
-            if name == KEY_YEAR:  # temporal parameter
-                self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))  # replace by self.data["years"]["prospective_years"] ?
 
-            # Single float value (constant)
-            elif isinstance(kwargs.get(f'{name}_reference_years_values', []), float):  # single float
-                self.params_dict[name] = kwargs[f'{name}_reference_years_values']
+            # KEY_YEAR is a special parameter treated separately
+            if name == KEY_YEAR:
+                self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
+                # replace by self.data["years"]["prospective_years"] ?
 
-            # TODO: better handling of non-float parameters?
-            # String parameters
-            elif any(isinstance(elem, str) for elem in kwargs.get(f'{name}_reference_years_values', [])):
-                self.params_dict[name] = kwargs[f'{name}_reference_years_values']
+            # Single float value
+            elif isinstance(kwargs.get(name), float):
+                self.params_dict[name] = kwargs[name]
 
-            # Multiple float values (--> interpolate)
-            else:
-                # Input data provided in parameters.json
-                if f'{name}_reference_years' in kwargs and f'{name}_reference_years_values' in kwargs:
-                    param_values = AeromapsInterpolationFunction(
-                        self,
-                        kwargs[f'{name}_reference_years'],
-                        kwargs[f'{name}_reference_years_values'],
-                        model_name=self.name,
-                    )  # pd.Series of interpolated values
-                    param_values = param_values.loc[self.prospection_start_year: self.end_year].values
-                # Output from previous AeroMAPS models
-                else:
-                    param_values = kwargs[name]
+            # Multiple float values
+            elif isinstance(kwargs.get(name), (list, np.ndarray, pd.Series)):
+                param_values = kwargs[name].copy()
                 # Check if the length of the parameter values is consistent with the years
-                if isinstance(param_values, (list, np.ndarray)):
-                    if len(param_values) > self.end_year - self.prospection_start_year + 1:
-                        # param_values = param_values[self.prospection_start_year - self.historic_start_year:]
-                        param_values = param_values[-(self.end_year - self.prospection_start_year + 1):]
-                    elif len(param_values) < self.end_year - self.prospection_start_year + 1:
-                        raise ValueError(f"Parameter '{name}' has not enough values for the simulation period.")
-                param_values = np.nan_to_num(param_values)
-                self.params_dict[name] = param_values
+                if len(param_values) > self.end_year - self.prospection_start_year + 1:
+                    param_values = param_values[- (self.end_year - self.prospection_start_year + 1):]
+                elif len(param_values) < self.end_year - self.prospection_start_year + 1:
+                    raise ValueError(f"Parameter '{name}' has not enough values for the simulation period.")
+                self.params_dict[name] = np.nan_to_num(param_values)
+                # TODO: nan_to_num is a weird way to convert pd.Series to lists. Should be done in a more explicit way.
+
+            # Parameters that should be interpolated from multiple values provided in parameters.json
+            # (reference years and corresponding values)
+            elif name + '_reference_years' in kwargs and name + '_reference_years_values' in kwargs:
+                param_values = AeromapsInterpolationFunction(
+                    self,
+                    kwargs[name + '_reference_years'],
+                    kwargs[name + '_reference_years_values'],
+                    model_name=self.name,
+                )
+                param_values = param_values.loc[self.prospection_start_year: self.end_year].values
+                self.params_dict[name] = np.nan_to_num(param_values)
+
+            # else: the parameter is not provided and will be set to its default value.
+            # This is typically the case for non-float parameters that are set in __init__
 
         # LCIA calculation
         multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year
@@ -102,12 +141,6 @@ class LifeCycleAssessment(AeroMAPSModel):
                     parameters_tmp[key] = val[i]
 
             # Calculate impacts for the current year
-            #res = agb.compute_impacts(
-            #    self.model,
-            #    self.methods,
-            #    axis=self.axis,
-            #    **parameters_tmp,
-            #)
             res = self.compute_impacts_from_lambdas(**parameters_tmp)
 
             # Build MultiIndex DataFrame by iterating over each method
@@ -138,9 +171,8 @@ class LifeCycleAssessment(AeroMAPSModel):
             series_list.append(series)
 
         series_list = tuple(series_list)  # convert list to tuple
-        # (*series_list,)
 
-        # TODO: replace by xplicit names of each impact cat to enable auto connection with other models (c.f. gemseo.py)
+        # TODO: replace by xplicit names of each impact cat to enable connection with other models (c.f. "auto_outputs")
         return series_list
 
     def compute_impacts_from_lambdas(
