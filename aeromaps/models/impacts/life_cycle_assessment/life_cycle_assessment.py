@@ -13,6 +13,7 @@ KEY_METHOD = 'method'
 from aeromaps.core.process import default_parameters_path
 from aeromaps.models.parameters import Parameters
 from typing import Dict
+import xarray as xr
 
 
 class LifeCycleAssessment(AeroMAPSModel):
@@ -128,52 +129,101 @@ class LifeCycleAssessment(AeroMAPSModel):
             # else: the parameter is not provided and will be set to its default value.
             # This is typically the case for non-float parameters that are set in __init__
 
-        # LCIA calculation
-        multi_df_lca = pd.DataFrame()  # Create empty DataFrame to store the results for each impact method and year
+        # Calculate impacts for all parameters at once
+        res = self.multiLCAAlgebraicRaw(**self.params_dict)
 
-        # Calculate impacts for each year
-        # FIXME: this is a temporary solution waiting for lca_algebraic to handle 'axis' and multi params simultaneously
-        parameters_tmp = self.params_dict.copy()
-        for i, year in enumerate(self.params_dict[KEY_YEAR]):
-            # Get the value of each parameter for the current year
-            for key, val in self.params_dict.items():
-                if isinstance(val, (list, np.ndarray)):
-                    parameters_tmp[key] = val[i]
+        # Set the year as the 'x' axis and rename
+        res['params'] = self.params_dict[KEY_YEAR]
+        res = res.rename({'params': KEY_YEAR})
 
-            # Calculate impacts for the current year
-            res = self.compute_impacts_from_lambdas(**parameters_tmp)
-
-            # Build MultiIndex DataFrame by iterating over each method
-            df_year = pd.DataFrame()  # DataFrame for the results of each impact method for the current year
-            for method in res.columns:
-                # Extract the results for the current method
-                data = res[method]
-                # Create a DataFrame with MultiIndex consisting of method and year
-                df_year_method = pd.DataFrame(data.values, columns=[year],
-                                              index=pd.MultiIndex.from_product([[method], data.index],
-                                                                               names=[KEY_METHOD, self.axis]))
-                # Concatenate the new DataFrame with the existing DataFrame
-                df_year = pd.concat([df_year, df_year_method], axis=0)
-
-            # Concatenate the DataFrame with the final LCA DataFrame
-            multi_df_lca = pd.concat([multi_df_lca, df_year], axis=1)
-
-        # Outputs : convert the DataFrame to a list of Series
-        self.multi_df_lca = multi_df_lca
-        series_list = list()
-        # Iterate over each row (method, phase) of the DataFrame
-        for index, row in multi_df_lca.iterrows():
-            # Convert the row to a Pandas Series
-            series = row.squeeze()
-            # Set the name of the series as the tuple index (method, phase)
-            series.name = index
-            # Append the series to the list
-            series_list.append(series)
-
-        series_list = tuple(series_list)  # convert list to tuple
+        # Store xarray to enable user to access data after process calculation
+        self.xarray_lca = res
+        self.multi_df_lca = res.to_dataframe()
 
         # TODO: replace by xplicit names of each impact cat to enable connection with other models (c.f. "auto_outputs")
+        series_list = (self.multi_df_lca,)
         return series_list
+
+    def multiLCAAlgebraicRaw(self, **params):
+        """
+        Main parametric LCIA method : Computes LCA by expressing the foreground
+        model as symbolic expression of background activities and parameters.
+        Then, compute 'static' inventory of the referenced background activities.
+        This enables a very fast recomputation of LCA with different parameters,
+        useful for stochastic evaluation of parametrized model
+        Parameters
+        ----------
+        models : List of Activities, or Dict of Activities: Lambdas if impacts exprs already calculated
+        methods : List of methods, i.e. impacts to consider. Overriden by info from lambdas if provided with models.
+        params : Dict[str,ListOrScalar]
+                 You should provide named values of all the parameters declared
+                 in the models. Values can be single value or list of samples, all of the same size
+        axis : keyword to split impacts by phase. Overriden by info from lambdas if provided with models.
+        Return
+        ------
+        lca : 3 dimension xarray of lca results, with dims=("systems", "impacts", "params"]
+        """
+
+        models = {self.model: self.lambdas}
+        methods = self.methods
+        axis=self.axis
+
+        # if isinstance(models, list):
+        #    def to_tuple(item):
+        #        if isinstance(item, tuple):
+        #            return item
+        #        else:
+        #            return (item, None)
+        #    models = dict(to_tuple(item) for item in self.model)
+
+        #elif not isinstance(models, dict):
+        #    models = {models: None}
+
+        param_length = agb.params._compute_param_length(params)
+        out = np.full((len(models.keys()), len(methods), param_length), np.nan, float)
+        axis_keys = None
+
+        for imodel, (model, lambdas) in enumerate(models.items()):
+            dbname = model.key[0]
+            with agb.DbContext(dbname):
+                # Check no params are passed for FixedParams
+                for key in params:
+                    if key in agb.params._fixed_params():
+                        raise ValueError("Param '%s' is marked as FIXED, but passed in parameters : ignored" % key)
+
+                if not lambdas or len(lambdas) != len(methods):
+                    if lambdas:
+                        print("Lambdas do not match with len of methods. Recompiling expressions.")
+                    lambdas = agb.lca._preMultiLCAAlgebric(model, methods, axis=axis)
+
+                if lambdas[0].has_axis:
+                    # Reshape array to add dimension corresponding to axis keys
+                    axis_keys = lambdas[0].axis_keys
+                    out = np.expand_dims(out, axis=-2)
+                    out = np.repeat(out, len(axis_keys), axis=-2)
+                for imethod, lambd_with_params in enumerate(lambdas):
+                    value = lambd_with_params.compute(**params).value
+                    if isinstance(value, dict):
+                        # axis values
+                        # value = list(float(value[axis]) if axis in value else 0.0 for axis in lambd_with_params.axis_keys)
+                        for iaxis, ax in enumerate(axis_keys):
+                            out[imodel, imethod, iaxis, :] = np.float_(value[ax])
+                    else:
+                        out[imodel, imethod, :] = value
+        if axis_keys:
+            res = xr.DataArray(out, name='lca', coords=[
+                ("systems", np.fromiter((m.key for m in models.keys()), dtype='O')),
+                ("impacts", np.fromiter(methods, dtype='O')),
+                ("axis", np.fromiter(axis_keys, dtype='O')),
+                ("params", list(range(param_length)))
+            ])
+        else:
+            res = xr.DataArray(out, name='lca', coords=[
+                ("systems", np.fromiter((m.key for m in models.keys()), dtype='O')),
+                ("impacts", np.fromiter(methods, dtype='O')),
+                ("params", list(range(param_length)))
+            ])
+        return res
 
     def compute_impacts_from_lambdas(
         self,
