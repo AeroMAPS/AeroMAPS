@@ -1015,6 +1015,7 @@ class DropInMeanMfsp(AeroMAPSModel):
     def compute(
         self,
         biofuel_mean_mfsp: pd.Series,
+        biofuel_marginal_mfsp: pd.Series,
         biofuel_mean_carbon_tax_per_l: pd.Series,
         biofuel_share: pd.Series,
         electrofuel_mean_mfsp_litre: pd.Series,
@@ -1024,11 +1025,28 @@ class DropInMeanMfsp(AeroMAPSModel):
         kerosene_price_supplement_carbon_tax: pd.Series,
         kerosene_share: pd.Series,
     ) -> Tuple[pd.Series, pd.Series]:
+
         dropin_mean_mfsp = (
             (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
             + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
             + (kerosene_market_price * kerosene_share / 100).fillna(0)
         )
+
+        for k in range(self.prospection_start_year-1, self.end_year+1):
+            # check for vals
+            valid = []
+            if biofuel_share.loc[k] > 0:
+                valid.append(biofuel_marginal_mfsp.loc[k])
+            if electrofuel_share.loc[k] > 0:
+                valid.append(electrofuel_mean_mfsp_litre.loc[k])
+            if kerosene_share.loc[k] > 0:
+                valid.append(kerosene_market_price.loc[k])
+
+            print(valid)
+
+            self.df.loc[k, "dropin_marginal_mfsp"] = np.max(valid)
+
+        dropin_marginal_mfsp = self.df.loc[:, "dropin_marginal_mfsp"]
 
         dropin_mfsp_carbon_tax_supplement = (
             (biofuel_mean_carbon_tax_per_l * biofuel_share / 100).fillna(0)
