@@ -2478,7 +2478,7 @@ class AnnualMACC:
             max=self.prospective_years[-1],
             step=1,
             description="Year:",
-            value=2050,
+            value=2035,
         )
 
         metric_widget = widgets.Dropdown(
@@ -2491,6 +2491,7 @@ class AnnualMACC:
                 ),
             ],
             description="Metric:",
+            value="generic_specific_carbon_abatement_cost"
         )
 
         scc_widget = widgets.FloatText(description="Base year SCC (Specific CAC ONLY):")
@@ -2780,7 +2781,7 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
-        # custom_annotation_height_for_nice_plot = [100, 100, 130,100,100,130,150,180,100,100,100,150,200,220,300,380,380,420,600,720,800,840,10]
+        custom_annotation_height_for_nice_plot = [70, 220, 130,100,100,130,150,180,100,100,100,180,240,220,300,380,460,520,580,670]
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
@@ -2794,8 +2795,8 @@ class AnnualMACC:
                     text,
                     (x_position, y_position),
                     xycoords="data",
-                    xytext=(x_position, y_position + 50),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    # xytext=(x_position, y_position + 50),
+                    xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
@@ -2808,8 +2809,8 @@ class AnnualMACC:
                     f"{names_pos[i]}",
                     (x_position, 0),
                     xycoords="data",
-                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    # xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                    xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
                     textcoords="data",
                     arrowprops=dict(width=0.5, headwidth=0),
                     rotation=-60,
@@ -2867,26 +2868,26 @@ class AnnualMACC:
             zorder=9,
         )
 
-        # custom_annotation_height_for_nice_plot = [15,70,120,170,220]
+        custom_annotation_height_for_nice_plot = [15,70,120,170,220]
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
                 cumwidths_effective_neg[-1]
                 - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
-            self.ax.annotate(
-                f"{names_neg[i]}",
-                (x_position, 0),
-                xycoords="data",
-                xytext=(x_position, 50 + 30 * (i % 3)),
-                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
-                textcoords="data",
-                arrowprops=dict(width=0.5, headwidth=0),
-                rotation=-60,
-                fontsize=9,
-                ha="right",
-                va="bottom",
-            )
+            # self.ax.annotate(
+            #     f"{names_neg[i]}",
+            #     (x_position, 0),
+            #     xycoords="data",
+            #     # xytext=(x_position, 50 + 30 * (i % 3)),
+            #     xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+            #     textcoords="data",
+            #     arrowprops=dict(width=0.5, headwidth=0),
+            #     rotation=-60,
+            #     fontsize=9,
+            #     ha="right",
+            #     va="bottom",
+            # )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_neg) - 2)):
@@ -2916,7 +2917,7 @@ class AnnualMACC:
         if scc_year:
             self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
             self.ax.text(
-                10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8
+                25, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=10
             )
 
         self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
@@ -2954,7 +2955,7 @@ class AnnualMACC:
         )
         self.ax.set_ylim(
             max(-300, min(min(heights_pos), min(heights_neg)) - 50),
-            min(2000, max(max(heights_neg), max(heights_pos)) + 300),
+            min(2000, max(max(heights_neg), max(heights_pos)) + 400),
         )
 
         # Add abatement and emission zones
@@ -2977,7 +2978,7 @@ class AnnualMACC:
 
         self.ax.text(
             -1,
-            self.ax.get_ylim()[1] / 2.8,
+            170,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
@@ -2987,8 +2988,8 @@ class AnnualMACC:
         )
         self.ax.text(
             5,
-            self.ax.get_ylim()[1] / 2.8,
-            "Carbon abatement",
+            170,
+            "Abatement",
             rotation=90,
             va="bottom",
             ha="left",
@@ -2997,7 +2998,7 @@ class AnnualMACC:
         )
 
         self.ax.grid()
-        self.ax.set_title(f"Marginal abatement cost curve for year {year}")
+        # self.ax.set_title(f"Marginal abatement cost curve for year {year}")
 
         self.ax2.xaxis.set_label_position("bottom")
         self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
