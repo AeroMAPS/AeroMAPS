@@ -426,10 +426,10 @@ class BiofuelCost(AeroMAPSModel):
 
         self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
 
-        for k in range(self.prospection_start_year, self.end_year+1):
+        for k in range(self.prospection_start_year, self.end_year + 1):
             # check for vals
-            valid=[]
-            if biofuel_atj_share.loc[k]>0:
+            valid = []
+            if biofuel_atj_share.loc[k] > 0:
                 valid.append(biofuel_atj_mfsp.loc[k])
             if biofuel_hefa_fog_share.loc[k] > 0:
                 valid.append(biofuel_hefa_fog_mfsp.loc[k])
@@ -525,7 +525,7 @@ class BiofuelCost(AeroMAPSModel):
             biofuel_mfsp_carbon_tax_supplement_atj,
             biofuel_mean_carbon_tax_per_l,
             biofuel_mean_mfsp,
-            biofuel_marginal_mfsp
+            biofuel_marginal_mfsp,
         )
 
     def _pathway_computation(

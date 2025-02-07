@@ -1025,14 +1025,13 @@ class DropInMeanMfsp(AeroMAPSModel):
         kerosene_price_supplement_carbon_tax: pd.Series,
         kerosene_share: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-
         dropin_mean_mfsp = (
             (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
             + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
             + (kerosene_market_price * kerosene_share / 100).fillna(0)
         )
 
-        for k in range(self.prospection_start_year-1, self.end_year+1):
+        for k in range(self.prospection_start_year - 1, self.end_year + 1):
             # check for vals
             valid = []
             if biofuel_share.loc[k] > 0:
