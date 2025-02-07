@@ -1024,7 +1024,7 @@ class DropInMeanMfsp(AeroMAPSModel):
         kerosene_market_price: pd.Series,
         kerosene_price_supplement_carbon_tax: pd.Series,
         kerosene_share: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
 
         dropin_mean_mfsp = (
             (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
@@ -1042,8 +1042,6 @@ class DropInMeanMfsp(AeroMAPSModel):
             if kerosene_share.loc[k] > 0:
                 valid.append(kerosene_market_price.loc[k])
 
-            print(valid)
-
             self.df.loc[k, "dropin_marginal_mfsp"] = np.max(valid)
 
         dropin_marginal_mfsp = self.df.loc[:, "dropin_marginal_mfsp"]
@@ -1057,4 +1055,4 @@ class DropInMeanMfsp(AeroMAPSModel):
         self.df.loc[:, "dropin_mean_mfsp"] = dropin_mean_mfsp
         self.df.loc[:, "dropin_mfsp_carbon_tax_supplement"] = dropin_mfsp_carbon_tax_supplement
 
-        return (dropin_mean_mfsp, dropin_mfsp_carbon_tax_supplement)
+        return (dropin_mean_mfsp, dropin_marginal_mfsp, dropin_mfsp_carbon_tax_supplement)
