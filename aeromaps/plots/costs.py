@@ -2478,7 +2478,7 @@ class AnnualMACC:
             max=self.prospective_years[-1],
             step=1,
             description="Year:",
-            value=2050,
+            value=2035,
         )
 
         metric_widget = widgets.Dropdown(
@@ -2491,6 +2491,7 @@ class AnnualMACC:
                 ),
             ],
             description="Metric:",
+            value="generic_specific_carbon_abatement_cost",
         )
 
         scc_widget = widgets.FloatText(description="Base year SCC (Specific CAC ONLY):")
@@ -2780,7 +2781,28 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
-        # custom_annotation_height_for_nice_plot = [100, 100, 130,100,100,130,150,180,100,100,100,150,200,220,300,380,380,420,600,720,800,840,10]
+        custom_annotation_height_for_nice_plot = [
+            70,
+            220,
+            130,
+            100,
+            100,
+            130,
+            150,
+            180,
+            100,
+            100,
+            100,
+            180,
+            240,
+            220,
+            300,
+            380,
+            460,
+            520,
+            580,
+            670,
+        ]
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
