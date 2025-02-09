@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Impact modeling and sustainability assessment &#8212; AeroMAPS documentation</title>
   
@@ -15,52 +15,49 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -78,28 +75,23 @@ const thebe_selector_output = ".output, .cell_output"
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -121,12 +113,20 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -142,6 +142,8 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="../intro.html">
@@ -160,14 +162,25 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About AeroMAPS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citations.html">Citations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="documentation.html">Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="documentation.html">Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="documentation_architecture.html">Architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_airtransport.html">Air transport modeling</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Impact modeling and sustainability assessment</a></li>
@@ -175,8 +188,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="documentation_software.html">Software developments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples_custom_process.html">Example for creating a custom process in AeroMAPS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_basic.html">Basic example for using AeroMAPS with Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_fleet.html">Example for using fleet modeling in AeroMAPS</a></li>
@@ -186,7 +199,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="examples_climate_application.html">Example for using climate models - Application submitted for publication in a journal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples_partitioning.html">Example for partitioning the scope of the AeroMAPS scenario using AeroSCOPE data</a></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -203,7 +216,7 @@ const thebe_selector_output = ".output, .cell_output"
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -212,14 +225,14 @@ const thebe_selector_output = ".output, .cell_output"
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
   <span class="fa-solid fa-bars"></span>
-</label></div>
+</button></div>
       
     </div>
   
@@ -312,10 +325,10 @@ const thebe_selector_output = ".output, .cell_output"
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script>
@@ -323,14 +336,14 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
-</label>
+</button>
 </div></div>
       
     </div>
@@ -353,8 +366,8 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impact-modeling">Impact modeling</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-and-climate-impacts">Emissions and climate impacts</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-emissions">CO<sub>2</sub> emissions</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co-sub-2-sub-emissions">Non-CO<sub>2</sub> emissions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-emissions">CO<sub>2</sub> emissions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co2-emissions">Non-CO<sub>2</sub> emissions</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#temperature-estimation">Temperature estimation</a></li>
 </ul>
 </li>
@@ -369,8 +382,8 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustainability-assessment">Sustainability assessment</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-sustainability">Climate sustainability</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-effects">CO<sub>2</sub> effects</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-and-non-co-sub-2-sub-effects">CO<sub>2</sub> and non-CO<sub>2</sub> effects</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-effects">CO<sub>2</sub> effects</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-and-non-co2-effects">CO<sub>2</sub> and non-CO<sub>2</sub> effects</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-resource-sustainability">Energy resource sustainability</a><ul class="nav section-nav flex-column">
@@ -389,7 +402,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="impact-modeling-and-sustainability-assessment">
 <h1>Impact modeling and sustainability assessment<a class="headerlink" href="#impact-modeling-and-sustainability-assessment" title="Permalink to this heading">#</a></h1>
@@ -401,20 +414,20 @@ impacts, and then compare them with limits via a sustainability assessment.</p>
 majority of impact modeling concern environmental impacts.</p>
 <section id="emissions-and-climate-impacts">
 <h3>Emissions and climate impacts<a class="headerlink" href="#emissions-and-climate-impacts" title="Permalink to this heading">#</a></h3>
-<section id="co-sub-2-sub-emissions">
-<h4>CO<sub>2</sub> emissions<a class="headerlink" href="#co-sub-2-sub-emissions" title="Permalink to this heading">#</a></h4>
+<section id="co2-emissions">
+<h4>CO<sub>2</sub> emissions<a class="headerlink" href="#co2-emissions" title="Permalink to this heading">#</a></h4>
 <p>Based on the modeling of the air transport system through a Kaya decomposition, the estimation of the evolution of
 CO<sub>2</sub> emissions is simple by multiplying the different factors. In addition, a coefficient corresponding to
 other life cycle emissions (excluding combustion and fuel production) can also be applied, but it only represents a few
 percent of the aviation environmental impacts <span id="id1">[<a class="reference internal" href="bibliography.html#id20" title="Sofia Pinheiro Melo, Alexander Barke, Felipe Cerdas, Christian Thies, Mark Mennenga, Thomas S Spengler, and Christoph Herrmann. Sustainability assessment and engineering of emerging aircraft technologies — Challenges, methods and tools. Sustainability, 12(14):5663, 2020. doi:10.3390/su12145663.">PMBC+20</a>]</span>.</p>
 </section>
-<section id="non-co-sub-2-sub-emissions">
-<h4>Non-CO<sub>2</sub> emissions<a class="headerlink" href="#non-co-sub-2-sub-emissions" title="Permalink to this heading">#</a></h4>
+<section id="non-co2-emissions">
+<h4>Non-CO<sub>2</sub> emissions<a class="headerlink" href="#non-co2-emissions" title="Permalink to this heading">#</a></h4>
 <p>For estimating non-CO<sub>2</sub> emissions, the concept of Emission Index (EI) is used. They make it possible to
 obtain different emissions (NO<sub>x</sub>, SO<sub>x</sub>…) depending on fuel consumption (or CO<sub>2</sub>
 emissions). Values for fossil kerosene from <span id="id2">[<a class="reference internal" href="bibliography.html#id18" title="David S Lee, DW Fahey, Agnieszka Skowron, MR Allen, Ulrike Burkhardt, Q Chen, SJ Doherty, S Freeman, PM Forster, J Fuglestvedt, and others. The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244:117834, 2021. doi:10.1016/j.atmosenv.2020.117834.">LFS+21</a>]</span> have been used and are provided in Tab.1. The
 values can be adapted for alternative energy carriers.</p>
-<table class="table">
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Emission</strong></p></th>
 <th class="head"><p><strong>Value</strong></p></th>
@@ -444,6 +457,7 @@ values can be adapted for alternative energy carriers.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p><em>Tab.1 Emission Index for fossil kerosene combustion.</em></p>
 <p>Based on these data, the estimation of the climate impact of aviation is achieved by the calculation of the ERF
 (Effective Radiative Forcing), which is based on the use of coefficients for the different impacts. These are obtained
@@ -451,7 +465,7 @@ through an analysis of the data from <span id="id3">[<a class="reference interna
 are cumulative: therefore, at first order, the coefficient to estimate the ERF must be applied on the cumulative
 CO<sub>2</sub> emissions. The impact of the other emissions is estimated from the annual emissions. Finally, the impact
 of contrails is assumed to be correlated with the total annual distance flown.</p>
-<table class="table">
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Climate impact</strong></p></th>
 <th class="head"><p><strong>Value</strong></p></th>
@@ -485,6 +499,7 @@ of contrails is assumed to be correlated with the total annual distance flown.</
 </tr>
 </tbody>
 </table>
+</div>
 <p><em>Tab.2 Coefficients for estimating the ERF of aviation climate impacts.</em></p>
 <p>Using the data and taking into account CO<sub>2</sub> and non-CO<sub>2</sub> effects, aviation (including private and
 military) generated 3.8% of the effective radiative forcing between 1750 and 2018 and commercial aviation is
@@ -645,7 +660,7 @@ CO<sub>2</sub> emissions and mean temperature increase are linked by a quasi-lin
 the estimation of carbon budgets <span id="id22">[<a class="reference internal" href="bibliography.html#id62" title="H Damon Matthews, Nathan P Gillett, Peter A Stott, and Kirsten Zickfeld. The proportionality of global warming to cumulative carbon emissions. Nature, 459(7248):829–832, 2009. doi:10.1038/nature08047.">MGSZ09</a>]</span>. Therefore, the use of carbon budgets allows
 for example to simply evaluate the relevance of transition scenarios to reach climate objectives based on their
 CO<sub>2</sub> emissions alone <span id="id23">[<a class="reference internal" href="bibliography.html#id63" title="Pierre Friedlingstein, Robbie M Andrew, Joeri Rogelj, Glen P Peters, Josep G Canadell, Reto Knutti, Gunnar Luderer, Michael R Raupach, Michiel Schaeffer, Detlef P van Vuuren, and others. Persistent growth of CO2 emissions and implications for reaching climate targets. Nature geoscience, 7(10):709–715, 2014. doi:10.1038/ngeo2248.">FAR+14</a>]</span>.</p>
-<table class="table">
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Temperature [°C]</strong></p></th>
 <th class="head"><p><strong>17th</strong></p></th>
@@ -700,12 +715,13 @@ CO<sub>2</sub> emissions alone <span id="id23">[<a class="reference internal" hr
 </tr>
 </tbody>
 </table>
+</div>
 <p><em>Tab.3 Estimates of carbon budgets depending on TCRE percentile according to IPCC AR6 (in GtCO<sub>2</sub>).</em></p>
 <p>However, these carbon budgets are defined globally and not by country or sector (like aviation). In the following, a
 method which can be applied to aviation CO<sub>2</sub> emissions is proposed. This later is also extended to include
 non-CO<sub>2</sub> effects using two solutions.</p>
-<section id="co-sub-2-sub-effects">
-<h4>CO<sub>2</sub> effects<a class="headerlink" href="#co-sub-2-sub-effects" title="Permalink to this heading">#</a></h4>
+<section id="co2-effects">
+<h4>CO<sub>2</sub> effects<a class="headerlink" href="#co2-effects" title="Permalink to this heading">#</a></h4>
 <p>First, a global gross carbon budget <span class="math notranslate nohighlight">\(GCB\)</span> is considered. As a reminder, it is defined as the sum of a net carbon budget
 and a CDR (Carbon Dioxide Removal) capacity (afforestation, BECCS, DACCS…). It is assumed that this budget will be
 entirely consumed by 2100. This constraint is expressed in the following equation via cumulative emissions, considering
@@ -737,8 +753,8 @@ cumulative direct CO<sub>2</sub> emissions from aviation would represent 3.4% of
 the cumulative CO<sub>2</sub> emissions with the allocated carbon budget for aviation. If the cumulative emissions
 are less than or equal to the carbon budget, the climate target is met.</p>
 </section>
-<section id="co-sub-2-sub-and-non-co-sub-2-sub-effects">
-<h4>CO<sub>2</sub> and non-CO<sub>2</sub> effects<a class="headerlink" href="#co-sub-2-sub-and-non-co-sub-2-sub-effects" title="Permalink to this heading">#</a></h4>
+<section id="co2-and-non-co2-effects">
+<h4>CO<sub>2</sub> and non-CO<sub>2</sub> effects<a class="headerlink" href="#co2-and-non-co2-effects" title="Permalink to this heading">#</a></h4>
 <p>For assessing the sustainability of aviation climate impact, a first solution is to directly compare the temperature
 increase from air transport to a climate objective (via an allocation or an absolute target) which is
 for instance performed in <span id="id27">[<a class="reference internal" href="bibliography.html#id24" title="Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. Nature Communications, 12(1):1–10, 2021. doi:10.1038/s41467-021-24091-y.">GGRGronstedt+21</a>, <a class="reference internal" href="bibliography.html#id35" title="Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. Environmental Research Letters, 16(10):104027, 2021. doi:10.1088/1748-9326/ac286e.">KlowerAL+21</a>]</span>.</p>
@@ -778,7 +794,7 @@ of view if the consumption of energy resources in 2050 does not exceed the energ
 a statistical analysis of IRENA (International Renewable ENergy Agency) data is performed. The resource categories
 described for the biofuel pathways are used. The results are given in Tab.4. The lower and upper fences are determined
 to exclude extreme values (outliers).</p>
-<table class="table">
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Resource</strong></p></th>
 <th class="head"><p><strong>Lower fence</strong></p></th>
@@ -833,6 +849,7 @@ to exclude extreme values (outliers).</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p><em>Tab.4 Global biomass availability (in EJ) scenarios to 2050.</em></p>
 <p>The estimates in Tab.4 are refined using an analysis of the references <span id="id30">[<a class="reference internal" href="bibliography.html#id67" title="Mark D Staples, Robert Malina, and Steven RH Barrett. The limits of bioenergy for mitigating global life-cycle greenhouse gas emissions from fossil fuels. Nature Energy, 2(2):1–8, 2017. doi:10.1038/nenergy.2016.202.">SMB17</a>, <a class="reference internal" href="bibliography.html#id39" title="Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. Energy Policy, 114:342–354, 2018. doi:10.1016/j.enpol.2017.12.007.">SMS+18</a>]</span>
 to obtain detailed results for different resources. Concerning waste, used cooking oil represents a deposit of about
@@ -886,7 +903,7 @@ factor. For comparison, the emission factors at the global level for low-carbon 
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -916,6 +933,7 @@ factor. For comparison, the emission factors at the global level for low-carbon 
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
@@ -924,8 +942,8 @@ factor. For comparison, the emission factors at the global level for low-carbon 
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impact-modeling">Impact modeling</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emissions-and-climate-impacts">Emissions and climate impacts</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-emissions">CO<sub>2</sub> emissions</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co-sub-2-sub-emissions">Non-CO<sub>2</sub> emissions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-emissions">CO<sub>2</sub> emissions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-co2-emissions">Non-CO<sub>2</sub> emissions</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#temperature-estimation">Temperature estimation</a></li>
 </ul>
 </li>
@@ -940,8 +958,8 @@ factor. For comparison, the emission factors at the global level for low-carbon 
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustainability-assessment">Sustainability assessment</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-sustainability">Climate sustainability</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-effects">CO<sub>2</sub> effects</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co-sub-2-sub-and-non-co-sub-2-sub-effects">CO<sub>2</sub> and non-CO<sub>2</sub> effects</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-effects">CO<sub>2</sub> effects</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#co2-and-non-co2-effects">CO<sub>2</sub> and non-CO<sub>2</sub> effects</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-resource-sustainability">Energy resource sustainability</a><ul class="nav section-nav flex-column">
@@ -999,8 +1017,8 @@ By AeroMAPS Research Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
