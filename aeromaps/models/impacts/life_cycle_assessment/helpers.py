@@ -6,7 +6,7 @@ from sympy import Float, factor
 import bw2data
 
 USER_DB = 'Foreground DB'
-DEFAULT_PROJECT = 'lcav_default_project'
+DEFAULT_PROJECT = 'lca_modeller_default_project'
 
 
 def list_processes(model, foreground_only: bool = True, custom_attribute: str = None) -> pd.DataFrame:
