@@ -122,6 +122,7 @@ class BiofuelCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
     ]:
         ### HEFA FOG
         # print('HEFOG')
@@ -425,6 +426,23 @@ class BiofuelCost(AeroMAPSModel):
 
         self.df.loc[:, "biofuel_mean_mfsp"] = biofuel_mean_mfsp
 
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            # check for vals
+            valid = []
+            if biofuel_atj_share.loc[k] > 0:
+                valid.append(biofuel_atj_mfsp.loc[k])
+            if biofuel_hefa_fog_share.loc[k] > 0:
+                valid.append(biofuel_hefa_fog_mfsp.loc[k])
+            if biofuel_ft_others_share.loc[k] > 0:
+                valid.append(biofuel_ft_others_mfsp.loc[k])
+            if biofuel_ft_msw_mfsp.loc[k] > 0:
+                valid.append(biofuel_ft_msw_mfsp.loc[k])
+            if biofuel_hefa_others_mfsp.loc[k] > 0:
+                valid.append(biofuel_hefa_others_mfsp.loc[k])
+
+            self.df.loc[k, "biofuel_marginal_mfsp"] = np.max(valid)
+
+        biofuel_marginal_mfsp = self.df.loc[:, "biofuel_marginal_mfsp"]
         # MEAN tax
         biofuel_mean_carbon_tax_per_l = (
             (biofuel_mfsp_carbon_tax_supplement_hefa_fog * biofuel_hefa_fog_share / 100).fillna(0)
@@ -507,6 +525,7 @@ class BiofuelCost(AeroMAPSModel):
             biofuel_mfsp_carbon_tax_supplement_atj,
             biofuel_mean_carbon_tax_per_l,
             biofuel_mean_mfsp,
+            biofuel_marginal_mfsp,
         )
 
     def _pathway_computation(
