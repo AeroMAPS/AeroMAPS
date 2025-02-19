@@ -7,6 +7,7 @@ authors = [
     "Thomas PLANES <thomas.planes@isae-supaero.fr>",
     "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",
     "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
+    "Felix POLLET <felix.pollet@isae-supaero.fr>",
 ]
 keywords = [
     "air transport",
@@ -47,8 +48,12 @@ ipytree = "^0.2.2"
 # Web deployment
 voila = "^0.5.0"
 
-# Life cycle assessment
-lcav = {git = "https://github.com/felixpollet/LCAv.git"}
+# Optional dependencies
+lca-modeller = {version = "*", optional = true}
+
+[tool.poetry.extras]
+lca = ["lca-modeller"]
+
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0"

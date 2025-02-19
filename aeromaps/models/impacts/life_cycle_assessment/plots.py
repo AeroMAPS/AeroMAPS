@@ -6,7 +6,7 @@ import os
 from IPython.display import display, HTML, IFrame
 from lca_algebraic.activity import Activity
 # from aeromaps.models.impacts.life_cycle_assessment.helpers import list_processes
-from lcav.helpers import list_processes
+from lca_modeller.helpers import list_processes
 import matplotlib
 import matplotlib.pyplot as plt
 
