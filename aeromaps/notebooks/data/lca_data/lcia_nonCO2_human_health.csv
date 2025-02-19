@@ -1,0 +1,3 @@
+name,categories,amount,unit
+contrail,air::lower stratosphere + upper troposphere,9.8627E-06,kilometer
+nitrogen oxides,air::lower stratosphere + upper troposphere,1.0230E-04,kilogram

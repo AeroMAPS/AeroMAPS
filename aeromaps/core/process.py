@@ -5,6 +5,7 @@ from json import load, dump
 # Third-party imports
 import numpy as np
 import pandas as pd
+import xarray as xr
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -123,6 +124,7 @@ class AeroMAPSProcess(object):
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
             self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+            # TODO: add lca_outputs
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
@@ -191,6 +193,7 @@ class AeroMAPSProcess(object):
         self.data["float_outputs"] = {}
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
+        self.data["lca_outputs"] = xr.DataArray()
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
@@ -304,7 +307,7 @@ class AeroMAPSProcess(object):
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
-            if not isinstance(field_value, (float, int, list)):
+            if not isinstance(field_value, (float, int, list, str)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
@@ -363,6 +366,11 @@ class AeroMAPSProcess(object):
                     )
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
+            if hasattr(disc.model, "xarray_lca"):
+                if first_computation:
+                    self.data["lca_outputs"] = disc.model.xarray_lca
+                else:
+                    self.data["lca_outputs"].update(disc.model.xarray_lca)
 
             self.data["float_outputs"].update(disc.model.float_outputs)
 
@@ -393,6 +401,9 @@ class AeroMAPSProcess(object):
         self.climate_outputs_df = self.data["climate_outputs"]
         self.climate_outputs_df.sort_index(axis=1, inplace=True)
 
+        # Vector lca xarray
+        # TODO: add xarray of lca_outputs?
+
         # Variable information
         self._read_data_information()
 
@@ -422,6 +433,11 @@ class AeroMAPSProcess(object):
             self.data["climate_outputs"].to_dict("list")
         )
 
+        # LCA outputs
+        #self.json["lca_outputs"] = convert_values_from_array_to_list(
+        #    self.data["lca_outputs"].to_dict("list")
+        #)
+
     def _read_data_information(self, file_name=None):
         if file_name is None:
             file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
@@ -429,6 +445,11 @@ class AeroMAPSProcess(object):
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():
+
+            # xarray no supported yet
+            if type(variables) is xr.DataArray:
+                continue
+
             for variable in variables:
                 # If the variable exists in the csv we extract the information
                 if variable in df["Name"].values:

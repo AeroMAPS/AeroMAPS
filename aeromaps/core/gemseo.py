@@ -432,7 +432,16 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
 
         super(AeroMAPSModelWrapper, self).__init__(
             py_func=self.model.compute,
+            use_arrays=True,
         )
+
+        if hasattr(self.model, "auto_inputs"):
+            self.input_grammar.update_from_types(self.model.auto_inputs)  # Explicit addition of auto-generated inputs
+            if "kwargs" in self.input_grammar.names:
+                self.input_grammar.required_names.remove("kwargs")
+
+        if hasattr(self.model, "auto_outputs"):
+            self.output_grammar.update_from_types(self.model.auto_outputs)  # Explicit addition of auto-generated outputs
 
         self.name = model.__class__.__name__
 
@@ -444,3 +453,4 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)
+

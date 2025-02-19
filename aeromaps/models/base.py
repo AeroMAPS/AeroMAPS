@@ -1,3 +1,5 @@
+
+import xarray as xr
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
@@ -29,6 +31,7 @@ class AeroMAPSModel(object):
         self.df_climate: pd.DataFrame = pd.DataFrame(
             index=range(self.climate_historic_start_year, self.end_year + 1)
         )
+        self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 

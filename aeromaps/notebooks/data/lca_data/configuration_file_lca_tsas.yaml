@@ -1,0 +1,525 @@
+project: aeromaps_tsas
+
+reset_project: False
+
+ecoinvent:
+    version: '3.10'
+    model: 'cutoff'
+    # Note: import of ecoinvent requires to provide credentials.
+    # For privacy reasons, we ask you to create a file named .env, that you will not share /commit,
+    # and contains the following :
+        # ECOINVENT_LOGIN=<your_login>
+        # ECOINVENT_PASSWORD=<your_password>
+
+premise:
+    scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2020
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2030
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2040
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2050
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2060
+        - model: 'remind'
+          pathway: 'SSP2-Base'
+          year: 2070
+          
+    update: 'all'  # all sectors
+        # Or a list of individual sectors to be updated
+        # - electricity
+        # - biomass
+        # - dac
+
+
+model:
+
+    airports:
+        custom_attributes:
+            - attribute: "phase"
+              value: "airport"
+              
+        name: 'market for airport'
+        amount: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range  # from ecoinvent 'transport, passenger aircraft, xxx haul'
+        
+
+    aircraft:
+        custom_attributes:
+            - attribute: "phase"
+              value: "aircraft production"
+
+        long_range:
+            name: 'aircraft production, passenger aircraft, long haul'
+            amount: 323.5  # median year value
+
+        medium_range:
+            name: 'aircraft production, passenger aircraft, medium haul'
+            amount: 864.5  # median year value
+
+        short_range:
+            name: 'aircraft production, passenger aircraft, short haul'
+            amount: 700.5  # # median year value
+            
+        
+    contrails:
+        custom_attributes:
+            - attribute: 'phase'
+              value: 'non-CO2 contrails'
+        amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending?
+        name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        
+        
+    fuel:
+        unit: MJ
+        
+        kerosene:
+            amount: energy_consumption_kerosene / lhv_kerosene  # conversion MJ to kg
+            unit: kilogram
+
+            CO2:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'CO2 kerosene'
+                amount: 0.074 * lhv_kerosene  # 74gCO2/MJ L. Jing et al. 2022 - doi: 10.1038/s41467-022-35392-1
+                name: 'carbon dioxide, fossil'  # this is a biosphere process   
+                categories:
+                    - 'air'
+                    - 'lower stratosphere + upper troposphere'
+            
+            nonCO2:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'non-CO2 kerosene'
+
+                NOx:
+                    custom_attributes:
+                        - attribute: 'emission'
+                          value: 'NOx'
+                    amount: emission_index_nox_kerosene  # emissions per kg of kerosene
+                    name: 'nitrogen oxides'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                SOx:
+                    amount: emission_index_sulfur_kerosene
+                    name: 'sulfur dioxide'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                #H2O:
+                #    amount: emission_index_h2o_kerosene  # TODO: fix water use LCIA method
+                #    name: 'water'
+                #    categories:
+                #        - 'air'
+                #        - 'lower stratosphere + upper troposphere'
+                PM:
+                    amount: emission_index_soot_kerosene
+                    name: 'Particulate Matter, < 2.5 um'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+
+                others_combustion_kero:  # amounts from Fabre et al. 2022 --> SAE, Procedure for the Calculation of Aircraft Emissions, 2009
+                    CO:
+                        amount: 2.01e-3
+                        name: 'carbon monoxide, fossil'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    CH4:
+                        amount: 8.92e-6
+                        name: 'methane, fossil'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+
+                    NMVOC:
+                        amount: 8.03e-5
+                        name: 'NMVOC, non-methane volatile organic compounds'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    N2O:
+                        amount: 5.00e-5
+                        name: 'dinitrogen monoxide'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+
+                    heavy_metals:
+                        Cadmium:
+                            amount: 1.00e-8
+                            name: 'Cadmium II'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Chromium:
+                            amount: 5.00e-8
+                            name: 'Chromium III'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Copper:
+                            amount: 1.70e-6
+                            name: 'Copper ion'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Lead:
+                            amount: 2.00e-5
+                            name: 'Lead II'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Mercury:
+                            amount: 7.00e-11
+                            name: 'Mercury II'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Nickel:
+                            amount: 7.00e-8
+                            name: 'Nickel II'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Selenium:
+                            amount: 1.00e-8
+                            name: 'Selenium IV'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                        Zinc:
+                            amount: 1.00e-5
+                            name: 'Zinc II'
+                            categories:
+                                - 'air'
+                                - 'lower stratosphere + upper troposphere'
+                                    
+            production:
+                unit: kilogram
+                custom_attributes:
+                        - attribute: "phase"
+                          value: "kerosene production"
+                
+                market_row:
+                    amount: 0.719396
+                    name: 'market for kerosene'
+                    loc: 'RoW'
+                    
+                market_europe:
+                    amount: 0.147226
+                    name: 'market for kerosene'
+                    loc: 'Europe without Switzerland'
+                    
+                market_india:
+                    amount: 0.080849
+                    name: 'market for kerosene'
+                    loc: 'IN'
+                    
+                market_brazil:
+                    amount: 0.025484
+                    name: 'market for kerosene'
+                    loc: 'BR'
+                    
+                market_south_africa:
+                    amount: 0.010466
+                    name: 'market for kerosene'
+                    loc: 'ZA'
+                    
+                market_switzerland:
+                    amount: 0.006927
+                    name: 'market for kerosene'
+                    loc: 'CH'
+                    
+                market_columbia:
+                    amount: 0.005400
+                    name: 'market for kerosene'
+                    loc: 'CO'
+                
+                market_peru:
+                    amount: 0.004253
+                    name: 'market for kerosene'
+                    loc: 'PE'
+                            
+                
+        biofuel:
+            amount: energy_consumption_biofuel / lhv_biofuel  # conversion MJ to kg
+            unit: kilogram
+
+            CO2:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'CO2 biofuel'
+                amount: 0.074 * lhv_biofuel
+                name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                categories:
+                    - 'air'
+            
+            nonCO2:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'non-CO2 biofuel'
+
+                NOx:
+                    amount: emission_index_nox_biofuel
+                    name: 'nitrogen oxides'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                SOx:
+                    amount: emission_index_sulfur_biofuel
+                    name: 'sulfur dioxide'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                #H2O:
+                #    amount: emission_index_h2o_biofuel  # TODO: fix water use LCIA method
+                #    name: 'water'
+                #    categories:
+                #        - 'air'
+                #        - 'lower stratosphere + upper troposphere'
+                PM:
+                    amount: emission_index_soot_biofuel
+                    name: 'Particulate Matter, < 2.5 um'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+
+                others_combustion_non_kero:
+                    CO:
+                        amount: 2.01e-3
+                        name: 'carbon monoxide, non-fossil'
+                        categories:
+                            - 'air'
+                            
+                    CH4:
+                        amount: 8.92e-6
+                        name: 'methane, non-fossil'
+                        categories:
+                            - 'air'
+
+                    NMVOC:
+                        amount: 8.03e-5
+                        name: 'NMVOC, non-methane volatile organic compounds'
+                        categories:
+                            - 'air'
+                            - 'lower stratosphere + upper troposphere'
+                    N2O:
+                        amount: 5.00e-5
+                        name: 'dinitrogen monoxide'
+                        categories:
+                            - 'air'
+                            - 'urban air close to ground'
+                                
+            production:
+                custom_attributes:
+                    - attribute: "phase"
+                      value: "biofuel production"
+                name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
+                #name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
+                loc: 'RER'
+        
+        efuel:
+            amount: energy_consumption_electrofuel / lhv_electrofuel  # conversion MJ to kg
+            unit: kilogram
+
+            CO2:
+                custom_attributes:
+                        - attribute: 'phase'
+                          value: 'CO2 electrofuel'
+                amount: 0.074 * lhv_electrofuel
+                name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                categories:
+                    - 'air'
+            
+            nonCO2:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'non-CO2 electrofuel'
+
+                NOx:
+                    amount: emission_index_nox_electrofuel
+                    name: 'nitrogen oxides'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                SOx:
+                    amount: emission_index_sulfur_electrofuel
+                    name: 'sulfur dioxide'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+                #H2O:
+                #    amount: emission_index_h2o_electrofuel  # TODO: fix water use LCIA method
+                #    name: 'water'
+                #    categories:
+                #        - 'air'
+                #        - 'lower stratosphere + upper troposphere'
+                PM:
+                    amount: emission_index_soot_electrofuel
+                    name: 'Particulate Matter, < 2.5 um'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+
+                others_combustion:
+                    name: '#others_combustion_non_kero'  # reference previously defined activity
+            
+            production:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'e-fuel production'
+                      
+                name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
+                loc: 'World'
+                add:  # add exchanges
+                    - amount: sum(market group for electricity*) * elec_solar_share  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
+                      #specific electricity mix:  # this activity can be modified (since background act is copied)
+                      #    name: 'electricity production, photovoltaic, commercial'
+                      #    loc: 'FR' 
+                      # Same as above but cannot be modified (update/add/delete)
+                      name: 'electricity production, photovoltaic, commercial'
+                      loc: 'FR' 
+                update:  # update exchanges
+                    - input_activity: 'market group for electricity*'  # you can use '*' wildcard in exchange name to get all acts containing this str
+                      new_value: 
+                          # if only amount is provided, the amount of all input acts will be replaced.
+                          amount: old_amount * (1 - elec_solar_share) # special symbol 'old_amount' references the previous amount of this exchange
+                          
+                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#World' # use '#' for specifying loc
+                      new_value:
+                          # if only activity is provided, the previous amounts will be kept. This is the same as using amount: old_amount
+                          # amount: old_amount  <-- unecessary here.
+                          syngas updated:
+                              name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
+                              loc: 'World'
+                              update:
+                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                    new_value:
+                                        hydrogen updated:
+                                            name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
+                                            loc: 'World'
+                                            add:
+                                                - amount: sum(market group for electricity*) * elec_solar_share
+                                                  name: 'electricity production, photovoltaic, commercial'
+                                                  loc: 'FR' 
+                                            update:
+                                                - input_activity: 'market group for electricity*'
+                                                  new_value:
+                                                      amount: old_amount * (1 - elec_solar_share)
+                                                                    
+                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#World'
+                                    new_value:
+                                        carbon monoxide updated:
+                                            name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
+                                            loc: 'World'
+                                            update:
+                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                                  new_value:
+                                                      name: '#hydrogen updated'  # reference a previously defined activity
+                                                - input_activity: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity#World'
+                                                  new_value:
+                                                      direct air capture updated:
+                                                          name: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity'
+                                                          loc: 'World'
+                                                          add:
+                                                              - amount: sum(market group for electricity*) * elec_solar_share
+                                                                name: 'electricity production, photovoltaic, commercial'
+                                                                loc: 'FR' 
+                                                          update:
+                                                              - input_activity: 'market group for electricity*'
+                                                                new_value:
+                                                                    amount: old_amount * (1 - elec_solar_share)  
+                                                        
+                
+        hydrogen:
+            amount: energy_consumption_hydrogen / lhv_hydrogen  # conversion MJ to kg
+            unit: kilogram
+            
+            production:
+                custom_attributes:
+                    - attribute: 'phase'
+                      value: 'hydrogen production'
+                      
+                electrolysis:
+                    name: '#hydrogen updated'  # conservative assumption: gaseous, no liquefaction for transportation
+            
+            combustion:
+                custom_attributes:
+                        - attribute: 'phase'
+                          value: 'non-CO2 hydrogen'
+                
+                NOx:
+                    amount: emission_index_nox_hydrogen
+                    name: 'nitrogen oxides'
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
+
+
+
+methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods()
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'acidification: terrestrial', 'terrestrial acidification potential (TAP)')"
+    #- "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: freshwater', 'freshwater ecotoxicity potential (FETP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: marine', 'marine ecotoxicity potential (METP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: terrestrial', 'terrestrial ecotoxicity potential (TETP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'energy resources: non-renewable, fossil', 'fossil fuel potential (FFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: freshwater', 'freshwater eutrophication potential (FEP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: marine', 'marine eutrophication potential (MEP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: carcinogenic', 'human toxicity potential (HTPc)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: non-carcinogenic', 'human toxicity potential (HTPnc)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ionising radiation', 'ionising radiation potential (IRP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'land use', 'agricultural land occupation (LOP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'material resources: metals/minerals', 'surplus ore potential (SOP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ozone depletion', 'ozone depletion potential (ODPinfinite)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'particulate matter formation', 'particulate matter formation potential (PMFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
+    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
+    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: natural resources', 'natural resources')"
+
+    
+custom_methods:
+    # Climate change including non-CO2 effects (NOx and contrails)
+    - name: "('Custom methods', 'climate change (with non-CO2)', 'global warming potential (GWP100)')"
+      filepath: './data/lca_data/lcia_nonCO2_global_warming.csv'  # This is where you define the CFs. Any flow not already existing (e.g. contrails) is automatically added.
+      unit: 'kg CO2-Eq'
+      source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
+      # if provided, the source method is duplicated and updated with the cfs provided in the filepath (cf modification or addition).
+      # otherwise, the lcia method is built from scratch.
+      
+    # Endpoints including non-CO2 effects for climate change
+    - name: "('Custom methods', 'total: ecosystem quality (with non-CO2)', 'ecosystem quality')"
+      filepath: './data/lca_data/lcia_nonCO2_ecosystem_quality.csv'
+      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
+      
+    - name: "('Custom methods', 'total: human health (with non-CO2)', 'human health')"
+      filepath: './data/lca_data/lcia_nonCO2_human_health.csv'
+      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+      
+    # Midpoint contributions at endpoint level, including non-CO2 effects for climate change
+    - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: freshwater ecosystems')"
+      filepath: './data/lca_data/lcia_nonCO2_freshwater_ecosystem_quality_climate_change.csv'
+      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
+      
+    - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: terrestrial ecosystems')"
+      filepath: './data/lca_data/lcia_nonCO2_terrestrial_ecosystem_quality_climate_change.csv'
+      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
+      
+    - name: "('Custom methods', 'human health (with non-CO2)', 'climate change: human health')"
+      filepath: './data/lca_data/lcia_nonCO2_human_health_climate_change.csv'
+      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
