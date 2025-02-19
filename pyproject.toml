@@ -20,7 +20,7 @@ homepage = "https://github.com/AeroMAPS/AeroMAPS"
 
 [tool.poetry.dependencies]
 # Core and standard libraries
-python = ">=3.10, <3.12"
+python = ">=3.9, <3.13"
 numpy = "^1.20.3"
 scipy = "^1.4.1"
 pandas = "^1.1.0"
@@ -49,7 +49,7 @@ ipytree = "^0.2.2"
 voila = "^0.5.0"
 
 # Optional dependencies
-lca-modeller = {version = "*", optional = true}
+lca-modeller = {version = "*", python = ">=3.10, <3.12", optional = true}
 
 [tool.poetry.extras]
 lca = ["lca-modeller"]
