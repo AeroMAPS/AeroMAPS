@@ -8,7 +8,6 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-
 class ElectricityDirectUse(AeroMAPSModel):
     def __init__(self, name="electricity_direct_use", *args, **kwargs):
         super().__init__(name, *args, **kwargs)

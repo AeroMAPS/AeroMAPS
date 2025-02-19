@@ -148,7 +148,6 @@ class AeroMAPSProcess(object):
         )
 
     def compute(self):
-
         self._pre_compute()
         if self.scenario is not None:
             if self.scenario_doe is not None:
@@ -159,7 +158,7 @@ class AeroMAPSProcess(object):
                 )
             else:
                 print("Running MDO")
-                self.scenario.execute(self.gemseo_settings['algorithm'])
+                self.scenario.execute(self.gemseo_settings["algorithm"])
         else:
             if self.mda_chain is None:
                 raise ValueError("MDA chain not created. Please call setup() first.")
@@ -167,10 +166,7 @@ class AeroMAPSProcess(object):
                 print("Running MDA")
                 self.mda_chain.execute(input_data=self.input_data)
 
-
-
         self._post_compute()
-
 
     def write_json(self, file_name=None):
         if file_name is None:
@@ -246,7 +242,6 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
-
 
     def _pre_compute(self):
         if self.fleet is not None:
@@ -369,7 +364,7 @@ class AeroMAPSProcess(object):
         self._initialize_climate_historical_data()
 
     def _initialize_parameters(self):
-        #TODO: Not possible to use folders fo inputs files as in tsas with these functions --> Make generic or refactor eerything to use folders
+        # TODO: Not possible to use folders fo inputs files as in tsas with these functions --> Make generic or refactor eerything to use folders
         self.parameters = Parameters()
         # First use main parameters.json as default values
         self.parameters.read_json(file_name=default_parameters_path)

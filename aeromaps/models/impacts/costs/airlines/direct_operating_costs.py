@@ -271,16 +271,16 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
         # Electric
         doc_non_energy_per_ask_short_range_electric = (
-                doc_non_energy_per_ask_short_range_dropin_fuel
-                * relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range
+            doc_non_energy_per_ask_short_range_dropin_fuel
+            * relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range
         )
         doc_non_energy_per_ask_medium_range_electric = (
-                doc_non_energy_per_ask_medium_range_dropin_fuel
-                * relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range
+            doc_non_energy_per_ask_medium_range_dropin_fuel
+            * relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range
         )
         doc_non_energy_per_ask_long_range_electric = (
-                doc_non_energy_per_ask_long_range_dropin_fuel
-                * relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
+            doc_non_energy_per_ask_long_range_dropin_fuel
+            * relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
         )
 
         self.df.loc[:, "doc_non_energy_per_ask_short_range_electric"] = (

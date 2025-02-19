@@ -62,6 +62,7 @@ from gemseo import create_mda
 from gemseo.core.chains.chain import MDOChain
 from gemseo.core.chains.parallel_chain import MDOParallelChain
 from gemseo.core.discipline import Discipline
+
 # from gemseo.core.execution_sequence import SerialExecSequence
 from gemseo.core.chains.initialization_chain import MDOInitializationChain
 
@@ -78,6 +79,7 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 N_CPUS = cpu_count()
+
 
 class AutoPyDisciplineBis(Discipline):
     """Wrap a Python function into a discipline.

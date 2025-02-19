@@ -6,6 +6,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 from typing import Tuple
 
+
 class PassengerAircraftOperationalProfit(AeroMAPSModel):
     def __init__(self, name="passenger_aircraft_operational_profit", *args, **kwargs):
         super().__init__(name, *args, **kwargs)

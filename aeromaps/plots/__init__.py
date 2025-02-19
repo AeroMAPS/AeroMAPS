@@ -68,7 +68,9 @@ from aeromaps.plots.costs import (
     DetailledMFSPBreakdownPerYear,
     ScenarioEnergyExpensesPlotWithoutCarbonTax,
     CumulativeMACC,
-    ShadowCarbonPrice, AnnualMACCSimple, ShadowCarbonPriceSimple,
+    ShadowCarbonPrice,
+    AnnualMACCSimple,
+    ShadowCarbonPriceSimple,
 )
 
 
