@@ -161,8 +161,11 @@ class AeroMAPSProcess(object):
                 print("Running MDO")
                 self.scenario.execute(self.gemseo_settings['algorithm'])
         else:
-            print("Running MDA")
-            self.mda_chain.execute(input_data=self.input_data)
+            if self.mda_chain is None:
+                raise ValueError("MDA chain not created. Please call setup() first.")
+            else:
+                print("Running MDA")
+                self.mda_chain.execute(input_data=self.input_data)
 
 
 
