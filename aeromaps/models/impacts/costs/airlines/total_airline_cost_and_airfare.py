@@ -473,7 +473,7 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
     def compute(
         self,
         rpk: pd.Series,
-        airfare_per_rpk: np.ndarray,
+        # airfare_per_rpk: np.ndarray,
         rpk_no_elasticity: pd.Series,
         total_cost_per_rpk_without_extra_tax: pd.Series,
         total_extra_tax_per_rpk: pd.Series,
@@ -481,14 +481,15 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
     ) -> Tuple[
         pd.Series,
         pd.Series,
-        np.ndarray,
+        pd.Series,
+        # np.ndarray,
     ]:
         # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025,2051))
-        interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
-
-        years_new = np.arange(2025, 2051, 1)
-        airfare_per_rpk = interp_af(years_new)
-        airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
+        # interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
+        #
+        # years_new = np.arange(2025, 2051, 1)
+        # airfare_per_rpk = interp_af(years_new)
+        # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
 
         intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[
             self.prospection_start_year - 1
@@ -514,27 +515,30 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
 
         airfare_per_rpk_true = marginal_cost_per_rpk + total_extra_tax_per_rpk
         airfare_per_rpk_true = airfare_per_rpk_true.loc[2025 : self.end_year + 1]
+        airfare_per_rpk = airfare_per_rpk_true.loc[2025 : self.end_year + 1]
 
         # print('a',a[self.end_year], 'b', b + total_cost_per_rpk_without_extra_tax[self.end_year] - intial_total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk[self.end_year])
         # print('checker',marginal_cost_per_rpk[self.end_year], rpk[self.end_year], airfare_per_rpk[self.end_year])
 
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
         self.df.loc[:, "airfare_per_rpk_true"] = airfare_per_rpk_true
+        # self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
 
         # print('End PaxCostAF: Airfare 2050:{}, A{}'.format(airfare_per_rpk[self.end_year], a[self.end_year]))
 
-        airfare_per_rpk_real_constraint_consistency = []
-        for year in [2025, 2030, 2035, 2040, 2045, 2050]:
-            airfare_per_rpk_real_constraint_consistency.append(
-                (airfare_per_rpk_true[year] - airfare_per_rpk[year]) / airfare_per_rpk_true[year]
-            )
-
-        airfare_per_rpk_real_constraint_consistency = np.array(
-            airfare_per_rpk_real_constraint_consistency
-        )
+        # airfare_per_rpk_real_constraint_consistency = []
+        # for year in [2025, 2030, 2035, 2040, 2045, 2050]:
+        #     airfare_per_rpk_real_constraint_consistency.append(
+        #         (airfare_per_rpk_true[year] - airfare_per_rpk[year]) / airfare_per_rpk_true[year]
+        #     )
+        #
+        # airfare_per_rpk_real_constraint_consistency = np.array(
+        #     airfare_per_rpk_real_constraint_consistency
+        # )
 
         return (
             marginal_cost_per_rpk,
             airfare_per_rpk_true,
-            airfare_per_rpk_real_constraint_consistency,
+            airfare_per_rpk,
+            # airfare_per_rpk_real_constraint_consistency,
         )
