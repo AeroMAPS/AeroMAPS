@@ -172,7 +172,7 @@ def completeParamValues(params, param_registry, setDefaults=True):
     # Set default variables for missing values
     if setDefaults:
         for name, param in param_registry.items():
-            if not name in params:
+            if name not in params:
                 params[name] = param["default"]
                 agb.warn(
                     "Required param '%s' was missing, replacing by default value : %s"
@@ -233,5 +233,5 @@ def _getAmountOrFormula(ex):
 def safe_delete_brightway_project(projectname: str) -> None:
     try:
         bw2data.projects.delete_project(name=projectname, delete_dir=True)
-    except:
-        pass
+    except Exception:
+        print("There is an error with the deletion of the Brightway project")

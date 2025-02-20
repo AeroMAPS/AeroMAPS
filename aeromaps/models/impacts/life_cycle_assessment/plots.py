@@ -4,7 +4,7 @@ Plots for life cycle assessments interpretation
 
 from pyvis.network import Network
 import os
-from IPython.display import display, HTML, IFrame
+from IPython.display import display, IFrame
 from lca_algebraic.activity import Activity
 
 # from aeromaps.models.impacts.life_cycle_assessment.helpers import list_processes

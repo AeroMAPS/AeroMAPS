@@ -63,12 +63,20 @@ from aeromaps.plots.costs import (
     DetailledMFSPBreakdownPerPathway,
     DetailledMFSPBreakdownPerYear,
     ScenarioEnergyExpensesPlotWithoutCarbonTax,
+    # AnnualMACC,
+    # ScenarioMACC,
+    # CumulativeMACC,
+    # ShadowCarbonPrice,
 )
 
 # Left plot
 plot_1 = {
     "Air transport CO2 emissions": AirTransportCO2EmissionsPlot,
     "Air transport climate impact": AirTransportClimateImpactsPlot,
+    # "AnnualMACC": AnnualMACC,
+    # "ScenarioMACC": ScenarioMACC,
+    # "CumulativeMACC": CumulativeMACC,
+    # "ShadowCarbonPrice": ShadowCarbonPrice,
 }
 
 # Central plot
