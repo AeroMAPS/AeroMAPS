@@ -366,7 +366,7 @@ class AeroMAPSProcess(object):
                     )
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
-            if hasattr(disc.model, "xarray_lca"):
+            if hasattr(disc.model, "xarray_lca") and disc.model.xarray_lca.size > 1:
                 if first_computation:
                     self.data["lca_outputs"] = disc.model.xarray_lca
                 else:
