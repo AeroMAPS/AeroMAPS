@@ -1,0 +1,4 @@
+{
+    "PARAMETERS_JSON_DATA_FILE": "./inputs_base_scenario.json",
+    "OUTPUTS_JSON_DATA_FILE": "./outputs_base_scenario.json"
+}

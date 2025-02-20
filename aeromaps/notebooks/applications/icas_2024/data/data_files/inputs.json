@@ -1,0 +1,7 @@
+{
+    "end_year": 2050,
+    "world_inhabitant_number_reference_years": [2020, 2030, 2040, 2050],
+    "world_inhabitant_number_reference_years_values": [7.805e9, 8.512e9, 9.159e9, 9.687e9],
+    "inhabitant_flyer_share_reference_years": [2020, 2030, 2040, 2050],
+    "inhabitant_flyer_share_reference_years_values": [11, 14, 17, 20]
+}

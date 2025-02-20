@@ -1,0 +1,19 @@
+{
+    "end_year": 2100,
+    "cagr_passenger_short_range_reference_periods": [2019,2051,2100],
+    "cagr_passenger_short_range_reference_periods_values": [0, -99.99],
+    "cagr_passenger_medium_range_reference_periods": [2019,2051,2100],
+    "cagr_passenger_medium_range_reference_periods_values": [0, -99.99],
+    "cagr_passenger_long_range_reference_periods": [2019,2051,2100],
+    "cagr_passenger_long_range_reference_periods_values": [0, -99.99],
+    "cagr_freight_reference_periods": [2019,2051,2100],
+    "cagr_freight_reference_periods_values": [0, -99.99],
+    "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
+    "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [0.0],
+    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years": [],
+    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values": [0.0],
+    "energy_per_ask_long_range_dropin_fuel_gain_reference_years": [],
+    "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [0.0],
+    "operations_final_gain": 0.0,
+    "load_factor_end_year": 82.399312
+}

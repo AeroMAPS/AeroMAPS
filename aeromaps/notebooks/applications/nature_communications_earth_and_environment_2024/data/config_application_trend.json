@@ -1,0 +1,4 @@
+{
+    "PARAMETERS_JSON_DATA_FILE": "./inputs/inputs_application_trend.json",
+    "OUTPUTS_JSON_DATA_FILE": "./outputs.json"
+}
