@@ -1,0 +1,8 @@
+*.pdf
+*.png
+*.svg
+
+**/.ipynb_checkpoints
+/.ipynb_checkpoints
+
+/aeromaps/notebooks/.env
