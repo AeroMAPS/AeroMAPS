@@ -434,9 +434,9 @@ class AeroMAPSProcess(object):
         )
 
         # LCA outputs
-        #self.json["lca_outputs"] = convert_values_from_array_to_list(
+        # self.json["lca_outputs"] = convert_values_from_array_to_list(
         #    self.data["lca_outputs"].to_dict("list")
-        #)
+        # )
 
     def _read_data_information(self, file_name=None):
         if file_name is None:
@@ -445,7 +445,6 @@ class AeroMAPSProcess(object):
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():
-
             # xarray no supported yet
             if type(variables) is xr.DataArray:
                 continue

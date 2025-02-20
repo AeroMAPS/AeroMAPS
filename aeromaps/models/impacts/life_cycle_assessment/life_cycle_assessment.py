@@ -8,17 +8,24 @@ import numpy as np
 import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator
 from typing import Tuple
-KEY_YEAR = 'year'
-KEY_METHOD = 'method'
+
+KEY_YEAR = "year"
+KEY_METHOD = "method"
 from aeromaps.core.process import default_parameters_path
 from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
 
 
-
 class LifeCycleAssessment(AeroMAPSModel):
-    def __init__(self, name: str = "life_cycle_assessment", configuration_file: str = None, split_by: str = None, *args, **kwargs):
+    def __init__(
+        self,
+        name: str = "life_cycle_assessment",
+        configuration_file: str = None,
+        split_by: str = None,
+        *args,
+        **kwargs,
+    ):
         super().__init__(name=name, *args, **kwargs)
 
         # Get LCA model and LCIA methods
@@ -39,7 +46,6 @@ class LifeCycleAssessment(AeroMAPSModel):
         json_parameters_dict = json_file_parameters.to_dict()
 
         for x in self.params_names:
-
             # KEY_YEAR is a special parameter treated separately
             if x == KEY_YEAR:
                 continue
@@ -61,40 +67,43 @@ class LifeCycleAssessment(AeroMAPSModel):
 
             # Parameters that should be interpolated from multiple values provided in parameters.json
             # (reference years and corresponding values)
-            elif x + '_reference_years' in json_parameters_dict.keys():
-                self.auto_inputs[x + '_reference_years'] = type(json_parameters_dict[x + '_reference_years'])
-                self.auto_inputs[x + '_reference_years_values'] = type(json_parameters_dict[x + '_reference_years_values'])
+            elif x + "_reference_years" in json_parameters_dict.keys():
+                self.auto_inputs[x + "_reference_years"] = type(
+                    json_parameters_dict[x + "_reference_years"]
+                )
+                self.auto_inputs[x + "_reference_years_values"] = type(
+                    json_parameters_dict[x + "_reference_years_values"]
+                )
 
             # Parameters that are not in parameters.json are assumed to be outputs from other AeroMAPS models
             else:
-                self.auto_inputs[x] = pd.Series  # TODO: is their a way to robustify this assumption?
+                self.auto_inputs[x] = (
+                    pd.Series
+                )  # TODO: is their a way to robustify this assumption?
 
         # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
-        print('Parametrizing LCIA impacts...', end=' ')
+        print("Parametrizing LCIA impacts...", end=" ")
         self.lambdas = agb.lca._preMultiLCAAlgebric(self.model, self.methods, axis=self.axis)
-        print('Done.')
+        print("Done.")
 
         # Add the auto-generated outputs to the AeroMAPSModel
         self.auto_outputs = dict()
         self.auto_outputs["series_list"] = tuple
 
         # TODO: explicitly define the outputs (with their types, e.g. pd.Series) of the model
-        #for i, method in enumerate(self.methods):
+        # for i, method in enumerate(self.methods):
         #    if self.lambdas[0].axis_keys:
         #        for j, phase in enumerate(self.lambdas[0].axis_keys):
         #            self.auto_outputs[f"ImpactScore_Method_{i}_Phase_{j}"] = pd.Series
         #    else:
         #        self.auto_outputs[f"ImpactScore_Method_{i}"] = pd.Series
-            #TODO: change names to be pythonic (no spaces, no special characters, etc.)
+        # TODO: change names to be pythonic (no spaces, no special characters, etc.)
 
     def compute(
-            self,
-            **kwargs
+        self, **kwargs
     ) -> Tuple[pd.Series, ...]:  # Python 3.9+: use builtins tuple instead of Tuple from typing lib
-
         # Assign values to parameters
         for name in self.params_names:
-
             # KEY_YEAR is a special parameter treated separately
             if name == KEY_YEAR:
                 self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
@@ -109,22 +118,26 @@ class LifeCycleAssessment(AeroMAPSModel):
                 param_values = kwargs[name].copy()
                 # Check if the length of the parameter values is consistent with the years
                 if len(param_values) > self.end_year - self.prospection_start_year + 1:
-                    param_values = param_values[- (self.end_year - self.prospection_start_year + 1):]
+                    param_values = param_values[
+                        -(self.end_year - self.prospection_start_year + 1) :
+                    ]
                 elif len(param_values) < self.end_year - self.prospection_start_year + 1:
-                    raise ValueError(f"Parameter '{name}' has not enough values for the simulation period.")
+                    raise ValueError(
+                        f"Parameter '{name}' has not enough values for the simulation period."
+                    )
                 self.params_dict[name] = np.nan_to_num(param_values)
                 # TODO: nan_to_num is a weird way to convert pd.Series to lists. Should be done in a more explicit way.
 
             # Parameters that should be interpolated from multiple values provided in parameters.json
             # (reference years and corresponding values)
-            elif name + '_reference_years' in kwargs and name + '_reference_years_values' in kwargs:
+            elif name + "_reference_years" in kwargs and name + "_reference_years_values" in kwargs:
                 param_values = AeromapsInterpolationFunction(
                     self,
-                    kwargs[name + '_reference_years'],
-                    kwargs[name + '_reference_years_values'],
+                    kwargs[name + "_reference_years"],
+                    kwargs[name + "_reference_years_values"],
                     model_name=self.name,
                 )
-                param_values = param_values.loc[self.prospection_start_year: self.end_year].values
+                param_values = param_values.loc[self.prospection_start_year : self.end_year].values
                 self.params_dict[name] = np.nan_to_num(param_values)
 
             # else: the parameter is not provided and will be set to its default value.
@@ -134,8 +147,8 @@ class LifeCycleAssessment(AeroMAPSModel):
         res = self.multiLCAAlgebraicRaw(**self.params_dict)
 
         # Set the year as the 'x' axis and rename
-        res['params'] = self.params_dict[KEY_YEAR]
-        res = res.rename({'params': KEY_YEAR})
+        res["params"] = self.params_dict[KEY_YEAR]
+        res = res.rename({"params": KEY_YEAR})
 
         # Store xarray to enable user to access data after process calculation
         self.xarray_lca = res
@@ -167,7 +180,7 @@ class LifeCycleAssessment(AeroMAPSModel):
 
         models = {self.model: self.lambdas}
         methods = self.methods
-        axis=self.axis
+        axis = self.axis
 
         # if isinstance(models, list):
         #    def to_tuple(item):
@@ -177,7 +190,7 @@ class LifeCycleAssessment(AeroMAPSModel):
         #            return (item, None)
         #    models = dict(to_tuple(item) for item in self.model)
 
-        #elif not isinstance(models, dict):
+        # elif not isinstance(models, dict):
         #    models = {models: None}
 
         param_length = agb.params._compute_param_length(params)
@@ -190,7 +203,10 @@ class LifeCycleAssessment(AeroMAPSModel):
                 # Check no params are passed for FixedParams
                 for key in params:
                     if key in agb.params._fixed_params():
-                        raise ValueError("Param '%s' is marked as FIXED, but passed in parameters : ignored" % key)
+                        raise ValueError(
+                            "Param '%s' is marked as FIXED, but passed in parameters : ignored"
+                            % key
+                        )
 
                 if not lambdas or len(lambdas) != len(methods):
                     if lambdas:
@@ -212,18 +228,26 @@ class LifeCycleAssessment(AeroMAPSModel):
                     else:
                         out[imodel, imethod, :] = value
         if axis_keys:
-            res = xr.DataArray(out, name='lca', coords=[
-                ("systems", np.fromiter((m.key for m in models.keys()), dtype='O')),
-                ("impacts", np.fromiter(methods, dtype='O')),
-                ("axis", np.fromiter(axis_keys, dtype='O')),
-                ("params", list(range(param_length)))
-            ])
+            res = xr.DataArray(
+                out,
+                name="lca",
+                coords=[
+                    ("systems", np.fromiter((m.key for m in models.keys()), dtype="O")),
+                    ("impacts", np.fromiter(methods, dtype="O")),
+                    ("axis", np.fromiter(axis_keys, dtype="O")),
+                    ("params", list(range(param_length))),
+                ],
+            )
         else:
-            res = xr.DataArray(out, name='lca', coords=[
-                ("systems", np.fromiter((m.key for m in models.keys()), dtype='O')),
-                ("impacts", np.fromiter(methods, dtype='O')),
-                ("params", list(range(param_length)))
-            ])
+            res = xr.DataArray(
+                out,
+                name="lca",
+                coords=[
+                    ("systems", np.fromiter((m.key for m in models.keys()), dtype="O")),
+                    ("impacts", np.fromiter(methods, dtype="O")),
+                    ("params", list(range(param_length))),
+                ],
+            )
         return res
 
     def compute_impacts_from_lambdas(
@@ -243,7 +267,7 @@ class LifeCycleAssessment(AeroMAPSModel):
                 if key in agb.params._fixed_params():
                     print("Param '%s' is marked as FIXED, but passed in parameters : ignored" % key)
 
-            #lambdas = _preMultiLCAAlgebric(model, methods, alpha=alpha, axis=axis)  # <-- this is the time-consuming part
+            # lambdas = _preMultiLCAAlgebric(model, methods, alpha=alpha, axis=axis)  # <-- this is the time-consuming part
 
             df = agb.lca._postMultiLCAAlgebric(self.methods, self.lambdas, **params)
 

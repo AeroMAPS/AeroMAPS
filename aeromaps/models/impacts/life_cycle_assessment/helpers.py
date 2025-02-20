@@ -5,28 +5,43 @@ from sympy.printing.str import StrPrinter
 from sympy import Float, factor
 import bw2data
 
-USER_DB = 'Foreground DB'
-DEFAULT_PROJECT = 'lca_modeller_default_project'
+USER_DB = "Foreground DB"
+DEFAULT_PROJECT = "lca_modeller_default_project"
 
 
-def list_processes(model, foreground_only: bool = True, custom_attribute: str = None) -> pd.DataFrame:
+def list_processes(
+    model, foreground_only: bool = True, custom_attribute: str = None
+) -> pd.DataFrame:
     """
     Traverses the tree of sub-activities (sub-processes) until the background database is reached.
     """
 
-    def _recursive_activities(act, activities, units, locations, parents, amounts, levels, dbs, custom_attributes,
-                              parent: str = "", exc: dict = None, level: int = 0):
-
+    def _recursive_activities(
+        act,
+        activities,
+        units,
+        locations,
+        parents,
+        amounts,
+        levels,
+        dbs,
+        custom_attributes,
+        parent: str = "",
+        exc: dict = None,
+        level: int = 0,
+    ):
         if exc is None:
             exc = {}
-        name = act.as_dict()['name']
-        unit = act.as_dict()['unit']
-        loc = act.as_dict().get('location', "")
-        if loc not in ['GLO', ''] and f'[{loc}]' not in name:
-            name += f' [{loc}]'
+        name = act.as_dict()["name"]
+        unit = act.as_dict()["unit"]
+        loc = act.as_dict().get("location", "")
+        if loc not in ["GLO", ""] and f"[{loc}]" not in name:
+            name += f" [{loc}]"
         amount = _getAmountOrFormula(exc)
-        db = act.as_dict()['database']
-        custom_attr = act.as_dict().get(custom_attribute, "")  # get any additional attribute asked by the user
+        db = act.as_dict()["database"]
+        custom_attr = act.as_dict().get(
+            custom_attribute, ""
+        )  # get any additional attribute asked by the user
 
         # Stop BEFORE reaching the first level of background activities
         if foreground_only and db != USER_DB:
@@ -55,12 +70,24 @@ def list_processes(model, foreground_only: bool = True, custom_attribute: str = 
             return
 
         for exc in act.exchanges():
-            if agb.base_utils._isOutputExch(exc):  # skip production exchange to only go down the tree
+            if agb.base_utils._isOutputExch(
+                exc
+            ):  # skip production exchange to only go down the tree
                 continue
-            _recursive_activities(exc.input, activities, units, locations, parents, amounts, levels, dbs, custom_attributes,
-                                  parent=name,
-                                  exc=exc,
-                                  level=level + 1)
+            _recursive_activities(
+                exc.input,
+                activities,
+                units,
+                locations,
+                parents,
+                amounts,
+                levels,
+                dbs,
+                custom_attributes,
+                parent=name,
+                exc=exc,
+                level=level + 1,
+            )
         return
 
     # Initialize lists
@@ -74,15 +101,18 @@ def list_processes(model, foreground_only: bool = True, custom_attribute: str = 
     custom_attributes = []
 
     # Recursively populate lists
-    _recursive_activities(model, activities, units, locations, parents, amounts, levels, dbs, custom_attributes)
-    data = {'activity': activities,
-            'unit': units,
-            'location': locations,
-            'level': levels,
-            'database': dbs,
-            'parents': parents,
-            'amounts': amounts,
-            }
+    _recursive_activities(
+        model, activities, units, locations, parents, amounts, levels, dbs, custom_attributes
+    )
+    data = {
+        "activity": activities,
+        "unit": units,
+        "location": locations,
+        "level": levels,
+        "database": dbs,
+        "parents": parents,
+        "amounts": amounts,
+    }
     if custom_attribute:
         data[custom_attribute] = custom_attributes
 
@@ -106,25 +136,27 @@ def expandParams(param, value=None):
     """
 
     # Enum (e.g. switch) parameters
-    if param['type'] == 'enum':
-        values = param['values'] + [None]
+    if param["type"] == "enum":
+        values = param["values"] + [None]
 
         # Bad value ?
         if value not in values:
-            raise Exception("Invalid value %s for param %s. Should be in %s" %
-                            (value, param['name'], str(param['values'])))
+            raise Exception(
+                "Invalid value %s for param %s. Should be in %s"
+                % (value, param["name"], str(param["values"]))
+            )
 
         res = dict()
         for enum_val in values:
-            var_name = "%s_%s" % (param['name'], enum_val if enum_val is not None else "default")
+            var_name = "%s_%s" % (param["name"], enum_val if enum_val is not None else "default")
             res[var_name] = 1.0 if enum_val == value else 0.0
         return res
 
     # Float parameters
     else:
         if value is None:
-            value = param['default']
-        return {param['name']: value}
+            value = param["default"]
+        return {param["name"]: value}
 
 
 def completeParamValues(params, param_registry, setDefaults=True):
@@ -141,9 +173,11 @@ def completeParamValues(params, param_registry, setDefaults=True):
     if setDefaults:
         for name, param in param_registry.items():
             if not name in params:
-                params[name] = param['default']
+                params[name] = param["default"]
                 agb.warn(
-                    "Required param '%s' was missing, replacing by default value : %s" % (name, str(param['default'])))
+                    "Required param '%s' was missing, replacing by default value : %s"
+                    % (name, str(param["default"]))
+                )
 
     res = dict()
     for key, val in params.items():
@@ -175,7 +209,7 @@ def format_number(num, precision=2):
     if isinstance(num, Float):  # SymPy float
         num = num.evalf()
     sci_num = "{:.{}e}".format(num, precision)
-    if 'e+00' in sci_num:
+    if "e+00" in sci_num:
         return "{:.{}f}".format(num, precision)
     else:
         return sci_num
@@ -183,24 +217,21 @@ def format_number(num, precision=2):
 
 class CustomStrPrinter(StrPrinter):
     def _print_Float(self, expr):
-        return '{:.2e}'.format(expr)
+        return "{:.2e}".format(expr)
 
 
 def _getAmountOrFormula(ex):
-    """ Return either a fixed float value or an expression for the amount of this exchange"""
-    if 'formula' in ex:
-        expr = parse_expr(ex['formula'], evaluate=False)
+    """Return either a fixed float value or an expression for the amount of this exchange"""
+    if "formula" in ex:
+        expr = parse_expr(ex["formula"], evaluate=False)
         return CustomStrPrinter().doprint(factor(expr))
-    elif 'amount' in ex:
-        return format_number(ex['amount'])
+    elif "amount" in ex:
+        return format_number(ex["amount"])
     return ""
 
 
 def safe_delete_brightway_project(projectname: str) -> None:
     try:
-        bw2data.projects.delete_project(
-            name = projectname,
-            delete_dir = True
-        )
+        bw2data.projects.delete_project(name=projectname, delete_dir=True)
     except:
         pass
