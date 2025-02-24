@@ -6,7 +6,6 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 import xarray as xr
-import yaml
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -231,8 +230,6 @@ class AeroMAPSProcess(object):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data
-                    if hasattr(model, "energy_carriers_data"):
-                        model.energy_carriers_data = self.energy_carriers_data
                     if hasattr(model, "compute"):
                         if model.model_type == 'custom':
                             model = AeroMAPSCustomModelWrapper(model=model)
@@ -305,24 +302,6 @@ class AeroMAPSProcess(object):
                     configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
                 )
                 self.parameters.read_json(file_name=new_input_file_path)
-
-        # TODO: check interest of doing that?
-        if (
-            self.configuration_file is not None
-            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
-        ):
-            configuration_directory = os.path.dirname(self.configuration_file)
-            energy_input_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
-            )
-            # If an alternative file is provided overwrite values
-        else:
-            energy_input_file_path = default_energy_carriers_data_path
-
-        with open(energy_input_file_path, "r") as file:
-            energy_carriers_data = yaml.load(file)
-
-        self.energy_carriers_data = energy_carriers_data
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
