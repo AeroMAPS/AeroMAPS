@@ -41,6 +41,11 @@ default_climate_historical_data_path = os.path.join(
     current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
 )
 
+# Construct the path to the energy carriers parameters default file
+default_energy_carriers_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "energy_carriers_data.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -297,6 +302,21 @@ class AeroMAPSProcess(object):
                     configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
                 )
                 self.parameters.read_json(file_name=new_input_file_path)
+
+        # TODO: check interest of doing that?
+        if (
+            self.configuration_file is not None
+            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
+        ):
+            configuration_directory = os.path.dirname(self.configuration_file)
+            energy_input_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
+            )
+            # If an alternative file is provided overwrite values
+        else:
+            energy_input_file_path = default_energy_carriers_data_path
+
+        self.energy_carriers_data = energy_input_file_path
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
