@@ -496,7 +496,7 @@ methods:  # tip: you can search for methods with lca_algebraic function agb.find
 custom_methods:
     # Climate change including non-CO2 effects (NOx and contrails)
     - name: "('Custom methods', 'climate change (with non-CO2)', 'global warming potential (GWP100)')"
-      filepath: './data/data/lcia_nonCO2_global_warming.csv'  # This is where you define the CFs. Any flow not already existing (e.g. contrails) is automatically added.
+      filepath: './data/lca_data/lcia_nonCO2_global_warming.csv'  # This is where you define the CFs. Any flow not already existing (e.g. contrails) is automatically added.
       unit: 'kg CO2-Eq'
       source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
       # if provided, the source method is duplicated and updated with the cfs provided in the filepath (cf modification or addition).
@@ -504,22 +504,22 @@ custom_methods:
       
     # Endpoints including non-CO2 effects for climate change
     - name: "('Custom methods', 'total: ecosystem quality (with non-CO2)', 'ecosystem quality')"
-      filepath: './data/data/lcia_nonCO2_ecosystem_quality.csv'
+      filepath: './data/lca_data/lcia_nonCO2_ecosystem_quality.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
       
     - name: "('Custom methods', 'total: human health (with non-CO2)', 'human health')"
-      filepath: './data/data/lcia_nonCO2_human_health.csv'
+      filepath: './data/lca_data/lcia_nonCO2_human_health.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
       
     # Midpoint contributions at endpoint level, including non-CO2 effects for climate change
     - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: freshwater ecosystems')"
-      filepath: './data/data/lcia_nonCO2_freshwater_ecosystem_quality_climate_change.csv'
+      filepath: './data/lca_data/lcia_nonCO2_freshwater_ecosystem_quality_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
       
     - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: terrestrial ecosystems')"
-      filepath: './data/data/lcia_nonCO2_terrestrial_ecosystem_quality_climate_change.csv'
+      filepath: './data/lca_data/lcia_nonCO2_terrestrial_ecosystem_quality_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
       
     - name: "('Custom methods', 'human health (with non-CO2)', 'climate change: human health')"
-      filepath: './data/data/lcia_nonCO2_human_health_climate_change.csv'
+      filepath: './data/lca_data/lcia_nonCO2_human_health_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
