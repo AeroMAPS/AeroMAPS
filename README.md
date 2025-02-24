@@ -44,6 +44,11 @@ You can install the latest version with this command:
 $ pip install --upgrade aeromaps
 ```
 
+If you also want to include the installation of the life cycle assessment models, use this command, but it requires Python 3.10.0:
+``` {.bash}
+$ pip install --upgrade aeromaps[lca]
+```
+
 
 Citation
 --------
