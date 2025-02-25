@@ -437,7 +437,7 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
 
         if hasattr(self.model, "auto_inputs"):
             self.input_grammar.update_from_types(
-                self.model.auto_inputs
+                self.model.auto_inputs,
             )  # Explicit addition of auto-generated inputs
             if "kwargs" in self.input_grammar.names:
                 self.input_grammar.required_names.remove("kwargs")
