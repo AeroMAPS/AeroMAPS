@@ -6,14 +6,11 @@ from aeromaps.models.base import AeroMAPSModelGeneric, AeromapsInterpolationFunc
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
-from lca_modeller.io.configuration import LCAProblemConfigurator
+from lca_modeller.io.configuration import LCAProblemConfigurator, KEY_YEAR
 from aeromaps.core.process import default_parameters_path
 from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
-
-KEY_YEAR = "year"
-KEY_METHOD = "method"
 
 
 class LifeCycleAssessment(AeroMAPSModelGeneric):
