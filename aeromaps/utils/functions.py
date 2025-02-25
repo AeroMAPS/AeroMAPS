@@ -12,7 +12,11 @@ from aeromaps.resources import climate_data
 def _dict_from_json(file_name="parameters.json") -> dict:
     with open(file_name, "r", encoding="utf-8") as f:
         parameters_dict = load(f)
+    dict = _dict_from_parameters_dict(parameters_dict)
+    return dict
 
+
+def _dict_from_parameters_dict(parameters_dict) -> dict:
     for key, value in parameters_dict.items():
         # TODO: generic handling of timetables
         if isinstance(value, list) and key in [
@@ -220,14 +224,3 @@ def create_partitioning(file, path=""):
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
-
-
-def merge_json_files(file1, file2, output_file):
-    with open(file1, "r") as f1, open(file2, "r") as f2:
-        data1 = json.load(f1)
-        data2 = json.load(f2)
-
-    merged_data = {**data1, **data2}
-
-    with open(output_file, "w") as outfile:
-        json.dump(merged_data, outfile, indent=4)

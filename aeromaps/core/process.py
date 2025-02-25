@@ -266,14 +266,34 @@ class AeroMAPSProcess(object):
         self.parameters.read_json(file_name=default_parameters_path)
 
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_input_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
-            )
-            # If an alternative file is provided overwrite values
-            if new_input_file_path != default_parameters_path:
+            # If the alternative file is a list of json files
+            if isinstance(self.config["PARAMETERS_JSON_DATA_FILE"], list):
+                merged_data = {}
+                new_input_file_path = []
+                configuration_directory = os.path.dirname(self.configuration_file)
+                for k in range(0, len(self.config["PARAMETERS_JSON_DATA_FILE"])):
+                    new_input_file_path.append(
+                        os.path.join(
+                            configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"][k]
+                        )
+                    )
+                for file in new_input_file_path:
+                    with open(file, "r") as f:
+                        data = load(f)
+                        for key, value in data.items():
+                            if key in merged_data:
+                                print(
+                                    f"Warning: '{key}' was given twice, only the last value was kept."
+                                )
+                            merged_data[key] = value
+                self.parameters.read_json_direct(merged_data)
+            # If the alternative file is a single json file
+            else:
+                configuration_directory = os.path.dirname(self.configuration_file)
+                new_input_file_path = os.path.join(
+                    configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
+                )
                 self.parameters.read_json(file_name=new_input_file_path)
-        # TODO: think refactoring to a dedicated method
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
