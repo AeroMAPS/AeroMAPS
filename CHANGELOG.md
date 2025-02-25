@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.8.0-beta
+
+Changed:
+- Upgrade GEMSEO to 6.0.0. (#87)
+- New models and application for TSAS conference. (#88)
+- Minor additions to cost code and notebooks update. (#89)
+- Life cycle assessment. (#90)
+- New features and restructuring of the notebooks. (#91)
+
+Fixed:
+- Multiple error fixes. (#91)
+
+
 ## Version 0.7.1-beta
 
 Changed:
