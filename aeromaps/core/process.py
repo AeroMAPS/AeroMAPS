@@ -125,7 +125,7 @@ class AeroMAPSProcess(object):
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
             self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
-            self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
+            # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
