@@ -34,6 +34,17 @@ class AeroMAPSModel(object):
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
 
+class AeroMAPSModelGeneric(AeroMAPSModel):
+    def __init__(
+            self,
+            name,
+            parameters=None,
+    ):
+        super().__init__(name=name, parameters=parameters)
+        self.input_names = {}
+        self.output_names = {}
+
+
 def AeromapsInterpolationFunction(
     self,
     reference_years,
