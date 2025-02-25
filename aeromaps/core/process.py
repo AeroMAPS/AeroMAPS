@@ -121,10 +121,11 @@ class AeroMAPSProcess(object):
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
             self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
             self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
+            self.str_inputs_df.to_excel(writer, sheet_name="String Inputs")
             self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
             self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
             self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
-            # TODO: add lca_outputs
+            # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
@@ -138,6 +139,9 @@ class AeroMAPSProcess(object):
 
     def list_float_inputs(self):
         return self.data["float_inputs"]
+
+    def list_str_inputs(self):
+        return self.data["str_inputs"]
 
     def plot(self, name, save=False, size_inches=None, remove_title=False):
         if name in available_plots_fleet:
@@ -186,6 +190,7 @@ class AeroMAPSProcess(object):
     def _initialize_data(self):
         # Inputs
         self.data["float_inputs"] = {}
+        self.data["str_inputs"] = {}
         # TODO: explore the possibility of using a dataframe for vector inputs
         self.data["vector_inputs"] = {}
 
@@ -261,14 +266,34 @@ class AeroMAPSProcess(object):
         self.parameters.read_json(file_name=default_parameters_path)
 
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_input_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
-            )
-            # If an alternative file is provided overwrite values
-            if new_input_file_path != default_parameters_path:
+            # If the alternative file is a list of json files
+            if isinstance(self.config["PARAMETERS_JSON_DATA_FILE"], list):
+                merged_data = {}
+                new_input_file_path = []
+                configuration_directory = os.path.dirname(self.configuration_file)
+                for k in range(0, len(self.config["PARAMETERS_JSON_DATA_FILE"])):
+                    new_input_file_path.append(
+                        os.path.join(
+                            configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"][k]
+                        )
+                    )
+                for file in new_input_file_path:
+                    with open(file, "r") as f:
+                        data = load(f)
+                        for key, value in data.items():
+                            if key in merged_data:
+                                print(
+                                    f"Warning: '{key}' was given twice, only the last value was kept."
+                                )
+                            merged_data[key] = value
+                self.parameters.read_json_direct(merged_data)
+            # If the alternative file is a single json file
+            else:
+                configuration_directory = os.path.dirname(self.configuration_file)
+                new_input_file_path = os.path.join(
+                    configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
+                )
                 self.parameters.read_json(file_name=new_input_file_path)
-        # TODO: think refactoring to a dedicated method
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
@@ -333,8 +358,15 @@ class AeroMAPSProcess(object):
         for name in all_inputs:
             try:
                 value = getattr(self.parameters, name)
-                if isinstance(value, (float, int, list)):
+                if isinstance(value, (float, int)):
                     self.data["float_inputs"][name] = value
+                elif isinstance(value, str):
+                    self.data["str_inputs"][name] = value
+                elif isinstance(value, list):
+                    if all(isinstance(x, str) for x in value) and len(value) > 0:
+                        self.data["str_inputs"][name] = value
+                    else:
+                        self.data["float_inputs"][name] = value
                 else:
                     new_values = []
                     for val in value:
@@ -366,7 +398,7 @@ class AeroMAPSProcess(object):
                     )
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
-            if hasattr(disc.model, "xarray_lca"):
+            if hasattr(disc.model, "xarray_lca") and disc.model.xarray_lca.size > 1:
                 if first_computation:
                     self.data["lca_outputs"] = disc.model.xarray_lca
                 else:
@@ -381,6 +413,13 @@ class AeroMAPSProcess(object):
             "Value": self.data["float_inputs"].values(),
         }
         self.float_inputs_df = pd.DataFrame(data=data)
+
+        # String parameters
+        data = {
+            "Name": self.data["str_inputs"].keys(),
+            "Value": self.data["str_inputs"].values(),
+        }
+        self.str_inputs_df = pd.DataFrame(data=data)
 
         # Vector parameters
         self.vector_inputs_df = _dict_to_df(self.data["vector_inputs"], orient="columns")
@@ -402,7 +441,7 @@ class AeroMAPSProcess(object):
         self.climate_outputs_df.sort_index(axis=1, inplace=True)
 
         # Vector lca xarray
-        # TODO: add xarray of lca_outputs?
+        self.lca_outputs_xarray = self.data["lca_outputs"]
 
         # Variable information
         self._read_data_information()
@@ -416,6 +455,9 @@ class AeroMAPSProcess(object):
 
         # Float inputs
         self.json["float_inputs"] = convert_values_from_array_to_list(self.data["float_inputs"])
+
+        # String inputs
+        self.json["str_inputs"] = convert_values_from_array_to_list(self.data["str_inputs"])
 
         # Vector inputs
         self.json["vector_inputs"] = convert_values_from_array_to_list(self.data["vector_inputs"])
@@ -433,9 +475,9 @@ class AeroMAPSProcess(object):
             self.data["climate_outputs"].to_dict("list")
         )
 
-        # LCA outputs
+        # LCA outputs --> convert to json is not supported yet
         # self.json["lca_outputs"] = convert_values_from_array_to_list(
-        #    self.data["lca_outputs"].to_dict("list")
+        #    self.data["lca_outputs"].to_series().to_dict("list")
         # )
 
     def _read_data_information(self, file_name=None):
@@ -445,7 +487,7 @@ class AeroMAPSProcess(object):
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():
-            # xarray no supported yet
+            # FIXME: xarray no supported yet for excel data information
             if type(variables) is xr.DataArray:
                 continue
 

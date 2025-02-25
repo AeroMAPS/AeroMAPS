@@ -247,56 +247,67 @@ class GraphicalUserInterface(widgets.VBox):
 
         # Air traffic
 
-        self.w_growth_short_range_percent = widgets.FloatSlider(
+        self.w_growth_air_traffic_percent = widgets.FloatSlider(
             min=-7,
             max=7,
             step=0.1,
             value=3.0,
-            description="Short Range",
-            description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Short Range market\n"
+            description="Growth rate",
+            description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger and Freight markets\n"
             "The default value of 3.0% corresponds to the aviation industry's projections",
         )
-        self.w_growth_short_range_percent.observe(self.update, "value")
+        self.w_growth_air_traffic_percent.observe(self.update, "value")
 
-        self.w_growth_medium_range_percent = widgets.FloatSlider(
-            min=-7,
-            max=7,
-            step=0.1,
-            value=3.0,
-            description="Medium Range",
-            description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Medium Range market\n"
-            "The default value of 3.0% corresponds to the aviation industry's projections",
-        )
-        self.w_growth_medium_range_percent.observe(self.update, "value")
+        # self.w_growth_short_range_percent = widgets.FloatSlider(
+        #     min=-7,
+        #     max=7,
+        #     step=0.1,
+        #     value=3.0,
+        #     description="Short Range",
+        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Short Range market\n"
+        #     "The default value of 3.0% corresponds to the aviation industry's projections",
+        # )
+        # self.w_growth_short_range_percent.observe(self.update, "value")
+        #
+        # self.w_growth_medium_range_percent = widgets.FloatSlider(
+        #     min=-7,
+        #     max=7,
+        #     step=0.1,
+        #     value=3.0,
+        #     description="Medium Range",
+        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Medium Range market\n"
+        #     "The default value of 3.0% corresponds to the aviation industry's projections",
+        # )
+        # self.w_growth_medium_range_percent.observe(self.update, "value")
+        #
+        # self.w_growth_long_range_percent = widgets.FloatSlider(
+        #     min=-7,
+        #     max=7,
+        #     step=0.1,
+        #     value=3.0,
+        #     description="Long Range",
+        #     description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Long Range market\n"
+        #     "The default value of 3.0% corresponds to the aviation industry's projections",
+        # )
+        # self.w_growth_long_range_percent.observe(self.update, "value")
+        #
+        # self.w_growth_freight_percent = widgets.FloatSlider(
+        #     min=-7,
+        #     max=7,
+        #     step=0.1,
+        #     value=3.0,
+        #     description="Freight",
+        #     description_tooltip="Annual air traffic growth (RTK) in percent (%) for Freight market\n"
+        #     "The default value of 3.0% corresponds to the aviation industry's projections",
+        # )
+        # self.w_growth_freight_percent.observe(self.update, "value")
 
-        self.w_growth_long_range_percent = widgets.FloatSlider(
-            min=-7,
-            max=7,
-            step=0.1,
-            value=3.0,
-            description="Long Range",
-            description_tooltip="Annual air traffic growth (RPK) in percent (%) for Passenger Long Range market\n"
-            "The default value of 3.0% corresponds to the aviation industry's projections",
-        )
-        self.w_growth_long_range_percent.observe(self.update, "value")
-
-        self.w_growth_freight_percent = widgets.FloatSlider(
-            min=-7,
-            max=7,
-            step=0.1,
-            value=3.0,
-            description="Freight",
-            description_tooltip="Annual air traffic growth (RTK) in percent (%) for Freight market\n"
-            "The default value of 3.0% corresponds to the aviation industry's projections",
-        )
-        self.w_growth_freight_percent.observe(self.update, "value")
-
-        self.w_grouped_market = widgets.Checkbox(
-            value=False,
-            description="Assuming similar market evolutions",
-            layout={"width": "max-content"},
-        )
-        self.w_grouped_market.observe(self.update, "value")
+        # self.w_grouped_market = widgets.Checkbox(
+        #     value=False,
+        #     description="Assuming similar market evolutions",
+        #     layout={"width": "max-content"},
+        # )
+        # self.w_grouped_market.observe(self.update, "value")
 
         self.w_short_range_reduction = widgets.Checkbox(
             value=False,
@@ -589,11 +600,12 @@ class GraphicalUserInterface(widgets.VBox):
                 ),
                 widgets.VBox(
                     [
-                        self.w_grouped_market,
-                        self.w_growth_short_range_percent,
-                        self.w_growth_medium_range_percent,
-                        self.w_growth_long_range_percent,
-                        self.w_growth_freight_percent,
+                        self.w_growth_air_traffic_percent,
+                        # self.w_grouped_market,
+                        # self.w_growth_short_range_percent,
+                        # self.w_growth_medium_range_percent,
+                        # self.w_growth_long_range_percent,
+                        # self.w_growth_freight_percent,
                         self.w_short_range_reduction,
                         self.w_social_measure,
                     ]
@@ -913,48 +925,59 @@ class GraphicalUserInterface(widgets.VBox):
     def update(self, change):
         self._update_controls()
         self.process.compute()
-        self.process.compute()
         self._update_plots()
 
     def _update_controls(self):
         # DISCOVERY
 
         # Traffic
-        if self.w_grouped_market.value is False:
-            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
-                self.w_growth_short_range_percent.value
-            ]
-            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
-                self.w_growth_medium_range_percent.value
-            ]
-            self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
-                self.w_growth_long_range_percent.value
-            ]
-            self.process.parameters.cagr_freight_reference_periods_values = [
-                self.w_growth_freight_percent.value
-            ]
-            self.w_growth_medium_range_percent.disabled = False
-            self.w_growth_long_range_percent.disabled = False
-            self.w_growth_freight_percent.disabled = False
-        else:
-            self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
-                self.w_growth_short_range_percent.value
-            ]
-            self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
-                self.w_growth_short_range_percent.value
-            ]
-            self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
-                self.w_growth_short_range_percent.value
-            ]
-            self.process.parameters.cagr_freight_reference_periods_values = [
-                self.w_growth_short_range_percent.value
-            ]
-            self.w_growth_medium_range_percent.disabled = True
-            self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
-            self.w_growth_long_range_percent.disabled = True
-            self.w_growth_long_range_percent.value = self.w_growth_short_range_percent.value
-            self.w_growth_freight_percent.disabled = True
-            self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
+        # if self.w_grouped_market.value is False:
+        #     self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
+        #         self.w_growth_short_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
+        #         self.w_growth_medium_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
+        #         self.w_growth_long_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_freight_reference_periods_values = [
+        #         self.w_growth_freight_percent.value
+        #     ]
+        #     self.w_growth_medium_range_percent.disabled = False
+        #     self.w_growth_long_range_percent.disabled = False
+        #     self.w_growth_freight_percent.disabled = False
+        # else:
+        #     self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
+        #         self.w_growth_short_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
+        #         self.w_growth_short_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
+        #         self.w_growth_short_range_percent.value
+        #     ]
+        #     self.process.parameters.cagr_freight_reference_periods_values = [
+        #         self.w_growth_short_range_percent.value
+        #     ]
+        #     self.w_growth_medium_range_percent.disabled = True
+        #     self.w_growth_medium_range_percent.value = self.w_growth_short_range_percent.value
+        #     self.w_growth_long_range_percent.disabled = True
+        #     self.w_growth_long_range_percent.value = self.w_growth_short_range_percent.value
+        #     self.w_growth_freight_percent.disabled = True
+        #     self.w_growth_freight_percent.value = self.w_growth_short_range_percent.value
+        self.process.parameters.cagr_passenger_short_range_reference_periods_values = [
+            self.w_growth_air_traffic_percent.value
+        ]
+        self.process.parameters.cagr_passenger_medium_range_reference_periods_values = [
+            self.w_growth_air_traffic_percent.value
+        ]
+        self.process.parameters.cagr_passenger_long_range_reference_periods_values = [
+            self.w_growth_air_traffic_percent.value
+        ]
+        self.process.parameters.cagr_freight_reference_periods_values = [
+            self.w_growth_air_traffic_percent.value
+        ]
 
         if self.w_short_range_reduction.value is False and self.w_social_measure.value is False:
             self.process.parameters.rpk_short_range_measures_final_impact = 0.0

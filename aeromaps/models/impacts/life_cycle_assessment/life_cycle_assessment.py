@@ -9,12 +9,13 @@ import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator
 from typing import Tuple
 
-KEY_YEAR = "year"
-KEY_METHOD = "method"
 from aeromaps.core.process import default_parameters_path
 from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
+
+KEY_YEAR = "year"
+KEY_METHOD = "method"
 
 
 class LifeCycleAssessment(AeroMAPSModel):
@@ -37,12 +38,13 @@ class LifeCycleAssessment(AeroMAPSModel):
         self.axis = split_by
         self.params_names = agb.all_params().keys()
         self.params_dict = dict()
+        self.xarray_lca = xr.DataArray()
 
         # Automatically add LCA parameters (except strings) as inputs of this AeroMAPSModel.
         # See gemseo.py for more details about addition of auto-generated inputs.
         self.auto_inputs = dict()
         json_file_parameters = Parameters()
-        json_file_parameters.read_json(file_name=default_parameters_path)
+        json_file_parameters.read_json(file_name=default_parameters_path)  # default json file (parameters.json)
         json_parameters_dict = json_file_parameters.to_dict()
 
         for x in self.params_names:
@@ -50,22 +52,12 @@ class LifeCycleAssessment(AeroMAPSModel):
             if x == KEY_YEAR:
                 continue
 
-            # Inputs provided in parameters.json
+            # Inputs provided in json file
             elif x in json_parameters_dict.keys():
                 value = json_parameters_dict[x]
+                self.auto_inputs[x] = type(value)
 
-                # String inputs are directly stored in the params_dict
-                if isinstance(value, str):
-                    self.params_dict[x] = value
-                elif isinstance(value, list) and any(isinstance(elem, str) for elem in value):
-                    self.params_dict[x] = value
-
-                # Float parameters are stored in the auto_inputs dict
-                # to be automatically added as inputs of the AeroMAPSModel
-                else:
-                    self.auto_inputs[x] = type(value)
-
-            # Parameters that should be interpolated from multiple values provided in parameters.json
+            # Parameters that should be interpolated from multiple values provided in json file
             # (reference years and corresponding values)
             elif x + "_reference_years" in json_parameters_dict.keys():
                 self.auto_inputs[x + "_reference_years"] = type(
@@ -79,7 +71,9 @@ class LifeCycleAssessment(AeroMAPSModel):
             else:
                 self.auto_inputs[x] = (
                     pd.Series
-                )  # TODO: is their a way to robustify this assumption?
+                )
+                # TODO: is their a way to robustify this assumption about data type pd.Series?
+                # Maybe by first running the other models and checking the data type of the outputs.
 
         # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
         print("Parametrizing LCIA impacts...", end=" ")
@@ -87,21 +81,22 @@ class LifeCycleAssessment(AeroMAPSModel):
         print("Done.")
 
         # Add the auto-generated outputs to the AeroMAPSModel
-        self.auto_outputs = dict()
-        self.auto_outputs["series_list"] = tuple
+        # FIXME: this is a temporary solution. Not defining explicitly the output type cause issue since gemseo is expecting a np.ndarray or pd.Series as output type.
+        self.auto_outputs = {"outputs_lca": xr.DataArray}
 
-        # TODO: explicitly define the outputs (with their types, e.g. pd.Series) of the model
+        # Alternative?
+        # This doesn't work for now because the return value of compute() must be a tuple of explicit variables
+        # self.auto_outputs = dict()
         # for i, method in enumerate(self.methods):
         #    if self.lambdas[0].axis_keys:
         #        for j, phase in enumerate(self.lambdas[0].axis_keys):
-        #            self.auto_outputs[f"ImpactScore_Method_{i}_Phase_{j}"] = pd.Series
+        #            self.auto_outputs[f"ImpactScore_Method_{i}_Axis_{j}"] = pd.Series
         #    else:
         #        self.auto_outputs[f"ImpactScore_Method_{i}"] = pd.Series
-        # TODO: change names to be pythonic (no spaces, no special characters, etc.)
 
     def compute(
         self, **kwargs
-    ) -> Tuple[pd.Series, ...]:  # Python 3.9+: use builtins tuple instead of Tuple from typing lib
+    ) -> xr.DataArray:  # Python 3.9+: use builtins tuple instead of Tuple from typing lib
         # Assign values to parameters
         for name in self.params_names:
             # KEY_YEAR is a special parameter treated separately
@@ -109,11 +104,15 @@ class LifeCycleAssessment(AeroMAPSModel):
                 self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
                 # replace by self.data["years"]["prospective_years"] ?
 
+            # String parameter
+            elif isinstance(kwargs.get(name), str):
+                self.params_dict[name] = kwargs[name]
+
             # Single float value
             elif isinstance(kwargs.get(name), float):
                 self.params_dict[name] = kwargs[name]
 
-            # Multiple float values
+            # Multiple values
             elif isinstance(kwargs.get(name), (list, np.ndarray, pd.Series)):
                 param_values = kwargs[name].copy()
                 # Check if the length of the parameter values is consistent with the years
@@ -126,9 +125,8 @@ class LifeCycleAssessment(AeroMAPSModel):
                         f"Parameter '{name}' has not enough values for the simulation period."
                     )
                 self.params_dict[name] = np.nan_to_num(param_values)
-                # TODO: nan_to_num is a weird way to convert pd.Series to lists. Should be done in a more explicit way.
 
-            # Parameters that should be interpolated from multiple values provided in parameters.json
+            # Parameters that should be interpolated from multiple values provided in json file
             # (reference years and corresponding values)
             elif name + "_reference_years" in kwargs and name + "_reference_years_values" in kwargs:
                 param_values = AeromapsInterpolationFunction(
@@ -137,11 +135,12 @@ class LifeCycleAssessment(AeroMAPSModel):
                     kwargs[name + "_reference_years_values"],
                     model_name=self.name,
                 )
-                param_values = param_values.loc[self.prospection_start_year : self.end_year].values
+                param_values = param_values.loc[self.prospection_start_year:self.end_year].values
                 self.params_dict[name] = np.nan_to_num(param_values)
 
             # else: the parameter is not provided and will be set to its default value.
-            # This is typically the case for non-float parameters that are set in __init__
+            else:
+                raise UserWarning(f'Value for LCA parameter "{name}" is not provided. Default value will be used.')
 
         # Calculate impacts for all parameters at once
         res = self.multiLCAAlgebraicRaw(**self.params_dict)
@@ -151,12 +150,24 @@ class LifeCycleAssessment(AeroMAPSModel):
         res = res.rename({"params": KEY_YEAR})
 
         # Store xarray to enable user to access data after process calculation
-        self.xarray_lca = res
-        self.multi_df_lca = res.to_dataframe()
+        self.xarray_lca = outputs_lca = res
 
-        # TODO: replace by xplicit names of each impact cat to enable connection with other models (c.f. "auto_outputs")
-        series_list = (self.multi_df_lca,)
-        return series_list
+        # Test: convert xarray to pd.Series to enable connection with other models.
+        # Convert each (impact, axis) pair into a pd.Series
+        # if self.lambdas[0].axis_keys:
+        #    outputs_lca = tuple([
+        #        res.sel(impacts=impact, axis=ax).to_series()
+        #        for impact in res.coords["impacts"].values
+        #        for ax in res.coords["axis"].values
+        #    ])
+        # else:
+        #    outputs_lca = tuple([
+        #        res.sel(impacts=impact).to_series() for impact in res.coords["impacts"].values
+        #    ])
+        # Issue to solve: how to set return with explicit variables? E.g. return tuple(outputs_lca) doesn't work.
+        # It has to be for example return (my_var1, my_var2, my_var3, ..., my_var_n) with each variable being a pd.Series or ndarray.
+
+        return outputs_lca
 
     def multiLCAAlgebraicRaw(self, **params):
         """

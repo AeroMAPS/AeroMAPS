@@ -2781,28 +2781,28 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
-        custom_annotation_height_for_nice_plot = [
-            70,
-            220,
-            130,
-            100,
-            100,
-            130,
-            150,
-            180,
-            100,
-            100,
-            100,
-            180,
-            240,
-            220,
-            300,
-            380,
-            460,
-            520,
-            580,
-            670,
-        ]
+        # custom_annotation_height_for_nice_plot = [
+        #     70,
+        #     220,
+        #     130,
+        #     100,
+        #     100,
+        #     130,
+        #     150,
+        #     180,
+        #     100,
+        #     100,
+        #     100,
+        #     180,
+        #     240,
+        #     220,
+        #     300,
+        #     380,
+        #     460,
+        #     520,
+        #     580,
+        #     670,
+        # ]
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2

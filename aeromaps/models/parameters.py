@@ -1,7 +1,7 @@
 from json import dump
 import pandas as pd
 
-from aeromaps.utils.functions import _dict_from_json
+from aeromaps.utils.functions import _dict_from_json, _dict_from_parameters_dict
 
 
 class Parameters:
@@ -24,6 +24,12 @@ class Parameters:
 
     def read_json(self, file_name="parameters.json"):
         data = _dict_from_json(file_name=file_name)
+
+        # Old reference data is kept
+        self.from_dict(data)
+
+    def read_json_direct(self, parameters_dict):
+        data = _dict_from_parameters_dict(parameters_dict)
 
         # Old reference data is kept
         self.from_dict(data)

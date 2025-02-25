@@ -23,6 +23,7 @@ class FleetEvolution(AeroMAPSModel):
         rpk_long_range: pd.Series,
         covid_start_year: int,
         covid_end_year_passenger: int,
+        dummy_fleet_model_output: np.ndarray,
     ) -> Tuple[
         dict,
         dict,

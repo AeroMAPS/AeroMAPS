@@ -34,5 +34,5 @@ jobs:
           poetry install
 
       - name: Notebook tests
-        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/examples_life_cycle_assessment.ipynb --ignore=aeromaps/notebooks/examples_life_cycle_assessment-tsas.ipynb --ignore=aeromaps/notebooks/examples_life_cycle_assessment-xarray.ipynb
+        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb
         shell: bash

@@ -1,0 +1,5 @@
+{
+    "PARAMETERS_JSON_DATA_FILE": ["../partitioned_data/partitioned_inputs.json","../ltag_data_inputs/is1medium_inputs.json"],
+    "PARAMETERS_CLIMATE_DATA_FILE": "../partitioned_data/partitioned_temperature_historical_dataset.csv",
+    "OUTPUTS_JSON_DATA_FILE": "../ltag_data_outputs/is1medium_outputs.json"
+}

@@ -1,0 +1,307 @@
+{
+    "cagr_passenger_short_range_reference_periods": [],
+    "cagr_passenger_short_range_reference_periods_values": [
+        3.0
+    ],
+    "cagr_passenger_medium_range_reference_periods": [],
+    "cagr_passenger_medium_range_reference_periods_values": [
+        3.0
+    ],
+    "cagr_passenger_long_range_reference_periods": [],
+    "cagr_passenger_long_range_reference_periods_values": [
+        3.0
+    ],
+    "cagr_freight_reference_periods": [],
+    "cagr_freight_reference_periods_values": [
+        3.0
+    ],
+    "load_factor_end_year": 89.0,
+    "operations_final_gain": 8.0,
+    "operations_start_year": 2025,
+    "operations_duration": 25.0,
+    "biofuel_share_reference_years": [
+        2020,
+        2025,
+        2030,
+        2035,
+        2040,
+        2045,
+        2050
+    ],
+    "biofuel_share_reference_years_values": [
+        0,
+        2,
+        6,
+        20,
+        34,
+        34,
+        35
+    ],
+    "electrofuel_share_reference_years": [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040,
+        2045,
+        2050
+    ],
+    "electrofuel_share_reference_years_values": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,
+        8,
+        35
+    ],
+    "biofuel_hefa_fog_share_reference_years": [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050
+    ],
+    "biofuel_hefa_fog_share_reference_years_values": [
+    100, 100, 100, 100, 62.72, 48.81, 39.46, 32.74, 27.18, 20.72,
+    15.2, 11.12, 8.27, 6.31, 5.04, 4.17, 3.53, 3.05, 2.68, 2.44,
+    2.29, 2.2, 2.17, 2.18, 2.18, 2.18, 2.16, 2.13, 2.09, 2.03, 1.97
+    ],
+    "biofuel_hefa_others_share_reference_years": [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050
+    ],
+    "biofuel_hefa_others_share_reference_years_values":[
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    13.7, 13.77, 13.82, 13.86, 12.29, 12.3, 12.3, 12.3,
+    12.3, 12.3, 12.3, 12.31, 12.31, 12.32, 12.33
+    ],
+    "biofuel_ft_others_share_reference_years": [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050
+    ],
+    "biofuel_ft_others_share_reference_years_values":  [
+    0, 0, 0, 0, 34.02, 46.71, 55.25, 61.38, 66.45, 72.35,
+    77.39, 81.11, 83.71, 85.5, 86.66, 87.45, 75.53, 75.91,
+    76.2, 76.38, 67.73, 67.79, 67.81, 67.81, 67.8, 67.81,
+    67.82, 67.84, 67.87, 67.91, 67.95
+    ],
+    "biofuel_ft_msw_share_reference_years": [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050
+    ],
+    "biofuel_ft_msw_share_reference_years_values": [
+    0, 0, 0, 0, 3.26, 4.48, 5.29, 5.88, 6.37, 6.93,
+    7.41, 7.77, 8.02, 8.19, 8.3, 8.38, 7.24, 7.27,
+    7.3, 7.32, 6.49, 6.49, 6.5, 6.5, 6.5, 6.5, 6.5,
+    6.5, 6.5, 6.5, 6.51
+    ],
+    "hydrogen_electrolysis_share_reference_years": [
+        2020,
+        2030,
+        2035,
+        2050
+    ],
+    "hydrogen_electrolysis_share_reference_years_values": [
+        0,
+        34.6,
+        54,
+        76
+    ],
+    "hydrogen_gas_ccs_share_reference_years": [
+        2020,
+        2030,
+        2035,
+        2050
+    ],
+    "hydrogen_gas_ccs_share_reference_years_values": [
+        0.75,
+        9,
+        11.9,
+        15
+    ],
+    "hydrogen_coal_ccs_share_reference_years": [
+        2020,
+        2030,
+        2035,
+        2050
+    ],
+    "hydrogen_coal_ccs_share_reference_years_values": [
+        0.25,
+        3,
+        3.9,
+        5
+    ],
+    "hydrogen_gas_share_reference_years": [
+        2020,
+        2030,
+        2035,
+        2050
+    ],
+    "hydrogen_gas_share_reference_years_values": [
+        75,
+        40,
+        22.6,
+        3
+    ],
+    "electrolysis_efficiency_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrolysis_efficiency_reference_years_values": [
+        0.64,
+        0.66,
+        0.72
+    ],
+    "electrolyser_capex_reference_years": [
+        2020,
+        2030,
+        2040,
+        2050
+    ],
+    "electrolyser_capex_reference_years_values": [
+        533,
+        355,
+        261,
+        210
+    ],
+    "electrolyser_fixed_opex_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrolyser_fixed_opex_reference_years_values": [
+        25.05,
+        20.57,
+        19.62
+    ],
+    "electrolyser_variable_opex_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrolyser_variable_opex_reference_years_values": [
+        0.3,
+        0.19,
+        0.12
+    ],
+    "liquefier_capex_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "liquefier_capex_reference_years_values": [
+        2248,
+        1457,
+        899
+    ],
+    "liquefaction_efficiency_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "liquefaction_efficiency_reference_years_values": [
+        0.75,
+        0.82,
+        0.83
+    ],
+    "electrofuel_hydrogen_efficiency_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrofuel_hydrogen_efficiency_reference_years_values": [
+        0.74,
+        0.74,
+        0.74
+    ],
+    "electrofuel_capex_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrofuel_capex_reference_years_values": [
+        2496,
+        1528,
+        510
+    ],
+    "electrofuel_var_opex_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrofuel_var_opex_reference_years_values": [
+        0.336,
+        0.296,
+        0.2
+    ],
+    "electrofuel_specific_co2_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "electrofuel_specific_co2_reference_years_values": [
+        4.3,
+        3.58,
+        2.552
+    ],
+    "co2_cost_reference_years": [
+        2020,
+        2030,
+        2050
+    ],
+    "co2_cost_reference_years_values": [
+        0.46,
+        0.15,
+        0.09
+    ],
+    "electricity_emission_factor_reference_years": [
+        2020,
+        2030,
+        2040,
+        2050
+    ],
+    "electricity_emission_factor_reference_years_values": [
+        429,
+        160,
+        40,
+        20
+    ],
+    "electricity_cost_reference_years": [
+        2020,
+        2050
+    ],
+    "electricity_cost_reference_years_values": [
+        0.08,
+        0.1
+    ],
+    "carbon_tax_reference_years": [
+        2020,
+        2030,
+        2040,
+        2050
+    ],
+    "carbon_tax_reference_years_values": [
+        0,
+        0,
+        0,
+        0
+    ],
+    "social_discount_rate": 0.045,
+    "exogenous_carbon_price_reference_years": [
+        2020,
+        2030,
+        2040,
+        2050
+    ],
+    "exogenous_carbon_price_reference_years_values": [
+        54,
+        250,
+        500,
+        775
+    ],
+    "net_carbon_budget": 850.0,
+    "carbon_dioxyde_removal_2100": 285.0,
+    "aviation_carbon_budget_allocated_share": 2.6,
+    "aviation_equivalentcarbonbudget_allocated_share": 5.1,
+    "aviation_biomass_allocated_share": 5.0,
+    "aviation_electricity_allocated_share": 5.0
+}
