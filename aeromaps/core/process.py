@@ -6,6 +6,7 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 import xarray as xr
+import yaml
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -302,6 +303,37 @@ class AeroMAPSProcess(object):
                     configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
                 )
                 self.parameters.read_json(file_name=new_input_file_path)
+
+        # Complete self.parameters with data from energy_carriers_data.yaml
+        # TODO: Put everything in a dediccate method
+        if (
+            self.configuration_file is not None
+            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
+        ):
+            configuration_directory = os.path.dirname(self.configuration_file)
+            energy_carriers_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
+            )
+        else:
+            energy_carriers_data_file_path = default_energy_carriers_data_path
+
+        with open(energy_carriers_data_file_path, "r") as file:
+            self.energy_carriers_data = yaml.load(file, Loader=yaml.FullLoader)
+
+        # Populate the dictionaries with data from energy carriers
+        def _flatten_params(prefix, params, result):
+            for param_name, param_value in params.items():
+                if isinstance(param_value, dict):
+                    _flatten_params(f"{prefix}_{param_name}", param_value, result)
+                else:
+                    result[f"{prefix}_{param_name}"] = param_value
+
+        flattened_params = {}
+        for pathway, params in self.energy_carriers_data.items():
+            full_name = params.get("name", pathway)
+            _flatten_params(full_name, params, flattened_params)
+
+        self.parameters.__dict__.update(flattened_params)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():

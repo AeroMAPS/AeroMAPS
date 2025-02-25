@@ -1,24 +1,26 @@
 hefa_fog:
-  name: "hefa_fog"
-  type: "dropin"
+  # ID
+  name: "hefa_fog" # TODO Aeromaps process not handling strings
+  # Policy
   blending_mandate:
-    Value: 0.1
-    Unit: "volume" # Possible types are: Volume (EJ), Share (%)
-  technical:
-    co2_emission_factor_without_resource: 0.5
-    other_specific_emission_factor: 0.3
-    plant_load_factor: 0.85
-    plant_lifespan: 25
-    density: 0.8
-    lower_heating_value: 42.0
-    kerosene_selectivity: 0.9
-    specific_consumption:
-      Resource_1: 0.8
-
-  cost:
-    mfsp: 100
-    mfsp_subsidy: 10
-    mfsp_tax: 5
-    capex_subsidy: 15
-    carbon_tax: 20
+    value: 0.1
+    unit: "volume" # Possible types are: Volume (EJ), Share (%). Specify unit for each? bof
+  # Technical:
+  type: "dropin"
+  co2_emission_factor_without_resource: 0.5
+  other_specific_emission_factor: 0.3
+  plant_load_factor: 0.85
+  plant_lifespan: 25
+  density: 0.8
+  lower_heating_value: 42.0
+  kerosene_selectivity: 0.9
+  specific_consumption:
+    electricity: 0.8
+    hydrogen: 0.1
+  # Economics:
+  mfsp: 100.0
+  mfsp_subsidy: 10.0
+  mfsp_tax: 5.0
+  capex_subsidy: 15.0
+  carbon_tax: 20.0
 
