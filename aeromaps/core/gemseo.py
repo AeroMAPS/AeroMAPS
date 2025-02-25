@@ -44,7 +44,7 @@ from gemseo.core.discipline import Discipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 
-from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.base import AeroMAPSModel, AeroMAPSModelGeneric
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -345,26 +345,6 @@ class AutoDiscDataProcessor(DataProcessor):
     to NumPy arrays.
     """
 
-    # TODO: API: this is never used, remove?
-    out_names: Sequence[str]
-    """The names of the outputs."""
-
-    # TODO: API: this is never used, remove?
-    one_output: bool
-    """Whether there is a single output."""
-
-    def __init__(
-        self,
-        out_names: Sequence[str],
-    ) -> None:
-        """
-        Args:
-            out_names: The names of the outputs.
-        """  # noqa: D205 D212 D415
-        super().__init__()
-        self.out_names = out_names
-        self.one_output = len(out_names) == 1
-
     def pre_process_data(self, data: dict[str, DataType]) -> dict[str, DataType]:
         """Pre-process the input data.
 
@@ -380,9 +360,9 @@ class AutoDiscDataProcessor(DataProcessor):
             where one-length NumPy arrays have been replaced with floats.
         """
         processed_data = data.copy()
-        for key, val in data.items():
-            if len(val) == 1:
-                processed_data[key] = float(val[0])
+        # for key, val in data.items():
+        #     if len(val) == 1:
+        #          processed_data[key] = float(val[0])
 
         return processed_data
 
@@ -400,9 +380,19 @@ class AutoDiscDataProcessor(DataProcessor):
             The processed data with NumPy arrays as values.
         """
         processed_data = data.copy()
+        outputs_to_remove = []
+        outputs_to_add = {}
         for output_name, output_value in processed_data.items():
-            if not isinstance(output_value, ndarray):
-                processed_data[output_name] = array([output_value])
+            if isinstance(output_value, dict):
+                for key, value in output_value.items():
+                    outputs_to_add[key] = value
+                outputs_to_remove.append(output_name)
+            # if not isinstance(output_value, ndarray):
+            #    processed_data[output_name] = array([output_value])
+
+        #for output_name in outputs_to_remove:
+        #    processed_data.pop(output_name)
+        processed_data.update(outputs_to_add)
 
         return processed_data
 
@@ -435,6 +425,8 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
             use_arrays=True,
         )
 
+        # self.io.data_processor = AutoDiscDataProcessor()
+
         if hasattr(self.model, "auto_inputs"):
             self.input_grammar.update_from_types(
                 self.model.auto_inputs
@@ -455,5 +447,23 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         for input in self.get_input_data():
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
+            if hasattr(self.model.parameters, input):
+                self.default_inputs[input] = getattr(self.model.parameters, input)
+
+
+class AeroMAPSModelWrapperGeneric(Discipline):
+    def __init__(self, model):
+        super().__init__()
+        self.input_grammar.update_from_data(model.input_names)
+        self.output_grammar.update_from_data(model.output_names)
+        self.model: AeroMAPSModelGeneric = model
+        self.name = model.__class__.__name__
+        self.update_defaults()
+
+    def _run(self, input_data):
+        return self.model.compute(input_data)
+
+    def update_defaults(self):
+        for input in self.get_input_data():
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)

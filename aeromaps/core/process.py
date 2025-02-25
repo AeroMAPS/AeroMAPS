@@ -10,8 +10,8 @@ from gemseo import generate_n2_plot, create_mda
 
 
 # Local application imports
-from aeromaps.models.base import AeroMAPSModel
-from aeromaps.core.gemseo import AeroMAPSModelWrapper
+from aeromaps.models.base import AeroMAPSModel, AeroMAPSModelGeneric
+from aeromaps.core.gemseo import AeroMAPSModelWrapper, AeroMAPSModelWrapperGeneric
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import _dict_to_df
@@ -226,7 +226,10 @@ class AeroMAPSProcess(object):
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        model = AeroMAPSModelWrapper(model=model)
+                        if isinstance(model, AeroMAPSModelGeneric):
+                            model = AeroMAPSModelWrapperGeneric(model=model)
+                        else:
+                            model = AeroMAPSModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
                         print(model.name)
