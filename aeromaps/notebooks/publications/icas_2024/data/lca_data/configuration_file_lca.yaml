@@ -1,10 +1,8 @@
-project: aeromaps_tsas
-
-reset_project: False
+project: example_methodology_ei391
 
 ecoinvent:
-    version: '3.10'
-    model: 'cutoff'
+    version: 3.9.1
+    model: cutoff
     # Note: import of ecoinvent requires to provide credentials.
     # For privacy reasons, we ask you to create a file named .env, that you will not share /commit,
     # and contains the following :
@@ -13,26 +11,72 @@ ecoinvent:
 
 premise:
     scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
-        - model: 'remind'
-          pathway: 'SSP2-Base'
+        - model: remind
+          pathway: SSP2-Base
           year: 2020
-        - model: 'remind'
-          pathway: 'SSP2-Base'
+        - model: remind
+          pathway: SSP2-Base
           year: 2030
-        - model: 'remind'
-          pathway: 'SSP2-Base'
+        - model: remind
+          pathway: SSP2-Base
           year: 2040
-        - model: 'remind'
-          pathway: 'SSP2-Base'
+        - model: remind
+          pathway: SSP2-Base
           year: 2050
-        - model: 'remind'
-          pathway: 'SSP2-Base'
-          year: 2060
-        - model: 'remind'
-          pathway: 'SSP2-Base'
-          year: 2070
           
-    update: 'all'  # all sectors
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2020
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2030
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2040
+        #- model: image
+        #  pathway: SSP2-Base
+        #  year: 2050
+         
+        #- model: remind
+        #  pathway: SSP1-PkBudg1150
+        #  year: 2020
+        #- model: remind
+        #  pathway: SSP1-PkBudg1150
+        #  year: 2030
+        #- model: remind
+        #  pathway: SSP1-PkBudg1150
+        #  year: 2040
+        #- model: remind
+        #  pathway: SSP1-PkBudg1150
+        #  year: 2050
+        
+        #- model: remind
+        #  pathway: SSP2-PkBudg1150
+        #  year: 2020
+        #- model: remind
+        #  pathway: SSP2-PkBudg1150
+        #  year: 2030
+        #- model: remind
+        #  pathway: SSP2-PkBudg1150
+        #  year: 2040
+        #- model: remind
+        #  pathway: SSP2-PkBudg1150
+        #  year: 2050
+          
+        #- model: image
+        #  pathway: SSP2-RCP26
+        #  year: 2020
+        #- model: image
+        #  pathway: SSP2-RCP26
+        #  year: 2030
+        #- model: image
+        #  pathway: SSP2-RCP26
+        #  year: 2040
+        #- model: image
+        #  pathway: SSP2-RCP26
+        #  year: 2050
+          
+    update: all  # all sectors
         # Or a list of individual sectors to be updated
         # - electricity
         # - biomass
@@ -57,27 +101,15 @@ model:
 
         long_range:
             name: 'aircraft production, passenger aircraft, long haul'
-            amount: 323.5  # median year value
+            amount: aircraft_production_long_range
 
         medium_range:
             name: 'aircraft production, passenger aircraft, medium haul'
-            amount: 864.5  # median year value
+            amount: aircraft_production_medium_range
 
         short_range:
             name: 'aircraft production, passenger aircraft, short haul'
-            amount: 700.5  # # median year value
-            
-        
-    contrails:
-        custom_attributes:
-            - attribute: 'phase'
-              value: 'non-CO2 contrails'
-        amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending?
-        name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
-        categories:
-            - 'air'
-            - 'lower stratosphere + upper troposphere'
-        
+            amount: aircraft_production_short_range
         
     fuel:
         unit: MJ
@@ -85,27 +117,21 @@ model:
         kerosene:
             amount: energy_consumption_kerosene / lhv_kerosene  # conversion MJ to kg
             unit: kilogram
-
-            CO2:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'CO2 kerosene'
-                amount: 0.074 * lhv_kerosene  # 74gCO2/MJ L. Jing et al. 2022 - doi: 10.1038/s41467-022-35392-1
-                name: 'carbon dioxide, fossil'  # this is a biosphere process   
-                categories:
-                    - 'air'
-                    - 'lower stratosphere + upper troposphere'
             
-            nonCO2:
+            combustion:
                 custom_attributes:
                     - attribute: 'phase'
-                      value: 'non-CO2 kerosene'
+                      value: 'combustion kerosene'
+                      
+                CO2:
+                    amount: 0.074 * lhv_kerosene  # amount from aeromaps
+                    name: 'carbon dioxide, fossil'  # this is a biosphere process   
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
 
                 NOx:
-                    custom_attributes:
-                        - attribute: 'emission'
-                          value: 'NOx'
-                    amount: emission_index_nox_kerosene  # emissions per kg of kerosene
+                    amount: emission_index_nox_kerosene
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
@@ -130,6 +156,10 @@ model:
                         - 'lower stratosphere + upper troposphere'
 
                 others_combustion_kero:  # amounts from Fabre et al. 2022 --> SAE, Procedure for the Calculation of Aircraft Emissions, 2009
+                    #custom_attributes:
+                    #    - attribute: 'subphase'
+                    #      value: 'others combustion (kero)'
+
                     CO:
                         amount: 2.01e-3
                         name: 'carbon monoxide, fossil'
@@ -210,7 +240,7 @@ model:
                 unit: kilogram
                 custom_attributes:
                         - attribute: "phase"
-                          value: "kerosene production"
+                          value: "production kerosene"
                 
                 market_row:
                     amount: 0.719396
@@ -256,20 +286,18 @@ model:
         biofuel:
             amount: energy_consumption_biofuel / lhv_biofuel  # conversion MJ to kg
             unit: kilogram
-
-            CO2:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'CO2 biofuel'
-                amount: 0.074 * lhv_biofuel
-                name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
-                categories:
-                    - 'air'
             
-            nonCO2:
+            combustion:
                 custom_attributes:
                     - attribute: 'phase'
-                      value: 'non-CO2 biofuel'
+                      value: 'combustion biofuel'
+                      
+                CO2:
+                    amount: 0.074 * lhv_biofuel
+                    name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
 
                 NOx:
                     amount: emission_index_nox_biofuel
@@ -297,17 +325,22 @@ model:
                         - 'lower stratosphere + upper troposphere'
 
                 others_combustion_non_kero:
+                    #custom_attributes:
+                    #    - attribute: 'subphase'
+                    #      value: 'others combustion (biofuel and efuel)'
+
                     CO:
                         amount: 2.01e-3
                         name: 'carbon monoxide, non-fossil'
                         categories:
                             - 'air'
-                            
+                            - 'lower stratosphere + upper troposphere'
                     CH4:
                         amount: 8.92e-6
                         name: 'methane, non-fossil'
                         categories:
                             - 'air'
+                            - 'urban air close to ground'
 
                     NMVOC:
                         amount: 8.03e-5
@@ -323,30 +356,29 @@ model:
                             - 'urban air close to ground'
                                 
             production:
+                production:
                 custom_attributes:
                     - attribute: "phase"
-                      value: "biofuel production"
+                      value: "production biofuel"
+                      
                 name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
-                #name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
                 loc: 'RER'
         
         efuel:
             amount: energy_consumption_electrofuel / lhv_electrofuel  # conversion MJ to kg
             unit: kilogram
-
-            CO2:
-                custom_attributes:
-                        - attribute: 'phase'
-                          value: 'CO2 electrofuel'
-                amount: 0.074 * lhv_electrofuel
-                name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
-                categories:
-                    - 'air'
             
-            nonCO2:
+            combustion:
                 custom_attributes:
                     - attribute: 'phase'
-                      value: 'non-CO2 electrofuel'
+                      value: 'combustion electrofuel'
+                      
+                CO2:
+                    amount: 0.074 * lhv_electrofuel
+                    name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                    categories:
+                        - 'air'
+                        - 'lower stratosphere + upper troposphere'
 
                 NOx:
                     amount: emission_index_nox_electrofuel
@@ -377,9 +409,9 @@ model:
                     name: '#others_combustion_non_kero'  # reference previously defined activity
             
             production:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'e-fuel production'
+                #custom_attributes:
+                #    - attribute: 'phase'
+                #      value: 'production electrofuel'
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
                 loc: 'World'
@@ -408,6 +440,9 @@ model:
                                   - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
                                     new_value:
                                         hydrogen updated:
+                                            custom_attributes:
+                                              - attribute: 'phase'
+                                                value: 'production electrofuel electrolysis'
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
                                             loc: 'World'
                                             add:
@@ -418,6 +453,22 @@ model:
                                                 - input_activity: 'market group for electricity*'
                                                   new_value:
                                                       amount: old_amount * (1 - elec_solar_share)
+                                                      
+                                                - input_activity: 'electrolyzer production, 1MWe, PEM, Balance of Plant#RER'
+                                                  new_value:
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
+                                                      
+                                                - input_activity: 'electrolyzer production, 1MWe, PEM, Stack#RER'
+                                                  new_value:
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
+                                                      
+                                                - input_activity:  'treatment of fuel cell balance of plant, 1MWe, PEM#RER'
+                                                  new_value:
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
+                                                      
+                                                - input_activity:  'treatment of fuel cell stack, 1MWe, PEM#RER'
+                                                  new_value:
+                                                      amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                                     
                                   - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#World'
                                     new_value:
@@ -431,6 +482,9 @@ model:
                                                 - input_activity: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity#World'
                                                   new_value:
                                                       direct air capture updated:
+                                                          custom_attributes:
+                                                              - attribute: 'phase'
+                                                                value: 'production electrofuel DAC'
                                                           name: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity'
                                                           loc: 'World'
                                                           add:
@@ -442,36 +496,21 @@ model:
                                                                 new_value:
                                                                     amount: old_amount * (1 - elec_solar_share)  
                                                         
-                
-        hydrogen:
-            amount: energy_consumption_hydrogen / lhv_hydrogen  # conversion MJ to kg
-            unit: kilogram
-            
-            production:
-                custom_attributes:
-                    - attribute: 'phase'
-                      value: 'hydrogen production'
-                      
-                electrolysis:
-                    name: '#hydrogen updated'  # conservative assumption: gaseous, no liquefaction for transportation
-            
-            combustion:
-                custom_attributes:
-                        - attribute: 'phase'
-                          value: 'non-CO2 hydrogen'
-                
-                NOx:
-                    amount: emission_index_nox_hydrogen
-                    name: 'nitrogen oxides'
-                    categories:
-                        - 'air'
-                        - 'lower stratosphere + upper troposphere'
+                                                              - input_activity: 'direct air capture system, solvent-based, 1MtCO2#RER'
+                                                                new_value:
+                                                                    amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
+                                                        
+                                                        
 
 
 
 methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods()
+    #- "('EF v3.1', 'acidification', 'accumulated exceedance (AE)')"
+    #- "('EF v3.1', 'climate change', 'global warming potential (GWP100)')"
+    #- "('EF v3.1', 'water use', 'user deprivation potential (deprivation-weighted water consumption)')"
+    #- "('EF v3.1', 'land use', 'soil quality index')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'acidification: terrestrial', 'terrestrial acidification potential (TAP)')"
-    #- "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
+    - "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: freshwater', 'freshwater ecotoxicity potential (FETP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: marine', 'marine ecotoxicity potential (METP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: terrestrial', 'terrestrial ecotoxicity potential (TETP)')"
@@ -488,38 +527,8 @@ methods:  # tip: you can search for methods with lca_algebraic function agb.find
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
-    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
-    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
     - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: natural resources', 'natural resources')"
 
     
-custom_methods:
-    # Climate change including non-CO2 effects (NOx and contrails)
-    - name: "('Custom methods', 'climate change (with non-CO2)', 'global warming potential (GWP100)')"
-      filepath: './data/data/lcia_nonCO2_global_warming.csv'  # This is where you define the CFs. Any flow not already existing (e.g. contrails) is automatically added.
-      unit: 'kg CO2-Eq'
-      source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
-      # if provided, the source method is duplicated and updated with the cfs provided in the filepath (cf modification or addition).
-      # otherwise, the lcia method is built from scratch.
-      
-    # Endpoints including non-CO2 effects for climate change
-    - name: "('Custom methods', 'total: ecosystem quality (with non-CO2)', 'ecosystem quality')"
-      filepath: './data/data/lcia_nonCO2_ecosystem_quality.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
-      
-    - name: "('Custom methods', 'total: human health (with non-CO2)', 'human health')"
-      filepath: './data/data/lcia_nonCO2_human_health.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
-      
-    # Midpoint contributions at endpoint level, including non-CO2 effects for climate change
-    - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: freshwater ecosystems')"
-      filepath: './data/data/lcia_nonCO2_freshwater_ecosystem_quality_climate_change.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
-      
-    - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: terrestrial ecosystems')"
-      filepath: './data/data/lcia_nonCO2_terrestrial_ecosystem_quality_climate_change.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
-      
-    - name: "('Custom methods', 'human health (with non-CO2)', 'climate change: human health')"
-      filepath: './data/data/lcia_nonCO2_human_health_climate_change.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
