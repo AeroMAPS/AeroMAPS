@@ -1,12 +1,10 @@
-import os.path
+# import os.path
 
 # import pandas as pd
 import yaml
 
 from aeromaps.models.base import AeroMAPSModel
 # from typing import Tuple
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class AviationEnergyCarriers(AeroMAPSModel):
@@ -46,17 +44,35 @@ class AviationEnergyCarriers(AeroMAPSModel):
         # Populate the auto outputs tuple containing all the outputs of all the pathways
         # TODO can't do auto inputs without auto outputs...
 
-        self.auto_outputs = {"zz8zz": float}
+        # self.auto_outputs = {"zz8zz": float}
         # print(self.auto_outputs)
 
     def compute(self, **kwargs) -> float:
         # print the inputs
-        print(kwargs)
 
+        print(kwargs)
         # TODO: unable to mix yaml inputs with other standards AeroMAPS inputs as grammar is handeld by  auto inputs.
         zz8zz = 0.0
 
         # self.float_outputs["zz8zz"] = zz8zz
+        # loop on pathways somehow
+        self._pathway_environmental_analysis()
+        self._pathway_economic_analysis()
 
-        print(zz8zz)
         return zz8zz
+
+    def _pathway_environmental_analysis(self, **kwargs):
+        # Function that computes energy carriers environmental impacts
+        # Ressource consumption
+        # GHG emissions combining ressource emmission and other if specified
+
+        return
+
+    def _pathway_economic_analysis(self, **kwargs):
+        # Would replace pathway_computation() in the current implementation
+        # Function that computes energy carriers mfsp + invest
+        # Split between complex and simple modes here ?
+
+        # As currently, call mfsp for each year based on production needs => _compute_pathway_year_mfsp
+
+        return
