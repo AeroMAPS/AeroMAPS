@@ -44,11 +44,10 @@ from gemseo.core.discipline import Discipline
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 
-from aeromaps.models.base import AeroMAPSModel, AeroMAPSModelGeneric
+from aeromaps.models.base import AeroMAPSModel
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from collections.abc import Sequence
 
 DataType = Union[float, ndarray]
 
@@ -413,31 +412,23 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
     return data
 
 
-class AeroMAPSModelWrapper(AutoPyDiscipline):
+class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
+    """
+    Wraps the AeroMAPSModel class into a discipline.
+    Inputs and outputs are automatically declared from the model's compute() function signature.
+    """
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
         # TODO: Explore possibility to use json grammar
         self.default_grammar_type = Discipline.GrammarType.SIMPLE
 
-        super(AeroMAPSModelWrapper, self).__init__(
+        super(AeroMAPSAutoModelWrapper, self).__init__(
             py_func=self.model.compute,
             use_arrays=True,
         )
 
         # self.io.data_processor = AutoDiscDataProcessor()
-
-        if hasattr(self.model, "auto_inputs"):
-            self.input_grammar.update_from_types(
-                self.model.auto_inputs
-            )  # Explicit addition of auto-generated inputs
-            if "kwargs" in self.input_grammar.names:
-                self.input_grammar.required_names.remove("kwargs")
-
-        if hasattr(self.model, "auto_outputs"):
-            self.output_grammar.update_from_types(
-                self.model.auto_outputs
-            )  # Explicit addition of auto-generated outputs
 
         self.name = model.__class__.__name__
 
@@ -451,19 +442,31 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
                 self.default_inputs[input] = getattr(self.model.parameters, input)
 
 
-class AeroMAPSModelWrapperGeneric(Discipline):
+class AeroMAPSCustomModelWrapper(Discipline):
+    """
+    Wraps the AeroMAPSModel class into a discipline.
+    Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
+    """
     def __init__(self, model):
         super().__init__()
         self.input_grammar.update_from_data(model.input_names)
         self.output_grammar.update_from_data(model.output_names)
-        self.model: AeroMAPSModelGeneric = model
+        self.model: AeroMAPSModel = model
         self.name = model.__class__.__name__
         self.update_defaults()
 
+        # TODO: explore data converters e.g. to convert pd.Series to np.array for MDA handling
+        # self.io.data_processor = AutoDiscDataProcessor()
+
     def _run(self, input_data):
-        return self.model.compute(input_data)
+        if hasattr(self.model, 'compute'):
+            return self.model.compute(input_data)
+        else:
+            raise AttributeError(f"Model {self.name} does not have a compute method")
 
     def update_defaults(self):
         for input in self.get_input_data():
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)
+
+

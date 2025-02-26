@@ -12,12 +12,21 @@ class AeroMAPSModel(object):
         self,
         name,
         parameters=None,
+        model_type='auto'
     ):
         self.name = name
         self.parameters = parameters
         self.float_outputs = {}
         if self.parameters is not None:
             self._initialize_df()
+
+        # Verify model type
+        self.model_type = model_type
+        if self.model_type == 'custom':
+            self.input_names = {}
+            self.output_names = {}
+        elif self.model_type != 'auto':
+            raise ValueError("model_type must be either 'auto' or 'custom'")
 
     def _initialize_df(self):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year
@@ -32,17 +41,6 @@ class AeroMAPSModel(object):
         )
         self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
-
-
-class AeroMAPSModelGeneric(AeroMAPSModel):
-    def __init__(
-            self,
-            name,
-            parameters=None,
-    ):
-        super().__init__(name=name, parameters=parameters)
-        self.input_names = {}
-        self.output_names = {}
 
 
 def AeromapsInterpolationFunction(

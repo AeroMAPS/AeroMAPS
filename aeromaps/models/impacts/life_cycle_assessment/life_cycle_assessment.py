@@ -2,7 +2,7 @@
 Model for Life Cycle Assessment (LCA) of air transportation systems
 """
 
-from aeromaps.models.base import AeroMAPSModelGeneric, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
@@ -13,7 +13,7 @@ from typing import Dict
 import xarray as xr
 
 
-class LifeCycleAssessment(AeroMAPSModelGeneric):
+class LifeCycleAssessment(AeroMAPSModel):
     def __init__(
         self,
         name: str = "life_cycle_assessment",
@@ -22,7 +22,12 @@ class LifeCycleAssessment(AeroMAPSModelGeneric):
         *args,
         **kwargs,
     ):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(
+            name=name,
+            model_type='custom',  # inputs/outputs are defined in __init__ rather than auto generated from compute() signature
+            *args,
+            **kwargs
+        )
 
         # Get LCA model and LCIA methods
         if configuration_file is None:

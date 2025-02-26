@@ -1,0 +1,109 @@
+"""
+Template classes to implement models in AeroMAPS.
+"""
+import pandas as pd
+from aeromaps.models.base import AeroMAPSModel
+import numpy as np
+import yaml
+from typing import Tuple
+
+
+class CustomTemplate(AeroMAPSModel):
+    """
+    AeroMAPS model template to be used as a starting point for custom models.
+    The compute() method of custom models does not need to explicitly define inputs,
+    and outputs can be of varying size.
+    However, inputs and outputs must be defined in the __init__ method using input_names and output_names dictionaries.
+    """
+    def __init__(
+        self,
+        name: str = "custom_template",
+        configuration_file: str = None,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            model_type='custom',  # inputs/outputs are defined in __init__ rather than auto generated from compute() signature
+            *args,
+            **kwargs
+        )
+
+        # Fill in explicit inputs and outputs with default values
+        self.input_names = {'input1': np.array([0.0]), 'input2': np.array([0.0])}
+        self.output_names = {'output1': np.array([0.0]), 'output2': np.array([0.0])}
+
+        # Read configuration file that contains user-defined data.
+        self.configuration_file = configuration_file
+        self.configuration_data = self.read_yaml_file()   # read and process configuration file
+
+        # Update inputs and outputs (name + default value) with user-defined data
+        if 'input_names' in self.configuration_data:
+            for key, val in self.configuration_data['input_names'].items():
+                self.input_names[key] = val
+        if 'output_names' in self.configuration_data:
+            for key, val in self.configuration_data['output_names'].items():
+                self.output_names[key] = val
+
+    def compute(self, input_data) -> dict:
+
+        # Get input data
+        input1 = input_data['input1']
+        input2 = input_data['input2']
+
+        # Initialize output data
+        output_data = {}
+
+        # perform computation on explicit inputs and add to output data
+        output_1 = input1 + input2
+        output_2 = input1 * input2
+        output_data['output_1'] = output_1
+        output_data['output_1'] = output_2
+
+        # perform computation on any input
+        for i, input in input_data:
+            output = input_data[input]**2  # any computation
+            output_data[f'output_{i}'] = output  # add to output data
+
+        # return output data
+        return {
+            name: output_data[name] for name in self.output_names
+        }
+
+    def read_yaml_file(self):
+        """Example function to read a YAML file and returns its contents as a dictionary."""
+        try:
+            with open(self.configuration_file, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file)
+                return data if isinstance(data, dict) else {}
+        except Exception as e:
+            print(f"Error reading YAML file: {e}")
+            return {}
+
+
+class AutoTemplate(AeroMAPSModel):
+    """
+    AeroMAPS model template to be used as a starting point for auto models.
+    Auto models do not require definition of inputs and outputs in __init__ method.
+    Inputs and outputs are auto generated from compute() method signature.
+    Therefore, the compute() method must explicitly define inputs and outputs.
+    """
+    def __init__(
+        self,
+        name: str = "auto_template",
+        *args,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            model_type='auto',  # inputs/outputs are auto generated from compute() signature
+            *args,
+            **kwargs
+        )
+
+    def compute(self, input1, input2) -> Tuple[pd.Series, float]:
+        output_1 = input1 * input2
+        output_2 = input2 ** 2
+
+        return output_1, output_2
+
