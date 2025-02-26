@@ -6,7 +6,6 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 import xarray as xr
-import yaml
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -40,11 +39,6 @@ default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "
 # Construct the path to the climate data .csv file
 default_climate_historical_data_path = os.path.join(
     current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
-)
-
-# Construct the path to the energy carriers parameters default file
-default_energy_carriers_data_path = os.path.join(
-    current_dir, "..", "resources", "data", "energy_carriers_data.yaml"
 )
 
 
@@ -233,6 +227,9 @@ class AeroMAPSProcess(object):
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
                         if model.model_type == "custom":
+                            # complete the parameters with inputs from the config file of custom disciplines
+                            # TODO: @Scott Delbecq: check if this is the right way to do it
+                            self.parameters.__dict__.update(model.input_names)
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
@@ -303,37 +300,6 @@ class AeroMAPSProcess(object):
                     configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
                 )
                 self.parameters.read_json(file_name=new_input_file_path)
-
-        # Complete self.parameters with data from energy_carriers_data.yaml
-        # TODO: Put everything in a dediccate method
-        if (
-            self.configuration_file is not None
-            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
-        ):
-            configuration_directory = os.path.dirname(self.configuration_file)
-            energy_carriers_data_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
-            )
-        else:
-            energy_carriers_data_file_path = default_energy_carriers_data_path
-
-        with open(energy_carriers_data_file_path, "r") as file:
-            self.energy_carriers_data = yaml.load(file, Loader=yaml.FullLoader)
-
-        # Populate the dictionaries with data from energy carriers
-        def _flatten_params(prefix, params, result):
-            for param_name, param_value in params.items():
-                if isinstance(param_value, dict):
-                    _flatten_params(f"{prefix}_{param_name}", param_value, result)
-                else:
-                    result[f"{prefix}_{param_name}"] = param_value
-
-        flattened_params = {}
-        for pathway, params in self.energy_carriers_data.items():
-            full_name = params.get("name", pathway)
-            _flatten_params(full_name, params, flattened_params)
-
-        self.parameters.__dict__.update(flattened_params)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
