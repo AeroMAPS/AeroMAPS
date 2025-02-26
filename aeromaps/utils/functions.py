@@ -28,6 +28,27 @@ def read_yaml_file(file_name="parameters.yaml"):
         return {}
 
 
+def flatten_dict(val, prefix=""):
+    """
+    Recursively flattens a nested dictionary by concatenating keys with an underscore.
+
+    Args:
+        val (dict): The dictionary to flatten.
+        prefix (str): The prefix to prepend to each key.
+
+    Returns:
+        dict: A flattened dictionary with concatenated keys.
+    """
+    flattened = {}
+    for param_name, param_value in val.items():
+        full_param_name = f"{prefix}_{param_name}" if prefix else param_name
+        if isinstance(param_value, dict):
+            flattened.update(flatten_dict(param_value, full_param_name))
+        else:
+            flattened[full_param_name] = param_value
+    return flattened
+
+
 def _dict_from_parameters_dict(parameters_dict) -> dict:
     for key, value in parameters_dict.items():
         # TODO: generic handling of timetables
