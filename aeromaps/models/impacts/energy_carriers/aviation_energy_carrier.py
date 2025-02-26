@@ -2,8 +2,8 @@
 
 # import pandas as pd
 import yaml
-from aeromaps.utils.functions import read_yaml_file
 
+from aeromaps.utils.functions import read_yaml_file, flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 # from typing import Tuple
 
@@ -28,8 +28,8 @@ class AviationEnergyCarriers(AeroMAPSModel):
         )
 
         # Fill in explicit inputs and outputs with default values
-        # self.input_names = {'input1': np.array([0.0]), 'input2': np.array([0.0])}
-        # self.output_names = {'output1': np.array([0.0]), 'output2': np.array([0.0])}
+        self.input_names = {}
+        self.output_names = {}
 
         # Read configuration file that contains user-defined data.
         self.configuration_file = configuration_file
@@ -37,15 +37,16 @@ class AviationEnergyCarriers(AeroMAPSModel):
             configuration_file
         )  # read and process configuration file
 
-        print(self.configuration_data)
-
-        # Update inputs and outputs (name + default value) with user-defined data
-        if "input_names" in self.configuration_data:
-            for key, val in self.configuration_data["input_names"].items():
+        if "inputs" in self.configuration_data:
+            flattened_inputs = flatten_dict(self.configuration_data["inputs"])
+            for key, val in flattened_inputs.items():
                 self.input_names[key] = val
-        if "output_names" in self.configuration_data:
-            for key, val in self.configuration_data["output_names"].items():
+
+        if "outputs" in self.configuration_data:
+            for key, val in self.configuration_data["outputs"].items():
                 self.output_names[key] = val
+
+    #
 
     def compute(self, input_data) -> dict:
         # Get input data
