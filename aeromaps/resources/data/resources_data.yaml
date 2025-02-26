@@ -1,0 +1,36 @@
+renewable_electricity:
+  # ID
+  name: "test" # TODO Aeromaps process not handling strings
+  # Technical:
+  load_factor: 0.3
+  co2_emission_factor: 0.5
+  # Economics:
+  cost: 30.0
+  subsidy: 10.0
+  tax: 5.0
+  capex_subsidy: 15.0
+  # Availability
+  availability:
+    global: 50 # [EJ]
+    aviation_allocated_share: 10 # [%] Share of the global availability
+    aviation: 5 # [EJ]
+    # TODO : use global + aviation_allocated_share OR aviation
+
+
+hydrogen:
+  # ID
+  name: "test2" # TODO Aeromaps process not handling strings
+  # Technical:
+  load_factor: 1
+  co2_emission_factor: 0.5
+  # Economics:
+  cost: 30.0
+  subsidy: 10.0
+  tax: 5.0
+  capex_subsidy: 15.0
+  # Availability
+  availability:
+    global: 50 # [EJ]
+    aviation_allocated_share: 10 # [%] Share of the global availability
+    aviation: 5 # [EJ]
+    # TODO : use global + aviation_allocated_share OR aviation
