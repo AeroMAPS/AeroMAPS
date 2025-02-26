@@ -232,7 +232,7 @@ class AeroMAPSProcess(object):
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        if model.model_type == 'custom':
+                        if model.model_type == "custom":
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)

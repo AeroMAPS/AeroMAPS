@@ -8,12 +8,7 @@ from fair.interface import fill, initialise
 
 
 class AeroMAPSModel(object):
-    def __init__(
-        self,
-        name,
-        parameters=None,
-        model_type='auto'
-    ):
+    def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters
         self.float_outputs = {}
@@ -22,10 +17,10 @@ class AeroMAPSModel(object):
 
         # Verify model type
         self.model_type = model_type
-        if self.model_type == 'custom':
+        if self.model_type == "custom":
             self.input_names = {}
             self.output_names = {}
-        elif self.model_type != 'auto':
+        elif self.model_type != "auto":
             raise ValueError("model_type must be either 'auto' or 'custom'")
 
     def _initialize_df(self):

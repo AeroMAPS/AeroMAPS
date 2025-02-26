@@ -389,7 +389,7 @@ class AutoDiscDataProcessor(DataProcessor):
             # if not isinstance(output_value, ndarray):
             #    processed_data[output_name] = array([output_value])
 
-        #for output_name in outputs_to_remove:
+        # for output_name in outputs_to_remove:
         #    processed_data.pop(output_name)
         processed_data.update(outputs_to_add)
 
@@ -417,6 +417,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are automatically declared from the model's compute() function signature.
     """
+
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
@@ -447,6 +448,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
     Wraps the AeroMAPSModel class into a discipline.
     Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
     """
+
     def __init__(self, model):
         super().__init__()
         self.input_grammar.update_from_data(model.input_names)
@@ -459,7 +461,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
         # self.io.data_processor = AutoDiscDataProcessor()
 
     def _run(self, input_data):
-        if hasattr(self.model, 'compute'):
+        if hasattr(self.model, "compute"):
             return self.model.compute(input_data)
         else:
             raise AttributeError(f"Model {self.name} does not have a compute method")
@@ -468,5 +470,3 @@ class AeroMAPSCustomModelWrapper(Discipline):
         for input in self.get_input_data():
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)
-
-

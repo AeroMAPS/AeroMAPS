@@ -2,6 +2,7 @@ import json
 from json import load
 import numpy as np
 import pandas as pd
+import yaml
 from pandas import read_csv
 import os.path as pth
 
@@ -14,6 +15,17 @@ def _dict_from_json(file_name="parameters.json") -> dict:
         parameters_dict = load(f)
     dict = _dict_from_parameters_dict(parameters_dict)
     return dict
+
+
+def read_yaml_file(file_name="parameters.yaml"):
+    """Example function to read a YAML file and returns its contents as a dictionary."""
+    try:
+        with open(file_name, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+            return data if isinstance(data, dict) else {}
+    except Exception as e:
+        print(f"Error reading YAML file: {e}")
+        return {}
 
 
 def _dict_from_parameters_dict(parameters_dict) -> dict:
