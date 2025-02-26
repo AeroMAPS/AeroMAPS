@@ -6,3 +6,5 @@
 /.ipynb_checkpoints
 
 /aeromaps/notebooks/.env
+
+__pycache__/
