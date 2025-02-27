@@ -56,6 +56,8 @@ class AeroMAPSProcess(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
 
+        self._instanciate_generic_energy_models()
+
         self._initialize_inputs()
 
         self.setup(add_examples_aircraft_and_subcategory)
@@ -199,6 +201,12 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
+
+    def _instanciate_generic_energy_models(self):
+        # Read the custom energy config file and instanciate each class from it by simply splitting the file at adequate positions
+        #   # and instanciating the class with the corresponding parameters
+        # Finally add the class to the models dictionary and proceed as before
+        return
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
