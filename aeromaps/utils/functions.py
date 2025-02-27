@@ -40,12 +40,13 @@ def flatten_dict(val, prefix=""):
         dict: A flattened dictionary with concatenated keys.
     """
     flattened = {}
-    for param_name, param_value in val.items():
-        full_param_name = f"{prefix}_{param_name}" if prefix else param_name
-        if isinstance(param_value, dict):
-            flattened.update(flatten_dict(param_value, full_param_name))
-        else:
-            flattened[full_param_name] = param_value
+    if val:
+        for param_name, param_value in val.items():
+            full_param_name = f"{prefix}_{param_name}" if prefix else param_name
+            if isinstance(param_value, dict):
+                flattened.update(flatten_dict(param_value, full_param_name))
+            else:
+                flattened[full_param_name] = param_value
     return flattened
 
 

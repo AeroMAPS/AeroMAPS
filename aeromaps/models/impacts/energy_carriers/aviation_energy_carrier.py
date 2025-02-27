@@ -37,13 +37,26 @@ class AviationEnergyCarriers(AeroMAPSModel):
             configuration_file
         )  # read and process configuration file
 
-        if "inputs" in self.configuration_data:
-            flattened_inputs = flatten_dict(self.configuration_data["inputs"])
-            for key, val in flattened_inputs.items():
-                self.input_names[key] = val
+        # To adapt to several pathways if needed
+        pathway = list(self.configuration_data.keys())
+        self.configuration_data = self.configuration_data[pathway[0]]
 
+        if "name" not in self.configuration_data:
+            raise ValueError("The pathway configuration file should contain its name")
+        if "inputs" not in self.configuration_data:
+            raise ValueError("The pathway configuration file should contain inputs")
+
+        flattened_inputs = flatten_dict(
+            self.configuration_data["inputs"], self.configuration_data["name"]
+        )
+        for key, val in flattened_inputs.items():
+            self.input_names[key] = val
+
+        flattened_outputs = flatten_dict(
+            self.configuration_data["outputs"], self.configuration_data["name"]
+        )
         if "outputs" in self.configuration_data:
-            for key, val in self.configuration_data["outputs"].items():
+            for key, val in flattened_outputs.items():
                 self.output_names[key] = val
 
     #

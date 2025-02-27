@@ -1,7 +1,7 @@
-inputs: # TODO that would be great to invert pathway name and inputs but not nice for inputs name concatenation
-  hefa_fog:
-    # ID
-    name: "test" # TODO Aeromaps process not handling strings
+hefa_fog:
+  # ID
+  name: "hefa_fog" # TODO Aeromaps process not handling strings
+  inputs:
     # Policy
     consumption:
       value: 0.1
@@ -35,4 +35,6 @@ inputs: # TODO that would be great to invert pathway name and inputs but not nic
     mfsp_tax: 5.0
     capex_subsidy: 15.0
     carbon_tax: 20.0
+  outputs:
+
 
