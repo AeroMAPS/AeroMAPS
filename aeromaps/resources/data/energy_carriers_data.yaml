@@ -1,6 +1,8 @@
 hefa_fog:
   # ID
   name: "hefa_fog" # TODO Aeromaps process not handling strings
+  environmental_model: "top-down"
+  cost_model: "top-down"
   inputs:
     # Policy
     consumption:
