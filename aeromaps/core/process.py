@@ -14,11 +14,14 @@ from aeromaps.models.base import AeroMAPSModel
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
-from aeromaps.utils.functions import _dict_to_df
+from aeromaps.utils.functions import _dict_to_df, read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
     FleetModel,
+)
+from aeromaps.models.impacts.energy_carriers.energy_carriers_factory import (
+    AviationEnergyCarriersFactory,
 )
 
 # Settings
@@ -41,6 +44,11 @@ default_climate_historical_data_path = os.path.join(
     current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
 )
 
+# Construct the path to the energy carriers parameters default file
+default_energy_carriers_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "energy_carriers_data.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -55,8 +63,7 @@ class AeroMAPSProcess(object):
 
         self.use_fleet_model = use_fleet_model
         self.models = models
-
-        self._instanciate_generic_energy_models()
+        self._instantiate_generic_energy_models()
 
         self._initialize_inputs()
 
@@ -202,11 +209,32 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
 
-    def _instanciate_generic_energy_models(self):
-        # Read the custom energy config file and instanciate each class from it by simply splitting the file at adequate positions
-        #   # and instanciating the class with the corresponding parameters
-        # Finally add the class to the models dictionary and proceed as before
-        return
+    def _instantiate_generic_energy_models(self):
+        # Read the custom energy config file and instantiate each class from it using the factory method
+        # Add the instantiated classes to the models dictionary
+        if (
+            self.configuration_file is not None
+            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
+        ):
+            configuration_directory = os.path.dirname(self.configuration_file)
+            energy_carriers_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
+            )
+        else:
+            energy_carriers_data_file_path = default_energy_carriers_data_path
+
+        self.energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        pathways = list(self.energy_carriers_data.keys())
+
+        for pathway in pathways:
+            # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
+            self.models.update(
+                AviationEnergyCarriersFactory.create_carrier(
+                    pathway, self.energy_carriers_data[pathway]
+                )
+            )
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
