@@ -35,6 +35,11 @@ class CustomTemplate(AeroMAPSModel):
         self.input_names = {"input1": np.array([0.0]), "input2": np.array([0.0])}
         self.output_names = {"output1": np.array([0.0]), "output2": np.array([0.0])}
 
+        # TODO #sgs or @pollet: distinguish AeroMAPS inputs (user or exogenous models) and outputs of other models
+        #  and store them in two different attributes
+        #  That would allow us to use self.inputs_names in _initialize_disciplines to populate AeroMAPSProcess.parameters
+        #  but without overiding outputs of other disciplines. Then add both to the grammar as currently[
+
         # Read configuration file that contains user-defined data.
         self.configuration_file = configuration_file
         self.configuration_data = read_yaml_file(
