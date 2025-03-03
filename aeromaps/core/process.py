@@ -332,7 +332,16 @@ class AeroMAPSProcess(object):
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
-            if not isinstance(field_value, (float, int, list, str)):
+            list_init = [
+                "rpk_init",
+                "ask_init",
+                "rtk_init",
+                "pax_init",
+                "freight_init",
+                "energy_consumption_init",
+                "total_aircraft_distance_init",
+            ]
+            if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
@@ -343,6 +352,25 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
+            elif not isinstance(field_value, (float, int, list, str)):
+                if (
+                    field_value.size
+                    == self.parameters.end_year - self.parameters.climate_historic_start_year + 1
+                ):
+                    index = range(
+                        self.parameters.climate_historic_start_year, self.parameters.end_year + 1
+                    )
+                    new_value = pd.Series(field_value, index=index)
+                    setattr(self.parameters, field_name, new_value)
+                elif (
+                    field_value.size
+                    == self.parameters.end_year - self.parameters.historic_start_year + 1
+                ):
+                    index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                    new_value = pd.Series(field_value, index=index)
+                    setattr(self.parameters, field_name, new_value)
+                else:
+                    print(f"Field {field_name} has an unexpected size {field_value.size}")
 
     def _update_variables(self):
         self._update_data_from_model()
