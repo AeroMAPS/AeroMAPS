@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    EXCEL_DATA_FILE: str = ""
-    EXCEL_DATA_INFORMATION_FILE: str = ""
-    PARAMETERS_JSON_DATA_FILE: str = ""
-    PARAMETERS_ENERGY_CARRIERS_DATA_FILE: str = ""
-    OUTPUTS_JSON_DATA_FILE: str = ""
-    PARAMETERS_CLIMATE_DATA_FILE: str = ""
+    excel_data_file: str = ""
+    excel_data_information_file: str = ""
+    parameters_json_data_file: str = ""
+    parameters_energy_carriers_data_file: str = ""
+    outputs_json_data_file: str = ""
+    parameters_climate_data_file: str = ""

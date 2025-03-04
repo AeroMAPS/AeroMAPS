@@ -85,18 +85,18 @@ class AeroMAPSProcess(object):
 
         self._update_variables()
 
-        file_name = self.config.get("OUTPUTS_JSON_DATA_FILE", None)
+        file_name = self.config.get("outputs_json_data_file", None)
         self.write_json(file_name=file_name)
 
     def write_json(self, file_name=None):
         if file_name is None:
-            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
+            file_name = self.config["outputs_json_data_file"]
         with open(file_name, "w", encoding="utf-8") as f:
             dump(self.json, f, ensure_ascii=False, indent=4)
 
     def write_excel(self, file_name=None):
         if file_name is None:
-            file_name = self.config["EXCEL_DATA_FILE"]
+            file_name = self.config["excel_data_file"]
         with pd.ExcelWriter(file_name) as writer:
             self.data_information_df.to_excel(writer, sheet_name="Data Information")
             self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
@@ -227,7 +227,7 @@ class AeroMAPSProcess(object):
     def _initialize_inputs(self):
         self.parameters = Parameters()
         # First use main parameters.json as default values
-        self.parameters.read_json(file_name=self.config.PARAMETERS_JSON_DATA_FILE)
+        self.parameters.read_json(file_name=self.config.parameters_json_data_file)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
@@ -238,7 +238,7 @@ class AeroMAPSProcess(object):
 
     def _initialize_climate_historical_data(self):
         historical_dataset_df = pd.read_csv(
-            self.config.PARAMETERS_CLIMATE_DATA_FILE, delimiter=";", header=None
+            self.config.parameters_climate_data_file, delimiter=";", header=None
         )
         self.climate_historical_data = historical_dataset_df.values
 
@@ -436,7 +436,7 @@ class AeroMAPSProcess(object):
 
     def _read_data_information(self, file_name=None):
         if file_name is None:
-            file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
+            file_name = self.config["excel_data_information_file"]
         df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
