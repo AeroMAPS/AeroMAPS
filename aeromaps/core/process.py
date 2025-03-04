@@ -24,6 +24,9 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 )
 from aeromaps.conf.config import Config
 
+# Constants
+DEFAULT_INPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "resources", "data", "parameters.json")
+
 # Settings
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
@@ -227,7 +230,7 @@ class AeroMAPSProcess(object):
     def _initialize_inputs(self):
         self.parameters = Parameters()
         # First use main parameters.json as default values
-        self.parameters.read_json(file_name=self.config.parameters_json_data_file)
+        self.parameters.read_json(file_name=DEFAULT_INPUT_FILE)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
