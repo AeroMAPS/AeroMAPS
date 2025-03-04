@@ -6,8 +6,10 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 import xarray as xr
+import yaml
 from gemseo import generate_n2_plot, create_mda
-
+import hydra
+from omegaconf import DictConfig, OmegaConf
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
@@ -20,6 +22,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
+from aeromaps.conf.config import Config
 
 # Settings
 pd.options.display.max_rows = 150
@@ -27,31 +30,15 @@ pd.set_option("display.max_columns", 150)
 pd.set_option("max_colwidth", 200)
 pd.options.mode.chained_assignment = None
 
-# Get the directory of the current script
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Construct the path to the config.json file
-default_config_path = os.path.join(current_dir, "config.json")
-
-# Construct the path to the parameters.json file
-default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
-
-# Construct the path to the climate data .csv file
-default_climate_historical_data_path = os.path.join(
-    current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
-)
-
-
 class AeroMAPSProcess(object):
     def __init__(
         self,
-        configuration_file=None,
+        cfg: Config,
         models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
     ):
-        self.configuration_file = configuration_file
-        self._initialize_configuration()
+        self.config = cfg
 
         self.use_fleet_model = use_fleet_model
         self.models = models
@@ -98,14 +85,7 @@ class AeroMAPSProcess(object):
 
         self._update_variables()
 
-        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(
-                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
-            )
-            file_name = new_output_file_path
-        else:
-            file_name = None
+        file_name = self.config.get("OUTPUTS_JSON_DATA_FILE", None)
         self.write_json(file_name=file_name)
 
     def write_json(self, file_name=None):
@@ -170,22 +150,6 @@ class AeroMAPSProcess(object):
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
-
-    def _initialize_configuration(self):
-        # Load the default configuration file
-        with open(default_config_path, "r") as f:
-            self.config = load(f)
-        # Update paths in the configuration file with absolute paths
-        for key, value in self.config.items():
-            self.config[key] = os.path.join(current_dir, value)
-
-        # Load the new configuration file
-        if self.configuration_file is not None:
-            with open(self.configuration_file, "r") as f:
-                new_config = load(f)
-            # Replace the default configuration with the new configuration
-            for key, value in new_config.items():
-                self.config[key] = value
 
     def _initialize_data(self):
         # Inputs
@@ -263,37 +227,7 @@ class AeroMAPSProcess(object):
     def _initialize_inputs(self):
         self.parameters = Parameters()
         # First use main parameters.json as default values
-        self.parameters.read_json(file_name=default_parameters_path)
-
-        if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
-            # If the alternative file is a list of json files
-            if isinstance(self.config["PARAMETERS_JSON_DATA_FILE"], list):
-                merged_data = {}
-                new_input_file_path = []
-                configuration_directory = os.path.dirname(self.configuration_file)
-                for k in range(0, len(self.config["PARAMETERS_JSON_DATA_FILE"])):
-                    new_input_file_path.append(
-                        os.path.join(
-                            configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"][k]
-                        )
-                    )
-                for file in new_input_file_path:
-                    with open(file, "r") as f:
-                        data = load(f)
-                        for key, value in data.items():
-                            if key in merged_data:
-                                print(
-                                    f"Warning: '{key}' was given twice, only the last value was kept."
-                                )
-                            merged_data[key] = value
-                self.parameters.read_json_direct(merged_data)
-            # If the alternative file is a single json file
-            else:
-                configuration_directory = os.path.dirname(self.configuration_file)
-                new_input_file_path = os.path.join(
-                    configuration_directory, self.config["PARAMETERS_JSON_DATA_FILE"]
-                )
-                self.parameters.read_json(file_name=new_input_file_path)
+        self.parameters.read_json(file_name=self.config.PARAMETERS_JSON_DATA_FILE)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
@@ -303,16 +237,8 @@ class AeroMAPSProcess(object):
                 setattr(self.parameters, key, value)
 
     def _initialize_climate_historical_data(self):
-        if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            climate_historical_data_file_path = os.path.join(
-                configuration_directory, self.config["PARAMETERS_CLIMATE_DATA_FILE"]
-            )
-        else:
-            climate_historical_data_file_path = default_climate_historical_data_path
-
         historical_dataset_df = pd.read_csv(
-            climate_historical_data_file_path, delimiter=";", header=None
+            self.config.PARAMETERS_CLIMATE_DATA_FILE, delimiter=";", header=None
         )
         self.climate_historical_data = historical_dataset_df.values
 
