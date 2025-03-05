@@ -8,7 +8,6 @@ renewable_electricity:
   cost: 30.0
   subsidy: 10.0
   tax: 5.0
-  capex_subsidy: 15.0 # Why? OUt of scope in my opinion
   # Availability
   availability:
     global: 50 # [EJ]
@@ -27,7 +26,6 @@ hydrogen:
   cost: 30.0
   subsidy: 10.0
   tax: 5.0
-  capex_subsidy: 15.0 # Why? OUt of scope in my opinion
   # Availability
   availability:
     global: 50 # [EJ]

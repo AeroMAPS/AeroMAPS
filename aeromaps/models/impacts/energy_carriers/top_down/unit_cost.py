@@ -1,12 +1,13 @@
+import numpy as np
+
 from aeromaps.utils.functions import flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 
 
 class TopDownUnitCost(AeroMAPSModel):
     """
-    Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
-    Actual models inherits from this class and implement the compute method.
-    TODO: Create a method in process.py that instanciates a class per carrier. Or create it here?
+    Top down unit cost model for energy carriers.
+    It subtracts subsidies from user provided mfsp and adds taxes to it.
     """
 
     def __init__(
@@ -26,10 +27,12 @@ class TopDownUnitCost(AeroMAPSModel):
 
         # Fill in explicit inputs and outputs with default values
         self.input_names = {}
-        self.output_names = {}
 
         if "name" not in configuration_data:
             raise ValueError("The pathway configuration file should contain its name")
+
+        self.pathway_name = configuration_data["name"]
+
         if "inputs" not in configuration_data:
             raise ValueError("The pathway configuration file should contain inputs")
 
@@ -37,10 +40,34 @@ class TopDownUnitCost(AeroMAPSModel):
         for key, val in flattened_inputs.items():
             self.input_names[key] = val
 
-        flattened_outputs = flatten_dict(configuration_data["outputs"], configuration_data["name"])
-        if "outputs" in configuration_data:
-            for key, val in flattened_outputs.items():
-                self.output_names[key] = val
+        # Fill in the expected outputs with names from the compute method, initialized with NaN
+        self.output_names = {self.pathway_name + "_net_mfsp": np.NaN}
 
     def compute(self, input_data) -> dict:
-        return {}
+        # Get standard names for inputs
+        print("in the compute")
+        # Mandatory inputs
+        if self.pathway_name + "_mfsp" not in input_data:
+            raise ValueError(
+                f"Mandatory input {self.pathway_name + '_mfsp'} is missing in input_data"
+            )
+        pathway_mfsp = input_data[self.pathway_name + "_mfsp"]
+
+        # Optional inputs
+        # Subsidies and taxes
+
+        pathway_subsidies = 0
+        pathway_tax = 0
+        if self.pathway_name + "_mfsp_subsidy" in input_data:
+            pathway_subsidies = input_data[self.pathway_name + "_mfsp_subsidy"]
+        if self.pathway_name + "_mfsp_tax" in input_data:
+            pathway_tax = input_data[self.pathway_name + "_mfsp_tax"]
+
+        # Calculate the unit cost
+        hefa_fog_net_mfsp = pathway_mfsp - pathway_subsidies + pathway_tax
+
+        self.float_outputs["hefa_fog_net_mfsp"] = hefa_fog_net_mfsp
+
+        return {
+            "hefa_fog_net_mfsp": hefa_fog_net_mfsp,
+        }
