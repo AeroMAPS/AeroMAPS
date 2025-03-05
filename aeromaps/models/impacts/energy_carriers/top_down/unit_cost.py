@@ -45,7 +45,6 @@ class TopDownUnitCost(AeroMAPSModel):
 
     def compute(self, input_data) -> dict:
         # Get standard names for inputs
-        print("in the compute")
         # Mandatory inputs
         if self.pathway_name + "_mfsp" not in input_data:
             raise ValueError(
@@ -63,11 +62,14 @@ class TopDownUnitCost(AeroMAPSModel):
         if self.pathway_name + "_mfsp_tax" in input_data:
             pathway_tax = input_data[self.pathway_name + "_mfsp_tax"]
 
-        # Calculate the unit cost
-        hefa_fog_net_mfsp = pathway_mfsp - pathway_subsidies + pathway_tax
+        # Actual computation
 
-        self.float_outputs["hefa_fog_net_mfsp"] = hefa_fog_net_mfsp
+        # Calculate the unit cost
+        pathway_net_mfsp = pathway_mfsp - pathway_subsidies + pathway_tax
+
+        # Store the results in the float_outputs dictionary
+        self.float_outputs[self.pathway_name + "_net_mfsp"] = pathway_net_mfsp
 
         return {
-            "hefa_fog_net_mfsp": hefa_fog_net_mfsp,
+            self.pathway_name + "_net_mfsp": pathway_net_mfsp,
         }
