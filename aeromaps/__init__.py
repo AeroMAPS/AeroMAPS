@@ -56,7 +56,7 @@ def load_config(config_path: str = "conf", config_name: str = "config.yaml") -> 
 
     # Get the original working directory
     original_cwd = Path(get_original_cwd())
-    print("original_cwd: ", original_cwd)
+    # print("original_cwd: ", original_cwd)
 
     # Rebuild all paths in the configuration to be absolute
     for key, value in cfg.items():
