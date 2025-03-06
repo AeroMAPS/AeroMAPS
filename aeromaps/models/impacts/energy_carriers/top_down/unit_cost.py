@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
 
-from aeromaps.utils.functions import flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 
 
@@ -25,33 +23,31 @@ class TopDownUnitCost(AeroMAPSModel):
             *args,
             **kwargs,
         )
-
-        if "name" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain its name")
-
+        # Get the name of the pathway
         self.pathway_name = configuration_data["name"]
 
-        if "inputs" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain inputs")
-
-        flattened_inputs = flatten_dict(configuration_data["inputs"], configuration_data["name"])
-        for key, val in flattened_inputs.items():
+        # Get the inputs from the configuration file
+        for key, val in configuration_data["inputs"].items():
             self.input_names[key] = val
 
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
-        self.input_names = {
-            "carbon_tax": pd.Series([0.0]),
-            self.pathway_name + "_emission_factor": pd.Series([0.0]),
-        }
-
-        print(self.input_names)
+        self.input_names.update(
+            {
+                "carbon_tax": pd.Series([0.0]),
+                self.pathway_name + "_emission_factor": pd.Series([0.0]),
+            }
+        )
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
-        self.output_names = {self.pathway_name + "_net_mfsp": np.NaN}
+        self.output_names = {
+            self.pathway_name + "_net_mfsp_without_carbon_tax": pd.Series([0.0]),
+            self.pathway_name + "_net_mfsp": pd.Series([0.0]),
+        }
 
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
         # Mandatory inputs
+
         if self.pathway_name + "_mfsp" not in input_data:
             raise ValueError(
                 f"Mandatory input {self.pathway_name + '_mfsp'} is missing in input_data"
@@ -79,17 +75,19 @@ class TopDownUnitCost(AeroMAPSModel):
         # Actual computation
 
         # Calculate the unit cost. TODO convert everything into series.
-        pathway_net_mfsp_without_carbon_tax = (
-            pathway_mfsp - pathway_subsidies + pathway_tax + carbon_tax[2025]
-        )
+        pathway_net_mfsp_without_carbon_tax = pathway_mfsp - pathway_subsidies + pathway_tax
 
         # Calculate the unit cost including the carbon tax
         emission_factor = input_data[self.pathway_name + "_emission_factor"]
-        pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + emission_factor * carbon_tax[2025]
+        pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + emission_factor * carbon_tax
 
-        # Store the results in the float_outputs dictionary
-        self.float_outputs[self.pathway_name + "_net_mfsp"] = pathway_net_mfsp
+        # Store the results in the df
+        self.df.loc[:, self.pathway_name + "_net_mfsp_without_carbon_tax"] = (
+            pathway_net_mfsp_without_carbon_tax
+        )
+        self.df.loc[:, self.pathway_name + "_net_mfsp"] = pathway_net_mfsp
 
         return {
+            self.pathway_name + "_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
             self.pathway_name + "_net_mfsp": pathway_net_mfsp,
         }

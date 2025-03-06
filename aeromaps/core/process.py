@@ -14,7 +14,12 @@ from aeromaps.models.base import AeroMAPSModel
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.parameters import Parameters
-from aeromaps.utils.functions import _dict_to_df, read_yaml_file
+from aeromaps.utils.functions import (
+    _dict_to_df,
+    read_yaml_file,
+    convert_custom_data_types,
+    flatten_dict,
+)
 from aeromaps.plots import available_plots, available_plots_fleet
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
@@ -63,7 +68,6 @@ class AeroMAPSProcess(object):
 
         self.use_fleet_model = use_fleet_model
         self.models = models
-        self._instantiate_generic_energy_models()
 
         self._initialize_inputs()
 
@@ -77,6 +81,8 @@ class AeroMAPSProcess(object):
         self._initialize_years()
 
         self._initialize_climate_historical_data()
+
+        self._instantiate_generic_energy_models()
 
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
@@ -229,6 +235,20 @@ class AeroMAPSProcess(object):
         pathways = list(self.energy_carriers_data.keys())
 
         for pathway in pathways:
+            pathway_data = self.energy_carriers_data[pathway]
+            if "name" not in pathway_data:
+                raise ValueError("The pathway configuration file should contain its name")
+
+            if "inputs" not in pathway_data:
+                raise ValueError("The pathway configuration file should contain inputs")
+
+            # Flatten the inputs dictionary and interpolate the necessary values
+            pathway_data["inputs"] = convert_custom_data_types(
+                flatten_dict(pathway_data["inputs"], pathway_data["name"]),
+                self.parameters.prospection_start_year,
+                self.parameters.end_year,
+            )
+
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
             self.models.update(
                 AviationEnergyCarriersFactory.create_carrier(
@@ -375,16 +395,25 @@ class AeroMAPSProcess(object):
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
             if not isinstance(field_value, (float, int, list, str)):
-                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
-                new_value = np.pad(
-                    field_value,
-                    (0, new_size - field_value.size),
-                    mode="constant",
-                    constant_values=np.nan,
-                )
-                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
-                new_value = pd.Series(new_value, index=new_index)
-                setattr(self.parameters, field_name, new_value)
+                if isinstance(field_value, pd.Series):
+                    new_index = range(
+                        self.parameters.historic_start_year, self.parameters.end_year + 1
+                    )
+                    field_value = field_value.reindex(new_index, fill_value=np.nan)
+                else:
+                    new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
+                    new_value = np.pad(
+                        field_value,
+                        (0, new_size - field_value.size),
+                        mode="constant",
+                        constant_values=np.nan,
+                    )
+                    new_index = range(
+                        self.parameters.historic_start_year, self.parameters.end_year + 1
+                    )
+                    new_value = pd.Series(new_value, index=new_index)
+                    field_value = new_value
+                setattr(self.parameters, field_name, field_value)
 
     def _update_variables(self):
         self._update_data_from_model()

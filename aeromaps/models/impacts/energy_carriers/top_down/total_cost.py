@@ -1,12 +1,10 @@
-from aeromaps.utils.functions import flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 
 
 class TopDownTotalCost(AeroMAPSModel):
     """
-    Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
-    Actual models inherits from this class and implement the compute method.
-    TODO: Create a method in process.py that instanciates a class per carrier. Or create it here?
+    Top down total cost model for energy carriers.
+    Takes outputs from unit costs and
     """
 
     def __init__(
@@ -23,24 +21,23 @@ class TopDownTotalCost(AeroMAPSModel):
             *args,
             **kwargs,
         )
+        # Get the name of the pathway
+        self.pathway_name = configuration_data["name"]
 
-        # Fill in explicit inputs and outputs with default values
-        self.input_names = {}
-        self.output_names = {}
-
-        if "name" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain its name")
-        if "inputs" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain inputs")
-
-        flattened_inputs = flatten_dict(configuration_data["inputs"], configuration_data["name"])
-        for key, val in flattened_inputs.items():
+        # Get the inputs from the configuration file
+        for key, val in configuration_data["inputs"].items():
             self.input_names[key] = val
 
-        flattened_outputs = flatten_dict(configuration_data["outputs"], configuration_data["name"])
-        if "outputs" in configuration_data:
-            for key, val in flattened_outputs.items():
-                self.output_names[key] = val
+        # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
+        self.input_names.update({})
+
+        # Fill in the expected outputs with names from the compute method, initialized with NaN
+        self.output_names = {}
 
     def compute(self, input_data) -> dict:
-        return {}
+        # Get standard names for inputs
+        # Mandatory inputs
+
+        return {
+            self.pathway_name + "_total_cost": 0.0,
+        }

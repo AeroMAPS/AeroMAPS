@@ -7,6 +7,17 @@ from fair import FAIR
 from fair.interface import fill, initialise
 
 
+class AeroMapsCustomDataType:
+    def __init__(self, reference_data: dict):
+        self.years = reference_data["years"]
+        self.values = reference_data["values"]
+        self.method = reference_data["method"]
+        if "positive_constraint" in reference_data:
+            self.positive_constraint = reference_data["positive_constraint"]
+        else:
+            self.positive_constraint = False
+
+
 class AeroMAPSModel(object):
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name

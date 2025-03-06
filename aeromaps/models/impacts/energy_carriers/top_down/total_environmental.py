@@ -1,4 +1,3 @@
-from aeromaps.utils.functions import flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 
 
@@ -23,24 +22,18 @@ class TopDownTotalEnvironmental(AeroMAPSModel):
             *args,
             **kwargs,
         )
+        # Get the name of the pathway
+        self.pathway_name = configuration_data["name"]
 
-        # Fill in explicit inputs and outputs with default values
-        self.input_names = {}
-        self.output_names = {}
-
-        if "name" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain its name")
-        if "inputs" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain inputs")
-
-        flattened_inputs = flatten_dict(configuration_data["inputs"], configuration_data["name"])
-        for key, val in flattened_inputs.items():
+        # Get the inputs from the configuration file
+        for key, val in configuration_data["inputs"].items():
             self.input_names[key] = val
 
-        flattened_outputs = flatten_dict(configuration_data["outputs"], configuration_data["name"])
-        if "outputs" in configuration_data:
-            for key, val in flattened_outputs.items():
-                self.output_names[key] = val
+        # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
+        self.input_names.update({})
+
+        # Fill in the expected outputs with names from the compute method, initialized with NaN
+        self.output_names = {}
 
     def compute(self, input_data) -> dict:
         return {}
