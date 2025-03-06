@@ -211,6 +211,7 @@
         "available_electricity": 300.0,
         "aviation_electricity_allocated_share": 2.3
     },
+    "str_inputs": {},
     "vector_inputs": {
         "rpk_init": [
             3037530000000.0,

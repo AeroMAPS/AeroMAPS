@@ -1,3 +1,3 @@
-parameters_json_data_file: "data/partitioned_inputs.json"
-parameters_climate_data_file: "data/partitioned_temperature_historical_dataset.csv"
-outputs_json_data_file: "data/outputs.json"
+parameters_json_data_file: "./partitioned_inputs.json"
+parameters_climate_data_file: "./partitioned_temperature_historical_dataset.csv"
+outputs_json_data_file: "./outputs.json"

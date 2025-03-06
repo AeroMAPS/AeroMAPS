@@ -1,15 +1,12 @@
 # Standard library imports
-import os
+from pathlib import Path
 from json import load, dump
 
 # Third-party imports
 import numpy as np
 import pandas as pd
 import xarray as xr
-import yaml
 from gemseo import generate_n2_plot, create_mda
-import hydra
-from omegaconf import DictConfig, OmegaConf
 
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel
@@ -25,7 +22,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
 from aeromaps.conf.config import Config
 
 # Constants
-DEFAULT_INPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "resources", "data", "parameters.json")
+DEFAULT_INPUT_FILE = Path(__file__).resolve().parent.parent / "resources" / "data" / "parameters.json"
 
 # Settings
 pd.options.display.max_rows = 150
@@ -231,6 +228,27 @@ class AeroMAPSProcess(object):
         self.parameters = Parameters()
         # First use main parameters.json as default values
         self.parameters.read_json(file_name=DEFAULT_INPUT_FILE)
+
+        if self.config.parameters_json_data_file is not None:
+            param_files = self.config.parameters_json_data_file
+            
+            # If a list of files is given, merge them
+            if isinstance(param_files, list):
+                merged_data = {}
+                for file_path in param_files:
+                    with file_path.open("r") as f:
+                        data = load(f)
+                        for key, value in data.items():
+                            if key in merged_data:
+                                print(
+                                    f"Warning: '{key}' was given twice, only the last value was kept."
+                                )
+                        merged_data[key] = value
+                self.parameters.read_json_direct(merged_data)
+            else:
+                file_path = param_files
+
+            self.parameters.read_json(file_name=file_path)
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
