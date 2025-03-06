@@ -1,0 +1,2 @@
+parameters_json_data_file: "./inputs/inputs_application_lcfuel.json"
+outputs_json_data_file: "./outputs.json"

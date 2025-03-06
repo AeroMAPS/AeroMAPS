@@ -1,0 +1,2 @@
+parameters_json_data_file: "./inputs/inputs_validation_suddenhalt.json"
+outputs_json_data_file: "./outputs.json"
