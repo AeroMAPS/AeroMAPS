@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.8.0-beta
+## Version 0.8.1-beta
 
 Changed:
 - Add a simple model for estimating CO2 emissions. (#94)
