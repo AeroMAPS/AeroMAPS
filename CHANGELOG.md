@@ -3,6 +3,15 @@
 ## Version 0.8.0-beta
 
 Changed:
+- Add a simple model for estimating CO2 emissions. (#94)
+
+Fixed:
+- Bug fixed for running a reduced number of models by providing vector inputs. (#93)
+
+
+## Version 0.8.0-beta
+
+Changed:
 - Upgrade GEMSEO to 6.0.0. (#87)
 - New models and application for TSAS conference. (#88)
 - Minor additions to cost code and notebooks update. (#89)
