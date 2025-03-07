@@ -25,12 +25,15 @@ import ast
 import logging
 from inspect import getfullargspec
 from inspect import getsource
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from typing import Callable
 from typing import Final
 from typing import Union
 from typing import get_type_hints
 
+import pandas as pd
+from gemseo.core.data_converters.simple import SimpleGrammarDataConverter
+from gemseo.core.grammars.simple_grammar import SimpleGrammar
 from gemseo.disciplines.auto_py import AutoPyDiscipline
 from numpy import array
 from numpy import atleast_2d
@@ -412,6 +415,19 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
     return data
 
 
+class DataConverter(SimpleGrammarDataConverter):
+    """A data converter where ``x_shared`` is not a ndarray and handles pd.Series."""
+
+    def convert_value_to_array(self, name: str, value: Any) -> ndarray:  # noqa: D102 # pragma: no cover
+        print("Finally using custom data converter")
+        if isinstance(value, pd.Series):
+            return value.values
+        return super().convert_value_to_array(name, value)
+
+
+SimpleGrammar.DATA_CONVERTER_CLASS = DataConverter
+
+
 class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
     """
     Wraps the AeroMAPSModel class into a discipline.
@@ -426,9 +442,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
 
         super(AeroMAPSAutoModelWrapper, self).__init__(
             py_func=self.model.compute,
-            use_arrays=True,
         )
-
         # self.io.data_processor = AutoDiscDataProcessor()
 
         self.name = model.__class__.__name__
@@ -452,6 +466,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
     def __init__(self, model):
         super().__init__()
         # TODO @felix/scott can't we use autopy to get grammar names appart from input data (e.g. outputs of other models)?
+        # Caution, uses a JSON grammar! Convert to simple grammar?
         self.input_grammar.update_from_data(model.input_names)
         self.output_grammar.update_from_data(model.output_names)
         self.model: AeroMAPSModel = model
