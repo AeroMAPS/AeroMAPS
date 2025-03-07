@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.8.1-beta
+
+Changed:
+- Add a simple model for estimating CO2 emissions. (#94)
+
+Fixed:
+- Bug fixed for running a reduced number of models by providing vector inputs. (#93)
+
+
 ## Version 0.8.0-beta
 
 Changed:
