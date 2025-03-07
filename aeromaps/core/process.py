@@ -25,7 +25,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
-from aeromaps.models.impacts.energy_carriers.energy_carriers_factory import (
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
 )
 
