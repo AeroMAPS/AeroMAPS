@@ -25,15 +25,29 @@ import ast
 import logging
 from inspect import getfullargspec
 from inspect import getsource
-from typing import TYPE_CHECKING
+from numbers import Number
+from typing import TYPE_CHECKING, ClassVar
 from typing import Callable
 from typing import Final
 from typing import Union
 from typing import get_type_hints
+from typing import Any
+from multiprocessing import cpu_count
 
-from numpy import array
+import numpy as np
+import pandas as pd
+
+# from gemseo.caches.memory_full_cache import MemoryFullCache
+# from gemseo.core.data_converters.json import JSONGrammarDataConverter
+from gemseo.core.data_converters.simple import SimpleGrammarDataConverter
+from gemseo.core.grammars.simple_grammar import SimpleGrammar
+from gemseo.core.grammars.json_grammar import JSONGrammar
+
+# from gemseo.disciplines.auto_py import AutoPyDiscipline
+# from numpy import array
 from numpy import atleast_2d
 from numpy import ndarray
+from numpy import array
 from typing_extensions import get_args
 from typing_extensions import get_origin
 
@@ -41,6 +55,7 @@ from gemseo.core.discipline.data_processor import DataProcessor
 from gemseo.utils.data_conversion import split_array_to_dict_of_arrays
 from gemseo.utils.source_parsing import get_callable_argument_defaults
 from gemseo.disciplines.auto_py import AutoPyDiscipline
+from gemseo.core.discipline import Discipline
 
 from aeromaps.models.base import AeroMAPSModel
 
@@ -52,31 +67,15 @@ DataType = Union[float, ndarray]
 
 LOGGER = logging.getLogger(__name__)
 
-import logging
-from multiprocessing import cpu_count
-from typing import TYPE_CHECKING
 
-from numpy import array
+# from gemseo import create_mda
+# from gemseo.core.chains.chain import MDOChain
+# from gemseo.core.chains.parallel_chain import MDOParallelChain
 
-from gemseo import create_mda
-from gemseo.core.chains.chain import MDOChain
-from gemseo.core.chains.parallel_chain import MDOParallelChain
-from gemseo.core.discipline import Discipline
 
 # from gemseo.core.execution_sequence import SerialExecSequence
-from gemseo.core.chains.initialization_chain import MDOInitializationChain
+# from gemseo.core.chains.initialization_chain import MDOInitializationChain
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-    from collections.abc import Mapping
-    from collections.abc import Sequence
-    from typing import Any
-
-    from gemseo.core.coupling_structure import MDOCouplingStructure
-    from gemseo.core.discipline.discipline_data import DisciplineData
-    from gemseo.utils.matplotlib_figure import FigSizeType
-
-LOGGER = logging.getLogger(__name__)
 
 N_CPUS = cpu_count()
 
@@ -449,11 +448,66 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
     return data
 
 
+## USING A SIMPLE GRAMMAR DATA CONVERTER WITH JSON GRAMMAR IS THE BEST OPTION SO FAR.
+# class DataConverter(SimpleGrammarDataConverter):
+#     def convert_value_to_array(self, name: str, value: Any) -> ndarray:  # noqa: D102 # pragma: no cover
+#         if isinstance(value, pd.Series):
+#             # print(f'Converting {name} to an array')
+#             return value.values
+#         return super().convert_value_to_array(name, value)
+#
+#     def convert_array_to_value(self, name: str, array_: Any) -> Any:  # noqa: D102 # pragma: no cover
+#         if isinstance(array_, ndarray) and len(array_) > 1:
+#             # print(f'Converting {name} to an pd serie')
+#             return pd.Series(array_, index=range(2051-len(array_), 2051), name=name) # very provisory
+#         return super().convert_array_to_value(name, array_)
+#
+#
+# SimpleGrammar.DATA_CONVERTER_CLASS = DataConverter
+
+
+class ExtendedJSONGrammar(JSONGrammar):
+    DATA_CONVERTER_CLASS: ClassVar[str] = "CustomDataConverter"
+    __PYTHON_TO_JSON_TYPES: Final[dict[type, str]] = {
+        **JSONGrammar._JSONGrammar__PYTHON_TO_JSON_TYPES,
+        # Add your additional types here
+        Number: "number",
+        pd.Series: "array",
+    }
+
+
+# TRY TO BE CLEAN WITH JSON GRAMMAR DATA CONVERTER
+class CustomDataConverter(SimpleGrammarDataConverter):
+    _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series)
+    _IS_NUMERIC_TYPES: ClassVar[tuple[type, ...]] = (int, *_IS_CONTINUOUS_TYPES)
+
+    def convert_value_to_array(self, name: str, value: Any) -> ndarray:
+        if isinstance(value, pd.Series):
+            value = value.fillna(-999999)
+            return value.values
+        return super().convert_value_to_array(name, value)
+
+    def convert_array_to_value(self, name: str, array_: Any) -> Any:
+        array_ = np.nan_to_num(array_, nan=-999999)
+        if isinstance(array_, ndarray) and len(array_) > 1:
+            return pd.Series(
+                array_, index=range(2051 - len(array_), 2051), name=name
+            )  # very provisory
+        return super().convert_array_to_value(name, array_)
+
+
+SimpleGrammar.DATA_CONVERTER_CLASS = CustomDataConverter
+
+
 class AeroMAPSModelWrapper(AutoPyDiscipline):
+    """
+    Wraps the AeroMAPSModel class into a discipline.
+    Inputs and outputs are automatically declared from the model's compute() function signature.
+    """
+
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
-        # TODO: Explore possibility to use json grammar
         self.default_grammar_type = Discipline.GrammarType.SIMPLE
 
         super(AeroMAPSModelWrapper, self).__init__(

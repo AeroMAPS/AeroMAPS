@@ -6,11 +6,13 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 
-from gemseo import generate_n2_plot, create_scenario, create_mda, generate_coupling_graph
+from gemseo import generate_n2_plot, create_scenario, generate_coupling_graph
+
+# from gemseo import create_mda
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
-from gemseo.mda.gauss_seidel import MDAGaussSeidel
-from gemseo.core.discipline import Discipline
+# from gemseo.mda.gauss_seidel import MDAGaussSeidel
+# from gemseo.core.discipline import Discipline
 
 
 # Local application imports
@@ -242,7 +244,7 @@ class AeroMAPSProcess(object):
         # Optional settings
         self.gemseo_settings["formulation"] = "MDF"
         self.gemseo_settings["scenario_type"] = "MDO"
-        self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
+        # self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
         self.gemseo_settings["doe_input_names"] = None
         self.gemseo_settings["doe_output_names"] = None
 
@@ -404,15 +406,12 @@ class AeroMAPSProcess(object):
             values = vector_inputs_df[column].values
             index = vector_inputs_df.iloc[:, 0].values
 
-            #TODO remove this: experiment to see if it works
+            # TODO remove this: experiment to see if it works
             # if column == "airfare_per_rpk":
             #     setattr(self.parameters, column, np.array(values))
             #
             # else:
             setattr(self.parameters, column, pd.Series(values, index=index))
-
-
-
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:

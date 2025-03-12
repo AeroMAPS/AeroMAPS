@@ -1,14 +1,14 @@
 from typing import Tuple
 from numbers import Number
 
-import numpy as np
+# import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
 from aeromaps.models.base import (
     AeroMAPSModel,
     aeromaps_leveling_function,
-    aeromaps_interpolation_function,
+    # aeromaps_interpolation_function,
 )
 
 
@@ -87,8 +87,6 @@ class PriceElasticityAndSurplus(AeroMAPSModel):
         #     airfare_per_rpk = pd.Series(airfare_per_rpk[25:], index=range(2025, 2051))
         # else:
         #     airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
-
-        airfare_per_rpk = airfare_per_rpk.loc[2025 : self.end_year + 1]
 
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):

@@ -4,11 +4,11 @@
 # @Software: PyCharm
 from typing import Tuple
 
-import numpy as np
+# import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
+# from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.base import AeroMAPSModel  # , aeromaps_interpolation_function
 
 
 class PassengerAircraftTotalCostAirfare(AeroMAPSModel):
@@ -514,14 +514,14 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         )
 
         airfare_per_rpk_true = marginal_cost_per_rpk + total_extra_tax_per_rpk
-        airfare_per_rpk_true = airfare_per_rpk_true.loc[2025 : self.end_year + 1]
-        airfare_per_rpk = airfare_per_rpk_true.loc[2025 : self.end_year + 1]
+        airfare_per_rpk_true = airfare_per_rpk_true
+        airfare_per_rpk = airfare_per_rpk_true
 
         # print('a',a[self.end_year], 'b', b + total_cost_per_rpk_without_extra_tax[self.end_year] - intial_total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk[self.end_year])
         # print('checker',marginal_cost_per_rpk[self.end_year], rpk[self.end_year], airfare_per_rpk[self.end_year])
 
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
-        self.df.loc[:, "airfare_per_rpk_true"] = airfare_per_rpk_true
+        self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
         # self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
 
         # print('End PaxCostAF: Airfare 2050:{}, A{}'.format(airfare_per_rpk[self.end_year], a[self.end_year]))
