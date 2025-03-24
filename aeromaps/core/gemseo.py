@@ -490,6 +490,7 @@ class CustomDataConverter(SimpleGrammarDataConverter):
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
         array_ = np.nan_to_num(array_, nan=-999999)
         if isinstance(array_, ndarray) and len(array_) > 1:
+            # TODO us eend year
             return pd.Series(
                 array_, index=range(2051 - len(array_), 2051), name=name
             )  # very provisory
