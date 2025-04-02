@@ -2460,7 +2460,7 @@ class AnnualMACC:
 
         try:
             self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
+                figsize=(12, 7),
             )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
@@ -2561,22 +2561,22 @@ class AnnualMACC:
                 [
                     el
                     for el in [
-                        "Freighter - Drop in",
-                        "Freighter - Hydrogen",
+                        "Freighter - DI",
+                        r"Freighter - $\text{H}_2$",
                         "Freighter - Electric",
-                        "Bio - HEFA FOG",
-                        "Bio - HEFA Others",
-                        "Bio - Alcohol to Jet",
-                        "Bio - FT MSW",
-                        "Bio - FT Others",
-                        "H2C",
-                        "H2CCCS",
-                        "H2G",
-                        "H2GCCS",
-                        "H2E",
+                        "Bio - HEFA-FOG",
+                        "Bio - HEFA-Others",
+                        "Bio - AtJ",
+                        "Bio - FT-MSW",
+                        "Bio - FT-Others",
+                        r"$\text{H}_2$ - Coal",
+                        r"$\text{H}_2$ - Coal + CCS",
+                        r"$\text{H}_2$ - Gas",
+                        r"$\text{H}_2$ - Gas + CCS",
+                        r"$\text{H}_2$ - Electrolysis",
                         "Electrofuel",
-                        "OPS",
-                        "OPS - Freight",
+                        "Operations",
+                        "Operations - Freight",
                         "Load Factor",
                     ]
                 ]
@@ -2744,6 +2744,14 @@ class AnnualMACC:
         maccneg_df = macc_df[macc_df["abatement_effective"] < -0]
         maccpos_df = macc_df[macc_df["abatement_effective"] > 0]
 
+        # Move 'recent_reference' to the top for nice plot for publication
+        maccpos_df = pd.concat(
+            [
+                maccpos_df.loc[maccpos_df.index == "recent_reference"],
+                maccpos_df.loc[maccpos_df.index != "recent_reference"],
+            ]
+        )
+
         ##### POS ######
 
         heights_pos = maccpos_df[metric].to_list()
@@ -2781,28 +2789,51 @@ class AnnualMACC:
             zorder=10,  # ensure top level
         )
 
-        # custom_annotation_height_for_nice_plot = [
-        #     70,
-        #     220,
-        #     130,
-        #     100,
-        #     100,
-        #     130,
-        #     150,
-        #     180,
-        #     100,
-        #     100,
-        #     100,
-        #     180,
-        #     240,
-        #     220,
-        #     300,
-        #     380,
-        #     460,
-        #     520,
-        #     580,
-        #     670,
-        # ]
+        custom_annotation_height_for_nice_plot = [
+            70,
+            80,
+            130,
+            100,
+            100,
+            100,
+            100,
+            130,
+            170,
+            90,
+            100,
+            180,
+            240,
+            270,
+            300,
+            330,
+            460,
+            520,
+            580,
+            670,
+        ]
+
+        custom_annotation_x_for_nice_plot = [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -12,
+            -10,
+            -5,
+            0,
+            -20,
+            -5,
+            -10,
+            -2,
+            0,
+            0,
+        ]
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
@@ -2816,29 +2847,68 @@ class AnnualMACC:
                     text,
                     (x_position, y_position),
                     xycoords="data",
-                    xytext=(x_position, y_position + 50),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    # xytext=(x_position, y_position + 50),
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
                     textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=9,
+                    fontsize=10,
                     ha="right",
                     va="bottom",
                 )
             else:
-                self.ax.annotate(
-                    f"{names_pos[i]}",
-                    (x_position, 0),
-                    xycoords="data",
-                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
-                    textcoords="data",
-                    arrowprops=dict(width=0.5, headwidth=0),
-                    rotation=-60,
-                    fontsize=9,
-                    ha="right",
-                    va="bottom",
-                )
+                if i in [0, 1, 2]:
+                    # Use the position of i=1 for the annotation text
+                    text_x = (
+                        cumwidths_effective_pos[1] + cumwidths_effective_pos[1 + 1]
+                    ) / 2 + custom_annotation_x_for_nice_plot[1]
+                    text_y = custom_annotation_height_for_nice_plot[1]  # Take the height for i=1
+                    self.ax.annotate(
+                        "",
+                        (x_position, 0),  # Arrow points to this position
+                        xycoords="data",
+                        xytext=(text_x, text_y),  # Arrow starts from the annotation position (i=1)
+                        textcoords="data",
+                        arrowprops=dict(arrowstyle="->"),
+                    )
+
+                else:
+                    self.ax.annotate(
+                        f"{names_pos[i]}",
+                        (x_position, 0),
+                        xycoords="data",
+                        # xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                        xytext=(
+                            x_position + custom_annotation_x_for_nice_plot[i],
+                            custom_annotation_height_for_nice_plot[i],
+                        ),
+                        textcoords="data",
+                        arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                        rotation=-60,
+                        fontsize=10,
+                        ha="right",
+                        va="bottom",
+                    )
+
+        # Use the position of i=1 for the annotation text
+        text_x = (
+            cumwidths_effective_pos[1] + cumwidths_effective_pos[1 + 1]
+        ) / 2 + custom_annotation_x_for_nice_plot[1]
+        text_y = custom_annotation_height_for_nice_plot[1]  # Take the height for i=1
+
+        # Add the single text annotation at the i=1 position
+        self.ax.annotate(
+            "Recent SR/MR/LR - DI",  # Replace with relevant text
+            (text_x, text_y),
+            xycoords="data",
+            fontsize=10,
+            ha="right",
+            va="bottom",
+            rotation=-60,
+        )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_pos) - 2)):
@@ -2889,26 +2959,49 @@ class AnnualMACC:
             zorder=9,
         )
 
-        # custom_annotation_height_for_nice_plot = [15,70,120,170,220]
+        custom_annotation_height_for_nice_plot = [30, 70, 120, 120, 220]
+
+        custom_annotation_x_for_nice_plot = [-10, -5, -3, 0, -50]
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
                 cumwidths_effective_neg[-1]
                 - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
-            self.ax.annotate(
-                f"{names_neg[i]}",
-                (x_position, 0),
-                xycoords="data",
-                xytext=(x_position, 50 + 30 * (i % 3)),
-                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
-                textcoords="data",
-                arrowprops=dict(width=0.5, headwidth=0),
-                rotation=-60,
-                fontsize=9,
-                ha="right",
-                va="bottom",
-            )
+            if i in [0, 1]:
+                self.ax.annotate(
+                    f"{names_neg[i]}",
+                    (x_position, 0),
+                    xycoords="data",
+                    # xytext=(x_position, 50 + 30 * (i % 3)),
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="right",
+                    va="bottom",
+                )
+            elif i == 3:
+                self.ax.annotate(
+                    "Old SR/MR/LR - DI",
+                    (x_position, 0),
+                    xycoords="data",
+                    # xytext=(x_position, 50 + 30 * (i % 3)),
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="right",
+                    va="bottom",
+                )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_neg) - 2)):
@@ -2948,26 +3041,38 @@ class AnnualMACC:
 
         self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
 
+        # Individual aircraft efficiency subcategories
+        aircraft_efficiency_patches = [
+            mpatches.Patch(color="gold", alpha=1, label="Short-Range (SR)"),
+            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range (MR)"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range (LR)"),
+            mpatches.Patch(color="khaki", alpha=1, label="Freighter"),
+        ]
+
+        # Other levers
+        other_levers = [
+            mpatches.Patch(color="orange", alpha=1, label="Operational Efficiency"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+        ]
+
+        # Define legend items, including bold for category headers
         legend_patches_1 = [
             Line2D(
                 [0], [0], color="black", linewidth=1, linestyle="-", label="Marginal Abatement Cost"
             ),
-            mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
-            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
-            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
-            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiency"),
-            mpatches.Patch(color="orange", alpha=1, label="Operations"),
-            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+            Line2D(
+                [0], [0], color="none", lw=0, label=r"$\bf{Aircraft\ Efficiency}$", markersize=0
+            ),
+            *aircraft_efficiency_patches,
+            Line2D([0], [0], color="none", lw=0, label=r"$\bf{Other}$", markersize=0),
+            *other_levers,
         ]
 
-        self.ax.add_artist(
-            self.ax.legend(
-                handles=legend_patches_1,
-                fontsize=9,
-                title="Type of lever",
-                loc="upper left",
-                bbox_to_anchor=(60 / self.ax.figure.bbox.width, 1),
-            )
+        # Create the legend
+        self.ax.legend(
+            handles=legend_patches_1,
+            loc="upper left",
+            bbox_to_anchor=(190 / self.ax.figure.bbox.width, 1),
         )
 
         self.ax.set_xlim(
@@ -3019,7 +3124,7 @@ class AnnualMACC:
         )
 
         self.ax.grid()
-        self.ax.set_title(f"Marginal abatement cost curve for year {year}")
+        # self.ax.set_title(f"Marginal abatement cost curve for year {year}")
 
         self.ax2.xaxis.set_label_position("bottom")
         self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
@@ -3052,7 +3157,7 @@ class CumulativeMACC:
 
         try:
             self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
+                figsize=(12, 7),
             )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
@@ -3126,23 +3231,23 @@ class CumulativeMACC:
             [
                 el
                 for el in [
-                    "Freighter - Dropin",
-                    "Freighter - Hydrogen",
+                    "Freighter - DI",
+                    r"Freighter - $\text{H}_2$",
                     "Freighter - Electric",
-                    "Bio - HEFA FOG",
-                    "Bio - HEFA Others",
-                    "Bio - Alcohol to Jet",
-                    "Bio - FT MSW",
-                    "Bio - FT Others",
-                    "H2C",
-                    "H2CCCS",
-                    "H2G",
-                    "H2GCCS",
-                    "H2E",
+                    "Bio - HEFA-FOG",
+                    "Bio - HEFA-Others",
+                    "Bio - AtJ",
+                    "Bio - FT-MSW",
+                    "Bio - FT-Others",
+                    r"$\text{H}_2$ - Coal",
+                    r"$\text{H}_2$ - Coal + CCS",
+                    r"$\text{H}_2$ - Gas",
+                    r"$\text{H}_2$ - Gas + CCS",
+                    r"$\text{H}_2$ - Electrolysis",
                     "Electrofuel",
-                    "OPS",
-                    "OPS - Freighter",
-                    "LF",
+                    "Operations",
+                    "Operations - Freight",
+                    "Load Factor",
                 ]
             ]
         )
@@ -3470,12 +3575,59 @@ class CumulativeMACC:
             where="post",
             color="black",
             label="Marginal abatement cost",
-            linewidth=1,
+            linewidth=0.6,
             zorder=10,  # ensure top level
         )
 
-        # custom_annotation_height_for_nice_plot = [100, 80, 80, 80, 80, 80, 80, 80, 20, 20, 50, 100, 120, 140, 170, 200,
-        #                                           180, 180, 250, 300, 350, 400]
+        custom_annotation_height_for_nice_plot = [
+            100,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            40,
+            -80,
+            -40,
+            100,
+            140,
+            190,
+            240,
+            300,
+            180,
+            180,
+            250,
+            300,
+            350,
+            400,
+        ]
+
+        custom_annotation_x_for_nice_plot = [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            250,
+            -800,
+            -500,
+            -500,
+            -100,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
 
         for i in range(len(widths_effective_pos) - 2):
             x_position = (cumwidths_effective_pos[i] + cumwidths_effective_pos[i + 1]) / 2
@@ -3489,30 +3641,103 @@ class CumulativeMACC:
                     text,
                     (x_position, y_position),
                     xycoords="data",
-                    xytext=(x_position, y_position + 50),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                    # xytext=(x_position, y_position + 50),
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
                     textcoords="data",
-                    arrowprops=dict(width=0.3, headwidth=0),
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=9,
+                    fontsize=10,
                     ha="right",
                     va="bottom",
+                )
+            elif i == 9:
+                if heights_pos[i + 1] >= 2000:
+                    text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+                else:
+                    text = f"{names_pos[i]}"
+                self.ax.annotate(
+                    text,
+                    (x_position, y_position),
+                    xycoords="data",
+                    # xytext=(x_position, y_position + 50),
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(0.05, 1)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="left",
+                    va="top",
+                )
+            elif i == 10:
+                if heights_pos[i + 1] >= 2000:
+                    text = f"{names_pos[i]}\n {int(heights_pos[i + 1])}"
+                else:
+                    text = f"{names_pos[i]}"
+                self.ax.annotate(
+                    text,
+                    (cumwidths_effective_pos[i + 1], y_position / 2),
+                    xycoords="data",
+                    # xytext=(x_position, y_position + 50),
+                    xytext=(
+                        cumwidths_effective_pos[i + 1] + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(0.2, 1)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="left",
+                    va="top",
                 )
             else:
-                self.ax.annotate(
-                    f"{names_pos[i]}",
-                    (x_position, 0),
-                    xycoords="data",
-                    xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
-                    # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
-                    textcoords="data",
-                    arrowprops=dict(width=0.3, headwidth=0),
-                    rotation=-60,
-                    fontsize=9,
-                    ha="right",
-                    va="bottom",
-                )
+                if i in [0, 1, 2]:
+                    # Use the position of i=1 for the annotation text
+                    text_x = (cumwidths_effective_pos[1] + cumwidths_effective_pos[1 + 1]) / 2
+                    text_y = custom_annotation_height_for_nice_plot[1]  # Take the height for i=1
+                    self.ax.annotate(
+                        "",
+                        (x_position, 0),  # Arrow points to this position
+                        xycoords="data",
+                        xytext=(text_x, text_y),  # Arrow starts from the annotation position (i=1)
+                        textcoords="data",
+                        arrowprops=dict(arrowstyle="->"),
+                    )
 
+                else:
+                    self.ax.annotate(
+                        f"{names_pos[i]}",
+                        (x_position, 0),
+                        xycoords="data",
+                        # xytext=(x_position, min(50, max(heights_pos) - 50) + 30 * (i % 3)),
+                        xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
+                        textcoords="data",
+                        arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                        rotation=-60,
+                        fontsize=10,
+                        ha="right",
+                        va="bottom",
+                    )
+
+        # Use the position of i=1 for the annotation text
+        text_x = (cumwidths_effective_pos[1] + cumwidths_effective_pos[1 + 1]) / 2
+        text_y = custom_annotation_height_for_nice_plot[1]  # Take the height for i=1
+
+        # Add the single text annotation at the i=1 position
+        self.ax.annotate(
+            "Recent SR/MR/LR - DI",  # Replace with relevant text
+            (text_x, text_y),
+            xycoords="data",
+            fontsize=10,
+            ha="right",
+            va="bottom",
+            rotation=-60,
+        )
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_pos) - 2)):
             # Create a polygon for each step
@@ -3558,30 +3783,53 @@ class CumulativeMACC:
             where="post",
             color="#335C67",
             label="Marginal emission cost",
-            linewidth=1,
+            linewidth=0.5,
             zorder=9,
         )
 
-        # custom_annotation_height_for_nice_plot = [20,45,70,95,120]
+        custom_annotation_height_for_nice_plot = [30, 45, 50, 95, 100]
+
+        custom_annotation_x_for_nice_plot = [-130, 0, 20, 0, -50]
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
                 cumwidths_effective_neg[-1]
                 - (cumwidths_effective_neg[i] + cumwidths_effective_neg[i + 1]) / 2
             )
-            self.ax.annotate(
-                f"{names_neg[i]}",
-                (x_position, 0),
-                xycoords="data",
-                # xytext=(x_position, custom_annotation_height_for_nice_plot[i]),
-                xytext=(x_position, 50 + 30 * (i % 3)),
-                textcoords="data",
-                arrowprops=dict(width=0.3, headwidth=0),
-                rotation=-60,
-                fontsize=9,
-                ha="right",
-                va="bottom",
-            )
+            if i == 2:
+                # Use the position of i=1 for the annotation text
+                text_x = cumwidths_effective_neg[-1]
+                -(cumwidths_effective_neg[2] + cumwidths_effective_neg[2 + 1]) / 2
+                text_y = custom_annotation_height_for_nice_plot[2]  # Take the height for i=1
+                self.ax.annotate(
+                    "Old  SR/MR/LR - DI",
+                    (x_position, 0),  # Arrow points to this position
+                    xycoords="data",
+                    xytext=(text_x + 80, text_y),  # Arrow starts from the annotation position (i=1)
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="right",
+                    va="bottom",
+                )
+            elif i in [0, 4]:
+                self.ax.annotate(
+                    f"{names_neg[i]}",
+                    (x_position, 0),
+                    xycoords="data",
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
+                    # xytext=(x_position, 50 + 30 * (i % 3)),
+                    textcoords="data",
+                    arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
+                    rotation=-60,
+                    fontsize=10,
+                    ha="right",
+                    va="bottom",
+                )
 
         # Fill under the step plot with different colors for each step
         for i in range(0, (len(widths_effective_neg) - 2)):
@@ -3615,23 +3863,38 @@ class CumulativeMACC:
 
         self.ax.axvline(0, color="black", linestyle="--", linewidth=1)
 
+        # Individual aircraft efficiency subcategories
+        aircraft_efficiency_patches = [
+            mpatches.Patch(color="gold", alpha=1, label="Short-Range (SR)"),
+            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range (MR)"),
+            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range (LR)"),
+            mpatches.Patch(color="khaki", alpha=1, label="Freighter"),
+        ]
+
+        # Other levers
+        other_levers = [
+            mpatches.Patch(color="orange", alpha=1, label="Operational Efficiency"),
+            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+        ]
+
+        # Define legend items, including bold for category headers
         legend_patches_1 = [
             Line2D(
                 [0], [0], color="black", linewidth=1, linestyle="-", label="Marginal Abatement Cost"
             ),
-            mpatches.Patch(color="gold", alpha=1, label="Short-Range Efficiency"),
-            mpatches.Patch(color="goldenrod", alpha=1, label="Medium-Range Efficiency"),
-            mpatches.Patch(color="darkgoldenrod", alpha=1, label="Long-Range Efficiency"),
-            mpatches.Patch(color="khaki", alpha=1, label="Freighter Efficiency"),
-            mpatches.Patch(color="orange", alpha=1, label="Operations"),
-            mpatches.Patch(color="yellowgreen", alpha=1, label="Energy"),
+            Line2D(
+                [0], [0], color="none", lw=0, label=r"$\bf{Aircraft\ Efficiency}$", markersize=0
+            ),
+            *aircraft_efficiency_patches,
+            Line2D([0], [0], color="none", lw=0, label=r"$\bf{Other}$", markersize=0),
+            *other_levers,
         ]
 
+        # Create the legend
         self.ax.legend(
             handles=legend_patches_1,
-            title="Type of lever",
             loc="upper left",
-            bbox_to_anchor=(90 / self.ax.figure.bbox.width, 1),
+            bbox_to_anchor=(110 / self.ax.figure.bbox.width, 1.01),
         )
 
         self.ax.set_xlim(
@@ -3683,12 +3946,12 @@ class CumulativeMACC:
         )
 
         self.ax.grid()
-        self.ax.set_title(
-            f"Cumulative marginal abatement cost curve, for starting year {self.prospective_years[1]}"
-        )
+        # self.ax.set_title(
+        #    f"Cumulative marginal abatement cost curve, for starting year {self.prospective_years[1]}"
+        # )
 
         self.ax2.xaxis.set_label_position("bottom")
-        self.ax2.set_xlabel("cumulative $\mathregular{CO_2}$ emissions (Mt)")
+        self.ax2.set_xlabel("Cumulative $\mathregular{CO_2}$ emissions (Mt)")
 
         self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
         self.ax2.xaxis.set_ticks_position("bottom")
