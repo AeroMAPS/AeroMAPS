@@ -1,1 +1,3 @@
-pip install git+https://github.com/AeroMAPS/AeroMAPS.git
+pip install poetry
+poetry config virtualenvs.create false --local
+poetry install
