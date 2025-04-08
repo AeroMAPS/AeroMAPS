@@ -98,8 +98,6 @@ class AeroMAPSProcess(object):
 
         self._update_variables()
 
-        self.write_json()
-
     def write_json(self, file_name=None):
         if file_name is None:
             file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
