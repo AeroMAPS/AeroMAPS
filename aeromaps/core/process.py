@@ -98,15 +98,7 @@ class AeroMAPSProcess(object):
 
         self._update_variables()
 
-        if self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(
-                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
-            )
-            file_name = new_output_file_path
-        else:
-            file_name = None
-        self.write_json(file_name=file_name)
+        self.write_json()
 
     def write_json(self, file_name=None):
         if file_name is None:
