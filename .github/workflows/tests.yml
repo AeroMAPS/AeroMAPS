@@ -34,5 +34,14 @@ jobs:
           poetry install
 
       - name: Notebook tests
-        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb
+        run: |
+          for notebook in $(find aeromaps -name "*.ipynb" \
+            ! -path "aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb" \
+            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb"); do
+            echo "Running tests for $notebook"
+            start_time=$(date +%s)
+            poetry run pytest --no-cov --nbval-lax -p no:python "$notebook"
+            end_time=$(date +%s)
+            echo "Tests for $notebook completed in $((end_time - start_time)) seconds."
+          done
         shell: bash
