@@ -105,7 +105,9 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
             )
             file_name = new_output_file_path
-
+        elif file_name is None:
+            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
+            
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
