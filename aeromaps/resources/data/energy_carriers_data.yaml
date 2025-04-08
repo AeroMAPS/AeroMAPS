@@ -3,16 +3,21 @@ hefa_fog:
   name: "hefa_fog"
   environmental_model: "top-down"
   cost_model: "top-down"
+  # Policy
+  usage:
+    energy_quantity: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 10.0, 9.0, 8.0, 7.0 ]
+      method: linear
+    flexible_usage: false
+    # mass_quantity: 10 # [Mt]
+    #    energy_blending_mandate: !AeroMapsCustomDataType
+    #      years: [ 2020, 2030, 2040, 2050 ]
+    #      values: [ 10.0, 9.0, 8.0, 7.0 ]
+    #      method: linear
+    # mass_blending_mandate: 10 # [%]
+    # TODO : use energy (or quantity with several units possible) OR blending_mandate OR ...
   inputs:
-    # Policy
-    consumption:
-      value: 0.1
-      # Possible types are: Volume (EJ/Mt), Share (%).
-      energy_quantity: 10 # [EJ]
-      mass_quantity: 10 # [Mt]
-      energy_blending_mandate: 10 # [%]
-      mass_blending_mandate: 10 # [%]
-      # TODO : use energy (or quantity with several units possible) OR blending_mandate OR ...
     # Technical:
     type: "dropin"
     subtype: "biofuel"
@@ -47,6 +52,20 @@ hefa_fog:
     capex_subsidy: 15.0
     carbon_tax: 20.0
   outputs:
+
+hefa_others:
+  # Settings
+  name: "hefa_others"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  # Policy
+  usage:
+    energy_blending_mandate: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 10.0, 9.0, 8.0, 7.0 ]
+      method: linear
+    flexible_usage: true
+  inputs:
 
 
 

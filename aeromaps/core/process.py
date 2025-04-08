@@ -13,6 +13,7 @@ from gemseo import generate_n2_plot, create_mda
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
+from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import (
     _dict_to_df,
@@ -234,6 +235,9 @@ class AeroMAPSProcess(object):
         # The first level of the yaml conf file contains all the pathways
         pathways = list(self.energy_carriers_data.keys())
 
+        # Create empty dict for the energy mandate model with all pathways use case
+        energy_use_choice_data = {}
+
         for pathway in pathways:
             pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
@@ -241,6 +245,13 @@ class AeroMAPSProcess(object):
 
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
+
+            # populate the energy_use_choice_data dictionary with the pathway name and its corresponding usage data, interpolate the values
+            energy_use_choice_data[pathway_data["name"]] = convert_custom_data_types(
+                flatten_dict(pathway_data["usage"], pathway_data["name"]),
+                self.parameters.prospection_start_year,
+                self.parameters.end_year,
+            )
 
             # Flatten the inputs dictionary and interpolate the necessary values
             pathway_data["inputs"] = convert_custom_data_types(
@@ -250,11 +261,12 @@ class AeroMAPSProcess(object):
             )
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
-            self.models.update(
-                AviationEnergyCarriersFactory.create_carrier(
-                    pathway, self.energy_carriers_data[pathway]
-                )
-            )
+            self.models.update(AviationEnergyCarriersFactory.create_carrier(pathway, pathway_data))
+
+        # Instanciate the energy use choice model
+        self.models.update(
+            "energy_use_choice", EnergyUseChoice("energy_use_choice", energy_use_choice_data)
+        )
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
