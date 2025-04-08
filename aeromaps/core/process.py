@@ -265,7 +265,7 @@ class AeroMAPSProcess(object):
 
         # Instanciate the energy use choice model
         self.models.update(
-            "energy_use_choice", EnergyUseChoice("energy_use_choice", energy_use_choice_data)
+            {"energy_use_choice": EnergyUseChoice("energy_use_choice", energy_use_choice_data)}
         )
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
@@ -414,6 +414,7 @@ class AeroMAPSProcess(object):
                     field_value = field_value.reindex(new_index, fill_value=np.nan)
                 else:
                     new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
+                    print(field_name, field_value, new_size)
                     new_value = np.pad(
                         field_value,
                         (0, new_size - field_value.size),

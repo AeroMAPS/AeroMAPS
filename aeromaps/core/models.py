@@ -131,6 +131,7 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     HydrogenConsumption,
     ElectricConsumption,
     EnergyConsumption,
+    DropInFuelDetailledConsumption,
 )
 from aeromaps.models.impacts.energy_resources.resources_consumption import (
     BiomassConsumption,
@@ -283,6 +284,9 @@ models_energy_without_fuel_effect = {
     "biofuel_production": BiofuelProduction("biofuel_production"),
     "hydrogen_production": HydrogenProduction("hydrogen_production"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
+    "drop_in_fuel_detailed_consumption": DropInFuelDetailledConsumption(
+        "drop_in_fuel_detailed_consumption"
+    ),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
@@ -310,6 +314,9 @@ models_energy_with_fuel_effect = {
     "biofuel_production": BiofuelProduction("biofuel_production"),
     "hydrogen_production": HydrogenProduction("hydrogen_production"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
+    "drop_in_fuel_detailed_consumption": DropInFuelDetailledConsumption(
+        "drop_in_fuel_detailed_consumption"
+    ),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),

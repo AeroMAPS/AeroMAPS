@@ -32,59 +32,29 @@ class EnergyUseChoice(AeroMAPSModel):
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
         self.input_names.update(
             {
-                # TODO change enrgy_consumption
+                "energy_consumption_dropin_fuel": pd.Series([0.0]),
+                "energy_consumption_hydrogen": pd.Series([0.0]),
+                "energy_consumption_electric": pd.Series([0.0]),
+                # TODO discuss relevance of keeping that outside of the yaml: pros: simpler yaml reading. cons: logic?
+                # TODO rename to something like "target share"
+                "biofuel_share": pd.Series([0.0]),
+                "electrofuel_share": pd.Series([0.0]),
             }
         )
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
         self.output_names = {
-            self.pathway_name + "_consumption": pd.Series([0.0]),
+            key + "_consumption": pd.Series([0.0]) for key in configuration_data.keys()
         }
+        self.output_names.update(
+            {
+                "biofuel_real_share": pd.Series([0.0]),
+                "electrofuel_real_share": pd.Series([0.0]),
+            }
+        )
 
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
-        # Mandatory inputs
+        print("input_data", input_data)
 
-        if self.pathway_name + "_mfsp" not in input_data:
-            raise ValueError(
-                f"Mandatory input {self.pathway_name + '_mfsp'} is missing in input_data"
-            )
-        pathway_mfsp = input_data[self.pathway_name + "_mfsp"]
-
-        # Optional inputs
-        # Subsidies and taxes
-
-        pathway_subsidies = 0
-        pathway_tax = 0
-        if self.pathway_name + "_mfsp_subsidy" in input_data:
-            pathway_subsidies = input_data[self.pathway_name + "_mfsp_subsidy"]
-        if self.pathway_name + "_mfsp_tax" in input_data:
-            pathway_tax = input_data[self.pathway_name + "_mfsp_tax"]
-
-        # Get other inputs
-
-        # Handle possible differential carbon_tax
-        if self.pathway_name + "_carbon_tax" in input_data:
-            carbon_tax = input_data[self.pathway_name + "_carbon_tax"]
-        else:
-            carbon_tax = input_data["carbon_tax"]
-
-        # Actual computation
-
-        # Calculate the unit cost. TODO convert everything into series.
-        pathway_net_mfsp_without_carbon_tax = pathway_mfsp - pathway_subsidies + pathway_tax
-
-        # Calculate the unit cost including the carbon tax
-        emission_factor = input_data[self.pathway_name + "_emission_factor"]
-        pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + emission_factor * carbon_tax
-
-        # Store the results in the df
-        self.df.loc[:, self.pathway_name + "_net_mfsp_without_carbon_tax"] = (
-            pathway_net_mfsp_without_carbon_tax
-        )
-        self.df.loc[:, self.pathway_name + "_net_mfsp"] = pathway_net_mfsp
-
-        return {
-            self.pathway_name + "_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
-            self.pathway_name + "_net_mfsp": pathway_net_mfsp,
-        }
+        return {}

@@ -11,9 +11,6 @@ class DropInFuelConsumption(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_share: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_share: pd.Series,
         ask_short_range_dropin_fuel: pd.Series,
         ask_medium_range_dropin_fuel: pd.Series,
         ask_long_range_dropin_fuel: pd.Series,
@@ -27,42 +24,6 @@ class DropInFuelConsumption(AeroMAPSModel):
         energy_per_ask_long_range_dropin_fuel: pd.Series,
         energy_per_rtk_freight_dropin_fuel: pd.Series,
     ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -122,6 +83,119 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_dropin_fuel_without_operations
         )
 
+        # WITH OPERATIONS
+        # Drop-in fuel
+        energy_consumption_short_range_dropin_fuel = (
+            energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
+        )
+        energy_consumption_medium_range_dropin_fuel = (
+            energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
+        )
+        energy_consumption_long_range_dropin_fuel = (
+            energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
+        )
+        energy_consumption_passenger_dropin_fuel = (
+            energy_consumption_short_range_dropin_fuel
+            + energy_consumption_medium_range_dropin_fuel
+            + energy_consumption_long_range_dropin_fuel
+        )
+        energy_consumption_freight_dropin_fuel = (
+            energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
+        )
+        energy_consumption_dropin_fuel = (
+            energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
+        )
+
+        self.df.loc[:, "energy_consumption_short_range_dropin_fuel"] = (
+            energy_consumption_short_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel"] = (
+            energy_consumption_medium_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_long_range_dropin_fuel"] = (
+            energy_consumption_long_range_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_passenger_dropin_fuel"] = (
+            energy_consumption_passenger_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_freight_dropin_fuel"] = (
+            energy_consumption_freight_dropin_fuel
+        )
+        self.df.loc[:, "energy_consumption_dropin_fuel"] = energy_consumption_dropin_fuel
+
+        return (
+            energy_consumption_short_range_dropin_fuel_without_operations,
+            energy_consumption_medium_range_dropin_fuel_without_operations,
+            energy_consumption_long_range_dropin_fuel_without_operations,
+            energy_consumption_passenger_dropin_fuel_without_operations,
+            energy_consumption_freight_dropin_fuel_without_operations,
+            energy_consumption_dropin_fuel_without_operations,
+            energy_consumption_short_range_dropin_fuel,
+            energy_consumption_medium_range_dropin_fuel,
+            energy_consumption_long_range_dropin_fuel,
+            energy_consumption_passenger_dropin_fuel,
+            energy_consumption_freight_dropin_fuel,
+            energy_consumption_dropin_fuel,
+        )
+
+
+class DropInFuelDetailledConsumption(AeroMAPSModel):
+    def __init__(self, name="drop_in_fuel_detailled_consumption", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        biofuel_share: pd.Series,
+        electrofuel_share: pd.Series,
+        kerosene_share: pd.Series,
+        energy_consumption_short_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_medium_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_long_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_freight_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_short_range_dropin_fuel: pd.Series,
+        energy_consumption_medium_range_dropin_fuel: pd.Series,
+        energy_consumption_long_range_dropin_fuel: pd.Series,
+        energy_consumption_freight_dropin_fuel: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        """Drop-in fuel consumption calculation."""
+        # WITHOUT OPERATIONS
         # Biofuel
         energy_consumption_short_range_biofuel_without_operations = (
             biofuel_share / 100 * energy_consumption_short_range_dropin_fuel_without_operations
@@ -249,45 +323,6 @@ class DropInFuelConsumption(AeroMAPSModel):
         )
 
         # WITH OPERATIONS
-        # Drop-in fuel
-        energy_consumption_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
-        )
-        energy_consumption_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
-        )
-        energy_consumption_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
-        )
-        energy_consumption_passenger_dropin_fuel = (
-            energy_consumption_short_range_dropin_fuel
-            + energy_consumption_medium_range_dropin_fuel
-            + energy_consumption_long_range_dropin_fuel
-        )
-        energy_consumption_freight_dropin_fuel = (
-            energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
-        )
-        energy_consumption_dropin_fuel = (
-            energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
-        )
-
-        self.df.loc[:, "energy_consumption_short_range_dropin_fuel"] = (
-            energy_consumption_short_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_medium_range_dropin_fuel"] = (
-            energy_consumption_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_long_range_dropin_fuel"] = (
-            energy_consumption_long_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_passenger_dropin_fuel"] = (
-            energy_consumption_passenger_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_freight_dropin_fuel"] = (
-            energy_consumption_freight_dropin_fuel
-        )
-        self.df.loc[:, "energy_consumption_dropin_fuel"] = energy_consumption_dropin_fuel
-
         # Biofuel
         energy_consumption_short_range_biofuel = (
             biofuel_share / 100 * energy_consumption_short_range_dropin_fuel
@@ -402,12 +437,6 @@ class DropInFuelConsumption(AeroMAPSModel):
         self.df.loc[:, "energy_consumption_kerosene"] = energy_consumption_kerosene
 
         return (
-            energy_consumption_short_range_dropin_fuel_without_operations,
-            energy_consumption_medium_range_dropin_fuel_without_operations,
-            energy_consumption_long_range_dropin_fuel_without_operations,
-            energy_consumption_passenger_dropin_fuel_without_operations,
-            energy_consumption_freight_dropin_fuel_without_operations,
-            energy_consumption_dropin_fuel_without_operations,
             energy_consumption_short_range_biofuel_without_operations,
             energy_consumption_medium_range_biofuel_without_operations,
             energy_consumption_long_range_biofuel_without_operations,
@@ -426,12 +455,6 @@ class DropInFuelConsumption(AeroMAPSModel):
             energy_consumption_passenger_kerosene_without_operations,
             energy_consumption_freight_kerosene_without_operations,
             energy_consumption_kerosene_without_operations,
-            energy_consumption_short_range_dropin_fuel,
-            energy_consumption_medium_range_dropin_fuel,
-            energy_consumption_long_range_dropin_fuel,
-            energy_consumption_passenger_dropin_fuel,
-            energy_consumption_freight_dropin_fuel,
-            energy_consumption_dropin_fuel,
             energy_consumption_short_range_biofuel,
             energy_consumption_medium_range_biofuel,
             energy_consumption_long_range_biofuel,
