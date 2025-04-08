@@ -66,6 +66,40 @@ hefa_others:
       method: linear
     flexible_usage: true
   inputs:
+    # Technical:
+    type: "dropin"
+    subtype: "biofuel"
+    plant:
+      load_factor: 0.85
+      lifespan: 25
+    kerosene_selectivity: 0.9
+    specific_consumption:
+      # Add a list of resources and their consumption per unit of fuel.
+      renewable_electricity: 0.8
+      hydrogen: 0.1
+    co2_emission_factor_without_resource: 0.5
+    emission_index:
+      h2o: 1.231
+      nox: 0.01514
+      sulfur: 0.0012
+      soot: 3e-05
+      particles_number: 8e13
+    # Economics:
+    mfsp: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 10.0, 9.0, 8.0, 7.0 ]
+      method: linear
+    mfsp_subsidy: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 0.0, 0.0, 0.0, 0.0 ]
+      method: linear
+    mfsp_tax: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 0.0, 0.0, 0.0, 0.0 ]
+      method: linear
+    capex_subsidy: 15.0
+    carbon_tax: 20.0
+  outputs:
 
 
 

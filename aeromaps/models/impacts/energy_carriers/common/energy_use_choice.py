@@ -23,12 +23,17 @@ class EnergyUseChoice(AeroMAPSModel):
             **kwargs,
         )
 
-        print(configuration_data)
-
-        # TODO add fuel type in there
+        # TODO is there a better way to do this?
+        # Store model metadata in an attribute
+        self.pathways_metadata = configuration_data
 
         # Get the inputs from the configuration file
-        self.input_names = configuration_data
+        self.input_names = {}
+
+        for key, val in configuration_data.items():
+            self.pathways_keys.append(configuration_data[key]["name"])
+            self.input_names.update(configuration_data[key]["usage"])
+
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
         self.input_names.update(
             {
@@ -43,18 +48,17 @@ class EnergyUseChoice(AeroMAPSModel):
         )
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
-        self.output_names = {
-            key + "_consumption": pd.Series([0.0]) for key in configuration_data.keys()
-        }
-        self.output_names.update(
-            {
-                "biofuel_real_share": pd.Series([0.0]),
-                "electrofuel_real_share": pd.Series([0.0]),
-            }
-        )
+        # self.output_names = {
+        #     key + "_consumption": pd.Series([0.0]) for key in configuration_data.keys()
+        # }
+        # self.output_names.update(
+        #     {
+        #         "biofuel_real_share": pd.Series([0.0]),
+        #         "electrofuel_real_share": pd.Series([0.0]),
+        #     }
+        # )
 
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
-        print("input_data", input_data)
 
         return {}

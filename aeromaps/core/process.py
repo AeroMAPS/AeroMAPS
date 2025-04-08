@@ -236,36 +236,38 @@ class AeroMAPSProcess(object):
         pathways = list(self.energy_carriers_data.keys())
 
         # Create empty dict for the energy mandate model with all pathways use case
-        energy_use_choice_data = {}
 
         for pathway in pathways:
             pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
-
+            if "usage" not in pathway_data:
+                raise ValueError(
+                    "The pathway configuration file should contain its use case (blending mandate OR volume mandate)"
+                )
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
 
-            # populate the energy_use_choice_data dictionary with the pathway name and its corresponding usage data, interpolate the values
-            energy_use_choice_data[pathway_data["name"]] = convert_custom_data_types(
+            # Flatten the inputs dictionary and interpolate the necessary values
+            pathway_data["usage"] = convert_custom_data_types(
                 flatten_dict(pathway_data["usage"], pathway_data["name"]),
                 self.parameters.prospection_start_year,
                 self.parameters.end_year,
             )
-
-            # Flatten the inputs dictionary and interpolate the necessary values
             pathway_data["inputs"] = convert_custom_data_types(
                 flatten_dict(pathway_data["inputs"], pathway_data["name"]),
                 self.parameters.prospection_start_year,
                 self.parameters.end_year,
             )
 
+            self.energy_carriers_data[pathway] = pathway_data
+
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
             self.models.update(AviationEnergyCarriersFactory.create_carrier(pathway, pathway_data))
 
         # Instanciate the energy use choice model
         self.models.update(
-            {"energy_use_choice": EnergyUseChoice("energy_use_choice", energy_use_choice_data)}
+            {"energy_use_choice": EnergyUseChoice("energy_use_choice", self.energy_carriers_data)}
         )
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
@@ -414,7 +416,6 @@ class AeroMAPSProcess(object):
                     field_value = field_value.reindex(new_index, fill_value=np.nan)
                 else:
                     new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
-                    print(field_name, field_value, new_size)
                     new_value = np.pad(
                         field_value,
                         (0, new_size - field_value.size),
