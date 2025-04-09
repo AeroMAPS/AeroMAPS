@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.3-beta
+
+Fixed:
+- Fixes poetry dynamic versioning. (#100)
+
+
 ## Version 0.8.2-beta
 
 Changed:
@@ -8,6 +14,7 @@ Changed:
 
 Fixed:
 - Fixes binder not running issue. (#97)
+
 
 ## Version 0.8.1-beta
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aeromaps"
-version = "0.8.1-beta" # This is directly modified by the poetry dynamic versioning
+version = "0.8.2-beta" # This is directly modified by the poetry dynamic versioning
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.md"
 authors = [
