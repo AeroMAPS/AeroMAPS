@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.8.2-beta
+
+Changed:
+- Switched binder to Python 3.9. (#96)
+- Computation improvements for app. (#98)
+
+Fixed:
+- Fixes binder not running issue. (#97)
+
 ## Version 0.8.1-beta
 
 Changed:
