@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.2-beta
+
+Changed:
+- Computation improvements for app. (#98)
+
+
 ## Version 0.8.1-beta
 
 Changed:
