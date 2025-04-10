@@ -1,8 +1,17 @@
 import warnings
+from dataclasses import dataclass
 
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+
+
+@dataclass
+class LocalEnergyCarrier:
+    name: str
+    aircraft_type: str
+    default: bool = False
+    mandate_type: str = None
 
 
 class EnergyUseChoice(AeroMAPSModel):
@@ -25,15 +34,42 @@ class EnergyUseChoice(AeroMAPSModel):
             **kwargs,
         )
 
-        # TODO is there a better way to do this?
-        # Store model metadata in an attribute
-        self.pathways_metadata = configuration_data
+        # Store model metadata in an dataclass
+        # (Caution: use only non coupling attributes as pathways metadata is not a coupling variable)
+        # Coupling variables should go in inputs_names
+
+        self.pathways_metadata = {
+            key: LocalEnergyCarrier(
+                name=key,
+                aircraft_type=val.get("aircraft_type"),
+                default=val.get("default"),
+                mandate_type=val.get("mandate", {}).get(f"{key}_mandate_type"),
+            )
+            for key, val in configuration_data.items()
+        }
 
         # Get the inputs from the configuration file
         self.input_names = {}
 
-        for key, val in configuration_data.items():
-            self.input_names.update(configuration_data[key]["usage"])
+        for key, val in self.pathways_metadata.items():
+            if val.mandate_type == "volume":
+                self.input_names.update(
+                    {
+                        f"{key}_mandate_volume": configuration_data[key]["mandate"].get(
+                            f"{key}_mandate_volume"
+                        )
+                    }
+                )
+            elif val.mandate_type == "share":
+                self.input_names.update(
+                    {
+                        f"{key}_mandate_volume": configuration_data[key]["mandate"].get(
+                            f"{key}_mandate_share"
+                        )
+                    }
+                )
+            else:
+                pass  # default patwhay has no mandate
 
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
         self.input_names.update(
@@ -55,10 +91,11 @@ class EnergyUseChoice(AeroMAPSModel):
 
         self.output_names.update(
             {
-                # "biofuel_real_share": pd.Series([0.0]),
-                # "electrofuel_real_share": pd.Series([0.0]),
+                "biofuel_share": pd.Series([0.0]),
+                # "electrofuel_share": pd.Series([0.0]),
             }
         )
+        print(self.input_names)
 
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
@@ -109,9 +146,9 @@ class EnergyUseChoice(AeroMAPSModel):
                     electric_blending_mandate_pathways.append(pathway)
 
         # Now for each energy type, compute an energy quantity to be produced based on priority order.
-        # DROPIN FUELS
+        # DROP-IN FUELS
 
-        # Get the consumption of dropin fuel
+        # Get the consumption of drop-in fuel
         energy_consumption_dropin_fuel = input_data["energy_consumption_dropin_fuel"]
         remaining_energy_consumption_dropin_fuel = energy_consumption_dropin_fuel.copy()
 
@@ -161,13 +198,11 @@ class EnergyUseChoice(AeroMAPSModel):
                     * energy_consumption_dropin_fuel
                     for pathway in dropin_blending_mandate_pathways
                 )
-                print(total_share_quantity - remaining_energy_consumption_dropin_fuel)
                 if (
                     total_share_quantity.fillna(0)
                     <= remaining_energy_consumption_dropin_fuel.fillna(0)
                 ).all():
                     # If the sum of quantities is less than or equal to the total, keep the quantities as output
-                    print("here")
                     for pathway in dropin_blending_mandate_pathways:
                         pathway_consumption = (
                             input_data[f"{pathway}_energy_blending_mandate"]
@@ -200,7 +235,7 @@ class EnergyUseChoice(AeroMAPSModel):
                 # Third case: default pathway completes to fill the remaining energy consumption
                 if dropin_default_pathway is not None:
                     output_data[f"{dropin_default_pathway}_energy_consumption"] = (
-                        remaining_energy_consumption_dropin_fuel
+                        remaining_energy_consumption_dropin_fuel.copy()
                     )
                     remaining_energy_consumption_dropin_fuel -= (
                         remaining_energy_consumption_dropin_fuel
@@ -208,6 +243,8 @@ class EnergyUseChoice(AeroMAPSModel):
 
                 # TODO HYDROGEN AND ELECTRICITY
                 # TODO COMPUTE REFUELEU SHARES
+
+                biofuel_share = ()
 
         print(output_data)
 

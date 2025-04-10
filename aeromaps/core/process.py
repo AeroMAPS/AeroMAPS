@@ -241,19 +241,17 @@ class AeroMAPSProcess(object):
             pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
-            if "usage" not in pathway_data:
-                raise ValueError(
-                    "The pathway configuration file should contain its use case (blending mandate OR volume mandate)"
-                )
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
 
             # Flatten the inputs dictionary and interpolate the necessary values
-            pathway_data["usage"] = convert_custom_data_types(
-                flatten_dict(pathway_data["usage"], pathway_data["name"]),
-                self.parameters.prospection_start_year,
-                self.parameters.end_year,
-            )
+            if "mandate" in pathway_data:
+                pathway_data["mandate"] = convert_custom_data_types(
+                    flatten_dict(pathway_data["mandate"], pathway_data["name"] + "_mandate"),
+                    self.parameters.prospection_start_year,
+                    self.parameters.end_year,
+                )
+
             pathway_data["inputs"] = convert_custom_data_types(
                 flatten_dict(pathway_data["inputs"], pathway_data["name"]),
                 self.parameters.prospection_start_year,
