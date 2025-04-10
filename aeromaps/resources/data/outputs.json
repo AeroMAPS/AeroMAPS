@@ -408,8 +408,6 @@
         ],
         "available_electricity": 300.0,
         "social_discount_rate": 0.03,
-        "hefa_fog_flexible_usage": false,
-        "hefa_others_flexible_usage": true,
         "aviation_electricity_allocated_share": 2.3,
         "co2_cost_reference_years": [],
         "co2_cost_reference_years_values": [
@@ -439,12 +437,8 @@
         "hefa_others_carbon_tax": 20.0
     },
     "str_inputs": {
-        "hefa_fog_type": "dropin",
-        "hefa_fog_subtype": "biofuel",
         "hefa_fog_emission_index_soot": "3e-05",
         "hefa_fog_emission_index_particles_number": "8e13",
-        "hefa_others_type": "dropin",
-        "hefa_others_subtype": "biofuel",
         "hefa_others_emission_index_soot": "3e-05",
         "hefa_others_emission_index_particles_number": "8e13"
     },
