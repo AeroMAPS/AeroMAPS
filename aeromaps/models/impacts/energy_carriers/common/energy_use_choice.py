@@ -2,6 +2,7 @@ import warnings
 from dataclasses import dataclass
 from typing import List
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -165,7 +166,15 @@ class EnergyUseChoice(AeroMAPSModel):
                         remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                 else:
                     # If the sum exceeds the total, decrease them homogeneously
-                    scaling_factor = energy_consumption_dropin_fuel / total_quantity
+                    scaling_factor = pd.Series(
+                        np.where(
+                            total_quantity > remaining_energy_consumption_dropin_fuel,
+                            remaining_energy_consumption_dropin_fuel / total_quantity,
+                            1,
+                        ),
+                        index=total_quantity.index,
+                    )
+
                     warnings.warn(
                         "The sum of the quantity-defined drop-in fuel "
                         "pathways exceeds the total drop-in energy consumption."
@@ -206,7 +215,15 @@ class EnergyUseChoice(AeroMAPSModel):
                         remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                 else:
                     # If the sum exceeds the total, decrease them homogeneously
-                    scaling_factor = remaining_energy_consumption_dropin_fuel / total_share_quantity
+                    scaling_factor = pd.Series(
+                        np.where(
+                            total_share_quantity > remaining_energy_consumption_dropin_fuel,
+                            remaining_energy_consumption_dropin_fuel / total_share_quantity,
+                            1,
+                        ),
+                        index=total_share_quantity.index,
+                    )
+
                     warnings.warn(
                         "The sum of the share-defined drop-in fuel pathways exceeds "
                         "the total drop-in energy consumption (minus quantity based pathways)."
@@ -221,7 +238,7 @@ class EnergyUseChoice(AeroMAPSModel):
                         output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
                         remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                         warnings.warn(
-                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption/scaling_factor/100} "
+                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption/energy_consumption_dropin_fuel*100} "
                             f"instead of {input_data[f'{pathway.name}_mandate_share']}"
                         )
 
