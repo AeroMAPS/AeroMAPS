@@ -1,5 +1,6 @@
 import warnings
 from dataclasses import dataclass
+from typing import List
 
 import pandas as pd
 
@@ -8,10 +9,29 @@ from aeromaps.models.base import AeroMAPSModel
 
 @dataclass
 class LocalEnergyCarrier:
-    name: str
-    aircraft_type: str
+    name: str = None
+    aircraft_type: str = None
     default: bool = False
     mandate_type: str = None
+    energy_origin: str = None
+
+
+class LocalEnergyCarrierManager:
+    def __init__(self, carriers: List[LocalEnergyCarrier] = None):
+        self.carriers = carriers if carriers is not None else []
+
+    def add(self, carrier: LocalEnergyCarrier):
+        self.carriers.append(carrier)
+
+    def get(self, **criteria) -> List[LocalEnergyCarrier]:
+        return [
+            c
+            for c in self.carriers
+            if all(getattr(c, attr, None) == val for attr, val in criteria.items())
+        ]
+
+    def get_all(self):
+        return self.carriers
 
 
 class EnergyUseChoice(AeroMAPSModel):
@@ -38,38 +58,43 @@ class EnergyUseChoice(AeroMAPSModel):
         # (Caution: use only non coupling attributes as pathways metadata is not a coupling variable)
         # Coupling variables should go in inputs_names
 
-        self.pathways_metadata = {
-            key: LocalEnergyCarrier(
-                name=key,
-                aircraft_type=val.get("aircraft_type"),
-                default=val.get("default"),
-                mandate_type=val.get("mandate", {}).get(f"{key}_mandate_type"),
-            )
-            for key, val in configuration_data.items()
-        }
+        self.pathways_manager = LocalEnergyCarrierManager(
+            [
+                LocalEnergyCarrier(
+                    name=key,
+                    aircraft_type=val.get("aircraft_type"),
+                    default=val.get("default"),
+                    mandate_type=val.get("mandate", {}).get(f"{key}_mandate_type"),
+                    energy_origin=val.get("energy_origin"),
+                )
+                for key, val in configuration_data.items()
+            ]
+        )
 
-        # Get the inputs from the configuration file
+        # Actual model variables goes in inputs_names
         self.input_names = {}
 
-        for key, val in self.pathways_metadata.items():
-            if val.mandate_type == "volume":
+        for pathway in self.pathways_manager.get_all():
+            name = pathway.name
+            if pathway.default:
+                # default pathway does not use any mandate even if defined
+                pass
+            if pathway.mandate_type == "quantity":
                 self.input_names.update(
                     {
-                        f"{key}_mandate_volume": configuration_data[key]["mandate"].get(
-                            f"{key}_mandate_volume"
+                        f"{name}_mandate_quantity": configuration_data[name]["mandate"].get(
+                            f"{name}_mandate_quantity"
                         )
                     }
                 )
-            elif val.mandate_type == "share":
+            elif pathway.mandate_type == "share":
                 self.input_names.update(
                     {
-                        f"{key}_mandate_volume": configuration_data[key]["mandate"].get(
-                            f"{key}_mandate_share"
+                        f"{name}_mandate_share": configuration_data[name]["mandate"].get(
+                            f"{name}_mandate_share"
                         )
                     }
                 )
-            else:
-                pass  # default patwhay has no mandate
 
         # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
         self.input_names.update(
@@ -77,8 +102,7 @@ class EnergyUseChoice(AeroMAPSModel):
                 "energy_consumption_dropin_fuel": pd.Series([0.0]),
                 "energy_consumption_hydrogen": pd.Series([0.0]),
                 "energy_consumption_electric": pd.Series([0.0]),
-                # TODO discuss relevance of keeping that outside of the yaml: pros: simpler yaml reading. cons: logic?
-                # TODO rename to something like "target share"
+                # TODO discuss idea of having a target share to force refuel-eu like mandate
                 # "biofuel_share": pd.Series([0.0]),
                 # "electrofuel_share": pd.Series([0.0]),
             }
@@ -86,131 +110,100 @@ class EnergyUseChoice(AeroMAPSModel):
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
         self.output_names = {
-            key + "_energy_consumption": pd.Series([0.0]) for key in self.pathways_metadata.keys()
+            pathway.name + "_energy_consumption": pd.Series([0.0])
+            for pathway in self.pathways_manager.get_all()
         }
 
         self.output_names.update(
             {
                 "biofuel_share": pd.Series([0.0]),
-                # "electrofuel_share": pd.Series([0.0]),
+                "electrofuel_share": pd.Series([0.0]),
+                "kerosene_share": pd.Series([0.0]),
             }
         )
-        print(self.input_names)
 
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
         output_data = {}
+        # For each energy type, compute an energy quantity to be produced based on priority order.
+
         ###### DROP-IN FUELS ######
-        # Separate pathways into three categories
-        dropin_default_pathway = None
-        dropin_quantity_pathways = []
-        dropin_blending_mandate_pathways = []
-
-        ###### HYDROGEN ######
-        # Separate pathways into three categories
-        hydrogen_default_pathway = None
-        hydrogen_quantity_pathways = []
-        hydrogen_blending_mandate_pathways = []
-
-        ###### ELECTRIC ######
-        # Separate pathways into three categories
-        electric_default_pathway = None
-        electric_quantity_pathways = []
-        electric_blending_mandate_pathways = []
-
-        # populate the various aircraft energy types
-        for pathway, metadata in self.pathways_metadata.items():
-            if metadata["aircraft_type"] == "dropin":
-                # First case: get the default dropin pathway
-                if metadata.get("default", True):
-                    dropin_default_pathway = pathway
-                elif f"{pathway}_energy_quantity" in metadata.get("usage", {}):
-                    dropin_quantity_pathways.append(pathway)
-                elif f"{pathway}_energy_blending_mandate" in metadata.get("usage", {}):
-                    dropin_blending_mandate_pathways.append(pathway)
-            elif metadata["aircraft_type"] == "hydrogen":
-                # First case: get the default hydrogen pathway
-                if metadata.get("default", False):
-                    hydrogen_default_pathway = pathway
-                elif f"{pathway}_energy_quantity" in metadata.get("usage", {}):
-                    hydrogen_quantity_pathways.append(pathway)
-                elif f"{pathway}_energy_blending_mandate" in metadata.get("usage", {}):
-                    hydrogen_blending_mandate_pathways.append(pathway)
-            elif metadata["aircraft_type"] == "electric":
-                # First case: get the default electric pathway
-                if metadata.get("default", False):
-                    electric_default_pathway = pathway
-                elif f"{pathway}_energy_quantity" in metadata.get("usage", {}):
-                    electric_quantity_pathways.append(pathway)
-                elif f"{pathway}_energy_blending_mandate" in metadata.get("usage", {}):
-                    electric_blending_mandate_pathways.append(pathway)
-
-        # Now for each energy type, compute an energy quantity to be produced based on priority order.
-        # DROP-IN FUELS
 
         # Get the consumption of drop-in fuel
         energy_consumption_dropin_fuel = input_data["energy_consumption_dropin_fuel"]
         remaining_energy_consumption_dropin_fuel = energy_consumption_dropin_fuel.copy()
 
+        # No need to define pathways if there is no drop-in fuel consumption
         if (
             energy_consumption_dropin_fuel.notna().any()
             and energy_consumption_dropin_fuel.sum() != 0
         ):
             # Default pathway should be defined
-            if dropin_default_pathway is None:
+            dropin_default_pathway = self.pathways_manager.get(aircraft_type="dropin", default=True)
+            if not dropin_default_pathway:
                 raise ValueError(
                     "It is mandatory to define a default drop-in fuel pathway defined in the energy_carriers_data.yaml"
                 )
+            elif len(dropin_default_pathway) > 1:
+                raise ValueError(
+                    "There should be only one default drop-in fuel pathway defined in the energy_carriers_data.yaml"
+                )
             else:
                 # First case: quantity-defined pathways
+                dropin_quantity_pathways = self.pathways_manager.get(
+                    aircraft_type="dropin", mandate_type="quantity"
+                )
                 total_quantity = sum(
-                    input_data[f"{pathway}_energy_quantity"] for pathway in dropin_quantity_pathways
+                    input_data[f"{pathway.name}_mandate_quantity"]
+                    for pathway in dropin_quantity_pathways
                 )
                 if (total_quantity.fillna(0) <= energy_consumption_dropin_fuel.fillna(0)).all():
                     # If the sum of quantities is less than or equal to the total, keep the quantities as output
                     for pathway in dropin_quantity_pathways:
-                        pathway_consumption = input_data[f"{pathway}_energy_quantity"]
-                        output_data[f"{pathway}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+                        pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
+                        output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                 else:
                     # If the sum exceeds the total, decrease them homogeneously
                     scaling_factor = energy_consumption_dropin_fuel / total_quantity
-                    # print(scaling_factor)
                     warnings.warn(
                         "The sum of the quantity-defined drop-in fuel "
                         "pathways exceeds the total drop-in energy consumption."
                     )
                     for pathway in dropin_quantity_pathways:
                         pathway_consumption = (
-                            input_data[f"{pathway}_energy_quantity"] * scaling_factor
+                            input_data[f"{pathway.name}_mandate_quantity"] * scaling_factor
                         )
-                        output_data[f"{pathway}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+                        output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                         warnings.warn(
-                            f"Pathway{pathway} energy consumption is set to {pathway_consumption} "
-                            f"instead of {input_data[f'{pathway}_energy_quantity']}"
+                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption} "
+                            f"instead of {input_data[f'{pathway.name}_mandate_quantity']}"
                         )
 
                 # Second case : blending mandate pathways
+                dropin_share_pathways = self.pathways_manager.get(
+                    aircraft_type="dropin", mandate_type="share"
+                )
                 total_share_quantity = sum(
-                    input_data[f"{pathway}_energy_blending_mandate"]
+                    input_data[f"{pathway.name}_mandate_share"]
                     / 100
                     * energy_consumption_dropin_fuel
-                    for pathway in dropin_blending_mandate_pathways
+                    for pathway in dropin_share_pathways
                 )
                 if (
                     total_share_quantity.fillna(0)
                     <= remaining_energy_consumption_dropin_fuel.fillna(0)
                 ).all():
                     # If the sum of quantities is less than or equal to the total, keep the quantities as output
-                    for pathway in dropin_blending_mandate_pathways:
+                    for pathway in dropin_share_pathways:
                         pathway_consumption = (
-                            input_data[f"{pathway}_energy_blending_mandate"]
+                            input_data[f"{pathway.name}_mandate_share"]
                             / 100
                             * energy_consumption_dropin_fuel
                         )
-                        output_data[f"{pathway}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+                        output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                 else:
                     # If the sum exceeds the total, decrease them homogeneously
                     scaling_factor = remaining_energy_consumption_dropin_fuel / total_share_quantity
@@ -218,34 +211,57 @@ class EnergyUseChoice(AeroMAPSModel):
                         "The sum of the share-defined drop-in fuel pathways exceeds "
                         "the total drop-in energy consumption (minus quantity based pathways)."
                     )
-                    for pathway in dropin_blending_mandate_pathways:
+                    for pathway in dropin_share_pathways:
                         pathway_consumption = (
-                            input_data[f"{pathway}_energy_blending_mandate"]
+                            input_data[f"{pathway.name}_mandate_share"]
                             / 100
                             * energy_consumption_dropin_fuel
                             * scaling_factor
                         )
-                        output_data[f"{pathway}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+                        output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
                         warnings.warn(
-                            f"Pathway{pathway} energy consumption is set to {pathway_consumption/scaling_factor/100} "
-                            f"instead of {input_data[f'{pathway}_energy_quantity']}"
+                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption/scaling_factor/100} "
+                            f"instead of {input_data[f'{pathway.name}_mandate_share']}"
                         )
 
                 # Third case: default pathway completes to fill the remaining energy consumption
-                if dropin_default_pathway is not None:
-                    output_data[f"{dropin_default_pathway}_energy_consumption"] = (
-                        remaining_energy_consumption_dropin_fuel.copy()
+                pathway = dropin_default_pathway[0]
+                output_data[f"{pathway.name}_energy_consumption"] = (
+                    remaining_energy_consumption_dropin_fuel.copy()
+                )
+                remaining_energy_consumption_dropin_fuel -= remaining_energy_consumption_dropin_fuel
+
+                # TODO Rename biofuel_share to dropin_biofuel_share for more clarity?
+                dropin_biofuel_consumption = sum(
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    for pathway in self.pathways_manager.get(
+                        aircraft_type="dropin", energy_origin="biomass"
                     )
-                    remaining_energy_consumption_dropin_fuel -= (
-                        remaining_energy_consumption_dropin_fuel
+                )
+                biofuel_share = dropin_biofuel_consumption / energy_consumption_dropin_fuel * 100
+                output_data["biofuel_share"] = biofuel_share.fillna(0)
+
+                dropin_electrofuel_consumption = sum(
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    for pathway in self.pathways_manager.get(
+                        aircraft_type="dropin", energy_origin="electrofuel"
                     )
+                )
+                electrofuel_share = (
+                    dropin_electrofuel_consumption / energy_consumption_dropin_fuel * 100
+                )
+                output_data["electrofuel_share"] = electrofuel_share.fillna(0)
 
-                # TODO HYDROGEN AND ELECTRICITY
-                # TODO COMPUTE REFUELEU SHARES
+                dropin_kerosene_consumption = sum(
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    for pathway in self.pathways_manager.get(
+                        aircraft_type="dropin", energy_origin="fossil"
+                    )
+                )
+                kerosene_share = dropin_kerosene_consumption / energy_consumption_dropin_fuel * 100
+                output_data["kerosene_share"] = kerosene_share.fillna(0)
 
-                biofuel_share = ()
-
-        print(output_data)
+            # TODO HYDROGEN AND ELECTRICITY
 
         return output_data
