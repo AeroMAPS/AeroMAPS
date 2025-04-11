@@ -37,7 +37,7 @@ class LocalEnergyCarrierManager:
 
 class EnergyUseChoice(AeroMAPSModel):
     """
-    Central model to define volume and share consumption of each energy carrier considered
+    Central model to define volume consumed of each energy carrier considered depending on the mandate specified and priorities.
     """
 
     def __init__(
@@ -50,7 +50,6 @@ class EnergyUseChoice(AeroMAPSModel):
         super().__init__(
             name=name,
             model_type="custom",
-            # inputs/outputs are defined in __init__ rather than auto generated from compute() signature
             *args,
             **kwargs,
         )
@@ -104,8 +103,6 @@ class EnergyUseChoice(AeroMAPSModel):
                 "energy_consumption_hydrogen": pd.Series([0.0]),
                 "energy_consumption_electric": pd.Series([0.0]),
                 # TODO discuss idea of having a target share to force refuel-eu like mandate
-                # "biofuel_share": pd.Series([0.0]),
-                # "electrofuel_share": pd.Series([0.0]),
             }
         )
 
@@ -124,6 +121,9 @@ class EnergyUseChoice(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the energy consumption of each energy carrier based on the defined pathways and mandates.
+        """
         # Get inputs from the configuration file
         output_data = {}
         # For each energy type, compute an energy quantity to be produced based on priority order.
@@ -174,21 +174,23 @@ class EnergyUseChoice(AeroMAPSModel):
                         ),
                         index=total_quantity.index,
                     )
-
-                    warnings.warn(
-                        "The sum of the quantity-defined drop-in fuel "
-                        "pathways exceeds the total drop-in energy consumption."
-                    )
                     for pathway in dropin_quantity_pathways:
-                        pathway_consumption = (
-                            input_data[f"{pathway.name}_mandate_quantity"] * scaling_factor
-                        )
+                        original = input_data[f"{pathway.name}_mandate_quantity"].fillna(0)
+                        pathway_consumption = (original * scaling_factor).fillna(0)
                         output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
-                        warnings.warn(
-                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption} "
-                            f"instead of {input_data[f'{pathway.name}_mandate_quantity']}"
-                        )
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+
+                        modified_years = pathway_consumption[pathway_consumption != original]
+
+                        if not modified_years.empty:
+                            msg = (
+                                f"\nThe sum of the quantity-defined drop-in fuel pathways exceeds the total drop-in energy consumption.\n"
+                                f"→ Pathway '{pathway.name}' energy consumption was adjusted in the following years:\n"
+                            )
+                            for year in modified_years.index:
+                                msg += f"   - {year}: {pathway_consumption[year]:.2e} MJ instead of {original[year]:.2e} MJ\n"
+
+                            warnings.warn(msg)
 
                 # Second case : blending mandate pathways
                 dropin_share_pathways = self.pathways_manager.get(
@@ -223,24 +225,28 @@ class EnergyUseChoice(AeroMAPSModel):
                         ),
                         index=total_share_quantity.index,
                     )
-
-                    warnings.warn(
-                        "The sum of the share-defined drop-in fuel pathways exceeds "
-                        "the total drop-in energy consumption (minus quantity based pathways)."
-                    )
                     for pathway in dropin_share_pathways:
+                        original_share = input_data[f"{pathway.name}_mandate_share"].fillna(0)
                         pathway_consumption = (
-                            input_data[f"{pathway.name}_mandate_share"]
-                            / 100
-                            * energy_consumption_dropin_fuel
-                            * scaling_factor
-                        )
+                            original_share / 100 * energy_consumption_dropin_fuel * scaling_factor
+                        ).fillna(0)
                         output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                        remaining_energy_consumption_dropin_fuel -= pathway_consumption.fillna(0)
-                        warnings.warn(
-                            f"Pathway{pathway.name} energy consumption is set to {pathway_consumption/energy_consumption_dropin_fuel*100} "
-                            f"instead of {input_data[f'{pathway.name}_mandate_share']}"
-                        )
+                        remaining_energy_consumption_dropin_fuel -= pathway_consumption
+
+                        modified_years = pathway_consumption[
+                            pathway_consumption
+                            != original_share / 100 * energy_consumption_dropin_fuel
+                        ]
+
+                        if not modified_years.empty:
+                            msg = (
+                                f"\nThe sum of the share-defined drop-in fuel pathways exceeds the total drop-in energy consumption (minus quantity-based pathways).\n"
+                                f"→ Pathway '{pathway.name}' share was adjusted in the following years:\n"
+                            )
+                            for year in modified_years.index:
+                                msg += f"   - {year}: {(pathway_consumption[year] * 100 / energy_consumption_dropin_fuel[year]):.1f} % instead of {(original_share[year]):.1f} %\n"
+
+                            warnings.warn(msg)
 
                 # Third case: default pathway completes to fill the remaining energy consumption
                 pathway = dropin_default_pathway[0]
@@ -279,6 +285,6 @@ class EnergyUseChoice(AeroMAPSModel):
                 kerosene_share = dropin_kerosene_consumption / energy_consumption_dropin_fuel * 100
                 output_data["kerosene_share"] = kerosene_share.fillna(0)
 
-            # TODO HYDROGEN AND ELECTRICITY
+            # TODO HYDROGEN AND ELECTRICITY ONCE DROP-IN ALL SET
 
         return output_data
