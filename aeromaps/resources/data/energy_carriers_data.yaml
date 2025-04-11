@@ -11,7 +11,7 @@ hefa_fog:
     type: "quantity"
     quantity: !AeroMapsCustomDataType
       years: [ 2020, 2030, 2040, 2050 ]
-      values: [ 10.0, 9.0, 8.0, 7e18 ]
+      values: [ 10.0, 9.0, 8.0, 1.0 ]
       method: linear
     # mass_quantity: 10 # [Mt]
     #    energy_blending_mandate: !AeroMapsCustomDataType
@@ -67,7 +67,7 @@ hefa_others:
     type: "share"
     share: !AeroMapsCustomDataType
       years: [ 2020, 2030, 2040, 2050 ]
-      values: [ 10.0, 89.0, 8.0, 7.0 ]
+      values: [ 10.0, 9.0, 8.0, 7.0 ]
       method: linear
   inputs:
     # Technical:
@@ -106,7 +106,7 @@ hefa_others:
 
 fossil:
   # Metadata
-  name: "hefa_others"
+  name: "fossil"
   environmental_model: "top-down"
   cost_model: "top-down"
   aircraft_type: "dropin"

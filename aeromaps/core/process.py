@@ -13,6 +13,10 @@ from gemseo import generate_n2_plot, create_mda
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
+    EnergyCarrierManager,
+    EnergyCarrierMetadata,
+)
 from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import (
@@ -230,15 +234,16 @@ class AeroMAPSProcess(object):
         else:
             energy_carriers_data_file_path = default_energy_carriers_data_path
 
-        self.energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
+        energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
 
         # The first level of the yaml conf file contains all the pathways
-        pathways = list(self.energy_carriers_data.keys())
+        pathways = list(energy_carriers_data.keys())
 
-        # Create empty dict for the energy mandate model with all pathways use case
+        # create a metadata manager for the pathways to easily sort them later
+        pathways_manager = EnergyCarrierManager()
 
         for pathway in pathways:
-            pathway_data = self.energy_carriers_data[pathway]
+            pathway_data = energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
             if "inputs" not in pathway_data:
@@ -258,14 +263,27 @@ class AeroMAPSProcess(object):
                 self.parameters.end_year,
             )
 
-            self.energy_carriers_data[pathway] = pathway_data
+            energy_carriers_data[pathway] = pathway_data
+            pathways_manager.add(
+                EnergyCarrierMetadata(
+                    name=pathway,
+                    aircraft_type=pathway_data.get("aircraft_type"),
+                    default=pathway_data.get("default"),
+                    mandate_type=pathway_data.get("mandate", {}).get(f"{pathway}_mandate_type"),
+                    energy_origin=pathway_data.get("energy_origin"),
+                )
+            )
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
             self.models.update(AviationEnergyCarriersFactory.create_carrier(pathway, pathway_data))
 
         # Instanciate the energy use choice model
         self.models.update(
-            {"energy_use_choice": EnergyUseChoice("energy_use_choice", self.energy_carriers_data)}
+            {
+                "energy_use_choice": EnergyUseChoice(
+                    "energy_use_choice", energy_carriers_data, pathways_manager
+                ),
+            }
         )
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):

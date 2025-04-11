@@ -1,38 +1,9 @@
 import warnings
-from dataclasses import dataclass
-from typing import List
 
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-
-
-@dataclass
-class LocalEnergyCarrier:
-    name: str = None
-    aircraft_type: str = None
-    default: bool = False
-    mandate_type: str = None
-    energy_origin: str = None
-
-
-class LocalEnergyCarrierManager:
-    def __init__(self, carriers: List[LocalEnergyCarrier] = None):
-        self.carriers = carriers if carriers is not None else []
-
-    def add(self, carrier: LocalEnergyCarrier):
-        self.carriers.append(carrier)
-
-    def get(self, **criteria) -> List[LocalEnergyCarrier]:
-        return [
-            c
-            for c in self.carriers
-            if all(getattr(c, attr, None) == val for attr, val in criteria.items())
-        ]
-
-    def get_all(self):
-        return self.carriers
 
 
 class EnergyUseChoice(AeroMAPSModel):
@@ -44,6 +15,7 @@ class EnergyUseChoice(AeroMAPSModel):
         self,
         name,
         configuration_data,
+        pathways_manager,
         *args,
         **kwargs,
     ):
@@ -54,22 +26,10 @@ class EnergyUseChoice(AeroMAPSModel):
             **kwargs,
         )
 
-        # Store model metadata in an dataclass
+        # get pathways manager to easily access pathways metadata (=NO VARIABLES)
         # (Caution: use only non coupling attributes as pathways metadata is not a coupling variable)
         # Coupling variables should go in inputs_names
-
-        self.pathways_manager = LocalEnergyCarrierManager(
-            [
-                LocalEnergyCarrier(
-                    name=key,
-                    aircraft_type=val.get("aircraft_type"),
-                    default=val.get("default"),
-                    mandate_type=val.get("mandate", {}).get(f"{key}_mandate_type"),
-                    energy_origin=val.get("energy_origin"),
-                )
-                for key, val in configuration_data.items()
-            ]
-        )
+        self.pathways_manager = pathways_manager
 
         # Actual model variables goes in inputs_names
         self.input_names = {}
