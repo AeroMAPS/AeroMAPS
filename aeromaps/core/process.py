@@ -240,7 +240,7 @@ class AeroMAPSProcess(object):
         pathways = list(energy_carriers_data.keys())
 
         # create a metadata manager for the pathways to easily sort them later
-        pathways_manager = EnergyCarrierManager()
+        self.pathways_manager = EnergyCarrierManager()
 
         for pathway in pathways:
             pathway_data = energy_carriers_data[pathway]
@@ -264,7 +264,7 @@ class AeroMAPSProcess(object):
             )
 
             energy_carriers_data[pathway] = pathway_data
-            pathways_manager.add(
+            self.pathways_manager.add(
                 EnergyCarrierMetadata(
                     name=pathway,
                     aircraft_type=pathway_data.get("aircraft_type"),
@@ -281,7 +281,7 @@ class AeroMAPSProcess(object):
         self.models.update(
             {
                 "energy_use_choice": EnergyUseChoice(
-                    "energy_use_choice", energy_carriers_data, pathways_manager
+                    "energy_use_choice", energy_carriers_data, self.pathways_manager
                 ),
             }
         )
