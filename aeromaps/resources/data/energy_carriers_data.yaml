@@ -26,11 +26,14 @@ hefa_fog:
       load_factor: 0.85
       lifespan: 25
     kerosene_selectivity: 0.9
-    specific_consumption:
+    resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
-      renewable_electricity: 0.8
-      hydrogen: 0.1
-    co2_emission_factor_without_resource: 0.5
+      wind_electricity: 0.8
+#      hydrogen: 0.1
+    co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [ 10.0, 9.0, 8.0, 1.0 ]
+      method: linear
     emission_index:
       h2o: 1.231
       nox: 0.01514
@@ -75,10 +78,10 @@ hefa_others:
       load_factor: 0.85
       lifespan: 25
     kerosene_selectivity: 0.9
-    specific_consumption:
+    resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
-      renewable_electricity: 0.8
-      hydrogen: 0.1
+      wind_electricity: 0.8
+#      hydrogen: 0.1
     co2_emission_factor_without_resource: 0.5
     emission_index:
       h2o: 1.231
@@ -118,10 +121,10 @@ fossil:
       load_factor: 0.85
       lifespan: 25
     kerosene_selectivity: 0.9
-    specific_consumption:
+    resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
-      renewable_electricity: 0.8
-      hydrogen: 0.1
+      wind_electricity: 0.8
+#      hydrogen: 0.1
     co2_emission_factor_without_resource: 0.5
     emission_index:
       h2o: 1.231

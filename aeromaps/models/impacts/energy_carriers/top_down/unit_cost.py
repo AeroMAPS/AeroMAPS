@@ -34,7 +34,7 @@ class TopDownUnitCost(AeroMAPSModel):
         self.input_names.update(
             {
                 "carbon_tax": pd.Series([0.0]),
-                self.pathway_name + "_emission_factor": pd.Series([0.0]),
+                self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
             }
         )
 
@@ -74,11 +74,11 @@ class TopDownUnitCost(AeroMAPSModel):
 
         # Actual computation
 
-        # Calculate the unit cost. TODO convert everything into series.
+        # Calculate the unit cost. TODO convert everything into series. -> ?
         pathway_net_mfsp_without_carbon_tax = pathway_mfsp - pathway_subsidies + pathway_tax
 
         # Calculate the unit cost including the carbon tax
-        emission_factor = input_data[self.pathway_name + "_emission_factor"]
+        emission_factor = input_data[self.pathway_name + "_co2_emission_factor"]
         pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + emission_factor * carbon_tax
 
         # Store the results in the df

@@ -1,34 +1,32 @@
-renewable_electricity:
+wind_electricity:
   # ID
-  name: "test" # TODO Aeromaps process not handling strings
+  name: "wind_electricity"
+  specifications:
   # Technical:
-  load_factor: 0.3
-  co2_emission_factor: 0.5
-  # Economics:
-  cost: 30.0
-  subsidy: 10.0
-  tax: 5.0
-  # Availability
-  availability:
-    global: 50 # [EJ]
-    aviation_allocated_share: 10 # [%] Share of the global availability
-    aviation: 5 # [EJ]
-    # TODO : use global + aviation_allocated_share OR aviation
+    load_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 0.2, 0.3, 0.3, 0.3]
+        method: linear
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 20, 40, 60, 12]
+        method: linear
+    # Economics:
+    cost: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 20, 40, 60, 12]
+        method: linear
+    subsidy: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 20, 40, 60, 12]
+        method: linear
+    tax: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [ 20, 40, 60, 12]
+        method: linear
+    # Availability
+    availability:
+      global: 50.0 # [EJ]
+      aviation_allocated_share: 10 # [%] Share of the global availability
 
 
-hydrogen:
-  # ID
-  name: "test2" # TODO Aeromaps process not handling strings
-  # Technical:
-  load_factor: 1
-  co2_emission_factor: 0.5
-  # Economics:
-  cost: 30.0
-  subsidy: 10.0
-  tax: 5.0
-  # Availability
-  availability:
-    global: 50 # [EJ]
-    aviation_allocated_share: 10 # [%] Share of the global availability
-    aviation: 5 # [EJ]
-    # TODO : use global + aviation_allocated_share OR aviation
