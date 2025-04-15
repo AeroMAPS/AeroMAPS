@@ -17,6 +17,10 @@ from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager impo
     EnergyCarrierManager,
     EnergyCarrierMetadata,
 )
+
+# from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
+#     EnergyCarriersMeanEmissions,
+# )
 from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
 from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
 from aeromaps.models.parameters import Parameters
@@ -331,6 +335,9 @@ class AeroMAPSProcess(object):
                 "energy_use_choice": EnergyUseChoice(
                     "energy_use_choice", energy_carriers_data, self.pathways_manager
                 ),
+                # "energy_carriers_mean_emissions": EnergyCarriersMeanEmissions(
+                #     "energy_carriers_mean_emissions", energy_carriers_data, self.pathways_manager
+                # ),
             }
         )
 

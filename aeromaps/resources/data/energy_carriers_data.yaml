@@ -3,7 +3,7 @@ hefa_fog:
   name: "hefa_fog"
   environmental_model: "top-down"
   cost_model: "top-down"
-  aircraft_type: "dropin"
+  aircraft_type: "dropin_fuel"
   energy_origin: "biomass"
   default: False
   # Policy
@@ -62,7 +62,7 @@ hefa_others:
   name: "hefa_others"
   environmental_model: "top-down"
   cost_model: "top-down"
-  aircraft_type: "dropin"
+  aircraft_type: "dropin_fuel"
   energy_origin: "biomass"
   default: False
   # Policy
@@ -112,7 +112,7 @@ fossil:
   name: "fossil"
   environmental_model: "top-down"
   cost_model: "top-down"
-  aircraft_type: "dropin"
+  aircraft_type: "dropin_fuel"
   energy_origin: "fossil"
   default: True
   inputs:
