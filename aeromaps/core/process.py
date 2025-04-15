@@ -18,6 +18,7 @@ from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager impo
     EnergyCarrierMetadata,
 )
 from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
+from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import (
     _dict_to_df,
@@ -59,6 +60,10 @@ default_energy_carriers_data_path = os.path.join(
     current_dir, "..", "resources", "data", "energy_carriers_data.yaml"
 )
 
+default_resources_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "resources_data.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -86,6 +91,8 @@ class AeroMAPSProcess(object):
         self._initialize_years()
 
         self._initialize_climate_historical_data()
+
+        self._instantiate_generic_ressources_models()
 
         self._instantiate_generic_energy_models()
 
@@ -220,6 +227,44 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
 
+    def _instantiate_generic_ressources_models(self):
+        # Read the custom energy config file and instantiate each class from it using the factory method
+        # Add the instantiated classes to the models dictionary
+        if self.configuration_file is not None and "PARAMETERS_RESOURCES_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            resources_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_RESOURCES_DATA_FILE"]
+            )
+        else:
+            resources_data_file_path = default_resources_data_path
+
+        energy_resources_data = read_yaml_file(resources_data_file_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        resources = list(energy_resources_data.keys())
+
+        for resource in resources:
+            resource_data = energy_resources_data[resource]
+            if "name" not in resource_data:
+                raise ValueError("The resource configuration file should contain its name")
+
+            # Flatten the inputs dictionary and interpolate the necessary values
+
+            resource_data["specifications"] = convert_custom_data_types(
+                flatten_dict(resource_data["specifications"], resource_data["name"]),
+                self.parameters.prospection_start_year,
+                self.parameters.end_year,
+            )
+
+            self.parameters.from_dict(resource_data["specifications"])
+
+            energy_resources_data[resource] = resource_data
+
+            # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
+            self.models.update(
+                {f"{resource}_resource": EnergyResource(f"{resource}_resource", resource_data)}
+            )
+
     def _instantiate_generic_energy_models(self):
         # Read the custom energy config file and instantiate each class from it using the factory method
         # Add the instantiated classes to the models dictionary
@@ -256,12 +301,15 @@ class AeroMAPSProcess(object):
                     self.parameters.prospection_start_year,
                     self.parameters.end_year,
                 )
+                self.parameters.from_dict(pathway_data["mandate"])
 
             pathway_data["inputs"] = convert_custom_data_types(
                 flatten_dict(pathway_data["inputs"], pathway_data["name"]),
                 self.parameters.prospection_start_year,
                 self.parameters.end_year,
             )
+
+            self.parameters.from_dict(pathway_data["inputs"])
 
             energy_carriers_data[pathway] = pathway_data
             self.pathways_manager.add(
@@ -314,8 +362,8 @@ class AeroMAPSProcess(object):
                     if hasattr(model, "compute"):
                         if model.model_type == "custom":
                             # complete the parameters with inputs from the config file of custom disciplines
-                            # TODO: @Scott Delbecq: check if this is the right way to do it
-                            self.parameters.__dict__.update(model.input_names)
+                            # TODO: @Scott Delbecq: check if this is the right way to do it -> now direct in instanciate_generic
+                            # self.parameters.__dict__.update(model.input_names)
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
