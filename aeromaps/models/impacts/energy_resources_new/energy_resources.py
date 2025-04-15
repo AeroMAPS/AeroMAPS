@@ -31,8 +31,8 @@ class EnergyResource(AeroMAPSModel):
         # print("In the balnk init", self.input_names)
 
     def compute(self, input_data) -> dict:
-        # print("In the blank compute", input_data)
-        # Why ? Problem with The custom data type is that their interpolated values
-        # should be transferred to gemseo variable space if they are needed by other functions.
+        # This function is useless as all operation on resources are AeroMAPSCustomType
+        # interpolations which are done automatically when reading the file in parameters.py.
+        # TODO if we keep it for future developments?
 
         return {}
