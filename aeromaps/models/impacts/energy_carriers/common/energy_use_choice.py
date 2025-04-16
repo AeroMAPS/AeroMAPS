@@ -62,6 +62,7 @@ class EnergyUseChoice(AeroMAPSModel):
                 "energy_consumption_dropin_fuel": pd.Series([0.0]),
                 "energy_consumption_hydrogen": pd.Series([0.0]),
                 "energy_consumption_electric": pd.Series([0.0]),
+                "energy_consumption": pd.Series([0.0]),
                 # not handling other energy carriers for now
             }
         )
@@ -108,6 +109,7 @@ class EnergyUseChoice(AeroMAPSModel):
 
             # No need to define pathways if there is no fuel consumption
             if energy_consumption.notna().any() and energy_consumption.sum() != 0:
+                print(f"Energy consumption for {aircraft_type} is {energy_consumption.sum()} MJ")
                 # Default pathway should be defined
                 type_default_pathway = self.pathways_manager.get(
                     aircraft_type=aircraft_type, default=True
@@ -222,7 +224,7 @@ class EnergyUseChoice(AeroMAPSModel):
                     )
                     remaining_energy_consumption -= remaining_energy_consumption
 
-                    # TODO modify the rest of aeromaps to work without these
+                    # TODO modify the rest of aeromaps to work without these before removing
                     dropin_biofuel_consumption = sum(
                         output_data[f"{pathway.name}_energy_consumption"]
                         for pathway in self.pathways_manager.get(
@@ -249,15 +251,18 @@ class EnergyUseChoice(AeroMAPSModel):
                     )
                     kerosene_share = dropin_kerosene_consumption / energy_consumption * 100
                     output_data["kerosene_share"] = kerosene_share.fillna(0)
+            else:
+                # If there is no energy consumption, set all energy consumption to 0
+                for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                    output_data[f"{pathway.name}_energy_consumption"] = pd.Series(
+                        [0.0] * (self.end_year - self.prospection_start_year + 1),
+                        index=pd.RangeIndex(
+                            start=self.prospection_start_year, stop=self.end_year + 1
+                        ),
+                    )
 
         # compute metrics derived from each patwhay consumption
-
-        # TODO could be replaced by energy consumption once calculated differently
-        total_energy_consumption = (
-            input_data["energy_consumption_dropin_fuel"]
-            + input_data["energy_consumption_hydrogen"]
-            + input_data["energy_consumption_electric"]
-        )
+        total_energy_consumption = input_data["energy_consumption"]
 
         # TODO  Get those inside main loop ? It would be messy in my opinion
         #       --> at least it can be optimized.
