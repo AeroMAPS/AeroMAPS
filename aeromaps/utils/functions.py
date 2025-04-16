@@ -76,6 +76,11 @@ def aeromaps_yaml_interpolation_function(
             reference_years_values,
             kind=method,
         )
+        # If first reference year is lower than prospection start year, we start interpolating before
+        # TODO @Planes ok for you?
+        if reference_years[0] < prospection_start_year:
+            prospection_start_year = reference_years[0]
+
         # If the last reference year matches the end year, interpolate for all years
         if reference_years[-1] == end_year:
             for k in range(prospection_start_year, reference_years[-1] + 1):

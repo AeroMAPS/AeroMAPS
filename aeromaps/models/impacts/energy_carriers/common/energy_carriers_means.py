@@ -40,8 +40,6 @@ class EnergyCarriersMeanEmissions(AeroMAPSModel):
                     }
                 )
 
-        print(self.output_names)
-
     def compute(self, input_data) -> dict:
         """
         This function loops through different energy types and computes the mean emissions
@@ -60,5 +58,5 @@ class EnergyCarriersMeanEmissions(AeroMAPSModel):
             output_data[f"{aircraft_type}_mean_co2_emission_factor"] = mean_emission_factor
 
         self._store_outputs(output_data)
-        print(output_data)
+
         return output_data

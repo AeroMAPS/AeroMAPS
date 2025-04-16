@@ -110,9 +110,6 @@ class CO2Emissions(AeroMAPSModel):
         rpk_long_range: pd.Series,
         rtk: pd.Series,
         load_factor: pd.Series,
-        biofuel_share: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_share: pd.Series,
         energy_per_ask_short_range_dropin_fuel: pd.Series,
         energy_per_ask_medium_range_dropin_fuel: pd.Series,
         energy_per_ask_long_range_dropin_fuel: pd.Series,
@@ -137,11 +134,9 @@ class CO2Emissions(AeroMAPSModel):
         ask_medium_range_electric_share: pd.Series,
         ask_long_range_electric_share: pd.Series,
         rtk_electric_share: pd.Series,
-        kerosene_emission_factor: pd.Series,
-        biofuel_mean_emission_factor: pd.Series,
-        electrofuel_emission_factor: pd.Series,
-        liquid_hydrogen_mean_emission_factor: pd.Series,
-        electricity_emission_factor: pd.Series,
+        dropin_fuel_mean_co2_emission_factor: pd.Series,
+        liquid_hydrogen_mean_emission_factor: pd.Series,  # TODO switch to generic
+        electricity_emission_factor: pd.Series,  # TODO switch to generic
         energy_per_ask_mean: pd.Series,
         energy_per_rtk_mean: pd.Series,
         co2_per_energy_mean: pd.Series,
@@ -184,18 +179,8 @@ class CO2Emissions(AeroMAPSModel):
                     ask_short_range_dropin_fuel_share.loc[k]
                     / 100
                     * (
-                        biofuel_share.loc[k]
-                        / 100
+                        dropin_fuel_mean_co2_emission_factor.loc[k]
                         * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
-                        / 100
-                        * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
-                        / 100
-                        * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
                     )
                     + ask_short_range_hydrogen_share.loc[k]
                     / 100
@@ -219,18 +204,8 @@ class CO2Emissions(AeroMAPSModel):
                     ask_medium_range_dropin_fuel_share.loc[k]
                     / 100
                     * (
-                        biofuel_share.loc[k]
-                        / 100
+                        dropin_fuel_mean_co2_emission_factor.loc[k]
                         * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
-                        / 100
-                        * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
-                        / 100
-                        * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
                     )
                     + ask_medium_range_hydrogen_share.loc[k]
                     / 100
@@ -254,18 +229,8 @@ class CO2Emissions(AeroMAPSModel):
                     ask_long_range_dropin_fuel_share.loc[k]
                     / 100
                     * (
-                        biofuel_share.loc[k]
-                        / 100
+                        dropin_fuel_mean_co2_emission_factor.loc[k]
                         * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
-                        / 100
-                        * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
-                        / 100
-                        * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
                     )
                     + ask_long_range_hydrogen_share.loc[k]
                     / 100
@@ -288,18 +253,8 @@ class CO2Emissions(AeroMAPSModel):
                     rtk_dropin_fuel_share.loc[k]
                     / 100
                     * (
-                        biofuel_share.loc[k]
-                        / 100
+                        dropin_fuel_mean_co2_emission_factor.loc[k]
                         * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
-                        / 100
-                        * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
-                        / 100
-                        * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
                     )
                     + rtk_hydrogen_share.loc[k]
                     / 100

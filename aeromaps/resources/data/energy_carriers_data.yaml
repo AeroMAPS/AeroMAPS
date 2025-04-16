@@ -124,8 +124,8 @@ fossil:
     # resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
     co2_emission_factor_without_resource: !AeroMapsCustomDataType
-      years: [ 2020 ]
-      values: [ 88.7 ]
+      years: [ 2000, 2050 ]
+      values: [ 88.7, 88.7 ]
       method: linear
     emission_index:
       h2o: 1.231
