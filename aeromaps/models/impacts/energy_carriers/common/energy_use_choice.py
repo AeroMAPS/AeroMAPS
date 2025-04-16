@@ -97,9 +97,13 @@ class EnergyUseChoice(AeroMAPSModel):
         # For each energy type, compute an energy quantity to be produced based on priority order.
 
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-            print(aircraft_type)
-            # Get the consumption of drop-in fuel
-            energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
+            # Get the energy consumption for the given aircraft type
+            try:
+                energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
+            except KeyError:
+                raise KeyError(
+                    f"Aircraft type <{aircraft_type}> specified in energy_carriers_data.yaml not supported by AeroMAPS aircraft models."
+                )
             remaining_energy_consumption = energy_consumption.copy()
 
             # No need to define pathways if there is no fuel consumption
