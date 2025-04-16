@@ -64,13 +64,11 @@ class TopDownUnitEnvironmental(AeroMAPSModel):
             output_data[self.pathway_name + "_co2_emission_factor_" + key] = (
                 co2_emission_factor_ressource
             )
-            self.df.loc[:, self.pathway_name + "_co2_emission_factor_" + key] = (
-                co2_emission_factor_ressource
-            )
             co2_emission_factor = co2_emission_factor + co2_emission_factor_ressource
 
             # Store the total CO2 emission factor in the dataframe
         output_data[self.pathway_name + "_co2_emission_factor"] = co2_emission_factor
-        self.df.loc[:, self.pathway_name + "_co2_emission_factor"] = co2_emission_factor
+
+        self._store_outputs(output_data)
 
         return output_data

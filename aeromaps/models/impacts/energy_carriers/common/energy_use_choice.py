@@ -222,7 +222,7 @@ class EnergyUseChoice(AeroMAPSModel):
                     )
                     remaining_energy_consumption -= remaining_energy_consumption
 
-                    # TODO modify the rest of aeromaps to work without these?
+                    # TODO modify the rest of aeromaps to work without these
                     dropin_biofuel_consumption = sum(
                         output_data[f"{pathway.name}_energy_consumption"]
                         for pathway in self.pathways_manager.get(
@@ -287,5 +287,7 @@ class EnergyUseChoice(AeroMAPSModel):
                 origin_energy_consumption / total_energy_consumption * 100
             )
 
-        # TODO put all outputs in the df
+        # Add all output data in self.df and self.float_outputs
+        self._store_outputs(output_data)
+
         return output_data

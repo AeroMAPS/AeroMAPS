@@ -81,13 +81,12 @@ class TopDownUnitCost(AeroMAPSModel):
         emission_factor = input_data[self.pathway_name + "_co2_emission_factor"]
         pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + emission_factor * carbon_tax
 
-        # Store the results in the df
-        self.df.loc[:, self.pathway_name + "_net_mfsp_without_carbon_tax"] = (
-            pathway_net_mfsp_without_carbon_tax
-        )
-        self.df.loc[:, self.pathway_name + "_net_mfsp"] = pathway_net_mfsp
-
-        return {
+        output_data = {
             self.pathway_name + "_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
             self.pathway_name + "_net_mfsp": pathway_net_mfsp,
         }
+
+        # Store the results in the df
+        self._store_outputs(output_data)
+
+        return output_data

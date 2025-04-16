@@ -48,6 +48,18 @@ class AeroMAPSModel(object):
         self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
+    def _store_outputs(self, output_data):
+        """
+        Store vector outputs in self.df and float outputs in self.float_outputs
+        """
+        for key, val in output_data.items():
+            if isinstance(val, pd.Series):
+                self.df.loc[:, key] = val
+            elif isinstance(val, float):
+                self.float_outputs[key] = val
+            else:
+                raise ValueError(f"Output {key} is not a valid type.")
+
 
 def AeromapsInterpolationFunction(
     self,
