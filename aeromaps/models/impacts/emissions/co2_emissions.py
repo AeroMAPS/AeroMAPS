@@ -14,74 +14,52 @@ class KayaFactors(AeroMAPSModel):
         ask: pd.Series,
         rtk: pd.Series,
         freight_energy_share_2019: float,
-        energy_consumption_passenger_biofuel_without_operations: pd.Series,
-        energy_consumption_passenger_electrofuel_without_operations: pd.Series,
-        energy_consumption_passenger_kerosene_without_operations: pd.Series,
+        energy_consumption_passenger_dropin_fuel_without_operations: pd.Series,
         energy_consumption_passenger_hydrogen_without_operations: pd.Series,
         energy_consumption_passenger_electric_without_operations: pd.Series,
-        energy_consumption_passenger_biofuel: pd.Series,
-        energy_consumption_passenger_electrofuel: pd.Series,
-        energy_consumption_passenger_kerosene: pd.Series,
+        energy_consumption_passenger_dropin_fuel: pd.Series,
         energy_consumption_passenger_hydrogen: pd.Series,
         energy_consumption_passenger_electric: pd.Series,
-        energy_consumption_freight_biofuel_without_operations: pd.Series,
-        energy_consumption_freight_electrofuel_without_operations: pd.Series,
-        energy_consumption_freight_kerosene_without_operations: pd.Series,
+        energy_consumption_freight_dropin_fuel_without_operations: pd.Series,
         energy_consumption_freight_hydrogen_without_operations: pd.Series,
         energy_consumption_freight_electric_without_operations: pd.Series,
-        energy_consumption_freight_biofuel: pd.Series,
-        energy_consumption_freight_electrofuel: pd.Series,
-        energy_consumption_freight_kerosene: pd.Series,
+        energy_consumption_freight_dropin_fuel: pd.Series,
         energy_consumption_freight_hydrogen: pd.Series,
         energy_consumption_freight_electric: pd.Series,
-        energy_consumption_biofuel: pd.Series,
-        energy_consumption_electrofuel: pd.Series,
-        energy_consumption_kerosene: pd.Series,
+        energy_consumption_dropin_fuel: pd.Series,
         energy_consumption_hydrogen: pd.Series,
         energy_consumption_electric: pd.Series,
         energy_consumption: pd.Series,
-        kerosene_emission_factor: pd.Series,
-        biofuel_mean_emission_factor: pd.Series,
-        electrofuel_emission_factor: pd.Series,
+        dropin_fuel_mean_co2_emission_factor: pd.Series,
         liquid_hydrogen_mean_emission_factor: pd.Series,
         electricity_emission_factor: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         energy_per_ask_mean_without_operations = (
-            energy_consumption_passenger_biofuel_without_operations
-            + energy_consumption_passenger_electrofuel_without_operations
-            + energy_consumption_passenger_kerosene_without_operations
+            +energy_consumption_passenger_dropin_fuel_without_operations
             + energy_consumption_passenger_hydrogen_without_operations
             + energy_consumption_passenger_electric_without_operations
         ) / ask
 
         energy_per_ask_mean = (
-            energy_consumption_passenger_biofuel
-            + energy_consumption_passenger_electrofuel
-            + energy_consumption_passenger_kerosene
+            +energy_consumption_passenger_dropin_fuel
             + energy_consumption_passenger_hydrogen
             + energy_consumption_passenger_electric
         ) / ask
 
         energy_per_rtk_mean_without_operations = (
-            energy_consumption_freight_biofuel_without_operations
-            + energy_consumption_freight_electrofuel_without_operations
-            + energy_consumption_freight_kerosene_without_operations
+            +energy_consumption_freight_dropin_fuel_without_operations
             + energy_consumption_freight_hydrogen_without_operations
             + energy_consumption_freight_electric_without_operations
         ) / rtk
 
         energy_per_rtk_mean = (
-            energy_consumption_freight_biofuel
-            + energy_consumption_freight_electrofuel
-            + energy_consumption_freight_kerosene
+            +energy_consumption_freight_dropin_fuel
             + energy_consumption_freight_hydrogen
             + energy_consumption_freight_electric
         ) / rtk
 
         co2_per_energy_mean = (
-            biofuel_mean_emission_factor * energy_consumption_biofuel
-            + electrofuel_emission_factor * energy_consumption_electrofuel
-            + kerosene_emission_factor * energy_consumption_kerosene
+            +dropin_fuel_mean_co2_emission_factor * energy_consumption_dropin_fuel
             + liquid_hydrogen_mean_emission_factor * energy_consumption_hydrogen
             + electricity_emission_factor / 3.6 * energy_consumption_electric
         ) / energy_consumption
@@ -99,7 +77,7 @@ class KayaFactors(AeroMAPSModel):
             energy_per_rtk_mean.loc[k] = (
                 energy_consumption.loc[k] / rtk.loc[k] * freight_energy_share_2019 / 100
             )
-            co2_per_energy_mean.loc[k] = kerosene_emission_factor.loc[k]
+            co2_per_energy_mean.loc[k] = dropin_fuel_mean_co2_emission_factor.loc[k]
 
         self.df.loc[:, "energy_per_ask_mean_without_operations"] = (
             energy_per_ask_mean_without_operations

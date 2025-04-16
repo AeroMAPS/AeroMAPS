@@ -736,21 +736,11 @@ class EnergyConsumption(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_short_range_biofuel_without_operations: pd.Series,
-        energy_consumption_medium_range_biofuel_without_operations: pd.Series,
-        energy_consumption_long_range_biofuel_without_operations: pd.Series,
-        energy_consumption_passenger_biofuel_without_operations: pd.Series,
-        energy_consumption_freight_biofuel_without_operations: pd.Series,
-        energy_consumption_short_range_electrofuel_without_operations: pd.Series,
-        energy_consumption_medium_range_electrofuel_without_operations: pd.Series,
-        energy_consumption_long_range_electrofuel_without_operations: pd.Series,
-        energy_consumption_passenger_electrofuel_without_operations: pd.Series,
-        energy_consumption_freight_electrofuel_without_operations: pd.Series,
-        energy_consumption_short_range_kerosene_without_operations: pd.Series,
-        energy_consumption_medium_range_kerosene_without_operations: pd.Series,
-        energy_consumption_long_range_kerosene_without_operations: pd.Series,
-        energy_consumption_passenger_kerosene_without_operations: pd.Series,
-        energy_consumption_freight_kerosene_without_operations: pd.Series,
+        energy_consumption_short_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_medium_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_long_range_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_passenger_dropin_fuel_without_operations: pd.Series,
+        energy_consumption_freight_dropin_fuel_without_operations: pd.Series,
         energy_consumption_short_range_hydrogen_without_operations: pd.Series,
         energy_consumption_medium_range_hydrogen_without_operations: pd.Series,
         energy_consumption_long_range_hydrogen_without_operations: pd.Series,
@@ -761,26 +751,14 @@ class EnergyConsumption(AeroMAPSModel):
         energy_consumption_long_range_electric_without_operations: pd.Series,
         energy_consumption_passenger_electric_without_operations: pd.Series,
         energy_consumption_freight_electric_without_operations: pd.Series,
-        energy_consumption_biofuel_without_operations: pd.Series,
-        energy_consumption_electrofuel_without_operations: pd.Series,
-        energy_consumption_kerosene_without_operations: pd.Series,
+        energy_consumption_dropin_fuel_without_operations: pd.Series,
         energy_consumption_hydrogen_without_operations: pd.Series,
         energy_consumption_electric_without_operations: pd.Series,
-        energy_consumption_short_range_biofuel: pd.Series,
-        energy_consumption_medium_range_biofuel: pd.Series,
-        energy_consumption_long_range_biofuel: pd.Series,
-        energy_consumption_passenger_biofuel: pd.Series,
-        energy_consumption_freight_biofuel: pd.Series,
-        energy_consumption_short_range_electrofuel: pd.Series,
-        energy_consumption_medium_range_electrofuel: pd.Series,
-        energy_consumption_long_range_electrofuel: pd.Series,
-        energy_consumption_passenger_electrofuel: pd.Series,
-        energy_consumption_freight_electrofuel: pd.Series,
-        energy_consumption_short_range_kerosene: pd.Series,
-        energy_consumption_medium_range_kerosene: pd.Series,
-        energy_consumption_long_range_kerosene: pd.Series,
-        energy_consumption_passenger_kerosene: pd.Series,
-        energy_consumption_freight_kerosene: pd.Series,
+        energy_consumption_short_range_dropin_fuel: pd.Series,
+        energy_consumption_medium_range_dropin_fuel: pd.Series,
+        energy_consumption_long_range_dropin_fuel: pd.Series,
+        energy_consumption_passenger_dropin_fuel: pd.Series,
+        energy_consumption_freight_dropin_fuel: pd.Series,
         energy_consumption_short_range_hydrogen: pd.Series,
         energy_consumption_medium_range_hydrogen: pd.Series,
         energy_consumption_long_range_hydrogen: pd.Series,
@@ -791,9 +769,7 @@ class EnergyConsumption(AeroMAPSModel):
         energy_consumption_long_range_electric: pd.Series,
         energy_consumption_passenger_electric: pd.Series,
         energy_consumption_freight_electric: pd.Series,
-        energy_consumption_biofuel: pd.Series,
-        energy_consumption_electrofuel: pd.Series,
-        energy_consumption_kerosene: pd.Series,
+        energy_consumption_dropin_fuel: pd.Series,
         energy_consumption_hydrogen: pd.Series,
         energy_consumption_electric: pd.Series,
     ) -> Tuple[
@@ -814,44 +790,32 @@ class EnergyConsumption(AeroMAPSModel):
 
         # WITHOUT OPERATIONS
         energy_consumption_short_range_without_operations = (
-            energy_consumption_short_range_biofuel_without_operations
-            + energy_consumption_short_range_electrofuel_without_operations
-            + energy_consumption_short_range_kerosene_without_operations
+            +energy_consumption_short_range_dropin_fuel_without_operations
             + energy_consumption_short_range_hydrogen_without_operations
             + energy_consumption_short_range_electric_without_operations
         )
         energy_consumption_medium_range_without_operations = (
-            energy_consumption_medium_range_biofuel_without_operations
-            + energy_consumption_medium_range_electrofuel_without_operations
-            + energy_consumption_medium_range_kerosene_without_operations
+            +energy_consumption_medium_range_dropin_fuel_without_operations
             + energy_consumption_medium_range_hydrogen_without_operations
             + energy_consumption_medium_range_electric_without_operations
         )
         energy_consumption_long_range_without_operations = (
-            energy_consumption_long_range_biofuel_without_operations
-            + energy_consumption_long_range_electrofuel_without_operations
-            + energy_consumption_long_range_kerosene_without_operations
+            +energy_consumption_long_range_dropin_fuel_without_operations
             + energy_consumption_long_range_hydrogen_without_operations
             + energy_consumption_long_range_electric_without_operations
         )
         energy_consumption_passenger_without_operations = (
-            energy_consumption_passenger_biofuel_without_operations
-            + energy_consumption_passenger_electrofuel_without_operations
-            + energy_consumption_passenger_kerosene_without_operations
+            +energy_consumption_passenger_dropin_fuel_without_operations
             + energy_consumption_passenger_hydrogen_without_operations
             + energy_consumption_passenger_electric_without_operations
         )
         energy_consumption_freight_without_operations = (
-            energy_consumption_freight_biofuel_without_operations
-            + energy_consumption_freight_electrofuel_without_operations
-            + energy_consumption_freight_kerosene_without_operations
+            +energy_consumption_freight_dropin_fuel_without_operations
             + energy_consumption_freight_hydrogen_without_operations
             + energy_consumption_freight_electric_without_operations
         )
         energy_consumption_without_operations = (
-            energy_consumption_biofuel_without_operations
-            + energy_consumption_electrofuel_without_operations
-            + energy_consumption_kerosene_without_operations
+            +energy_consumption_dropin_fuel_without_operations
             + energy_consumption_hydrogen_without_operations
             + energy_consumption_electric_without_operations
         )
@@ -877,44 +841,32 @@ class EnergyConsumption(AeroMAPSModel):
 
         # WITH OPERATIONS
         energy_consumption_short_range = (
-            energy_consumption_short_range_biofuel
-            + energy_consumption_short_range_electrofuel
-            + energy_consumption_short_range_kerosene
+            +energy_consumption_short_range_dropin_fuel
             + energy_consumption_short_range_hydrogen
             + energy_consumption_short_range_electric
         )
         energy_consumption_medium_range = (
-            energy_consumption_medium_range_biofuel
-            + energy_consumption_medium_range_electrofuel
-            + energy_consumption_medium_range_kerosene
+            +energy_consumption_medium_range_dropin_fuel
             + energy_consumption_medium_range_hydrogen
             + energy_consumption_medium_range_electric
         )
         energy_consumption_long_range = (
-            energy_consumption_long_range_biofuel
-            + energy_consumption_long_range_electrofuel
-            + energy_consumption_long_range_kerosene
+            +energy_consumption_long_range_dropin_fuel
             + energy_consumption_long_range_hydrogen
             + energy_consumption_long_range_electric
         )
         energy_consumption_passenger = (
-            energy_consumption_passenger_biofuel
-            + energy_consumption_passenger_electrofuel
-            + energy_consumption_passenger_kerosene
+            +energy_consumption_passenger_dropin_fuel
             + energy_consumption_passenger_hydrogen
             + energy_consumption_passenger_electric
         )
         energy_consumption_freight = (
-            energy_consumption_freight_biofuel
-            + energy_consumption_freight_electrofuel
-            + energy_consumption_freight_kerosene
+            +energy_consumption_freight_dropin_fuel
             + energy_consumption_freight_hydrogen
             + energy_consumption_freight_electric
         )
         energy_consumption = (
-            energy_consumption_biofuel
-            + energy_consumption_electrofuel
-            + energy_consumption_kerosene
+            +energy_consumption_dropin_fuel
             + energy_consumption_hydrogen
             + energy_consumption_electric
         )
