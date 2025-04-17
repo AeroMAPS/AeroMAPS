@@ -109,7 +109,6 @@ class EnergyUseChoice(AeroMAPSModel):
 
             # No need to define pathways if there is no fuel consumption
             if energy_consumption.notna().any() and energy_consumption.sum() != 0:
-                print(f"Energy consumption for {aircraft_type} is {energy_consumption.sum()} MJ")
                 # Default pathway should be defined
                 type_default_pathway = self.pathways_manager.get(
                     aircraft_type=aircraft_type, default=True
@@ -225,32 +224,35 @@ class EnergyUseChoice(AeroMAPSModel):
                     remaining_energy_consumption -= remaining_energy_consumption
 
                     # TODO modify the rest of aeromaps to work without these before removing
-                    dropin_biofuel_consumption = sum(
-                        output_data[f"{pathway.name}_energy_consumption"]
-                        for pathway in self.pathways_manager.get(
-                            aircraft_type=aircraft_type, energy_origin="biomass"
+                    if aircraft_type == "dropin_fuel":
+                        dropin_biofuel_consumption = sum(
+                            output_data[f"{pathway.name}_energy_consumption"]
+                            for pathway in self.pathways_manager.get(
+                                aircraft_type=aircraft_type, energy_origin="biomass"
+                            )
                         )
-                    )
-                    biofuel_share = dropin_biofuel_consumption / energy_consumption * 100
-                    output_data["biofuel_share"] = biofuel_share.fillna(0)
+                        biofuel_share = dropin_biofuel_consumption / energy_consumption * 100
+                        output_data["biofuel_share"] = biofuel_share.fillna(0)
 
-                    dropin_electrofuel_consumption = sum(
-                        output_data[f"{pathway.name}_energy_consumption"]
-                        for pathway in self.pathways_manager.get(
-                            aircraft_type=aircraft_type, energy_origin="electrofuel"
+                        dropin_electrofuel_consumption = sum(
+                            output_data[f"{pathway.name}_energy_consumption"]
+                            for pathway in self.pathways_manager.get(
+                                aircraft_type=aircraft_type, energy_origin="electricity"
+                            )
                         )
-                    )
-                    electrofuel_share = dropin_electrofuel_consumption / energy_consumption * 100
-                    output_data["electrofuel_share"] = electrofuel_share.fillna(0)
+                        electrofuel_share = (
+                            dropin_electrofuel_consumption / energy_consumption * 100
+                        )
+                        output_data["electrofuel_share"] = electrofuel_share.fillna(0)
 
-                    dropin_kerosene_consumption = sum(
-                        output_data[f"{pathway.name}_energy_consumption"]
-                        for pathway in self.pathways_manager.get(
-                            aircraft_type=aircraft_type, energy_origin="fossil"
+                        dropin_kerosene_consumption = sum(
+                            output_data[f"{pathway.name}_energy_consumption"]
+                            for pathway in self.pathways_manager.get(
+                                aircraft_type=aircraft_type, energy_origin="fossil"
+                            )
                         )
-                    )
-                    kerosene_share = dropin_kerosene_consumption / energy_consumption * 100
-                    output_data["kerosene_share"] = kerosene_share.fillna(0)
+                        kerosene_share = dropin_kerosene_consumption / energy_consumption * 100
+                        output_data["kerosene_share"] = kerosene_share.fillna(0)
             else:
                 # If there is no energy consumption, set all energy consumption to 0
                 for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
@@ -264,8 +266,6 @@ class EnergyUseChoice(AeroMAPSModel):
         # compute metrics derived from each patwhay consumption
         total_energy_consumption = input_data["energy_consumption"]
 
-        # TODO  Get those inside main loop ? It would be messy in my opinion
-        #       --> at least it can be optimized.
         # Compute share of each pathway in the total energy consumption
         for pathway in self.pathways_manager.get_all():
             output_data[f"{pathway.name}_share_total_energy"] = (
