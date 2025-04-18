@@ -1,6 +1,6 @@
 # import all the concrete implementations of the energy carriers
-
-
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import EnergyCarriersMeans
+from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
 from aeromaps.models.impacts.energy_carriers.top_down.cost import (
     TopDownCost,
 )
@@ -77,3 +77,15 @@ class AviationEnergyCarriersFactory:
                 raise ValueError(f"Unsupported model type: {environmental_model_type}")
             if cost_model_type not in ["top-down", "bottom-up"]:
                 raise ValueError(f"Unsupported model type: {cost_model_type}")
+
+    @staticmethod
+    def instantiate_energy_carriers_models(energy_carriers_data, pathways_manager):
+        """Instantiates energy carriers models."""
+        return {
+            "energy_use_choice": EnergyUseChoice(
+                "energy_use_choice", energy_carriers_data, pathways_manager
+            ),
+            "energy_carriers_means": EnergyCarriersMeans(
+                "energy_carriers_means", energy_carriers_data, pathways_manager
+            ),
+        }
