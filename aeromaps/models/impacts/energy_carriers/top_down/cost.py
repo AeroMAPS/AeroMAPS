@@ -3,7 +3,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-class TopDownUnitCost(AeroMAPSModel):
+class TopDownCost(AeroMAPSModel):
     """
     Top down unit cost model for energy carriers.
     It subtracts subsidies from user provided mfsp and adds taxes to it.

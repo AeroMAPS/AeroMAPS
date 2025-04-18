@@ -1,15 +1,11 @@
 # import all the concrete implementations of the energy carriers
-from aeromaps.models.impacts.energy_carriers.top_down.total_cost import (
-    TopDownTotalCost,
+
+
+from aeromaps.models.impacts.energy_carriers.top_down.cost import (
+    TopDownCost,
 )
-from aeromaps.models.impacts.energy_carriers.top_down.total_environmental import (
-    TopDownTotalEnvironmental,
-)
-from aeromaps.models.impacts.energy_carriers.top_down.unit_cost import (
-    TopDownUnitCost,
-)
-from aeromaps.models.impacts.energy_carriers.top_down.unit_environmental import (
-    TopDownUnitEnvironmental,
+from aeromaps.models.impacts.energy_carriers.top_down.environmental import (
+    TopDownEnvironmental,
 )
 from aeromaps.models.impacts.energy_carriers.bottom_up.cost import (
     BottomUpCost,
@@ -32,26 +28,17 @@ class AviationEnergyCarriersFactory:
 
         if environmental_model_type == "top-down" and cost_model_type == "top-down":
             return {
-                f"{pathway_name}_top_down_total_cost": TopDownTotalCost(
-                    f"{pathway_name}_top_down_total_cost", configuration_file
-                ),
-                f"{pathway_name}_top_down_total_environmental": TopDownTotalEnvironmental(
-                    f"{pathway_name}_top_down_total_environmental", configuration_file
-                ),
-                f"{pathway_name}_top_down_unit_cost": TopDownUnitCost(
+                f"{pathway_name}_top_down_unit_cost": TopDownCost(
                     f"{pathway_name}_top_down_unit_cost", configuration_file
                 ),
-                f"{pathway_name}_top_down_unit_environmental": TopDownUnitEnvironmental(
+                f"{pathway_name}_top_down_unit_environmental": TopDownEnvironmental(
                     f"{pathway_name}_top_down_unit_environmental", configuration_file
                 ),
             }
         elif environmental_model_type == "top-down" and cost_model_type == "bottom-up":
             return {
-                f"{pathway_name}_top_down_total_environmental": TopDownTotalEnvironmental(
+                f"{pathway_name}_top_down_total_environmental": TopDownEnvironmental(
                     f"{pathway_name}_top_down_total_environmental", configuration_file
-                ),
-                f"{pathway_name}_top_down_unit_environmental": TopDownUnitEnvironmental(
-                    f"{pathway_name}_top_down_unit_environmental", configuration_file
                 ),
                 f"{pathway_name}_bottom_up_cost": BottomUpCost(
                     f"{pathway_name}_bottom_up_cost", configuration_file
@@ -68,10 +55,7 @@ class AviationEnergyCarriersFactory:
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
                     f"{pathway_name}_bottom_up_capacity", configuration_file
                 ),
-                f"{pathway_name}_top_down_total_cost": TopDownTotalCost(
-                    f"{pathway_name}_top_down_total_cost", configuration_file
-                ),
-                f"{pathway_name}_top_down_unit_cost": TopDownUnitCost(
+                f"{pathway_name}_top_down_unit_cost": TopDownCost(
                     f"{pathway_name}_top_down_unit_cost", configuration_file
                 ),
             }

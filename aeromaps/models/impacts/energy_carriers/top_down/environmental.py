@@ -3,7 +3,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-class TopDownUnitEnvironmental(AeroMAPSModel):
+class TopDownEnvironmental(AeroMAPSModel):
     """
     Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
     """
