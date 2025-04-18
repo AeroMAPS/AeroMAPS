@@ -120,7 +120,7 @@ fossil:
     plant:
       load_factor: 0.85
       lifespan: 25
-    kerosene_selectivity: 0.9
+    kerosene_selectivity: 1
     # resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
     co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -210,6 +210,7 @@ green_electricity:
     plant:
       load_factor: 0.85
       lifespan: 25
+    kerosene_selectivity: 0.9
     resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
       wind_electricity: 1
