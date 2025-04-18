@@ -295,33 +295,30 @@ class AeroMAPSProcess(object):
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
 
-            # Flatten the inputs dictionary and interpolate the necessary values
-            if "mandate" in pathway_data:
-                pathway_data["mandate"] = convert_custom_data_types(
-                    flatten_dict(pathway_data["mandate"], pathway_data["name"] + "_mandate"),
-                    self.parameters.prospection_start_year,
-                    self.parameters.end_year,
-                )
-                self.parameters.from_dict(pathway_data["mandate"])
-
-            pathway_data["inputs"] = convert_custom_data_types(
-                flatten_dict(pathway_data["inputs"], pathway_data["name"]),
-                self.parameters.prospection_start_year,
-                self.parameters.end_year,
-            )
-
-            self.parameters.from_dict(pathway_data["inputs"])
-
-            energy_carriers_data[pathway] = pathway_data
             self.pathways_manager.add(
                 EnergyCarrierMetadata(
                     name=pathway,
                     aircraft_type=pathway_data.get("aircraft_type"),
                     default=pathway_data.get("default"),
-                    mandate_type=pathway_data.get("mandate", {}).get(f"{pathway}_mandate_type"),
+                    mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
                     energy_origin=pathway_data.get("energy_origin"),
                 )
             )
+
+            inputs = pathway_data["inputs"]
+            # Flatten the inputs dictionary and interpolate the necessary values
+            for key, value in inputs.items():
+                inputs[key] = convert_custom_data_types(
+                    flatten_dict(value, pathway_data["name"]),
+                    self.parameters.prospection_start_year,
+                    self.parameters.end_year,
+                )
+                # set data to parameters
+                self.parameters.from_dict(inputs[key])
+
+            pathway_data["inputs"] = inputs
+
+            energy_carriers_data[pathway] = pathway_data
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
             self.models.update(AviationEnergyCarriersFactory.create_carrier(pathway, pathway_data))

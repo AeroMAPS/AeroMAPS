@@ -26,11 +26,13 @@ class TopDownCost(AeroMAPSModel):
         # Get the name of the pathway
         self.pathway_name = configuration_data["name"]
 
-        # Get the inputs from the configuration file
-        for key, val in configuration_data["inputs"].items():
+        # Get the inputs from the configuration file: two options
+        # 1. All inputs of a certain category in the yaml file
+        for key, val in configuration_data.get("inputs").get("economics").items():
+            # TODO initialize with zeros instead of actual val?
             self.input_names[key] = val
 
-        # Fill and initialize inputs not defined in the yaml file (either user inputs or other models outputs)
+        # 2. Set individual inputs, coming either from other models or from the yaml as well
         self.input_names.update(
             {
                 "carbon_tax": pd.Series([0.0]),
@@ -47,7 +49,6 @@ class TopDownCost(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         # Get inputs from the configuration file
         # Mandatory inputs
-
         if self.pathway_name + "_mfsp" not in input_data:
             raise ValueError(
                 f"Mandatory input {self.pathway_name + '_mfsp'} is missing in input_data"

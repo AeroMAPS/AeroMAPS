@@ -42,17 +42,13 @@ class EnergyUseChoice(AeroMAPSModel):
             if pathway.mandate_type == "quantity":
                 self.input_names.update(
                     {
-                        f"{name}_mandate_quantity": configuration_data[name]["mandate"].get(
-                            f"{name}_mandate_quantity"
-                        )
+                        f"{name}_mandate_quantity": pd.Series([0.0]),
                     }
                 )
             elif pathway.mandate_type == "share":
                 self.input_names.update(
                     {
-                        f"{name}_mandate_share": configuration_data[name]["mandate"].get(
-                            f"{name}_mandate_share"
-                        )
+                        f"{name}_mandate_share": pd.Series([0.0]),
                     }
                 )
 
