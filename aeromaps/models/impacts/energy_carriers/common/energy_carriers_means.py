@@ -1,5 +1,3 @@
-import time
-
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -49,14 +47,14 @@ class EnergyCarriersMeans(AeroMAPSModel):
         """
         This function loops through different energy types and computes the mean emissions
         """
-        t1 = time.time()
 
         output_data = {}
 
-        default_series = lambda: pd.Series(
-            [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-            index=range(self.historic_start_year, self.end_year + 1),
-        )
+        def default_series():
+            return pd.Series(
+                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
+                index=range(self.historic_start_year, self.end_year + 1),
+            )
 
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             # Get the share of each pathway for this aircraft type
@@ -89,6 +87,5 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
         # get output data in the means
         self._store_outputs(output_data)
-        print(f"EnergyCarriersMeans compute time: {time.time() - t1:.5f} seconds")
 
         return output_data

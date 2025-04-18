@@ -24,15 +24,16 @@ class EnergyResource(AeroMAPSModel):
         # Get the name of the resource
         self.resource_name = configuration_data["name"]
 
+        self.output_names = {}
         # Get the inputs from the configuration file
         for key, val in configuration_data["specifications"].items():
-            self.input_names[key] = val  # --> Initialize with blanks?
+            self.output_names[key] = val  # --> Initialize with blanks?
 
         # print("In the balnk init", self.input_names)
 
     def compute(self, input_data) -> dict:
         # This function is useless as all operation on resources are AeroMAPSCustomType
         # interpolations which are done automatically when reading the file in parameters.py.
+        # However we can set interpolated values to vector outputs with this function.
         # TODO if we keep it for future developments?
-
-        return {}
+        return self.output_names

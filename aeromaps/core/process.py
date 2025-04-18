@@ -22,7 +22,8 @@ from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import
     EnergyCarriersMeans,
 )
 from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
-from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
+
+# from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
 from aeromaps.models.parameters import Parameters
 from aeromaps.utils.functions import (
     _dict_to_df,
@@ -232,7 +233,7 @@ class AeroMAPSProcess(object):
         self.data["lca_outputs"] = xr.DataArray()
 
     def _instantiate_generic_ressources_models(self):
-        # Read the custom energy config file and instantiate each class from it using the factory method
+        # Read the custom energy config file and instantiate each class
         # Add the instantiated classes to the models dictionary
         if self.configuration_file is not None and "PARAMETERS_RESOURCES_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -264,10 +265,11 @@ class AeroMAPSProcess(object):
 
             energy_resources_data[resource] = resource_data
 
-            # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
-            self.models.update(
-                {f"{resource}_resource": EnergyResource(f"{resource}_resource", resource_data)}
-            )
+            # Ressources models not necessary as no operation done besides reading and interpolating values.
+            #
+            # self.models.update(
+            #   {f"{resource}_resource": EnergyResource(f"{resource}_resource", resource_data)}
+            # )
 
     def _instantiate_generic_energy_models(self):
         # Read the custom energy config file and instantiate each class from it using the factory method
