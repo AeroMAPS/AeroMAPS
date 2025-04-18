@@ -600,6 +600,7 @@ class AeroMAPSProcess(object):
         self.lca_outputs_xarray = self.data["lca_outputs"]
 
         # Variable information
+        # FIXME: that can be out of the compute? SLOWEST (0.3 s) function of update variables: easy gain?
         self._read_data_information()
 
     def _update_json_from_data(self):
