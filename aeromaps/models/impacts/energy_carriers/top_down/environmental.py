@@ -35,12 +35,12 @@ class TopDownEnvironmental(AeroMAPSModel):
             self.input_names[key] = val
 
         # 2. Set individual inputs, coming either from other models or from the yaml as well
-        # Defined in the yaml file
-        # Done already in the loop above
-        # Defined by EnergyUseChoice
+        # Individual inputs defined in the yaml file
+        # -- None
+        # Individual inputs defined by EnergyUseChoice
         self.input_names[self.pathway_name + "_energy_consumption"] = pd.Series([0.0])
 
-        # TODO find a better way to get the resource inputs ? Now better !
+        # TODO find a better way to get the resource inputs ? Now better with the list(str) argument of each pathway .yaml
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
         self.resource_keys = (
             configuration_data.get("inputs")
@@ -57,10 +57,12 @@ class TopDownEnvironmental(AeroMAPSModel):
             )
 
         # Fill in the other expected outputs with names from the compute method
-        self.output_names = {
-            self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
-            self.pathway_name + "_total_co2_emissions": pd.Series([0.0]),
-        }
+        self.output_names.update(
+            {
+                self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
+                self.pathway_name + "_total_co2_emissions": pd.Series([0.0]),
+            }
+        )
 
     def compute(self, input_data) -> dict:
         output_data = {}
