@@ -122,16 +122,22 @@ class EnergyUseChoice(AeroMAPSModel):
                     type_quantity_pathways = self.pathways_manager.get(
                         aircraft_type=aircraft_type, mandate_type="quantity"
                     )
-                    total_quantity = sum(
-                        input_data[f"{pathway.name}_mandate_quantity"]
-                        for pathway in type_quantity_pathways
+                    total_quantity = (
+                        sum(
+                            input_data[f"{pathway.name}_mandate_quantity"]
+                            for pathway in type_quantity_pathways
+                        )
+                        .reindex(energy_consumption.index)
+                        .fillna(0)
                     )
-                    if (total_quantity.fillna(0) <= energy_consumption.fillna(0)).all():
+                    if (total_quantity <= energy_consumption.fillna(0)).all():
                         # If the sum of quantities is less than or equal to the total, keep the quantities as output
                         for pathway in type_quantity_pathways:
                             pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
                             output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.fillna(0)
+                            remaining_energy_consumption -= pathway_consumption.reindex(
+                                energy_consumption.index
+                            ).fillna(0)
                     else:
                         # If the sum exceeds the total, decrease them homogeneously
                         scaling_factor = pd.Series(
@@ -146,7 +152,9 @@ class EnergyUseChoice(AeroMAPSModel):
                             original = input_data[f"{pathway.name}_mandate_quantity"].fillna(0)
                             pathway_consumption = (original * scaling_factor).fillna(0)
                             output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption
+                            remaining_energy_consumption -= pathway_consumption.reindex(
+                                energy_consumption.index
+                            ).fillna(0)
 
                             modified_years = pathway_consumption[pathway_consumption != original]
 
@@ -164,9 +172,13 @@ class EnergyUseChoice(AeroMAPSModel):
                     type_share_pathways = self.pathways_manager.get(
                         aircraft_type=aircraft_type, mandate_type="share"
                     )
-                    total_share_quantity = sum(
-                        input_data[f"{pathway.name}_mandate_share"] / 100 * energy_consumption
-                        for pathway in type_share_pathways
+                    total_share_quantity = (
+                        sum(
+                            input_data[f"{pathway.name}_mandate_share"] / 100 * energy_consumption
+                            for pathway in type_share_pathways
+                        )
+                        .reindex(energy_consumption.index)
+                        .fillna(0)
                     )
                     if (
                         total_share_quantity.fillna(0) <= remaining_energy_consumption.fillna(0)
@@ -179,7 +191,9 @@ class EnergyUseChoice(AeroMAPSModel):
                                 * energy_consumption
                             )
                             output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.fillna(0)
+                            remaining_energy_consumption -= pathway_consumption.reindex(
+                                energy_consumption.index
+                            ).fillna(0)
                     else:
                         # If the sum exceeds the total, decrease them homogeneously
                         scaling_factor = pd.Series(
@@ -196,7 +210,9 @@ class EnergyUseChoice(AeroMAPSModel):
                                 original_share / 100 * energy_consumption * scaling_factor
                             ).fillna(0)
                             output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption
+                            remaining_energy_consumption -= pathway_consumption.reindex(
+                                energy_consumption.index
+                            ).fillna(0)
 
                             modified_years = pathway_consumption[
                                 pathway_consumption != original_share / 100 * energy_consumption

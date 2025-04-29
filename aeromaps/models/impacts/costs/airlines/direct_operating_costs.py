@@ -1034,11 +1034,11 @@ class DropInMeanMfsp(AeroMAPSModel):
         for k in range(self.prospection_start_year - 1, self.end_year + 1):
             # check for vals
             valid = []
-            if biofuel_share.loc[k] > 0:
+            if biofuel_share.loc[k] > 0.0:
                 valid.append(biofuel_marginal_mfsp.loc[k])
-            if electrofuel_share.loc[k] > 0:
+            if electrofuel_share.loc[k] > 0.0:
                 valid.append(electrofuel_mean_mfsp_litre.loc[k])
-            if kerosene_share.loc[k] > 0:
+            if kerosene_share.loc[k] > 0.0:
                 valid.append(kerosene_market_price.loc[k])
 
             self.df.loc[k, "dropin_marginal_mfsp"] = np.max(valid)

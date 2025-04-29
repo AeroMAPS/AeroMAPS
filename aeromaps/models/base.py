@@ -11,7 +11,10 @@ class AeroMapsCustomDataType:
     def __init__(self, reference_data: dict):
         self.years = reference_data["years"]
         self.values = reference_data["values"]
-        self.method = reference_data["method"]
+        if "method" in reference_data:
+            self.method = reference_data["method"]
+        else:
+            self.method = "linear"
         if "positive_constraint" in reference_data:
             self.positive_constraint = reference_data["positive_constraint"]
         else:

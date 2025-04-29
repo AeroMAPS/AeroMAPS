@@ -5,8 +5,6 @@ import pandas as pd
 import yaml
 from pandas import read_csv
 import os.path as pth
-import warnings
-from scipy.interpolate import interp1d
 
 from aeromaps.models.base import AeroMapsCustomDataType
 from aeromaps.resources import data
@@ -37,96 +35,6 @@ def read_yaml_file(file_name="parameters.yaml"):
     except Exception as e:
         print(f"Error reading YAML file: {e}")
         return {}
-
-
-def convert_custom_data_types(data, prospection_start_year, end_year):
-    for key, value in data.items():
-        if isinstance(value, AeroMapsCustomDataType):
-            data[key] = aeromaps_yaml_interpolation_function(
-                value.years,
-                value.values,
-                prospection_start_year,
-                end_year,
-                method=value.method,
-                positive_constraint=value.positive_constraint,
-            )
-    return data
-
-
-def aeromaps_yaml_interpolation_function(
-    reference_years,
-    reference_years_values,
-    prospection_start_year,
-    end_year,
-    method="linear",
-    positive_constraint=False,
-    model_name="Not provided",
-):
-    interpolation_function_values = []
-
-    # If no reference years are provided, use the first reference value for all years
-    if len(reference_years) == 0:
-        interpolation_function_values = [reference_years_values[0]] * (
-            end_year - prospection_start_year + 1
-        )
-    else:
-        # Create the interpolation function
-        interpolation_function = interp1d(
-            reference_years,
-            reference_years_values,
-            kind=method,
-        )
-        # If first reference year is lower than prospection start year, we start interpolating before
-        # TODO @Planes ok for you?
-        if reference_years[0] < prospection_start_year:
-            prospection_start_year = reference_years[0]
-
-        # If the last reference year matches the end year, interpolate for all years
-        if reference_years[-1] == end_year:
-            for k in range(prospection_start_year, reference_years[-1] + 1):
-                value = interpolation_function(k).item()
-                if positive_constraint and value <= 0.0:
-                    interpolation_function_values.append(0.0)
-                else:
-                    interpolation_function_values.append(value)
-
-        # If the last reference year is greater than the end year, interpolate up to the end year
-        elif reference_years[-1] > end_year:
-            warnings.warn(
-                "Warning Message - "
-                + "Model name: "
-                + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
-                + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
-            )
-            for k in range(prospection_start_year, end_year + 1):
-                value = interpolation_function(k).item()
-                if positive_constraint and value <= 0.0:
-                    interpolation_function_values.append(0.0)
-                else:
-                    interpolation_function_values.append(value)
-        # If the last reference year is less than the end year, use the last value as a constant for the remaining years
-        else:
-            warnings.warn(
-                "Warning Message - "
-                + "Model name: "
-                + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
-                + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
-            )
-            for k in range(prospection_start_year, reference_years[-1] + 1):
-                value = interpolation_function(k).item()
-                if positive_constraint and value <= 0.0:
-                    interpolation_function_values.append(0.0)
-                else:
-                    interpolation_function_values.append(value)
-            last_value = interpolation_function_values[-1]
-            for k in range(reference_years[-1] + 1, end_year + 1):
-                interpolation_function_values.append(last_value)
-
-    return pd.Series(
-        interpolation_function_values, index=range(prospection_start_year, end_year + 1)
-    )
 
 
 def flatten_dict(val, prefix=""):

@@ -10,7 +10,7 @@ from gemseo import generate_n2_plot, create_mda
 
 
 # Local application imports
-from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
 from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
@@ -20,10 +20,10 @@ from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager impo
 
 # from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
 from aeromaps.models.parameters import Parameters
+from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
     read_yaml_file,
-    convert_custom_data_types,
     flatten_dict,
 )
 from aeromaps.plots import available_plots, available_plots_fleet
@@ -250,11 +250,8 @@ class AeroMAPSProcess(object):
 
             # Flatten the inputs dictionary and interpolate the necessary values
 
-            resource_data["specifications"] = convert_custom_data_types(
-                flatten_dict(resource_data["specifications"], resource_data["name"]),
-                self.parameters.prospection_start_year,
-                self.parameters.end_year,
-            )
+            flattened_yaml = flatten_dict(resource_data["specifications"], resource_data["name"])
+            resource_data["specifications"] = self._convert_custom_data_types(flattened_yaml)
 
             self.parameters.from_dict(resource_data["specifications"])
 
@@ -308,11 +305,8 @@ class AeroMAPSProcess(object):
             inputs = pathway_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
-                inputs[key] = convert_custom_data_types(
-                    flatten_dict(value, pathway_data["name"]),
-                    self.parameters.prospection_start_year,
-                    self.parameters.end_year,
-                )
+                flattened_yaml = flatten_dict(value, pathway_data["name"])
+                inputs[key] = self._convert_custom_data_types(flattened_yaml)
                 # set data to parameters
                 self.parameters.from_dict(inputs[key])
 
@@ -329,6 +323,21 @@ class AeroMAPSProcess(object):
                 energy_carriers_data, self.pathways_manager
             )
         )
+
+    def _convert_custom_data_types(self, data):
+        for key, value in data.items():
+            if isinstance(value, AeroMapsCustomDataType):
+                # add an interpolator model for each custom data type
+                self.models.update({key: YAMLInterpolator(key, value)})
+                self.parameters.from_dict(
+                    {
+                        f"{key}_years": value.years,
+                        f"{key}_values": value.values,
+                    }
+                )
+                # set a normal series to provide carrier model with the name/type result of the interpolation
+                data[key] = pd.Series([0.0])  # initialize to future interpolation type.
+        return data
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
