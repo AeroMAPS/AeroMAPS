@@ -77,12 +77,20 @@ class YAMLInterpolator(AeroMAPSModel):
                 reference_years_values,
                 kind=method,
             )
+
             # If first reference year is lower than prospection start year, we start interpolating before
             # TODO @Planes ok for you?
-            if reference_years[0] < prospection_start_year:
+            if reference_years[0] != prospection_start_year:
                 prospection_start_year = reference_years[0]
+                warnings.warn(
+                    "Warning Message - "
+                    + "Model name: "
+                    + model_name
+                    + " - Warning on AeromapsInterpolationFunction:"
+                    + " The first reference year for the interpolation is different from prospection start year, the interpolation starts at the first reference year.",
+                )
 
-            # If the last reference year matches the end year, interpolate for all years
+                # If the last reference year matches the end year, interpolate for all years
             if reference_years[-1] == end_year:
                 for k in range(prospection_start_year, reference_years[-1] + 1):
                     value = interpolation_function(k).item()
