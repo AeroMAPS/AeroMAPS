@@ -18,7 +18,6 @@ from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager impo
     EnergyCarrierMetadata,
 )
 
-# from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResource
 from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
@@ -259,9 +258,7 @@ class AeroMAPSProcess(object):
 
             # Ressources models not necessary as no operation done besides reading and interpolating values.
             #
-            # self.models.update(
-            #   {f"{resource}_resource": EnergyResource(f"{resource}_resource", resource_data)}
-            # )
+            #
 
     def _instantiate_generic_energy_models(self):
         # Read the custom energy config file and instantiate each class from it using the factory method
@@ -299,6 +296,9 @@ class AeroMAPSProcess(object):
                     default=pathway_data.get("default"),
                     mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
                     energy_origin=pathway_data.get("energy_origin"),
+                    resources_used=pathway_data.get("inputs")
+                    .get("technical", {})
+                    .get("resource_names", []),
                 )
             )
 
@@ -320,8 +320,14 @@ class AeroMAPSProcess(object):
                     pathway, pathway_data, self.energy_resources_data
                 )
             )
+        # Instantiate resources use models
+        self.models.update(
+            AviationEnergyCarriersFactory.instantiate_resource_consumption_models(
+                self.energy_resources_data, self.pathways_manager
+            )
+        )
 
-        # Instanciate the energy use choice model
+        # Instantiate the energy use choice model
         self.models.update(
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
                 self.energy_carriers_data, self.pathways_manager

@@ -16,6 +16,7 @@ from aeromaps.models.impacts.energy_carriers.bottom_up.environmental import (
 from aeromaps.models.impacts.energy_carriers.bottom_up.production_capacity import (
     BottomUpCapacity,
 )
+from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResourceConsumption
 
 
 class AviationEnergyCarriersFactory:
@@ -89,3 +90,17 @@ class AviationEnergyCarriersFactory:
                 "energy_carriers_means", energy_carriers_data, pathways_manager
             ),
         }
+
+    @staticmethod
+    def instantiate_resource_consumption_models(resources_data, pathways_manager):
+        """Instantiates energy carriers models."""
+        models = {}
+        for resource in resources_data.keys():
+            models.update(
+                {
+                    f"{resource}_consumption": EnergyResourceConsumption(
+                        f"{resource}_consumption", resources_data[resource], pathways_manager
+                    )
+                }
+            )
+        return models

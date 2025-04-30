@@ -46,6 +46,7 @@ class YAMLInterpolator(AeroMAPSModel):
             end_year=self.end_year,
             method=self.custom_data_type.method,
             positive_constraint=self.custom_data_type.positive_constraint,
+            model_name=self.value_name,
         )
 
         output_data = {self.value_name: interpolated_value}
@@ -81,14 +82,12 @@ class YAMLInterpolator(AeroMAPSModel):
             # If first reference year is lower than prospection start year, we start interpolating before
             # TODO @Planes ok for you?
             if reference_years[0] != prospection_start_year:
-                prospection_start_year = reference_years[0]
                 warnings.warn(
-                    "Warning Message - "
-                    + "Model name: "
-                    + model_name
-                    + " - Warning on AeromapsInterpolationFunction:"
-                    + " The first reference year for the interpolation is different from prospection start year, the interpolation starts at the first reference year.",
+                    f"\n[Interpolation Model: {model_name} Warning]\n"
+                    f"The first reference year ({reference_years[0]}) differs from the prospection start year ({prospection_start_year}).\n"
+                    f"Interpolation will begin at the first reference year."
                 )
+                prospection_start_year = reference_years[0]
 
                 # If the last reference year matches the end year, interpolate for all years
             if reference_years[-1] == end_year:
@@ -102,11 +101,9 @@ class YAMLInterpolator(AeroMAPSModel):
             # If the last reference year is greater than the end year, interpolate up to the end year
             elif reference_years[-1] > end_year:
                 warnings.warn(
-                    "Warning Message - "
-                    + "Model name: "
-                    + model_name
-                    + " - Warning on AeromapsInterpolationFunction:"
-                    + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
+                    f"\n[Interpolation Model: {model_name} Warning]\n"
+                    f"The last reference year ({reference_years[-1]}) is higher than the end year ({end_year}).\n"
+                    f"The interpolation function will not be used in its entirety."
                 )
                 for k in range(prospection_start_year, end_year + 1):
                     value = interpolation_function(k).item()
@@ -117,11 +114,9 @@ class YAMLInterpolator(AeroMAPSModel):
             # If the last reference year is less than the end year, use the last value as a constant for the remaining years
             else:
                 warnings.warn(
-                    "Warning Message - "
-                    + "Model name: "
-                    + model_name
-                    + " - Warning on AeromapsInterpolationFunction:"
-                    + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
+                    f"\n[Interpolation Model: {model_name} Warning]\n"
+                    f"The last reference year ({reference_years[-1]}) is lower than the end year ({end_year}).\n"
+                    f"The value associated with the last reference year will be used as a constant for the upper years."
                 )
                 for k in range(prospection_start_year, reference_years[-1] + 1):
                     value = interpolation_function(k).item()

@@ -1,16 +1,21 @@
+import pandas as pd
+
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
+    EnergyCarrierManager,
+)
 
 
-class EnergyResource(AeroMAPSModel):
+class EnergyResourceConsumption(AeroMAPSModel):
     """
-    Top down unit cost model for energy carriers.
-    It subtracts subsidies from user provided mfsp and adds taxes to it.
+    Aggregates all pathways consumption for a given resource. And compare to available share.
     """
 
     def __init__(
         self,
         name,
         configuration_data,
+        pathways_manager: EnergyCarrierManager,
         *args,
         **kwargs,
     ):
@@ -21,19 +26,80 @@ class EnergyResource(AeroMAPSModel):
             *args,
             **kwargs,
         )
+        self.pathways_manager = pathways_manager
         # Get the name of the resource
         self.resource_name = configuration_data["name"]
 
-        self.output_names = {}
-        # Get the inputs from the configuration file
-        for key, val in configuration_data["specifications"].items():
-            self.output_names[key] = val  # --> Initialize with blanks?
+        self.input_names = {
+            f"{self.resource_name}_availability_global": configuration_data["specifications"][
+                f"{self.resource_name}_availability_global"
+            ],
+            f"{self.resource_name}_availability_aviation_allocated_share": configuration_data[
+                "specifications"
+            ][f"{self.resource_name}_availability_aviation_allocated_share"],
+        }
 
-        # print("In the balnk init", self.input_names)
+        for pathway in self.pathways_manager.get(resources_used=self.resource_name):
+            self.input_names.update(
+                {
+                    f"{pathway.name}_total_consumption_{self.resource_name}": pd.Series([0.0]),
+                    f"{pathway.name}_total_consumption_with_selectivity_{self.resource_name}": pd.Series(
+                        [0.0]
+                    ),
+                }
+            )
+
+        self.output_names = {
+            f"{self.resource_name}_total_consumption": pd.Series([0.0]),
+            f"{self.resource_name}_total_necessary_with_selectivity": pd.Series([0.0]),
+            f"{self.resource_name}_consumed_global_share": pd.Series([0.0]),
+            f"{self.resource_name}_necessary_global_share_with_selectivity": pd.Series([0.0]),
+            f"{self.resource_name}_consumed_aviation_allocated_share": pd.Series([0.0]),
+        }
 
     def compute(self, input_data) -> dict:
-        # This function is useless as all operation on resources are AeroMAPSCustomType
-        # interpolations which are done automatically when reading the file in parameters.py.
-        # However we can set interpolated values to vector outputs with this function.
-        # TODO if we keep it for future developments?
-        return self.output_names
+        output_data = {}
+
+        total_resource_consumption = pd.Series(
+            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+        )
+        total_resource_consumption_with_selectivity = pd.Series(
+            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+        )
+
+        for pathway in self.pathways_manager.get(resources_used=self.resource_name):
+            total_resource_consumption += input_data[
+                f"{pathway.name}_total_consumption_{self.resource_name}"
+            ]
+            total_resource_consumption_with_selectivity += input_data[
+                f"{pathway.name}_total_consumption_with_selectivity_{self.resource_name}"
+            ]
+
+        print(total_resource_consumption)
+        output_data[f"{self.resource_name}_total_consumption"] = total_resource_consumption
+        output_data[f"{self.resource_name}_total_necessary_with_selectivity"] = (
+            total_resource_consumption_with_selectivity
+        )
+
+        print(input_data[f"{self.resource_name}_availability_global"])
+
+        output_data[f"{self.resource_name}_consumed_global_share"] = (
+            total_resource_consumption / input_data[f"{self.resource_name}_availability_global"]
+        )
+        output_data[f"{self.resource_name}_necessary_global_share_with_selectivity"] = (
+            total_resource_consumption_with_selectivity
+            / input_data[f"{self.resource_name}_availability_global"]
+        )
+
+        output_data[f"{self.resource_name}_consumed_aviation_allocated_share"] = (
+            total_resource_consumption
+            / (
+                input_data[f"{self.resource_name}_availability_global"]
+                * input_data[f"{self.resource_name}_availability_aviation_allocated_share"]
+                / 100
+            )
+        )
+
+        self._store_outputs(output_data)
+
+        return output_data

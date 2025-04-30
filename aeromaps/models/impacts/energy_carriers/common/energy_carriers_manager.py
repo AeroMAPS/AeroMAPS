@@ -9,6 +9,7 @@ class EnergyCarrierMetadata:
     default: bool = False
     mandate_type: str = None
     energy_origin: str = None
+    resources_used: List[str] = None
 
 
 class EnergyCarrierManager:
@@ -25,7 +26,12 @@ class EnergyCarrierManager:
         return [
             c
             for c in self.carriers
-            if all(getattr(c, attr, None) == val for attr, val in criteria.items())
+            if all(
+                val in getattr(c, attr, [])
+                if isinstance(getattr(c, attr, None), list)
+                else getattr(c, attr, None) == val
+                for attr, val in criteria.items()
+            )
         ]
 
     def get_all(self):
