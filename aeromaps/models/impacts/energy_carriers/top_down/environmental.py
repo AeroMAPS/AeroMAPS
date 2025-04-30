@@ -12,6 +12,7 @@ class TopDownEnvironmental(AeroMAPSModel):
         self,
         name,
         configuration_data,
+        resources_data,
         *args,
         **kwargs,
     ):
@@ -49,7 +50,8 @@ class TopDownEnvironmental(AeroMAPSModel):
         )
         # Adding resources-linked inputs and outputs
         for key in self.resource_keys:
-            self.input_names[key + "_co2_emission_factor"] = pd.Series([0.0])
+            if f"{key}_co2_emission_factor" in resources_data[key]["specifications"]:
+                self.input_names[key + "_co2_emission_factor"] = pd.Series([0.0])
             self.output_names[self.pathway_name + "_co2_emission_factor_" + key] = pd.Series([0.0])
             self.output_names[self.pathway_name + "_total_consumption_" + key] = pd.Series([0.0])
             self.output_names[self.pathway_name + "_total_consumption_with_selectivity_" + key] = (
@@ -66,10 +68,13 @@ class TopDownEnvironmental(AeroMAPSModel):
 
     def compute(self, input_data) -> dict:
         output_data = {}
+        optional_null_series = pd.Series(
+            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+        )
 
-        co2_emission_factor = input_data[
-            self.pathway_name + "_co2_emission_factor_without_resource"
-        ]
+        co2_emission_factor = input_data.get(
+            self.pathway_name + "_co2_emission_factor_without_resource", optional_null_series
+        )
 
         # Get the total energy consumption of the pathway
         energy_consumption = input_data[self.pathway_name + "_energy_consumption"]
@@ -91,7 +96,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                 ressource_required_with_selectivity
             )
 
-            unit_emissions = input_data[key + "_co2_emission_factor"]
+            unit_emissions = input_data.get(key + "_co2_emission_factor", optional_null_series)
             # get resource emission per unit of energy
             co2_emission_factor_ressource = specific_consumption * unit_emissions
 

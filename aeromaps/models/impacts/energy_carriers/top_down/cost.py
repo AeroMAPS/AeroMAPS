@@ -13,6 +13,7 @@ class TopDownCost(AeroMAPSModel):
         self,
         name,
         configuration_data,
+        resources_data,
         *args,
         **kwargs,
     ):
@@ -40,7 +41,6 @@ class TopDownCost(AeroMAPSModel):
             {
                 "carbon_tax": pd.Series([0.0]),
                 self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
-                self.pathway_name + "_energy_consumption": pd.Series([0.0]),
             }
         )
 
@@ -50,11 +50,16 @@ class TopDownCost(AeroMAPSModel):
             .get("technical")
             .get(f"{self.pathway_name}_resource_names", [])
         )
+
         # Adding resources-linked inputs and outputs
         for key in self.resource_keys:
-            self.input_names[key + "_cost"] = pd.Series([0.0])
-            self.input_names[key + "_subsidy"] = pd.Series([0.0])
-            self.input_names[key + "_tax"] = pd.Series([0.0])
+            if f"{key}_cost" in resources_data[key]["specifications"]:
+                self.input_names[key + "_cost"] = pd.Series([0.0])
+            if f"{key}_subsidy" in resources_data[key]["specifications"]:
+                self.input_names[key + "_subsidy"] = pd.Series([0.0])
+            if f"{key}_tax" in resources_data[key]["specifications"]:
+                self.input_names[key + "_tax"] = pd.Series([0.0])
+            # Outputs.
             self.output_names[self.pathway_name + "_unit_cost_" + key] = pd.Series([0.0])
             self.output_names[self.pathway_name + "_unit_tax_" + key] = pd.Series([0.0])
             self.output_names[self.pathway_name + "_unit_subsidy_" + key] = pd.Series([0.0])
@@ -76,37 +81,45 @@ class TopDownCost(AeroMAPSModel):
         # Mandatory inputs
         output_data = {}
 
-        if self.pathway_name + "_mfsp_without_resource" not in input_data:
-            raise ValueError(
-                f"Mandatory input {self.pathway_name + '_mfsp_without_resource'} is missing in input_data"
-            )
+        optional_null_series = pd.Series(
+            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+        )
 
-        pathway_mfsp_without_resource = input_data[self.pathway_name + "_mfsp_without_resource"]
+        # Usage of get/ brackets -> get usefull to set null values to optional inputs
+        pathway_mfsp_without_resource = input_data.get(
+            self.pathway_name + "_mfsp_without_resource", optional_null_series.copy()
+        )
         pathway_mfsp = pathway_mfsp_without_resource.copy()
 
-        pathway_unit_subsidy_without_resource = input_data[
-            self.pathway_name + "_unit_subsidy_without_resource"
-        ]
+        pathway_unit_subsidy_without_resource = input_data.get(
+            self.pathway_name + "_unit_subsidy_without_resource", optional_null_series.copy()
+        )
         pathway_unit_subsidy = pathway_unit_subsidy_without_resource.copy()
 
-        pathway_unit_tax_without_resource = input_data[
-            self.pathway_name + "_unit_tax_without_resource"
-        ]
+        pathway_unit_tax_without_resource = input_data.get(
+            self.pathway_name + "_unit_tax_without_resource", optional_null_series.copy()
+        )
         pathway_unit_tax = pathway_unit_tax_without_resource.copy()
 
         for key in self.resource_keys:
             specific_consumption = input_data[
                 self.pathway_name + "_resource_specific_consumption_" + key
             ]
-            mfsp_ressource = input_data[key + "_cost"] * specific_consumption
+            mfsp_ressource = (
+                input_data.get(key + "_cost", optional_null_series.copy()) * specific_consumption
+            )
             pathway_mfsp += mfsp_ressource
             output_data[self.pathway_name + "_unit_cost_" + key] = mfsp_ressource
 
-            subsidy_ressource = input_data[key + "_subsidy"] * specific_consumption
+            subsidy_ressource = (
+                input_data.get(key + "_subsidy", optional_null_series.copy()) * specific_consumption
+            )
             pathway_unit_subsidy += subsidy_ressource
             output_data[self.pathway_name + "_unit_subsidy_" + key] = subsidy_ressource
 
-            tax_ressource = input_data[key + "_tax"] * specific_consumption
+            tax_ressource = (
+                input_data.get(key + "_tax", optional_null_series.copy()) * specific_consumption
+            )
             pathway_unit_tax += tax_ressource
             output_data[self.pathway_name + "_unit_tax_" + key] = tax_ressource
 

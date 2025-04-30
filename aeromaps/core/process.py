@@ -238,13 +238,13 @@ class AeroMAPSProcess(object):
         else:
             resources_data_file_path = default_resources_data_path
 
-        energy_resources_data = read_yaml_file(resources_data_file_path)
+        self.energy_resources_data = read_yaml_file(resources_data_file_path)
 
         # The first level of the yaml conf file contains all the pathways
-        resources = list(energy_resources_data.keys())
+        resources = list(self.energy_resources_data.keys())
 
         for resource in resources:
-            resource_data = energy_resources_data[resource]
+            resource_data = self.energy_resources_data[resource]
             if "name" not in resource_data:
                 raise ValueError("The resource configuration file should contain its name")
 
@@ -255,7 +255,7 @@ class AeroMAPSProcess(object):
 
             self.parameters.from_dict(resource_data["specifications"])
 
-            energy_resources_data[resource] = resource_data
+            self.energy_resources_data[resource] = resource_data
 
             # Ressources models not necessary as no operation done besides reading and interpolating values.
             #
@@ -277,16 +277,16 @@ class AeroMAPSProcess(object):
         else:
             energy_carriers_data_file_path = default_energy_carriers_data_path
 
-        energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
+        self.energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
 
         # The first level of the yaml conf file contains all the pathways
-        pathways = list(energy_carriers_data.keys())
+        pathways = list(self.energy_carriers_data.keys())
 
         # create a metadata manager for the pathways to easily sort them later
         self.pathways_manager = EnergyCarrierManager()
 
         for pathway in pathways:
-            pathway_data = energy_carriers_data[pathway]
+            pathway_data = self.energy_carriers_data[pathway]
             if "name" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain its name")
             if "inputs" not in pathway_data:
@@ -312,19 +312,29 @@ class AeroMAPSProcess(object):
 
             pathway_data["inputs"] = inputs
 
-            energy_carriers_data[pathway] = pathway_data
+            self.energy_carriers_data[pathway] = pathway_data
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
-            self.models.update(AviationEnergyCarriersFactory.create_carrier(pathway, pathway_data))
+            self.models.update(
+                AviationEnergyCarriersFactory.create_carrier(
+                    pathway, pathway_data, self.energy_resources_data
+                )
+            )
 
         # Instanciate the energy use choice model
         self.models.update(
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
-                energy_carriers_data, self.pathways_manager
+                self.energy_carriers_data, self.pathways_manager
             )
         )
 
     def _convert_custom_data_types(self, data):
+        """
+        This method reads the flattened yaml file. It does two principal things:
+         - it instantiates interpolator models when encountering a custom data type, and add reference tears and values to parameters
+         - it converts the custom type to a normal series in the flattened yaml file so that generic energy models know the type of the interpolated inputs
+        Returns the modified data
+        """
         for key, value in data.items():
             if isinstance(value, AeroMapsCustomDataType):
                 # add an interpolator model for each custom data type

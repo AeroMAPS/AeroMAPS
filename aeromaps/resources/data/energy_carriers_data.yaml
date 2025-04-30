@@ -41,10 +41,10 @@ hefa_fog:
         years: [ 2020, 2030, 2040, 2050 ]
         values: [ 10.0, 9.0, 8.0, 7.0 ]
         method: linear
-      unit_subsidy_without_resource: !AeroMapsCustomDataType
-        years: [ 2020, 2030, 2040, 2050 ]
-        values: [ 0.0, 0.0, 0.0, 0.0 ]
-        method: linear
+#      unit_subsidy_without_resource: !AeroMapsCustomDataType
+#        years: [ 2020, 2030, 2040, 2050 ]
+#        values: [ 0.0, 0.0, 0.0, 0.0 ]
+#        method: linear
       unit_tax_without_resource: !AeroMapsCustomDataType
         years: [ 2020, 2030, 2040, 2050 ]
         values: [ 0.0, 0.0, 0.0, 0.0 ]

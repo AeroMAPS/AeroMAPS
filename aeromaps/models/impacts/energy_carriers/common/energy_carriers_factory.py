@@ -20,55 +20,55 @@ from aeromaps.models.impacts.energy_carriers.bottom_up.production_capacity impor
 
 class AviationEnergyCarriersFactory:
     @staticmethod
-    def create_carrier(pathway_name, configuration_file):
-        environmental_model_type = configuration_file["environmental_model"]
-        cost_model_type = configuration_file["cost_model"]
+    def create_carrier(pathway_name, pathway_data, resources_data):
+        environmental_model_type = pathway_data["environmental_model"]
+        cost_model_type = pathway_data["cost_model"]
         # case distinction between energy model types
         # TODO split the config file into two separate files here instead in the inits ?
 
         if environmental_model_type == "top-down" and cost_model_type == "top-down":
             return {
                 f"{pathway_name}_top_down_unit_cost": TopDownCost(
-                    f"{pathway_name}_top_down_unit_cost", configuration_file
+                    f"{pathway_name}_top_down_unit_cost", pathway_data, resources_data
                 ),
                 f"{pathway_name}_top_down_unit_environmental": TopDownEnvironmental(
-                    f"{pathway_name}_top_down_unit_environmental", configuration_file
+                    f"{pathway_name}_top_down_unit_environmental", pathway_data, resources_data
                 ),
             }
         elif environmental_model_type == "top-down" and cost_model_type == "bottom-up":
             return {
                 f"{pathway_name}_top_down_total_environmental": TopDownEnvironmental(
-                    f"{pathway_name}_top_down_total_environmental", configuration_file
+                    f"{pathway_name}_top_down_total_environmental", pathway_data, resources_data
                 ),
                 f"{pathway_name}_bottom_up_cost": BottomUpCost(
-                    f"{pathway_name}_bottom_up_cost", configuration_file
+                    f"{pathway_name}_bottom_up_cost", pathway_data, resources_data
                 ),
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", configuration_file
+                    f"{pathway_name}_bottom_up_capacity", pathway_data, resources_data
                 ),
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "top-down":
             return {
                 f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
-                    f"{pathway_name}_bottom_up_environmental", configuration_file
+                    f"{pathway_name}_bottom_up_environmental", pathway_data, resources_data
                 ),
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", configuration_file
+                    f"{pathway_name}_bottom_up_capacity", pathway_data, resources_data
                 ),
                 f"{pathway_name}_top_down_unit_cost": TopDownCost(
-                    f"{pathway_name}_top_down_unit_cost", configuration_file
+                    f"{pathway_name}_top_down_unit_cost", pathway_data, resources_data
                 ),
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "bottom-up":
             return {
                 f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
-                    f"{pathway_name}_bottom_up_environmental", configuration_file
+                    f"{pathway_name}_bottom_up_environmental", pathway_data, resources_data
                 ),
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", configuration_file
+                    f"{pathway_name}_bottom_up_capacity", pathway_data, resources_data
                 ),
                 f"{pathway_name}_bottom_up_cost": BottomUpCost(
-                    f"{pathway_name}_bottom_up_cost", configuration_file
+                    f"{pathway_name}_bottom_up_cost", pathway_data, resources_data
                 ),
             }
         else:
