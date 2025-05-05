@@ -184,7 +184,7 @@ class AeroMAPSProcess(object):
                     f"Plot {name} requires using bottom up fleet model. Original error: {e}"
                 )
         elif name in available_plots:
-            fig = available_plots[name](self.data)
+            fig = available_plots[name](self)
             if save:
                 if size_inches is not None:
                     fig.fig.set_size_inches(size_inches)

@@ -76,6 +76,11 @@ class EnergyUseChoice(AeroMAPSModel):
 
         for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
             self.output_names[f"{energy_origin}_share_total_energy"] = pd.Series([0.0])
+            for pathway in self.pathways_manager.get(energy_origin=energy_origin):
+                self.output_names[f"{pathway.name}_share_{energy_origin}"] = pd.Series([0.0])
+            for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+                self.output_names[f"{energy_origin}_share_{aircraft_type}"] = pd.Series([0.0])
+                self.output_names[f"{aircraft_type}_share_{energy_origin}"] = pd.Series([0.0])
 
         self.output_names.update(
             {
@@ -230,8 +235,13 @@ class EnergyUseChoice(AeroMAPSModel):
                                     energy_consumption.index
                                 ).fillna(0)
 
-                                modified_years = pathway_consumption[
-                                    pathway_consumption != original_share / 100 * energy_consumption
+                                modified_years = pathway_consumption.loc[original_share.index][
+                                    pathway_consumption.loc[original_share.index]
+                                    != (
+                                        original_share
+                                        / 100
+                                        * energy_consumption.loc[original_share.index]
+                                    )
                                 ]
 
                                 if not modified_years.empty:
@@ -239,6 +249,7 @@ class EnergyUseChoice(AeroMAPSModel):
                                         f"\nThe sum of the share-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption (minus quantity-based pathways).\n"
                                         f"→ Pathway '{pathway.name}' share was adjusted in the following years:\n"
                                     )
+                                    print(modified_years)
                                     for year in modified_years.index:
                                         msg += f"   - {year}: {(pathway_consumption[year] * 100 / energy_consumption[year]):.1f} % instead of {(original_share[year]):.1f} %\n"
 
@@ -316,9 +327,34 @@ class EnergyUseChoice(AeroMAPSModel):
                 output_data[f"{pathway.name}_energy_consumption"]
                 for pathway in self.pathways_manager.get(energy_origin=energy_origin)
             )
+            for pathway in self.pathways_manager.get(energy_origin=energy_origin):
+                output_data[f"{pathway.name}_share_{energy_origin}"] = (
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    / origin_energy_consumption
+                    * 100
+                )
             output_data[f"{energy_origin}_share_total_energy"] = (
                 origin_energy_consumption / total_energy_consumption * 100
             )
+
+            # get detail for each aircraft type
+            for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+                type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
+
+                origin_type_energy_consumption = sum(
+                    output_data[f"{pathway.name}_energy_consumption"]
+                    for pathway in self.pathways_manager.get(
+                        energy_origin=energy_origin, aircraft_type=aircraft_type
+                    )
+                )
+
+                output_data[f"{energy_origin}_share_{aircraft_type}"] = (
+                    origin_type_energy_consumption / type_energy_consumption * 100
+                )
+
+                output_data[f"{aircraft_type}_share_{energy_origin}"] = (
+                    origin_type_energy_consumption / origin_energy_consumption * 100
+                )
 
         # Add all output data in self.df and self.float_outputs
         self._store_outputs(output_data)

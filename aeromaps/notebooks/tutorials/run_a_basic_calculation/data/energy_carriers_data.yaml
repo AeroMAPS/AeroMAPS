@@ -40,7 +40,7 @@ hefa_fog:
         values: [0.815488]
         method: linear
   outputs:
-
+  
 
 hefa_others:
   # Metadata

@@ -29,7 +29,7 @@ from .aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelPlot,
     EnergyConsumptionPlot,
-    ShareDropinFuelPlot,
+    ShareFuelPlot,
 )
 from .emissions import (
     CumulativeCO2EmissionsPlot,
@@ -102,7 +102,7 @@ available_plots = {
     "fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "mean_fuel_emission_factor": MeanFuelEmissionFactorPlot,
     "emission_factor_per_fuel": EmissionFactorPerFuelPlot,
-    "dropin_fuel_shares": ShareDropinFuelPlot,
+    "fuel_shares": ShareFuelPlot,
     "cumulative_co2_emissions": CumulativeCO2EmissionsPlot,
     "direct_h2o_emissions": DirectH2OEmissionsPlot,
     "direct_nox_emissions": DirectNOxEmissionsPlot,
