@@ -28,10 +28,10 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         # Get the inputs from the configuration file: two options
         # 1. All inputs of a certain category in the yaml file
-        for key, val in configuration_data.get("inputs").get("environmental").items():
+        for key, val in configuration_data.get("inputs").get("environmental", {}).items():
             # TODO initialize with zeros instead of actual val?
             self.input_names[key] = val
-        for key, val in configuration_data.get("inputs").get("technical").items():
+        for key, val in configuration_data.get("inputs").get("technical", {}).items():
             # TODO initialize with zeros instead of actual val?
             self.input_names[key] = val
 
@@ -45,7 +45,7 @@ class TopDownEnvironmental(AeroMAPSModel):
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
         self.resource_keys = (
             configuration_data.get("inputs")
-            .get("technical")
+            .get("technical", {})
             .get(f"{self.pathway_name}_resource_names", [])
         )
         # Adding resources-linked inputs and outputs
@@ -80,7 +80,9 @@ class TopDownEnvironmental(AeroMAPSModel):
         energy_consumption = input_data[self.pathway_name + "_energy_consumption"]
 
         # Pathway selectivity
-        pathway_kerosene_selectivity = input_data[self.pathway_name + "_kerosene_selectivity"]
+        pathway_kerosene_selectivity = input_data.get(
+            self.pathway_name + "_kerosene_selectivity", 1.0
+        )
 
         for key in self.resource_keys:
             specific_consumption = input_data[

@@ -75,13 +75,10 @@ class EnergyResourceConsumption(AeroMAPSModel):
                 f"{pathway.name}_total_consumption_with_selectivity_{self.resource_name}"
             ]
 
-        print(total_resource_consumption)
         output_data[f"{self.resource_name}_total_consumption"] = total_resource_consumption
         output_data[f"{self.resource_name}_total_necessary_with_selectivity"] = (
             total_resource_consumption_with_selectivity
         )
-
-        print(input_data[f"{self.resource_name}_availability_global"])
 
         output_data[f"{self.resource_name}_consumed_global_share"] = (
             total_resource_consumption / input_data[f"{self.resource_name}_availability_global"]

@@ -122,111 +122,127 @@ class EnergyUseChoice(AeroMAPSModel):
                     type_quantity_pathways = self.pathways_manager.get(
                         aircraft_type=aircraft_type, mandate_type="quantity"
                     )
-                    total_quantity = (
-                        sum(
-                            input_data[f"{pathway.name}_mandate_quantity"]
-                            for pathway in type_quantity_pathways
+                    if type_quantity_pathways:
+                        total_quantity = (
+                            sum(
+                                input_data[f"{pathway.name}_mandate_quantity"]
+                                for pathway in type_quantity_pathways
+                            )
+                            .reindex(energy_consumption.index)
+                            .fillna(0)
                         )
-                        .reindex(energy_consumption.index)
-                        .fillna(0)
-                    )
-                    if (total_quantity <= energy_consumption.fillna(0)).all():
-                        # If the sum of quantities is less than or equal to the total, keep the quantities as output
-                        for pathway in type_quantity_pathways:
-                            pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
-                            output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.reindex(
-                                energy_consumption.index
-                            ).fillna(0)
-                    else:
-                        # If the sum exceeds the total, decrease them homogeneously
-                        scaling_factor = pd.Series(
-                            np.where(
-                                total_quantity > remaining_energy_consumption,
-                                remaining_energy_consumption / total_quantity,
-                                1,
-                            ),
-                            index=total_quantity.index,
-                        )
-                        for pathway in type_quantity_pathways:
-                            original = input_data[f"{pathway.name}_mandate_quantity"].fillna(0)
-                            pathway_consumption = (original * scaling_factor).fillna(0)
-                            output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.reindex(
-                                energy_consumption.index
-                            ).fillna(0)
-
-                            modified_years = pathway_consumption[pathway_consumption != original]
-
-                            if not modified_years.empty:
-                                msg = (
-                                    f"\nThe sum of the quantity-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption.\n"
-                                    f"→ Pathway '{pathway.name}' energy consumption was adjusted in the following years:\n"
+                        if (total_quantity <= energy_consumption.fillna(0)).all():
+                            # If the sum of quantities is less than or equal to the total, keep the quantities as output
+                            for pathway in type_quantity_pathways:
+                                pathway_consumption = input_data[f"{pathway.name}_mandate_quantity"]
+                                output_data[f"{pathway.name}_energy_consumption"] = (
+                                    pathway_consumption
                                 )
-                                for year in modified_years.index:
-                                    msg += f"   - {year}: {pathway_consumption[year]:.2e} MJ instead of {original[year]:.2e} MJ\n"
+                                remaining_energy_consumption -= pathway_consumption.reindex(
+                                    energy_consumption.index
+                                ).fillna(0)
+                        else:
+                            # If the sum exceeds the total, decrease them homogeneously
+                            scaling_factor = pd.Series(
+                                np.where(
+                                    total_quantity > remaining_energy_consumption,
+                                    remaining_energy_consumption / total_quantity,
+                                    1,
+                                ),
+                                index=total_quantity.index,
+                            )
+                            for pathway in type_quantity_pathways:
+                                original = input_data[f"{pathway.name}_mandate_quantity"].fillna(0)
+                                pathway_consumption = (original * scaling_factor).fillna(0)
+                                output_data[f"{pathway.name}_energy_consumption"] = (
+                                    pathway_consumption
+                                )
+                                remaining_energy_consumption -= pathway_consumption.reindex(
+                                    energy_consumption.index
+                                ).fillna(0)
 
-                                warnings.warn(msg)
+                                modified_years = pathway_consumption[
+                                    pathway_consumption != original
+                                ]
+
+                                if not modified_years.empty:
+                                    msg = (
+                                        f"\nThe sum of the quantity-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption.\n"
+                                        f"→ Pathway '{pathway.name}' energy consumption was adjusted in the following years:\n"
+                                    )
+                                    for year in modified_years.index:
+                                        msg += f"   - {year}: {pathway_consumption[year]:.2e} MJ instead of {original[year]:.2e} MJ\n"
+
+                                    warnings.warn(msg)
 
                     # Second case : blending mandate pathways
                     type_share_pathways = self.pathways_manager.get(
                         aircraft_type=aircraft_type, mandate_type="share"
                     )
-                    total_share_quantity = (
-                        sum(
-                            input_data[f"{pathway.name}_mandate_share"] / 100 * energy_consumption
-                            for pathway in type_share_pathways
-                        )
-                        .reindex(energy_consumption.index)
-                        .fillna(0)
-                    )
-                    if (
-                        total_share_quantity.fillna(0) <= remaining_energy_consumption.fillna(0)
-                    ).all():
-                        # If the sum of quantities is less than or equal to the total, keep the quantities as output
-                        for pathway in type_share_pathways:
-                            pathway_consumption = (
+                    if type_share_pathways:
+                        total_share_quantity = (
+                            sum(
                                 input_data[f"{pathway.name}_mandate_share"]
                                 / 100
                                 * energy_consumption
+                                for pathway in type_share_pathways
                             )
-                            output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.reindex(
-                                energy_consumption.index
-                            ).fillna(0)
-                    else:
-                        # If the sum exceeds the total, decrease them homogeneously
-                        scaling_factor = pd.Series(
-                            np.where(
-                                total_share_quantity > remaining_energy_consumption,
-                                remaining_energy_consumption / total_share_quantity,
-                                1,
-                            ),
-                            index=total_share_quantity.index,
+                            .reindex(energy_consumption.index)
+                            .fillna(0)
                         )
-                        for pathway in type_share_pathways:
-                            original_share = input_data[f"{pathway.name}_mandate_share"].fillna(0)
-                            pathway_consumption = (
-                                original_share / 100 * energy_consumption * scaling_factor
-                            ).fillna(0)
-                            output_data[f"{pathway.name}_energy_consumption"] = pathway_consumption
-                            remaining_energy_consumption -= pathway_consumption.reindex(
-                                energy_consumption.index
-                            ).fillna(0)
-
-                            modified_years = pathway_consumption[
-                                pathway_consumption != original_share / 100 * energy_consumption
-                            ]
-
-                            if not modified_years.empty:
-                                msg = (
-                                    f"\nThe sum of the share-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption (minus quantity-based pathways).\n"
-                                    f"→ Pathway '{pathway.name}' share was adjusted in the following years:\n"
+                        if (
+                            total_share_quantity.fillna(0) <= remaining_energy_consumption.fillna(0)
+                        ).all():
+                            # If the sum of quantities is less than or equal to the total, keep the quantities as output
+                            for pathway in type_share_pathways:
+                                pathway_consumption = (
+                                    input_data[f"{pathway.name}_mandate_share"]
+                                    / 100
+                                    * energy_consumption
                                 )
-                                for year in modified_years.index:
-                                    msg += f"   - {year}: {(pathway_consumption[year] * 100 / energy_consumption[year]):.1f} % instead of {(original_share[year]):.1f} %\n"
+                                output_data[f"{pathway.name}_energy_consumption"] = (
+                                    pathway_consumption
+                                )
+                                remaining_energy_consumption -= pathway_consumption.reindex(
+                                    energy_consumption.index
+                                ).fillna(0)
+                        else:
+                            # If the sum exceeds the total, decrease them homogeneously
+                            scaling_factor = pd.Series(
+                                np.where(
+                                    total_share_quantity > remaining_energy_consumption,
+                                    remaining_energy_consumption / total_share_quantity,
+                                    1,
+                                ),
+                                index=total_share_quantity.index,
+                            )
+                            for pathway in type_share_pathways:
+                                original_share = input_data[f"{pathway.name}_mandate_share"].fillna(
+                                    0
+                                )
+                                pathway_consumption = (
+                                    original_share / 100 * energy_consumption * scaling_factor
+                                ).fillna(0)
+                                output_data[f"{pathway.name}_energy_consumption"] = (
+                                    pathway_consumption
+                                )
+                                remaining_energy_consumption -= pathway_consumption.reindex(
+                                    energy_consumption.index
+                                ).fillna(0)
 
-                                warnings.warn(msg)
+                                modified_years = pathway_consumption[
+                                    pathway_consumption != original_share / 100 * energy_consumption
+                                ]
+
+                                if not modified_years.empty:
+                                    msg = (
+                                        f"\nThe sum of the share-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption (minus quantity-based pathways).\n"
+                                        f"→ Pathway '{pathway.name}' share was adjusted in the following years:\n"
+                                    )
+                                    for year in modified_years.index:
+                                        msg += f"   - {year}: {(pathway_consumption[year] * 100 / energy_consumption[year]):.1f} % instead of {(original_share[year]):.1f} %\n"
+
+                                    warnings.warn(msg)
 
                     # Third case: default pathway completes to fill the remaining energy consumption
                     pathway = type_default_pathway[0]

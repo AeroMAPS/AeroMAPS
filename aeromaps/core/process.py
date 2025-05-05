@@ -288,7 +288,6 @@ class AeroMAPSProcess(object):
                 raise ValueError("The pathway configuration file should contain its name")
             if "inputs" not in pathway_data:
                 raise ValueError("The pathway configuration file should contain inputs")
-
             self.pathways_manager.add(
                 EnergyCarrierMetadata(
                     name=pathway,
