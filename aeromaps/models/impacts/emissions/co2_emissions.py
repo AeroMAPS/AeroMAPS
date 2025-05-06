@@ -60,12 +60,13 @@ class KayaFactors(AeroMAPSModel):
         # TODO
         #  --> Caution with the 3.6 there !!
         #      With the new model we should stick to MJ instead of KWh even for the electricity
+        #  --> Update: removed the 3.6, emission factor converted in the input file
         #  --> Better way than fillna to handle years where no energy is produced?
 
         co2_per_energy_mean = (
             +dropin_fuel_mean_co2_emission_factor.fillna(0) * energy_consumption_dropin_fuel
             + hydrogen_mean_co2_emission_factor.fillna(0) * energy_consumption_hydrogen
-            + electric_mean_co2_emission_factor.fillna(0) / 3.6 * energy_consumption_electric
+            + electric_mean_co2_emission_factor.fillna(0) * energy_consumption_electric
         ) / energy_consumption
 
         self.df.loc[:, "energy_per_ask_mean_without_operations"] = (
@@ -147,7 +148,6 @@ class CO2Emissions(AeroMAPSModel):
                 + ask_short_range_electric_share
                 / 100
                 * (energy_per_ask_short_range_electric * electric_mean_co2_emission_factor)
-                / 3.6
             )
             * 10 ** (-12)
         )
@@ -166,7 +166,6 @@ class CO2Emissions(AeroMAPSModel):
                 + ask_medium_range_electric_share
                 / 100
                 * (energy_per_ask_medium_range_electric * electric_mean_co2_emission_factor)
-                / 3.6
             )
             * 10 ** (-12)
         )
@@ -185,7 +184,6 @@ class CO2Emissions(AeroMAPSModel):
                 + ask_long_range_electric_share
                 / 100
                 * (energy_per_ask_long_range_electric * electric_mean_co2_emission_factor)
-                / 3.6
             )
             * 10 ** (-12)
         )
@@ -203,7 +201,6 @@ class CO2Emissions(AeroMAPSModel):
                 + rtk_electric_share
                 / 100
                 * (energy_per_rtk_freight_electric * electric_mean_co2_emission_factor)
-                / 3.6
             )
             * 10 ** (-12)
         )
