@@ -221,6 +221,7 @@ class ShareFuelPlot:
         }
         valid_markers = ["o", "s", "D", "^", "v", "<", ">", "p", "*", "h", "H", "+", "x", "X", "d"]
 
+        # focus on a type of aircraft energy
         if energy_origin == "All types" and aircraft_type != "All Types":
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 color = color_mapping.get(energy_origin, "grey")
@@ -256,12 +257,15 @@ class ShareFuelPlot:
                         linewidth=1,
                     )
             self.ax.grid()
-            self.ax.set_title(f"Evolution of the {aircraft_type} fuel blend")
+            self.ax.set_title(f"Evolution of the {aircraft_type}-aircraft fuel blend")
             self.ax.set_xlabel("Year")
-            self.ax.set_ylabel(f"Share of pathways in {aircraft_type} energy use [%]")
+            self.ax.set_ylabel(
+                f"Share of production pathways in {aircraft_type}-aircraft fuel blend [%]"
+            )
             # self.ax = plt.gca()
             self.ax.legend(title="Pathway shares")
 
+        # Focus on an energy origin
         elif energy_origin != "All types" and aircraft_type == "All Types":
             for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
                 self.ax.plot(
@@ -272,7 +276,7 @@ class ShareFuelPlot:
                         self.prospective_years[0] :, f"{aircraft_type}_share_{energy_origin}"
                     ],
                     linestyle="-",
-                    label=f"Total {aircraft_type} of {energy_origin}",
+                    label=f"Total {aircraft_type}-aircraft type",
                     linewidth=2,
                 )
                 for pathway in self.pathways_manager.get(
@@ -296,12 +300,11 @@ class ShareFuelPlot:
             self.ax.grid()
             self.ax.set_title(f"Evolution of the {energy_origin}-based fuel blend")
             self.ax.set_xlabel("Year")
-            self.ax.set_ylabel(
-                f"Share of pathways and aircraft types in {energy_origin}-based energy use [%]"
-            )
+            self.ax.set_ylabel(f"Share of pathways in {energy_origin}-based fuel blend [%]")
             # self.ax = plt.gca()
             self.ax.legend(title="Pathway shares")
 
+        # Detailed view of a specific aircraft type and energy origin
         elif energy_origin != "All types" and aircraft_type != "All Types":
             # color = color_mapping.get(energy_origin, "grey")
             for pathway in self.pathways_manager.get(
@@ -325,14 +328,17 @@ class ShareFuelPlot:
                     linewidth=2,
                 )
             self.ax.grid()
-            self.ax.set_title(f"Evolution of the {aircraft_type}, {energy_origin}-based fuel blend")
+            self.ax.set_title(
+                f"Evolution of the {aircraft_type}-aircraft type, {energy_origin}-based fuel blend"
+            )
             self.ax.set_xlabel("Year")
             self.ax.set_ylabel(
-                f"Share of pathways in {aircraft_type}, {energy_origin}-based energy use [%]"
+                f"Share of pathways in {aircraft_type}-aircraft type, {energy_origin}-based energy use [%]"
             )
             # self.ax = plt.gca()
             self.ax.legend(title="Pathway shares")
 
+        # Overall view of all aircraft types and energy origins
         elif energy_origin == "All types" and aircraft_type == "All Types":
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 color = color_mapping.get(energy_origin, "grey")
@@ -355,7 +361,7 @@ class ShareFuelPlot:
                     / self.df.loc[self.prospective_years[0] :, "energy_consumption"]
                     * 100,
                     linestyle="--",
-                    label=f"Total {aircraft_type}",
+                    label=f"Total {aircraft_type}-aircraft type",
                     linewidth=2,
                 )
 

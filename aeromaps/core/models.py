@@ -1,6 +1,5 @@
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
-    DropInMeanMfsp,
     PassengerAircraftDocCarbonTax,
     PassengerAircraftDocNonEnergyComplex,
     PassengerAircraftTotalDoc,
@@ -458,7 +457,6 @@ models_energy_cost_complex = {
     "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
     "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
@@ -481,7 +479,6 @@ models_energy_cost_simple = {
     "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
-    "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
 }

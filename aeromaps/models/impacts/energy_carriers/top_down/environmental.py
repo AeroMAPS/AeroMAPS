@@ -105,7 +105,9 @@ class TopDownEnvironmental(AeroMAPSModel):
             output_data[self.pathway_name + "_co2_emission_factor_" + key] = (
                 co2_emission_factor_ressource
             )
-            co2_emission_factor = co2_emission_factor + co2_emission_factor_ressource
+            co2_emission_factor = co2_emission_factor.add(
+                co2_emission_factor_ressource, fill_value=0
+            )
 
         # Store the total CO2 emission factor in the dataframe
         output_data[self.pathway_name + "_co2_emission_factor"] = co2_emission_factor

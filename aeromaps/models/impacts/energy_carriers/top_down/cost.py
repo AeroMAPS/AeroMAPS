@@ -108,34 +108,43 @@ class TopDownCost(AeroMAPSModel):
             mfsp_ressource = (
                 input_data.get(key + "_cost", optional_null_series.copy()) * specific_consumption
             )
-            pathway_mfsp += mfsp_ressource
+            # usage of add to avoid getting a nan if one of the series is not defined intentionally
+            pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
+
             output_data[self.pathway_name + "_unit_cost_" + key] = mfsp_ressource
 
             subsidy_ressource = (
                 input_data.get(key + "_subsidy", optional_null_series.copy()) * specific_consumption
             )
-            pathway_unit_subsidy += subsidy_ressource
+            pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
             output_data[self.pathway_name + "_unit_subsidy_" + key] = subsidy_ressource
 
             tax_ressource = (
                 input_data.get(key + "_tax", optional_null_series.copy()) * specific_consumption
             )
-            pathway_unit_tax += tax_ressource
+            pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
             output_data[self.pathway_name + "_unit_tax_" + key] = tax_ressource
 
-        pathway_net_mfsp_without_carbon_tax = pathway_mfsp - pathway_unit_subsidy + pathway_unit_tax
+        # Avoiding adding nans if subsidies and taxes defined for a shorter period of time than the mfsp
+        pathway_net_mfsp_without_carbon_tax = pathway_mfsp.add(
+            pathway_unit_subsidy, fill_value=0
+        ).add(pathway_unit_tax, fill_value=0)
 
         # Handle possible differential carbon_tax
         if self.pathway_name + "_carbon_tax" in input_data:
-            carbon_tax = input_data[self.pathway_name + "_carbon_tax"]
+            carbon_tax = (
+                input_data[self.pathway_name + "_carbon_tax"] / 1000
+            )  # converted to €/kgCO2
         else:
-            carbon_tax = input_data["carbon_tax"]
+            carbon_tax = input_data["carbon_tax"] / 1000  # converted to €/kgCO2
 
         emission_factor = input_data[self.pathway_name + "_co2_emission_factor"]
-        pathway_unit_carbon_tax = carbon_tax * emission_factor
+        pathway_unit_carbon_tax = carbon_tax * emission_factor  # TODO CHECK UNITS CONSISTENCY
         output_data[self.pathway_name + "_unit_carbon_tax"] = pathway_unit_carbon_tax
 
-        pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax + pathway_unit_carbon_tax
+        pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax.add(
+            pathway_unit_carbon_tax, fill_value=0
+        )
 
         output_data.update(
             {

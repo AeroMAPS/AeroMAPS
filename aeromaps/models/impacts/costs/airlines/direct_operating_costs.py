@@ -368,8 +368,8 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         energy_per_ask_long_range_electric: pd.Series,
         energy_per_ask_medium_range_electric: pd.Series,
         energy_per_ask_short_range_electric: pd.Series,
-        dropin_mean_mfsp: pd.Series,
-        average_hydrogen_mean_mfsp_kg: pd.Series,
+        dropin_fuel_mean_mfsp: pd.Series,
+        hydrogen_mean_mfsp: pd.Series,
         ask_long_range_hydrogen_share: pd.Series,
         ask_long_range_dropin_fuel_share: pd.Series,
         ask_medium_range_hydrogen_share: pd.Series,
@@ -382,7 +382,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         ask_long_range: pd.Series,
         ask_medium_range: pd.Series,
         ask_short_range: pd.Series,
-        electricity_market_price: pd.Series,
+        electric_mean_mfsp: pd.Series,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -433,53 +433,51 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         for k in range(self.historic_start_year, self.end_year + 1):
             if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_long_range_dropin_fuel[k] = (
-                    energy_per_ask_long_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                    energy_per_ask_long_range_dropin_fuel[k] * dropin_fuel_mean_mfsp[k] / fuel_lhv
                 )
             if ask_long_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_long_range_hydrogen[k] = (
                     energy_per_ask_long_range_hydrogen[k]
-                    * average_hydrogen_mean_mfsp_kg[k]
+                    * hydrogen_mean_mfsp[k]
                     / hydrogen_specific_energy
                 )
 
             if ask_long_range_electric_share[k] > 0:
                 doc_energy_per_ask_long_range_electric[k] = (
-                    energy_per_ask_long_range_electric[k]
-                    * electricity_market_price[k]
-                    / 3.6  # kWh to MJ
+                    energy_per_ask_long_range_electric[k] * electric_mean_mfsp[k] / 3.6  # kWh to MJ
                 )
 
             if ask_medium_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_medium_range_dropin_fuel[k] = (
-                    energy_per_ask_medium_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                    energy_per_ask_medium_range_dropin_fuel[k] * dropin_fuel_mean_mfsp[k] / fuel_lhv
                 )
             if ask_medium_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_medium_range_hydrogen[k] = (
                     energy_per_ask_medium_range_hydrogen[k]
-                    * average_hydrogen_mean_mfsp_kg[k]
+                    * hydrogen_mean_mfsp[k]
                     / hydrogen_specific_energy
                 )
 
             if ask_medium_range_electric_share[k] > 0:
                 doc_energy_per_ask_medium_range_electric[k] = (
                     energy_per_ask_medium_range_electric[k]
-                    * electricity_market_price[k]
+                    * electric_mean_mfsp[k]
                     / 3.6  # kWh to MJ
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
                 doc_energy_per_ask_short_range_dropin_fuel[k] = (
-                    energy_per_ask_short_range_dropin_fuel[k] * dropin_mean_mfsp[k] / fuel_lhv
+                    energy_per_ask_short_range_dropin_fuel[k] * dropin_fuel_mean_mfsp[k] / fuel_lhv
                 )
             if ask_short_range_hydrogen_share[k] > 0:
                 doc_energy_per_ask_short_range_hydrogen[k] = (
                     energy_per_ask_short_range_hydrogen[k]
-                    * average_hydrogen_mean_mfsp_kg[k]
+                    * hydrogen_mean_mfsp[k]
                     / hydrogen_specific_energy
                 )
             if ask_short_range_electric_share[k] > 0:
                 doc_energy_per_ask_short_range_electric[k] = (
                     energy_per_ask_short_range_electric[k]
-                    * electricity_market_price[k]
+                    * electric_mean_mfsp[k]
                     / 3.6  # kWh to MJ
                 )
 
@@ -585,9 +583,9 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
         energy_per_ask_short_range_dropin_fuel: pd.Series,
         energy_per_ask_short_range_hydrogen: pd.Series,
         energy_per_ask_short_range_electric: pd.Series,
-        dropin_mfsp_carbon_tax_supplement: pd.Series,
-        average_hydrogen_mean_carbon_tax_kg: pd.Series,
-        electricity_direct_use_carbon_tax_kWh: pd.Series,
+        dropin_fuel_mean_carbon_tax_supplement: pd.Series,
+        hydrogen_mean_carbon_tax_supplement: pd.Series,
+        electric_mean_carbon_tax_supplement: pd.Series,
         ask_long_range_hydrogen_share: pd.Series,
         ask_long_range_dropin_fuel_share: pd.Series,
         ask_long_range_electric_share: pd.Series,
@@ -654,55 +652,55 @@ class PassengerAircraftDocCarbonTax(AeroMAPSModel):
             if ask_long_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_dropin_fuel[k] = (
                     energy_per_ask_long_range_dropin_fuel[k]
-                    * dropin_mfsp_carbon_tax_supplement[k]
+                    * dropin_fuel_mean_carbon_tax_supplement[k]
                     / fuel_lhv
                 )
             if ask_long_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_hydrogen[k] = (
                     energy_per_ask_long_range_hydrogen[k]
-                    * average_hydrogen_mean_carbon_tax_kg[k]
+                    * hydrogen_mean_carbon_tax_supplement[k]
                     / hydrogen_specific_energy
                 )
             if ask_long_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_long_range_electric[k] = (
                     energy_per_ask_long_range_electric[k]
-                    * electricity_direct_use_carbon_tax_kWh[k]
+                    * electric_mean_carbon_tax_supplement[k]
                     / 3.6
                 )
             if ask_medium_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_dropin_fuel[k] = (
                     energy_per_ask_medium_range_dropin_fuel[k]
-                    * dropin_mfsp_carbon_tax_supplement[k]
+                    * dropin_fuel_mean_carbon_tax_supplement[k]
                     / fuel_lhv
                 )
             if ask_medium_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_hydrogen[k] = (
                     energy_per_ask_medium_range_hydrogen[k]
-                    * average_hydrogen_mean_carbon_tax_kg[k]
+                    * hydrogen_mean_carbon_tax_supplement[k]
                     / hydrogen_specific_energy
                 )
             if ask_medium_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_medium_range_electric[k] = (
                     energy_per_ask_medium_range_electric[k]
-                    * electricity_direct_use_carbon_tax_kWh[k]
+                    * electric_mean_carbon_tax_supplement[k]
                     / 3.6
                 )
             if ask_short_range_dropin_fuel_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_dropin_fuel[k] = (
                     energy_per_ask_short_range_dropin_fuel[k]
-                    * dropin_mfsp_carbon_tax_supplement[k]
+                    * dropin_fuel_mean_carbon_tax_supplement[k]
                     / fuel_lhv
                 )
             if ask_short_range_hydrogen_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_hydrogen[k] = (
                     energy_per_ask_short_range_hydrogen[k]
-                    * average_hydrogen_mean_carbon_tax_kg[k]
+                    * hydrogen_mean_carbon_tax_supplement[k]
                     / hydrogen_specific_energy
                 )
             if ask_short_range_electric_share[k] > 0:
                 doc_carbon_tax_per_ask_short_range_electric[k] = (
                     energy_per_ask_short_range_electric[k]
-                    * electricity_direct_use_carbon_tax_kWh[k]
+                    * electric_mean_carbon_tax_supplement[k]
                     / 3.6
                 )
 
@@ -1007,51 +1005,52 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         )
 
 
-class DropInMeanMfsp(AeroMAPSModel):
-    def __init__(self, name="dropin_mean_mfsp", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
-        self.fleet_model = None
-
-    def compute(
-        self,
-        biofuel_mean_mfsp: pd.Series,
-        biofuel_marginal_mfsp: pd.Series,
-        biofuel_mean_carbon_tax_per_l: pd.Series,
-        biofuel_share: pd.Series,
-        electrofuel_mean_mfsp_litre: pd.Series,
-        electrofuel_mfsp_carbon_tax_supplement: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_market_price: pd.Series,
-        kerosene_price_supplement_carbon_tax: pd.Series,
-        kerosene_share: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-        dropin_mean_mfsp = (
-            (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
-            + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
-            + (kerosene_market_price * kerosene_share / 100).fillna(0)
-        )
-
-        for k in range(self.prospection_start_year - 1, self.end_year + 1):
-            # check for vals
-            valid = []
-            if biofuel_share.loc[k] > 0.0:
-                valid.append(biofuel_marginal_mfsp.loc[k])
-            if electrofuel_share.loc[k] > 0.0:
-                valid.append(electrofuel_mean_mfsp_litre.loc[k])
-            if kerosene_share.loc[k] > 0.0:
-                valid.append(kerosene_market_price.loc[k])
-
-            self.df.loc[k, "dropin_marginal_mfsp"] = np.max(valid)
-
-        dropin_marginal_mfsp = self.df.loc[:, "dropin_marginal_mfsp"]
-
-        dropin_mfsp_carbon_tax_supplement = (
-            (biofuel_mean_carbon_tax_per_l * biofuel_share / 100).fillna(0)
-            + (electrofuel_mfsp_carbon_tax_supplement * electrofuel_share / 100).fillna(0)
-            + (kerosene_price_supplement_carbon_tax * kerosene_share / 100).fillna(0)
-        )
-
-        self.df.loc[:, "dropin_mean_mfsp"] = dropin_mean_mfsp
-        self.df.loc[:, "dropin_mfsp_carbon_tax_supplement"] = dropin_mfsp_carbon_tax_supplement
-
-        return (dropin_mean_mfsp, dropin_marginal_mfsp, dropin_mfsp_carbon_tax_supplement)
+# class DropInMeanMfsp(AeroMAPSModel):
+#       TODO DELETE
+#     def __init__(self, name="dropin_mean_mfsp", *args, **kwargs):
+#         super().__init__(name=name, *args, **kwargs)
+#         self.fleet_model = None
+#
+#     def compute(
+#         self,
+#         biofuel_mean_mfsp: pd.Series,
+#         biofuel_marginal_mfsp: pd.Series,
+#         biofuel_mean_carbon_tax_per_l: pd.Series,
+#         biofuel_share: pd.Series,
+#         electrofuel_mean_mfsp_litre: pd.Series,
+#         electrofuel_mfsp_carbon_tax_supplement: pd.Series,
+#         electrofuel_share: pd.Series,
+#         kerosene_market_price: pd.Series,
+#         kerosene_price_supplement_carbon_tax: pd.Series,
+#         kerosene_share: pd.Series,
+#     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
+#         dropin_mean_mfsp = (
+#             (biofuel_mean_mfsp * biofuel_share / 100).fillna(0)
+#             + (electrofuel_mean_mfsp_litre * electrofuel_share / 100).fillna(0)
+#             + (kerosene_market_price * kerosene_share / 100).fillna(0)
+#         )
+#
+#         for k in range(self.prospection_start_year - 1, self.end_year + 1):
+#             # check for vals
+#             valid = []
+#             if biofuel_share.loc[k] > 0.0:
+#                 valid.append(biofuel_marginal_mfsp.loc[k])
+#             if electrofuel_share.loc[k] > 0.0:
+#                 valid.append(electrofuel_mean_mfsp_litre.loc[k])
+#             if kerosene_share.loc[k] > 0.0:
+#                 valid.append(kerosene_market_price.loc[k])
+#
+#             self.df.loc[k, "dropin_marginal_mfsp"] = np.max(valid)
+#
+#         dropin_marginal_mfsp = self.df.loc[:, "dropin_marginal_mfsp"]
+#
+#         dropin_mfsp_carbon_tax_supplement = (
+#             (biofuel_mean_carbon_tax_per_l * biofuel_share / 100).fillna(0)
+#             + (electrofuel_mfsp_carbon_tax_supplement * electrofuel_share / 100).fillna(0)
+#             + (kerosene_price_supplement_carbon_tax * kerosene_share / 100).fillna(0)
+#         )
+#
+#         self.df.loc[:, "dropin_mean_mfsp"] = dropin_mean_mfsp
+#         self.df.loc[:, "dropin_mfsp_carbon_tax_supplement"] = dropin_mfsp_carbon_tax_supplement
+#
+#         return (dropin_mean_mfsp, dropin_marginal_mfsp, dropin_mfsp_carbon_tax_supplement)

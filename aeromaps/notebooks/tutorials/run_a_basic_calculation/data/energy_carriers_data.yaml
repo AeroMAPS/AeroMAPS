@@ -285,8 +285,8 @@ fossil:
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType
-        years: []
-        values: [0.41]
+        years: [2000, 2050]
+        values: [0.41, 0.41]
         method: linear
   outputs:
   

@@ -145,9 +145,9 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
 
     def compute(
         self,
-        biofuel_share: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_share: pd.Series,
+        biomass_share_dropin_fuel: pd.Series,
+        electricity_share_dropin_fuel: pd.Series,
+        fossil_share_dropin_fuel: pd.Series,
         energy_consumption_short_range_dropin_fuel_without_operations: pd.Series,
         energy_consumption_medium_range_dropin_fuel_without_operations: pd.Series,
         energy_consumption_long_range_dropin_fuel_without_operations: pd.Series,
@@ -194,17 +194,24 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        # TODO further adapt to generic energy model outputs?
         """Drop-in fuel consumption calculation."""
         # WITHOUT OPERATIONS
         # Biofuel
         energy_consumption_short_range_biofuel_without_operations = (
-            biofuel_share / 100 * energy_consumption_short_range_dropin_fuel_without_operations
+            biomass_share_dropin_fuel
+            / 100
+            * energy_consumption_short_range_dropin_fuel_without_operations
         )
         energy_consumption_medium_range_biofuel_without_operations = (
-            biofuel_share / 100 * energy_consumption_medium_range_dropin_fuel_without_operations
+            biomass_share_dropin_fuel
+            / 100
+            * energy_consumption_medium_range_dropin_fuel_without_operations
         )
         energy_consumption_long_range_biofuel_without_operations = (
-            biofuel_share / 100 * energy_consumption_long_range_dropin_fuel_without_operations
+            biomass_share_dropin_fuel
+            / 100
+            * energy_consumption_long_range_dropin_fuel_without_operations
         )
         energy_consumption_passenger_biofuel_without_operations = (
             energy_consumption_short_range_biofuel_without_operations
@@ -212,7 +219,9 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_biofuel_without_operations
         )
         energy_consumption_freight_biofuel_without_operations = (
-            biofuel_share / 100 * energy_consumption_freight_dropin_fuel_without_operations
+            biomass_share_dropin_fuel
+            / 100
+            * energy_consumption_freight_dropin_fuel_without_operations
         )
         energy_consumption_biofuel_without_operations = (
             energy_consumption_passenger_biofuel_without_operations
@@ -240,13 +249,19 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
 
         # Electrofuel
         energy_consumption_short_range_electrofuel_without_operations = (
-            electrofuel_share / 100 * energy_consumption_short_range_dropin_fuel_without_operations
+            electricity_share_dropin_fuel
+            / 100
+            * energy_consumption_short_range_dropin_fuel_without_operations
         )
         energy_consumption_medium_range_electrofuel_without_operations = (
-            electrofuel_share / 100 * energy_consumption_medium_range_dropin_fuel_without_operations
+            electricity_share_dropin_fuel
+            / 100
+            * energy_consumption_medium_range_dropin_fuel_without_operations
         )
         energy_consumption_long_range_electrofuel_without_operations = (
-            electrofuel_share / 100 * energy_consumption_long_range_dropin_fuel_without_operations
+            electricity_share_dropin_fuel
+            / 100
+            * energy_consumption_long_range_dropin_fuel_without_operations
         )
         energy_consumption_passenger_electrofuel_without_operations = (
             energy_consumption_short_range_electrofuel_without_operations
@@ -254,7 +269,9 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_electrofuel_without_operations
         )
         energy_consumption_freight_electrofuel_without_operations = (
-            electrofuel_share / 100 * energy_consumption_freight_dropin_fuel_without_operations
+            electricity_share_dropin_fuel
+            / 100
+            * energy_consumption_freight_dropin_fuel_without_operations
         )
         energy_consumption_electrofuel_without_operations = (
             energy_consumption_passenger_electrofuel_without_operations
@@ -282,13 +299,19 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
 
         # Kerosene
         energy_consumption_short_range_kerosene_without_operations = (
-            kerosene_share / 100 * energy_consumption_short_range_dropin_fuel_without_operations
+            fossil_share_dropin_fuel
+            / 100
+            * energy_consumption_short_range_dropin_fuel_without_operations
         )
         energy_consumption_medium_range_kerosene_without_operations = (
-            kerosene_share / 100 * energy_consumption_medium_range_dropin_fuel_without_operations
+            fossil_share_dropin_fuel
+            / 100
+            * energy_consumption_medium_range_dropin_fuel_without_operations
         )
         energy_consumption_long_range_kerosene_without_operations = (
-            kerosene_share / 100 * energy_consumption_long_range_dropin_fuel_without_operations
+            fossil_share_dropin_fuel
+            / 100
+            * energy_consumption_long_range_dropin_fuel_without_operations
         )
         energy_consumption_passenger_kerosene_without_operations = (
             energy_consumption_short_range_kerosene_without_operations
@@ -296,7 +319,9 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_kerosene_without_operations
         )
         energy_consumption_freight_kerosene_without_operations = (
-            kerosene_share / 100 * energy_consumption_freight_dropin_fuel_without_operations
+            fossil_share_dropin_fuel
+            / 100
+            * energy_consumption_freight_dropin_fuel_without_operations
         )
         energy_consumption_kerosene_without_operations = (
             energy_consumption_passenger_kerosene_without_operations
@@ -325,13 +350,13 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
         # WITH OPERATIONS
         # Biofuel
         energy_consumption_short_range_biofuel = (
-            biofuel_share / 100 * energy_consumption_short_range_dropin_fuel
+            biomass_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
         )
         energy_consumption_medium_range_biofuel = (
-            biofuel_share / 100 * energy_consumption_medium_range_dropin_fuel
+            biomass_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
         )
         energy_consumption_long_range_biofuel = (
-            biofuel_share / 100 * energy_consumption_long_range_dropin_fuel
+            biomass_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
         )
         energy_consumption_passenger_biofuel = (
             energy_consumption_short_range_biofuel
@@ -339,7 +364,7 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_biofuel
         )
         energy_consumption_freight_biofuel = (
-            biofuel_share / 100 * energy_consumption_freight_dropin_fuel
+            biomass_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
         )
         energy_consumption_biofuel = (
             energy_consumption_passenger_biofuel + energy_consumption_freight_biofuel
@@ -362,13 +387,13 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
 
         # Electrofuel
         energy_consumption_short_range_electrofuel = (
-            electrofuel_share / 100 * energy_consumption_short_range_dropin_fuel
+            electricity_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
         )
         energy_consumption_medium_range_electrofuel = (
-            electrofuel_share / 100 * energy_consumption_medium_range_dropin_fuel
+            electricity_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
         )
         energy_consumption_long_range_electrofuel = (
-            electrofuel_share / 100 * energy_consumption_long_range_dropin_fuel
+            electricity_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
         )
         energy_consumption_passenger_electrofuel = (
             energy_consumption_short_range_electrofuel
@@ -376,7 +401,7 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_electrofuel
         )
         energy_consumption_freight_electrofuel = (
-            electrofuel_share / 100 * energy_consumption_freight_dropin_fuel
+            electricity_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
         )
         energy_consumption_electrofuel = (
             energy_consumption_passenger_electrofuel + energy_consumption_freight_electrofuel
@@ -401,13 +426,13 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
 
         # Kerosene
         energy_consumption_short_range_kerosene = (
-            kerosene_share / 100 * energy_consumption_short_range_dropin_fuel
+            fossil_share_dropin_fuel / 100 * energy_consumption_short_range_dropin_fuel
         )
         energy_consumption_medium_range_kerosene = (
-            kerosene_share / 100 * energy_consumption_medium_range_dropin_fuel
+            fossil_share_dropin_fuel / 100 * energy_consumption_medium_range_dropin_fuel
         )
         energy_consumption_long_range_kerosene = (
-            kerosene_share / 100 * energy_consumption_long_range_dropin_fuel
+            fossil_share_dropin_fuel / 100 * energy_consumption_long_range_dropin_fuel
         )
         energy_consumption_passenger_kerosene = (
             energy_consumption_short_range_kerosene
@@ -415,7 +440,7 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             + energy_consumption_long_range_kerosene
         )
         energy_consumption_freight_kerosene = (
-            kerosene_share / 100 * energy_consumption_freight_dropin_fuel
+            fossil_share_dropin_fuel / 100 * energy_consumption_freight_dropin_fuel
         )
         energy_consumption_kerosene = (
             energy_consumption_passenger_kerosene + energy_consumption_freight_kerosene

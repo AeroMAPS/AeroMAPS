@@ -58,33 +58,33 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         total_aircraft_distance: pd.Series,
         total_aircraft_distance_hydrogen: pd.Series,
         total_aircraft_distance_electric: pd.Series,
-        biofuel_share: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_share: pd.Series,
+        biomass_share_dropin_fuel: pd.Series,
+        electricity_share_dropin_fuel: pd.Series,
+        fossil_share_dropin_fuel: pd.Series,
         emission_index_number_particles_biofuel: float,
         emission_index_number_particles_electrofuel: float,
         emission_index_number_particles_kerosene: float,
         contrails_relative_effect_hydrogen_wrt_kerosene: float,
     ) -> pd.Series:
         """Fuel effect on contrails for ERF calculation."""
-
+        # TODO @Thomas further adapt to new generic energy model ? E.g. what if i use a LCAF: here counted as fossil.
         fuel_effect_correction_contrails = (
             total_aircraft_distance_dropin_fuel
             / total_aircraft_distance
             * (
-                kerosene_share
+                fossil_share_dropin_fuel
                 / 100
                 * np.sqrt(
                     emission_index_number_particles_kerosene
                     / emission_index_number_particles_kerosene
                 )
-                + biofuel_share
+                + biomass_share_dropin_fuel
                 / 100
                 * np.sqrt(
                     emission_index_number_particles_biofuel
                     / emission_index_number_particles_kerosene
                 )
-                + electrofuel_share
+                + electricity_share_dropin_fuel
                 / 100
                 * np.sqrt(
                     emission_index_number_particles_electrofuel

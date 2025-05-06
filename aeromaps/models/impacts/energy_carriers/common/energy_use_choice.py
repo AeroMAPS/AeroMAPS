@@ -82,14 +82,6 @@ class EnergyUseChoice(AeroMAPSModel):
                 self.output_names[f"{energy_origin}_share_{aircraft_type}"] = pd.Series([0.0])
                 self.output_names[f"{aircraft_type}_share_{energy_origin}"] = pd.Series([0.0])
 
-        self.output_names.update(
-            {
-                "biofuel_share": pd.Series([0.0]),
-                "electrofuel_share": pd.Series([0.0]),
-                "kerosene_share": pd.Series([0.0]),
-            }
-        )
-
     def compute(self, input_data) -> dict:
         """
         Compute the energy consumption of each energy carrier based on the defined pathways and mandates.
@@ -249,7 +241,6 @@ class EnergyUseChoice(AeroMAPSModel):
                                         f"\nThe sum of the share-defined {aircraft_type} fuel pathways exceeds the total {aircraft_type} energy consumption (minus quantity-based pathways).\n"
                                         f"→ Pathway '{pathway.name}' share was adjusted in the following years:\n"
                                     )
-                                    print(modified_years)
                                     for year in modified_years.index:
                                         msg += f"   - {year}: {(pathway_consumption[year] * 100 / energy_consumption[year]):.1f} % instead of {(original_share[year]):.1f} %\n"
 
@@ -262,36 +253,6 @@ class EnergyUseChoice(AeroMAPSModel):
                     )
                     remaining_energy_consumption -= remaining_energy_consumption
 
-                    # TODO modify the rest of aeromaps to work without these before removing
-                    if aircraft_type == "dropin_fuel":
-                        dropin_biofuel_consumption = sum(
-                            output_data[f"{pathway.name}_energy_consumption"]
-                            for pathway in self.pathways_manager.get(
-                                aircraft_type=aircraft_type, energy_origin="biomass"
-                            )
-                        )
-                        biofuel_share = dropin_biofuel_consumption / energy_consumption * 100
-                        output_data["biofuel_share"] = biofuel_share.fillna(0)
-
-                        dropin_electrofuel_consumption = sum(
-                            output_data[f"{pathway.name}_energy_consumption"]
-                            for pathway in self.pathways_manager.get(
-                                aircraft_type=aircraft_type, energy_origin="electricity"
-                            )
-                        )
-                        electrofuel_share = (
-                            dropin_electrofuel_consumption / energy_consumption * 100
-                        )
-                        output_data["electrofuel_share"] = electrofuel_share.fillna(0)
-
-                        dropin_kerosene_consumption = sum(
-                            output_data[f"{pathway.name}_energy_consumption"]
-                            for pathway in self.pathways_manager.get(
-                                aircraft_type=aircraft_type, energy_origin="fossil"
-                            )
-                        )
-                        kerosene_share = dropin_kerosene_consumption / energy_consumption * 100
-                        output_data["kerosene_share"] = kerosene_share.fillna(0)
             else:
                 # If there is no energy consumption, set all energy consumption to 0
                 for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
@@ -313,7 +274,7 @@ class EnergyUseChoice(AeroMAPSModel):
 
         # Compute share of each pathway in a given aircraft type energy consumption
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-            type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
+            type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"].fillna(0)
             for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
                 output_data[f"{pathway.name}_share_{aircraft_type}"] = (
                     output_data[f"{pathway.name}_energy_consumption"]
@@ -324,7 +285,7 @@ class EnergyUseChoice(AeroMAPSModel):
         for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
             # Get the total energy consumption for each energy origin
             origin_energy_consumption = sum(
-                output_data[f"{pathway.name}_energy_consumption"]
+                output_data[f"{pathway.name}_energy_consumption"].fillna(0)
                 for pathway in self.pathways_manager.get(energy_origin=energy_origin)
             )
             for pathway in self.pathways_manager.get(energy_origin=energy_origin):
@@ -342,7 +303,7 @@ class EnergyUseChoice(AeroMAPSModel):
                 type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
 
                 origin_type_energy_consumption = sum(
-                    output_data[f"{pathway.name}_energy_consumption"]
+                    output_data[f"{pathway.name}_energy_consumption"].fillna(0)
                     for pathway in self.pathways_manager.get(
                         energy_origin=energy_origin, aircraft_type=aircraft_type
                     )
@@ -354,6 +315,18 @@ class EnergyUseChoice(AeroMAPSModel):
 
                 output_data[f"{aircraft_type}_share_{energy_origin}"] = (
                     origin_type_energy_consumption / origin_energy_consumption * 100
+                )
+
+        # Fill with mandatory inputs if missing
+        mandatory_outputs = [
+            "biomass_share_dropin_fuel",
+            "electricity_share_dropin_fuel",
+            "fossil_share_dropin_fuel",
+        ]
+        for output in mandatory_outputs:
+            if output not in output_data:
+                output_data[output] = pd.Series(
+                    0.0, index=range(self.prospection_start_year, self.end_year + 1)
                 )
 
         # Add all output data in self.df and self.float_outputs
