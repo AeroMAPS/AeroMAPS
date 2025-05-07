@@ -6,7 +6,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class MeanFuelEmissionFactorPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -73,7 +74,8 @@ class MeanFuelEmissionFactorPlot:
 
 
 class EmissionFactorPerFuelPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -88,7 +90,7 @@ class EmissionFactorPerFuelPlot:
     def create_plot(self):
         (self.line_biofuel_mean_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "biofuel_mean_emission_factor"],
+            self.df.loc[self.prospective_years, "dropin_fuel_biomass_mean_co2_emission_factor"],
             color="green",
             linestyle="-",
             label="Biofuel",
@@ -97,7 +99,7 @@ class EmissionFactorPerFuelPlot:
 
         (self.line_hydrogen_mean_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "liquid_hydrogen_mean_emission_factor"],
+            self.df.loc[self.prospective_years, "hydrogen_mean_co2_emission_factor"],
             color="blue",
             linestyle="-",
             label="Hydrogen",
@@ -106,7 +108,7 @@ class EmissionFactorPerFuelPlot:
 
         (self.line_electrofuel_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "electrofuel_emission_factor"],
+            self.df.loc[self.prospective_years, "dropin_fuel_electricity_mean_co2_emission_factor"],
             color="red",
             linestyle="-",
             label="Electrofuel",
@@ -115,7 +117,7 @@ class EmissionFactorPerFuelPlot:
 
         (self.line_kerosene_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "kerosene_emission_factor"],
+            self.df.loc[self.prospective_years, "fossil_kerosene_co2_emission_factor"],
             color="black",
             linestyle="-",
             label="Kerosene",
@@ -124,10 +126,10 @@ class EmissionFactorPerFuelPlot:
 
         (self.line_electricity_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "electricity_emission_factor"] / 3.6,
+            self.df.loc[self.prospective_years, "electric_mean_co2_emission_factor"],
             color="purple",
             linestyle="-",
-            label="Electricity",
+            label="Direct Electricity",
             linewidth=2,
         )
 
@@ -152,23 +154,23 @@ class EmissionFactorPerFuelPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_biofuel_mean_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "biofuel_mean_emission_factor"]
+            self.df.loc[self.prospective_years, "dropin_fuel_biomass_mean_co2_emission_factor"]
         )
 
         self.line_hydrogen_mean_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "liquid_hydrogen_mean_emission_factor"]
+            self.df.loc[self.prospective_years, "hydrogen_mean_co2_emission_factor"]
         )
 
         self.line_electrofuel_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "electrofuel_emission_factor"]
+            self.df.loc[self.prospective_years, "dropin_fuel_electricity_mean_co2_emission_factor"]
         )
 
         self.line_kerosene_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "kerosene_emission_factor"]
+            self.df.loc[self.prospective_years, "fossil_kerosene_co2_emission_factor"]
         )
 
         self.line_electricity_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "electricity_emission_factor"] / 3.6
+            self.df.loc[self.prospective_years, "electric_mean_co2_emission_factor"]
         )
 
         for collection in self.ax.collections:
@@ -314,15 +316,13 @@ class ShareFuelPlot:
                 valid_markers.remove(marker)
                 self.ax.plot(
                     self.df.loc[
-                        self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
+                        self.prospective_years[0] :,
+                        f"{pathway.name}_share_{aircraft_type}_{energy_origin}",
                     ].index,
                     self.df.loc[
-                        self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
-                    ]
-                    / self.df.loc[
-                        self.prospective_years[0] :, f"{energy_origin}_share_{aircraft_type}"
-                    ]
-                    * 100,
+                        self.prospective_years[0] :,
+                        f"{pathway.name}_share_{aircraft_type}_{energy_origin}",
+                    ],
                     linestyle="--",
                     label=pathway.name,
                     linewidth=2,
@@ -383,7 +383,8 @@ class ShareFuelPlot:
 
 
 class EnergyConsumptionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

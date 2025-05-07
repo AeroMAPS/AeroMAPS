@@ -260,9 +260,9 @@ electrofuel:
   outputs:
 
 
-fossil:
+fossil_kerosene:
   # Metadata
-  name: "fossil"
+  name: "fossil_kerosene"
   environmental_model: "top-down"
   cost_model: "top-down"
   aircraft_type: "dropin_fuel"

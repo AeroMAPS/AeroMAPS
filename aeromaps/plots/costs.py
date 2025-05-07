@@ -22,7 +22,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class ScenarioEnergyCapitalPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -177,7 +178,8 @@ class ScenarioEnergyCapitalPlot:
 
 
 class ScenarioEnergyExpensesPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -505,7 +507,8 @@ class ScenarioEnergyExpensesPlot:
 
 
 class ScenarioEnergyExpensesPlotWithoutCarbonTax:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -666,7 +669,8 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
 
 
 class ScenarioEnergyCarbonTaxPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -804,7 +808,8 @@ class ScenarioEnergyCarbonTaxPlot:
 
 
 class ScenarioEnergyUnitCostPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -1051,7 +1056,8 @@ class ScenarioEnergyUnitCostPlot:
 
 
 class ScenarioEnergyUnitCostWithCarbonTaxPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -1382,7 +1388,8 @@ class ScenarioEnergyUnitCostWithCarbonTaxPlot:
 
 
 class DiscountEffect:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
@@ -1447,7 +1454,8 @@ class DiscountEffect:
 
 
 class DropInMACC:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -1805,7 +1813,8 @@ class DropInMACC:
 
 
 class DOCEvolutionBreakdown:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -1940,7 +1949,8 @@ class DOCEvolutionBreakdown:
 
 
 class DOCEvolutionCategory:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
@@ -2098,7 +2108,8 @@ class DOCEvolutionCategory:
 
 
 class AirfareEvolutionBreakdown:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -4496,7 +4507,8 @@ class ShadowCarbonPrice:
 
 
 class DetailledMFSPBreakdownPerPathway:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
@@ -5185,7 +5197,8 @@ class DetailledMFSPBreakdownPerPathway:
 
 
 class DetailledMFSPBreakdownPerYear:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
@@ -5712,7 +5725,8 @@ class DetailledMFSPBreakdownPerYear:
 
 
 class AnnualMACCSimple:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
@@ -6247,7 +6261,8 @@ class AnnualMACCSimple:
 
 
 class ShadowCarbonPriceSimple:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]

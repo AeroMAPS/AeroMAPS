@@ -4,7 +4,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class BiomassConsumptionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -60,7 +61,8 @@ class BiomassConsumptionPlot:
 
 
 class ElectricityConsumptionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

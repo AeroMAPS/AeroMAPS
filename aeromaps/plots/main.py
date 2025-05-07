@@ -4,7 +4,8 @@ from .constants import plot_1_x, plot_1_y
 
 
 class AirTransportCO2EmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]

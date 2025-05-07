@@ -3,7 +3,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class DropinFuelConsumptionLiterPerPAX100kmPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -70,7 +71,8 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot:
 
 
 class MeanLoadFactorPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -133,7 +135,8 @@ class MeanLoadFactorPlot:
 
 
 class MeanEnergyPerASKPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -200,7 +203,8 @@ class MeanEnergyPerASKPlot:
 
 
 class MeanEnergyPerRTKPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

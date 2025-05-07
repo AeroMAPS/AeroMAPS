@@ -7,7 +7,8 @@ from .constants import plot_2_x, plot_2_y
 
 
 class CarbonBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -278,7 +279,8 @@ class CarbonBudgetAssessmentPlot:
 
 
 class EquivalentCarbonBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]
@@ -600,7 +602,8 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
 
 class EquivalentCarbonBudgetAssessmentPlotOld:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -702,7 +705,8 @@ class EquivalentCarbonBudgetAssessmentPlotOld:
 
 
 class BiomassResourceBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -955,7 +959,8 @@ class BiomassResourceBudgetAssessmentPlot:
 
 
 class ElectricityResourceBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -1212,7 +1217,8 @@ class ElectricityResourceBudgetAssessmentPlot:
 
 
 class MultidisciplinaryAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]

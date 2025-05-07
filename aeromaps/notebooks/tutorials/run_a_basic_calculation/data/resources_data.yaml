@@ -54,7 +54,7 @@ grid_electricity:
   # Technical:
     co2_emission_factor: !AeroMapsCustomDataType
         years: [ 2020, 2030, 2040, 2050 ]
-        values: [33.103, 15.433, 7.716, 2.314] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+        values: [119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
         method: linear
     availability:
       global: 250.0e+12 # [EJ]

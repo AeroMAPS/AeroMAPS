@@ -3,7 +3,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class RevenuePassengerKilometerPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -66,7 +67,8 @@ class RevenuePassengerKilometerPlot:
 
 
 class RevenueTonneKilometerPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -129,7 +131,8 @@ class RevenueTonneKilometerPlot:
 
 
 class AvailableSeatKilometerPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -192,7 +195,8 @@ class AvailableSeatKilometerPlot:
 
 
 class TotalAircraftDistancePlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
