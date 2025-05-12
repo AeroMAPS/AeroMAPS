@@ -2790,8 +2790,8 @@ class AnnualMACC:
         )
 
         custom_annotation_height_for_nice_plot = [
-            70,
-            80,
+            50,
+            50,
             130,
             100,
             100,
@@ -2855,7 +2855,7 @@ class AnnualMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -2888,7 +2888,7 @@ class AnnualMACC:
                         textcoords="data",
                         arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                         rotation=-60,
-                        fontsize=10,
+                        fontsize=11,
                         ha="right",
                         va="bottom",
                     )
@@ -2904,7 +2904,7 @@ class AnnualMACC:
             "Recent SR/MR/LR - DI",  # Replace with relevant text
             (text_x, text_y),
             xycoords="data",
-            fontsize=10,
+            fontsize=11,
             ha="right",
             va="bottom",
             rotation=-60,
@@ -2981,7 +2981,7 @@ class AnnualMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -2998,7 +2998,7 @@ class AnnualMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -3029,13 +3029,15 @@ class AnnualMACC:
             self.ax.add_patch(polygon)
 
         if scc_year:
-            self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
+            self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1.2)
             self.ax.text(
-                10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8
+                15, scc_year * 1.03, "Reference carbon value", color="firebrick", fontsize=11
             )
 
-        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
-        self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)")
+        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", fontsize=13)
+        self.ax.set_xlabel("$\mathregular{CO_2}$ abatted (Mt)", fontsize=13)
+        self.ax.tick_params(axis="x", labelsize=12)  # Taille de police pour l'axe X
+        self.ax.tick_params(axis="y", labelsize=12)  # Taille de police pour l'axe Y
 
         self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
 
@@ -3072,7 +3074,8 @@ class AnnualMACC:
         self.ax.legend(
             handles=legend_patches_1,
             loc="upper left",
-            bbox_to_anchor=(190 / self.ax.figure.bbox.width, 1),
+            bbox_to_anchor=(200 / self.ax.figure.bbox.width, 1),
+            fontsize=11,
         )
 
         self.ax.set_xlim(
@@ -3104,22 +3107,22 @@ class AnnualMACC:
 
         self.ax.text(
             -1,
-            self.ax.get_ylim()[1] / 2.8,
+            self.ax.get_ylim()[1] / 2.2,
             "Extra carbon emissions",
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=10,
+            fontsize=11,
             color="dimgrey",
         )
         self.ax.text(
             5,
-            self.ax.get_ylim()[1] / 2.8,
+            self.ax.get_ylim()[1] / 2.2,
             "Carbon abatement",
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=10,
+            fontsize=11,
             color="dimgrey",
         )
 
@@ -3127,7 +3130,8 @@ class AnnualMACC:
         # self.ax.set_title(f"Marginal abatement cost curve for year {year}")
 
         self.ax2.xaxis.set_label_position("bottom")
-        self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)")
+        self.ax2.set_xlabel("Annual $\mathregular{CO_2}$ emissions (Mt)", fontsize=13)
+        self.ax2.tick_params(axis="x", labelsize=12)
 
         self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
         self.ax2.xaxis.set_ticks_position("bottom")
@@ -3581,11 +3585,11 @@ class CumulativeMACC:
 
         custom_annotation_height_for_nice_plot = [
             100,
+            40,
             80,
             80,
             80,
-            80,
-            80,
+            40,
             80,
             80,
             40,
@@ -3649,7 +3653,7 @@ class CumulativeMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -3670,7 +3674,7 @@ class CumulativeMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(0.05, 1)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="left",
                     va="top",
                 )
@@ -3691,7 +3695,7 @@ class CumulativeMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(0.2, 1)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="left",
                     va="top",
                 )
@@ -3719,7 +3723,7 @@ class CumulativeMACC:
                         textcoords="data",
                         arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                         rotation=-60,
-                        fontsize=10,
+                        fontsize=11,
                         ha="right",
                         va="bottom",
                     )
@@ -3733,7 +3737,7 @@ class CumulativeMACC:
             "Recent SR/MR/LR - DI",  # Replace with relevant text
             (text_x, text_y),
             xycoords="data",
-            fontsize=10,
+            fontsize=11,
             ha="right",
             va="bottom",
             rotation=-60,
@@ -3787,9 +3791,9 @@ class CumulativeMACC:
             zorder=9,
         )
 
-        custom_annotation_height_for_nice_plot = [30, 45, 50, 95, 100]
+        custom_annotation_height_for_nice_plot = [30, 45, 40, 95, 110]
 
-        custom_annotation_x_for_nice_plot = [-130, 0, 20, 0, -50]
+        custom_annotation_x_for_nice_plot = [-130, 0, 50, 0, -50]
 
         for i in range(len(widths_effective_neg) - 2):
             x_position = (
@@ -3798,18 +3802,18 @@ class CumulativeMACC:
             )
             if i == 2:
                 # Use the position of i=1 for the annotation text
-                text_x = cumwidths_effective_neg[-1]
-                -(cumwidths_effective_neg[2] + cumwidths_effective_neg[2 + 1]) / 2
-                text_y = custom_annotation_height_for_nice_plot[2]  # Take the height for i=1
                 self.ax.annotate(
                     "Old  SR/MR/LR - DI",
                     (x_position, 0),  # Arrow points to this position
                     xycoords="data",
-                    xytext=(text_x + 80, text_y),  # Arrow starts from the annotation position (i=1)
+                    xytext=(
+                        x_position + custom_annotation_x_for_nice_plot[i],
+                        custom_annotation_height_for_nice_plot[i],
+                    ),
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -3826,7 +3830,7 @@ class CumulativeMACC:
                     textcoords="data",
                     arrowprops=dict(arrowstyle="->", relpos=(1, 0)),
                     rotation=-60,
-                    fontsize=10,
+                    fontsize=11,
                     ha="right",
                     va="bottom",
                 )
@@ -3856,8 +3860,10 @@ class CumulativeMACC:
             )
             self.ax.add_patch(polygon)
 
-        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)")
-        self.ax.set_xlabel("Cumulative $\mathregular{CO_2}$ abatted (Mt)")
+        self.ax.set_ylabel("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", fontsize=13)
+        self.ax.set_xlabel("Cumulative $\mathregular{CO_2}$ abatted (Mt)", fontsize=13)
+        self.ax.tick_params(axis="y", labelsize=12)
+        self.ax.tick_params(axis="x", labelsize=12)
 
         self.ax.axhline(0, color="black", linestyle="--", linewidth=1)
 
@@ -3894,7 +3900,8 @@ class CumulativeMACC:
         self.ax.legend(
             handles=legend_patches_1,
             loc="upper left",
-            bbox_to_anchor=(110 / self.ax.figure.bbox.width, 1.01),
+            bbox_to_anchor=(125 / self.ax.figure.bbox.width, 1.01),
+            fontsize=11,
         )
 
         self.ax.set_xlim(
@@ -3931,7 +3938,7 @@ class CumulativeMACC:
             rotation=90,
             va="bottom",
             ha="right",
-            fontsize=10,
+            fontsize=11,
             color="dimgrey",
         )
         self.ax.text(
@@ -3941,7 +3948,7 @@ class CumulativeMACC:
             rotation=90,
             va="bottom",
             ha="left",
-            fontsize=10,
+            fontsize=11,
             color="dimgrey",
         )
 
@@ -3951,7 +3958,8 @@ class CumulativeMACC:
         # )
 
         self.ax2.xaxis.set_label_position("bottom")
-        self.ax2.set_xlabel("Cumulative $\mathregular{CO_2}$ emissions (Mt)")
+        self.ax2.set_xlabel("Cumulative $\mathregular{CO_2}$ emissions (Mt)", fontsize=13)
+        self.ax2.tick_params(axis="x", labelsize=12)
 
         self.ax2.spines["bottom"].set_position(("axes", -0.1))  # Move spine below the plot
         self.ax2.xaxis.set_ticks_position("bottom")
@@ -4010,7 +4018,7 @@ class ScenarioMACC:
                     "generic_specific_carbon_abatement_cost",
                 ),
             ],
-            value="specific_carbon_abatement_cost",
+            value="generic_specific_carbon_abatement_cost",
             description="Metric:",
         )
 
@@ -4352,6 +4360,7 @@ class ScenarioMACC:
                         mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
                     ],
                     labels=["Above SCC", "Below or Equal to SCC", "Extra Emissions"],
+                    fontsize=12,
                 )
             else:
                 self.ax_scc.set_visible(False)
@@ -4361,6 +4370,7 @@ class ScenarioMACC:
                         mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
                     ],
                     labels=["Extra Emissions"],
+                    fontsize=12,
                 )
 
         # Create a ScalarMappable to display the colormap as a legend
@@ -4368,15 +4378,21 @@ class ScenarioMACC:
         sm = ScalarMappable(cmap=plt.cm.RdBu_r, norm=norm)
         sm.set_array([])  # Set an empty array since we don't have specific data values
 
-        self.fig.colorbar(
-            sm, cax=self.ax2, label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", norm=norm
+        bar = self.fig.colorbar(
+            sm,
+            cax=self.ax2,
+            label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)",
+            norm=norm,
         )
+
+        bar.set_label("Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", fontsize=13)
+        bar.ax.tick_params(labelsize=12)
 
         # Hatch legedn
 
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Abatement Effective (Mt)")
-        self.ax.tick_params(labelbottom=True)
+        self.ax.set_xlabel("Year", fontsize=13)
+        self.ax.set_ylabel("Abatement Effective (Mt $\mathregular{CO_2}$)", fontsize=13)
+        self.ax.tick_params(labelbottom=True, labelsize=12)
 
         self.ax_scc.set_xlim(
             (2 * self.prospective_years[0] - 1) / 2, (2 * self.prospective_years[-1] + 1) / 2
@@ -4384,9 +4400,9 @@ class ScenarioMACC:
         self.ax_scc.set_ylim(0, 1)
         self.ax_scc.yaxis.set_visible(False)
         self.ax_scc.tick_params(top=True, bottom=False, labelbottom=False)
-        self.ax_scc.set_xlabel("Reference carbon value (€/t$\mathregular{CO_2}$)")
+        self.ax_scc.set_xlabel("Reference carbon value (SCC, €/t$\mathregular{CO_2}$)", fontsize=13)
 
-        self.ax.set_title("Scenario Carbon Abatement Cost Evolution")
+        # self.ax.set_title("Scenario Carbon Abatement Cost Evolution")
         self.ax.yaxis.grid(True)
         self.fig.tight_layout()
         self.fig.canvas.draw()
