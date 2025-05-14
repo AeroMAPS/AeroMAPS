@@ -42,8 +42,8 @@ class EnergyResourceConsumption(AeroMAPSModel):
         for pathway in self.pathways_manager.get(resources_used=self.resource_name):
             self.input_names.update(
                 {
-                    f"{pathway.name}_total_consumption_{self.resource_name}": pd.Series([0.0]),
-                    f"{pathway.name}_total_consumption_with_selectivity_{self.resource_name}": pd.Series(
+                    f"{pathway.name}_{self.resource_name}_total_consumption": pd.Series([0.0]),
+                    f"{pathway.name}_{self.resource_name}_total_consumption_with_selectivity": pd.Series(
                         [0.0]
                     ),
                 }
@@ -69,10 +69,10 @@ class EnergyResourceConsumption(AeroMAPSModel):
 
         for pathway in self.pathways_manager.get(resources_used=self.resource_name):
             total_resource_consumption += input_data[
-                f"{pathway.name}_total_consumption_{self.resource_name}"
+                f"{pathway.name}_{self.resource_name}_total_consumption"
             ]
             total_resource_consumption_with_selectivity += input_data[
-                f"{pathway.name}_total_consumption_with_selectivity_{self.resource_name}"
+                f"{pathway.name}_{self.resource_name}_total_consumption_with_selectivity"
             ]
 
         output_data[f"{self.resource_name}_total_consumption"] = total_resource_consumption

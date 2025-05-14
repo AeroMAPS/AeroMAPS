@@ -14,6 +14,7 @@ class TopDownCost(AeroMAPSModel):
         name,
         configuration_data,
         resources_data,
+        processes_data,
         *args,
         **kwargs,
     ):
@@ -51,7 +52,66 @@ class TopDownCost(AeroMAPSModel):
             .get(f"{self.pathway_name}_resource_names", [])
         )
 
+        for key in self.resource_keys:
+            # Outputs.
+            self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_cost"] = (
+                pd.Series([0.0])
+            )
+            self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_tax"] = (
+                pd.Series([0.0])
+            )
+            self.output_names[
+                self.pathway_name + "_excluding_processes_" + key + "_unit_subsidy"
+            ] = pd.Series([0.0])
+
+        self.process_keys = (
+            configuration_data.get("inputs")
+            .get("technical", {})
+            .get(f"{self.pathway_name}_processes_names", [])
+        )
+
+        for process_key in self.process_keys:
+            for key, val in processes_data[process_key].get("inputs").get("technical", {}).items():
+                if key == f"{process_key}_resource_names":
+                    resources = (
+                        processes_data[process_key]
+                        .get("inputs")
+                        .get("technical", {})
+                        .get(f"{process_key}_resource_names", [])
+                    )
+                    self.resource_keys.extend(resources)
+                    for resource in resources:
+                        self.output_names[
+                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_cost"
+                        ] = pd.Series([0.0])
+                        self.output_names[
+                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_tax"
+                        ] = pd.Series([0.0])
+                        self.output_names[
+                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_subsidy"
+                        ] = pd.Series([0.0])
+                else:
+                    # TODO initialize with zeros instead of actual val?
+                    self.input_names[key] = val
+
+            for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
+                # TODO initialize with zeros instead of actual val?
+                self.input_names[key] = val
+            self.output_names[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_cost"
+            ] = pd.Series([0.0])
+            self.output_names[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_tax"
+            ] = pd.Series([0.0])
+            self.output_names[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_subsidy"
+            ] = pd.Series([0.0])
+
+        # Getting unique resources
+        self.resource_keys = list(set(self.resource_keys))
+
         # Adding resources-linked inputs and outputs
+        # TODO specify eco/cost as for process
         for key in self.resource_keys:
             if f"{key}_cost" in resources_data[key]["specifications"]:
                 self.input_names[key + "_cost"] = pd.Series([0.0])
@@ -60,9 +120,6 @@ class TopDownCost(AeroMAPSModel):
             if f"{key}_tax" in resources_data[key]["specifications"]:
                 self.input_names[key + "_tax"] = pd.Series([0.0])
             # Outputs.
-            self.output_names[self.pathway_name + "_unit_cost_" + key] = pd.Series([0.0])
-            self.output_names[self.pathway_name + "_unit_tax_" + key] = pd.Series([0.0])
-            self.output_names[self.pathway_name + "_unit_subsidy_" + key] = pd.Series([0.0])
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
         self.output_names.update(
@@ -102,28 +159,99 @@ class TopDownCost(AeroMAPSModel):
         pathway_unit_tax = pathway_unit_tax_without_resource.copy()
 
         for key in self.resource_keys:
-            specific_consumption = input_data[
-                self.pathway_name + "_resource_specific_consumption_" + key
-            ]
-            mfsp_ressource = (
-                input_data.get(key + "_cost", optional_null_series.copy()) * specific_consumption
+            # 1 ) --> pathway gets directly a resource
+            specific_consumption = input_data.get(
+                self.pathway_name + "_resource_specific_consumption_" + key, None
             )
-            # usage of add to avoid getting a nan if one of the series is not defined intentionally
-            pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
+            if specific_consumption is not None:
+                mfsp_ressource = (
+                    input_data.get(key + "_cost", optional_null_series.copy())
+                    * specific_consumption
+                )
+                # usage of add to avoid getting a nan if one of the series is not defined intentionally
+                pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
 
-            output_data[self.pathway_name + "_unit_cost_" + key] = mfsp_ressource
+                output_data[self.pathway_name + "_excluding_processes_" + key + "_unit_cost"] = (
+                    mfsp_ressource
+                )
 
-            subsidy_ressource = (
-                input_data.get(key + "_subsidy", optional_null_series.copy()) * specific_consumption
+                subsidy_ressource = (
+                    input_data.get(key + "_subsidy", optional_null_series.copy())
+                    * specific_consumption
+                )
+                pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
+                output_data[self.pathway_name + "_excluding_processes_" + key + "_unit_subsidy"] = (
+                    subsidy_ressource
+                )
+
+                tax_ressource = (
+                    input_data.get(key + "_tax", optional_null_series.copy()) * specific_consumption
+                )
+                pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
+                output_data[self.pathway_name + "_excluding_processes_" + key + "_unit_tax"] = (
+                    tax_ressource
+                )
+
+            # 2 ) --> pathway gets a process that uses a resource
+            for process_key in self.process_keys:
+                specific_consumption = input_data.get(
+                    process_key + "_resource_specific_consumption_" + key
+                )
+                if specific_consumption is not None:
+                    mfsp_ressource = (
+                        input_data.get(key + "_cost", optional_null_series.copy())
+                        * specific_consumption
+                    )
+                    # usage of add to avoid getting a nan if one of the series is not defined intentionally
+                    pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
+
+                    output_data[
+                        self.pathway_name + "_" + process_key + "_" + key + "_unit_cost"
+                    ] = mfsp_ressource
+
+                    subsidy_ressource = (
+                        input_data.get(key + "_subsidy", optional_null_series.copy())
+                        * specific_consumption
+                    )
+                    pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
+                    output_data[
+                        self.pathway_name + "_" + process_key + "_" + key + "_unit_subsidy"
+                    ] = subsidy_ressource
+
+                    tax_ressource = (
+                        input_data.get(key + "_tax", optional_null_series.copy())
+                        * specific_consumption
+                    )
+                    pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
+                    output_data[self.pathway_name + "_" + process_key + "_" + key + "_unit_tax"] = (
+                        tax_ressource
+                    )
+
+        # 3 ) --> pathway needs process cost without resources
+        for process_key in self.process_keys:
+            mfsp_process = input_data.get(
+                process_key + "_mfsp_without_resource", optional_null_series.copy()
             )
-            pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
-            output_data[self.pathway_name + "_unit_subsidy_" + key] = subsidy_ressource
-
-            tax_ressource = (
-                input_data.get(key + "_tax", optional_null_series.copy()) * specific_consumption
+            pathway_mfsp = pathway_mfsp.add(mfsp_process, fill_value=0)
+            output_data[self.pathway_name + "_" + process_key + "_without_resources_unit_cost"] = (
+                mfsp_process
             )
-            pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
-            output_data[self.pathway_name + "_unit_tax_" + key] = tax_ressource
+
+            subsidy_process = input_data.get(
+                process_key + "_without_resources_unit_subsidy", optional_null_series.copy()
+            )
+            pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_process, fill_value=0)
+            output_data[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_subsidy"
+            ] = subsidy_process
+
+            tax_process = input_data.get(
+                process_key + "_without_resources_unit_tax", optional_null_series.copy()
+            )
+            pathway_unit_tax = pathway_unit_tax.add(tax_process, fill_value=0)
+            output_data[self.pathway_name + "_" + process_key + "_without_resources_unit_tax"] = (
+                tax_process
+            )
 
         # Avoiding adding nans if subsidies and taxes defined for a shorter period of time than the mfsp
         pathway_net_mfsp_without_carbon_tax = pathway_mfsp.add(
@@ -139,7 +267,7 @@ class TopDownCost(AeroMAPSModel):
             carbon_tax = input_data["carbon_tax"] / 1000  # converted to €/kgCO2
 
         emission_factor = input_data[self.pathway_name + "_co2_emission_factor"]
-        pathway_unit_carbon_tax = carbon_tax * emission_factor  # TODO CHECK UNITS CONSISTENCY
+        pathway_unit_carbon_tax = carbon_tax * emission_factor
         output_data[self.pathway_name + "_unit_carbon_tax"] = pathway_unit_carbon_tax
 
         pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax.add(

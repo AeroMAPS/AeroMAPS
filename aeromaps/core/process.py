@@ -63,6 +63,10 @@ default_resources_data_path = os.path.join(
     current_dir, "..", "resources", "data", "resources_data.yaml"
 )
 
+default_processes_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "processes_data.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -91,8 +95,8 @@ class AeroMAPSProcess(object):
 
         self._initialize_climate_historical_data()
 
-        self._instantiate_generic_ressources_models()
-
+        self._read_generic_resources_data()
+        self._read_generic_process_data()
         self._instantiate_generic_energy_models()
 
         self._initialize_disciplines(
@@ -226,9 +230,8 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
 
-    def _instantiate_generic_ressources_models(self):
+    def _read_generic_resources_data(self):
         # Read the custom energy config file and instantiate each class
-        # Add the instantiated classes to the models dictionary
         if self.configuration_file is not None and "PARAMETERS_RESOURCES_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
             resources_data_file_path = os.path.join(
@@ -256,9 +259,39 @@ class AeroMAPSProcess(object):
 
             self.energy_resources_data[resource] = resource_data
 
-            # Ressources models not necessary as no operation done besides reading and interpolating values.
-            #
-            #
+    def _read_generic_process_data(self):
+        # Read the custom energy config file and instantiate each class
+        if self.configuration_file is not None and "PARAMETERS_PROCESSES_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            processes_data_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_PROCESSES_DATA_FILE"]
+            )
+        else:
+            processes_data_path = default_processes_data_path
+
+        self.energy_processes_data = read_yaml_file(processes_data_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        processes = list(self.energy_processes_data.keys())
+
+        for process in processes:
+            process_data = self.energy_processes_data[process]
+            if "name" not in process_data:
+                raise ValueError("The process configuration file should contain its name")
+
+            # Flatten the inputs dictionary and interpolate the necessary values
+
+            inputs = process_data["inputs"]
+            # Flatten the inputs dictionary and interpolate the necessary values
+            for key, value in inputs.items():
+                flattened_yaml = flatten_dict(value, process_data["name"])
+                inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                # set data to parameters
+                self.parameters.from_dict(inputs[key])
+
+            process_data["inputs"] = inputs
+
+            self.energy_processes_data[process] = process_data
 
     def _instantiate_generic_energy_models(self):
         # Read the custom energy config file and instantiate each class from it using the factory method
@@ -316,7 +349,7 @@ class AeroMAPSProcess(object):
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
             self.models.update(
                 AviationEnergyCarriersFactory.create_carrier(
-                    pathway, pathway_data, self.energy_resources_data
+                    pathway, pathway_data, self.energy_resources_data, self.energy_processes_data
                 )
             )
         # Instantiate resources use models
