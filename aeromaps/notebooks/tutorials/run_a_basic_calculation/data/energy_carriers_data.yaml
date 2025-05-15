@@ -316,10 +316,8 @@ hydrogen_electrolysis:
         method: linear
     # Technical:
     technical:
-      resource_names: [ "grid_electricity" ]
-      resource_specific_consumption:
-      # Add a list of resources and their consumption per unit of fuel.
-        grid_electricity: 2.11
+      technical:
+        processes_names: [ "liquefaction", "electrolysis" ]
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -356,6 +354,8 @@ hydrogen_gas:
         values: [71, 0, 0, 0]
         method: linear
     # Technical:
+    technical:
+      processes_names: [ "liquefaction" ]
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -387,6 +387,8 @@ hydrogen_coal:
   inputs:
     # Mandate
     # Technical:
+    technical:
+      processes_names: [ "liquefaction" ]
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
