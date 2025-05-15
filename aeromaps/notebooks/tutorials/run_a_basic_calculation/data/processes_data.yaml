@@ -29,7 +29,7 @@ electrolysis:
     technical:
       resource_names: [ "grid_electricity" ]
       resource_specific_consumption:
-        grid_electricity: 1.14
+        grid_electricity: 1.69
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType

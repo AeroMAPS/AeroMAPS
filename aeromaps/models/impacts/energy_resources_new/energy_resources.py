@@ -39,7 +39,9 @@ class EnergyResourceConsumption(AeroMAPSModel):
             ][f"{self.resource_name}_availability_aviation_allocated_share"],
         }
 
-        for pathway in self.pathways_manager.get(resources_used=self.resource_name):
+        for pathway in self.pathways_manager.get(
+            resources_used=self.resource_name
+        ) + self.pathways_manager.get(resources_used_processes=self.resource_name):
             self.input_names.update(
                 {
                     f"{pathway.name}_{self.resource_name}_total_consumption": pd.Series([0.0]),

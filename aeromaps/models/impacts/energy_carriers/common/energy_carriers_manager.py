@@ -10,6 +10,7 @@ class EnergyCarrierMetadata:
     mandate_type: str = None
     energy_origin: str = None
     resources_used: List[str] = None
+    resources_used_processes: dict = None
 
 
 class EnergyCarrierManager:
@@ -27,7 +28,9 @@ class EnergyCarrierManager:
             c
             for c in self.carriers
             if all(
-                val in getattr(c, attr, [])
+                val in getattr(c, attr, {}).values()
+                if isinstance(getattr(c, attr, None), dict)
+                else val in getattr(c, attr, [])
                 if isinstance(getattr(c, attr, None), list)
                 else getattr(c, attr, None) == val
                 for attr, val in criteria.items()

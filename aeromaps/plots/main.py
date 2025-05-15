@@ -236,7 +236,8 @@ class AirTransportCO2EmissionsPlot:
 
 
 class AirTransportClimateImpactsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

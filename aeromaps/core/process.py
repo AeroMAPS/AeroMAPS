@@ -331,6 +331,16 @@ class AeroMAPSProcess(object):
                     resources_used=pathway_data.get("inputs")
                     .get("technical", {})
                     .get("resource_names", []),
+                    resources_used_processes={
+                        el: i
+                        for el in pathway_data.get("inputs", {})
+                        .get("technical", {})
+                        .get("processes_names", [])
+                        for i in self.energy_processes_data.get(el, {})
+                        .get("inputs", {})
+                        .get("technical", {})
+                        .get(f"{el}_resource_names", [])
+                    },
                 )
             )
 
@@ -347,6 +357,7 @@ class AeroMAPSProcess(object):
             self.energy_carriers_data[pathway] = pathway_data
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
+            # TODO would it be simpler to pass the EnergyCarrierMetadata to the models?
             self.models.update(
                 AviationEnergyCarriersFactory.create_carrier(
                     pathway, pathway_data, self.energy_resources_data, self.energy_processes_data

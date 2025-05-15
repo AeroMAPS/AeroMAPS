@@ -316,8 +316,7 @@ hydrogen_electrolysis:
         method: linear
     # Technical:
     technical:
-      technical:
-        processes_names: [ "liquefaction", "electrolysis" ]
+      processes_names: [ "liquefaction", "electrolysis" ]
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType

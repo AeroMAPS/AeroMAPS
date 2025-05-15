@@ -124,9 +124,19 @@ class TopDownEnvironmental(AeroMAPSModel):
                 self.pathway_name + "_" + process_key + "_without_resources_co2_emission_factor"
             ] = pd.Series([0.0])
 
+        # Getting unique resources
+        self.resource_keys = list(set(self.resource_keys))
+
         for key in self.resource_keys:
             if f"{key}_co2_emission_factor" in resources_data[key]["specifications"]:
                 self.input_names[key + "_co2_emission_factor"] = pd.Series([0.0])
+
+            self.output_names[self.pathway_name + "_" + key + "_total_consumption"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[
+                self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"
+            ] = pd.Series([0.0])
 
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(
@@ -244,6 +254,7 @@ class TopDownEnvironmental(AeroMAPSModel):
             output_data[self.pathway_name + "_" + key + "_total_consumption"] = (
                 total_ressource_consumption
             )
+
             output_data[self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"] = (
                 total_ressource_mobilised_with_selectivity
             )
@@ -266,8 +277,5 @@ class TopDownEnvironmental(AeroMAPSModel):
         output_data[self.pathway_name + "_total_co2_emissions"] = total_co2_emissions
 
         self._store_outputs(output_data)
-
-        if self.pathway_name == "graulhet_super_fuel":
-            print(output_data)
 
         return output_data
