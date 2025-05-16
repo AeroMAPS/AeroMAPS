@@ -234,6 +234,8 @@ def compare_json_files(
     file2_path: str,
     ignore_order: bool = True,
     verbose: bool = True,
+    rtol: float = 0.0001,
+    atol: float = 0.1,
 ) -> DeepDiff:
     """
     Compare two JSON files using deepdiff and return the differences.
@@ -253,11 +255,34 @@ def compare_json_files(
 
     diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
 
+    # Only keep differences with error greater than 0.1%
+    if "values_changed" in diff:
+        keys_to_remove = []
+        for key, value in diff["values_changed"].items():
+            if isinstance(value, dict) and "new_value" in value and "old_value" in value:
+                new_value = value["new_value"]
+                old_value = value["old_value"]
+                # Remove if both are floats and the relative or absolute difference are within the tolerance
+                if (
+                    isinstance(new_value, float)
+                    and isinstance(old_value, float)
+                    and np.isclose(new_value, old_value, rtol=rtol, atol=atol)
+                ):
+                    keys_to_remove.append(key)
+        for key in keys_to_remove:
+            del diff["values_changed"][key]
+        
+        # If values_changed is empty, remove the key
+        if not diff["values_changed"]:
+            del diff["values_changed"]
+
     if verbose:
         if diff:
             print("Differences found:")
             print(json.dumps(diff, indent=2))
+            files_are_different = True
         else:
             print("No differences found.")
+            files_are_different = False
 
-    return diff
+    return files_are_different
