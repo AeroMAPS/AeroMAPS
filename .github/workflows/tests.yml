@@ -40,7 +40,7 @@ jobs:
             ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb"); do
             echo "Running tests for $notebook"
             start_time=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$notebook"
+            poetry run pytest --no-cov --nbval-lax -p no:python "$notebook" -s
             end_time=$(date +%s)
             echo "Tests for $notebook completed in $((end_time - start_time)) seconds."
           done
