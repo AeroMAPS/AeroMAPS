@@ -234,7 +234,7 @@ def compare_json_files(
     file2_path: str,
     ignore_order: bool = True,
     verbose: bool = True,
-) -> Dict[str, Any]:
+) -> DeepDiff:
     """
     Compare two JSON files using deepdiff and return the differences.
 
