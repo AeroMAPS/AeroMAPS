@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 import pandas as pd
 
@@ -105,110 +103,148 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
+        self.pathways_manager = None
+
+    def custom_setup(self):
+        # TODO caution aircraft types not generic there
+        # TODO CAUTION MODEL NOT TESTED => NEED TO CONVERT NOTEBOOK
+        self.input_names = {
+            "ask_long_range_dropin_fuel": pd.Series([0.0]),
+            "ask_medium_range_dropin_fuel": pd.Series([0.0]),
+            "ask_short_range_dropin_fuel": pd.Series([0.0]),
+            "ask_long_range_hydrogen": pd.Series([0.0]),
+            "ask_medium_range_hydrogen": pd.Series([0.0]),
+            "ask_short_range_hydrogen": pd.Series([0.0]),
+        }
+
+        self.output_names = {}
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    self.output_names.update(
+                        {
+                            f"{aircraft_type}_{energy_origin}_mean_emission_index_nox": pd.Series(
+                                [0.0]
+                            ),
+                        }
+                    )
+
+            for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                self.input_names.update(
+                    {
+                        f"{pathway.name}_emission_index_nox": 0.0,
+                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                            [0.0]
+                        ),
+                    }
+                )
 
     def compute(
         self,
-        emission_index_nox_biofuel_2019: float,
-        emission_index_nox_electrofuel_2019: float,
-        emission_index_nox_kerosene_2019: float,
-        emission_index_nox_hydrogen_2019: float,
-        ask_long_range_dropin_fuel: pd.Series,
-        ask_medium_range_dropin_fuel: pd.Series,
-        ask_short_range_dropin_fuel: pd.Series,
-        ask_long_range_hydrogen: pd.Series,
-        ask_medium_range_hydrogen: pd.Series,
-        ask_short_range_hydrogen: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+        input_data,
+    ) -> dict:
         """NOx emission index calculation using fleet renewal models."""
+        output_data = {}
+        # Getting fleet model data
 
-        emission_index_nox_short_range_dropin_fuel = self.fleet_model.df[
-            "Short Range:emission_index_nox:dropin_fuel"
-        ]
-        emission_index_nox_medium_range_dropin_fuel = self.fleet_model.df[
-            "Medium Range:emission_index_nox:dropin_fuel"
-        ]
-        emission_index_nox_long_range_dropin_fuel = self.fleet_model.df[
-            "Long Range:emission_index_nox:dropin_fuel"
-        ]
-        emission_index_nox_short_range_hydrogen = self.fleet_model.df[
-            "Short Range:emission_index_nox:hydrogen"
-        ]
-        emission_index_nox_medium_range_hydrogen = self.fleet_model.df[
-            "Medium Range:emission_index_nox:hydrogen"
-        ]
-        emission_index_nox_long_range_hydrogen = self.fleet_model.df[
-            "Long Range:emission_index_nox:hydrogen"
-        ]
-
-        # Initialization
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "emission_index_nox_biofuel"] = emission_index_nox_biofuel_2019
-            self.df.loc[k, "emission_index_nox_electrofuel"] = emission_index_nox_electrofuel_2019
-            self.df.loc[k, "emission_index_nox_kerosene"] = emission_index_nox_kerosene_2019
-            self.df.loc[k, "emission_index_nox_hydrogen"] = emission_index_nox_hydrogen_2019
-
-        # Kerosene
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "emission_index_nox_kerosene"] = (
-                emission_index_nox_short_range_dropin_fuel.loc[k]
-                * ask_short_range_dropin_fuel.loc[k]
-                + emission_index_nox_medium_range_dropin_fuel.loc[k]
-                * ask_medium_range_dropin_fuel.loc[k]
-                + emission_index_nox_long_range_dropin_fuel.loc[k]
-                * ask_long_range_dropin_fuel.loc[k]
-            ) / (
-                ask_short_range_dropin_fuel.loc[k]
-                + ask_medium_range_dropin_fuel.loc[k]
-                + ask_long_range_dropin_fuel.loc[k]
+        def default_series():
+            return pd.Series(
+                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
+                index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        # Electrofuel and biofuel
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "emission_index_nox_biofuel"] = (
-                emission_index_nox_biofuel_2019
-                / emission_index_nox_kerosene_2019
-                * self.df.loc[k, "emission_index_nox_kerosene"]
-            )
-            self.df.loc[k, "emission_index_nox_electrofuel"] = (
-                emission_index_nox_electrofuel_2019
-                / emission_index_nox_kerosene_2019
-                * self.df.loc[k, "emission_index_nox_kerosene"]
-            )
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            emission_index_nox_short_range = self.fleet_model.df[
+                f"Short Range:emission_index_nox:{aircraft_type}"
+            ]
+            emission_index_nox_medium_range = self.fleet_model.df[
+                f"Medium Range:emission_index_nox:{aircraft_type}"
+            ]
+            emission_index_nox_long_range = self.fleet_model.df[
+                f"Long Range:emission_index_nox:{aircraft_type}"
+            ]
 
-        # Hydrogen
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            if (
-                ask_short_range_hydrogen.loc[k]
-                + ask_medium_range_hydrogen.loc[k]
-                + ask_long_range_hydrogen.loc[k]
-                == 0
-            ):
-                self.df.loc[k, "emission_index_nox_hydrogen"] = self.df.loc[
-                    k - 1, "emission_index_nox_hydrogen"
-                ]
-            else:
-                self.df.loc[k, "emission_index_nox_hydrogen"] = (
-                    emission_index_nox_short_range_hydrogen.loc[k] * ask_short_range_hydrogen.loc[k]
-                    + emission_index_nox_medium_range_hydrogen.loc[k]
-                    * ask_medium_range_hydrogen.loc[k]
-                    + emission_index_nox_long_range_hydrogen.loc[k] * ask_long_range_hydrogen.loc[k]
-                ) / (
-                    ask_short_range_hydrogen.loc[k]
-                    + ask_medium_range_hydrogen.loc[k]
-                    + ask_long_range_hydrogen.loc[k]
+            ask_short_range = input_data[f"ask_short_range_{aircraft_type}"]
+            ask_medium_range = input_data[f"ask_medium_range_{aircraft_type}"]
+            ask_long_range = input_data[f"ask_long_range_{aircraft_type}"]
+
+            emission_index_aircraft_type = (
+                (
+                    emission_index_nox_short_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_short_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
                 )
+                + (
+                    emission_index_nox_medium_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_medium_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
+                )
+                + (
+                    emission_index_nox_long_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_long_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
+                )
+            ) / (
+                ask_short_range.loc[self.historic_start_year, self.prospection_start_year].fillna(0)
+                + ask_medium_range.loc[
+                    self.historic_start_year, self.prospection_start_year
+                ].fillna(0)
+                + ask_long_range.loc[self.historic_start_year, self.prospection_start_year].fillna(
+                    0
+                )
+            )
 
-        emission_index_nox_biofuel = self.df["emission_index_nox_biofuel"]
-        emission_index_nox_electrofuel = self.df["emission_index_nox_electrofuel"]
-        emission_index_nox_kerosene = self.df["emission_index_nox_kerosene"]
-        emission_index_nox_hydrogen = self.df["emission_index_nox_hydrogen"]
+            relative_emission_index_aircraft_type = (
+                emission_index_aircraft_type
+                / emission_index_aircraft_type.loc[self.prospection_start_year - 1]
+            )
 
-        return (
-            emission_index_nox_biofuel,
-            emission_index_nox_electrofuel,
-            emission_index_nox_kerosene,
-            emission_index_nox_hydrogen,
-        )
+            # intialize the mean values for the aircraft type
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                # Get the pathways for this aircraft type and energy origin
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if pathways:
+                    origin_mean_emission_index_nox = default_series()
+                    origin_cumulative_share = default_series()
+                    for pathway in pathways:
+                        origin_share = input_data[
+                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                        ]
+                        origin_cumulative_share = (
+                            origin_cumulative_share + origin_share.fillna(0) / 100
+                        )
+                        pathway_emission_index_nox = input_data[
+                            f"{pathway.name}_emission_index_nox"
+                        ]
+
+                        origin_mean_emission_index_nox += (
+                            pathway_emission_index_nox * origin_share
+                        ).fillna(0) / 100
+
+                    origin_valid_years = origin_cumulative_share.replace(0, np.nan)
+
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_nox"] = (
+                        origin_mean_emission_index_nox
+                        * origin_valid_years
+                        * relative_emission_index_aircraft_type
+                    )
+        self._store_outputs(output_data)
+
+        return output_data
 
 
 class SootEmissionIndex(AeroMAPSModel):
@@ -308,112 +344,148 @@ class SootEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
+        self.pathways_manager = None
+
+    def custom_setup(self):
+        # TODO caution aircraft types not generic there
+        # TODO CAUTION MODEL NOT TESTED => NEED TO CONVERT NOTEBOOK
+        self.input_names = {
+            "ask_long_range_dropin_fuel": pd.Series([0.0]),
+            "ask_medium_range_dropin_fuel": pd.Series([0.0]),
+            "ask_short_range_dropin_fuel": pd.Series([0.0]),
+            "ask_long_range_hydrogen": pd.Series([0.0]),
+            "ask_medium_range_hydrogen": pd.Series([0.0]),
+            "ask_short_range_hydrogen": pd.Series([0.0]),
+        }
+
+        self.output_names = {}
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    self.output_names.update(
+                        {
+                            f"{aircraft_type}_{energy_origin}_mean_emission_index_soot": pd.Series(
+                                [0.0]
+                            ),
+                        }
+                    )
+
+            for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                self.input_names.update(
+                    {
+                        f"{pathway.name}_emission_index_soot": 0.0,
+                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                            [0.0]
+                        ),
+                    }
+                )
 
     def compute(
         self,
-        emission_index_soot_biofuel_2019: float,
-        emission_index_soot_electrofuel_2019: float,
-        emission_index_soot_kerosene_2019: float,
-        emission_index_soot_hydrogen_2019: float,
-        ask_long_range_dropin_fuel: pd.Series,
-        ask_medium_range_dropin_fuel: pd.Series,
-        ask_short_range_dropin_fuel: pd.Series,
-        ask_long_range_hydrogen: pd.Series,
-        ask_medium_range_hydrogen: pd.Series,
-        ask_short_range_hydrogen: pd.Series,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-        """Soot emission index calculation using fleet renewal models."""
+        input_data,
+    ) -> dict:
+        """NOx emission index calculation using fleet renewal models."""
+        output_data = {}
+        # Getting fleet model data
 
-        emission_index_soot_short_range_dropin_fuel = self.fleet_model.df[
-            "Short Range:emission_index_soot:dropin_fuel"
-        ]
-        emission_index_soot_medium_range_dropin_fuel = self.fleet_model.df[
-            "Medium Range:emission_index_soot:dropin_fuel"
-        ]
-        emission_index_soot_long_range_dropin_fuel = self.fleet_model.df[
-            "Long Range:emission_index_soot:dropin_fuel"
-        ]
-        emission_index_soot_short_range_hydrogen = self.fleet_model.df[
-            "Short Range:emission_index_soot:hydrogen"
-        ]
-        emission_index_soot_medium_range_hydrogen = self.fleet_model.df[
-            "Medium Range:emission_index_soot:hydrogen"
-        ]
-        emission_index_soot_long_range_hydrogen = self.fleet_model.df[
-            "Long Range:emission_index_soot:hydrogen"
-        ]
-
-        # Initialization
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "emission_index_soot_biofuel"] = emission_index_soot_biofuel_2019
-            self.df.loc[k, "emission_index_soot_electrofuel"] = emission_index_soot_electrofuel_2019
-            self.df.loc[k, "emission_index_soot_kerosene"] = emission_index_soot_kerosene_2019
-            self.df.loc[k, "emission_index_soot_hydrogen"] = emission_index_soot_hydrogen_2019
-
-        # Kerosene
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "emission_index_soot_kerosene"] = (
-                emission_index_soot_short_range_dropin_fuel.loc[k]
-                * ask_short_range_dropin_fuel.loc[k]
-                + emission_index_soot_medium_range_dropin_fuel.loc[k]
-                * ask_medium_range_dropin_fuel.loc[k]
-                + emission_index_soot_long_range_dropin_fuel.loc[k]
-                * ask_long_range_dropin_fuel.loc[k]
-            ) / (
-                ask_short_range_dropin_fuel.loc[k]
-                + ask_medium_range_dropin_fuel.loc[k]
-                + ask_long_range_dropin_fuel.loc[k]
+        def default_series():
+            return pd.Series(
+                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
+                index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        # Electrofuel and biofuel
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "emission_index_soot_biofuel"] = (
-                emission_index_soot_biofuel_2019
-                / emission_index_soot_kerosene_2019
-                * self.df.loc[k, "emission_index_soot_kerosene"]
-            )
-            self.df.loc[k, "emission_index_soot_electrofuel"] = (
-                emission_index_soot_electrofuel_2019
-                / emission_index_soot_kerosene_2019
-                * self.df.loc[k, "emission_index_soot_kerosene"]
-            )
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            emission_index_soot_short_range = self.fleet_model.df[
+                f"Short Range:emission_index_soot:{aircraft_type}"
+            ]
+            emission_index_soot_medium_range = self.fleet_model.df[
+                f"Medium Range:emission_index_soot:{aircraft_type}"
+            ]
+            emission_index_soot_long_range = self.fleet_model.df[
+                f"Long Range:emission_index_soot:{aircraft_type}"
+            ]
 
-        # Hydrogen
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            if (
-                ask_short_range_hydrogen.loc[k]
-                + ask_medium_range_hydrogen.loc[k]
-                + ask_long_range_hydrogen.loc[k]
-                == 0
-            ):
-                self.df.loc[k, "emission_index_soot_hydrogen"] = self.df.loc[
-                    k - 1, "emission_index_soot_hydrogen"
-                ]
-            else:
-                self.df.loc[k, "emission_index_soot_hydrogen"] = (
-                    emission_index_soot_short_range_hydrogen.loc[k]
-                    * ask_short_range_hydrogen.loc[k]
-                    + emission_index_soot_medium_range_hydrogen.loc[k]
-                    * ask_medium_range_hydrogen.loc[k]
-                    + emission_index_soot_long_range_hydrogen.loc[k]
-                    * ask_long_range_hydrogen.loc[k]
-                ) / (
-                    ask_short_range_hydrogen.loc[k]
-                    + ask_medium_range_hydrogen.loc[k]
-                    + ask_long_range_hydrogen.loc[k]
+            ask_short_range = input_data[f"ask_short_range_{aircraft_type}"]
+            ask_medium_range = input_data[f"ask_medium_range_{aircraft_type}"]
+            ask_long_range = input_data[f"ask_long_range_{aircraft_type}"]
+
+            emission_index_aircraft_type = (
+                (
+                    emission_index_soot_short_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_short_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
                 )
+                + (
+                    emission_index_soot_medium_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_medium_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
+                )
+                + (
+                    emission_index_soot_long_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ]
+                    * ask_long_range.loc[
+                        self.historic_start_year, self.prospection_start_year
+                    ].fillna(0)
+                )
+            ) / (
+                ask_short_range.loc[self.historic_start_year, self.prospection_start_year].fillna(0)
+                + ask_medium_range.loc[
+                    self.historic_start_year, self.prospection_start_year
+                ].fillna(0)
+                + ask_long_range.loc[self.historic_start_year, self.prospection_start_year].fillna(
+                    0
+                )
+            )
 
-        emission_index_soot_biofuel = self.df["emission_index_soot_biofuel"]
-        emission_index_soot_electrofuel = self.df["emission_index_soot_electrofuel"]
-        emission_index_soot_kerosene = self.df["emission_index_soot_kerosene"]
-        emission_index_soot_hydrogen = self.df["emission_index_soot_hydrogen"]
+            relative_emission_index_aircraft_type = (
+                emission_index_aircraft_type
+                / emission_index_aircraft_type.loc[self.prospection_start_year - 1]
+            )
 
-        return (
-            emission_index_soot_biofuel,
-            emission_index_soot_electrofuel,
-            emission_index_soot_kerosene,
-            emission_index_soot_hydrogen,
-        )
+            # intialize the mean values for the aircraft type
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                # Get the pathways for this aircraft type and energy origin
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if pathways:
+                    origin_mean_emission_index_soot = default_series()
+                    origin_cumulative_share = default_series()
+                    for pathway in pathways:
+                        origin_share = input_data[
+                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                        ]
+                        origin_cumulative_share = (
+                            origin_cumulative_share + origin_share.fillna(0) / 100
+                        )
+                        pathway_emission_index_soot = input_data[
+                            f"{pathway.name}_emission_index_soot"
+                        ]
+
+                        origin_mean_emission_index_soot += (
+                            pathway_emission_index_soot * origin_share
+                        ).fillna(0) / 100
+
+                    origin_valid_years = origin_cumulative_share.replace(0, np.nan)
+
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_soot"] = (
+                        origin_mean_emission_index_soot
+                        * origin_valid_years
+                        * relative_emission_index_aircraft_type
+                    )
+        self._store_outputs(output_data)
+
+        return output_data
 
 
 class H2OEmissionIndex(AeroMAPSModel):
