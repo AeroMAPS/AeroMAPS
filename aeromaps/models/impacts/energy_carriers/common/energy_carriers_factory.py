@@ -1,5 +1,8 @@
 # import all the concrete implementations of the energy carriers
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import EnergyCarriersMeans
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
+    EnergyCarriersMeans,
+    EnergyCarriersMeanLHV,
+)
 from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
 from aeromaps.models.impacts.energy_carriers.top_down.cost import (
     TopDownCost,
@@ -116,6 +119,7 @@ class AviationEnergyCarriersFactory:
             "energy_carriers_means": EnergyCarriersMeans(
                 "energy_carriers_means", energy_carriers_data, pathways_manager
             ),
+            "energy_carriers_mean_lhv": EnergyCarriersMeanLHV("energy_carriers_mean_lhv"),
         }
 
     @staticmethod

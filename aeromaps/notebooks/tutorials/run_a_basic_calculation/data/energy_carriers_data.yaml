@@ -21,6 +21,7 @@ hefa_fog:
       resource_specific_consumption:
         hefa_fog_biomass: 1.14
       kerosene_selectivity: 0.15
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -30,8 +31,8 @@ hefa_fog:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
     # Economics:
     economics:
@@ -65,6 +66,7 @@ hefa_others:
       resource_specific_consumption:
         hefa_others_biomass: 1.72
       kerosene_selectivity: 0.15
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -74,8 +76,8 @@ hefa_others:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
       # Economics:
     economics:
@@ -108,6 +110,7 @@ ft_msw:
       resource_specific_consumption:
         ft_msw_biomass: 2.17
       kerosene_selectivity: 0.15
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -117,8 +120,8 @@ ft_msw:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
       # Economics:
     economics:
@@ -152,6 +155,7 @@ ft_others:
       resource_specific_consumption:
         ft_others_biomass: 2.17
       kerosene_selectivity: 0.15
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -161,8 +165,8 @@ ft_others:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
       # Economics:
     economics:
@@ -195,6 +199,7 @@ atj:
       resource_specific_consumption:
         atj_biomass: 2.08
       kerosene_selectivity: 0.15
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -204,8 +209,8 @@ atj:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
       # Economics:
     economics:
@@ -239,6 +244,7 @@ electrofuel:
       resource_specific_consumption:
         # Add a list of resources and their consumption per unit of fuel.
         grid_electricity: 2.32
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -248,8 +254,8 @@ electrofuel:
       emission_index:
         h2o: 1.231
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
+        sulfur: 0.0
+        soot: 6.0e-06
         particles_number: 8e13
     # Economics:
     economics:
@@ -270,6 +276,8 @@ fossil_kerosene:
   default: True
   inputs:
     # Technical:
+    technical:
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -277,11 +285,11 @@ fossil_kerosene:
         values: [ 88.7, 88.7 ]
         method: linear
       emission_index:
-        h2o: 1.231
+        h2o: 1.231 # 
         nox: 0.01514
         sulfur: 0.0012
-        soot: 3e-05
-        particles_number: 8e13
+        soot: 3.0e-05
+        particles_number: 2e14
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType
@@ -317,6 +325,7 @@ hydrogen_electrolysis:
     # Technical:
     technical:
       processes_names: [ "liquefaction", "electrolysis" ]
+      lhv: 120
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -324,11 +333,11 @@ hydrogen_electrolysis:
         values: [0.0]
         method: linear
       emission_index:
-        h2o: 1.231
+        h2o: 9.0
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
-        particles_number: 8e13
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType
@@ -355,6 +364,7 @@ hydrogen_gas:
     # Technical:
     technical:
       processes_names: [ "liquefaction" ]
+      lhv: 120
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -362,11 +372,11 @@ hydrogen_gas:
         values: [100]
         method: linear
       emission_index:
-        h2o: 1.231
+        h2o: 9.0
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
-        particles_number: 8e13
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType
@@ -388,6 +398,7 @@ hydrogen_coal:
     # Technical:
     technical:
       processes_names: [ "liquefaction" ]
+      lhv: 44
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -395,11 +406,11 @@ hydrogen_coal:
         values: [191.6]
         method: linear
       emission_index:
-        h2o: 1.231
+        h2o: 9.0
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
-        particles_number: 8e13
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType
@@ -427,18 +438,19 @@ battery_electric:
       resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
         grid_electricity: 1
+      lhv: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!! 
     # Environmental:
     environmental:
       co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
-      emission_index:
-        h2o: 1.231
-        nox: 0.01514
-        sulfur: 0.0012
-        soot: 3e-05
-        particles_number: 8e13
+      emission_index: # CAUTION: INDEX PER KG, UNDIFINED FOR ELECTRIC!! 
+        h2o: 0.0
+        nox: 0.0
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
     # Economics:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType

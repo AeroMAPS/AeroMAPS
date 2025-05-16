@@ -225,3 +225,76 @@ class EnergyCarriersMeans(AeroMAPSModel):
         self._store_outputs(output_data)
 
         return output_data
+
+
+class EnergyCarriersMeanLHV(AeroMAPSModel):
+    def __init__(self, name="energy_carriers_mean_lhv", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.pathways_manager = None
+
+    def custom_setup(self):
+        self.input_names = {}
+        self.output_names = {}
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    self.output_names.update(
+                        {
+                            f"{aircraft_type}_{energy_origin}_mean_lhv": pd.Series([0.0]),
+                        }
+                    )
+
+            for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
+                self.input_names.update(
+                    {
+                        f"{pathway.name}_lhv": 0.0,
+                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                            [0.0]
+                        ),
+                    }
+                )
+
+    def compute(self, input_data) -> dict:
+        """Average H20 emission index calculation"""
+
+        output_data = {}
+
+        def default_series():
+            return pd.Series(
+                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
+                index=range(self.historic_start_year, self.end_year + 1),
+            )
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            # initialise the mean values for the aircraft type
+            for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
+                # Get the pathways for this aircraft type and energy origin
+                pathways = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                )
+                if pathways:
+                    origin_mean_lhv = default_series()
+                    origin_cumulative_share = default_series()
+                    for pathway in pathways:
+                        origin_share = input_data[
+                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                        ]
+                        origin_cumulative_share = (
+                            origin_cumulative_share + origin_share.fillna(0) / 100
+                        )
+                        pathway_lhv = input_data[f"{pathway.name}_lhv"]
+
+                        origin_mean_lhv += (pathway_lhv * origin_share).fillna(0) / 100
+
+                    origin_valid_years = origin_cumulative_share.replace(0, np.nan)
+
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_lhv"] = (
+                        origin_mean_lhv * origin_valid_years
+                    )
+
+        self._store_outputs(output_data)
+
+        return output_data

@@ -79,14 +79,20 @@ class EnergyUseChoice(AeroMAPSModel):
             for pathway in self.pathways_manager.get(energy_origin=energy_origin):
                 self.output_names[f"{pathway.name}_share_{energy_origin}"] = pd.Series([0.0])
             for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-                self.output_names[f"{energy_origin}_share_{aircraft_type}"] = pd.Series([0.0])
-                self.output_names[f"{aircraft_type}_share_{energy_origin}"] = pd.Series([0.0])
-                for pathway in self.pathways_manager.get(
-                    energy_origin=energy_origin, aircraft_type=aircraft_type
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
                 ):
-                    self.output_names[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
+                    self.output_names[f"{energy_origin}_share_{aircraft_type}"] = pd.Series([0.0])
+                    self.output_names[f"{aircraft_type}_share_{energy_origin}"] = pd.Series([0.0])
+                    self.output_names[f"{aircraft_type}_{energy_origin}_energy_consumption"] = (
                         pd.Series([0.0])
                     )
+                    for pathway in self.pathways_manager.get(
+                        energy_origin=energy_origin, aircraft_type=aircraft_type
+                    ):
+                        self.output_names[
+                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                        ] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
         """
@@ -306,30 +312,37 @@ class EnergyUseChoice(AeroMAPSModel):
 
             # get detail for each aircraft type
             for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-                type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
+                if self.pathways_manager.get(
+                    aircraft_type=aircraft_type, energy_origin=energy_origin
+                ):
+                    type_energy_consumption = input_data[f"energy_consumption_{aircraft_type}"]
 
-                origin_type_energy_consumption = sum(
-                    output_data[f"{pathway.name}_energy_consumption"].fillna(0)
+                    origin_type_energy_consumption = sum(
+                        output_data[f"{pathway.name}_energy_consumption"].fillna(0)
+                        for pathway in self.pathways_manager.get(
+                            energy_origin=energy_origin, aircraft_type=aircraft_type
+                        )
+                    )
+
+                    output_data[f"{aircraft_type}_{energy_origin}_energy_consumption"] = (
+                        origin_type_energy_consumption
+                    )
+
+                    output_data[f"{energy_origin}_share_{aircraft_type}"] = (
+                        origin_type_energy_consumption / type_energy_consumption * 100
+                    )
+
+                    output_data[f"{aircraft_type}_share_{energy_origin}"] = (
+                        origin_type_energy_consumption / origin_energy_consumption * 100
+                    )
                     for pathway in self.pathways_manager.get(
                         energy_origin=energy_origin, aircraft_type=aircraft_type
-                    )
-                )
-
-                output_data[f"{energy_origin}_share_{aircraft_type}"] = (
-                    origin_type_energy_consumption / type_energy_consumption * 100
-                )
-
-                output_data[f"{aircraft_type}_share_{energy_origin}"] = (
-                    origin_type_energy_consumption / origin_energy_consumption * 100
-                )
-                for pathway in self.pathways_manager.get(
-                    energy_origin=energy_origin, aircraft_type=aircraft_type
-                ):
-                    output_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
-                        output_data[f"{pathway.name}_energy_consumption"]
-                        / origin_type_energy_consumption
-                        * 100
-                    )
+                    ):
+                        output_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
+                            output_data[f"{pathway.name}_energy_consumption"]
+                            / origin_type_energy_consumption
+                            * 100
+                        )
 
         # Fill with mandatory inputs for aeromaps models (non_co2) to work even if no pathway is defined for a given type
         mandatory_outputs = [
@@ -342,7 +355,6 @@ class EnergyUseChoice(AeroMAPSModel):
                 output_data[output] = pd.Series(
                     0.0, index=range(self.prospection_start_year, self.end_year + 1)
                 )
-
         # Add all output data in self.df and self.float_outputs
         self._store_outputs(output_data)
 

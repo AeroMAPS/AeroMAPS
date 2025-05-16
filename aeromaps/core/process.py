@@ -78,7 +78,6 @@ class AeroMAPSProcess(object):
     ):
         self.configuration_file = configuration_file
         self._initialize_configuration()
-
         self.use_fleet_model = use_fleet_model
         self.models = models
 
@@ -357,6 +356,9 @@ class AeroMAPSProcess(object):
             self.energy_carriers_data[pathway] = pathway_data
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
+            # TODO fix the models handling to keep models dict intact
+            # self.models.update({"nox_emission_index": NOxEmissionIndex("nox_emission_index", self.pathways_manager)})
+
             # TODO would it be simpler to pass the EnergyCarrierMetadata to the models?
             self.models.update(
                 AviationEnergyCarriersFactory.create_carrier(
@@ -419,6 +421,11 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+                        # TODO harmonise the way to pass the pathways manager with generic models
+                        model.pathways_manager = self.pathways_manager
+                        model.custom_setup()
+                        print(model.name)
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):

@@ -227,37 +227,39 @@ class ShareFuelPlot:
         if energy_origin == "All types" and aircraft_type != "All Types":
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 color = color_mapping.get(energy_origin, "grey")
-                self.ax.plot(
-                    self.df.loc[
-                        self.prospective_years[0] :, f"{energy_origin}_share_{aircraft_type}"
-                    ].index,
-                    self.df.loc[
-                        self.prospective_years[0] :, f"{energy_origin}_share_{aircraft_type}"
-                    ],
-                    linestyle="-",
-                    color=color,
-                    label=f"Total {energy_origin}-based",
-                    linewidth=2,
-                )
-                for pathway in self.pathways_manager.get(
+                pathways = self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
-                ):
-                    marker = random.choice(valid_markers)
-                    valid_markers.remove(marker)
+                )
+                if pathways:
                     self.ax.plot(
                         self.df.loc[
-                            self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
+                            self.prospective_years[0] :, f"{energy_origin}_share_{aircraft_type}"
                         ].index,
                         self.df.loc[
-                            self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
+                            self.prospective_years[0] :, f"{energy_origin}_share_{aircraft_type}"
                         ],
-                        linestyle="--",
+                        linestyle="-",
                         color=color,
-                        marker=marker,
-                        markersize=4,
-                        label=pathway.name,
-                        linewidth=1,
+                        label=f"Total {energy_origin}-based",
+                        linewidth=2,
                     )
+                    for pathway in pathways:
+                        marker = random.choice(valid_markers)
+                        valid_markers.remove(marker)
+                        self.ax.plot(
+                            self.df.loc[
+                                self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
+                            ].index,
+                            self.df.loc[
+                                self.prospective_years[0] :, f"{pathway.name}_share_{aircraft_type}"
+                            ],
+                            linestyle="--",
+                            color=color,
+                            marker=marker,
+                            markersize=4,
+                            label=pathway.name,
+                            linewidth=1,
+                        )
             self.ax.grid()
             self.ax.set_title(f"Evolution of the {aircraft_type}-aircraft fuel blend")
             self.ax.set_xlabel("Year")
@@ -270,35 +272,37 @@ class ShareFuelPlot:
         # Focus on an energy origin
         elif energy_origin != "All types" and aircraft_type == "All Types":
             for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-                self.ax.plot(
-                    self.df.loc[
-                        self.prospective_years[0] :, f"{aircraft_type}_share_{energy_origin}"
-                    ].index,
-                    self.df.loc[
-                        self.prospective_years[0] :, f"{aircraft_type}_share_{energy_origin}"
-                    ],
-                    linestyle="-",
-                    label=f"Total {aircraft_type}-aircraft type",
-                    linewidth=2,
-                )
-                for pathway in self.pathways_manager.get(
+                pathways = self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
-                ):
-                    marker = random.choice(valid_markers)
-                    valid_markers.remove(marker)
+                )
+                if pathways:
                     self.ax.plot(
                         self.df.loc[
-                            self.prospective_years[0] :, f"{pathway.name}_share_{energy_origin}"
+                            self.prospective_years[0] :, f"{aircraft_type}_share_{energy_origin}"
                         ].index,
                         self.df.loc[
-                            self.prospective_years[0] :, f"{pathway.name}_share_{energy_origin}"
+                            self.prospective_years[0] :, f"{aircraft_type}_share_{energy_origin}"
                         ],
-                        linestyle="--",
-                        marker=marker,
-                        markersize=4,
-                        label=pathway.name,
-                        linewidth=1,
+                        linestyle="-",
+                        label=f"Total {aircraft_type}-aircraft type",
+                        linewidth=2,
                     )
+                    for pathway in pathways:
+                        marker = random.choice(valid_markers)
+                        valid_markers.remove(marker)
+                        self.ax.plot(
+                            self.df.loc[
+                                self.prospective_years[0] :, f"{pathway.name}_share_{energy_origin}"
+                            ].index,
+                            self.df.loc[
+                                self.prospective_years[0] :, f"{pathway.name}_share_{energy_origin}"
+                            ],
+                            linestyle="--",
+                            marker=marker,
+                            markersize=4,
+                            label=pathway.name,
+                            linewidth=1,
+                        )
             self.ax.grid()
             self.ax.set_title(f"Evolution of the {energy_origin}-based fuel blend")
             self.ax.set_xlabel("Year")

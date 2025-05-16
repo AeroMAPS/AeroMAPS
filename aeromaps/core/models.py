@@ -124,6 +124,8 @@ from aeromaps.models.impacts.emissions.non_co2_emissions import (
     SootEmissionIndex,
     SootEmissionIndexComplex,
     NonCO2Emissions,
+    H2OEmissionIndex,
+    SulfurEmissionIndex,
 )
 from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelConsumption,
@@ -241,6 +243,8 @@ models_efficiency_top_down = {
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
     "soot_emission_index": SootEmissionIndex("soot_emission_index"),
+    "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
+    "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
 }
 
 models_efficiency_top_down_interp = {
@@ -254,6 +258,8 @@ models_efficiency_top_down_interp = {
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
     "soot_emission_index": SootEmissionIndex("soot_emission_index"),
+    "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
+    "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
 }
 
 models_efficiency_bottom_up = {
