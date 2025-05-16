@@ -28,17 +28,17 @@ pd.set_option("max_colwidth", 200)
 pd.options.mode.chained_assignment = None
 
 # Get the directory of the current script
-current_dir = os.path.dirname(os.path.abspath(__file__))
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Construct the path to the config.json file
-default_config_path = os.path.join(current_dir, "config.json")
+DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "config.json")
 
 # Construct the path to the parameters.json file
-default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
+DEFAULT_PARAMETERS_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "parameters.json")
 
 # Construct the path to the climate data .csv file
-default_climate_historical_data_path = os.path.join(
-    current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
+DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
 )
 
 
@@ -63,13 +63,11 @@ class AeroMAPSProcess(object):
         self.data = {}
         self.json = {}
 
-
         # Intialize inputs
         self._initialize_inputs()
 
         # Initialize data
         self._initialize_data()
-
 
         # Initialize disciplines
         self._initialize_disciplines(
@@ -171,11 +169,11 @@ class AeroMAPSProcess(object):
 
     def _initialize_configuration(self):
         # Load the default configuration file
-        with open(default_config_path, "r") as f:
+        with open(DEFAULT_CONFIG_PATH, "r") as f:
             self.config = load(f)
         # Update paths in the configuration file with absolute paths
         for key, value in self.config.items():
-            self.config[key] = os.path.join(current_dir, value)
+            self.config[key] = os.path.join(CURRENT_DIR, value)
 
         # Load the new configuration file
         if self.configuration_file is not None:
@@ -271,7 +269,7 @@ class AeroMAPSProcess(object):
 
         # First use main parameters.json as default values
         if use_defaults:
-            self.parameters.read_json(file_name=default_parameters_path)
+            self.parameters.read_json(file_name=DEFAULT_PARAMETERS_PATH)
 
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
             # If the alternative file is a list of json files
@@ -320,7 +318,7 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["PARAMETERS_CLIMATE_DATA_FILE"]
             )
         else:
-            climate_historical_data_file_path = default_climate_historical_data_path
+            climate_historical_data_file_path = DEFAULT_CLIMATE_HISTORICAL_DATA_PATH
 
         historical_dataset_df = pd.read_csv(
             climate_historical_data_file_path, delimiter=";", header=None
