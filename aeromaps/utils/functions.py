@@ -257,9 +257,7 @@ def compare_json_files(
         if diff:
             print("Differences found:")
             print(json.dumps(diff, indent=2))
-            files_are_different = True
         else:
             print("No differences found.")
-            files_are_different = False
 
-    return files_are_different
+    return diff
