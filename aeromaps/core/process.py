@@ -65,20 +65,16 @@ class AeroMAPSProcess(object):
         self.data = {}
         self.json = {}
 
-        self._initialize_years()
 
-        self._initialize_climate_historical_data()
+        # Initialize data
+        self._initialize_data()
 
+        # Initialize disciplines
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
         # Create GEMSEO process
         self.process = create_mda("MDAChain", disciplines=self.disciplines)
-
-        self._initialize_data()
-
-        # TODO: check if we need to know inputs before computing
-        # self._update_variables()
 
     def compute(self):
         if self.fleet is not None:
@@ -188,6 +184,12 @@ class AeroMAPSProcess(object):
                 self.config[key] = value
 
     def _initialize_data(self):
+
+        # Indexes
+        self._initialize_years() 
+
+        self._initialize_climate_historical_data()
+
         # Inputs
         self.data["float_inputs"] = {}
         self.data["str_inputs"] = {}
