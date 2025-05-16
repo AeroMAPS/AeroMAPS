@@ -56,8 +56,6 @@ class AeroMAPSProcess(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
 
-        self._initialize_inputs()
-
         self.setup(add_examples_aircraft_and_subcategory)
 
     def setup(self, add_examples_aircraft_and_subcategory=True):
@@ -65,8 +63,13 @@ class AeroMAPSProcess(object):
         self.data = {}
         self.json = {}
 
+
+        # Intialize inputs
+        self._initialize_inputs()
+
         # Initialize data
         self._initialize_data()
+
 
         # Initialize disciplines
         self._initialize_disciplines(
@@ -201,6 +204,8 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
 
+        
+
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
             self.fleet = Fleet(
@@ -304,6 +309,9 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
+        
+        # Format input vectors
+        self._format_input_vectors()
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -321,7 +329,6 @@ class AeroMAPSProcess(object):
 
     def _set_inputs(self):
         all_inputs = {}
-        self._format_input_vectors()
         # TODO: make this more efficient
         for disc in self.disciplines:
             disc.model.parameters = self.parameters
