@@ -1,9 +1,12 @@
+import os.path as pth
 import json
 from json import load
+from typing import Dict, Any
+
 import numpy as np
 import pandas as pd
 from pandas import read_csv
-import os.path as pth
+from deepdiff import DeepDiff
 
 from aeromaps.resources import data
 from aeromaps.resources import climate_data
@@ -224,3 +227,39 @@ def create_partitioning(file, path=""):
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
+
+
+def compare_json_files(
+    file1_path: str,
+    file2_path: str,
+    ignore_order: bool = True,
+    verbose: bool = True,
+) -> Dict[str, Any]:
+    """
+    Compare two JSON files using deepdiff and return the differences.
+
+    Args:
+        file1_path (str): Path to the first JSON file.
+        file2_path (str): Path to the second JSON file.
+        ignore_order (bool): Whether to ignore the order in lists. Defaults to True.
+        verbose (bool): Whether to print differences. Defaults to True.
+
+    Returns:
+        dict: The DeepDiff result dictionary.
+    """
+    with open(file1_path, "r") as f1, open(file2_path, "r") as f2:
+        json1 = json.load(f1)
+        json2 = json.load(f2)
+
+    diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
+
+    if verbose:
+        if diff:
+            print("Differences found:")
+            print(json.dumps(diff, indent=2))
+            files_are_different = True
+        else:
+            print("No differences found.")
+            files_are_different = False
+
+    return files_are_different
