@@ -65,7 +65,6 @@ class NOxEmissionIndex(AeroMAPSModel):
                 ),
                 index=range(self.historic_start_year, self.end_year + 1),
             )
-            print("growth_series", growth_series)
 
             # intialize the mean values for the aircraft type
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -90,11 +89,6 @@ class NOxEmissionIndex(AeroMAPSModel):
                         origin_mean_emission_index_nox += (
                             pathway_emission_index_nox * origin_share
                         ).fillna(0) / 100
-                        print(
-                            "origin_mean_emission_index_nox",
-                            pathway.name,
-                            origin_mean_emission_index_nox,
-                        )
 
                     origin_valid_years = origin_cumulative_share.replace(0, np.nan)
 
