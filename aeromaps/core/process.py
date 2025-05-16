@@ -65,7 +65,6 @@ class AeroMAPSProcess(object):
         self.data = {}
         self.json = {}
 
-
         # Initialize data
         self._initialize_data()
 
@@ -262,10 +261,12 @@ class AeroMAPSProcess(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
-    def _initialize_inputs(self):
+    def _initialize_inputs(self, use_defaults=True):
         self.parameters = Parameters()
+
         # First use main parameters.json as default values
-        self.parameters.read_json(file_name=default_parameters_path)
+        if use_defaults:
+            self.parameters.read_json(file_name=default_parameters_path)
 
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
             # If the alternative file is a list of json files
