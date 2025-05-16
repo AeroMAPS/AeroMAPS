@@ -236,7 +236,7 @@ def compare_json_files(
     verbose: bool = True,
     rtol: float = 0.0001,
     atol: float = 0.1,
-) -> DeepDiff:
+) -> bool:
     """
     Compare two JSON files using deepdiff and return the differences.
 
