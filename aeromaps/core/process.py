@@ -56,15 +56,15 @@ class AeroMAPSProcess(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
 
+        # Initialize inputs
+        self._initialize_inputs()
+
         self.setup(add_examples_aircraft_and_subcategory)
 
     def setup(self, add_examples_aircraft_and_subcategory=True):
         self.disciplines = []
         self.data = {}
         self.json = {}
-
-        # Intialize inputs
-        self._initialize_inputs()
 
         # Initialize data
         self._initialize_data()
