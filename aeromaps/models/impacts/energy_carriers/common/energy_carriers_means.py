@@ -268,7 +268,7 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             mass_consumption = sum(
                 input_data[f"{pathway.name}_energy_consumption"].fillna(0)
-                / input_data[f"{pathway.name}_lhv"].fillna(0)
+                / input_data[f"{pathway.name}_lhv"]
                 for pathway in self.pathways_manager.get(aircraft_type=aircraft_type)
             )
             # initialise the mean values for the aircraft type

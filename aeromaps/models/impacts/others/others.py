@@ -44,7 +44,7 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
     def compute(
         self,
         energy_consumption_passenger_dropin_fuel: pd.Series,
-        dropin_fuel_mean_lhv: float,
+        dropin_fuel_mean_lhv: pd.Series,
         rpk: pd.Series,
     ) -> pd.Series:
         """Drop-in fuel consumption in liter per passenger per 100 km calculation."""

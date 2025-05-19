@@ -45,6 +45,9 @@ from aeromaps.models.impacts.costs.operations.operations_cost import (
 from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import (
     ExogenousCarbonPriceTrajectory,
 )
+from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
+    EnergyCarriersMassicShares,
+)
 from aeromaps.models.impacts.energy_resources.abatement_potential import (
     DropinAbatementPotential,
     EnergyAbatementEffective,
@@ -303,6 +306,7 @@ models_energy_without_fuel_effect = {
     "without_fuel_effect_correction_contrails": WithoutFuelEffectCorrectionContrails(
         "without_fuel_effect_correction_contrails"
     ),
+    "energy_carriers_massic_shares": EnergyCarriersMassicShares("energy_carriers_massic_shares"),
 }
 
 models_energy_with_fuel_effect = {
