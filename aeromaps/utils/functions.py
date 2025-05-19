@@ -247,7 +247,7 @@ def compare_json_files(
         verbose (bool): Whether to print differences. Defaults to True.
 
     Returns:
-        dict: The DeepDiff result dictionary.
+        bool: True if differences exist.
     """
     with open(file1_path, "r") as f1, open(file2_path, "r") as f2:
         json1 = json.load(f1)
