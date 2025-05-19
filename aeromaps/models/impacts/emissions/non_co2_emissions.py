@@ -34,7 +34,7 @@ class NOxEmissionIndex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_nox": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -75,7 +75,7 @@ class NOxEmissionIndex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
@@ -136,7 +136,7 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_nox": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -222,7 +222,7 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
@@ -275,7 +275,7 @@ class SootEmissionIndex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_soot": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -316,7 +316,7 @@ class SootEmissionIndex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
@@ -377,7 +377,7 @@ class SootEmissionIndexComplex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_soot": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -463,7 +463,7 @@ class SootEmissionIndexComplex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
@@ -514,7 +514,7 @@ class H2OEmissionIndex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_h2o": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -543,7 +543,7 @@ class H2OEmissionIndex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
@@ -593,7 +593,7 @@ class SulfurEmissionIndex(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_emission_index_sulfur": 0.0,
-                        f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
+                        f"{pathway.name}_massic_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
                     }
@@ -622,7 +622,7 @@ class SulfurEmissionIndex(AeroMAPSModel):
                     origin_cumulative_share = default_series()
                     for pathway in pathways:
                         origin_share = input_data[
-                            f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
+                            f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
                         ]
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100

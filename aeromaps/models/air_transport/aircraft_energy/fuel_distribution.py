@@ -18,7 +18,7 @@ class DropinFuelDistribution(AeroMAPSModel):
         electrofuel_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Fuel distribution calculation using interpolation functions"""
-
+        # TODO: this model is not needed with generic fuel model. DELETE ?
         # Biofuel
         biofuel_share_prospective = AeromapsInterpolationFunction(
             self,
