@@ -107,8 +107,11 @@ class AeroMAPSProcess(object):
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
+        # Retrieve the data from the model
+        json_data = self._data_to_json()
+
         with open(file_name, "w", encoding="utf-8") as f:
-            dump(self.json, f, ensure_ascii=False, indent=4)
+            dump(json_data, f, ensure_ascii=False, indent=4)
 
     def write_excel(self, file_name=None):
         if file_name is None:
@@ -385,8 +388,6 @@ class AeroMAPSProcess(object):
 
         self._update_dataframes_from_data()
 
-        self._update_json_from_data()
-
     def _update_data_from_model(self):
         # Inputs
         all_inputs = self.process.get_input_data()
@@ -482,39 +483,44 @@ class AeroMAPSProcess(object):
         # Variable information
         self._read_data_information()
 
-    def _update_json_from_data(self):
+    def _data_to_json(self):
         def convert_values_from_array_to_list(d):
             for key, value in d.items():
                 if isinstance(value, (pd.Series, np.ndarray)):
                     d[key] = list(value)
             return d
+        
+        # Create json data
+        json_data = {}
 
         # Float inputs
-        self.json["float_inputs"] = convert_values_from_array_to_list(self.data["float_inputs"])
+        json_data["float_inputs"] = convert_values_from_array_to_list(self.data["float_inputs"])
 
         # String inputs
-        self.json["str_inputs"] = convert_values_from_array_to_list(self.data["str_inputs"])
+        json_data["str_inputs"] = convert_values_from_array_to_list(self.data["str_inputs"])
 
         # Vector inputs
-        self.json["vector_inputs"] = convert_values_from_array_to_list(self.data["vector_inputs"])
+        json_data["vector_inputs"] = convert_values_from_array_to_list(self.data["vector_inputs"])
 
         # Float outputs
-        self.json["float_outputs"] = convert_values_from_array_to_list(self.data["float_outputs"])
+        json_data["float_outputs"] = convert_values_from_array_to_list(self.data["float_outputs"])
 
         # Vector outputs
-        self.json["vector_outputs"] = convert_values_from_array_to_list(
+        json_data["vector_outputs"] = convert_values_from_array_to_list(
             self.data["vector_outputs"].to_dict("list")
         )
 
         # Climate outputs
-        self.json["climate_outputs"] = convert_values_from_array_to_list(
+        json_data["climate_outputs"] = convert_values_from_array_to_list(
             self.data["climate_outputs"].to_dict("list")
         )
 
         # LCA outputs --> convert to json is not supported yet
-        # self.json["lca_outputs"] = convert_values_from_array_to_list(
+        # json_data["lca_outputs"] = convert_values_from_array_to_list(
         #    self.data["lca_outputs"].to_series().to_dict("list")
         # )
+
+        return json_data
 
     def _read_data_information(self, file_name=None):
         if file_name is None:
