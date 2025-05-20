@@ -83,7 +83,7 @@ hefa_others:
     economics:
       mfsp_without_resource: !AeroMapsCustomDataType 
         years: []
-        values: [0.299] # Converted 1.052703 €/L to €/MJ with 0.8 density and 44 LHV
+        values: [0.0299] # Converted 1.052703 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
   outputs:
   
@@ -263,14 +263,6 @@ electrofuel:
         years: []
         values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
-      unit_tax_without_resource: !AeroMapsCustomDataType
-        years: []
-        values: [0.0396] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
-        method: linear
-      unit_subsidy_without_resource: !AeroMapsCustomDataType
-        years: []
-        values: [0.0496] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
-        method: linear 
   outputs:
 
 

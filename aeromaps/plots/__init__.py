@@ -64,7 +64,6 @@ from aeromaps.plots.costs import (
     AnnualMACC,
     ScenarioMACC,
     DetailledMFSPBreakdownPerPathway,
-    DetailledMFSPBreakdownPerYear,
     ScenarioEnergyExpensesPlotWithoutCarbonTax,
     CumulativeMACC,
     ShadowCarbonPrice,
@@ -72,8 +71,7 @@ from aeromaps.plots.costs import (
     ShadowCarbonPriceSimple,
 )
 
-from aeromaps.plots.costs_generic import ScenarioEnergyExpensesPlot
-
+from aeromaps.plots.costs_generic import ScenarioEnergyExpensesPlot, DetailledMFSPBreakdownPerYear
 
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
