@@ -53,7 +53,6 @@ from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
 from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
-    ScenarioEnergyExpensesPlot,
     ScenarioEnergyUnitCostPlot,
     DiscountEffect,
     ScenarioEnergyCarbonTaxPlot,
@@ -72,6 +71,8 @@ from aeromaps.plots.costs import (
     AnnualMACCSimple,
     ShadowCarbonPriceSimple,
 )
+
+from aeromaps.plots.costs_generic import ScenarioEnergyExpensesPlot
 
 
 available_plots = {

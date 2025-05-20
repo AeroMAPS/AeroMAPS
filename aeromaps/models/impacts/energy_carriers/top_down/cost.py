@@ -255,7 +255,7 @@ class TopDownCost(AeroMAPSModel):
 
         # Avoiding adding nans if subsidies and taxes defined for a shorter period of time than the mfsp
         pathway_net_mfsp_without_carbon_tax = pathway_mfsp.add(
-            pathway_unit_subsidy, fill_value=0
+            -pathway_unit_subsidy, fill_value=0
         ).add(pathway_unit_tax, fill_value=0)
 
         # Handle possible differential carbon_tax
@@ -266,9 +266,10 @@ class TopDownCost(AeroMAPSModel):
         else:
             carbon_tax = input_data["carbon_tax"] / 1000  # converted to €/kgCO2
 
-        emission_factor = input_data[self.pathway_name + "_co2_emission_factor"]
+        emission_factor = (
+            input_data[self.pathway_name + "_co2_emission_factor"] / 1000
+        )  # converted to kgCO2/MJ
         pathway_unit_carbon_tax = carbon_tax * emission_factor
-        output_data[self.pathway_name + "_unit_carbon_tax"] = pathway_unit_carbon_tax
 
         pathway_net_mfsp = pathway_net_mfsp_without_carbon_tax.add(
             pathway_unit_carbon_tax, fill_value=0
@@ -281,6 +282,7 @@ class TopDownCost(AeroMAPSModel):
                 self.pathway_name + "_net_mfsp": pathway_net_mfsp,
                 self.pathway_name + "_mfsp": pathway_mfsp,
                 self.pathway_name + "_unit_tax": pathway_unit_tax,
+                self.pathway_name + "_unit_carbon_tax": pathway_unit_carbon_tax,
                 self.pathway_name + "_unit_subsidy": pathway_unit_subsidy,
             }
         )

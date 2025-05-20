@@ -263,6 +263,14 @@ electrofuel:
         years: []
         values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
+      unit_tax_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0396] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+      unit_subsidy_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0496] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear 
   outputs:
 
 
