@@ -69,7 +69,9 @@ class EnergyResourceConsumption(AeroMAPSModel):
             0.0, index=range(self.prospection_start_year, self.end_year + 1)
         )
 
-        for pathway in self.pathways_manager.get(resources_used=self.resource_name):
+        for pathway in self.pathways_manager.get(
+            resources_used=self.resource_name
+        ) + self.pathways_manager.get(resources_used_processes=self.resource_name):
             total_resource_consumption += input_data[
                 f"{pathway.name}_{self.resource_name}_total_consumption"
             ]
