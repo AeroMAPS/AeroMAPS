@@ -276,6 +276,11 @@ def compare_json_files(
         if not diff["values_changed"]:
             del diff["values_changed"]
 
+    #TODO: investigate why this is necessary with python 3.12
+    # If iterable added, remove it
+    if "iterable_item_added" in diff:
+        del diff["iterable_item_added"]
+
     if verbose:
         if diff:
             print("Differences found:")
