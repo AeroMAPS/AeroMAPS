@@ -99,6 +99,9 @@ jobs:
           done
 
       - name: Compare timings
+        shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
         run: |
           echo "Notebook timing comparison:" >> $GITHUB_STEP_SUMMARY
           {
@@ -106,8 +109,9 @@ jobs:
             sep="|----------|----|--------|----------|----------------|----------|----------|"
             echo "$header"
             echo "$sep"
+            IFS=$'\n'
             for nb in $NOTEBOOKS; do
-              base=$(basename $nb)
+              base=$(basename "$nb")
               os="${{ matrix.os }}"
               py="${{ matrix.python-version }}"
               t_main=$(cat /tmp/timings/$base.main.time)
