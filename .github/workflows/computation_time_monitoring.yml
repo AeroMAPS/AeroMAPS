@@ -41,6 +41,9 @@ jobs:
         id: branch
         run: echo "BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
+      - name: Stash notebook changes
+        run: git stash push -u -m "Stash before switching branches"
+
       - name: Run notebooks on current branch
         run: |
           mkdir -p timings
@@ -101,4 +104,6 @@ jobs:
 
       - name: Restore branch
         if: always()
-        run: git checkout $BRANCH_NAME
+        run: |
+          git checkout $BRANCH_NAME
+          git stash pop || true
