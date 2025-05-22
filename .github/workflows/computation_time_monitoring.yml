@@ -9,7 +9,7 @@ on:
       - '**'
 
 jobs:
-  computation-time-monitor:
+  individual-computation-time-monitoring:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -92,7 +92,7 @@ jobs:
 
       - name: Compare timings
         run: |
-          echo "Notebook timing comparison:"
+          echo "Notebook timing comparison:" >> $GITHUB_STEP_SUMMARY
           {
             header="| Notebook | OS | Python | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
             sep="|----------|----|--------|----------|----------------|----------|----------|"
@@ -113,7 +113,16 @@ jobs:
               fi
               echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
             done
-          } | tee -a $GITHUB_STEP_SUMMARY
+          } >> $GITHUB_WORKSPACE/timing_matrix_table.md
+
+          cat $GITHUB_WORKSPACE/timing_matrix_table.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload timing summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-matrix-summary
+          path: $GITHUB_WORKSPACE/timing_matrix_table.md
 
       - name: Stash notebook changes (main)
         run: git stash push -u -m "Stash main branch notebook changes"
@@ -123,3 +132,28 @@ jobs:
         run: |
           git checkout $BRANCH_NAME
           git stash pop || true
+
+  computation-time-monitoring-summary:
+    needs: individual-computation-time-monitoring
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download timing summary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: timing-matrix-summary
+          path: timing_summaries
+
+      - name: Combine all timing summaries
+        run: |
+          echo "## Global Notebook Timing Comparison" > global_timing_summary.md
+          cat timing_summaries/timing_matrix_table.md >> global_timing_summary.md
+
+      - name: Upload global timing summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-timing-summary
+          path: global_timing_summary.md
+
+      - name: Add global timing summary to job summary
+        run: cat global_timing_summary.md >> $GITHUB_STEP_SUMMARY
