@@ -84,11 +84,11 @@ class AeroMAPSProcess(object):
             )
             self.fleet_model.compute()
 
-        input_data = self._set_inputs()
+        input_data = self.parameters.to_dict()
 
         if self.fleet is not None:
             # This is needed since fleet model is particular discipline
-            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
+            input_data["dummy_fleet_model_output"] = np.array([1.0])
 
         self.process.execute(input_data=input_data)
 
@@ -327,19 +327,6 @@ class AeroMAPSProcess(object):
             climate_historical_data_file_path, delimiter=";", header=None
         )
         self.climate_historical_data = historical_dataset_df.values
-
-    def _set_inputs(self):
-        all_inputs = {}
-        # TODO: make this more efficient
-        for disc in self.disciplines:
-            disc.model.parameters = self.parameters
-            disc.model._initialize_df()
-            # disc.update_defaults()
-            # all_inputs.update(disc.default_inputs)
-
-        all_inputs.update(self.parameters.__dict__)
-
-        return all_inputs
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():

@@ -276,6 +276,28 @@
             10124456000000.0,
             10540946000000.0
         ],
+        "dummy_fleet_model_output": [
+            1.0,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+        ],
         "energy_consumption_init": [
             8326707840000.0,
             8142488640000.0,
