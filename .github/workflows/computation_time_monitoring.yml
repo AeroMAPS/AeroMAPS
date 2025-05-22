@@ -67,6 +67,7 @@ jobs:
 
       - name: Run notebooks on main branch
         run: |
+          mkdir -p timings
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on main"
             start=$(date +%s)
