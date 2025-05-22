@@ -102,6 +102,9 @@ jobs:
             done
           } | tee -a $GITHUB_STEP_SUMMARY
           exit $fail
+          
+      - name: Stash notebook changes (main)
+        run: git stash push -u -m "Stash main branch notebook changes"
 
       - name: Restore branch
         if: always()
