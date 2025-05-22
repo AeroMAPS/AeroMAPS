@@ -9,14 +9,22 @@ on:
       - '**'
 
 jobs:
-  speed-monitor:
-    runs-on: ubuntu-latest
+  computation-time-monitor:
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        python-version: [ '3.11' ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
 
     steps:
+
+      # If macos increase the max number of semaphores
+      - name: Set sysctl for macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          sudo sysctl -w kern.posix.sem.max=20000
+
       - name: Set notebook list
         run: |
             echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
@@ -86,10 +94,14 @@ jobs:
         run: |
           echo "Notebook timing comparison:"
           {
-            echo "| Notebook | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
-            echo "|----------|----------|----------------|----------|----------|"
+            header="| Notebook | OS | Python | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
+            sep="|----------|----|--------|----------|----------------|----------|----------|"
+            echo "$header"
+            echo "$sep"
             for nb in $NOTEBOOKS; do
               base=$(basename $nb)
+              os="${{ matrix.os }}"
+              py="${{ matrix.python-version }}"
               t_main=$(cat /tmp/timings/$base.main.time)
               t_branch=$(cat /tmp/timings/$base.$BRANCH_NAME.time)
               diff=$((t_branch-t_main))
@@ -99,7 +111,7 @@ jobs:
               else
                 percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
               fi
-              echo "| $base | $t_main | $t_branch | $diff | $percent |"
+              echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
             done
           } | tee -a $GITHUB_STEP_SUMMARY
 
