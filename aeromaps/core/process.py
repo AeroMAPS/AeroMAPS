@@ -84,26 +84,6 @@ class AeroMAPSProcess(object):
 
         self._update_variables()
 
-    def _pre_compute(self):
-
-        input_data = self.parameters.to_dict()
-
-        if self.fleet is not None:
-            # Necessary when user hard coded the fleet
-            self.fleet_model.fleet.all_aircraft_elements = (
-                self.fleet_model.fleet.get_all_aircraft_elements()
-            )
-            self.fleet_model.compute()
-        
-            # This is needed since fleet model is particular discipline
-            input_data["dummy_fleet_model_output"] = np.array([1.0])
-                    
-        # Initialize the dataframes witjh latest parameter values
-        for disc in self.disciplines:
-            disc.model._initialize_df()
-        
-        return input_data
-
     def write_json(self, file_name=None):
         if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -175,6 +155,26 @@ class AeroMAPSProcess(object):
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
         return fig
+
+    def _pre_compute(self):
+
+        input_data = self.parameters.to_dict()
+
+        if self.fleet is not None:
+            # Necessary when user hard coded the fleet
+            self.fleet_model.fleet.all_aircraft_elements = (
+                self.fleet_model.fleet.get_all_aircraft_elements()
+            )
+            self.fleet_model.compute()
+        
+            # This is needed since fleet model is particular discipline
+            input_data["dummy_fleet_model_output"] = np.array([1.0])
+                    
+        # Initialize the dataframes witjh latest parameter values
+        for disc in self.disciplines:
+            disc.model._initialize_df()
+        
+        return input_data
 
     def _initialize_configuration(self):
         # Load the default configuration file
@@ -517,7 +517,7 @@ class AeroMAPSProcess(object):
 
     def _read_data_information(self, file_name=None):
         if file_name is None:
-            file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
+            file_name = self.config["CSV_DATA_INFORMATION_FILE"]
         df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
