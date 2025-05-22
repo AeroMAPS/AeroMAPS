@@ -277,6 +277,7 @@ def compare_json_files(
             del diff["values_changed"]
 
     #TODO: investigate why this is necessary with python 3.12
+    # total_co2_equivalent_emissions_ratio
     # If iterable added, remove it
     if "iterable_item_added" in diff:
         del diff["iterable_item_added"]
