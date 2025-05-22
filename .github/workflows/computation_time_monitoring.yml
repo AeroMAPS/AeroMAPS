@@ -43,13 +43,13 @@ jobs:
 
       - name: Run notebooks on current branch
         run: |
-          mkdir -p timings
+          mkdir -p /tmp/timings
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on $BRANCH_NAME"
             start=$(date +%s)
             poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
             end=$(date +%s)
-            echo "$((end - start))" > timings/$(basename $nb).$BRANCH_NAME.time
+            echo "$((end - start))" > /tmp/timings/$(basename $nb).$BRANCH_NAME.time
           done
 
       - name: Stash notebook changes
@@ -67,13 +67,13 @@ jobs:
 
       - name: Run notebooks on main branch
         run: |
-          mkdir -p timings
+          mkdir -p /tmp/timings
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on main"
             start=$(date +%s)
             poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
             end=$(date +%s)
-            echo "$((end - start))" > timings/$(basename $nb).main.time
+            echo "$((end - start))" > /tmp/timings/$(basename $nb).main.time
           done
 
       - name: Compare timings
@@ -85,8 +85,8 @@ jobs:
             echo "|----------|----------|----------------|----------|----------|"
             for nb in $NOTEBOOKS; do
               base=$(basename $nb)
-              t_main=$(cat timings/$base.main.time)
-              t_branch=$(cat timings/$base.$BRANCH_NAME.time)
+              t_main=$(cat /tmp/timings/$base.main.time)
+              t_branch=$(cat /tmp/timings/$base.$BRANCH_NAME.time)
               diff=$((t_branch-t_main))
               # Calculate percent difference (avoid division by zero)
               if [ "$t_main" -eq 0 ]; then
