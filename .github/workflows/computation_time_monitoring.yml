@@ -19,7 +19,13 @@ jobs:
     steps:
       - name: Set notebook list
         run: |
-          echo "NOTEBOOKS=aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
+            echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
+            echo "aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
+            echo "aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb" >> $GITHUB_ENV
+            echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
+            echo "aeromaps/notebooks/publications/macc/examples_macc_application.ipynb" >> $GITHUB_ENV
+            echo "aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
 
       - name: Checkout current branch
         uses: actions/checkout@v4
