@@ -1,0 +1,93 @@
+name: Computation Time Monitoring
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - '**'
+
+jobs:
+  speed-monitor:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ '3.11' ]
+
+    notebooks:
+      - aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb
+      - aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb
+
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Save current branch name
+        id: branch
+        run: echo "BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+
+      - name: Run notebooks on current branch
+        run: |
+          mkdir -p timings
+          for nb in "${{ toJson(job.notebooks) }}"; do
+            echo "Timing $nb on ${{ env.BRANCH_NAME }}"
+            start=$(date +%s)
+            poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
+            end=$(date +%s)
+            echo "$((end - start))" > timings/$(basename $nb).${{ env.BRANCH_NAME }}.time
+          done
+
+      - name: Checkout main branch
+        run: |
+          git fetch origin main:main
+          git checkout main
+
+      - name: Install dependencies (main)
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Run notebooks on main branch
+        run: |
+          for nb in "${{ toJson(job.notebooks) }}"; do
+            echo "Timing $nb on main"
+            start=$(date +%s)
+            poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
+            end=$(date +%s)
+            echo "$((end - start))" > timings/$(basename $nb).main.time
+          done
+
+      - name: Compare timings
+        run: |
+          echo "Notebook timing comparison:"
+          {
+            echo "| Notebook | main (s) | ${{ env.BRANCH_NAME }} (s) | diff (s) |"
+            echo "|----------|----------|----------------|----------|"
+            for nb in "${{ toJson(job.notebooks) }}"; do
+              base=$(basename $nb)
+              t_main=$(cat timings/$base.main.time)
+              t_branch=$(cat timings/$base.${{ env.BRANCH_NAME }}.time)
+              diff=$((t_branch-t_main))
+              echo "$base: main=${t_main}s, ${{ env.BRANCH_NAME }}=${t_branch}s, diff=${diff}s"
+              echo "| $base | $t_main | $t_branch | $diff |"
+            done
+          } | tee -a $GITHUB_STEP_SUMMARY
+
+      - name: Restore branch
+        if: always()
+        run: git checkout ${{ env.BRANCH_NAME }}
