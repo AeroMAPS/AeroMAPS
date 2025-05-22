@@ -16,11 +16,13 @@ jobs:
       matrix:
         python-version: [ '3.11' ]
 
-    notebooks:
-      - aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb
-      - aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb
-
     steps:
+      - name: Set notebook list
+        run: |
+          echo "NOTEBOOKS='\
+          aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb\
+          aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb'" >> $GITHUB_ENV
+
       - name: Checkout current branch
         uses: actions/checkout@v4
 
@@ -44,12 +46,12 @@ jobs:
       - name: Run notebooks on current branch
         run: |
           mkdir -p timings
-          for nb in "${{ toJson(job.notebooks) }}"; do
-            echo "Timing $nb on ${{ env.BRANCH_NAME }}"
+          for nb in $NOTEBOOKS; do
+            echo "Timing $nb on $BRANCH_NAME"
             start=$(date +%s)
             poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
             end=$(date +%s)
-            echo "$((end - start))" > timings/$(basename $nb).${{ env.BRANCH_NAME }}.time
+            echo "$((end - start))" > timings/$(basename $nb).$BRANCH_NAME.time
           done
 
       - name: Checkout main branch
@@ -64,7 +66,7 @@ jobs:
 
       - name: Run notebooks on main branch
         run: |
-          for nb in "${{ toJson(job.notebooks) }}"; do
+          for nb in $NOTEBOOKS; do
             echo "Timing $nb on main"
             start=$(date +%s)
             poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
@@ -77,12 +79,12 @@ jobs:
           echo "Notebook timing comparison:"
           fail=0
           {
-            echo "| Notebook | main (s) | ${{ env.BRANCH_NAME }} (s) | diff (s) | diff (%) |"
+            echo "| Notebook | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
             echo "|----------|----------|----------------|----------|----------|"
-            for nb in "${{ toJson(job.notebooks) }}"; do
+            for nb in $NOTEBOOKS; do
               base=$(basename $nb)
               t_main=$(cat timings/$base.main.time)
-              t_branch=$(cat timings/$base.${{ env.BRANCH_NAME }}.time)
+              t_branch=$(cat timings/$base.$BRANCH_NAME.time)
               diff=$((t_branch-t_main))
               # Calculate percent difference (avoid division by zero)
               if [ "$t_main" -eq 0 ]; then
@@ -90,7 +92,7 @@ jobs:
               else
                 percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
               fi
-              echo "$base: main=${t_main}s, ${{ env.BRANCH_NAME }}=${t_branch}s, diff=${diff}s, diff=${percent}%"
+              echo "$base: main=${t_main}s, $BRANCH_NAME=${t_branch}s, diff=${diff}s, diff=${percent}%"
               echo "| $base | $t_main | $t_branch | $diff | $percent |"
               # Fail if percent difference > 1%
               abs_percent=$(awk -v p="$percent" 'BEGIN { print (p<0)?-p:p }')
@@ -101,4 +103,4 @@ jobs:
 
       - name: Restore branch
         if: always()
-        run: git checkout ${{ env.BRANCH_NAME }}
+        run: git checkout $BRANCH_NAME
