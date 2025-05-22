@@ -111,19 +111,22 @@ jobs:
             echo "$sep"
             IFS=$'\n'
             for nb in $NOTEBOOKS; do
-              base=$(basename "$nb")
+              nb_trimmed=$(echo "$nb" | tr -d '\r')
+              base=$(basename "$nb_trimmed")
               os="${{ matrix.os }}"
               py="${{ matrix.python-version }}"
-              t_main=$(cat /tmp/timings/$base.main.time)
-              t_branch=$(cat /tmp/timings/$base.$BRANCH_NAME.time)
-              diff=$((t_branch-t_main))
-              # Calculate percent difference (avoid division by zero)
-              if [ "$t_main" -eq 0 ]; then
-                percent=0
-              else
-                percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+              if [[ -f /tmp/timings/$base.main.time && -f /tmp/timings/$base.$BRANCH_NAME.time ]]; then
+                t_main=$(cat /tmp/timings/$base.main.time)
+                t_branch=$(cat /tmp/timings/$base.$BRANCH_NAME.time)
+                diff=$((t_branch-t_main))
+                # Calculate percent difference (avoid division by zero)
+                if [ "$t_main" -eq 0 ]; then
+                  percent=0
+                else
+                  percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+                fi
+                echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
               fi
-              echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
             done
           } >> $GITHUB_WORKSPACE/timing_matrix_table.md
 
@@ -144,28 +147,3 @@ jobs:
         run: |
           git checkout $BRANCH_NAME
           git stash pop || true
-
-  computation-time-monitoring-summary:
-    needs: individual-computation-time-monitoring
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Download timing summary artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: timing-matrix-summary
-          path: timing_summaries
-
-      - name: Combine all timing summaries
-        run: |
-          echo "## Global Notebook Timing Comparison" > global_timing_summary.md
-          cat timing_summaries/timing_matrix_table.md >> global_timing_summary.md
-
-      - name: Upload global timing summary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: global-timing-summary
-          path: global_timing_summary.md
-
-      - name: Add global timing summary to job summary
-        run: cat global_timing_summary.md >> $GITHUB_STEP_SUMMARY
