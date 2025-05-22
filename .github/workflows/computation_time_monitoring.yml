@@ -53,7 +53,7 @@ jobs:
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on $BRANCH_NAME"
             start=$(date +%s)
-            poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb"
             end=$(date +%s)
             echo "$((end - start))" > /tmp/timings/$(basename $nb).$BRANCH_NAME.time
           done
@@ -77,7 +77,7 @@ jobs:
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on main"
             start=$(date +%s)
-            poetry run jupyter nbconvert --to notebook --execute --inplace "$nb"
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb"
             end=$(date +%s)
             echo "$((end - start))" > /tmp/timings/$(basename $nb).main.time
           done
