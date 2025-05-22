@@ -56,6 +56,7 @@ jobs:
         run: echo "BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
       - name: Run notebooks on current branch
+        shell: bash
         run: |
           mkdir -p /tmp/timings
           for nb in $NOTEBOOKS; do
@@ -80,6 +81,7 @@ jobs:
           poetry install
 
       - name: Run notebooks on main branch
+        shell: bash
         run: |
           mkdir -p /tmp/timings
           for nb in $NOTEBOOKS; do
