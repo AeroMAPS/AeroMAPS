@@ -57,8 +57,11 @@ jobs:
 
       - name: Run notebooks on current branch
         shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
         run: |
           mkdir -p /tmp/timings
+          IFS=$'\n'
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on $BRANCH_NAME"
             start=$(date +%s)
@@ -82,8 +85,11 @@ jobs:
 
       - name: Run notebooks on main branch
         shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
         run: |
           mkdir -p /tmp/timings
+          IFS=$'\n'
           for nb in $NOTEBOOKS; do
             echo "Timing $nb on main"
             start=$(date +%s)
