@@ -1827,32 +1827,53 @@ class DOCEvolutionBreakdown:
         self.create_plot()
 
     def create_plot(self):
-        self.ax.plot(
-            self.prospective_years,
-            np.zeros(len(self.prospective_years)),
-            color="royalblue",
-            linestyle="-",
-            linewidth=1,
-        )
-
         (self.line_total,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
             color="blue",
             linestyle="-",
-            label="Total DOC",
+            label="Total DOC (Net)",
             linewidth=2,
+            zorder=3,
+        )
+
+        (self.line_total_gross,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            color="blue",
+            linestyle=":",
+            label="Total DOC (Gross)",
+            linewidth=2,
+            zorder=3,
         )
 
         (self.line_total_adjusted,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="blue",
             linestyle="--",
-            label="Total DOC adjusted of offset",
+            label="Total DOC (Net, with offset)",
             linewidth=2,
+            zorder=3,
+        )
+
+        # start with energy subsidies
+        self.ax.fill_between(
+            self.prospective_years,
+            -self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="cornflowerblue",
+            hatch="xx",
+            label="Energy subsidy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -1861,6 +1882,8 @@ class DOCEvolutionBreakdown:
             np.zeros(len(self.prospective_years)),
             color="royalblue",
             label="Non-energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -1870,16 +1893,37 @@ class DOCEvolutionBreakdown:
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             color="cornflowerblue",
             label="Energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            color="lightsteelblue",
+            color="cornflowerblue",
+            hatch="//",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Energy taxes (non-carbon)",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
+            color="cornflowerblue",
+            hatch="..",
+            linewidth=0.5,
+            edgecolor="dimgray",
             label="Carbon tax",
         )
 
@@ -1888,7 +1932,44 @@ class DOCEvolutionBreakdown:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct Operating Costs [€/ASK]")
         self.ax = plt.gca()
-        self.ax.legend()
+
+        components_handles = [
+            Patch(facecolor="cornflowerblue", edgecolor="black", label="Energy"),
+            Patch(facecolor="royalblue", edgecolor="black", label="Non-energy"),
+        ]
+
+        self.ax.add_artist(
+            self.ax.legend(
+                handles=components_handles,
+                loc="upper left",
+                prop={"size": 8},
+            )
+        )
+
+        tax_handles = [
+            Patch(facecolor="none", edgecolor="black", hatch="//", label="Tax"),
+            Patch(
+                facecolor="none",
+                edgecolor="black",
+                hatch="xx",
+                label="Subsidy",
+            ),
+            Patch(
+                facecolor="none",
+                edgecolor="black",
+                hatch="..",
+                label="Carbon tax",
+            ),
+        ]
+
+        self.ax.add_artist(
+            self.ax.legend(
+                handles=tax_handles,
+                loc="upper right",
+                prop={"size": 8},
+            )
+        )
+
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
         # self.ax.set_ylim(0,)
 
@@ -1913,7 +1994,27 @@ class DOCEvolutionBreakdown:
         self.line_total_adjusted.set_ydata(
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
+        )
+
+        self.line_total_gross.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            -self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="cornflowerblue",
+            hatch="xx",
+            label="Energy subsidy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -1922,6 +2023,8 @@ class DOCEvolutionBreakdown:
             np.zeros(len(self.prospective_years)),
             color="royalblue",
             label="Non-energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -1931,18 +2034,40 @@ class DOCEvolutionBreakdown:
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             color="cornflowerblue",
             label="Energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            color="lightsteelblue",
+            color="cornflowerblue",
+            hatch="//",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Energy taxes (non-carbon)",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
+            color="cornflowerblue",
+            hatch="..",
+            linewidth=0.5,
+            edgecolor="dimgray",
             label="Carbon tax",
         )
+
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
@@ -2122,18 +2247,14 @@ class AirfareEvolutionBreakdown:
         self.create_plot()
 
     def create_plot(self):
-        self.ax.plot(
-            self.prospective_years,
-            np.zeros(len(self.prospective_years)),
-            color="royalblue",
-            linestyle="-",
-            linewidth=1,
-        )
+        print(self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"])
 
         (self.line_total_airfare,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2146,33 +2267,53 @@ class AirfareEvolutionBreakdown:
             linewidth=2,
         )
 
-        (self.line_total_lowering_offset,) = self.ax.plot(
+        (self.line_total_gross,) = self.ax.plot(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            color="blue",
+            linestyle=":",
+            label="Total DOC (Gross)",
+            linewidth=2,
+            zorder=3,
+        )
+
+        (self.line_total_adjusted,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="blue",
-            linestyle="-",
-            label="Total DOC (Carbon tax not including offsets)",
+            linestyle="--",
+            label="Total DOC (Net, with offset)",
             linewidth=2,
+            zorder=3,
         )
 
-        (self.line_doc_total,) = self.ax.plot(
+        # start with energy subsidies
+        self.ax.fill_between(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"],
-            color="blue",
-            linestyle="--",
-            label="Total DOC (Carbon tax applied to all direct emissions)",
-            linewidth=2,
+            -self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="cornflowerblue",
+            hatch="xx",
+            label="Energy subsidy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             np.zeros(len(self.prospective_years)),
-            color="#004CA3",
-            alpha=0.8,
-            label="DOC Non-energy",
+            color="royalblue",
+            label="Non-energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -2180,30 +2321,51 @@ class AirfareEvolutionBreakdown:
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
-            color="#0077FF",
-            alpha=0.8,
-            label="DOC Energy",
+            color="cornflowerblue",
+            label="Energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            color="#5CA8FF",
-            alpha=0.8,
-            label="Carbon tax (not including offsets)",
+            color="cornflowerblue",
+            hatch="//",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Energy taxes (non-carbon)",
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
+            color="cornflowerblue",
+            hatch="..",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Carbon tax (adjusted for offsets)",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="#848482",
@@ -2215,11 +2377,13 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             color="#FF8800",
@@ -2231,12 +2395,14 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"],
@@ -2249,6 +2415,7 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2256,6 +2423,7 @@ class AirfareEvolutionBreakdown:
             + self.df.loc[self.prospective_years, "passenger_tax_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2269,6 +2437,7 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2277,6 +2446,7 @@ class AirfareEvolutionBreakdown:
             + self.df.loc[self.prospective_years, "operational_profit_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2294,9 +2464,6 @@ class AirfareEvolutionBreakdown:
         self.ax = plt.gca()
         self.ax.legend(fontsize="8", loc="upper left")
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
-        self.ax.set_ylim(
-            0,
-        )
 
         self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
@@ -2317,6 +2484,8 @@ class AirfareEvolutionBreakdown:
         self.line_total_airfare.set_ydata(
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2325,21 +2494,40 @@ class AirfareEvolutionBreakdown:
             + self.df.loc[self.prospective_years, "operational_profit_per_ask"]
         )
 
-        self.line_total_lowering_offset.set_ydata(
+        self.line_total_gross.set_ydata(
+            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
+        )
+
+        self.line_total_adjusted.set_ydata(
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
         )
 
-        self.line_doc_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
+        self.ax.fill_between(
+            self.prospective_years,
+            -self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
+            np.zeros(len(self.prospective_years)),
+            color="cornflowerblue",
+            hatch="xx",
+            label="Energy subsidy",
+            edgecolor="dimgray",
+            linewidth=0.5,
+        )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
             np.zeros(len(self.prospective_years)),
-            color="#004CA3",
-            alpha=0.8,
-            label="DOC Non-energy",
+            color="royalblue",
+            label="Non-energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
@@ -2347,30 +2535,51 @@ class AirfareEvolutionBreakdown:
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
-            color="#0077FF",
-            alpha=0.8,
-            label="DOC Energy",
+            color="cornflowerblue",
+            label="Energy",
+            edgecolor="dimgray",
+            linewidth=0.5,
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            color="#5CA8FF",
-            alpha=0.8,
-            label="Carbon tax (not including offsets)",
+            color="cornflowerblue",
+            hatch="//",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Energy taxes (non-carbon)",
         )
 
         self.ax.fill_between(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
+            color="cornflowerblue",
+            hatch="..",
+            linewidth=0.5,
+            edgecolor="dimgray",
+            label="Carbon tax (adjusted for offsets)",
+        )
+
+        self.ax.fill_between(
+            self.prospective_years,
+            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"],
             color="#848482",
@@ -2382,11 +2591,13 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"],
             color="#FF8800",
@@ -2398,12 +2609,14 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "indirect_operating_cost_per_ask"],
@@ -2416,6 +2629,7 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2423,6 +2637,7 @@ class AirfareEvolutionBreakdown:
             + self.df.loc[self.prospective_years, "passenger_tax_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2436,6 +2651,7 @@ class AirfareEvolutionBreakdown:
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]
@@ -2444,6 +2660,7 @@ class AirfareEvolutionBreakdown:
             + self.df.loc[self.prospective_years, "operational_profit_per_ask"],
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
+            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
             + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
             + self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"]
             + self.df.loc[self.prospective_years, "non_operating_cost_per_ask"]

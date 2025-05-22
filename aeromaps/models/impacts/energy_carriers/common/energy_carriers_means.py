@@ -42,6 +42,9 @@ class EnergyCarriersMeans(AeroMAPSModel):
                     f"{aircraft_type}_mean_net_mfsp_without_carbon_tax": pd.Series([0.0]),
                     f"{aircraft_type}_mean_carbon_tax_supplement": pd.Series([0.0]),
                     f"{aircraft_type}_marginal_net_mfsp": pd.Series([0.0]),
+                    f"{aircraft_type}_mean_unit_subsidy": pd.Series([0.0]),
+                    f"{aircraft_type}_mean_unit_tax": pd.Series([0.0]),
+                    f"{aircraft_type}_mean_unit_carbon_tax": pd.Series([0.0]),
                 }
             )
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -63,6 +66,11 @@ class EnergyCarriersMeans(AeroMAPSModel):
                                 [0.0]
                             ),
                             f"{aircraft_type}_{energy_origin}_marginal_net_mfsp": pd.Series([0.0]),
+                            f"{aircraft_type}_{energy_origin}_mean_unit_subsidy": pd.Series([0.0]),
+                            f"{aircraft_type}_{energy_origin}_mean_unit_tax": pd.Series([0.0]),
+                            f"{aircraft_type}_{energy_origin}_mean_unit_carbon_tax": pd.Series(
+                                [0.0]
+                            ),
                         }
                     )
 
@@ -77,6 +85,9 @@ class EnergyCarriersMeans(AeroMAPSModel):
                         f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
+                        f"{pathway.name}_unit_subsidy": pd.Series([0.0]),
+                        f"{pathway.name}_unit_tax": pd.Series([0.0]),
+                        f"{pathway.name}_unit_carbon_tax": pd.Series([0.0]),
                     }
                 )
 
@@ -106,6 +117,9 @@ class EnergyCarriersMeans(AeroMAPSModel):
             mean_carbon_tax_supplement = default_series()
             marginal_net_mfsp = default_series()
             cumulative_share = default_series()
+            mean_unit_subsidy = default_series()
+            mean_unit_tax = default_series()
+            mean_unit_carbon_tax = default_series()
 
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 # Get the pathways for this aircraft type and energy origin
@@ -120,6 +134,9 @@ class EnergyCarriersMeans(AeroMAPSModel):
                     origin_mean_carbon_tax_supplement = default_series()
                     origin_marginal_net_mfsp = default_series()
                     origin_cumulative_share = default_series()
+                    origin_mean_unit_subsidy = default_series()
+                    origin_mean_unit_tax = default_series()
+                    origin_mean_unit_carbon_tax = default_series()
 
                     for pathway in pathways:
                         share = input_data[f"{pathway.name}_share_{aircraft_type}"]
@@ -166,6 +183,22 @@ class EnergyCarriersMeans(AeroMAPSModel):
                             * origin_share
                         ).fillna(0) / 100
 
+                        pathway_unit_subsidy = input_data[f"{pathway.name}_unit_subsidy"]
+                        mean_unit_subsidy += (pathway_unit_subsidy * share).fillna(0) / 100
+                        origin_mean_unit_subsidy += (pathway_unit_subsidy * origin_share).fillna(
+                            0
+                        ) / 100
+
+                        pathway_unit_tax = input_data[f"{pathway.name}_unit_tax"]
+                        mean_unit_tax += (pathway_unit_tax * share).fillna(0) / 100
+                        origin_mean_unit_tax += (pathway_unit_tax * origin_share).fillna(0) / 100
+
+                        pathway_unit_carbon_tax = input_data[f"{pathway.name}_unit_carbon_tax"]
+                        mean_unit_carbon_tax += (pathway_unit_carbon_tax * share).fillna(0) / 100
+                        origin_mean_unit_carbon_tax += (
+                            pathway_unit_carbon_tax * origin_share
+                        ).fillna(0) / 100
+
                         # compute the marginal net MFSP for each aircraft type: the most expensive pathways each year
                         marginal_net_mfsp = marginal_net_mfsp.where(
                             marginal_net_mfsp > pathway_net_mfsp.fillna(0),
@@ -196,6 +229,16 @@ class EnergyCarriersMeans(AeroMAPSModel):
                     output_data[f"{aircraft_type}_{energy_origin}_marginal_net_mfsp"] = (
                         origin_marginal_net_mfsp * origin_valid_years
                     )
+                    # Store mean unit subsidy, tax, carbon tax
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_unit_subsidy"] = (
+                        origin_mean_unit_subsidy * origin_valid_years
+                    )
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_unit_tax"] = (
+                        origin_mean_unit_tax * origin_valid_years
+                    )
+                    output_data[f"{aircraft_type}_{energy_origin}_mean_unit_carbon_tax"] = (
+                        origin_mean_unit_carbon_tax * origin_valid_years
+                    )
 
             # if no energy consumption for any year, replace by nan. if all pathways not equal to 100%, triggers warning
             valid_years = cumulative_share.replace(0, np.nan)
@@ -220,6 +263,12 @@ class EnergyCarriersMeans(AeroMAPSModel):
                 mean_carbon_tax_supplement * valid_years
             )
             output_data[f"{aircraft_type}_marginal_net_mfsp"] = marginal_net_mfsp * valid_years
+            # Store mean unit subsidy, tax, carbon tax
+            output_data[f"{aircraft_type}_mean_unit_subsidy"] = mean_unit_subsidy * valid_years
+            output_data[f"{aircraft_type}_mean_unit_tax"] = mean_unit_tax * valid_years
+            output_data[f"{aircraft_type}_mean_unit_carbon_tax"] = (
+                mean_unit_carbon_tax * valid_years
+            )
 
         # get output data in the means
         self._store_outputs(output_data)

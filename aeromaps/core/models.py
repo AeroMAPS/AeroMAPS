@@ -1,9 +1,11 @@
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
-    PassengerAircraftDocCarbonTax,
     PassengerAircraftDocNonEnergyComplex,
     PassengerAircraftTotalDoc,
     PassengerAircraftDocNonEnergySimple,
+    PassengerAircraftDocEnergyCarbonTax,
+    PassengerAircraftDocEnergyTax,
+    PassengerAircraftDocEnergySubsidy,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric import (
     FleetEvolution,
@@ -498,10 +500,16 @@ models_operation_cost_top_down = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
-    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
-        "passenger_aircraft_doc_carbon_tax"
+    "passenger_aricraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
+        "passenger_aricraft_doc_energy_carbon_tax"
     ),
+    "passenger_aricraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
+        "passenger_aricraft_doc_energy_tax"
+    ),
+    "passenger_aircraft_doc_energy_subsidy": PassengerAircraftDocEnergySubsidy(
+        "passenger_aircraft_doc_energy_subsidy"
+    ),
+    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
@@ -525,10 +533,16 @@ models_operation_cost_bottom_up = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
-    "passenger_aircraft_doc_carbon_tax": PassengerAircraftDocCarbonTax(
-        "passenger_aircraft_doc_carbon_tax"
+    "passenger_aricraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
+        "passenger_aricraft_doc_energy_carbon_tax"
     ),
+    "passenger_aricraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
+        "passenger_aricraft_doc_energy_tax"
+    ),
+    "passenger_aircraft_doc_energy_subsidy": PassengerAircraftDocEnergySubsidy(
+        "passenger_aircraft_doc_energy_subsidy"
+    ),
+    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
     "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
         "passenger_aircraft_noc_carbon_offset"
     ),
