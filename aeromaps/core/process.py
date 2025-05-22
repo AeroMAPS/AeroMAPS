@@ -82,7 +82,24 @@ class AeroMAPSProcess(object):
         
         self.process.execute(input_data=input_data)
 
-        self._update_variables()
+        self._update_data_from_model()
+
+    def get_dataframes(self):
+        """Return all main DataFrames as a dictionary, generated on demand."""
+        return {
+            "data_information": self._get_data_information_df(),
+            "vector_inputs": self._get_vector_inputs_df(),
+            "float_inputs": self._get_float_inputs_df(),
+            "str_inputs": self._get_str_inputs_df(),
+            "vector_outputs": self._get_vector_outputs_df(),
+            "float_outputs": self._get_float_outputs_df(),
+            "climate_outputs": self._get_climate_outputs_df(),
+            # Add more if needed
+        }
+
+    def get_json(self):
+        """Return the model outputs as a JSON-serializable dictionary."""
+        return self._data_to_json()
 
     def write_json(self, file_name=None):
         if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
@@ -98,7 +115,7 @@ class AeroMAPSProcess(object):
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         # Retrieve the data from the model
-        json_data = self._data_to_json()
+        json_data = self.get_json()
 
         with open(file_name, "w", encoding="utf-8") as f:
             dump(json_data, f, ensure_ascii=False, indent=4)
@@ -107,13 +124,13 @@ class AeroMAPSProcess(object):
         if file_name is None:
             file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
-            self.data_information_df.to_excel(writer, sheet_name="Data Information")
-            self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
-            self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
-            self.str_inputs_df.to_excel(writer, sheet_name="String Inputs")
-            self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
-            self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
-            self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+            self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
+            self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
+            self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
+            self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
+            self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
+            self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
+            self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
             # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
 
     def generate_n2(self):
@@ -376,11 +393,6 @@ class AeroMAPSProcess(object):
                 else:
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
 
-    def _update_variables(self):
-        self._update_data_from_model()
-
-        self._update_dataframes_from_data()
-
     def _update_data_from_model(self):
         # Inputs
         all_inputs = self.process.get_input_data()
@@ -436,45 +448,44 @@ class AeroMAPSProcess(object):
 
             self.data["float_outputs"].update(disc.model.float_outputs)
 
-    def _update_dataframes_from_data(self):
-        # Float parameters
+    def _get_float_inputs_df(self):
         data = {
             "Name": self.data["float_inputs"].keys(),
             "Value": self.data["float_inputs"].values(),
         }
-        self.float_inputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # String parameters
+    def _get_str_inputs_df(self):
         data = {
             "Name": self.data["str_inputs"].keys(),
             "Value": self.data["str_inputs"].values(),
         }
-        self.str_inputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # Vector parameters
-        self.vector_inputs_df = _dict_to_df(self.data["vector_inputs"], orient="columns")
-        self.vector_inputs_df.sort_index(axis=1, inplace=True)
+    def _get_vector_inputs_df(self):
+        df = _dict_to_df(self.data["vector_inputs"], orient="columns")
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Float outputs df
+    def _get_float_outputs_df(self):
         data = {
             "Name": self.data["float_outputs"].keys(),
             "Value": self.data["float_outputs"].values(),
         }
-        self.float_outputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # Vector outputs dataframe
-        self.vector_outputs_df = self.data["vector_outputs"]
-        self.vector_outputs_df.sort_index(axis=1, inplace=True)
+    def _get_vector_outputs_df(self):
+        df = self.data["vector_outputs"].copy()
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Vector climate dataframe
-        self.climate_outputs_df = self.data["climate_outputs"]
-        self.climate_outputs_df.sort_index(axis=1, inplace=True)
+    def _get_climate_outputs_df(self):
+        df = self.data["climate_outputs"].copy()
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Vector lca xarray
-        self.lca_outputs_xarray = self.data["lca_outputs"]
-
-        # Variable information
-        self._read_data_information()
+    def _get_data_information_df(self):
+        return self._read_data_information()
 
     def _data_to_json(self):
         def convert_values_from_array_to_list(d):
@@ -544,4 +555,4 @@ class AeroMAPSProcess(object):
                     new_row = pd.DataFrame(data=data)
                     var_infos_df = pd.concat([var_infos_df, new_row], ignore_index=True)
 
-        self.data_information_df = var_infos_df
+        return var_infos_df
