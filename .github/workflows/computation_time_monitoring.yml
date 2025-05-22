@@ -75,18 +75,29 @@ jobs:
       - name: Compare timings
         run: |
           echo "Notebook timing comparison:"
+          fail=0
           {
-            echo "| Notebook | main (s) | ${{ env.BRANCH_NAME }} (s) | diff (s) |"
-            echo "|----------|----------|----------------|----------|"
+            echo "| Notebook | main (s) | ${{ env.BRANCH_NAME }} (s) | diff (s) | diff (%) |"
+            echo "|----------|----------|----------------|----------|----------|"
             for nb in "${{ toJson(job.notebooks) }}"; do
               base=$(basename $nb)
               t_main=$(cat timings/$base.main.time)
               t_branch=$(cat timings/$base.${{ env.BRANCH_NAME }}.time)
               diff=$((t_branch-t_main))
-              echo "$base: main=${t_main}s, ${{ env.BRANCH_NAME }}=${t_branch}s, diff=${diff}s"
-              echo "| $base | $t_main | $t_branch | $diff |"
+              # Calculate percent difference (avoid division by zero)
+              if [ "$t_main" -eq 0 ]; then
+                percent=0
+              else
+                percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+              fi
+              echo "$base: main=${t_main}s, ${{ env.BRANCH_NAME }}=${t_branch}s, diff=${diff}s, diff=${percent}%"
+              echo "| $base | $t_main | $t_branch | $diff | $percent |"
+              # Fail if percent difference > 1%
+              abs_percent=$(awk -v p="$percent" 'BEGIN { print (p<0)?-p:p }')
+              awk -v a="$abs_percent" 'BEGIN { exit (a > 1.0) ? 1 : 0 }' || fail=1
             done
           } | tee -a $GITHUB_STEP_SUMMARY
+          exit $fail
 
       - name: Restore branch
         if: always()
