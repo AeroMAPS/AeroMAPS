@@ -26,49 +26,39 @@ jobs:
           sudo sysctl -w kern.posix.sem.max=20000
 
       - name: Set notebook list
+        shell: bash
         run: |
-            echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
-            echo "aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
-            echo "aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb" >> $GITHUB_ENV
-            echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
-            echo "aeromaps/notebooks/publications/macc/examples_macc_application.ipynb" >> $GITHUB_ENV
-            echo "aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-
-      - name: Checkout current branch
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        run: pipx install poetry
-
-      - name: Install dependencies
-        run: |
-          poetry env use ${{ matrix.python-version }}
-          poetry install
+          echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/macc/examples_macc_application.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Save current branch name
         id: branch
-        run: echo "BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        shell: bash
+        run: |
+          raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
+          echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
 
       - name: Run notebooks on current branch
         shell: bash
         env:
           NOTEBOOKS: ${{ env.NOTEBOOKS }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
         run: |
           mkdir -p "${RUNNER_TEMP}/timings"
           IFS=$'\n'
           for nb in $NOTEBOOKS; do
             nb_trimmed=$(echo "$nb" | tr -d '\r')
+            safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
             echo "Timing $nb_trimmed on $BRANCH_NAME"
             start=$(date +%s)
             poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
             end=$(date +%s)
-            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$BRANCH_NAME.time"
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
           done
 
       - name: Stash notebook changes
@@ -106,6 +96,7 @@ jobs:
           NOTEBOOKS: ${{ env.NOTEBOOKS }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
         run: |
+          safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
           echo "Notebook timing comparison:" >> $GITHUB_STEP_SUMMARY
           {
             header="| Notebook | OS | Python | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
@@ -119,11 +110,10 @@ jobs:
               os="${{ matrix.os }}"
               py="${{ matrix.python-version }}"
               main_file="${RUNNER_TEMP}/timings/$base.main.time"
-              branch_file="${RUNNER_TEMP}/timings/$base.$BRANCH_NAME.time"
-              if [[ -f "$main_file" && -f "$branch_file" ]]; then # Check if files exist
+              branch_file="${RUNNER_TEMP}/timings/$base.$safe_branch.time"
+              if [[ -f "$main_file" && -f "$branch_file" ]]; then
                 t_main=$(cat "$main_file" | tr -d '\r\n')
                 t_branch=$(cat "$branch_file" | tr -d '\r\n')
-                # Ensure t_main and t_branch are not empty and are numbers
                 if [[ -n "$t_main" && "$t_main" =~ ^[0-9]+$ && -n "$t_branch" && "$t_branch" =~ ^[0-9]+$ ]]; then
                   diff=$((t_branch-t_main))
                   if [ "$t_main" -eq 0 ]; then
