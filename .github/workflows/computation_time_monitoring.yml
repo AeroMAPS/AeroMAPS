@@ -60,14 +60,15 @@ jobs:
         env:
           NOTEBOOKS: ${{ env.NOTEBOOKS }}
         run: |
-          mkdir -p /tmp/timings
+          mkdir -p "${RUNNER_TEMP}/timings"
           IFS=$'\n'
           for nb in $NOTEBOOKS; do
-            echo "Timing $nb on $BRANCH_NAME"
+            nb_trimmed=$(echo "$nb" | tr -d '\r')
+            echo "Timing $nb_trimmed on $BRANCH_NAME"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$nb"
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
             end=$(date +%s)
-            echo "$((end - start))" > /tmp/timings/$(basename $nb).$BRANCH_NAME.time
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$BRANCH_NAME.time"
           done
 
       - name: Stash notebook changes
@@ -88,20 +89,22 @@ jobs:
         env:
           NOTEBOOKS: ${{ env.NOTEBOOKS }}
         run: |
-          mkdir -p /tmp/timings
+          mkdir -p "${RUNNER_TEMP}/timings"
           IFS=$'\n'
           for nb in $NOTEBOOKS; do
-            echo "Timing $nb on main"
+            nb_trimmed=$(echo "$nb" | tr -d '\r')
+            echo "Timing $nb_trimmed on main"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$nb"
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
             end=$(date +%s)
-            echo "$((end - start))" > /tmp/timings/$(basename $nb).main.time
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
           done
 
       - name: Compare timings
         shell: bash
         env:
           NOTEBOOKS: ${{ env.NOTEBOOKS }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
         run: |
           echo "Notebook timing comparison:" >> $GITHUB_STEP_SUMMARY
           {
@@ -115,17 +118,21 @@ jobs:
               base=$(basename "$nb_trimmed")
               os="${{ matrix.os }}"
               py="${{ matrix.python-version }}"
-              if [[ -f /tmp/timings/$base.main.time && -f /tmp/timings/$base.$BRANCH_NAME.time ]]; then
-                t_main=$(cat /tmp/timings/$base.main.time)
-                t_branch=$(cat /tmp/timings/$base.$BRANCH_NAME.time)
-                diff=$((t_branch-t_main))
-                # Calculate percent difference (avoid division by zero)
-                if [ "$t_main" -eq 0 ]; then
-                  percent=0
-                else
-                  percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+              main_file="${RUNNER_TEMP}/timings/$base.main.time"
+              branch_file="${RUNNER_TEMP}/timings/$base.$BRANCH_NAME.time"
+              if [[ -f "$main_file" && -f "$branch_file" ]]; then # Check if files exist
+                t_main=$(cat "$main_file" | tr -d '\r\n')
+                t_branch=$(cat "$branch_file" | tr -d '\r\n')
+                # Ensure t_main and t_branch are not empty and are numbers
+                if [[ -n "$t_main" && "$t_main" =~ ^[0-9]+$ && -n "$t_branch" && "$t_branch" =~ ^[0-9]+$ ]]; then
+                  diff=$((t_branch-t_main))
+                  if [ "$t_main" -eq 0 ]; then
+                    percent=0
+                  else
+                    percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+                  fi
+                  echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
                 fi
-                echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
               fi
             done
           } >> $GITHUB_WORKSPACE/timing_matrix_table.md
