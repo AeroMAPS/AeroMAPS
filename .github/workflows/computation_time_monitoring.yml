@@ -18,12 +18,6 @@ jobs:
 
     steps:
 
-      # If macos increase the max number of semaphores
-      - name: Set sysctl for macOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          sudo sysctl -w kern.posix.sem.max=20000
-
       - name: Checkout current branch
         uses: actions/checkout@v4
 
