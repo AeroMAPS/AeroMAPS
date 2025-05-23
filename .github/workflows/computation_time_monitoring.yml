@@ -59,27 +59,6 @@ jobs:
           raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
           echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
 
-      - name: Run notebooks on current branch
-        shell: bash
-        env:
-          NOTEBOOKS: ${{ env.NOTEBOOKS }}
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-        run: |
-          mkdir -p "${RUNNER_TEMP}/timings"
-          IFS=$'\n'
-          for nb in $NOTEBOOKS; do
-            nb_trimmed=$(echo "$nb" | tr -d '\r')
-            safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
-            echo "Timing $nb_trimmed on $BRANCH_NAME"
-            start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
-            end=$(date +%s)
-            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
-          done
-
-      - name: Stash notebook changes
-        run: git stash push -u -m "Stash before switching branches"
-
       - name: Checkout main branch
         run: |
           git fetch origin main:main
@@ -105,6 +84,40 @@ jobs:
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
           done
+
+      - name: Stash notebook changes (main)
+        run: git stash push -u -m "Stash main branch notebook changes"
+
+      - name: Restore branch
+        run: |
+          git checkout $BRANCH_NAME
+          git stash pop || true
+
+      - name: Install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Run notebooks on current branch
+        shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/timings"
+          IFS=$'\n'
+          for nb in $NOTEBOOKS; do
+            nb_trimmed=$(echo "$nb" | tr -d '\r')
+            safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
+            echo "Timing $nb_trimmed on $BRANCH_NAME"
+            start=$(date +%s)
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
+            end=$(date +%s)
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
+          done
+
+      - name: Stash notebook changes
+        run: git stash push -u -m "Stash before switching branches"
 
       - name: Compare timings
         shell: bash
