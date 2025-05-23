@@ -9,7 +9,7 @@ import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator
 from typing import Tuple
 
-from aeromaps.core.process import default_parameters_path
+from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
 from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
@@ -44,7 +44,7 @@ class LifeCycleAssessment(AeroMAPSModel):
         # See gemseo.py for more details about addition of auto-generated inputs.
         self.auto_inputs = dict()
         json_file_parameters = Parameters()
-        json_file_parameters.read_json(file_name=default_parameters_path)  # default json file (parameters.json)
+        json_file_parameters.read_json(file_name=DEFAULT_PARAMETERS_PATH)  # default json file (parameters.json)
         json_parameters_dict = json_file_parameters.to_dict()
 
         for x in self.params_names:

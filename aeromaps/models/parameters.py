@@ -6,13 +6,7 @@ from aeromaps.utils.functions import _dict_from_json, _dict_from_parameters_dict
 
 class Parameters:
     def to_dict(self):
-        data = self.__dict__
-
-        for key, value in data.items():
-            if isinstance(value, pd.Series):
-                data[key] = list(value)
-
-        return data
+        return self.__dict__
 
     def from_dict(self, data):
         for key, value in data.items():

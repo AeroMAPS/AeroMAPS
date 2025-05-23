@@ -134,33 +134,34 @@ class GraphicalUserInterface(widgets.VBox):
         self.children = [language, self.tabs]
 
     def _create_dataframe_tabs(self, change=None):
+        dfs = self.process.get_dataframes()
         # Data information
-        datagrid = DataGrid(self.process.data_information_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["data_information"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_data_information_df = datagrid
 
         # Vector inputs
-        datagrid = DataGrid(self.process.vector_inputs_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["vector_inputs"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_vector_inputs_df = datagrid
 
         # Parameters
-        datagrid = DataGrid(self.process.float_inputs_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["float_inputs"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_float_inputs_df = datagrid
 
         # Vector Outputs
-        datagrid = DataGrid(self.process.vector_outputs_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["vector_outputs"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_vector_outputs_df = datagrid
 
         # Float Outputs
-        datagrid = DataGrid(self.process.float_outputs_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["float_outputs"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_float_outputs_df = datagrid
 
         # Climate Outputs
-        datagrid = DataGrid(self.process.climate_outputs_df, selection_mode="cell")
+        datagrid = DataGrid(dfs["climate_outputs"], selection_mode="cell")
         datagrid.auto_fit_columns = True
         self.w_climate_outputs_df = datagrid
 
@@ -183,23 +184,19 @@ class GraphicalUserInterface(widgets.VBox):
         self.df_tabs.set_title(5, "Climate Outputs")
 
     def _update_dataframe_tabs(self, change=None):
-        # Data information
-        self.w_data_information_df.data = self.process.data_information_df
-
-        # Vector inputs
-        self.w_vector_inputs_df.data = self.process.vector_inputs_df
-
-        # Parameters
-        self.w_float_inputs_df.data = self.process.float_inputs_df
-
-        # Vector Outputs
-        self.w_vector_outputs_df.data = self.process.vector_outputs_df
-
-        # Float Outputs
-        self.w_float_outputs_df.data = self.process.float_outputs_df
-
-        # Climate Outputs
-        self.w_climate_outputs_df.data = self.process.climate_outputs_df
+        dfs = self.process.get_dataframes()
+        if self.w_data_information_df is not None:
+            self.w_data_information_df.data = dfs["data_information"]
+        if self.w_vector_inputs_df is not None:
+            self.w_vector_inputs_df.data = dfs["vector_inputs"]
+        if self.w_float_inputs_df is not None:
+            self.w_float_inputs_df.data = dfs["float_inputs"]
+        if self.w_vector_outputs_df is not None:
+            self.w_vector_outputs_df.data = dfs["vector_outputs"]
+        if self.w_float_outputs_df is not None:
+            self.w_float_outputs_df.data = dfs["float_outputs"]
+        if self.w_climate_outputs_df is not None:
+            self.w_climate_outputs_df.data = dfs["climate_outputs"]
 
     def _create_widgets(self):
         # TODO: Convert to french
@@ -1624,11 +1621,11 @@ class GraphicalUserInterface(widgets.VBox):
             )
             long_range_aircraft2_params = AircraftParameters(
                 entry_into_service_year=2045,
-                consumption_evolution=-35.0,
+                consumption_evolution=-45.0,
                 nox_evolution=0.0,
                 soot_evolution=0.0,
-                doc_non_energy_evolution=0.0,
-                cruise_altitude=12000.0,
+                doc_non_energy_evolution=10.0,
+                cruise_altitude=6000.0,
                 ask_year=1.0,  # Dummy
                 rc_cost=1.0,  # Dummy
                 nrc_cost=1.0,  # Dummy
@@ -1754,6 +1751,7 @@ class GraphicalUserInterface(widgets.VBox):
                 rc_cost=1.0,  # Dummy
                 nrc_cost=1.0,  # Dummy
             )
+
             long_range_aircraft2 = Aircraft(
                 "New Long-range Aircraft 2",
                 parameters=long_range_aircraft2_params,
@@ -1975,7 +1973,7 @@ class GraphicalUserInterface(widgets.VBox):
                 )
                 medium_range_aircraft_hydrogen_params = AircraftParameters(
                     entry_into_service_year=2035,
-                    consumption_evolution=-15.0,
+                    consumption_evolution=0.0,
                     nox_evolution=-75.0,
                     soot_evolution=-100.0,
                     doc_non_energy_evolution=20.0,
@@ -1992,7 +1990,6 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.fleet.categories["Medium Range"].subcategories[1].add_aircraft(
                     aircraft=medium_range_aircraft_hydrogen
                 )
-
         # Load factor
         if self.w_load_factor.value == "Constant":
             self.process.parameters.load_factor_end_year = 82.4
