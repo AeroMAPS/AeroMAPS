@@ -125,7 +125,7 @@ jobs:
             for nb in $NOTEBOOKS; do
               nb_trimmed=$(echo "$nb" | tr -d '\r')
               base=$(basename "$nb_trimmed")
-              os="${{ matrix.os }}"
+              os="${{ runner.os }}"
               py="${{ matrix.python-version }}"
               main_file="${RUNNER_TEMP}/timings/$base.main.time"
               branch_file="${RUNNER_TEMP}/timings/$base.$safe_branch.time"
