@@ -25,6 +25,22 @@ jobs:
         run: |
           sudo sysctl -w kern.posix.sem.max=20000
 
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
       - name: Set notebook list
         shell: bash
         run: |
