@@ -496,7 +496,7 @@ class DetailledMFSPBreakdown:
         return color_map
 
     @staticmethod
-    def _is_nonzero_or_notnull(*args):
+    def _is_nonzero_or_notnan(*args):
         """Check if any of the arguments is non-zero or not null. TODO generalize this for the whole project."""
         return any(
             (v is not None and not (isinstance(v, float) and np.isnan(v)) and v != 0) for v in args
@@ -527,8 +527,8 @@ class DetailledMFSPBreakdown:
         )
         show_used_widget = widgets.ToggleButtons(
             options=[
-                ("Used only", True),
-                ("All options", False),
+                ("Show used pathways/years only", True),
+                ("Show all defined", False),
             ],
             description="Show:",
             value=True,
@@ -583,7 +583,7 @@ class DetailledMFSPBreakdown:
             color = self.resource_color_map.get(("main", "mfsp_without_resource"), "grey")
             mfsp_col = p.name + "_mfsp_without_resource"
             mfsp_val = self.df.loc[year, mfsp_col] if mfsp_col in self.df.columns else 0
-            if self._is_nonzero_or_notnull(mfsp_val):
+            if self._is_nonzero_or_notnan(mfsp_val):
                 self.ax.bar(
                     p.name,
                     mfsp_val,
@@ -600,7 +600,7 @@ class DetailledMFSPBreakdown:
             # Taxes and subsidies on the base
             tax_col = p.name + "_unit_tax_without_resource"
             tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-            if self._is_nonzero_or_notnull(tax_val):
+            if self._is_nonzero_or_notnan(tax_val):
                 self.ax.bar(
                     p.name,
                     tax_val,
@@ -615,7 +615,7 @@ class DetailledMFSPBreakdown:
 
             subsidy_col = p.name + "_unit_subsidy_without_resource"
             subsidy_val = self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
-            if self._is_nonzero_or_notnull(subsidy_val):
+            if self._is_nonzero_or_notnan(subsidy_val):
                 self.ax.bar(
                     p.name,
                     -subsidy_val,
@@ -628,7 +628,7 @@ class DetailledMFSPBreakdown:
                 )
 
             neg_base = -subsidy_val
-            if self._is_nonzero_or_notnull(mfsp_val, tax_val, subsidy_val):
+            if self._is_nonzero_or_notnan(mfsp_val, tax_val, subsidy_val):
                 pathway_handles.append(
                     Patch(
                         facecolor=color,
@@ -644,7 +644,7 @@ class DetailledMFSPBreakdown:
                 color = self.resource_color_map.get(("main", resource), None)
                 cost_col = p.name + "_excluding_processes_" + resource + "_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(cost_val):
+                if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
                         p.name,
                         cost_val,
@@ -659,7 +659,7 @@ class DetailledMFSPBreakdown:
                 # Taxes and subsidies on the resource
                 tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(tax_val):
+                if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
                         p.name,
                         tax_val,
@@ -675,7 +675,7 @@ class DetailledMFSPBreakdown:
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
-                if self._is_nonzero_or_notnull(subsidy_val):
+                if self._is_nonzero_or_notnan(subsidy_val):
                     self.ax.bar(
                         p.name,
                         -subsidy_val,
@@ -687,7 +687,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                 neg_base = -subsidy_val
-                if self._is_nonzero_or_notnull(cost_val, tax_val, subsidy_val):
+                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
                     pathway_handles.append(
                         Patch(
                             facecolor=color,
@@ -704,7 +704,7 @@ class DetailledMFSPBreakdown:
                 color = self.resource_color_map.get((process_name, resource), None)
                 cost_col = p.name + "_" + process_name + "_" + resource + "_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(cost_val):
+                if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
                         p.name,
                         cost_val,
@@ -719,7 +719,7 @@ class DetailledMFSPBreakdown:
                 # Taxes and subsidies on this process/resource
                 tax_col = p.name + "_" + process_name + "_" + resource + "_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(tax_val):
+                if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
                         p.name,
                         tax_val,
@@ -735,7 +735,7 @@ class DetailledMFSPBreakdown:
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
-                if self._is_nonzero_or_notnull(subsidy_val):
+                if self._is_nonzero_or_notnan(subsidy_val):
                     self.ax.bar(
                         p.name,
                         -subsidy_val,
@@ -747,7 +747,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                 neg_base = -subsidy_val
-                if self._is_nonzero_or_notnull(cost_val, tax_val, subsidy_val):
+                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
                     pathway_handles.append(
                         Patch(
                             facecolor=color,
@@ -765,7 +765,7 @@ class DetailledMFSPBreakdown:
                 )
                 cost_col = p.name + "_" + process_name + "_without_resources_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(cost_val):
+                if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
                         p.name,
                         cost_val,
@@ -780,7 +780,7 @@ class DetailledMFSPBreakdown:
                 # Taxes and subsidies on this process without resource
                 tax_col = p.name + "_" + process_name + "_without_resources_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-                if self._is_nonzero_or_notnull(tax_val):
+                if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
                         p.name,
                         tax_val,
@@ -796,7 +796,7 @@ class DetailledMFSPBreakdown:
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
-                if self._is_nonzero_or_notnull(subsidy_val):
+                if self._is_nonzero_or_notnan(subsidy_val):
                     self.ax.bar(
                         p.name,
                         -subsidy_val,
@@ -808,7 +808,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                 neg_base = -subsidy_val
-                if self._is_nonzero_or_notnull(cost_val, tax_val, subsidy_val):
+                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
                     pathway_handles.append(
                         Patch(
                             facecolor=color,
@@ -933,7 +933,6 @@ class DetailledMFSPBreakdown:
         )
         legend2 = self.ax.legend(
             handles=bar_type_handles,
-            title="Bar types",
             loc="upper right",
             prop={"size": 8},
         )
@@ -959,346 +958,283 @@ class DetailledMFSPBreakdown:
 
     def update_pathway_over_time(self, pathway):
         self.ax.cla()
-        years = self.prospective_years
+        years = self.prospective_years[1:]
         p = pathway
 
         energy_col = f"{p.name}_energy_consumption"
         if energy_col not in self.df.columns:
             return
 
+        # Active mask: years with energy consumption >= 1e-9 and not NaN
         active_mask = (self.df.loc[years, energy_col] >= 1e-9) & (
             ~self.df.loc[years, energy_col].isna()
         )
-        if not active_mask.any():
-            return
+        years_active = np.array(years)[active_mask.values]
+        years_inactive = np.array([y for y in years if y not in years_active])
+        years_inactive = np.append(
+            years_inactive,
+            years_active[0]
+            if len(years_active) > 0 and years_active[0] < self.prospective_years[-1]
+            else [],
+        )
 
-        years = active_mask[active_mask].index
-
-        base = np.zeros(len(years))
-        neg_base = np.zeros(len(years))
         pathway_handles = []
 
-        # Base cost (excluding resource)
-        color = self.resource_color_map.get(("main", "mfsp_without_resource"), "grey")
-        mfsp_col = p.name + "_mfsp_without_resource"
-        mfsp_vals = (
-            self.df.loc[years, mfsp_col].fillna(0).values
-            if mfsp_col in self.df.columns
-            else np.zeros(len(years))
-        )
-        if np.any(mfsp_vals != 0):
-            self.ax.fill_between(
-                years,
-                base,
-                base + mfsp_vals,
-                facecolor=color,
-                hatch=self.hatch_map["cost"],
-                edgecolor="black",
-                linewidth=0.5,
-                alpha=0.8,
-                zorder=2,
-            )
-            base += mfsp_vals
-            pathway_handles.append(
-                Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
-            )
+        def plot_for_years(years_subset, alpha):
+            if len(years_subset) == 0:
+                return
+            base = np.zeros(len(years_subset))
+            neg_base = np.zeros(len(years_subset))
 
-        # Taxes on base
-        tax_col = p.name + "_unit_tax_without_resource"
-        tax_vals = (
-            self.df.loc[years, tax_col].fillna(0).values
-            if tax_col in self.df.columns
-            else np.zeros(len(years))
-        )
-        if np.any(tax_vals != 0):
-            self.ax.fill_between(
-                years,
-                base,
-                base + tax_vals,
-                facecolor=color,
-                hatch=self.hatch_map["tax"],
-                edgecolor="black",
-                linewidth=0.5,
-                alpha=0.8,
-                zorder=2,
-            )
-            base += tax_vals
+            def get_vals(col):
+                if col in self.df.columns:
+                    return self.df.loc[years_subset, col].fillna(0).values
+                else:
+                    return np.zeros(len(years_subset))
 
-        # Subsidy on base
-        subsidy_col = p.name + "_unit_subsidy_without_resource"
-        subsidy_vals = (
-            self.df.loc[years, subsidy_col].fillna(0).values
-            if subsidy_col in self.df.columns
-            else np.zeros(len(years))
-        )
-        if np.any(subsidy_vals != 0):
-            neg_top = neg_base - subsidy_vals
+            # Base cost (excluding resource)
             color = self.resource_color_map.get(("main", "mfsp_without_resource"), "grey")
-            self.ax.fill_between(
-                years,
-                neg_base,
-                neg_top,
-                facecolor=color,
-                hatch=self.hatch_map["subsidy"],
-                edgecolor="black",
-                linewidth=0.5,
-                alpha=0.8,
-                zorder=2,
-            )
-            neg_base = neg_top
-
-        if np.any(mfsp_vals != 0) or np.any(subsidy_vals != 0) or np.any(tax_vals != 0):
-            pathway_handles.append(
-                Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
-            )
-
-        # Pathway-specific resources
-        for resource in p.resources_used:
-            color = self.resource_color_map.get(("main", resource), None)
-            cost_col = p.name + "_excluding_processes_" + resource + "_unit_cost"
-            cost_vals = (
-                self.df.loc[years, cost_col].fillna(0).values
-                if cost_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(cost_vals != 0):
+            mfsp_col = p.name + "_mfsp_without_resource"
+            mfsp_vals = get_vals(mfsp_col)
+            if np.any(mfsp_vals != 0):
                 self.ax.fill_between(
-                    years,
+                    years_subset,
                     base,
-                    base + cost_vals,
+                    base + mfsp_vals,
                     facecolor=color,
                     hatch=self.hatch_map["cost"],
                     edgecolor="black",
                     linewidth=0.5,
-                    alpha=0.8,
+                    alpha=alpha,
                     zorder=2,
                 )
-                base += cost_vals
+                base += mfsp_vals
                 pathway_handles.append(
-                    Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
+                    Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
                 )
-            tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
-            tax_vals = (
-                self.df.loc[years, tax_col].fillna(0).values
-                if tax_col in self.df.columns
-                else np.zeros(len(years))
-            )
+
+            # Taxes on base
+            tax_col = p.name + "_unit_tax_without_resource"
+            tax_vals = get_vals(tax_col)
             if np.any(tax_vals != 0):
                 self.ax.fill_between(
-                    years,
+                    years_subset,
                     base,
                     base + tax_vals,
                     facecolor=color,
                     hatch=self.hatch_map["tax"],
                     edgecolor="black",
                     linewidth=0.5,
-                    alpha=0.8,
+                    alpha=alpha,
                     zorder=2,
                 )
                 base += tax_vals
-                # Subsidy on resources
 
-            subsidy_col = p.name + "_excluding_processes_" + resource + "_unit_subsidy"
-            subsidy_vals = (
-                self.df.loc[years, subsidy_col].fillna(0).values
-                if subsidy_col in self.df.columns
-                else np.zeros(len(years))
-            )
+            # Subsidy on base
+            subsidy_col = p.name + "_unit_subsidy_without_resource"
+            subsidy_vals = get_vals(subsidy_col)
             if np.any(subsidy_vals != 0):
                 neg_top = neg_base - subsidy_vals
                 self.ax.fill_between(
-                    years,
+                    years_subset,
                     neg_base,
                     neg_top,
                     facecolor=color,
                     hatch=self.hatch_map["subsidy"],
                     edgecolor="black",
                     linewidth=0.5,
-                    alpha=0.8,
+                    alpha=alpha,
                     zorder=2,
                 )
                 neg_base = neg_top
-            if np.any(cost_vals != 0) or np.any(tax_vals != 0) or np.any(subsidy_vals != 0):
+
+            if np.any(mfsp_vals != 0) or np.any(subsidy_vals != 0) or np.any(tax_vals != 0):
                 pathway_handles.append(
-                    Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
+                    Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
                 )
 
-        # Resources used by each process
-        process_resources = p.resources_used_processes
-        for process_name, resource in process_resources.items():
-            color = self.resource_color_map.get((process_name, resource), None)
-            cost_col = p.name + "_" + process_name + "_" + resource + "_unit_cost"
-            cost_vals = (
-                self.df.loc[years, cost_col].fillna(0).values
-                if cost_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(cost_vals != 0):
-                self.ax.fill_between(
-                    years,
-                    base,
-                    base + cost_vals,
-                    facecolor=color,
-                    hatch=self.hatch_map["cost"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    zorder=2,
-                )
-                base += cost_vals
-
-            tax_col = p.name + "_" + process_name + "_" + resource + "_unit_tax"
-            tax_vals = (
-                self.df.loc[years, tax_col].fillna(0).values
-                if tax_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(tax_vals != 0):
-                self.ax.fill_between(
-                    years,
-                    base,
-                    base + tax_vals,
-                    facecolor=color,
-                    hatch=self.hatch_map["tax"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    zorder=2,
-                )
-                base += tax_vals
-            subsidy_col = p.name + "_" + process_name + "_" + resource + "_unit_subsidy"
-            subsidy_vals = (
-                self.df.loc[years, subsidy_col].fillna(0).values
-                if subsidy_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(subsidy_vals != 0):
-                neg_top = neg_base - subsidy_vals
-                self.ax.fill_between(
-                    years,
-                    neg_base,
-                    neg_top,
-                    facecolor=color,
-                    hatch=self.hatch_map["subsidy"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    label=f"Subsidy - {process_name}, {resource}",
-                    zorder=2,
-                )
-                neg_base = neg_top
-            if np.any(tax_vals != 0) or np.any(subsidy_vals != 0) or np.any(cost_vals != 0):
-                pathway_handles.append(
-                    Patch(facecolor=color, edgecolor="black", label=f"{process_name}, {resource}")
-                )
-
-        # Cost without resource for each process
-        for process_name in process_resources.keys():
-            color = self.resource_color_map.get((process_name, "without_resources_unit_cost"), None)
-            cost_col = p.name + "_" + process_name + "_without_resources_unit_cost"
-            cost_vals = (
-                self.df.loc[years, cost_col].fillna(0).values
-                if cost_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(cost_vals != 0):
-                self.ax.fill_between(
-                    years,
-                    base,
-                    base + cost_vals,
-                    facecolor=color,
-                    hatch=self.hatch_map["cost"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    zorder=2,
-                )
-                base += cost_vals
-
-            tax_col = p.name + "_" + process_name + "_without_resources_unit_tax"
-            tax_vals = (
-                self.df.loc[years, tax_col].fillna(0).values
-                if tax_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(tax_vals != 0):
-                self.ax.fill_between(
-                    years,
-                    base,
-                    base + tax_vals,
-                    facecolor=color,
-                    hatch=self.hatch_map["tax"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    zorder=2,
-                )
-                base += tax_vals
-
-            subsidy_col = p.name + "_" + process_name + "_without_resources_unit_subsidy"
-            subsidy_vals = (
-                self.df.loc[years, subsidy_col].fillna(0).values
-                if subsidy_col in self.df.columns
-                else np.zeros(len(years))
-            )
-            if np.any(subsidy_vals != 0):
-                neg_top = neg_base - subsidy_vals
-                self.ax.fill_between(
-                    years,
-                    neg_base,
-                    neg_top,
-                    facecolor=color,
-                    hatch=self.hatch_map["subsidy"],
-                    edgecolor="black",
-                    linewidth=0.5,
-                    alpha=0.8,
-                    zorder=2,
-                )
-                neg_base = neg_top
-            if np.any(tax_vals != 0) or np.any(subsidy_vals != 0) or np.any(cost_vals != 0):
-                pathway_handles.append(
-                    Patch(
+            # Pathway-specific resources
+            for resource in p.resources_used:
+                color = self.resource_color_map.get(("main", resource), None)
+                cost_col = p.name + "_excluding_processes_" + resource + "_unit_cost"
+                cost_vals = get_vals(cost_col)
+                if np.any(cost_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + cost_vals,
                         facecolor=color,
+                        hatch=self.hatch_map["cost"],
                         edgecolor="black",
-                        label=f"{process_name}, excluding resource",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
                     )
-                )
+                    base += cost_vals
+                    pathway_handles.append(
+                        Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
+                    )
+                tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
+                tax_vals = get_vals(tax_col)
+                if np.any(tax_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + tax_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["tax"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += tax_vals
 
-        # Carbon tax (per pathway only)
-        carbon_tax_col = f"{p.name}_unit_carbon_tax"
-        carbon_tax_vals = (
-            self.df.loc[years, carbon_tax_col].fillna(0).values
-            if carbon_tax_col in self.df.columns
-            else np.zeros(len(years))
-        )
-        if np.any(carbon_tax_vals != 0):
-            self.ax.fill_between(
-                years,
-                base,
-                base + carbon_tax_vals,
-                facecolor="none",
-                hatch=self.hatch_map["carbon_tax"],
-                edgecolor="black",
-                linewidth=0.5,
-                alpha=0.8,
-                zorder=2,
+                subsidy_col = p.name + "_excluding_processes_" + resource + "_unit_subsidy"
+                subsidy_vals = get_vals(subsidy_col)
+                if np.any(subsidy_vals != 0):
+                    neg_top = neg_base - subsidy_vals
+                    self.ax.fill_between(
+                        years_subset,
+                        neg_base,
+                        neg_top,
+                        facecolor=color,
+                        hatch=self.hatch_map["subsidy"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    neg_base = neg_top
+                if np.any(cost_vals != 0) or np.any(tax_vals != 0) or np.any(subsidy_vals != 0):
+                    pathway_handles.append(
+                        Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
+                    )
+
+            # Resources used by each process
+            process_resources = p.resources_used_processes
+            for process_name, resource in process_resources.items():
+                color = self.resource_color_map.get((process_name, resource), None)
+                cost_col = p.name + "_" + process_name + "_" + resource + "_unit_cost"
+                cost_vals = get_vals(cost_col)
+                if np.any(cost_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + cost_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += cost_vals
+
+                tax_col = p.name + "_" + process_name + "_" + resource + "_unit_tax"
+                tax_vals = get_vals(tax_col)
+                if np.any(tax_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + tax_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["tax"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += tax_vals
+                subsidy_col = p.name + "_" + process_name + "_" + resource + "_unit_subsidy"
+                subsidy_vals = get_vals(subsidy_col)
+                if np.any(subsidy_vals != 0):
+                    neg_top = neg_base - subsidy_vals
+                    self.ax.fill_between(
+                        years_subset,
+                        neg_base,
+                        neg_top,
+                        facecolor=color,
+                        hatch=self.hatch_map["subsidy"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        label=f"Subsidy - {process_name}, {resource}",
+                        zorder=2,
+                    )
+                    neg_base = neg_top
+                if np.any(tax_vals != 0) or np.any(subsidy_vals != 0) or np.any(cost_vals != 0):
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color, edgecolor="black", label=f"{process_name}, {resource}"
+                        )
+                    )
+
+            # Cost without resource for each process
+            for process_name in process_resources.keys():
+                color = self.resource_color_map.get(
+                    (process_name, "without_resources_unit_cost"), None
+                )
+                cost_col = p.name + "_" + process_name + "_without_resources_unit_cost"
+                cost_vals = get_vals(cost_col)
+                if np.any(cost_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + cost_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += cost_vals
+
+        # Plot inactive years (alpha=0.3) only if self.show_only_used is False
+        if not self.show_only_used:
+            plot_for_years(years_inactive, 0.3)
+        plot_for_years(years_active, 0.8)
+
+        # Add vertical dashed line to separate used and unused years
+        if not self.show_only_used and len(years_active) > 0 and len(years_inactive) > 0:
+            first_active_year = years_active[0]
+            # Draw a vertical dashed line between last unused and first used year
+            self.ax.axvline(
+                x=first_active_year,
+                color="black",
+                linestyle="dashed",
+                linewidth=1,
+                alpha=0.7,
+                zorder=3,
             )
-            base += carbon_tax_vals
-
-        # Net MFSP overlay
-        net_col = f"{p.name}_net_mfsp"
-        if net_col in self.df.columns:
-            net_vals = self.df.loc[years, net_col].fillna(0).values
-            if np.any(net_vals != 0):
-                self.ax.plot(
-                    years,
-                    net_vals,
-                    color="black",
-                    linewidth=2,
-                    alpha=0.7,
-                    zorder=2,
-                    label="Net MFSP",
-                )
+            # Add vertical text annotations
+            ylim = self.ax.get_ylim()
+            ymid = (ylim[0] + ylim[1]) / 2
+            self.ax.text(
+                first_active_year - 0.2,
+                ymid,
+                "Not used",
+                rotation=90,
+                va="center",
+                ha="right",
+                fontsize=10,
+                color="black",
+                alpha=0.7,
+                backgroundcolor="none",
+            )
+            self.ax.text(
+                first_active_year + 0.2,
+                ymid,
+                "Used",
+                rotation=90,
+                va="center",
+                ha="left",
+                fontsize=10,
+                color="black",
+                alpha=0.7,
+                backgroundcolor="none",
+            )
 
         # Remove duplicate labels in legend
         seen = set()
@@ -1334,7 +1270,6 @@ class DetailledMFSPBreakdown:
         )
         legend2 = self.ax.legend(
             handles=bar_type_handles,
-            title="Bar types",
             loc="upper right",
             prop={"size": 8},
         )
@@ -1345,7 +1280,7 @@ class DetailledMFSPBreakdown:
         self.ax.set_title(f"MFSP breakdown over time for {p.name}")
         self.ax.set_ylabel("MFSP [€/MJ]")
         self.ax.set_xlabel("Year")
-        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
+        self.ax.set_xlim(self.prospective_years[1], self.prospective_years[-1])
         self.ax.set_ylim(
             self.ax.get_ylim()[0],
             self.ax.get_ylim()[1] * 1.1,
