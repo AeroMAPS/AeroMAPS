@@ -57,10 +57,7 @@ class AviationEnergyCarriersFactory:
                     f"{pathway_name}_bottom_up_cost", pathway_data, resources_data, processs_data
                 ),
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
+                    f"{pathway_name}_bottom_up_capacity", pathway_data
                 ),
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "top-down":
@@ -74,8 +71,6 @@ class AviationEnergyCarriersFactory:
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
                     f"{pathway_name}_bottom_up_capacity",
                     pathway_data,
-                    resources_data,
-                    processs_data,
                 ),
                 f"{pathway_name}_top_down_unit_cost": TopDownCost(
                     f"{pathway_name}_top_down_unit_cost",
@@ -86,7 +81,7 @@ class AviationEnergyCarriersFactory:
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "bottom-up":
             return {
-                f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
+                f"{pathway_name}_bottom_up_environmental": TopDownEnvironmental(
                     f"{pathway_name}_bottom_up_environmental",
                     pathway_data,
                     resources_data,
@@ -95,10 +90,8 @@ class AviationEnergyCarriersFactory:
                 f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
                     f"{pathway_name}_bottom_up_capacity",
                     pathway_data,
-                    resources_data,
-                    processs_data,
                 ),
-                f"{pathway_name}_bottom_up_cost": BottomUpCost(
+                f"{pathway_name}_bottom_up_cost": TopDownCost(
                     f"{pathway_name}_bottom_up_cost", pathway_data, resources_data, processs_data
                 ),
             }
