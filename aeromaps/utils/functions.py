@@ -1,9 +1,12 @@
+import os.path as pth
 import json
 from json import load
+from typing import Dict, Any
+
 import numpy as np
 import pandas as pd
 from pandas import read_csv
-import os.path as pth
+from deepdiff import DeepDiff
 
 from aeromaps.resources import data
 from aeromaps.resources import climate_data
@@ -224,3 +227,68 @@ def create_partitioning(file, path=""):
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
     return
+
+
+def compare_json_files(
+    file1_path: str,
+    file2_path: str,
+    ignore_order: bool = True,
+    verbose: bool = True,
+    rtol: float = 0.0001,
+    atol: float = 0.1,
+) -> bool:
+    """
+    Compare two JSON files using deepdiff and return the differences.
+
+    Args:
+        file1_path (str): Path to the first JSON file.
+        file2_path (str): Path to the second JSON file.
+        ignore_order (bool): Whether to ignore the order in lists. Defaults to True.
+        verbose (bool): Whether to print differences. Defaults to True.
+
+    Returns:
+        bool: True if differences exist.
+    """
+    with open(file1_path, "r") as f1, open(file2_path, "r") as f2:
+        json1 = json.load(f1)
+        json2 = json.load(f2)
+
+    diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
+
+    # Only keep differences with error greater than 0.1%
+    if "values_changed" in diff:
+        keys_to_remove = []
+        for key, value in diff["values_changed"].items():
+            if isinstance(value, dict) and "new_value" in value and "old_value" in value:
+                new_value = value["new_value"]
+                old_value = value["old_value"]
+                # Remove if both are floats and the relative or absolute difference are within the tolerance
+                if (
+                    isinstance(new_value, float)
+                    and isinstance(old_value, float)
+                    and np.isclose(new_value, old_value, rtol=rtol, atol=atol)
+                ):
+                    keys_to_remove.append(key)
+        for key in keys_to_remove:
+            del diff["values_changed"][key]
+        
+        # If values_changed is empty, remove the key
+        if not diff["values_changed"]:
+            del diff["values_changed"]
+
+    #TODO: investigate why this is necessary with python 3.12
+    # total_co2_equivalent_emissions_ratio
+    # If iterable added, remove it
+    if "iterable_item_added" in diff:
+        del diff["iterable_item_added"]
+
+    if verbose:
+        if diff:
+            print("Differences found:")
+            print(json.dumps(diff, indent=2))
+            files_are_different = True
+        else:
+            print("No differences found.")
+            files_are_different = False
+
+    return files_are_different

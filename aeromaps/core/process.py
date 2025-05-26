@@ -28,17 +28,17 @@ pd.set_option("max_colwidth", 200)
 pd.options.mode.chained_assignment = None
 
 # Get the directory of the current script
-current_dir = os.path.dirname(os.path.abspath(__file__))
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Construct the path to the config.json file
-default_config_path = os.path.join(current_dir, "config.json")
+DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "config.json")
 
 # Construct the path to the parameters.json file
-default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
+DEFAULT_PARAMETERS_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "parameters.json")
 
 # Construct the path to the climate data .csv file
-default_climate_historical_data_path = os.path.join(
-    current_dir, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
+DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
 )
 
 
@@ -56,6 +56,7 @@ class AeroMAPSProcess(object):
         self.use_fleet_model = use_fleet_model
         self.models = models
 
+        # Initialize inputs
         self._initialize_inputs()
 
         self.setup(add_examples_aircraft_and_subcategory)
@@ -65,38 +66,40 @@ class AeroMAPSProcess(object):
         self.data = {}
         self.json = {}
 
-        self._initialize_years()
+        # Initialize data
+        self._initialize_data()
 
-        self._initialize_climate_historical_data()
-
+        # Initialize disciplines
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
         # Create GEMSEO process
         self.process = create_mda("MDAChain", disciplines=self.disciplines)
 
-        self._initialize_data()
-
-        # TODO: check if we need to know inputs before computing
-        # self._update_variables()
-
     def compute(self):
-        if self.fleet is not None:
-            # Necessary when user hard coded the fleet
-            self.fleet_model.fleet.all_aircraft_elements = (
-                self.fleet_model.fleet.get_all_aircraft_elements()
-            )
-            self.fleet_model.compute()
 
-        input_data = self._set_inputs()
-
-        if self.fleet is not None:
-            # This is needed since fleet model is particular discipline
-            input_data["dummy_fleet_model_output"] = np.random.rand(1, 1)
-
+        input_data = self._pre_compute()
+        
         self.process.execute(input_data=input_data)
 
-        self._update_variables()
+        self._update_data_from_model()
+
+    def get_dataframes(self):
+        """Return all main DataFrames as a dictionary, generated on demand."""
+        return {
+            "data_information": self._get_data_information_df(),
+            "vector_inputs": self._get_vector_inputs_df(),
+            "float_inputs": self._get_float_inputs_df(),
+            "str_inputs": self._get_str_inputs_df(),
+            "vector_outputs": self._get_vector_outputs_df(),
+            "float_outputs": self._get_float_outputs_df(),
+            "climate_outputs": self._get_climate_outputs_df(),
+            # Add more if needed
+        }
+
+    def get_json(self):
+        """Return the model outputs as a JSON-serializable dictionary."""
+        return self._data_to_json()
 
     def write_json(self, file_name=None):
         if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
@@ -111,28 +114,27 @@ class AeroMAPSProcess(object):
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
+        # Retrieve the data from the model
+        json_data = self.get_json()
+
         with open(file_name, "w", encoding="utf-8") as f:
-            dump(self.json, f, ensure_ascii=False, indent=4)
+            dump(json_data, f, ensure_ascii=False, indent=4)
 
     def write_excel(self, file_name=None):
         if file_name is None:
             file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
-            self.data_information_df.to_excel(writer, sheet_name="Data Information")
-            self.vector_inputs_df.to_excel(writer, sheet_name="Vector Inputs")
-            self.float_inputs_df.to_excel(writer, sheet_name="Float Inputs")
-            self.str_inputs_df.to_excel(writer, sheet_name="String Inputs")
-            self.vector_outputs_df.to_excel(writer, sheet_name="Vector Outputs")
-            self.float_outputs_df.to_excel(writer, sheet_name="Float Outputs")
-            self.climate_outputs_df.to_excel(writer, sheet_name="Climate Outputs")
+            self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
+            self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
+            self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
+            self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
+            self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
+            self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
+            self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
             # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
 
     def generate_n2(self):
         generate_n2_plot(self.disciplines)
-
-    def update_parameters(self):
-        for name, model in self.models.items():
-            model.parameters = self.parameters
 
     def list_available_plots(self):
         return list(available_plots.keys())
@@ -171,13 +173,33 @@ class AeroMAPSProcess(object):
             )
         return fig
 
+    def _pre_compute(self):
+
+        input_data = self.parameters.to_dict()
+
+        if self.fleet is not None:
+            # Necessary when user hard coded the fleet
+            self.fleet_model.fleet.all_aircraft_elements = (
+                self.fleet_model.fleet.get_all_aircraft_elements()
+            )
+            self.fleet_model.compute()
+        
+            # This is needed since fleet model is particular discipline
+            input_data["dummy_fleet_model_output"] = np.array([1.0])
+                    
+        # Initialize the dataframes witjh latest parameter values
+        for disc in self.disciplines:
+            disc.model._initialize_df()
+        
+        return input_data
+
     def _initialize_configuration(self):
         # Load the default configuration file
-        with open(default_config_path, "r") as f:
+        with open(DEFAULT_CONFIG_PATH, "r") as f:
             self.config = load(f)
         # Update paths in the configuration file with absolute paths
         for key, value in self.config.items():
-            self.config[key] = os.path.join(current_dir, value)
+            self.config[key] = os.path.join(CURRENT_DIR, value)
 
         # Load the new configuration file
         if self.configuration_file is not None:
@@ -188,6 +210,12 @@ class AeroMAPSProcess(object):
                 self.config[key] = value
 
     def _initialize_data(self):
+
+        # Indexes
+        self._initialize_years() 
+
+        self._initialize_climate_historical_data()
+
         # Inputs
         self.data["float_inputs"] = {}
         self.data["str_inputs"] = {}
@@ -199,6 +227,8 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
+
+        
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
@@ -260,10 +290,12 @@ class AeroMAPSProcess(object):
             range(self.parameters.prospection_start_year - 1, self.parameters.end_year + 1)
         )
 
-    def _initialize_inputs(self):
+    def _initialize_inputs(self, use_defaults=True):
         self.parameters = Parameters()
+
         # First use main parameters.json as default values
-        self.parameters.read_json(file_name=default_parameters_path)
+        if use_defaults:
+            self.parameters.read_json(file_name=DEFAULT_PARAMETERS_PATH)
 
         if self.configuration_file is not None and "PARAMETERS_JSON_DATA_FILE" in self.config:
             # If the alternative file is a list of json files
@@ -301,6 +333,9 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
+        
+        # Format input vectors
+        self._format_input_vectors()
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -309,26 +344,12 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["PARAMETERS_CLIMATE_DATA_FILE"]
             )
         else:
-            climate_historical_data_file_path = default_climate_historical_data_path
+            climate_historical_data_file_path = DEFAULT_CLIMATE_HISTORICAL_DATA_PATH
 
         historical_dataset_df = pd.read_csv(
             climate_historical_data_file_path, delimiter=";", header=None
         )
         self.climate_historical_data = historical_dataset_df.values
-
-    def _set_inputs(self):
-        all_inputs = {}
-        self._format_input_vectors()
-        # TODO: make this more efficient
-        for disc in self.disciplines:
-            disc.model.parameters = self.parameters
-            disc.model._initialize_df()
-            # disc.update_defaults()
-            # all_inputs.update(disc.default_inputs)
-
-        all_inputs.update(self.parameters.__dict__)
-
-        return all_inputs
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
@@ -371,13 +392,6 @@ class AeroMAPSProcess(object):
                     setattr(self.parameters, field_name, new_value)
                 else:
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
-
-    def _update_variables(self):
-        self._update_data_from_model()
-
-        self._update_dataframes_from_data()
-
-        self._update_json_from_data()
 
     def _update_data_from_model(self):
         # Inputs
@@ -434,83 +448,87 @@ class AeroMAPSProcess(object):
 
             self.data["float_outputs"].update(disc.model.float_outputs)
 
-    def _update_dataframes_from_data(self):
-        # Float parameters
+    def _get_float_inputs_df(self):
         data = {
             "Name": self.data["float_inputs"].keys(),
             "Value": self.data["float_inputs"].values(),
         }
-        self.float_inputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # String parameters
+    def _get_str_inputs_df(self):
         data = {
             "Name": self.data["str_inputs"].keys(),
             "Value": self.data["str_inputs"].values(),
         }
-        self.str_inputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # Vector parameters
-        self.vector_inputs_df = _dict_to_df(self.data["vector_inputs"], orient="columns")
-        self.vector_inputs_df.sort_index(axis=1, inplace=True)
+    def _get_vector_inputs_df(self):
+        df = _dict_to_df(self.data["vector_inputs"], orient="columns")
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Float outputs df
+    def _get_float_outputs_df(self):
         data = {
             "Name": self.data["float_outputs"].keys(),
             "Value": self.data["float_outputs"].values(),
         }
-        self.float_outputs_df = pd.DataFrame(data=data)
+        return pd.DataFrame(data=data)
 
-        # Vector outputs dataframe
-        self.vector_outputs_df = self.data["vector_outputs"]
-        self.vector_outputs_df.sort_index(axis=1, inplace=True)
+    def _get_vector_outputs_df(self):
+        df = self.data["vector_outputs"].copy()
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Vector climate dataframe
-        self.climate_outputs_df = self.data["climate_outputs"]
-        self.climate_outputs_df.sort_index(axis=1, inplace=True)
+    def _get_climate_outputs_df(self):
+        df = self.data["climate_outputs"].copy()
+        df.sort_index(axis=1, inplace=True)
+        return df
 
-        # Vector lca xarray
-        self.lca_outputs_xarray = self.data["lca_outputs"]
+    def _get_data_information_df(self):
+        return self._read_data_information()
 
-        # Variable information
-        self._read_data_information()
-
-    def _update_json_from_data(self):
+    def _data_to_json(self):
         def convert_values_from_array_to_list(d):
             for key, value in d.items():
                 if isinstance(value, (pd.Series, np.ndarray)):
                     d[key] = list(value)
             return d
+        
+        # Create json data
+        json_data = {}
 
         # Float inputs
-        self.json["float_inputs"] = convert_values_from_array_to_list(self.data["float_inputs"])
+        json_data["float_inputs"] = convert_values_from_array_to_list(self.data["float_inputs"])
 
         # String inputs
-        self.json["str_inputs"] = convert_values_from_array_to_list(self.data["str_inputs"])
+        json_data["str_inputs"] = convert_values_from_array_to_list(self.data["str_inputs"])
 
         # Vector inputs
-        self.json["vector_inputs"] = convert_values_from_array_to_list(self.data["vector_inputs"])
+        json_data["vector_inputs"] = convert_values_from_array_to_list(self.data["vector_inputs"])
 
         # Float outputs
-        self.json["float_outputs"] = convert_values_from_array_to_list(self.data["float_outputs"])
+        json_data["float_outputs"] = convert_values_from_array_to_list(self.data["float_outputs"])
 
         # Vector outputs
-        self.json["vector_outputs"] = convert_values_from_array_to_list(
+        json_data["vector_outputs"] = convert_values_from_array_to_list(
             self.data["vector_outputs"].to_dict("list")
         )
 
         # Climate outputs
-        self.json["climate_outputs"] = convert_values_from_array_to_list(
+        json_data["climate_outputs"] = convert_values_from_array_to_list(
             self.data["climate_outputs"].to_dict("list")
         )
 
         # LCA outputs --> convert to json is not supported yet
-        # self.json["lca_outputs"] = convert_values_from_array_to_list(
+        # json_data["lca_outputs"] = convert_values_from_array_to_list(
         #    self.data["lca_outputs"].to_series().to_dict("list")
         # )
 
+        return json_data
+
     def _read_data_information(self, file_name=None):
         if file_name is None:
-            file_name = self.config["EXCEL_DATA_INFORMATION_FILE"]
+            file_name = self.config["CSV_DATA_INFORMATION_FILE"]
         df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
@@ -537,4 +555,4 @@ class AeroMAPSProcess(object):
                     new_row = pd.DataFrame(data=data)
                     var_infos_df = pd.concat([var_infos_df, new_row], ignore_index=True)
 
-        self.data_information_df = var_infos_df
+        return var_infos_df
