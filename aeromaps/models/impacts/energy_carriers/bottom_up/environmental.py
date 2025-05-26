@@ -1,4 +1,3 @@
-from aeromaps.utils.functions import flatten_dict
 from aeromaps.models.base import AeroMAPSModel
 
 
@@ -6,13 +5,14 @@ class BottomUpEnvironmental(AeroMAPSModel):
     """
     Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
     Actual models inherits from this class and implement the compute method.
-    TODO: Create a method in process.py that instanciates a class per carrier. Or create it here?
     """
 
     def __init__(
         self,
         name,
         configuration_data,
+        resources_data,
+        processs_data,
         *args,
         **kwargs,
     ):
@@ -28,19 +28,16 @@ class BottomUpEnvironmental(AeroMAPSModel):
         self.input_names = {}
         self.output_names = {}
 
-        if "name" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain its name")
-        if "inputs" not in configuration_data:
-            raise ValueError("The pathway configuration file should contain inputs")
+        self.pathway_name = configuration_data["name"]
 
-        flattened_inputs = flatten_dict(configuration_data["inputs"], configuration_data["name"])
-        for key, val in flattened_inputs.items():
+        # Get the inputs from the configuration file: two options
+        # 1. All inputs of a certain category in the yaml file
+        for key, val in configuration_data.get("inputs").get("environmental", {}).items():
+            # TODO initialize with zeros instead of actual val?
             self.input_names[key] = val
-
-        flattened_outputs = flatten_dict(configuration_data["outputs"], configuration_data["name"])
-        if "outputs" in configuration_data:
-            for key, val in flattened_outputs.items():
-                self.output_names[key] = val
+        for key, val in configuration_data.get("inputs").get("technical", {}).items():
+            # TODO initialize with zeros instead of actual val?
+            self.input_names[key] = val
 
     def compute(self, input_data) -> dict:
         return {}
