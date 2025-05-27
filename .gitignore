@@ -8,3 +8,4 @@
 /aeromaps/notebooks/.env
 
 __pycache__/
+.python-version

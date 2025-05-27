@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator, KEY_YEAR
-from aeromaps.core.process import default_parameters_path
+from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
 from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
@@ -47,7 +47,7 @@ class LifeCycleAssessment(AeroMAPSModel):
         # Automatically add LCA parameters (except strings) as inputs of this AeroMAPSModel.
         json_file_parameters = Parameters()
         json_file_parameters.read_json(
-            file_name=default_parameters_path
+            file_name=DEFAULT_PARAMETERS_PATH
         )  # default json file (parameters.json)
         json_parameters_dict = json_file_parameters.to_dict()
         for x in self.params_names:

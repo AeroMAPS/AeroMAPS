@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aeromaps"
-version = "0.8.0-beta" # This is directly modified by the poetry dynamic versioning
+version = "0.8.2-beta" # This is directly modified by the poetry dynamic versioning
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.md"
 authors = [
@@ -27,6 +27,7 @@ pandas = "^1.1.0"
 xlrd = "1.2.0"
 openpyxl = "^3.1.2"
 gemseo = "^6.0"
+deepdiff = "^8"
 
 # Data visualization
 matplotlib = "^3.7"
@@ -75,6 +76,20 @@ ruff = "0.5.4"
 
 [tool.poetry.scripts]
     aeromaps = "aeromaps.app:main"
+
+# Dynamic versioning settings ==================================================
+# poetry-dynamic-versioning has to be installed in the same environment as
+# Poetry (normally outside your project environment).
+# see https://github.com/mtkennerly/poetry-dynamic-versioning#installation
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+# Packaging system =============================================================
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.ruff]
 line-length = 100

@@ -481,3 +481,53 @@ class DetailedCumulativeCO2Emissions(AeroMAPSModel):
             cumulative_co2_emissions_including_load_factor,
             cumulative_co2_emissions_including_energy,
         )
+
+
+class SimpleCO2Emissions(AeroMAPSModel):
+    def __init__(self, name="simple_co2_emissions", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+        self.climate_historical_data = None
+
+    def compute(
+        self,
+        energy_consumption_init: pd.Series,
+        biofuel_mean_emission_factor: pd.Series,
+        electrofuel_emission_factor: pd.Series,
+        kerosene_emission_factor: pd.Series,
+        liquid_hydrogen_mean_emission_factor: pd.Series,
+        energy_consumption_kerosene: pd.Series,
+        energy_consumption_biofuel: pd.Series,
+        energy_consumption_electrofuel: pd.Series,
+        energy_consumption_hydrogen: pd.Series,
+    ) -> pd.Series:
+        """Simple CO2 emissions calculation."""
+
+        ## Initialization
+        historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
+
+        # Calculation
+        for k in range(self.climate_historic_start_year, self.historic_start_year):
+            self.df_climate.loc[k, "co2_emissions"] = historical_co2_emissions_for_temperature[
+                k - self.climate_historic_start_year
+            ]
+
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df_climate.loc[k, "co2_emissions"] = (
+                kerosene_emission_factor.loc[k] / 10**12 * energy_consumption_init.loc[k]
+            )
+
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df_climate.loc[k, "co2_emissions"] = (
+                biofuel_mean_emission_factor.loc[k] / 10**12 * energy_consumption_biofuel.loc[k]
+                + electrofuel_emission_factor.loc[k]
+                / 10**12
+                * energy_consumption_electrofuel.loc[k]
+                + kerosene_emission_factor.loc[k] / 10**12 * energy_consumption_kerosene.loc[k]
+                + liquid_hydrogen_mean_emission_factor.loc[k]
+                / 10**12
+                * energy_consumption_hydrogen.loc[k]
+            )
+
+        co2_emissions = self.df_climate.loc[:, "co2_emissions"]
+
+        return co2_emissions

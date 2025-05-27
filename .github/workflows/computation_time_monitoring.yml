@@ -1,0 +1,164 @@
+name: Computation Time Monitoring
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  computation-time-monitoring:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
+
+    steps:
+
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Set notebook list
+        shell: bash
+        run: |
+          echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/macc/examples_macc_application.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Save current branch name
+        id: branch
+        shell: bash
+        run: |
+          raw_branch_name=$(git rev-parse --abbrev-ref HEAD)
+          echo "BRANCH_NAME=$raw_branch_name" >> $GITHUB_ENV
+
+      - name: Checkout main branch
+        run: |
+          git fetch origin main:main
+          git checkout main
+
+      - name: Install dependencies (main)
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Run notebooks on main branch
+        shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/timings"
+          IFS=$'\n'
+          for nb in $NOTEBOOKS; do
+            nb_trimmed=$(echo "$nb" | tr -d '\r')
+            echo "Timing $nb_trimmed on main"
+            start=$(date +%s)
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
+            end=$(date +%s)
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
+          done
+
+      - name: Stash notebook changes (main)
+        run: git stash push -u -m "Stash main branch notebook changes"
+
+      - name: Restore branch
+        run: |
+          git checkout $BRANCH_NAME
+          git stash pop || true
+
+      - name: Install dependencies
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install
+
+      - name: Run notebooks on current branch
+        shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/timings"
+          IFS=$'\n'
+          for nb in $NOTEBOOKS; do
+            nb_trimmed=$(echo "$nb" | tr -d '\r')
+            safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
+            echo "Timing $nb_trimmed on $BRANCH_NAME"
+            start=$(date +%s)
+            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
+            end=$(date +%s)
+            echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
+          done
+
+      - name: Stash notebook changes
+        run: git stash push -u -m "Stash before switching branches"
+
+      - name: Compare timings
+        shell: bash
+        env:
+          NOTEBOOKS: ${{ env.NOTEBOOKS }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+        run: |
+          safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
+          echo "Notebook timing comparison:" >> $GITHUB_STEP_SUMMARY
+          {
+            header="| Notebook | OS | Python | main (s) | $BRANCH_NAME (s) | diff (s) | diff (%) |"
+            sep="|----------|----|--------|----------|----------------|----------|----------|"
+            echo "$header"
+            echo "$sep"
+            IFS=$'\n'
+            for nb in $NOTEBOOKS; do
+              nb_trimmed=$(echo "$nb" | tr -d '\r')
+              base=$(basename "$nb_trimmed")
+              os="${{ runner.os }}"
+              py="${{ matrix.python-version }}"
+              main_file="${RUNNER_TEMP}/timings/$base.main.time"
+              branch_file="${RUNNER_TEMP}/timings/$base.$safe_branch.time"
+              if [[ -f "$main_file" && -f "$branch_file" ]]; then
+                t_main=$(cat "$main_file" | tr -d '\r\n')
+                t_branch=$(cat "$branch_file" | tr -d '\r\n')
+                if [[ -n "$t_main" && "$t_main" =~ ^[0-9]+$ && -n "$t_branch" && "$t_branch" =~ ^[0-9]+$ ]]; then
+                  diff=$((t_branch-t_main))
+                  if [ "$t_main" -eq 0 ]; then
+                    percent=0
+                  else
+                    percent=$(awk -v t_main="$t_main" -v t_branch="$t_branch" 'BEGIN { printf "%.2f", (t_branch-t_main)/t_main*100 }')
+                  fi
+                  echo "| $base | $os | $py | $t_main | $t_branch | $diff | $percent |"
+                fi
+              fi
+            done
+          } >> $GITHUB_WORKSPACE/timing_matrix_table.md
+
+          cat $GITHUB_WORKSPACE/timing_matrix_table.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload timing summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-matrix-summary
+          path: $GITHUB_WORKSPACE/timing_matrix_table.md
+
+      - name: Stash notebook changes (main)
+        run: git stash push -u -m "Stash main branch notebook changes"
+
+      - name: Restore branch
+        if: always()
+        run: |
+          git checkout $BRANCH_NAME
+          git stash pop || true
