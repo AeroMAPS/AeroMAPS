@@ -55,15 +55,15 @@ DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
 )
 
 # Construct the path to the energy carriers parameters default file
-default_energy_carriers_data_path = os.path.join(
+DEFAULT_ENERGY_CARRIERS_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "data", "energy_carriers_data.yaml"
 )
 
-default_resources_data_path = os.path.join(
+DEFAULT_RESOURCES_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "data", "resources_data.yaml"
 )
 
-default_processes_data_path = os.path.join(
+DEFAULT_PROCESSES_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "data", "processes_data.yaml"
 )
 
@@ -266,7 +266,7 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["PARAMETERS_RESOURCES_DATA_FILE"]
             )
         else:
-            resources_data_file_path = default_resources_data_path
+            resources_data_file_path = DEFAULT_RESOURCES_DATA_PATH
 
         self.energy_resources_data = read_yaml_file(resources_data_file_path)
 
@@ -295,7 +295,7 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["PARAMETERS_PROCESSES_DATA_FILE"]
             )
         else:
-            processes_data_path = default_processes_data_path
+            processes_data_path = DEFAULT_PROCESSES_DATA_PATH
 
         self.energy_processes_data = read_yaml_file(processes_data_path)
 
@@ -333,7 +333,7 @@ class AeroMAPSProcess(object):
                 configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
             )
         else:
-            energy_carriers_data_file_path = default_energy_carriers_data_path
+            energy_carriers_data_file_path = DEFAULT_ENERGY_CARRIERS_DATA_PATH
 
         self.energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
 
