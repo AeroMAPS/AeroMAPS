@@ -1,0 +1,47 @@
+liquefaction:
+  # Metadata
+  name: "liquefaction"
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 0.25
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020,2030,2040,2050]
+        values: [0.01148759, 0.01148759, 0.01148759, 0.01148759] # [1.378511,1.378511,1.378511,1.378511]/120,
+        method: linear
+        
+
+electrolysis:
+  # Metadata
+  name: "electrolysis"
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 1.69
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0421, 0.0416, 0.0412, 0.0410] # [5.047140, 4.994914, 4.949078, 4.924813]/ 120 # caution no liquefaction there
+        method: linear
+    
+    
+

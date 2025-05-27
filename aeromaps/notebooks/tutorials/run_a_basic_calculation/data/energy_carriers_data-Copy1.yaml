@@ -1,0 +1,484 @@
+hefa_fog:
+  # Metadata
+  name: "hefa_fog"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 4.8, 0.168, 0.245]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_fog_biomass" ]
+      resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.815488]
+        method: linear
+  outputs:
+  
+graulhet_super_fuel:
+  # Metadata
+  name: "graulhet_super_fuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 4.8, 0.168, 100.0]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis"]
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 1.72
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.815488]
+        method: linear
+  outputs:
+
+
+hefa_others:
+  # Metadata
+  name: "hefa_others"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 0.91, 1.33]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_others_biomass" ]
+      resource_specific_consumption:
+        hefa_others_biomass: 1.72
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [61.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+      # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [1.052703]
+        method: linear
+  outputs:
+  
+ft_msw:
+  # Metadata
+  name: "ft_msw"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 1.78, 2.59]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_msw_biomass" ]
+      resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+      # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [1.142423]
+        method: linear
+  outputs:
+
+
+ft_others:
+  # Metadata
+  name: "ft_others"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 18.31, 26.705]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_others_biomass" ]
+      resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [7.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+      # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [1.378082]
+        method: linear
+  outputs:
+  
+atj:
+  # Metadata
+  name: "atj"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 2.8320000000000003, 4.13]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "atj_biomass" ]
+      resource_specific_consumption:
+        atj_biomass: 2.08
+      kerosene_selectivity: 0.15
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [52.2]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+      # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [1.38668]
+        method: linear
+  outputs:
+
+
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 1.2, 10.0, 35.0]
+        method: linear
+    # Technical:
+    technical:
+      kerosene_selectivity: 0.5 # TODO check
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        # Add a list of resources and their consumption per unit of fuel.
+        grid_electricity: 2.32
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [3.504428]
+        method: linear
+  outputs:
+
+
+fossil:
+  # Metadata
+  name: "fossil"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.41]
+        method: linear
+  outputs:
+  
+  
+hydrogen_electrolysis:
+  # Metadata
+  name: "hydrogen_electrolysis"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [2, 100, 0, 90]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis"]
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [5.047140, 4.994914, 4.949078, 4.924813]
+        method: linear
+  outputs:
+  
+hydrogen_gas:
+  # Metadata
+  name: "hydrogen_gas"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [71, 0, 0, 5]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction"]
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [100]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.664742,0.927900,0.884040,0.840180] # caution no liquefaction there
+        method: linear
+  outputs:
+  
+hydrogen_coal:
+  # Metadata
+  name: "hydrogen_coal"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Mandate
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction"]
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [191.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [1.535725,1.519058,1.502391,1.491280] # caution no liquefaction there
+        method: linear
+  outputs:
+
+
+battery_electric:
+  # Metadata
+  name: "battery_electric"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "electric"
+  energy_origin: "electricity"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+      # Add a list of resources and their consumption per unit of fuel.
+        grid_electricity: 1
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3e-05
+        particles_number: 8e13
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.08]
+        method: linear
+  outputs:
+
+
+
