@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.functions import get_value_for_year
 
 
 class BottomUpCapacity(AeroMAPSModel):
@@ -8,7 +10,7 @@ class BottomUpCapacity(AeroMAPSModel):
     Computes annual capacity additions required to follow an energy consumption trajectory.
     """
 
-    def __init__(self, name, configuration_data, *args, **kwargs):
+    def __init__(self, name, configuration_data, processes_data, *args, **kwargs):
         super().__init__(
             name=name,
             model_type="custom",
@@ -19,22 +21,56 @@ class BottomUpCapacity(AeroMAPSModel):
         # Inputs
         self.input_names = {
             f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
-            f"{self.pathway_name}_plant_load_factor": 0.0,
-            f"{self.pathway_name}_plant_lifespan": 0.0,
-            f"{self.pathway_name}_technology_introduction_year": 0,
-            f"{self.pathway_name}_technology_introduction_volume": 0.0,
         }
+
+        for key, val in configuration_data.get("inputs").get("technical", {}).items():
+            # TODO initialize with zeros instead of actual val?
+            self.input_names[key] = val
+
         # Outputs
         self.output_names = {
             f"{self.pathway_name}_plant_building_scenario": pd.Series([0.0]),
+            f"{self.pathway_name}_energy_production_commissioned": pd.Series([0.0]),
             f"{self.pathway_name}_plant_operating_capacity": pd.Series([0.0]),
             f"{self.pathway_name}_energy_unused": pd.Series([0.0]),
         }
 
+        self.resource_keys = (
+            configuration_data.get("inputs")
+            .get("technical", {})
+            .get(f"{self.pathway_name}_resource_names", [])
+        )
+        self.process_keys = (
+            configuration_data.get("inputs")
+            .get("technical", {})
+            .get(f"{self.pathway_name}_processes_names", [])
+        )
+
+        self.process_resource_keys = {}
+        for process_key in self.process_keys:
+            for key, val in processes_data[process_key].get("inputs").get("technical", {}).items():
+                if key == f"{process_key}_resource_names":
+                    self.input_names[key] = val
+                    resources = (
+                        processes_data[process_key]
+                        .get("inputs")
+                        .get("technical", {})
+                        .get(f"{process_key}_resource_names", [])
+                    )
+                    self.process_resource_keys[process_key] = resources
+                elif key == f"{process_key}_load_factor":
+                    self.input_names[key] = val
+            self.output_names[f"{self.pathway_name}_{process_key}_plant_building_scenario"] = (
+                pd.Series([0.0])
+            )
+
     def compute(self, input_data) -> dict:
+        output_data = {}
+
         # Get the energy consumption trajectory and capacity factor
         energy_required = input_data.get(f"{self.pathway_name}_energy_consumption")
-        plant_load_factor = input_data.get(f"{self.pathway_name}_plant_load_factor")
+        plant_load_factor = input_data.get(f"{self.pathway_name}_plant_load_factor", 1)
+
         plant_lifespan = input_data.get(f"{self.pathway_name}_plant_lifespan")
         technology_introduction = input_data.get(
             f"{self.pathway_name}_technology_introduction_year"
@@ -51,9 +87,9 @@ class BottomUpCapacity(AeroMAPSModel):
         # NB: that is transparent for alternative pathways that start after the historic start year.
 
         if energy_required.loc[self.historic_start_year] > 1e-9:
-            if not technology_introduction:
+            if not technology_introduction or not technology_introduction_volume:
                 raise ValueError(
-                    f"Technology introduction year for {self.pathway_name} must be specified if there is energy consumption before the historic start year."
+                    f"Technology introduction year and volume for {self.pathway_name} must be specified if there is energy consumption before the historic start year."
                 )
             else:
                 first_plant_year = technology_introduction
@@ -74,6 +110,7 @@ class BottomUpCapacity(AeroMAPSModel):
         plant_building_scenario = pd.Series(np.zeros(len(years)), years)
         plant_available_scenario = pd.Series(np.zeros(len(years)), years)
         energy_produced = pd.Series(np.zeros(len(years)), years)
+        energy_production_commissioned = pd.Series(np.zeros(len(years)), years)
         energy_unused = pd.Series(np.zeros(len(years)), years)
 
         for year in years:
@@ -82,13 +119,48 @@ class BottomUpCapacity(AeroMAPSModel):
                 energy_unused[year] = missing_production
             else:
                 # Calculate the required capacity to meet the energy demand
+                for key in self.resource_keys:
+                    if f"{key}_load_factor" in input_data:
+                        resource_load_factor = get_value_for_year(
+                            input_data.get(f"{key}_load_factor"), year
+                        )
+                        if resource_load_factor is not None:
+                            plant_load_factor = min(plant_load_factor, resource_load_factor)
+
+                energy_production_commissioned[year] = missing_production
                 required_capacity = (
-                    missing_production / plant_load_factor / 365
-                )  # Absolute output in MJ per day
+                    missing_production / plant_load_factor
+                )  # Absolute output in MJ per year
                 plant_building_scenario[year] += required_capacity
                 # Update the available capacity and production for plant lifespan
                 plant_available_scenario.loc[year : year + plant_lifespan - 1] += required_capacity
                 energy_produced.loc[year : year + plant_lifespan - 1] += missing_production
+
+        # computing additions for processes
+        for process_key in self.process_keys:
+            process_building_scenario = pd.Series(np.zeros(len(years)), years)
+            for year in years:
+                process_load_factor = get_value_for_year(
+                    input_data.get(f"{process_key}_load_factor", 1), year
+                )
+                for resource in self.process_resource_keys[process_key]:
+                    if f"{resource}_load_factor" in input_data:
+                        resource_load_factor = get_value_for_year(
+                            input_data.get(f"{resource}_load_factor"), year
+                        )
+                        if resource_load_factor is not None:
+                            process_load_factor = min(process_load_factor, resource_load_factor)
+                process_building_scenario[year] = (
+                    energy_production_commissioned[year] / process_load_factor
+                )
+            process_building_scenario = process_building_scenario.loc[
+                self.prospection_start_year : self.end_year
+            ]
+            output_data.update(
+                {
+                    f"{self.pathway_name}_{process_key}_plant_building_scenario": process_building_scenario
+                }
+            )
 
         # restrict the outputs to prospective years
         plant_building_scenario = plant_building_scenario.loc[
@@ -98,12 +170,18 @@ class BottomUpCapacity(AeroMAPSModel):
             self.prospection_start_year : self.end_year
         ]
         energy_unused = energy_unused.loc[self.prospection_start_year : self.end_year]
+        energy_production_commissioned = energy_production_commissioned.loc[
+            self.prospection_start_year : self.end_year
+        ]
 
-        output_data = {
-            f"{self.pathway_name}_plant_building_scenario": plant_building_scenario,
-            f"{self.pathway_name}_plant_operating_capacity": plant_available_scenario,
-            f"{self.pathway_name}_energy_unused": -energy_unused,
-        }
+        output_data.update(
+            {
+                f"{self.pathway_name}_plant_building_scenario": plant_building_scenario,
+                f"{self.pathway_name}_energy_production_commissioned": energy_production_commissioned,
+                f"{self.pathway_name}_plant_operating_capacity": plant_available_scenario,
+                f"{self.pathway_name}_energy_unused": -energy_unused,
+            }
+        )
 
         self._store_outputs(output_data)
 

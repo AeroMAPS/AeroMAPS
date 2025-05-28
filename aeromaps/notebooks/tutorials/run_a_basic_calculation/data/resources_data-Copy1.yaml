@@ -56,8 +56,23 @@ grid_electricity:
         years: [ 2020, 2030, 2040, 2050 ]
         values: [119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
         method: linear
+    cost: !AeroMapsCustomDataType
+        years: []
+        values: [0.022] 
+        method: linear
     availability:
       global: 250.0e+12 # [EJ]
       aviation_allocated_share: 5 # [%] Share of the global availability
+      
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.225] #€/kg CO2
+      method: linear 
 
 

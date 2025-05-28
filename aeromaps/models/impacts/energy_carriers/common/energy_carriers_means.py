@@ -201,12 +201,14 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
                         # compute the marginal net MFSP for each aircraft type: the most expensive pathways each year
                         marginal_net_mfsp = marginal_net_mfsp.where(
-                            marginal_net_mfsp > pathway_net_mfsp.fillna(0),
-                            pathway_net_mfsp.fillna(0),
+                            marginal_net_mfsp
+                            > pathway_net_mfsp.reindex(marginal_net_mfsp.index).fillna(0),
+                            pathway_net_mfsp.reindex(marginal_net_mfsp.index).fillna(0),
                         )
                         origin_marginal_net_mfsp = origin_marginal_net_mfsp.where(
-                            origin_marginal_net_mfsp > pathway_net_mfsp.fillna(0),
-                            pathway_net_mfsp.fillna(0),
+                            origin_marginal_net_mfsp
+                            > pathway_net_mfsp.reindex(origin_marginal_net_mfsp.index).fillna(0),
+                            pathway_net_mfsp.reindex(origin_marginal_net_mfsp.index).fillna(0),
                         )
 
                     origin_valid_years = origin_cumulative_share.replace(0, np.nan)

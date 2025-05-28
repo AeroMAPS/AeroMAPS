@@ -1,7 +1,6 @@
 import os.path as pth
 import json
 from json import load
-from typing import Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -314,12 +313,12 @@ def compare_json_files(
                     keys_to_remove.append(key)
         for key in keys_to_remove:
             del diff["values_changed"][key]
-        
+
         # If values_changed is empty, remove the key
         if not diff["values_changed"]:
             del diff["values_changed"]
 
-    #TODO: investigate why this is necessary with python 3.12
+    # TODO: investigate why this is necessary with python 3.12
     # total_co2_equivalent_emissions_ratio
     # If iterable added, remove it
     if "iterable_item_added" in diff:
@@ -335,3 +334,13 @@ def compare_json_files(
             files_are_different = False
 
     return files_are_different
+
+
+def get_value_for_year(value, year):
+    """Utilitary function for generic bottom up model.
+    Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series."""
+    if isinstance(value, (int, float)):
+        return value
+    elif isinstance(value, pd.Series):
+        return value.loc[year] if year in value.index else None
+    return None

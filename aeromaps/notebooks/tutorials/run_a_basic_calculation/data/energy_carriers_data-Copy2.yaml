@@ -272,13 +272,64 @@ electrofuel:
         values: [0.0496] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear 
   outputs:
+  
+electrofuel_b_up:
+  # Metadata
+  name: "electrofuel_b_up"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 1.2, 1.0, 1.0]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: ["grid_electricity", "co2_dac"]
+      resource_specific_consumption:
+        grid_electricity: 1.69 
+        co2_dac: 0.1015 # KgCO2/MJ
+      processes_names: [ "liquefaction"] # TODO remove
+      lhv: 44
+      # technology_introduction_year: 2020
+      # technology_introduction_volume: 4.0e+11
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231 # 
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2e14
+    # Economics:
+    economics:
+      capex: !AeroMapsCustomDataType
+        years: []
+        values: [0.0001438]
+        method: linear
+      variable_opex: !AeroMapsCustomDataType
+        years: []
+        values: [0.01079545]
+        method: linear
+  outputs:
 
 
 fossil_kerosene:
   # Metadata
   name: "fossil_kerosene"
-  environmental_model: "bottom-up"
-  cost_model: "bottom-up"
+  environmental_model: "top-down"
+  cost_model: "top-down"
   aircraft_type: "dropin_fuel"
   energy_origin: "fossil"
   default: True
@@ -286,8 +337,6 @@ fossil_kerosene:
     # Technical:
     technical:
       lhv: 44
-      technology_introduction_year: 1950
-      technology_introduction_volume: 4.0e+11
       plant_load_factor: 0.95
       plant_lifespan: 25
     # Environmental:
@@ -317,6 +366,7 @@ fossil_kerosene:
         0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
         method: linear
   outputs:
+
   
   
 hydrogen_electrolysis:

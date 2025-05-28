@@ -107,9 +107,8 @@ class AeroMAPSProcess(object):
         self.process = create_mda("MDAChain", disciplines=self.disciplines)
 
     def compute(self):
-
         input_data = self._pre_compute()
-        
+
         self.process.execute(input_data=input_data)
 
         self._update_data_from_model()
@@ -132,7 +131,11 @@ class AeroMAPSProcess(object):
         return self._data_to_json()
 
     def write_json(self, file_name=None):
-        if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+        if (
+            file_name is None
+            and self.configuration_file is not None
+            and "OUTPUTS_JSON_DATA_FILE" in self.config
+        ):
             configuration_directory = os.path.dirname(self.configuration_file)
             new_output_file_path = os.path.join(
                 configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
@@ -140,7 +143,7 @@ class AeroMAPSProcess(object):
             file_name = new_output_file_path
         elif file_name is None:
             file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
-            
+
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
@@ -204,7 +207,6 @@ class AeroMAPSProcess(object):
         return fig
 
     def _pre_compute(self):
-
         input_data = self.parameters.to_dict()
 
         if self.fleet is not None:
@@ -213,14 +215,14 @@ class AeroMAPSProcess(object):
                 self.fleet_model.fleet.get_all_aircraft_elements()
             )
             self.fleet_model.compute()
-        
+
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.array([1.0])
-                    
+
         # Initialize the dataframes witjh latest parameter values
         for disc in self.disciplines:
             disc.model._initialize_df()
-        
+
         return input_data
 
     def _initialize_configuration(self):
@@ -240,9 +242,8 @@ class AeroMAPSProcess(object):
                 self.config[key] = value
 
     def _initialize_data(self):
-
         # Indexes
-        self._initialize_years() 
+        self._initialize_years()
 
         self._initialize_climate_historical_data()
 
@@ -543,7 +544,7 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
-        
+
         # Format input vectors
         self._format_input_vectors()
 
@@ -570,7 +571,6 @@ class AeroMAPSProcess(object):
                 #         self.parameters.historic_start_year, self.parameters.end_year + 1
                 #     )
                 #     field_value = field_value.reindex(new_index, fill_value=np.nan)
-
 
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
@@ -690,7 +690,7 @@ class AeroMAPSProcess(object):
                 if isinstance(value, (pd.Series, np.ndarray)):
                     d[key] = list(value)
             return d
-        
+
         # Create json data
         json_data = {}
 
