@@ -114,7 +114,7 @@ class BottomUpCapacity(AeroMAPSModel):
         energy_unused = pd.Series(np.zeros(len(years)), years)
 
         for year in years:
-            missing_production = energy_required[year] - energy_produced[year]
+            missing_production = energy_required.fillna(0)[year] - energy_produced.fillna(0)[year]
             if missing_production <= 0.0:
                 energy_unused[year] = missing_production
             else:
@@ -128,6 +128,7 @@ class BottomUpCapacity(AeroMAPSModel):
                             plant_load_factor = min(plant_load_factor, resource_load_factor)
 
                 energy_production_commissioned[year] = missing_production
+
                 required_capacity = (
                     missing_production / plant_load_factor
                 )  # Absolute output in MJ per year
@@ -135,6 +136,7 @@ class BottomUpCapacity(AeroMAPSModel):
                 # Update the available capacity and production for plant lifespan
                 plant_available_scenario.loc[year : year + plant_lifespan - 1] += required_capacity
                 energy_produced.loc[year : year + plant_lifespan - 1] += missing_production
+                print(year, energy_produced.loc[year : year + plant_lifespan - 1])
 
         # computing additions for processes
         for process_key in self.process_keys:
