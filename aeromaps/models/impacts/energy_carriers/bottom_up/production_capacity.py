@@ -69,9 +69,7 @@ class BottomUpCapacity(AeroMAPSModel):
 
         # Get the energy consumption trajectory and capacity factor
         energy_required = input_data.get(f"{self.pathway_name}_energy_consumption")
-        plant_load_factor = input_data.get(f"{self.pathway_name}_plant_load_factor", 1)
 
-        plant_lifespan = input_data.get(f"{self.pathway_name}_plant_lifespan")
         technology_introduction = input_data.get(
             f"{self.pathway_name}_technology_introduction_year"
         )
@@ -114,6 +112,14 @@ class BottomUpCapacity(AeroMAPSModel):
         energy_unused = pd.Series(np.zeros(len(years)), years)
 
         for year in years:
+            # getting entry into service (eis) plant charcteristics
+            plant_load_factor = get_value_for_year(
+                input_data.get(f"{self.pathway_name}_eis_plant_load_factor"), year, 1
+            )
+            plant_lifespan = get_value_for_year(
+                input_data.get(f"{self.pathway_name}_eis_plant_lifespan"), year, 25
+            )
+
             missing_production = energy_required.fillna(0)[year] - energy_produced.fillna(0)[year]
             if missing_production <= 0.0:
                 energy_unused[year] = missing_production
