@@ -163,7 +163,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
         )
         # Get time index and basic parameters
         years = range(self.prospection_start_year, self.end_year + 1)
-        lifespan = input_data.get(f"{self.pathway_name}_plant_lifespan", 25)
+
         energy_production_commissioned = input_data[
             f"{self.pathway_name}_energy_production_commissioned"
         ]
@@ -176,6 +176,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
         # For each vintage, compute its emission factor and contribution
         for year, needed_capacity in energy_production_commissioned.items():
+            lifespan = get_value_for_year(
+                input_data.get(f"{self.pathway_name}_eis_lifespan"), year, 1
+            )
             # The plant will operate from year to year+lifespan (or until end_year)
             vintage_indexes = range(year, year + lifespan)
             vintage_emission_factor = pd.Series(np.zeros(len(vintage_indexes)), vintage_indexes)
@@ -252,7 +255,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     # III) Now let's compute the emissions from processes that gets a ressource
                     for process_key in self.process_keys:
                         specific_consumption = get_value_for_year(
-                            input_data.get(process_key + "_resource_specific_consumption_" + key),
+                            input_data.get(
+                                process_key + "_eis_resource_specific_consumption_" + key
+                            ),
                             year,
                             None,
                         )
@@ -313,7 +318,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 for process_key in self.process_keys:
                     # Get the inputs for the year
                     process_emission_factor = get_value_for_year(
-                        input_data.get(process_key + "_co2_emission_factor_without_resources"),
+                        input_data.get(process_key + "_eis_co2_emission_factor_without_resources"),
                         year,
                         0.0,
                     )
