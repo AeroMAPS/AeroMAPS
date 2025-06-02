@@ -149,61 +149,8 @@ class BottomUpCost(AeroMAPSModel):
         # pathway_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
 
         # first lets initialize the output data with mean mfsp components by parsing resources and processes
-        output_data = {}
-        # core mfsp without resources and processes
-        output_data[f"{self.pathway_name}_unit_capex"] = pd.Series(np.zeros(len(indexes)), indexes)
-        output_data[f"{self.pathway_name}_unit_fixed_opex"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-        output_data[f"{self.pathway_name}_unit_variable_opex"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-        output_data[f"{self.pathway_name}_mfsp_without_resource"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-        output_data[f"{self.pathway_name}_capex_cost"] = pd.Series(np.zeros(len(indexes)), indexes)
-        for key in self.resource_keys:
-            output_data[self.pathway_name + "_excluding_processes_" + key + "_unit_cost"] = (
-                pd.Series(np.zeros(len(indexes)), indexes)
-            )
-            for process_key in self.process_keys:
-                if input_data.get(process_key + "_eis_resource_specific_consumption_" + key):
-                    output_data[
-                        self.pathway_name + "_" + process_key + "_" + key + "_unit_cost"
-                    ] = pd.Series(np.zeros(len(indexes)), indexes)
-        for process_key in self.process_keys:
-            output_data[self.pathway_name + "_" + process_key + "_without_resources_unit_cost"] = (
-                pd.Series(np.zeros(len(indexes)), indexes)
-            )
-            output_data[self.pathway_name + "_" + process_key + "_unit_capex"] = pd.Series(
-                np.zeros(len(indexes)), indexes
-            )
-            output_data[self.pathway_name + "_" + process_key + "_capex_cost"] = pd.Series(
-                np.zeros(len(indexes)), indexes
-            )
-            output_data[self.pathway_name + "_" + process_key + "_unit_fixed_opex"] = pd.Series(
-                np.zeros(len(indexes)), indexes
-            )
-            output_data[self.pathway_name + "_" + process_key + "_unit_variable_opex"] = pd.Series(
-                np.zeros(len(indexes)), indexes
-            )
-        output_data[f"{self.pathway_name}_mfsp"] = pd.Series(np.zeros(len(indexes)), indexes)
-        output_data[f"{self.pathway_name}_net_mfsp_without_carbon_tax"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-        output_data[f"{self.pathway_name}_net_mfsp"] = pd.Series(np.zeros(len(indexes)), indexes)
-        output_data[f"{self.pathway_name}_unit_tax"] = pd.Series(np.zeros(len(indexes)), indexes)
-        output_data[f"{self.pathway_name}_unit_subsidy"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-        output_data[f"{self.pathway_name}_unit_carbon_tax"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
-
-        # Ajoute la série pour le MFSP actualisé
-        output_data[f"{self.pathway_name}_cumulative_discounted_costs"] = pd.Series(
-            np.zeros(len(indexes)), indexes
-        )
+        # Prepare outputs
+        output_data = {k: pd.Series(0.0, index=indexes) for k in self.output_names}
 
         # First lets compute the core mfsp
         for year, needed_capacity in energy_production_commissioned.items():
