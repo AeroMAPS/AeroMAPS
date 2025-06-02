@@ -259,7 +259,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                 total_ressource_mobilised_with_selectivity
             )
 
-        # 3 ) --> pathway gets a process that makes on ressource emission
+        # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
             co2_emission_factor_process = input_data.get(
                 process_key + "_co2_emission_factor_without_resource", optional_null_series

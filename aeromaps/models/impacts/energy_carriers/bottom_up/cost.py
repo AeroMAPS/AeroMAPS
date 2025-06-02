@@ -32,7 +32,6 @@ class BottomUpCost(AeroMAPSModel):
         # 2. Set individual inputs, coming either from other models or from the yaml as well
         self.input_names.update(
             {
-                f"{self.pathway_name}_plant_building_scenario": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_production_commissioned": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
             }
@@ -131,6 +130,9 @@ class BottomUpCost(AeroMAPSModel):
             }
         )
 
+        # Ajoute la sortie pour le MFSP actualisé (discounted)
+        self.output_names[self.pathway_name + "_cumulative_discounted_costs"] = pd.Series([0.0])
+
     def compute(self, input_data) -> dict:
         optional_null_series = pd.Series(
             0.0, index=range(self.prospection_start_year, self.end_year + 1)
@@ -200,6 +202,11 @@ class BottomUpCost(AeroMAPSModel):
             np.zeros(len(indexes)), indexes
         )
         output_data[f"{self.pathway_name}_unit_carbon_tax"] = pd.Series(
+            np.zeros(len(indexes)), indexes
+        )
+
+        # Ajoute la série pour le MFSP actualisé
+        output_data[f"{self.pathway_name}_cumulative_discounted_costs"] = pd.Series(
             np.zeros(len(indexes)), indexes
         )
 
@@ -408,6 +415,15 @@ class BottomUpCost(AeroMAPSModel):
             # TODO -- Compute the discounted MFSP for the vintage (as option?)
             #     CAC computation split between here (discounted cots) and bottom up emissions (emissions/discounted emissions)
 
+            # compute the discounted cumulative unit costs
+            discounted_mfsp = self._cumulative_discounted_costs(
+                mfsp_series=vintage_mfsp,
+                year=year,
+                plant_lifespan=lifespan,
+                discount_rate=private_discount_rate,
+            )
+            output_data[f"{self.pathway_name}_cumulative_discounted_costs"][year] += discounted_mfsp
+
         # Store the results in the df and retun
 
         self._store_outputs(output_data)
@@ -448,3 +464,22 @@ class BottomUpCost(AeroMAPSModel):
             capital_cost_lc = capex / lifespan
 
         return capital_cost_lc
+
+    def _cumulative_discounted_costs(
+        self,
+        mfsp_series,
+        year,
+        plant_lifespan,
+        discount_rate,
+    ):
+        """
+        Compute the discounted MFSP for a given vintage over its lifespan.
+        """
+        discounted_cumul_cost = 0.0
+        for i in range(year, year + int(plant_lifespan)):
+            if i <= self.end_year:
+                cost = mfsp_series[i] if i in mfsp_series.index else mfsp_series.iloc[-1]
+            else:
+                cost = mfsp_series.iloc[-1]
+            discounted_cumul_cost += cost / ((1 + discount_rate) ** (i - year))
+        return discounted_cumul_cost
