@@ -80,7 +80,7 @@ class AviationEnergyCarriersFactory:
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "bottom-up":
             return {
-                f"{pathway_name}_bottom_up_environmental": TopDownEnvironmental(
+                f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
                     f"{pathway_name}_bottom_up_environmental",
                     pathway_data,
                     resources_data,

@@ -37,7 +37,13 @@ class BottomUpCost(AeroMAPSModel):
             }
         )
 
-        self.output_names = {self.pathway_name + "_mfsp_without_resource": pd.Series([0.0])}
+        self.output_names = {
+            self.pathway_name + "_mfsp_without_resource": pd.Series([0.0]),
+            self.pathway_name + "_unit_capex": pd.Series([0.0]),
+            self.pathway_name + "_unit_fixed_opex": pd.Series([0.0]),
+            self.pathway_name + "_unit_variable_opex": pd.Series([0.0]),
+            self.pathway_name + "_capex_cost": pd.Series([0.0]),
+        }
 
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
         self.resource_keys = (
@@ -95,6 +101,19 @@ class BottomUpCost(AeroMAPSModel):
             self.output_names[
                 self.pathway_name + "_" + process_key + "_without_resources_unit_cost"
             ] = pd.Series([0.0])
+            self.output_names[self.pathway_name + "_" + process_key + "_unit_capex"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[self.pathway_name + "_" + process_key + "_capex_cost"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[self.pathway_name + "_" + process_key + "_unit_fixed_opex"] = (
+                pd.Series([0.0])
+            )
+            self.output_names[self.pathway_name + "_" + process_key + "_unit_variable_opex"] = (
+                pd.Series([0.0])
+            )
+
             # self.output_names[
             #     self.pathway_name + "_" + process_key + "_without_resources_unit_tax"
             # ] = pd.Series([0.0])

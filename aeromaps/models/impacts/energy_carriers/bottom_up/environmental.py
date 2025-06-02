@@ -148,8 +148,11 @@ class BottomUpEnvironmental(AeroMAPSModel):
             {
                 self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
                 self.pathway_name + "_total_co2_emissions": pd.Series([0.0]),
+                # Base EF, added by hand
+                self.pathway_name + "_co2_emission_factor_without_resource": pd.Series([0.0]),
             }
         )
+        print(self.output_names)
 
     def compute(self, input_data) -> dict:
         """
