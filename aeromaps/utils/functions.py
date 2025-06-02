@@ -336,11 +336,11 @@ def compare_json_files(
     return files_are_different
 
 
-def get_value_for_year(value, year):
+def get_value_for_year(value, year, default_return=None):
     """Utilitary function for generic bottom up model.
     Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series."""
     if isinstance(value, (int, float)):
         return value
     elif isinstance(value, pd.Series):
-        return value.loc[year] if year in value.index else None
-    return None
+        return value.loc[year] if year in value.index else default_return
+    return default_return

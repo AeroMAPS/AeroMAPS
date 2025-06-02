@@ -136,7 +136,6 @@ class BottomUpCapacity(AeroMAPSModel):
                 # Update the available capacity and production for plant lifespan
                 plant_available_scenario.loc[year : year + plant_lifespan - 1] += required_capacity
                 energy_produced.loc[year : year + plant_lifespan - 1] += missing_production
-                print(year, energy_produced.loc[year : year + plant_lifespan - 1])
 
         # computing additions for processes
         for process_key in self.process_keys:
