@@ -419,7 +419,7 @@ class DataConverter(SimpleGrammarDataConverter):
     """A data converter where ``x_shared`` is not a ndarray and handles pd.Series."""
 
     def convert_value_to_array(self, name: str, value: Any) -> ndarray:  # noqa: D102 # pragma: no cover
-        print("Finally using custom data converter")
+        print(f"(Undesired loop ?) using custom data converter for {name}; {value}")
         if isinstance(value, pd.Series):
             return value.values
         return super().convert_value_to_array(name, value)

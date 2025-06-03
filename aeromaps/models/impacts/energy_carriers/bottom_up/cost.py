@@ -202,6 +202,7 @@ class BottomUpCost(AeroMAPSModel):
                 )
 
                 # get the plant load factor for the year: minimum of plant load factor and resource load factors
+                # TODO what shall we do with processes LF? Uncoupling core and processes make sense in many cases.
                 main_process_load_factor = plant_load_factor
                 for key in input_data.get(f"{self.pathway_name}_resource_names", []):
                     if f"{key}_load_factor" in input_data:

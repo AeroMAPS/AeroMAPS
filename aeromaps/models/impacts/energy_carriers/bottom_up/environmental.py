@@ -152,13 +152,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 self.pathway_name + "_co2_emission_factor_without_resource": pd.Series([0.0]),
             }
         )
-        print(self.output_names)
 
     def compute(self, input_data) -> dict:
         """
         Compute the environmental impact of the energy carrier pathway.
         Each plant (vintage) is commissioned with the characteristics of its commissioning year,
-        and its emissions are distributed over its lifespan, weighted by its share in annual production.
+            and its emissions are distributed over its lifespan, weighted by its share in annual production.
         """
 
         optional_null_series = pd.Series(
@@ -180,7 +179,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
         # For each vintage, compute its emission factor and contribution
         for year, needed_capacity in energy_production_commissioned.items():
             lifespan = get_value_for_year(
-                input_data.get(f"{self.pathway_name}_eis_lifespan"), year, 1
+                input_data.get(f"{self.pathway_name}_eis_plant_lifespan"), year, 25
             )
             # The plant will operate from year to year+lifespan (or until end_year)
             vintage_indexes = range(year, year + lifespan)
@@ -203,7 +202,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                 vintage_emission_factor += core_emission_factor
                 output_data[f"{self.pathway_name}_co2_emission_factor_without_resource"].loc[
-                    vintage_indexes
+                    year : year + lifespan
                 ] += core_emission_factor * relative_share
 
                 # II) Now let's compute the emissions from resources that are linked to the pathway itself
@@ -227,34 +226,44 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             resources_consumption * kerosene_selectivity
                         )
 
-                        total_ressource_consumption.loc[vintage_indexes] = resources_consumption
-                        total_ressource_mobilised_with_selectivity.loc[vintage_indexes] = (
+                        total_ressource_consumption.loc[year : year + lifespan] = (
+                            resources_consumption
+                        )
+                        total_ressource_mobilised_with_selectivity.loc[year : year + lifespan] = (
                             resources_consumption_with_selectivity
                         )
 
                         output_data[
                             self.pathway_name + "_excluding_processes_" + key + "_total_consumption"
-                        ].loc[vintage_indexes] += resources_consumption
+                        ].loc[year : year + lifespan] += resources_consumption
                         output_data[
                             self.pathway_name
                             + "_excluding_processes_"
                             + key
                             + "_total_mobilised_with_selectivity"
-                        ].loc[vintage_indexes] += resources_consumption_with_selectivity
+                        ].loc[year : year + lifespan] += resources_consumption_with_selectivity
 
                         # Get the CO2 emission factor for the resource
                         unit_emissions = input_data.get(
                             key + "_co2_emission_factor", optional_null_series
                         )
+                        # beyond sceanrio end year, we stick to last known value
+                        unit_emissions = unit_emissions.reindex(
+                            range(year, year + lifespan), method="ffill"
+                        )
+
                         # get resource emission per unit of energy
                         co2_emission_factor_ressource = specific_consumption * unit_emissions
                         vintage_emission_factor += co2_emission_factor_ressource
+
                         output_data[
                             self.pathway_name
                             + "_excluding_processes_"
                             + key
                             + "_co2_emission_factor"
-                        ].loc[vintage_indexes] += co2_emission_factor_ressource * relative_share
+                        ].loc[year : year + lifespan] += (
+                            co2_emission_factor_ressource * relative_share
+                        )
                     # III) Now let's compute the emissions from processes that gets a ressource
                     for process_key in self.process_keys:
                         specific_consumption = get_value_for_year(
@@ -272,10 +281,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 resources_consumption * kerosene_selectivity
                             )
 
-                            total_ressource_consumption.loc[vintage_indexes] = resources_consumption
-                            total_ressource_mobilised_with_selectivity.loc[vintage_indexes] = (
-                                resources_consumption_with_selectivity
+                            total_ressource_consumption.loc[year : year + lifespan] = (
+                                resources_consumption
                             )
+                            total_ressource_mobilised_with_selectivity.loc[
+                                year : year + lifespan
+                            ] = resources_consumption_with_selectivity
 
                             output_data[
                                 self.pathway_name
@@ -284,7 +295,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 + "_"
                                 + key
                                 + "_total_consumption"
-                            ].loc[vintage_indexes] += resources_consumption
+                            ].loc[year : year + lifespan] += resources_consumption
                             output_data[
                                 self.pathway_name
                                 + "_"
@@ -292,11 +303,15 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 + "_"
                                 + key
                                 + "_total_mobilised_with_selectivity"
-                            ].loc[vintage_indexes] += resources_consumption_with_selectivity
+                            ].loc[year : year + lifespan] += resources_consumption_with_selectivity
 
                             # Get the CO2 emission factor for the resource
                             unit_emissions = input_data.get(
                                 key + "_co2_emission_factor", optional_null_series
+                            )
+                            # beyond sceanrio end year, we stick to last known value
+                            unit_emissions = unit_emissions.reindex(
+                                range(year, year + lifespan), method="ffill"
                             )
                             # get resource emission per unit of energy
                             co2_emission_factor_ressource = specific_consumption * unit_emissions
@@ -308,14 +323,16 @@ class BottomUpEnvironmental(AeroMAPSModel):
                                 + "_"
                                 + key
                                 + "_co2_emission_factor"
-                            ].loc[vintage_indexes] += co2_emission_factor_ressource * relative_share
+                            ].loc[year : year + lifespan] += (
+                                co2_emission_factor_ressource * relative_share
+                            )
                     # store the total consumption of the resource
                     output_data[self.pathway_name + "_" + key + "_total_consumption"].loc[
-                        vintage_indexes
+                        year : year + lifespan
                     ] += total_ressource_consumption
                     output_data[
                         self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"
-                    ].loc[vintage_indexes] += total_ressource_mobilised_with_selectivity
+                    ].loc[year : year + lifespan] += total_ressource_mobilised_with_selectivity
 
                 # IV) Now let's compute the emissions from processes themselves
                 for process_key in self.process_keys:
@@ -326,21 +343,24 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         0.0,
                     )
                     vintage_emission_factor += process_emission_factor
+
                     output_data[
                         self.pathway_name
                         + "_"
                         + process_key
                         + "_without_resources_co2_emission_factor"
-                    ].loc[vintage_indexes] += process_emission_factor * relative_share
+                    ].loc[year : year + lifespan] += process_emission_factor * relative_share
 
                 # Compute the average emission factor from the vintage
-                co2_emission_factor.loc[vintage_indexes] += vintage_emission_factor * relative_share
+                co2_emission_factor.loc[year : year + lifespan] += (
+                    vintage_emission_factor * relative_share
+                )
 
-            # Store the emission factor
-            output_data[f"{self.pathway_name}_co2_emission_factor"] = co2_emission_factor
-            # Compute the total emissions from the vintage
-            total_co2_emissions = energy_consumption * co2_emission_factor
-            output_data[self.pathway_name + "_total_co2_emissions"] = total_co2_emissions
+        # Store the emission factor
+        output_data[f"{self.pathway_name}_co2_emission_factor"] = co2_emission_factor
+        # Compute the total emissions from the vintage
+        total_co2_emissions = energy_consumption * co2_emission_factor
+        output_data[self.pathway_name + "_total_co2_emissions"] = total_co2_emissions
 
         self._store_outputs(output_data)
         return output_data

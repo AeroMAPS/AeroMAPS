@@ -455,7 +455,6 @@ class AeroMAPSProcess(object):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
-                        print(model.name)
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):

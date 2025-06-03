@@ -302,7 +302,7 @@ electrofuel_b_up:
       eis_plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
