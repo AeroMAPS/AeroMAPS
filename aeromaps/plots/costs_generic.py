@@ -1299,3 +1299,84 @@ class DetailledMFSPBreakdown:
         # self.ax.set_xticklabels(years, rotation=-30, ha="left")
         self.fig.tight_layout()
         self.fig.canvas.draw()
+
+
+class SimpleMFSP:
+    def __init__(self, process):
+        data = process.data
+        self.df = data["vector_outputs"]
+        self.years = data["years"]["full_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = process.pathways_manager
+
+        self.fig, self.ax = plt.subplots(figsize=(12, 7))
+        self.create_plot()
+
+    def create_plot(self):
+        pathways = self.pathways_manager.get_all()
+        colors = plt.cm.get_cmap("tab20", len(pathways))
+        # Définir un mapping de linestyle selon le type d'aéronef
+        aircraft_linestyles = {
+            "dropin_fuel": "solid",
+            "hydrogen": "dashed",
+            "electric": "dotted",
+        }
+        for i, p in enumerate(pathways):
+            col = f"{p.name}_net_mfsp"
+            energy_col = f"{p.name}_energy_consumption"
+            if col in self.df.columns and energy_col in self.df.columns:
+                # Masque : pathway utilisé si énergie > 1e-9 et non NaN
+                mask = (self.df.loc[self.prospective_years, energy_col] > 1e-9) & (
+                    ~self.df.loc[self.prospective_years, energy_col].isna()
+                )
+                years_used = np.array(self.prospective_years)[mask.values]
+                vals = self.df.loc[self.prospective_years, col].fillna(np.nan).values[mask.values]
+                if len(years_used) > 0:
+                    linestyle = aircraft_linestyles.get(getattr(p, "aircraft_type", ""), "solid")
+                    self.ax.plot(
+                        years_used,
+                        vals,
+                        label=p.name,
+                        color=colors(i),
+                        linewidth=2,
+                        linestyle=linestyle,
+                    )
+        self.ax.set_title("Net MFSP by fuel")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Net MFSP [€/MJ]")
+        self.ax.legend()
+        self.ax.grid(True)
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+    def update(self, df_data):
+        self.df = df_data["vector_outputs"]
+
+        pathways = self.pathways_manager.get_all()
+        colors = plt.cm.get_cmap("tab20", len(pathways))
+        aircraft_linestyles = {
+            "dropin_fuel": "solid",
+            "hydrogen": "dashed",
+            "electric": "dotted",
+        }
+        for i, p in enumerate(pathways):
+            col = f"{p.name}_net_mfsp"
+            energy_col = f"{p.name}_energy_consumption"
+            if col in self.df.columns and energy_col in self.df.columns:
+                mask = (self.df.loc[self.prospective_years, energy_col] > 1e-9) & (
+                    ~self.df.loc[self.prospective_years, energy_col].isna()
+                )
+                years_used = np.array(self.prospective_years)[mask.values]
+                vals = self.df.loc[self.prospective_years, col].fillna(np.nan).values[mask.values]
+                if len(years_used) > 0:
+                    linestyle = aircraft_linestyles.get(getattr(p, "aircraft_type", ""), "solid")
+                    self.ax.plot(
+                        years_used,
+                        vals,
+                        label=p.name,
+                        color=colors(i),
+                        linewidth=2,
+                        linestyle=linestyle,
+                    )
+        self.fig.tight_layout()
+        self.fig.canvas.draw()

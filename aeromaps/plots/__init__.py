@@ -53,7 +53,6 @@ from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
 from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
-    ScenarioEnergyUnitCostPlot,
     DiscountEffect,
     ScenarioEnergyCarbonTaxPlot,
     ScenarioEnergyUnitCostWithCarbonTaxPlot,
@@ -71,7 +70,11 @@ from aeromaps.plots.costs import (
     ShadowCarbonPriceSimple,
 )
 
-from aeromaps.plots.costs_generic import ScenarioEnergyExpensesPlot, DetailledMFSPBreakdown
+from aeromaps.plots.costs_generic import (
+    ScenarioEnergyExpensesPlot,
+    DetailledMFSPBreakdown,
+    SimpleMFSP,
+)
 
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
@@ -117,7 +120,7 @@ available_plots = {
     "energy_capex": ScenarioEnergyCapitalPlot,
     "energy_expenses_with_carbon_tax": ScenarioEnergyExpensesPlot,
     "energy_expenses_without_carbon_tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
-    "energy_mfsp": ScenarioEnergyUnitCostPlot,
+    "energy_mfsp": SimpleMFSP,
     "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "energy_expenses_discounted": DiscountEffect,
     "energy_expenses_carbon_tax_effect": ScenarioEnergyCarbonTaxPlot,
