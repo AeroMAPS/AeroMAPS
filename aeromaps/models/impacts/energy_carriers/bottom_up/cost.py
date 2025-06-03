@@ -50,7 +50,7 @@ class BottomUpCost(AeroMAPSModel):
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_resource_names", [])
-        )
+        ).copy()
 
         for key in self.resource_keys:
             # Outputs.
@@ -68,7 +68,7 @@ class BottomUpCost(AeroMAPSModel):
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_processes_names", [])
-        )
+        ).copy()
 
         for process_key in self.process_keys:
             for key, val in processes_data[process_key].get("inputs").get("technical", {}).items():
@@ -79,7 +79,7 @@ class BottomUpCost(AeroMAPSModel):
                         .get("inputs")
                         .get("technical", {})
                         .get(f"{process_key}_resource_names", [])
-                    )
+                    ).copy()
                     self.resource_keys.extend(resources)
                     for resource in resources:
                         self.output_names[

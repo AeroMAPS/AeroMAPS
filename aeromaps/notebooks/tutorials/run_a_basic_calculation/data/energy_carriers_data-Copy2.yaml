@@ -294,7 +294,7 @@ electrofuel_b_up:
       eis_resource_specific_consumption:
         grid_electricity: 1.69 
         co2_dac: 0.1015 # KgCO2/MJ
-      processes_names: [ "liquefaction"] # TODO remove
+      processes_names: ["liquefaction"] # TODO remove
       lhv: 44
       # technology_introduction_year: 2020
       # technology_introduction_volume: 4.0e+11

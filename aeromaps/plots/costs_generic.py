@@ -492,7 +492,6 @@ class DetailledMFSPBreakdown:
         pairs_sorted = sorted(process_resource_pairs)
         cmap = plt.get_cmap("tab20")
         color_map = {pair: cmap(i % 20) for i, pair in enumerate(pairs_sorted)}
-        color_map[("main", "mfsp_without_resource")] = (0.7, 0.7, 0.7, 1.0)
         return color_map
 
     @staticmethod
@@ -1071,9 +1070,6 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     base += cost_vals
-                    pathway_handles.append(
-                        Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
-                    )
                 tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
                 tax_vals = get_vals(tax_col)
                 if np.any(tax_vals != 0):

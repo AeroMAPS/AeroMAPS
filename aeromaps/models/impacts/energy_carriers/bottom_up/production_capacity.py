@@ -39,12 +39,12 @@ class BottomUpCapacity(AeroMAPSModel):
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_resource_names", [])
-        )
+        ).copy()
         self.process_keys = (
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_processes_names", [])
-        )
+        ).copy()
 
         self.process_resource_keys = {}
         for process_key in self.process_keys:
@@ -56,7 +56,7 @@ class BottomUpCapacity(AeroMAPSModel):
                         .get("inputs")
                         .get("technical", {})
                         .get(f"{process_key}_resource_names", [])
-                    )
+                    ).copy()
                     self.process_resource_keys[process_key] = resources
                 elif key == f"{process_key}_load_factor":
                     self.input_names[key] = val

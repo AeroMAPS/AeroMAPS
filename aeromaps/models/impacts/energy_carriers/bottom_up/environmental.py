@@ -52,13 +52,13 @@ class BottomUpEnvironmental(AeroMAPSModel):
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_resource_names", [])
-        )
+        ).copy()
 
         self.process_keys = (
             configuration_data.get("inputs")
             .get("technical", {})
             .get(f"{self.pathway_name}_processes_names", [])
-        )
+        ).copy()
 
         # Adding resources-linked inputs and outputs
         for key in self.resource_keys:
@@ -91,7 +91,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         .get("inputs")
                         .get("technical", {})
                         .get(f"{process_key}_resource_names", [])
-                    )
+                    ).copy()
                     self.resource_keys.extend(resources)
                     for resource in resources:
                         self.output_names[
