@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import numpy as np
 from ipywidgets import widgets, interact
 
 from .constants import plot_3_x, plot_3_y
@@ -73,7 +74,7 @@ class MeanFuelEmissionFactorPlot:
         self.fig.canvas.draw()
 
 
-class EmissionFactorPerFuelPlot:
+class EmissionFactorPerFuelCategory:
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -178,6 +179,137 @@ class EmissionFactorPerFuelPlot:
 
         self.ax.relim()
         self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
+class EmissionFactorPerFuel:
+    def __init__(self, process):
+        data = process.data
+        self.df = data["vector_outputs"]
+        self.years = data["years"]["full_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = process.pathways_manager
+
+        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.create_plot()
+
+    def create_plot(self):
+        pathways = self.pathways_manager.get_all()
+        colors = plt.cm.get_cmap("tab20", len(pathways))
+        aircraft_linestyles = {
+            "dropin_fuel": "-",
+            "hydrogen": "--",
+            "electric": "-.",
+        }
+        dashed_line_needed = False
+        for i, p in enumerate(pathways):
+            col = f"{p.name}_co2_emission_factor"
+            energy_col = f"{p.name}_energy_consumption"
+            if col in self.df.columns and energy_col in self.df.columns:
+                years = np.array(self.prospective_years)
+                vals = self.df.loc[self.prospective_years, col].fillna(np.nan).values
+                energy = self.df.loc[self.prospective_years, energy_col].fillna(0).values
+                linestyle = aircraft_linestyles.get(getattr(p, "aircraft_type", ""), "solid")
+
+                used_mask = energy > 1e-9
+                color_used = colors(i)
+                color_unused = "grey"
+                linewidth = 2
+
+                seg_start = 0
+                current_used = used_mask[0]
+                for idx in range(1, len(years)):
+                    if used_mask[idx] != current_used:
+                        seg_years = years[seg_start : idx + 1]
+                        seg_vals = vals[seg_start : idx + 1]
+                        if current_used:
+                            self.ax.plot(
+                                seg_years,
+                                seg_vals,
+                                color=color_used,
+                                linewidth=linewidth,
+                                linestyle=linestyle,
+                                label=p.name if seg_start == 0 else None,
+                            )
+                        else:
+                            self.ax.plot(
+                                seg_years,
+                                seg_vals,
+                                color=color_unused,
+                                linewidth=1.5,
+                                linestyle="dotted",
+                                alpha=0.7,
+                                label="Not used" if not dashed_line_needed else None,
+                            )
+                            dashed_line_needed = True
+                        seg_start = idx
+                        current_used = used_mask[idx]
+                seg_years = years[seg_start:]
+                seg_vals = vals[seg_start:]
+                if current_used:
+                    self.ax.plot(
+                        seg_years,
+                        seg_vals,
+                        color=color_used,
+                        linewidth=linewidth,
+                        linestyle=linestyle,
+                        label=p.name if seg_start == 0 else None,
+                    )
+                else:
+                    self.ax.plot(
+                        seg_years,
+                        seg_vals,
+                        color=color_unused,
+                        linewidth=1.5,
+                        linestyle="dotted",
+                        alpha=0.7,
+                        label="Not used" if not dashed_line_needed else None,
+                    )
+                    dashed_line_needed = True
+
+        from matplotlib.lines import Line2D
+
+        handles, labels = self.ax.get_legend_handles_labels()
+        print(handles, labels)
+        # Remove duplicate "Not used"
+        seen = set()
+        new_handles = []
+        new_labels = []
+        for ha, lb in zip(handles, labels):
+            if lb not in seen:
+                new_handles.append(ha)
+                new_labels.append(lb)
+                seen.add(lb)
+        # Add "Not used" if needed and not present
+        if dashed_line_needed and "Not used" not in new_labels:
+            new_handles.append(
+                Line2D(
+                    [0],
+                    [0],
+                    color="grey",
+                    linestyle="dotted",
+                    linewidth=1.5,
+                    alpha=0.7,
+                    label="Not used",
+                )
+            )
+            new_labels.append("Not used")
+        self.ax.set_title("CO2 emission factor by fuel")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("CO2 emission factor [gCO2-eq/MJ]")
+        self.ax.legend(new_handles, new_labels)
+        self.ax.grid(True)
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+    def update(self, data):
+        self.df = data["vector_outputs"]
+        self.years = data["years"]["full_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = data["pathways_manager"]
+
+        self.ax.cla()
+        self.create_plot()
         self.fig.canvas.draw()
 
 

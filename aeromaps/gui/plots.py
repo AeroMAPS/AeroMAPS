@@ -28,7 +28,7 @@ from aeromaps.plots.aircraft_fleet_and_operations import (
 )
 from aeromaps.plots.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
-    EmissionFactorPerFuelPlot,
+    EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
 )
 from aeromaps.plots.emissions import (
@@ -99,7 +99,7 @@ plot_3 = {
     "Fuel consumption (fuel consumption per passenger per 100 km)": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "Energy consumption of the aircraft fleet": EnergyConsumptionPlot,
     "Mean fuel emission factor (CO2 emissions per energy)": MeanFuelEmissionFactorPlot,
-    "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelPlot,
+    "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelCategory,
     "Cumulative CO2 emissions": CumulativeCO2EmissionsPlot,
     "Direct H2O emissions": DirectH2OEmissionsPlot,
     "Direct NOx emissions": DirectNOxEmissionsPlot,

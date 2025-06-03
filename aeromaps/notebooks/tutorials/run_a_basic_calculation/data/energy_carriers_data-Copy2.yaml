@@ -296,8 +296,8 @@ electrofuel_b_up:
         co2_dac: 0.1015 # KgCO2/MJ
       processes_names: ["liquefaction"] # TODO remove
       lhv: 44
-      # technology_introduction_year: 2020
-      # technology_introduction_volume: 4.0e+11
+      technology_introduction_year: 2020
+      technology_introduction_volume: 4.0e+11
       eis_plant_load_factor: 0.95
       eis_plant_lifespan: 25
     # Environmental:

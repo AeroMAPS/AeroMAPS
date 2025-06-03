@@ -807,7 +807,7 @@ class ScenarioEnergyCarbonTaxPlot:
         self.fig.canvas.draw()
 
 
-class ScenarioEnergyUnitCostPlot:
+class ScenarioEnergyUnitCostPlotD:
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]

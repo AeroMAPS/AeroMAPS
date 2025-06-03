@@ -1,5 +1,5 @@
 {
-    "PARAMETERS_ENERGY_CARRIERS_DATA_FILE": "./energy_carriers_data-Copy2.yaml",
-    "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data-Copy1.yaml",
-    "PARAMETERS_PROCESSES_DATA_FILE": "./processes_data-Copy1.yaml"
+    "PARAMETERS_ENERGY_CARRIERS_DATA_FILE": "./energy_carriers_data.yaml",
+    "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data.yaml",
+    "PARAMETERS_PROCESSES_DATA_FILE": "./processes_data.yaml"
 }

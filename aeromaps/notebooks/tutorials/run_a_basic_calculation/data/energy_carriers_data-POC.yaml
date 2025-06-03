@@ -240,10 +240,10 @@ electrofuel:
     # Technical:
     technical:
       kerosene_selectivity: 0.5 # TODO chose
-      resource_names: [ "grid_electricity" ]
+      resource_names: [ "wind_electricity" ]
       resource_specific_consumption:
         # Add a list of resources and their consumption per unit of fuel.
-        grid_electricity: 2.32
+        wind_electricity: 2.32
       lhv: 44
     # Environmental:
     environmental:
@@ -263,6 +263,11 @@ electrofuel:
         years: []
         values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
+      unit_subsidy_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0496] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear 
+    
   outputs:
 
 
@@ -307,9 +312,9 @@ fossil_kerosene:
   outputs:
   
   
-hydrogen_electrolysis:
+hydrogen_electrolysis_grid_fr:
   # Metadata
-  name: "hydrogen_electrolysis"
+  name: "hydrogen_electrolysis_grid_fr"
   environmental_model: "top-down"
   cost_model: "top-down"
   aircraft_type: "hydrogen"
@@ -324,7 +329,7 @@ hydrogen_electrolysis:
         method: linear
     # Technical:
     technical:
-      processes_names: [ "liquefaction", "electrolysis" ]
+      processes_names: [ "liquefaction", "electrolysis_grid_fr" ]
       lhv: 120
     # Environmental:
     environmental:
@@ -341,6 +346,83 @@ hydrogen_electrolysis:
     # Economics:
     economics:
   outputs:
+  
+  
+hydrogen_electrolysis_grid_us:
+  # Metadata
+  name: "hydrogen_electrolysis_grid_us"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [0, 0, 2, 5]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis_grid_us" ]
+      lhv: 120
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+  outputs:
+  
+hydrogen_electrolysis_wind:
+  # Metadata
+  name: "hydrogen_electrolysis_wind"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [0, 0, 0, 0]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis_wind" ]
+      lhv: 120
+    # Environmental:
+    environmental:
+      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0421, 0.0416, 0.0412, 0.0410] # ARBITRARY FOR POC
+        method: linear
+  outputs:
+  
+
   
 hydrogen_gas:
   # Metadata
@@ -430,10 +512,10 @@ battery_electric:
   inputs:
     # Technical:
     technical:
-      resource_names: [ "grid_electricity" ]
+      resource_names: [ "grid_electricity_fr" ]
       resource_specific_consumption:
       # Add a list of resources and their consumption per unit of fuel.
-        grid_electricity: 1
+        grid_electricity_fr: 1
       lhv: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!! 
     # Environmental:
     environmental:
@@ -449,10 +531,7 @@ battery_electric:
         particles_number: 0.0
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
-        years: []
-        values: [0.022] # Converted 0.8 €/kWh to €/MJ with 3.6 MJ/kWh
-        method: linear
+
   outputs:
 
 

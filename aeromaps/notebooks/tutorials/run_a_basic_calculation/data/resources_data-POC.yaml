@@ -1,0 +1,106 @@
+hefa_fog_biomass:
+  # ID
+  name: "hefa_fog_biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 1.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+hefa_others_biomass:
+  # ID
+  name: "hefa_others_biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 20.67e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+      
+ft_msw_biomass:
+  # ID
+  name: "ft_msw_biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 11.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+
+ft_others_biomass:
+  # ID
+  name: "ft_others_biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 113.7e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+atj_biomass:
+  # ID
+  name: "atj_biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 17.64e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+grid_electricity_fr:
+  # ID
+  name: "grid_electricity_fr"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [20.16, 15.5, 10.8, 5.3] # STD=[119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+        method: linear
+    cost: !AeroMapsCustomDataType
+        years: []
+        values: [0.022] 
+        method: linear
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+grid_electricity_us:
+  # ID
+  name: "grid_electricity_us"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+        method: linear
+    cost: !AeroMapsCustomDataType
+        years: []
+        values: [0.018] 
+        method: linear
+    subsidy: !AeroMapsCustomDataType
+        years: []
+        values: [0.00396] 
+        method: linear 
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+wind_electricity:
+  # ID
+  name: "wind_electricity"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [5.16, 5.5, 5.8, 5.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+        method: linear
+    load_factor: 0.4
+    mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0321, 0.0216, 0.0212, 0.01910] # [5.047140, 4.994914, 4.949078, 4.924813]/ 120 # caution no liquefaction there
+        method: linear
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
