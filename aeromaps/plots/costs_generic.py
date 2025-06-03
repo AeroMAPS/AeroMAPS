@@ -349,7 +349,7 @@ class ScenarioEnergyExpensesPlot:
                     )
 
         # Adapted legends
-        if detail_level_selected == "Lines (no stack)":
+        if detail_level_selected == "line_pathways":
             pathway_legend_handles = [
                 Patch(facecolor=pathway_colors[p.name], edgecolor="black", alpha=0.5, label=p.name)
                 for p in pathways
@@ -394,10 +394,22 @@ class ScenarioEnergyExpensesPlot:
             self.ax.add_artist(legend1)
             self.ax.add_artist(legend2)
         else:
-            pathway_legend_handles = [
-                Patch(facecolor=pathway_colors[p.name], edgecolor="black", label=p.name, alpha=0.5)
-                for p in pathways
-            ]
+            if detail_level_selected == "stacked_pathways":
+                pathway_legend_handles = [
+                    Patch(
+                        facecolor=pathway_colors[p.name], edgecolor="black", label=p.name, alpha=0.5
+                    )
+                    for p in pathways
+                ]
+            else:
+                pathway_legend_handles = [
+                    Patch(
+                        facecolor="grey",
+                        edgecolor="black",
+                        label="All pathways selected",
+                        alpha=0.5,
+                    )
+                ]
             overlay_legend_handles = [
                 Patch(edgecolor="black", facecolor="none", label=self.label_map["mfsp"]),
                 Patch(
@@ -445,7 +457,7 @@ class ScenarioEnergyExpensesPlot:
             self.ax.add_artist(legend2)
 
         self.ax.grid(axis="x")
-        self.ax.set_title("Annual energy expenses per pathway")
+        self.ax.set_title("Annual energy expenses")
         self.ax.set_ylabel("Energy expenses [M€]")
         self.ax.set_xlim(2020, self.years[-1])
         self.ax.set_ylim()
@@ -473,7 +485,9 @@ class DetailledMFSPBreakdown:
             "subsidy": "xx",
         }
 
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(
+            figsize=(15, 9),
+        )
         self.create_plot()
         self.plot_interact()
 
@@ -490,7 +504,7 @@ class DetailledMFSPBreakdown:
                 process_resource_pairs.add((process_name, "without_resources_unit_cost"))
         process_resource_pairs.add(("main", "mfsp_without_resource"))
         pairs_sorted = sorted(process_resource_pairs)
-        cmap = plt.get_cmap("tab20")
+        cmap = plt.get_cmap("tab20b")
         color_map = {pair: cmap(i % 20) for i, pair in enumerate(pairs_sorted)}
         return color_map
 
@@ -871,13 +885,13 @@ class DetailledMFSPBreakdown:
                 )
                 # Add vertical text annotations
                 ylim = self.ax.get_ylim()
-                ymid = (ylim[0] + ylim[1]) / 2
+                ymid = ylim[1] * 0.99
                 self.ax.text(
                     used_count - 0.7,
                     ymid,
                     "Used",
                     rotation=90,
-                    va="center",
+                    va="top",
                     ha="right",
                     fontsize=10,
                     color="black",
@@ -889,7 +903,7 @@ class DetailledMFSPBreakdown:
                     ymid,
                     "Not (yet) used",
                     rotation=90,
-                    va="center",
+                    va="top",
                     ha="left",
                     fontsize=10,
                     color="black",
