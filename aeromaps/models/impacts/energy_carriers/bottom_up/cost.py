@@ -38,11 +38,11 @@ class BottomUpCost(AeroMAPSModel):
         )
 
         self.output_names = {
-            self.pathway_name + "_mfsp_without_resource": pd.Series([0.0]),
-            self.pathway_name + "_unit_capex": pd.Series([0.0]),
-            self.pathway_name + "_unit_fixed_opex": pd.Series([0.0]),
-            self.pathway_name + "_unit_variable_opex": pd.Series([0.0]),
-            self.pathway_name + "_capex_cost": pd.Series([0.0]),
+            f"{self.pathway_name}_mfsp_without_resource": pd.Series([0.0]),
+            f"{self.pathway_name}_unit_capex": pd.Series([0.0]),
+            f"{self.pathway_name}_unit_fixed_opex": pd.Series([0.0]),
+            f"{self.pathway_name}_unit_variable_opex": pd.Series([0.0]),
+            f"{self.pathway_name}_capex_cost": pd.Series([0.0]),
         }
 
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
@@ -54,7 +54,7 @@ class BottomUpCost(AeroMAPSModel):
 
         for key in self.resource_keys:
             # Outputs.
-            self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_cost"] = (
+            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_unit_cost"] = (
                 pd.Series([0.0])
             )
             # self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_tax"] = (
@@ -83,7 +83,7 @@ class BottomUpCost(AeroMAPSModel):
                     self.resource_keys.extend(resources)
                     for resource in resources:
                         self.output_names[
-                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_cost"
+                            f"{self.pathway_name}_{process_key}_{resource}_unit_cost"
                         ] = pd.Series([0.0])
                         # self.output_names[
                         #     self.pathway_name + "_" + process_key + "_" + resource + "_unit_tax"
@@ -98,20 +98,16 @@ class BottomUpCost(AeroMAPSModel):
             for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
-            self.output_names[
-                self.pathway_name + "_" + process_key + "_without_resources_unit_cost"
-            ] = pd.Series([0.0])
-            self.output_names[self.pathway_name + "_" + process_key + "_unit_capex"] = pd.Series(
-                [0.0]
-            )
-            self.output_names[self.pathway_name + "_" + process_key + "_capex_cost"] = pd.Series(
-                [0.0]
-            )
-            self.output_names[self.pathway_name + "_" + process_key + "_unit_fixed_opex"] = (
+            self.output_names[f"{self.pathway_name}_{process_key}_without_resources_unit_cost"] = (
                 pd.Series([0.0])
             )
-            self.output_names[self.pathway_name + "_" + process_key + "_unit_variable_opex"] = (
-                pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_{process_key}_unit_capex"] = pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_{process_key}_capex_cost"] = pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_{process_key}_unit_fixed_opex"] = pd.Series(
+                [0.0]
+            )
+            self.output_names[f"{self.pathway_name}_{process_key}_unit_variable_opex"] = pd.Series(
+                [0.0]
             )
 
             # self.output_names[
@@ -128,9 +124,9 @@ class BottomUpCost(AeroMAPSModel):
         # TODO specify eco/cost as for process
         for key in self.resource_keys:
             if f"{key}_cost" in resources_data[key]["specifications"]:
-                self.input_names[key + "_cost"] = pd.Series([0.0])
+                self.input_names[f"{key}_cost"] = pd.Series([0.0])
             if f"{key}_load_factor" in resources_data[key]["specifications"]:
-                self.input_names[key + "_load_factor"] = pd.Series([0.0])
+                self.input_names[f"{key}_load_factor"] = pd.Series([0.0])
             # if f"{key}_subsidy" in resources_data[key]["specifications"]:
             #     self.input_names[key + "_subsidy"] = pd.Series([0.0])
             # if f"{key}_tax" in resources_data[key]["specifications"]:
@@ -140,17 +136,17 @@ class BottomUpCost(AeroMAPSModel):
         # Fill in the expected outputs with names from the compute method, initialized with NaN
         self.output_names.update(
             {
-                self.pathway_name + "_net_mfsp_without_carbon_tax": pd.Series([0.0]),
-                self.pathway_name + "_net_mfsp": pd.Series([0.0]),
-                self.pathway_name + "_mfsp": pd.Series([0.0]),
-                self.pathway_name + "_unit_tax": pd.Series([0.0]),
-                self.pathway_name + "_unit_carbon_tax": pd.Series([0.0]),
-                self.pathway_name + "_unit_subsidy": pd.Series([0.0]),
+                f"{self.pathway_name}_net_mfsp_without_carbon_tax": pd.Series([0.0]),
+                f"{self.pathway_name}_net_mfsp": pd.Series([0.0]),
+                f"{self.pathway_name}_mfsp": pd.Series([0.0]),
+                f"{self.pathway_name}_unit_tax": pd.Series([0.0]),
+                f"{self.pathway_name}_unit_carbon_tax": pd.Series([0.0]),
+                f"{self.pathway_name}_unit_subsidy": pd.Series([0.0]),
             }
         )
 
         # Ajoute la sortie pour le MFSP actualisé (discounted)
-        self.output_names[self.pathway_name + "_cumulative_discounted_costs"] = pd.Series([0.0])
+        self.output_names[f"{self.pathway_name}_cumulative_discounted_costs"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
         optional_null_series = pd.Series(
@@ -265,7 +261,7 @@ class BottomUpCost(AeroMAPSModel):
                     )
 
                     if specific_consumption is not None:
-                        resource_price = input_data.get(key + "_cost", optional_null_series.copy())
+                        resource_price = input_data.get(f"{key}_cost", optional_null_series.copy())
 
                         # cast mfsp_resource to a series with the same index as
                         # vintage_mfsp by keeping correct values (<end year) extending last year value to the end of the vintage_mfsp
@@ -338,7 +334,7 @@ class BottomUpCost(AeroMAPSModel):
                     for key in input_data.get(f"{process_key}_resource_names", []):
                         if f"{key}_load_factor" in input_data:
                             resource_load_factor = get_value_for_year(
-                                input_data.get(f"{key}_load_factor" + key), year, 1.0
+                                input_data.get(f"{key}_load_factor"), year, 1.0
                             )
                             if resource_load_factor is not None:
                                 process_load_factor = min(process_load_factor, resource_load_factor)

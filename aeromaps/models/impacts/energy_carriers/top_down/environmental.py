@@ -40,7 +40,7 @@ class TopDownEnvironmental(AeroMAPSModel):
         # Individual inputs defined in the yaml file
         # -- None
         # Individual inputs defined by EnergyUseChoice
-        self.input_names[self.pathway_name + "_energy_consumption"] = pd.Series([0.0])
+        self.input_names[f"{self.pathway_name}_energy_consumption"] = pd.Series([0.0])
 
         # TODO find a better way to get the resource inputs ? Now better with the list(str) argument of each pathway .yaml
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
@@ -59,24 +59,19 @@ class TopDownEnvironmental(AeroMAPSModel):
         # Adding resources-linked inputs and outputs
         for key in self.resource_keys:
             self.output_names[
-                self.pathway_name + "_excluding_processes_" + key + "_co2_emission_factor"
+                f"{self.pathway_name}_excluding_processes_{key}_co2_emission_factor"
             ] = pd.Series([0.0])
             self.output_names[
-                self.pathway_name + "_excluding_processes_" + key + "_total_consumption"
+                f"{self.pathway_name}_excluding_processes_{key}_total_consumption"
             ] = pd.Series([0.0])
             self.output_names[
-                self.pathway_name
-                + "_excluding_processes_"
-                + key
-                + "_total_mobilised_with_selectivity"
+                f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
             ] = pd.Series([0.0])
 
-            self.output_names[self.pathway_name + "_" + key + "_total_consumption"] = pd.Series(
-                [0.0]
+            self.output_names[f"{self.pathway_name}_{key}_total_consumption"] = pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
+                pd.Series([0.0])
             )
-            self.output_names[
-                self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"
-            ] = pd.Series([0.0])
 
         for process_key in self.process_keys:
             for key, val in processes_data[process_key].get("inputs").get("technical", {}).items():
@@ -90,28 +85,13 @@ class TopDownEnvironmental(AeroMAPSModel):
                     self.resource_keys.extend(resources)
                     for resource in resources:
                         self.output_names[
-                            self.pathway_name
-                            + "_"
-                            + process_key
-                            + "_"
-                            + resource
-                            + "_co2_emission_factor"
+                            f"{self.pathway_name}_{process_key}_{resource}_co2_emission_factor"
                         ] = pd.Series([0.0])
                         self.output_names[
-                            self.pathway_name
-                            + "_"
-                            + process_key
-                            + "_"
-                            + resource
-                            + "_total_consumption"
+                            f"{self.pathway_name}_{process_key}_{resource}_total_consumption"
                         ] = pd.Series([0.0])
                         self.output_names[
-                            self.pathway_name
-                            + "_"
-                            + process_key
-                            + "_"
-                            + resource
-                            + "_total_mobilised_with_selectivity"
+                            f"{self.pathway_name}_{process_key}_{resource}_total_mobilised_with_selectivity"
                         ] = pd.Series([0.0])
                 else:
                     # TODO initialize with zeros instead of actual val?
@@ -121,7 +101,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
             self.output_names[
-                self.pathway_name + "_" + process_key + "_without_resources_co2_emission_factor"
+                f"{self.pathway_name}_{process_key}_without_resources_co2_emission_factor"
             ] = pd.Series([0.0])
 
         # Getting unique resources
@@ -129,20 +109,18 @@ class TopDownEnvironmental(AeroMAPSModel):
 
         for key in self.resource_keys:
             if f"{key}_co2_emission_factor" in resources_data[key]["specifications"]:
-                self.input_names[key + "_co2_emission_factor"] = pd.Series([0.0])
+                self.input_names[f"{key}_co2_emission_factor"] = pd.Series([0.0])
 
-            self.output_names[self.pathway_name + "_" + key + "_total_consumption"] = pd.Series(
-                [0.0]
+            self.output_names[f"{self.pathway_name}_{key}_total_consumption"] = pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
+                pd.Series([0.0])
             )
-            self.output_names[
-                self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"
-            ] = pd.Series([0.0])
 
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(
             {
-                self.pathway_name + "_co2_emission_factor": pd.Series([0.0]),
-                self.pathway_name + "_total_co2_emissions": pd.Series([0.0]),
+                f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+                f"{self.pathway_name}_total_co2_emissions": pd.Series([0.0]),
             }
         )
 
@@ -153,21 +131,21 @@ class TopDownEnvironmental(AeroMAPSModel):
         )
 
         co2_emission_factor = input_data.get(
-            self.pathway_name + "_co2_emission_factor_without_resource", optional_null_series
+            f"{self.pathway_name}_co2_emission_factor_without_resource", optional_null_series
         )
 
         # Get the total energy consumption of the pathway
-        energy_consumption = input_data[self.pathway_name + "_energy_consumption"]
+        energy_consumption = input_data[f"{self.pathway_name}_energy_consumption"]
 
         # Pathway selectivity
         pathway_kerosene_selectivity = input_data.get(
-            self.pathway_name + "_kerosene_selectivity", 1.0
+            f"{self.pathway_name}_kerosene_selectivity", 1.0
         )
 
         for key in self.resource_keys:
             # 1 ) --> pathway gets directly a resource
             specific_consumption = input_data.get(
-                self.pathway_name + "_resource_specific_consumption_" + key, None
+                f"{self.pathway_name}_resource_specific_consumption_{key}", None
             )
             total_ressource_consumption = optional_null_series.copy()
             total_ressource_mobilised_with_selectivity = optional_null_series.copy()
@@ -186,22 +164,19 @@ class TopDownEnvironmental(AeroMAPSModel):
                     )
                 )
 
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_total_consumption"] = (
+                    ressource_consumption
+                )
                 output_data[
-                    self.pathway_name + "_excluding_processes_" + key + "_total_consumption"
-                ] = ressource_consumption
-                output_data[
-                    self.pathway_name
-                    + "_excluding_processes_"
-                    + key
-                    + "_total_mobilised_with_selectivity"
+                    f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
                 ] = ressource_required_with_selectivity
 
-                unit_emissions = input_data.get(key + "_co2_emission_factor", optional_null_series)
+                unit_emissions = input_data.get(f"{key}_co2_emission_factor", optional_null_series)
                 # get resource emission per unit of energy
                 co2_emission_factor_ressource = specific_consumption * unit_emissions
 
                 output_data[
-                    self.pathway_name + "_excluding_processes_" + key + "_co2_emission_factor"
+                    f"{self.pathway_name}_excluding_processes_{key}_co2_emission_factor"
                 ] = co2_emission_factor_ressource
                 co2_emission_factor = co2_emission_factor.add(
                     co2_emission_factor_ressource, fill_value=0
@@ -209,7 +184,7 @@ class TopDownEnvironmental(AeroMAPSModel):
             # 2 ) --> pathway gets a process that uses a resource
             for process_key in self.process_keys:
                 specific_consumption = input_data.get(
-                    process_key + "_resource_specific_consumption_" + key
+                    f"{process_key}_resource_specific_consumption_{key}"
                 )
                 if specific_consumption is not None:
                     ressource_consumption = energy_consumption * specific_consumption
@@ -226,55 +201,50 @@ class TopDownEnvironmental(AeroMAPSModel):
                         )
                     )
 
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_total_consumption"] = (
+                        ressource_consumption
+                    )
                     output_data[
-                        self.pathway_name + "_" + process_key + "_" + key + "_total_consumption"
-                    ] = ressource_consumption
-                    output_data[
-                        self.pathway_name
-                        + "_"
-                        + process_key
-                        + "_"
-                        + key
-                        + "_total_mobilised_with_selectivity"
+                        f"{self.pathway_name}_{process_key}_{key}_total_mobilised_with_selectivity"
                     ] = ressource_required_with_selectivity
 
                     unit_emissions = input_data.get(
-                        key + "_co2_emission_factor", optional_null_series
+                        f"{key}_co2_emission_factor", optional_null_series
                     )
                     # get resource emission per unit of energy
                     co2_emission_factor_ressource = specific_consumption * unit_emissions
 
-                    output_data[
-                        self.pathway_name + "_" + process_key + "_" + key + "_co2_emission_factor"
-                    ] = co2_emission_factor_ressource
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_co2_emission_factor"] = (
+                        co2_emission_factor_ressource
+                    )
                     co2_emission_factor = co2_emission_factor.add(
                         co2_emission_factor_ressource, fill_value=0
                     )
             # Store the total resource consumption
-            output_data[self.pathway_name + "_" + key + "_total_consumption"] = (
+            output_data[f"{self.pathway_name}_{key}_total_consumption"] = (
                 total_ressource_consumption
             )
 
-            output_data[self.pathway_name + "_" + key + "_total_mobilised_with_selectivity"] = (
+            output_data[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
                 total_ressource_mobilised_with_selectivity
             )
 
         # 3 ) --> pathway gets a process that makes own emissions (besides resources)
         for process_key in self.process_keys:
             co2_emission_factor_process = input_data.get(
-                process_key + "_co2_emission_factor_without_resource", optional_null_series
+                f"{process_key}_co2_emission_factor_without_resource", optional_null_series
             )
             output_data[
-                self.pathway_name + "_" + process_key + "_without_resources_co2_emission_factor"
+                f"{self.pathway_name}_{process_key}_without_resources_co2_emission_factor"
             ] = co2_emission_factor_process
 
             co2_emission_factor = co2_emission_factor.add(co2_emission_factor_process)
 
         # Store the total CO2 emission factor in the dataframe
-        output_data[self.pathway_name + "_co2_emission_factor"] = co2_emission_factor
+        output_data[f"{self.pathway_name}_co2_emission_factor"] = co2_emission_factor
         # Calculate the total CO2 emissions
         total_co2_emissions = energy_consumption * co2_emission_factor
-        output_data[self.pathway_name + "_total_co2_emissions"] = total_co2_emissions
+        output_data[f"{self.pathway_name}_total_co2_emissions"] = total_co2_emissions
 
         self._store_outputs(output_data)
 
