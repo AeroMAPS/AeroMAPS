@@ -121,6 +121,18 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 pd.Series([0.0])
             )
 
+        # Checking if we need to compute the CAC
+        if configuration_data.get("abatement_cost"):
+            self.compute_abatement_cost = True
+            self.input_names["exogenous_carbon_price_trajectory"] = pd.Series([0.0])
+            self.input_names["social_discount_rate"] = 0.0
+            self.output_names[f"{self.pathway_name}_lifespan_unitary_emissions"] = pd.Series([0.0])
+            self.output_names[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"] = (
+                pd.Series([0.0])
+            )
+        else:
+            self.compute_abatement_cost = False
+
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(
             {
@@ -309,6 +321,29 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     vintage_emission_factor * relative_share
                 )
 
+                # compute the cumulative and discounted emissions for the vintage
+                if self.compute_abatement_cost:
+                    # Get the exogenous carbon price trajectory and social discount rate
+                    exogenous_carbon_price_trajectory = input_data.get(
+                        "exogenous_carbon_price_trajectory", optional_null_series
+                    )
+                    social_discount_rate = input_data.get("social_discount_rate", 0.0)
+
+                    # Compute cumulative and discounted emissions for the vintage
+                    cumul_em, generic_discounted_cumul_em = self._unitary_cumul_emissions_vintage(
+                        vintage_emission_factor,
+                        exogenous_carbon_price_trajectory,
+                        social_discount_rate,
+                    )
+
+                    # Store the cumulative emissions for the vintage
+                    output_data[f"{self.pathway_name}_lifespan_unitary_emissions"].loc[year] = (
+                        cumul_em
+                    )
+                    output_data[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"].loc[
+                        year
+                    ] = generic_discounted_cumul_em
+
         # Store the emission factor
         output_data[f"{self.pathway_name}_co2_emission_factor"] = co2_emission_factor
         # Compute the total emissions from the vintage
@@ -317,3 +352,46 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+    def _unitary_cumul_emissions_vintage(
+        self,
+        vintage_emission_factor: pd.Series,
+        exogenous_carbon_price_trajectory: pd.Series,
+        social_discount_rate: float,
+    ):
+        """
+        Compute cumulative and discounted emissions for each vintage,
+        using the vintage ef
+        """
+        indexes = vintage_emission_factor.index
+        cumul_em = 0
+        generic_discounted_cumul_em = 0
+        for i in indexes:
+            # Use the emission factor of the commissioning year (vintage)
+            if i <= self.end_year:
+                cumul_em += vintage_emission_factor[i]
+                generic_discounted_cumul_em += (
+                    vintage_emission_factor[i]
+                    * exogenous_carbon_price_trajectory[i]
+                    / exogenous_carbon_price_trajectory[indexes[0]]
+                    / (1 + social_discount_rate) ** (i - indexes[0])
+                )
+            else:
+                # After scenario end, keep last known values and extrapolate SCC growth
+                ef_end = vintage_emission_factor[self.end_year]
+                future_scc_growth = (
+                    exogenous_carbon_price_trajectory[self.end_year]
+                    / exogenous_carbon_price_trajectory[self.end_year - 1]
+                )
+                cumul_em += ef_end
+                generic_discounted_cumul_em += (
+                    ef_end
+                    * (
+                        exogenous_carbon_price_trajectory[self.end_year]
+                        / exogenous_carbon_price_trajectory[indexes[0]]
+                        * (future_scc_growth) ** (i - self.end_year)
+                    )
+                    / (1 + social_discount_rate) ** (i - indexes[0])
+                )
+
+        return cumul_em, generic_discounted_cumul_em

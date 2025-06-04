@@ -281,6 +281,7 @@ electrofuel_b_up:
   aircraft_type: "dropin_fuel"
   energy_origin: "electricity"
   default: False
+  abatement_cost: True
   inputs:
     mandate:
       mandate_type: "share"

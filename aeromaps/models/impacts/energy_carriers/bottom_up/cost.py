@@ -34,6 +34,7 @@ class BottomUpCost(AeroMAPSModel):
             {
                 f"{self.pathway_name}_energy_production_commissioned": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
+                "private_discount_rate": 0.0,
             }
         )
 
@@ -145,8 +146,15 @@ class BottomUpCost(AeroMAPSModel):
             }
         )
 
-        # Ajoute la sortie pour le MFSP actualisé (discounted)
-        self.output_names[f"{self.pathway_name}_cumulative_discounted_costs"] = pd.Series([0.0])
+        # Ajoute la sortie pour le MFSP actualisé (discounted) uniquement si abatement cost activé
+        if configuration_data.get("abatement_cost"):
+            self.compute_abatement_cost = True
+            self.output_names[f"{self.pathway_name}_lifespan_unitary_discounted_costs"] = pd.Series(
+                [0.0]
+            )
+            self.input_names["social_discount_rate"] = 0.0
+        else:
+            self.compute_abatement_cost = False
 
     def compute(self, input_data) -> dict:
         optional_null_series = pd.Series(
@@ -390,19 +398,18 @@ class BottomUpCost(AeroMAPSModel):
                 output_data[f"{self.pathway_name}_mfsp"].loc[year : year + lifespan] += (
                     vintage_mfsp * relative_share
                 )
-            # print(vintage_mfsp, mfsp_process, mfsp_capex, mfsp_resource, mfsp_process_ressource)
 
-            # TODO -- Compute the discounted MFSP for the vintage (as option?)
-            #     CAC computation split between here (discounted cots) and bottom up emissions (emissions/discounted emissions)
-
-            # compute the discounted cumulative unit costs
-            discounted_mfsp = self._cumulative_discounted_costs(
-                mfsp_series=vintage_mfsp,
-                year=year,
-                plant_lifespan=lifespan,
-                discount_rate=private_discount_rate,
-            )
-            output_data[f"{self.pathway_name}_cumulative_discounted_costs"][year] += discounted_mfsp
+            # compute discounted costs if necessary
+            if self.compute_abatement_cost:
+                discounted_mfsp = self._cumulative_discounted_costs(
+                    mfsp_series=vintage_mfsp,
+                    year=year,
+                    plant_lifespan=lifespan,
+                    discount_rate=input_data["social_discount_rate"],
+                )
+                output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] += (
+                    discounted_mfsp
+                )
 
         # Store the results in the df and retun
 
