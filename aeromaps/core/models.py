@@ -277,6 +277,8 @@ models_efficiency_bottom_up = {
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index_complex": NOxEmissionIndexComplex("nox_emission_index_complex"),
     "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
+    "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
+    "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
 }
 
 models_energy_without_fuel_effect = {
@@ -567,7 +569,7 @@ models_production_cost = {
 
 models_abatements_cost = {
     "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
-    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
+    # "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
     "cargo_efficiency_carbon_abatement_cost": CargoEfficiencyCarbonAbatementCosts(

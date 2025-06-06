@@ -2667,7 +2667,8 @@ class AirfareEvolutionBreakdown:
 
 
 class AnnualMACC:
-    def __init__(self, data, fleet_model):
+    def __init__(self, process, fleet_model):
+        data = process.data
         self.df = data["vector_outputs"]
         self.fleet_model = fleet_model
         self.float_outputs = data["float_outputs"]
@@ -2675,6 +2676,7 @@ class AnnualMACC:
         self.years = data["years"]["full_years"]
         self.historic_years = data["years"]["historic_years"]
         self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = process.pathways_manager
 
         try:
             self.fig, self.ax = plt.subplots(
@@ -2736,8 +2738,11 @@ class AnnualMACC:
             g_spe_cost = []
 
             colors = []
+
+            # Start with discrete aircraft from the fleet model
             for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
                 for aircraft_var in sets:
+                    print(aircraft_var)
                     if hasattr(aircraft_var, "parameters"):
                         aircraft_var_name = aircraft_var.parameters.full_name
                     else:
@@ -2775,6 +2780,41 @@ class AnnualMACC:
                         colors.append("darkgoldenrod")
                     name.append(aircraft_var_name.split(":")[-1])
 
+            # continue with generic energy production pathways
+
+            for pathway in self.pathways_manager.get_all():
+                if (
+                    pathway.name != "fossil_kerosene"
+                ):  # hard coded for cac now, may be parametrized later
+                    name.append(pathway.name)
+                    abatement_col = f"{pathway.name}_abatement_effective"
+                    if abatement_col not in self.df.columns:
+                        raise ValueError(
+                            f"Pathway {pathway.name} abatement is not defined. Pathways must be defined with bottom-up model."
+                        )
+                    vol.append(self.df[f"{pathway.name}_abatement_effective"] / 1000000)
+                    cac_col = f"{pathway.name}_carbon_abatement_cost"
+                    if cac_col not in self.df.columns:
+                        raise ValueError(
+                            f"Pathway {pathway.name} carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
+                        )
+                    cost.append(self.df[f"{pathway.name}_carbon_abatement_cost"])
+                    spe_cac_col = f"{pathway.name}_specific_carbon_abatement_cost"
+                    if spe_cac_col not in self.df.columns:
+                        raise ValueError(
+                            f"Pathway {pathway.name} specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
+                        )
+                    spe_cost.append(self.df[f"{pathway.name}_specific_carbon_abatement_cost"])
+                    g_spe_cac_col = f"{pathway.name}_generic_specific_carbon_abatement_cost"
+                    if g_spe_cac_col not in self.df.columns:
+                        raise ValueError(
+                            f"Pathway {pathway.name} generic specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
+                        )
+                    g_spe_cost.append(
+                        self.df[f"{pathway.name}_generic_specific_carbon_abatement_cost"]
+                    )
+                    colors.append("yellowgreen")
+
             name.extend(
                 [
                     el
@@ -2782,17 +2822,6 @@ class AnnualMACC:
                         "Freighter - Drop in",
                         "Freighter - Hydrogen",
                         "Freighter - Electric",
-                        "Bio - HEFA FOG",
-                        "Bio - HEFA Others",
-                        "Bio - Alcohol to Jet",
-                        "Bio - FT MSW",
-                        "Bio - FT Others",
-                        "H2C",
-                        "H2CCCS",
-                        "H2G",
-                        "H2GCCS",
-                        "H2E",
-                        "Electrofuel",
                         "OPS",
                         "OPS - Freight",
                         "Load Factor",
@@ -2808,17 +2837,6 @@ class AnnualMACC:
                         self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
                         self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
                         self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.abatement_effective_hefa_fog[year],
-                        self.df.abatement_effective_hefa_others[year],
-                        self.df.abatement_effective_atj[year],
-                        self.df.abatement_effective_ft_msw[year],
-                        self.df.abatement_effective_ft_others[year],
-                        self.df.abatement_effective_hydrogen_coal[year],
-                        self.df.abatement_effective_hydrogen_coal_ccs[year],
-                        self.df.abatement_effective_hydrogen_gas[year],
-                        self.df.abatement_effective_hydrogen_gas_ccs[year],
-                        self.df.abatement_effective_hydrogen_electrolysis[year],
-                        self.df.abatement_effective_electrofuel[year],
                         self.df.operations_abatement_effective[year],
                         self.df.operations_abatement_effective_freight[year],
                         self.df.load_factor_abatement_effective[year],
@@ -2834,17 +2852,6 @@ class AnnualMACC:
                         self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
                         self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
                         self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.carbon_abatement_cost_hefa_fog[year],
-                        self.df.carbon_abatement_cost_hefa_others[year],
-                        self.df.carbon_abatement_cost_atj[year],
-                        self.df.carbon_abatement_cost_ft_msw[year],
-                        self.df.carbon_abatement_cost_ft_others[year],
-                        self.df.carbon_abatement_cost_h2_coal[year],
-                        self.df.carbon_abatement_cost_h2_coal_ccs[year],
-                        self.df.carbon_abatement_cost_h2_gas[year],
-                        self.df.carbon_abatement_cost_h2_gas_ccs[year],
-                        self.df.carbon_abatement_cost_h2_electrolysis[year],
-                        self.df.carbon_abatement_cost_electrofuel[year],
                         self.df.operations_abatement_cost[year],
                         self.df.operations_abatement_cost_freight[year],
                         self.df.load_factor_abatement_cost[year],
@@ -2859,17 +2866,6 @@ class AnnualMACC:
                         self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
                         self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
                         self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.specific_carbon_abatement_cost_atj[year],
-                        self.df.specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_specific_abatement_cost[year],
-                        self.df.gas_h2_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_specific_abatement_cost[year],
-                        self.df.specific_carbon_abatement_cost_electrofuel[year],
                         self.df.operations_specific_abatement_cost[year],
                         self.df.operations_specific_abatement_cost_freight[year],
                         self.df.load_factor_specific_abatement_cost[year],
@@ -2890,17 +2886,6 @@ class AnnualMACC:
                         self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
                             year
                         ],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_fog[year],
-                        self.df.generic_specific_carbon_abatement_cost_hefa_others[year],
-                        self.df.generic_specific_carbon_abatement_cost_atj[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_msw[year],
-                        self.df.generic_specific_carbon_abatement_cost_ft_others[year],
-                        self.df.coal_h2_generic_specific_abatement_cost[year],
-                        self.df.coal_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_h2_generic_specific_abatement_cost[year],
-                        self.df.gas_ccs_h2_generic_specific_abatement_cost[year],
-                        self.df.electrolysis_h2_generic_specific_abatement_cost[year],
-                        self.df.generic_specific_carbon_abatement_cost_electrofuel[year],
                         self.df.operations_generic_specific_abatement_cost[year],
                         self.df.operations_generic_specific_abatement_cost_freight[year],
                         self.df.load_factor_generic_specific_abatement_cost[year],
@@ -2915,17 +2900,6 @@ class AnnualMACC:
                         "khaki",
                         "khaki",
                         "khaki",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
-                        "yellowgreen",
                         "orange",
                         "orange",
                         "orange",

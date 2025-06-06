@@ -181,7 +181,8 @@ class AeroMAPSProcess(object):
     def plot(self, name, save=False, size_inches=None, remove_title=False):
         if name in available_plots_fleet:
             try:
-                fig = available_plots_fleet[name](self.data, self.fleet_model)
+                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
+                fig = available_plots_fleet[name](self, self.fleet_model)
                 if save:
                     if size_inches is not None:
                         fig.fig.set_size_inches(size_inches)
@@ -208,7 +209,6 @@ class AeroMAPSProcess(object):
 
     def _pre_compute(self):
         input_data = self.parameters.to_dict()
-
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (

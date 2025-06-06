@@ -101,7 +101,7 @@ class NOxEmissionIndex(AeroMAPSModel):
 
 class NOxEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
 
@@ -119,7 +119,9 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
 
         self.output_names = {}
 
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        aircraft_types = ["dropin_fuel", "hydrogen"]
+
+        for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
@@ -156,7 +158,9 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        aircraft_types = ["dropin_fuel", "hydrogen"]
+
+        for aircraft_type in aircraft_types:
             emission_index_nox_short_range = self.fleet_model.df[
                 f"Short Range:emission_index_nox:{aircraft_type}"
             ]
@@ -167,41 +171,43 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                 f"Long Range:emission_index_nox:{aircraft_type}"
             ]
 
-            ask_short_range = input_data[f"ask_short_range_{aircraft_type}"]
-            ask_medium_range = input_data[f"ask_medium_range_{aircraft_type}"]
-            ask_long_range = input_data[f"ask_long_range_{aircraft_type}"]
+            ask_short_range = input_data.get(f"ask_short_range_{aircraft_type}", default_series())
+            ask_medium_range = input_data.get(f"ask_medium_range_{aircraft_type}", default_series())
+            ask_long_range = input_data.get(f"ask_long_range_{aircraft_type}", default_series())
 
             emission_index_aircraft_type = (
                 (
                     emission_index_nox_short_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_short_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
                 + (
                     emission_index_nox_medium_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_medium_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
                 + (
                     emission_index_nox_long_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_long_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
             ) / (
-                ask_short_range.loc[self.historic_start_year, self.prospection_start_year].fillna(0)
+                ask_short_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
+                    0
+                )
                 + ask_medium_range.loc[
-                    self.historic_start_year, self.prospection_start_year
+                    self.historic_start_year : self.prospection_start_year
                 ].fillna(0)
-                + ask_long_range.loc[self.historic_start_year, self.prospection_start_year].fillna(
+                + ask_long_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
                     0
                 )
             )
@@ -342,7 +348,7 @@ class SootEmissionIndex(AeroMAPSModel):
 
 class SootEmissionIndexComplex(AeroMAPSModel):
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
 
@@ -360,7 +366,8 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 
         self.output_names = {}
 
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        aircraft_types = ["dropin_fuel", "hydrogen"]
+        for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
@@ -397,7 +404,9 @@ class SootEmissionIndexComplex(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        aircraft_types = ["dropin_fuel", "hydrogen"]
+
+        for aircraft_type in aircraft_types:
             emission_index_soot_short_range = self.fleet_model.df[
                 f"Short Range:emission_index_soot:{aircraft_type}"
             ]
@@ -415,34 +424,36 @@ class SootEmissionIndexComplex(AeroMAPSModel):
             emission_index_aircraft_type = (
                 (
                     emission_index_soot_short_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_short_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
                 + (
                     emission_index_soot_medium_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_medium_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
                 + (
                     emission_index_soot_long_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ]
                     * ask_long_range.loc[
-                        self.historic_start_year, self.prospection_start_year
+                        self.historic_start_year : self.prospection_start_year
                     ].fillna(0)
                 )
             ) / (
-                ask_short_range.loc[self.historic_start_year, self.prospection_start_year].fillna(0)
+                ask_short_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
+                    0
+                )
                 + ask_medium_range.loc[
-                    self.historic_start_year, self.prospection_start_year
+                    self.historic_start_year : self.prospection_start_year
                 ].fillna(0)
-                + ask_long_range.loc[self.historic_start_year, self.prospection_start_year].fillna(
+                + ask_long_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
                     0
                 )
             )
@@ -653,7 +664,9 @@ class NonCO2Emissions(AeroMAPSModel):
         self.pathways_manager = None
 
     def custom_setup(self):
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        aircraft_type = ["dropin_fuel", "hydrogen"]
+
+        for aircraft_type in aircraft_type:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
@@ -719,7 +732,7 @@ class NonCO2Emissions(AeroMAPSModel):
             historical_sulfur_emissions_for_temperature
         )
 
-        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+        for aircraft_type in ["dropin_fuel", "hydrogen"]:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
