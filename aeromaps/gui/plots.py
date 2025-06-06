@@ -55,13 +55,11 @@ from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
-    ScenarioEnergyUnitCostWithCarbonTaxPlot,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
     DetailledMFSPBreakdownPerPathway,
     DetailledMFSPBreakdownPerYear,
-    ScenarioEnergyExpensesPlotWithoutCarbonTax,
 )
 
 # Left plot
@@ -113,10 +111,8 @@ plot_3 = {
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
-    "Annual expenses for energy procurement without carbon tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
     "Annual energy expense vs reference situation": ScenarioEnergyExpensesComparison,
     "Evolution of pathways MFSP": SimpleMFSP,
-    "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "Effect of the discount rate on total energy costs": DiscountEffect,
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,

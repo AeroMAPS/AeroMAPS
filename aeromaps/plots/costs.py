@@ -178,6 +178,7 @@ class ScenarioEnergyCapitalPlot:
 
 
 class ScenarioEnergyExpensesPlotD:
+    # TODO DEPRECATE THIS CLASS
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -506,7 +507,8 @@ class ScenarioEnergyExpensesPlotD:
         self.fig.canvas.draw()
 
 
-class ScenarioEnergyExpensesPlotWithoutCarbonTax:
+class ScenarioEnergyExpensesPlotWithoutCarbonTaxD:
+    # TODO DEPRECATE THIS CLASS
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -793,6 +795,7 @@ class ScenarioEnergyExpensesComparison:
 
 
 class ScenarioEnergyUnitCostPlotD:
+    # TODO DEPRECATE THIS CLASS
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -1040,7 +1043,8 @@ class ScenarioEnergyUnitCostPlotD:
         self.fig.canvas.draw()
 
 
-class ScenarioEnergyUnitCostWithCarbonTaxPlot:
+class ScenarioEnergyUnitCostWithCarbonTaxPlotD:
+    # TODO DEPRECATE THIS CLASS
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -1439,6 +1443,7 @@ class DiscountEffect:
 
 
 class DropInMACC:
+    # TODO DEPRECATE THIS CLASS
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]

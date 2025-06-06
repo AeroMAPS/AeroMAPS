@@ -1310,9 +1310,21 @@ class SimpleMFSP:
         self.pathways_manager = process.pathways_manager
 
         self.fig, self.ax = plt.subplots(figsize=(12, 7))
-        self.create_plot()
+        self.plot_interact()
 
-    def create_plot(self):
+    def plot_interact(self):
+        mfsp_toggle = widgets.ToggleButtons(
+            options=[
+                ("Net MFSP", "net_mfsp"),
+                ("MFSP", "mfsp"),
+            ],
+            description="MFSP type:",
+            value="net_mfsp",
+        )
+        interact(self.create_plot, mfsp_type=mfsp_toggle)
+
+    def create_plot(self, mfsp_type="net_mfsp"):
+        self.ax.cla()
         pathways = self.pathways_manager.get_all()
         colors = plt.cm.get_cmap("tab20", len(pathways))
         aircraft_linestyles = {
@@ -1323,7 +1335,7 @@ class SimpleMFSP:
         dashed_line_needed = False
         used_labels = set()
         for i, p in enumerate(pathways):
-            col = f"{p.name}_net_mfsp"
+            col = f"{p.name}_{mfsp_type}"
             energy_col = f"{p.name}_energy_consumption"
             if col in self.df.columns and energy_col in self.df.columns:
                 years = np.array(self.prospective_years)
@@ -1421,9 +1433,9 @@ class SimpleMFSP:
                 )
             )
             new_labels.append("Not used")
-        self.ax.set_title("Net MFSP by fuel")
+        self.ax.set_title("Net MFSP by fuel" if mfsp_type == "net_mfsp" else "MFSP by fuel")
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Net MFSP [€/MJ]")
+        self.ax.set_ylabel("Net MFSP [€/MJ]" if mfsp_type == "net_mfsp" else "MFSP [€/MJ]")
         self.ax.legend(new_handles, new_labels)
         self.ax.grid(True)
         self.fig.tight_layout()
