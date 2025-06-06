@@ -401,13 +401,13 @@ class BottomUpCost(AeroMAPSModel):
 
             # compute discounted costs if necessary
             if self.compute_abatement_cost:
-                discounted_mfsp = self._cumulative_discounted_costs(
+                discounted_mfsp = self._unitary_cumulative_discounted_costs_vintage(
                     mfsp_series=vintage_mfsp,
                     year=year,
                     plant_lifespan=lifespan,
                     discount_rate=input_data["social_discount_rate"],
                 )
-                output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] += (
+                output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] = (
                     discounted_mfsp
                 )
 
@@ -452,7 +452,7 @@ class BottomUpCost(AeroMAPSModel):
 
         return capital_cost_lc
 
-    def _cumulative_discounted_costs(
+    def _unitary_cumulative_discounted_costs_vintage(
         self,
         mfsp_series,
         year,

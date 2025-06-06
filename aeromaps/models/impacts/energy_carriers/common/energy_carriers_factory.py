@@ -1,4 +1,5 @@
 # import all the concrete implementations of the energy carriers
+from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_cost import BottomUpAbatementCost
 from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
     EnergyCarriersMeans,
     EnergyCarriersMeanLHV,
@@ -24,7 +25,8 @@ from aeromaps.models.impacts.energy_resources_new.energy_resources import Energy
 
 class AviationEnergyCarriersFactory:
     @staticmethod
-    def create_carrier(pathway_name, pathway_data, resources_data, processs_data):
+    def create_carrier(pathway_name, energy_carriers_data, resources_data, processs_data):
+        pathway_data = energy_carriers_data[pathway_name]
         environmental_model_type = pathway_data["environmental_model"]
         cost_model_type = pathway_data["cost_model"]
         # case distinction between energy model types
@@ -92,6 +94,13 @@ class AviationEnergyCarriersFactory:
                 f"{pathway_name}_bottom_up_cost": BottomUpCost(
                     f"{pathway_name}_bottom_up_cost", pathway_data, resources_data, processs_data
                 ),
+                f"{pathway_name}_bottom_up_abatement_cost": BottomUpAbatementCost(
+                    f"{pathway_name}_bottom_up_abatement_cost",
+                    pathway_name,
+                    energy_carriers_data,
+                )
+                if pathway_data.get("abatement_cost")
+                else None,
             }
         else:
             # return error message depending on which model type is unknown

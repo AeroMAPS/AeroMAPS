@@ -392,7 +392,10 @@ class AeroMAPSProcess(object):
             # TODO would it be simpler to pass the EnergyCarrierMetadata to the models?
             self.models.update(
                 AviationEnergyCarriersFactory.create_carrier(
-                    pathway, pathway_data, self.energy_resources_data, self.energy_processes_data
+                    pathway,
+                    self.energy_carriers_data,
+                    self.energy_resources_data,
+                    self.energy_processes_data,
                 )
             )
         # Instantiate resources use models
