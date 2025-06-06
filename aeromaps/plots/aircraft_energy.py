@@ -2,6 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 from ipywidgets import widgets, interact
+from matplotlib.lines import Line2D
 
 from .constants import plot_3_x, plot_3_y
 
@@ -202,6 +203,7 @@ class EmissionFactorPerFuel:
             "electric": "-.",
         }
         dashed_line_needed = False
+        used_labels = set()
         for i, p in enumerate(pathways):
             col = f"{p.name}_co2_emission_factor"
             energy_col = f"{p.name}_energy_consumption"
@@ -223,15 +225,19 @@ class EmissionFactorPerFuel:
                         seg_years = years[seg_start : idx + 1]
                         seg_vals = vals[seg_start : idx + 1]
                         if current_used:
+                            label = p.name if p.name not in used_labels else None
                             self.ax.plot(
                                 seg_years,
                                 seg_vals,
                                 color=color_used,
                                 linewidth=linewidth,
                                 linestyle=linestyle,
-                                label=p.name if seg_start == 0 else None,
+                                label=label,
                             )
+                            if label:
+                                used_labels.add(label)
                         else:
+                            label = "Not used" if not dashed_line_needed else None
                             self.ax.plot(
                                 seg_years,
                                 seg_vals,
@@ -239,23 +245,28 @@ class EmissionFactorPerFuel:
                                 linewidth=1.5,
                                 linestyle="dotted",
                                 alpha=0.7,
-                                label="Not used" if not dashed_line_needed else None,
+                                label=label,
                             )
-                            dashed_line_needed = True
+                            if label:
+                                dashed_line_needed = True
                         seg_start = idx
                         current_used = used_mask[idx]
                 seg_years = years[seg_start:]
                 seg_vals = vals[seg_start:]
                 if current_used:
+                    label = p.name if p.name not in used_labels else None
                     self.ax.plot(
                         seg_years,
                         seg_vals,
                         color=color_used,
                         linewidth=linewidth,
                         linestyle=linestyle,
-                        label=p.name if seg_start == 0 else None,
+                        label=label,
                     )
+                    if label:
+                        used_labels.add(label)
                 else:
+                    label = "Not used" if not dashed_line_needed else None
                     self.ax.plot(
                         seg_years,
                         seg_vals,
@@ -263,14 +274,12 @@ class EmissionFactorPerFuel:
                         linewidth=1.5,
                         linestyle="dotted",
                         alpha=0.7,
-                        label="Not used" if not dashed_line_needed else None,
+                        label=label,
                     )
-                    dashed_line_needed = True
-
-        from matplotlib.lines import Line2D
+                    if label:
+                        dashed_line_needed = True
 
         handles, labels = self.ax.get_legend_handles_labels()
-        print(handles, labels)
         # Remove duplicate "Not used"
         seen = set()
         new_handles = []

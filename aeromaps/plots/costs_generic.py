@@ -1397,8 +1397,6 @@ class SimpleMFSP:
                     if label:
                         dashed_line_needed = True
 
-        from matplotlib.lines import Line2D
-
         handles, labels = self.ax.get_legend_handles_labels()
         # Remove duplicate labels
         seen = set()
