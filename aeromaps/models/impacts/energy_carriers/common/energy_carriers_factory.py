@@ -1,5 +1,8 @@
 # import all the concrete implementations of the energy carriers
 from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_cost import BottomUpAbatementCost
+from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_effective import (
+    EnergyAbatementEffective,
+)
 from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
     EnergyCarriersMeans,
     EnergyCarriersMeanLHV,
@@ -81,27 +84,42 @@ class AviationEnergyCarriersFactory:
                 ),
             }
         elif environmental_model_type == "bottom-up" and cost_model_type == "bottom-up":
-            return {
-                f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
-                    f"{pathway_name}_bottom_up_environmental",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-                f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
-                ),
-                f"{pathway_name}_bottom_up_cost": BottomUpCost(
-                    f"{pathway_name}_bottom_up_cost", pathway_data, resources_data, processs_data
-                ),
-                f"{pathway_name}_bottom_up_abatement_cost": BottomUpAbatementCost(
-                    f"{pathway_name}_bottom_up_abatement_cost",
-                    pathway_name,
-                    energy_carriers_data,
+            models = {}
+            models.update(
+                {
+                    f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
+                        f"{pathway_name}_bottom_up_environmental",
+                        pathway_data,
+                        resources_data,
+                        processs_data,
+                    ),
+                    f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
+                        f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
+                    ),
+                    f"{pathway_name}_bottom_up_cost": BottomUpCost(
+                        f"{pathway_name}_bottom_up_cost",
+                        pathway_data,
+                        resources_data,
+                        processs_data,
+                    ),
+                }
+            )
+            if pathway_data.get("abatement_cost"):
+                models.update(
+                    {
+                        f"{pathway_name}_bottom_up_abatement_cost": BottomUpAbatementCost(
+                            f"{pathway_name}_bottom_up_abatement_cost",
+                            pathway_name,
+                            energy_carriers_data,
+                        ),
+                        f"{pathway_name}_abatement_effective": EnergyAbatementEffective(
+                            f"{pathway_name}_abatement_effective",
+                            pathway_name,
+                            energy_carriers_data,
+                        ),
+                    }
                 )
-                if pathway_data.get("abatement_cost")
-                else None,
-            }
+            return models
         else:
             # return error message depending on which model type is unknown
             if environmental_model_type not in ["top-down", "bottom-up"]:
