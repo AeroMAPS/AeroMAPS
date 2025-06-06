@@ -54,7 +54,7 @@ from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityC
 from aeromaps.plots.costs import (
     ScenarioEnergyCapitalPlot,
     DiscountEffect,
-    ScenarioEnergyCarbonTaxPlot,
+    ScenarioEnergyExpensesComparison,
     ScenarioEnergyUnitCostWithCarbonTaxPlot,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
@@ -114,7 +114,7 @@ plot_3 = {
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
     "Annual expenses for energy procurement without carbon tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
-    "Effect of a carbon tax on energy expenses": ScenarioEnergyCarbonTaxPlot,
+    "Annual energy expense vs reference situation": ScenarioEnergyExpensesComparison,
     "Evolution of pathways MFSP": SimpleMFSP,
     "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
     "Effect of the discount rate on total energy costs": DiscountEffect,

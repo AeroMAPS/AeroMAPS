@@ -59,6 +59,13 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
                     net_cost, fill_value=0
                 )
 
+        non_discounted_energy_expenses = (
+            non_discounted_energy_expenses / 1000000
+        )  # Convert to millions euros
+        non_discounted_net_energy_expenses = (
+            non_discounted_net_energy_expenses / 1000000
+        )  # Convert to millions euros
+
         # Compute the business as usual energy expenses
 
         if "fossil_kerosene_co2_emission_factor" not in input_data:

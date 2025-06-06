@@ -668,7 +668,7 @@ class ScenarioEnergyExpensesPlotWithoutCarbonTax:
         self.fig.canvas.draw()
 
 
-class ScenarioEnergyCarbonTaxPlot:
+class ScenarioEnergyExpensesComparison:
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -693,23 +693,8 @@ class ScenarioEnergyCarbonTaxPlot:
 
         (self.line_energy_expenses_carb_tax,) = self.ax.plot(
             self.prospective_years,
-            (
-                self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_cost"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_fog"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_hefa_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_atj"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_others"]
-                + self.df.loc[self.prospective_years, "biofuel_carbon_tax_ft_msw"]
-                + self.df.loc[self.prospective_years, "electrolysis_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "gas_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_ccs_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "coal_h2_carbon_tax"]
-                + self.df.loc[self.prospective_years, "electrofuel_carbon_tax"]
-                + self.df.loc[self.prospective_years, "electricity_direct_use_carbon_tax"]
-            ),
-            label="Scenario energy expenses incl. carbon tax",
+            (self.df.loc[self.prospective_years, "non_discounted_net_energy_expenses"]),
+            label="Scenario net energy expenses",
             linestyle="--",
             color="#0c9e30",
         )
