@@ -486,7 +486,7 @@ class DetailledMFSPBreakdown:
         }
 
         self.fig, self.ax = plt.subplots(
-            figsize=(15, 9),
+            figsize=(10, 7),
         )
         self.create_plot()
         self.plot_interact()

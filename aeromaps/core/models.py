@@ -172,7 +172,6 @@ from aeromaps.models.impacts.costs.energy.market_prices import (
     KeroseneCost,
     KerosenePrice,
     CarbonTax,
-    KeroseneBAUCost,
     CoalCost,
     GasCost,
     ElectricityLoadFactor,
@@ -436,7 +435,6 @@ models_energy_cost_complex = {
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
     "kerosene_cost": KeroseneCost("kerosene_cost"),
-    "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
     "biofuel_cost": BiofuelCost("biofuel_cost"),
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
@@ -480,7 +478,6 @@ models_energy_cost_complex = {
 models_energy_cost_simple = {
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
     "kerosene_cost": KeroseneCost("kerosene_cost"),
-    "kerosene_BAU_cost": KeroseneBAUCost("kerosene_BAU_cost"),
     "biofuel_cost_simple": BiofuelCostSimple("biofuel_cost_simple"),
     "biofuel_mfsp_simple": BiofuelMfspSimple("biofuel_mfsp_simple"),
     "electrofuel_cost_simple": ElectrofuelCostSimple("electrofuel_cost_simple"),

@@ -715,7 +715,7 @@ class ScenarioEnergyCarbonTaxPlot:
         )
         (self.line_bau_energy_expenses,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"],
+            self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"],
             label="Business as usual energy expenses",
             linestyle="-",
             color="#2A3438",
@@ -723,8 +723,8 @@ class ScenarioEnergyCarbonTaxPlot:
         (self.line_bau_energy_expenses_carbon_tax,) = self.ax.plot(
             self.prospective_years,
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"]
+                + self.df.loc[self.prospective_years, "carbon_tax_bau"]
             ),
             label="Business as usual energy expenses incl. carbon tax",
             linestyle="--",
@@ -742,7 +742,7 @@ class ScenarioEnergyCarbonTaxPlot:
             self.prospective_years,
             (
                 self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_full_kero"]
+                + self.df.loc[self.prospective_years, "carbon_tax_full_kero"]
             ),
             label="Efficiency only energy expenses incl. carbon tax",
             linestyle="--",
@@ -790,13 +790,13 @@ class ScenarioEnergyCarbonTaxPlot:
         )
 
         self.line_bau_energy_expenses.set_ydata(
-            self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
+            self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"]
         )
 
         self.line_bau_energy_expenses_carbon_tax.set_ydata(
             (
-                self.df.loc[self.prospective_years, "non_discounted_BAU_energy_expenses"]
-                + self.df.loc[self.prospective_years, "kerosene_carbon_tax_BAU"]
+                self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"]
+                + self.df.loc[self.prospective_years, "carbon_tax_bau"]
             )
         )
 
