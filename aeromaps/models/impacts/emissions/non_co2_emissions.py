@@ -115,11 +115,14 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
             "ask_long_range_hydrogen": pd.Series([0.0]),
             "ask_medium_range_hydrogen": pd.Series([0.0]),
             "ask_short_range_hydrogen": pd.Series([0.0]),
+            "ask_long_range_electric": pd.Series([0.0]),
+            "ask_medium_range_electric": pd.Series([0.0]),
+            "ask_short_range_electric": pd.Series([0.0]),
         }
 
         self.output_names = {}
 
-        aircraft_types = ["dropin_fuel", "hydrogen"]
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -158,7 +161,7 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        aircraft_types = ["dropin_fuel", "hydrogen"]
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             emission_index_nox_short_range = self.fleet_model.df[
@@ -362,11 +365,14 @@ class SootEmissionIndexComplex(AeroMAPSModel):
             "ask_long_range_hydrogen": pd.Series([0.0]),
             "ask_medium_range_hydrogen": pd.Series([0.0]),
             "ask_short_range_hydrogen": pd.Series([0.0]),
+            "ask_long_range_electric": pd.Series([0.0]),
+            "ask_medium_range_electric": pd.Series([0.0]),
+            "ask_short_range_electric": pd.Series([0.0]),
         }
 
         self.output_names = {}
 
-        aircraft_types = ["dropin_fuel", "hydrogen"]
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
         for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
@@ -404,7 +410,7 @@ class SootEmissionIndexComplex(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        aircraft_types = ["dropin_fuel", "hydrogen"]
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             emission_index_soot_short_range = self.fleet_model.df[
