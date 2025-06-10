@@ -269,10 +269,8 @@ class EnergyUseChoice(AeroMAPSModel):
                 # If there is no energy consumption, set all energy consumption to 0
                 for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
                     output_data[f"{pathway.name}_energy_consumption"] = pd.Series(
-                        [0.0] * (self.end_year - self.prospection_start_year + 1),
-                        index=pd.RangeIndex(
-                            start=self.prospection_start_year, stop=self.end_year + 1
-                        ),
+                        [0.0] * (self.end_year - self.historic_start_year + 1),
+                        index=pd.RangeIndex(start=self.historic_start_year, stop=self.end_year + 1),
                     )
 
         # compute metrics derived from each patwhay consumption

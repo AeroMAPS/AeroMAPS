@@ -83,7 +83,6 @@ class BottomUpCapacity(AeroMAPSModel):
         # The idea of the code is therefore to construct a virtual energy demand since the technology introduction year,
         # if needed, and to concatenate it with the real energy demand from the historic start year.
         # NB: that is transparent for alternative pathways that start after the historic start year.
-
         if energy_required.loc[self.historic_start_year] > 1e-9:
             if not technology_introduction or not technology_introduction_volume:
                 raise ValueError(

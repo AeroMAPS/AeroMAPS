@@ -2742,7 +2742,6 @@ class AnnualMACC:
             # Start with discrete aircraft from the fleet model
             for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
                 for aircraft_var in sets:
-                    print(aircraft_var)
                     if hasattr(aircraft_var, "parameters"):
                         aircraft_var_name = aircraft_var.parameters.full_name
                     else:
@@ -2792,26 +2791,26 @@ class AnnualMACC:
                         raise ValueError(
                             f"Pathway {pathway.name} abatement is not defined. Pathways must be defined with bottom-up model."
                         )
-                    vol.append(self.df[f"{pathway.name}_abatement_effective"] / 1000000)
+                    vol.append(self.df[f"{pathway.name}_abatement_effective"][year] / 1000000)
                     cac_col = f"{pathway.name}_carbon_abatement_cost"
                     if cac_col not in self.df.columns:
                         raise ValueError(
                             f"Pathway {pathway.name} carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
                         )
-                    cost.append(self.df[f"{pathway.name}_carbon_abatement_cost"])
+                    cost.append(self.df[f"{pathway.name}_carbon_abatement_cost"][year])
                     spe_cac_col = f"{pathway.name}_specific_carbon_abatement_cost"
                     if spe_cac_col not in self.df.columns:
                         raise ValueError(
                             f"Pathway {pathway.name} specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
                         )
-                    spe_cost.append(self.df[f"{pathway.name}_specific_carbon_abatement_cost"])
+                    spe_cost.append(self.df[f"{pathway.name}_specific_carbon_abatement_cost"][year])
                     g_spe_cac_col = f"{pathway.name}_generic_specific_carbon_abatement_cost"
                     if g_spe_cac_col not in self.df.columns:
                         raise ValueError(
                             f"Pathway {pathway.name} generic specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
                         )
                     g_spe_cost.append(
-                        self.df[f"{pathway.name}_generic_specific_carbon_abatement_cost"]
+                        self.df[f"{pathway.name}_generic_specific_carbon_abatement_cost"][year]
                     )
                     colors.append("yellowgreen")
 

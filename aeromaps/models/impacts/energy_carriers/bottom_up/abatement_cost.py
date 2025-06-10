@@ -69,9 +69,9 @@ class BottomUpAbatementCost(AeroMAPSModel):
         # Outputs: specific abatement cost and generic specific abatement cost
 
         self.output_names = {
-            f"{self.pathway_name}_abatement_cost": pd.Series([0.0]),
-            f"{self.pathway_name}_specific_abatement_cost": pd.Series([0.0]),
-            f"{self.pathway_name}_generic_specific_abatement_cost": pd.Series([0.0]),
+            f"{self.pathway_name}_carbon_abatement_cost": pd.Series([0.0]),
+            f"{self.pathway_name}_specific_carbon_abatement_cost": pd.Series([0.0]),
+            f"{self.pathway_name}_generic_specific_carbon_abatement_cost": pd.Series([0.0]),
         }
 
     def compute(self, input_data) -> dict:
@@ -125,24 +125,24 @@ class BottomUpAbatementCost(AeroMAPSModel):
                 )
             )
 
-        generic_specific_abatement_cost = (
+        generic_specific_carbon_abatement_cost = (
             unitary_discounted_costs - reference_unitary_discounted_costs
         ) / (reference_unitary_discounted_emissions - unitary_discounted_emissions)
-        specific_abatement_cost = (
+        specific_carbon_abatement_cost = (
             unitary_discounted_costs - reference_unitary_discounted_costs
         ) / (reference_unitary_emissions - unitary_emissions)
 
-        abatement_cost = (mfsp - fossil_mfsp) / (fossil_ef - co2_emission_factor)
+        carbon_abatement_cost = (mfsp - fossil_mfsp) / (fossil_ef - co2_emission_factor)
 
         # Unit conversion = > from €/gCO2 to €/tCO2
-        specific_abatement_cost *= 1000000
-        generic_specific_abatement_cost *= 1000000
-        abatement_cost *= 1000000
+        specific_carbon_abatement_cost *= 1000000
+        generic_specific_carbon_abatement_cost *= 1000000
+        carbon_abatement_cost *= 1000000
 
         output_data = {
-            f"{self.pathway_name}_specific_abatement_cost": specific_abatement_cost,
-            f"{self.pathway_name}_generic_specific_abatement_cost": generic_specific_abatement_cost,
-            f"{self.pathway_name}_abatement_cost": abatement_cost,
+            f"{self.pathway_name}_specific_carbon_abatement_cost": specific_carbon_abatement_cost,
+            f"{self.pathway_name}_generic_specific_carbon_abatement_cost": generic_specific_carbon_abatement_cost,
+            f"{self.pathway_name}_carbon_abatement_cost": carbon_abatement_cost,
         }
 
         self._store_outputs(output_data)
