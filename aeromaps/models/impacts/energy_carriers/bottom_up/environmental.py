@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -134,6 +136,9 @@ class BottomUpEnvironmental(AeroMAPSModel):
         else:
             self.compute_abatement_cost = False
 
+        if configuration_data.get("compute_all_years"):
+            self.compute_all_years = True
+
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(
             {
@@ -172,7 +177,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
             # The plant will operate from year to year+lifespan (or until end_year)
             vintage_indexes = range(year, year + lifespan)
             vintage_emission_factor = pd.Series(np.nan, index=vintage_indexes)
-            if needed_capacity > 0:
+            if needed_capacity > 0 or self.compute_all_years:
+                if needed_capacity < 0:
+                    warnings.warn(
+                        f"Negative needed capacity for {self.pathway_name} in year {year}. "
+                        "This is not expected despite the compute_all_years option being set to True."
+                    )
                 # relative contibution of the vintage
                 relative_share = needed_capacity / (energy_consumption + energy_unused)
                 relative_share = relative_share.loc[year : year + lifespan - 1]
