@@ -159,7 +159,7 @@ class BottomUpCost(AeroMAPSModel):
 
     def compute(self, input_data) -> dict:
         optional_nan_series = pd.Series(
-            np.nan, index=range(self.prospection_start_year, self.end_year + 1)
+            np.nan, index=range(self.historic_start_year, self.end_year + 1)
         )
 
         energy_production_commissioned = input_data[
@@ -190,7 +190,7 @@ class BottomUpCost(AeroMAPSModel):
 
             # plant production is potentially evaluated beyond scenario end year
             vintage_indexes = range(year, year + lifespan)
-            vintage_mfsp = pd.Series(np.zeros(len(vintage_indexes)), vintage_indexes)
+            vintage_mfsp = pd.Series(np.nan, index=vintage_indexes)
             if needed_capacity > 0:
                 # relative contibution of the vintage
                 relative_share = needed_capacity / (energy_consumption + energy_unused)
@@ -467,15 +467,21 @@ class BottomUpCost(AeroMAPSModel):
 
             # compute discounted costs if necessary
             if self.compute_abatement_cost:
-                discounted_mfsp = self._unitary_cumulative_discounted_costs_vintage(
-                    mfsp_series=vintage_mfsp,
-                    year=year,
-                    plant_lifespan=lifespan,
-                    discount_rate=input_data["social_discount_rate"],
-                )
+                if vintage_mfsp.notna().any():
+                    discounted_mfsp = self._unitary_cumulative_discounted_costs_vintage(
+                        mfsp_series=vintage_mfsp,
+                        year=year,
+                        plant_lifespan=lifespan,
+                        discount_rate=input_data["social_discount_rate"],
+                    )
+                else:
+                    discounted_mfsp = np.NaN
                 output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] = (
                     discounted_mfsp
                 )
+        print(
+            input_data["social_discount_rate"],
+        )
 
         # Store the results in the df and retun
 

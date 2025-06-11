@@ -14,7 +14,6 @@ class EnergyAbatementEffective(AeroMAPSModel):
             **kwargs,
         )
         self.pathway_name = pathway_name
-        print(f"Initializing {self.pathway_name} abatement effective model.")
 
         # Inputs needed: discounted costs, unitary emissions, discounted emissions
         self.input_names = {

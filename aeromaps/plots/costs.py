@@ -2929,7 +2929,7 @@ class AnnualMACC:
 
         macc_df = macc_df.sort_values(by=metric)
 
-        # dropping NaN on costs or abatements
+        # Dropping NaN on costs or abatements
         macc_df = macc_df.dropna(subset=metric)
 
         maccneg_df = macc_df[macc_df["abatement_effective"] < -0]

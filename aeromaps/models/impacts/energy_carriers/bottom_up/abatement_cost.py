@@ -107,9 +107,9 @@ class BottomUpAbatementCost(AeroMAPSModel):
 
         else:
             reference_lifespan = input_data.get(f"{self.pathway_name}_eis_plant_lifespan", 25.0)
-            social_discount_rate = input_data.get(f"{self.pathway_name}_social_discount_rate", 0.0)
+            social_discount_rate = input_data.get("social_discount_rate")
             exogenous_carbon_price_trajectory = input_data.get(
-                f"{self.pathway_name}_exogenous_carbon_price_trajectory", pd.Series([0.0])
+                "exogenous_carbon_price_trajectory", pd.Series([0.0])
             )
 
             reference_unitary_discounted_costs = self._unit_kerozene_discounted_cumul_costs(
@@ -118,7 +118,6 @@ class BottomUpAbatementCost(AeroMAPSModel):
             (reference_unitary_emissions, reference_unitary_discounted_emissions) = (
                 self._unitary_cumul_emissions_vintage(
                     fossil_ef,
-                    exogenous_carbon_price_trajectory,
                     exogenous_carbon_price_trajectory,
                     reference_lifespan,
                     social_discount_rate,
@@ -153,16 +152,13 @@ class BottomUpAbatementCost(AeroMAPSModel):
         fossil_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
         plant_lifespan: float,
-        lhv_hydrogen: float,
         social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
     ]:
-        # Constants:
-
+        # Print all arguments for debugging:
         indexes = fossil_emission_factor.index
-
         specific_em = pd.Series(np.nan, indexes)
         generic_discounted_specific_em = pd.Series(np.nan, indexes)
 
@@ -171,7 +167,7 @@ class BottomUpAbatementCost(AeroMAPSModel):
             generic_discounted_cumul_em = 0
             for i in range(year, year + int(plant_lifespan)):
                 if i < (self.end_year + 1):
-                    cumul_em += fossil_emission_factor[i] * (lhv_hydrogen) / 1000000
+                    cumul_em += fossil_emission_factor[i]
 
                     # discounting emissions for non-hotelling scc
                     generic_discounted_cumul_em += (
@@ -182,7 +178,7 @@ class BottomUpAbatementCost(AeroMAPSModel):
                     )
 
                 else:
-                    cumul_em += fossil_emission_factor[self.end_year] * (lhv_hydrogen) / 1000000
+                    cumul_em += fossil_emission_factor[self.end_year]
                     # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
                     future_scc_growth = (
                         exogenous_carbon_price_trajectory[self.end_year]
@@ -201,7 +197,6 @@ class BottomUpAbatementCost(AeroMAPSModel):
 
             specific_em[year] = cumul_em
             generic_discounted_specific_em[year] = generic_discounted_cumul_em
-
         return (specific_em, generic_discounted_specific_em)
 
     def _unit_kerozene_discounted_cumul_costs(

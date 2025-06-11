@@ -151,7 +151,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
         """
 
         optional_nan_series = pd.Series(
-            np.nan, index=range(self.prospection_start_year, self.end_year + 1)
+            np.nan, index=range(self.historic_start_year, self.end_year + 1)
         )
         energy_production_commissioned = input_data[
             f"{self.pathway_name}_energy_production_commissioned"
@@ -171,7 +171,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
             )
             # The plant will operate from year to year+lifespan (or until end_year)
             vintage_indexes = range(year, year + lifespan)
-            vintage_emission_factor = pd.Series(np.zeros(len(vintage_indexes)), vintage_indexes)
+            vintage_emission_factor = pd.Series(np.nan, index=vintage_indexes)
             if needed_capacity > 0:
                 # relative contibution of the vintage
                 relative_share = needed_capacity / (energy_consumption + energy_unused)
@@ -357,18 +357,24 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                 # compute the cumulative and discounted emissions for the vintage
                 if self.compute_abatement_cost:
-                    # Get the exogenous carbon price trajectory and social discount rate
-                    exogenous_carbon_price_trajectory = input_data.get(
-                        "exogenous_carbon_price_trajectory", optional_nan_series
-                    )
-                    social_discount_rate = input_data.get("social_discount_rate", 0.0)
+                    if vintage_emission_factor.notna().any():
+                        # Get the exogenous carbon price trajectory and social discount rate
+                        exogenous_carbon_price_trajectory = input_data.get(
+                            "exogenous_carbon_price_trajectory", optional_nan_series
+                        )
+                        social_discount_rate = input_data.get("social_discount_rate", 0.0)
 
-                    # Compute cumulative and discounted emissions for the vintage
-                    cumul_em, generic_discounted_cumul_em = self._unitary_cumul_emissions_vintage(
-                        vintage_emission_factor,
-                        exogenous_carbon_price_trajectory,
-                        social_discount_rate,
-                    )
+                        # Compute cumulative and discounted emissions for the vintage
+                        cumul_em, generic_discounted_cumul_em = (
+                            self._unitary_cumul_emissions_vintage(
+                                vintage_emission_factor,
+                                exogenous_carbon_price_trajectory,
+                                social_discount_rate,
+                            )
+                        )
+                    else:
+                        cumul_em = np.NaN
+                        generic_discounted_cumul_em = np.NaN
 
                     # Store the cumulative emissions for the vintage
                     output_data[f"{self.pathway_name}_lifespan_unitary_emissions"].loc[year] = (
