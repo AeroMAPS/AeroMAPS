@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.utils.functions import get_value_for_year
+from aeromaps.utils.functions import get_value_for_year, custom_series_addition
 
 
 class BottomUpCost(AeroMAPSModel):
@@ -34,6 +34,7 @@ class BottomUpCost(AeroMAPSModel):
             {
                 f"{self.pathway_name}_energy_production_commissioned": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
+                f"{self.pathway_name}_energy_unused": pd.Series([0.0]),
                 "private_discount_rate": 0.0,
             }
         )
@@ -157,23 +158,19 @@ class BottomUpCost(AeroMAPSModel):
             self.compute_abatement_cost = False
 
     def compute(self, input_data) -> dict:
-        optional_null_series = pd.Series(
-            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+        optional_nan_series = pd.Series(
+            np.nan, index=range(self.prospection_start_year, self.end_year + 1)
         )
 
         energy_production_commissioned = input_data[
             f"{self.pathway_name}_energy_production_commissioned"
         ]
         energy_consumption = input_data[f"{self.pathway_name}_energy_consumption"]
-
-        indexes = range(self.prospection_start_year, self.end_year + 1)
-
-        # plant_building_cost = pd.Series(np.zeros(len(indexes)), indexes)
-        # pathway_total_cost = pd.Series(np.zeros(len(indexes)), indexes)
+        energy_unused = input_data[f"{self.pathway_name}_energy_unused"]
 
         # first lets initialize the output data with mean mfsp components by parsing resources and processes
         # Prepare outputs
-        output_data = {k: pd.Series(0.0, index=indexes) for k in self.output_names}
+        output_data = {k: optional_nan_series.copy() for k in self.output_names}
 
         # First lets compute the core mfsp
         for year, needed_capacity in energy_production_commissioned.items():
@@ -192,12 +189,13 @@ class BottomUpCost(AeroMAPSModel):
             )
 
             # plant production is potentially evaluated beyond scenario end year
-            vintage_indexes = range(year, year + lifespan + 1)
+            vintage_indexes = range(year, year + lifespan)
             vintage_mfsp = pd.Series(np.zeros(len(vintage_indexes)), vintage_indexes)
             if needed_capacity > 0:
                 # relative contibution of the vintage
-                relative_share = needed_capacity / energy_consumption
-                relative_share = relative_share.loc[year : year + lifespan]
+                relative_share = needed_capacity / (energy_consumption + energy_unused)
+
+                relative_share = relative_share.loc[year : year + lifespan - 1]
 
                 # I -- First lets compute the core MFSP (no resources, no processes)
                 # Get the inputs for the year
@@ -227,9 +225,20 @@ class BottomUpCost(AeroMAPSModel):
                 capex_year = capex * needed_capacity
                 output_data[f"{self.pathway_name}_capex_cost"].loc[
                     year - construction_time : year
-                ] = capex_year / construction_time
-                output_data[f"{self.pathway_name}_unit_capex"].loc[year : year + lifespan] += (
-                    mfsp_capex * relative_share
+                ] = custom_series_addition(
+                    output_data[f"{self.pathway_name}_capex_cost"].loc[
+                        year - construction_time : year
+                    ],
+                    capex_year / construction_time,
+                )
+
+                output_data[f"{self.pathway_name}_unit_capex"].loc[year : year + lifespan - 1] = (
+                    custom_series_addition(
+                        output_data[f"{self.pathway_name}_unit_capex"].loc[
+                            year : year + lifespan - 1
+                        ],
+                        mfsp_capex * relative_share,
+                    )
                 )
 
                 # As var opex is in € per MJ we can directly get it
@@ -237,8 +246,13 @@ class BottomUpCost(AeroMAPSModel):
                     input_data.get(f"{self.pathway_name}_eis_variable_opex"), year, 0.0
                 )
                 output_data[f"{self.pathway_name}_unit_variable_opex"].loc[
-                    year : year + lifespan
-                ] += variable_opex * relative_share
+                    year : year + lifespan - 1
+                ] = custom_series_addition(
+                    output_data[f"{self.pathway_name}_unit_variable_opex"].loc[
+                        year : year + lifespan - 1
+                    ],
+                    variable_opex * relative_share,
+                )
 
                 # As fixed opex is in €/year for a plant of 1 MJ/year, we can directly get it in €/MJ
                 fixed_opex = (
@@ -247,15 +261,27 @@ class BottomUpCost(AeroMAPSModel):
                     )
                     / main_process_load_factor
                 )
-                output_data[f"{self.pathway_name}_unit_fixed_opex"].loc[year : year + lifespan] += (
-                    fixed_opex * relative_share
+                output_data[f"{self.pathway_name}_unit_fixed_opex"].loc[
+                    year : year + lifespan - 1
+                ] = custom_series_addition(
+                    output_data[f"{self.pathway_name}_unit_fixed_opex"].loc[
+                        year : year + lifespan - 1
+                    ],
+                    fixed_opex * relative_share,
                 )
 
-                vintage_mfsp += mfsp_capex + fixed_opex + variable_opex
+                vintage_mfsp = custom_series_addition(
+                    vintage_mfsp, mfsp_capex + fixed_opex + variable_opex
+                )
 
                 output_data[f"{self.pathway_name}_mfsp_without_resource"].loc[
-                    year : year + lifespan
-                ] += vintage_mfsp * relative_share
+                    year : year + lifespan - 1
+                ] = custom_series_addition(
+                    output_data[f"{self.pathway_name}_mfsp_without_resource"].loc[
+                        year : year + lifespan - 1
+                    ],
+                    vintage_mfsp * relative_share,
+                )
 
                 # II -- Now lets get the resources as in TopDownCost model
                 for key in self.resource_keys:
@@ -269,7 +295,7 @@ class BottomUpCost(AeroMAPSModel):
                     )
 
                     if specific_consumption is not None:
-                        resource_price = input_data.get(f"{key}_cost", optional_null_series.copy())
+                        resource_price = input_data.get(f"{key}_cost", optional_nan_series.copy())
 
                         # cast mfsp_resource to a series with the same index as
                         # vintage_mfsp by keeping correct values (<end year) extending last year value to the end of the vintage_mfsp
@@ -283,12 +309,17 @@ class BottomUpCost(AeroMAPSModel):
                             index=vintage_mfsp.index,
                         )
 
-                        vintage_mfsp = vintage_mfsp + mfsp_resource
+                        vintage_mfsp = custom_series_addition(vintage_mfsp, mfsp_resource)
 
                         # Store the resource cost in the output data
                         output_data[f"{self.pathway_name}_excluding_processes_{key}_unit_cost"].loc[
-                            year : year + lifespan
-                        ] += mfsp_resource * relative_share
+                            year : year + lifespan - 1
+                        ] = custom_series_addition(
+                            output_data[
+                                f"{self.pathway_name}_excluding_processes_{key}_unit_cost"
+                            ].loc[year : year + lifespan - 1],
+                            mfsp_resource * relative_share,
+                        )
 
                     # get processes that use this resource
                     for process_key in self.process_keys:
@@ -302,7 +333,7 @@ class BottomUpCost(AeroMAPSModel):
 
                         if specific_consumption is not None:
                             process_ressource_price = input_data.get(
-                                f"{key}_cost", optional_null_series.copy()
+                                f"{key}_cost", optional_nan_series.copy()
                             )
                             # cast mfsp_resource to a series with the same index as
                             # vintage_mfsp by keeping correct values (<end year) extending last year value to the end of the vintage_mfsp
@@ -317,12 +348,19 @@ class BottomUpCost(AeroMAPSModel):
                                 index=vintage_mfsp.index,
                             )
 
-                            vintage_mfsp = vintage_mfsp + mfsp_process_ressource
+                            vintage_mfsp = custom_series_addition(
+                                vintage_mfsp, mfsp_process_ressource
+                            )
 
                             # Store the resource cost in the output data
                             output_data[f"{self.pathway_name}_{process_key}_{key}_unit_cost"].loc[
-                                year : year + lifespan
-                            ] += mfsp_process_ressource * relative_share
+                                year : year + lifespan - 1
+                            ] = custom_series_addition(
+                                output_data[
+                                    f"{self.pathway_name}_{process_key}_{key}_unit_cost"
+                                ].loc[year : year + lifespan - 1],
+                                mfsp_process_ressource * relative_share,
+                            )
 
                 # III -- Now lets get the processes
                 for process_key in self.process_keys:
@@ -360,7 +398,12 @@ class BottomUpCost(AeroMAPSModel):
 
                         output_data[f"{self.pathway_name}_{process_key}_capex_cost"].loc[
                             year - process_construction_time : year
-                        ] = process_capex * needed_capacity / construction_time
+                        ] = custom_series_addition(
+                            output_data[f"{self.pathway_name}_{process_key}_capex_cost"].loc[
+                                year - process_construction_time : year
+                            ],
+                            process_capex * needed_capacity / construction_time,
+                        )
                     else:
                         capex_process = 0.0
                     # Get the variable and fixed opex for the process
@@ -380,23 +423,46 @@ class BottomUpCost(AeroMAPSModel):
                     # Compute the MFSP for the process
                     mfsp_process = capex_process + variable_opex_process + fixed_opex_process
                     # Add the MFSP for the process to the pathway MFSP
-                    vintage_mfsp = vintage_mfsp + mfsp_process
+                    vintage_mfsp = custom_series_addition(vintage_mfsp, mfsp_process)
                     # Store the process cost in the output data
                     output_data[
                         f"{self.pathway_name}_{process_key}_without_resources_unit_cost"
-                    ].loc[year : year + process_lifespan] += mfsp_process * relative_share
+                    ].loc[year : year + process_lifespan] = custom_series_addition(
+                        output_data[
+                            f"{self.pathway_name}_{process_key}_without_resources_unit_cost"
+                        ].loc[year : year + process_lifespan],
+                        mfsp_process * relative_share,
+                    )
                     output_data[f"{self.pathway_name}_{process_key}_unit_capex"].loc[
-                        year : year + lifespan
-                    ] += capex_process * relative_share
+                        year : year + lifespan - 1
+                    ] = custom_series_addition(
+                        output_data[f"{self.pathway_name}_{process_key}_unit_capex"].loc[
+                            year : year + lifespan - 1
+                        ],
+                        capex_process * relative_share,
+                    )
                     output_data[f"{self.pathway_name}_{process_key}_unit_fixed_opex"].loc[
-                        year : year + lifespan
-                    ] += fixed_opex_process * relative_share
+                        year : year + lifespan - 1
+                    ] = custom_series_addition(
+                        output_data[f"{self.pathway_name}_{process_key}_unit_fixed_opex"].loc[
+                            year : year + lifespan - 1
+                        ],
+                        fixed_opex_process * relative_share,
+                    )
                     output_data[f"{self.pathway_name}_{process_key}_unit_variable_opex"].loc[
-                        year : year + lifespan
-                    ] += variable_opex_process * relative_share
+                        year : year + lifespan - 1
+                    ] = custom_series_addition(
+                        output_data[f"{self.pathway_name}_{process_key}_unit_variable_opex"].loc[
+                            year : year + lifespan - 1
+                        ],
+                        variable_opex_process * relative_share,
+                    )
 
-                output_data[f"{self.pathway_name}_mfsp"].loc[year : year + lifespan] += (
-                    vintage_mfsp * relative_share
+                output_data[f"{self.pathway_name}_mfsp"].loc[year : year + lifespan - 1] = (
+                    custom_series_addition(
+                        output_data[f"{self.pathway_name}_mfsp"].loc[year : year + lifespan - 1],
+                        vintage_mfsp * relative_share,
+                    )
                 )
 
             # compute discounted costs if necessary

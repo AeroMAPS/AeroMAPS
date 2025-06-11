@@ -122,6 +122,10 @@ class BottomUpCapacity(AeroMAPSModel):
             missing_production = energy_required.fillna(0)[year] - energy_produced.fillna(0)[year]
             if missing_production <= 0.0:
                 energy_unused[year] = missing_production
+                if missing_production < 0.0:
+                    print(
+                        f"Warning: excess {self.pathway_name} production in year {year}. Scaling down costs and emissions accordingly."
+                    )
             else:
                 # Calculate the required capacity to meet the energy demand
                 for key in self.resource_keys:
