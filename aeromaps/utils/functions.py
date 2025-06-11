@@ -344,3 +344,42 @@ def get_value_for_year(value, year, default_return=None):
     elif isinstance(value, pd.Series):
         return value.loc[year] if year in value.index else default_return
     return default_return
+
+
+def custom_series_addition(s1: pd.Series, s2: pd.Series) -> pd.Series:
+    """
+    Adds two pandas Series, handling missing indices (NaN) gracefully.
+
+    For each index in the result (union of both Series indices):
+      - If both values are NaN, the result is NaN.
+      - If only one value is NaN, the other value is used.
+      - Otherwise, the two values are summed.
+
+    Args:
+        s1 (pd.Series): First Series to add.
+        s2 (pd.Series): Second Series to add.
+
+    Returns:
+        pd.Series: Resulting Series from the addition, aligned on the union of indices.
+    """
+    # Extend the indices of both Series to create a full index
+    full_index = s1.index.union(s2.index)
+    s1_aligned = s1.reindex(full_index)
+    s2_aligned = s2.reindex(full_index)
+
+    na1 = s1_aligned.isna()
+    na2 = s2_aligned.isna()
+
+    # Vectorized addition with handling for NaN values
+    return pd.Series(
+        np.where(
+            na1 & na2,
+            np.nan,  # If both are NaN, result is NaN
+            np.where(
+                na1,
+                s2_aligned,  # If s1 is NaN, use s2
+                np.where(na2, s1_aligned, s1_aligned + s2_aligned),
+            ),  # If s2 is NaN, use s1, otherwise sum both
+        ),
+        index=full_index,
+    )
