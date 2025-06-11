@@ -346,7 +346,7 @@ def get_value_for_year(value, year, default_return=None):
     return default_return
 
 
-def custom_series_addition(s1: pd.Series, s2: pd.Series) -> pd.Series:
+def custom_series_addition(s1, s2) -> pd.Series:
     """
     Adds two pandas Series, handling missing indices (NaN) gracefully.
 
@@ -356,12 +356,18 @@ def custom_series_addition(s1: pd.Series, s2: pd.Series) -> pd.Series:
       - Otherwise, the two values are summed.
 
     Args:
-        s1 (pd.Series): First Series to add.
-        s2 (pd.Series): Second Series to add.
+        s1: First Series (or scalar) to add.
+        s2: Second Series (or scalar) to add.
 
     Returns:
         pd.Series: Resulting Series from the addition, aligned on the union of indices.
     """
+
+    if np.isscalar(s1):
+        return pd.Series(np.where(pd.isna(s2), s1, s1 + s2), index=s2.index)
+    if np.isscalar(s2):
+        return pd.Series(np.where(pd.isna(s1), s2, s1 + s2), index=s1.index)
+
     # Extend the indices of both Series to create a full index
     full_index = s1.index.union(s2.index)
     s1_aligned = s1.reindex(full_index)
