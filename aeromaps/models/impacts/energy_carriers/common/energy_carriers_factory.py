@@ -1,5 +1,8 @@
 # import all the concrete implementations of the energy carriers
-from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_cost import BottomUpAbatementCost
+from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_cost import (
+    EnergyAbatementCost,
+    ReferenceAbatementCost,
+)
 from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_effective import (
     EnergyAbatementEffective,
 )
@@ -34,98 +37,88 @@ class AviationEnergyCarriersFactory:
         cost_model_type = pathway_data["cost_model"]
         # case distinction between energy model types
         # TODO split the config file into two separate files here instead in the inits ?
-
-        if environmental_model_type == "top-down" and cost_model_type == "top-down":
-            return {
-                f"{pathway_name}_top_down_unit_cost": TopDownCost(
-                    f"{pathway_name}_top_down_unit_cost",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-                f"{pathway_name}_top_down_unit_environmental": TopDownEnvironmental(
-                    f"{pathway_name}_top_down_unit_environmental",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-            }
-        elif environmental_model_type == "top-down" and cost_model_type == "bottom-up":
-            return {
-                f"{pathway_name}_top_down_total_environmental": TopDownEnvironmental(
-                    f"{pathway_name}_top_down_total_environmental",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-                f"{pathway_name}_bottom_up_cost": BottomUpCost(
-                    f"{pathway_name}_bottom_up_cost", pathway_data, resources_data, processs_data
-                ),
-                f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
-                ),
-            }
-        elif environmental_model_type == "bottom-up" and cost_model_type == "top-down":
-            return {
-                f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
-                    f"{pathway_name}_bottom_up_environmental",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-                f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                    f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
-                ),
-                f"{pathway_name}_top_down_unit_cost": TopDownCost(
-                    f"{pathway_name}_top_down_unit_cost",
-                    pathway_data,
-                    resources_data,
-                    processs_data,
-                ),
-            }
-        elif environmental_model_type == "bottom-up" and cost_model_type == "bottom-up":
-            models = {}
+        models = {}
+        if environmental_model_type == "top-down":
             models.update(
                 {
-                    f"{pathway_name}_bottom_up_environmental": BottomUpEnvironmental(
-                        f"{pathway_name}_bottom_up_environmental",
+                    f"{pathway_name}_top_down_unit_environmental": TopDownEnvironmental(
+                        f"{pathway_name}_top_down_unit_environmental",
                         pathway_data,
                         resources_data,
                         processs_data,
-                    ),
+                    )
+                }
+            )
+        elif environmental_model_type == "bottom-up":
+            models.update(
+                {
+                    f"{pathway_name}_bottom_up_unit_environmental": BottomUpEnvironmental(
+                        f"{pathway_name}_bottom_up_unit_environmental",
+                        pathway_data,
+                        resources_data,
+                        processs_data,
+                    )
+                }
+            )
+        else:
+            raise ValueError(f"Unsupported environmental model type: {environmental_model_type}")
+        if cost_model_type == "top-down":
+            models.update(
+                {
+                    f"{pathway_name}_top_down_unit_cost": TopDownCost(
+                        f"{pathway_name}_top_down_unit_cost",
+                        pathway_data,
+                        resources_data,
+                        processs_data,
+                    )
+                }
+            )
+        elif cost_model_type == "bottom-up":
+            models.update(
+                {
+                    f"{pathway_name}_bottom_up_unit_cost": BottomUpCost(
+                        f"{pathway_name}_bottom_up_unit_cost",
+                        pathway_data,
+                        resources_data,
+                        processs_data,
+                    )
+                }
+            )
+        else:
+            raise ValueError(f"Unsupported cost model type: {cost_model_type}")
+        # add capacity model
+        if environmental_model_type == "bottom-up" or cost_model_type == "bottom-up":
+            models.update(
+                {
                     f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
                         f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
+                    )
+                }
+            )
+        if pathway_data.get("abatement_cost"):
+            models.update(
+                {
+                    f"{pathway_name}_bottom_up_abatement_cost": EnergyAbatementCost(
+                        f"{pathway_name}_bottom_up_abatement_cost",
+                        pathway_name,
                     ),
-                    f"{pathway_name}_bottom_up_cost": BottomUpCost(
-                        f"{pathway_name}_bottom_up_cost",
-                        pathway_data,
-                        resources_data,
-                        processs_data,
+                    f"{pathway_name}_abatement_effective": EnergyAbatementEffective(
+                        f"{pathway_name}_abatement_effective",
+                        pathway_name,
                     ),
                 }
             )
-            if pathway_data.get("abatement_cost"):
-                models.update(
-                    {
-                        f"{pathway_name}_bottom_up_abatement_cost": BottomUpAbatementCost(
-                            f"{pathway_name}_bottom_up_abatement_cost",
-                            pathway_name,
-                            energy_carriers_data,
-                        ),
-                        f"{pathway_name}_abatement_effective": EnergyAbatementEffective(
-                            f"{pathway_name}_abatement_effective",
-                            pathway_name,
-                            energy_carriers_data,
-                        ),
-                    }
-                )
-            return models
-        else:
-            # return error message depending on which model type is unknown
-            if environmental_model_type not in ["top-down", "bottom-up"]:
-                raise ValueError(f"Unsupported model type: {environmental_model_type}")
-            if cost_model_type not in ["top-down", "bottom-up"]:
-                raise ValueError(f"Unsupported model type: {cost_model_type}")
+        if pathway_data.get("abatement_cost_reference"):
+            models.update(
+                {
+                    f"{pathway_name}_abatement_cost_reference": ReferenceAbatementCost(
+                        f"{pathway_name}_abatement_cost_reference",
+                        pathway_name,
+                        pathway_data,
+                    )
+                }
+            )
+        return models
 
     @staticmethod
     def instantiate_energy_carriers_models(energy_carriers_data, pathways_manager):

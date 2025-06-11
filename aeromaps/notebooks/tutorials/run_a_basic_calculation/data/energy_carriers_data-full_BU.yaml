@@ -316,6 +316,7 @@ fossil_kerosene:
   aircraft_type: "dropin_fuel"
   energy_origin: "fossil"
   default: True
+  abatement_cost_reference: True ## CAUTION: impossible to compute CACs for the reference patwhay.
   inputs:
     # Technical:
     technical:

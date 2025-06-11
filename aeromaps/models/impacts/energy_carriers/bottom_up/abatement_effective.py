@@ -6,7 +6,7 @@ from aeromaps.models.base import AeroMAPSModel
 class EnergyAbatementEffective(AeroMAPSModel):
     """ """
 
-    def __init__(self, name, pathway_name, configuration_data, *args, **kwargs):
+    def __init__(self, name, pathway_name, *args, **kwargs):
         super().__init__(
             name=name,
             model_type="custom",
@@ -19,18 +19,9 @@ class EnergyAbatementEffective(AeroMAPSModel):
         self.input_names = {
             f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
             f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+            "cac_reference_co2_emission_factor": pd.Series([0.0]),
         }
-        # get the fossil kerosene reference to compute the CACs.
-        if "fossil_kerosene" not in configuration_data.keys():
-            raise ValueError(
-                "Configuration data must contain 'fossil_kerosene' reference pathway for abatement computation."
-            )
-        else:
-            self.input_names.update(
-                {
-                    "fossil_kerosene_co2_emission_factor": pd.Series([0.0]),
-                }
-            )
+
         # Outputs: effective abatement volume (unit: tCO2)
         self.output_names = {
             f"{self.pathway_name}_abatement_effective": pd.Series([0.0]),
@@ -41,7 +32,7 @@ class EnergyAbatementEffective(AeroMAPSModel):
         Compute the specific abatement cost and generic specific abatement cost for each vintage.
         """
         avoided_emission_factor = (
-            input_data["fossil_kerosene_co2_emission_factor"]
+            input_data["cac_reference_co2_emission_factor"]
             - input_data[f"{self.pathway_name}_co2_emission_factor"]
         )
         abatement_effective = (
