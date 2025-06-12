@@ -1,0 +1,76 @@
+name;categories;amount;unit
+Dinitrogen monoxide;air;1,41E-10;kilogram
+Dinitrogen monoxide;air::low population density, long-term;1,41E-10;kilogram
+Dinitrogen monoxide;air::lower stratosphere + upper troposphere;1,41E-10;kilogram
+Dinitrogen monoxide;air::non-urban air or from high stacks;1,41E-10;kilogram
+Dinitrogen monoxide;air::urban air close to ground;1,41E-10;kilogram
+Ethane, 1,1,1-trichloro-, HCFC-140;air;1,32E-09;kilogram
+Ethane, 1,1,1-trichloro-, HCFC-140;air::low population density, long-term;1,32E-09;kilogram
+Ethane, 1,1,1-trichloro-, HCFC-140;air::lower stratosphere + upper troposphere;1,32E-09;kilogram
+Ethane, 1,1,1-trichloro-, HCFC-140;air::non-urban air or from high stacks;1,32E-09;kilogram
+Ethane, 1,1,1-trichloro-, HCFC-140;air::urban air close to ground;1,32E-09;kilogram
+Ethane, 1,1,2-trichloro-1,2,2-trifluoro-, CFC-113;air;4,91E-09;kilogram
+Ethane, 1,1,2-trichloro-1,2,2-trifluoro-, CFC-113;air::low population density, long-term;4,91E-09;kilogram
+Ethane, 1,1,2-trichloro-1,2,2-trifluoro-, CFC-113;air::lower stratosphere + upper troposphere;4,91E-09;kilogram
+Ethane, 1,1,2-trichloro-1,2,2-trifluoro-, CFC-113;air::non-urban air or from high stacks;4,91E-09;kilogram
+Ethane, 1,1,2-trichloro-1,2,2-trifluoro-, CFC-113;air::urban air close to ground;4,91E-09;kilogram
+Ethane, 1,1-dichloro-1-fluoro-, HCFC-141b;air;1,07E-09;kilogram
+Ethane, 1,1-dichloro-1-fluoro-, HCFC-141b;air::low population density, long-term;1,07E-09;kilogram
+Ethane, 1,1-dichloro-1-fluoro-, HCFC-141b;air::lower stratosphere + upper troposphere;1,07E-09;kilogram
+Ethane, 1,1-dichloro-1-fluoro-, HCFC-141b;air::non-urban air or from high stacks;1,07E-09;kilogram
+Ethane, 1,1-dichloro-1-fluoro-, HCFC-141b;air::urban air close to ground;1,07E-09;kilogram
+Ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-, CFC-114;air;3,64E-09;kilogram
+Ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-, CFC-114;air::low population density, long-term;3,64E-09;kilogram
+Ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-, CFC-114;air::lower stratosphere + upper troposphere;3,64E-09;kilogram
+Ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-, CFC-114;air::non-urban air or from high stacks;3,64E-09;kilogram
+Ethane, 1,2-dichloro-1,1,2,2-tetrafluoro-, CFC-114;air::urban air close to ground;3,64E-09;kilogram
+Ethane, 1-chloro-1,1-difluoro-, HCFC-142b;air;6,76E-10;kilogram
+Ethane, 1-chloro-1,1-difluoro-, HCFC-142b;air::low population density, long-term;6,76E-10;kilogram
+Ethane, 1-chloro-1,1-difluoro-, HCFC-142b;air::lower stratosphere + upper troposphere;6,76E-10;kilogram
+Ethane, 1-chloro-1,1-difluoro-, HCFC-142b;air::non-urban air or from high stacks;6,76E-10;kilogram
+Ethane, 1-chloro-1,1-difluoro-, HCFC-142b;air::urban air close to ground;6,76E-10;kilogram
+Ethane, chloropentafluoro-, CFC-115;air;3,99E-09;kilogram
+Ethane, chloropentafluoro-, CFC-115;air::low population density, long-term;3,99E-09;kilogram
+Ethane, chloropentafluoro-, CFC-115;air::lower stratosphere + upper troposphere;3,99E-09;kilogram
+Ethane, chloropentafluoro-, CFC-115;air::non-urban air or from high stacks;3,99E-09;kilogram
+Ethane, chloropentafluoro-, CFC-115;air::urban air close to ground;3,99E-09;kilogram
+Methane, bromo-, Halon 1001;air;7,46E-09;kilogram
+Methane, bromo-, Halon 1001;air::low population density, long-term;7,46E-09;kilogram
+Methane, bromo-, Halon 1001;air::lower stratosphere + upper troposphere;7,46E-09;kilogram
+Methane, bromo-, Halon 1001;air::non-urban air or from high stacks;7,46E-09;kilogram
+Methane, bromo-, Halon 1001;air::urban air close to ground;7,46E-09;kilogram
+Methane, bromochlorodifluoro-, Halon 1211;air;5,16E-08;kilogram
+Methane, bromochlorodifluoro-, Halon 1211;air::low population density, long-term;5,16E-08;kilogram
+Methane, bromochlorodifluoro-, Halon 1211;air::lower stratosphere + upper troposphere;5,16E-08;kilogram
+Methane, bromochlorodifluoro-, Halon 1211;air::non-urban air or from high stacks;5,16E-08;kilogram
+Methane, bromochlorodifluoro-, Halon 1211;air::urban air close to ground;5,16E-08;kilogram
+Methane, bromotrifluoro-, Halon 1301;air;1,15E-07;kilogram
+Methane, bromotrifluoro-, Halon 1301;air::low population density, long-term;1,15E-07;kilogram
+Methane, bromotrifluoro-, Halon 1301;air::lower stratosphere + upper troposphere;1,15E-07;kilogram
+Methane, bromotrifluoro-, Halon 1301;air::non-urban air or from high stacks;1,15E-07;kilogram
+Methane, bromotrifluoro-, Halon 1301;air::urban air close to ground;1,15E-07;kilogram
+Methane, chlorodifluoro-, HCFC-22;air;4,83E-10;kilogram
+Methane, chlorodifluoro-, HCFC-22;air::low population density, long-term;4,83E-10;kilogram
+Methane, chlorodifluoro-, HCFC-22;air::lower stratosphere + upper troposphere;4,83E-10;kilogram
+Methane, chlorodifluoro-, HCFC-22;air::non-urban air or from high stacks;4,83E-10;kilogram
+Methane, chlorodifluoro-, HCFC-22;air::urban air close to ground;4,83E-10;kilogram
+Methane, dichlorodifluoro-, CFC-12;air;7,34E-09;kilogram
+Methane, dichlorodifluoro-, CFC-12;air::low population density, long-term;7,34E-09;kilogram
+Methane, dichlorodifluoro-, CFC-12;air::lower stratosphere + upper troposphere;7,34E-09;kilogram
+Methane, dichlorodifluoro-, CFC-12;air::non-urban air or from high stacks;7,34E-09;kilogram
+Methane, dichlorodifluoro-, CFC-12;air::urban air close to ground;7,34E-09;kilogram
+Methane, monochloro-, R-40;air;4,03E-10;kilogram
+Methane, monochloro-, R-40;air::low population density, long-term;4,03E-10;kilogram
+Methane, monochloro-, R-40;air::lower stratosphere + upper troposphere;4,03E-10;kilogram
+Methane, monochloro-, R-40;air::non-urban air or from high stacks;4,03E-10;kilogram
+Methane, monochloro-, R-40;air::urban air close to ground;4,03E-10;kilogram
+Methane, tetrachloro-, R-10;air;5,74E-09;kilogram
+Methane, tetrachloro-, R-10;air::low population density, long-term;5,74E-09;kilogram
+Methane, tetrachloro-, R-10;air::lower stratosphere + upper troposphere;5,74E-09;kilogram
+Methane, tetrachloro-, R-10;air::non-urban air or from high stacks;5,74E-09;kilogram
+Methane, tetrachloro-, R-10;air::urban air close to ground;5,74E-09;kilogram
+Methane, trichlorofluoro-, CFC-11;air;7,85E-09;kilogram
+Methane, trichlorofluoro-, CFC-11;air::low population density, long-term;7,85E-09;kilogram
+Methane, trichlorofluoro-, CFC-11;air::lower stratosphere + upper troposphere;7,85E-09;kilogram
+Methane, trichlorofluoro-, CFC-11;air::non-urban air or from high stacks;7,85E-09;kilogram
+Methane, trichlorofluoro-, CFC-11;air::urban air close to ground;7,85E-09;kilogram

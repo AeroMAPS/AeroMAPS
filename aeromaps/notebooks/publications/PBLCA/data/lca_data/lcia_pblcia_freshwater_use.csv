@@ -1,0 +1,16 @@
+name;categories;amount;unit
+Water;water::ground-;-0,000000001;m3
+Water;water::surface water;-0,000000001;m3
+Water, cooling, unspecified natural origin;natural resource::in water;0,000000001;m3
+Water, lake;natural resource::in water;0,000000001;m3
+Water, river;natural resource::in water;0,000000001;m3
+Water, salt, ocean;natural resource::in water;0;m3
+Water, salt, sole;natural resource::in water;0;m3
+Water, turbine use, unspecified natural origin;natural resource::in water;0,000000001;m3
+Water, unspecified natural origin;natural resource::in water;0,000000001;m3
+Water, unspecified natural origin;natural resource::fossil well;0,000000001;m3
+Water, unspecified natural origin;natural resource::in ground;0,000000001;m3
+Water, well, in ground;natural resource::in water;0,000000001;m3
+Water;water;-0,000000001;m3
+Water;water::fossil well;-0,000000001;m3
+Water;water::ground-, long-term;-0,000000001;m3
