@@ -60,9 +60,12 @@ from aeromaps.plots.costs import (
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
+    DetailledMFSPBreakdownPerPathway,
+)
+
+from aeromaps.plots.macc import (
     AnnualMACC,
     ScenarioMACC,
-    DetailledMFSPBreakdownPerPathway,
     CumulativeMACC,
     ShadowCarbonPrice,
     AnnualMACCSimple,

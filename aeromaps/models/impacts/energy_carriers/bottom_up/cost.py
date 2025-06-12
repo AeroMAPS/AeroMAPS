@@ -37,7 +37,9 @@ class BottomUpCost(AeroMAPSModel):
                 f"{self.pathway_name}_energy_production_commissioned": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_unused": pd.Series([0.0]),
+                f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
                 "private_discount_rate": 0.0,
+                "carbon_tax": pd.Series([0.0]),
             }
         )
 
@@ -61,12 +63,12 @@ class BottomUpCost(AeroMAPSModel):
             self.output_names[f"{self.pathway_name}_excluding_processes_{key}_unit_cost"] = (
                 pd.Series([0.0])
             )
-            # self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_tax"] = (
-            #     pd.Series([0.0])
-            # )
-            # self.output_names[
-            #     self.pathway_name + "_excluding_processes_" + key + "_unit_subsidy"
-            # ] = pd.Series([0.0])
+            self.output_names[self.pathway_name + "_excluding_processes_" + key + "_unit_tax"] = (
+                pd.Series([0.0])
+            )
+            self.output_names[
+                self.pathway_name + "_excluding_processes_" + key + "_unit_subsidy"
+            ] = pd.Series([0.0])
 
         self.process_keys = (
             configuration_data.get("inputs")
@@ -89,12 +91,12 @@ class BottomUpCost(AeroMAPSModel):
                         self.output_names[
                             f"{self.pathway_name}_{process_key}_{resource}_unit_cost"
                         ] = pd.Series([0.0])
-                        # self.output_names[
-                        #     self.pathway_name + "_" + process_key + "_" + resource + "_unit_tax"
-                        # ] = pd.Series([0.0])
-                        # self.output_names[
-                        #     self.pathway_name + "_" + process_key + "_" + resource + "_unit_subsidy"
-                        # ] = pd.Series([0.0])
+                        self.output_names[
+                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_tax"
+                        ] = pd.Series([0.0])
+                        self.output_names[
+                            self.pathway_name + "_" + process_key + "_" + resource + "_unit_subsidy"
+                        ] = pd.Series([0.0])
                 else:
                     # TODO initialize with zeros instead of actual val?
                     self.input_names[key] = val
@@ -113,13 +115,12 @@ class BottomUpCost(AeroMAPSModel):
             self.output_names[f"{self.pathway_name}_{process_key}_unit_variable_opex"] = pd.Series(
                 [0.0]
             )
-
-            # self.output_names[
-            #     self.pathway_name + "_" + process_key + "_without_resources_unit_tax"
-            # ] = pd.Series([0.0])
-            # self.output_names[
-            #     self.pathway_name + "_" + process_key + "_without_resources_unit_subsidy"
-            # ] = pd.Series([0.0])
+            self.output_names[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_tax"
+            ] = pd.Series([0.0])
+            self.output_names[
+                self.pathway_name + "_" + process_key + "_without_resources_unit_subsidy"
+            ] = pd.Series([0.0])
 
         # Getting unique resources
         self.resource_keys = list(set(self.resource_keys))
@@ -131,10 +132,10 @@ class BottomUpCost(AeroMAPSModel):
                 self.input_names[f"{key}_cost"] = pd.Series([0.0])
             if f"{key}_load_factor" in resources_data[key]["specifications"]:
                 self.input_names[f"{key}_load_factor"] = pd.Series([0.0])
-            # if f"{key}_subsidy" in resources_data[key]["specifications"]:
-            #     self.input_names[key + "_subsidy"] = pd.Series([0.0])
-            # if f"{key}_tax" in resources_data[key]["specifications"]:
-            #     self.input_names[key + "_tax"] = pd.Series([0.0])
+            if f"{key}_subsidy" in resources_data[key]["specifications"]:
+                self.input_names[key + "_subsidy"] = pd.Series([0.0])
+            if f"{key}_tax" in resources_data[key]["specifications"]:
+                self.input_names[key + "_tax"] = pd.Series([0.0])
             # Outputs.
 
         # Fill in the expected outputs with names from the compute method, initialized with NaN
@@ -242,13 +243,9 @@ class BottomUpCost(AeroMAPSModel):
                     capex_year / construction_time,
                 )
 
-                output_data[f"{self.pathway_name}_unit_capex"].loc[year : year + lifespan - 1] = (
-                    custom_series_addition(
-                        output_data[f"{self.pathway_name}_unit_capex"].loc[
-                            year : year + lifespan - 1
-                        ],
-                        mfsp_capex * relative_share,
-                    )
+                output_data[f"{self.pathway_name}_unit_capex"].loc[year] = custom_series_addition(
+                    output_data[f"{self.pathway_name}_unit_capex"].loc[year : year + lifespan - 1],
+                    mfsp_capex * relative_share,
                 )
 
                 # As var opex is in € per MJ we can directly get it
@@ -489,8 +486,51 @@ class BottomUpCost(AeroMAPSModel):
                 output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] = (
                     discounted_mfsp
                 )
-        print(
-            input_data["social_discount_rate"],
+
+        ### STEP 2: add taxes and subsidies like in TopDownCost model
+        # Only pathway subsidies and taxes are considered here, not resources or processes taxes
+
+        pathway_unit_subsidy_without_resource = input_data.get(
+            f"{self.pathway_name}_unit_subsidy_without_resource", optional_nan_series.copy()
+        )
+
+        pathway_unit_tax_without_resource = input_data.get(
+            f"{self.pathway_name}_unit_tax_without_resource", optional_nan_series.copy()
+        )
+
+        # Avoiding adding nans if subsidies and taxes defined for a shorter period of time than the mfsp
+        pathway_net_mfsp_without_carbon_tax = custom_series_addition(
+            custom_series_addition(
+                output_data[f"{self.pathway_name}_mfsp"], pathway_unit_tax_without_resource
+            ),
+            -pathway_unit_subsidy_without_resource,
+        )
+
+        # Handle possible differential carbon_tax
+        if f"{self.pathway_name}_carbon_tax" in input_data:
+            carbon_tax = (
+                input_data[f"{self.pathway_name}_carbon_tax"] / 1000
+            )  # converted to €/kgCO2
+        else:
+            carbon_tax = input_data["carbon_tax"] / 1000  # converted to €/kgCO2
+
+        emission_factor = (
+            input_data[f"{self.pathway_name}_co2_emission_factor"] / 1000
+        )  # converted to kgCO2/MJ
+        pathway_unit_carbon_tax = carbon_tax * emission_factor
+
+        pathway_net_mfsp = custom_series_addition(
+            pathway_net_mfsp_without_carbon_tax, pathway_unit_carbon_tax
+        )
+
+        output_data.update(
+            {
+                f"{self.pathway_name}_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
+                f"{self.pathway_name}_net_mfsp": pathway_net_mfsp,
+                f"{self.pathway_name}_unit_tax": pathway_unit_tax_without_resource,
+                f"{self.pathway_name}_unit_carbon_tax": pathway_unit_carbon_tax,
+                f"{self.pathway_name}_unit_subsidy": pathway_unit_subsidy_without_resource,
+            }
         )
 
         # Store the results in the df and retun
