@@ -143,6 +143,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
         self.output_names.update(
             {
                 f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+                f"{self.pathway_name}_vintage_eis_co2_emission_factor": pd.Series([0.0]),
                 f"{self.pathway_name}_total_co2_emissions": pd.Series([0.0]),
                 f"{self.pathway_name}_co2_emission_factor_without_resource": pd.Series([0.0]),
             }
@@ -363,6 +364,11 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 co2_emission_factor.loc[year : year + lifespan - 1] = custom_series_addition(
                     co2_emission_factor.loc[year : year + lifespan - 1],
                     vintage_emission_factor * relative_share,
+                )
+
+                # Store the emission factor for the vintage
+                output_data[f"{self.pathway_name}_vintage_eis_co2_emission_factor"].loc[year] = (
+                    vintage_emission_factor.loc[year]
                 )
 
                 # compute the cumulative and discounted emissions for the vintage
