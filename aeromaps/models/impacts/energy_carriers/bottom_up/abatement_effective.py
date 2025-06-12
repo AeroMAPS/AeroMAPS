@@ -18,7 +18,7 @@ class EnergyAbatementEffective(AeroMAPSModel):
         # Inputs needed: discounted costs, unitary emissions, discounted emissions
         self.input_names = {
             f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
-            f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+            f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
             "cac_reference_co2_emission_factor": pd.Series([0.0]),
         }
 
@@ -33,7 +33,7 @@ class EnergyAbatementEffective(AeroMAPSModel):
         """
         avoided_emission_factor = (
             input_data["cac_reference_co2_emission_factor"]
-            - input_data[f"{self.pathway_name}_co2_emission_factor"]
+            - input_data[f"{self.pathway_name}_mean_co2_emission_factor"]
         )
         abatement_effective = (
             input_data[f"{self.pathway_name}_energy_consumption"]

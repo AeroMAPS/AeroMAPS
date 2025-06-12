@@ -119,7 +119,7 @@ class EmissionFactorPerFuelCategory:
 
         (self.line_kerosene_emission_factor,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "fossil_kerosene_co2_emission_factor"],
+            self.df.loc[self.prospective_years, "fossil_kerosene_mean_co2_emission_factor"],
             color="black",
             linestyle="-",
             label="Kerosene",
@@ -168,7 +168,7 @@ class EmissionFactorPerFuelCategory:
         )
 
         self.line_kerosene_emission_factor.set_ydata(
-            self.df.loc[self.prospective_years, "fossil_kerosene_co2_emission_factor"]
+            self.df.loc[self.prospective_years, "fossil_kerosene_mean_co2_emission_factor"]
         )
 
         self.line_electricity_emission_factor.set_ydata(
@@ -205,7 +205,7 @@ class EmissionFactorPerFuel:
         dashed_line_needed = False
         used_labels = set()
         for i, p in enumerate(pathways):
-            col = f"{p.name}_co2_emission_factor"
+            col = f"{p.name}_mean_co2_emission_factor"
             energy_col = f"{p.name}_energy_consumption"
             if col in self.df.columns and energy_col in self.df.columns:
                 years = np.array(self.prospective_years)

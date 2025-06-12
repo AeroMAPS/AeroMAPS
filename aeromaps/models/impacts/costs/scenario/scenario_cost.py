@@ -19,10 +19,10 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         if self.pathways_manager is not None:
             for p in self.pathways_manager.get_all():
                 self.input_names[f"{p.name}_net_mfsp"] = pd.Series([0.0])
-                self.input_names[f"{p.name}_mfsp"] = pd.Series([0.0])
+                self.input_names[f"{p.name}_mean_mfsp"] = pd.Series([0.0])
                 self.input_names[f"{p.name}_energy_consumption"] = pd.Series([0.0])
                 if p.name == "fossil_kerosene":
-                    self.input_names["fossil_kerosene_co2_emission_factor"] = pd.Series([0.0])
+                    self.input_names["fossil_kerosene_mean_co2_emission_factor"] = pd.Series([0.0])
 
         # Add BAU computation
         self.input_names["co2_emissions_2019technology"] = pd.Series([0.0])
@@ -42,7 +42,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         non_discounted_net_energy_expenses = None
         for p in self.pathways_manager.get_all():
             net_mfsp = input_data.get(f"{p.name}_net_mfsp", pd.Series([0.0])).fillna(0)
-            mfsp = input_data.get(f"{p.name}_mfsp", pd.Series([0.0])).fillna(0)
+            mfsp = input_data.get(f"{p.name}_mean_mfsp", pd.Series([0.0])).fillna(0)
             energy_consumption = input_data.get(
                 f"{p.name}_energy_consumption", pd.Series([0.0])
             ).fillna(0)
@@ -68,17 +68,17 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
         # Compute the business as usual energy expenses
 
-        if "fossil_kerosene_co2_emission_factor" not in input_data:
+        if "fossil_kerosene_mean_co2_emission_factor" not in input_data:
             print(
-                "Warning: fossil_kerosene pathway not found in input data. Illustrative kerosene costs computed using defauylt values."
+                "Warning: fossil_kerosene pathway not found in input data. Illustrative kerosene costs computed using default values."
             )
             kerosene_emission_factor = 88.7
             kerosene_market_price = 0.013921201
         else:
-            kerosene_emission_factor = input_data["fossil_kerosene_co2_emission_factor"].loc[
+            kerosene_emission_factor = input_data["fossil_kerosene_mean_co2_emission_factor"].loc[
                 self.prospection_start_year - 1
             ]
-            kerosene_market_price = input_data["fossil_kerosene_mfsp"]
+            kerosene_market_price = input_data["fossil_kerosene_mean_mfsp"]
 
         co2_emissions_including_load_factor = input_data["co2_emissions_including_load_factor"]
         carbon_tax = input_data["carbon_tax"]

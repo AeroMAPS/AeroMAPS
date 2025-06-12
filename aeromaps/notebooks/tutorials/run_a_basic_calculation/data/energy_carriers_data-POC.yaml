@@ -24,7 +24,7 @@ hefa_fog:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [20.7]
         method: linear
@@ -36,7 +36,7 @@ hefa_fog:
         particles_number: 8e13
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.02317] # Converted 0.815488 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
@@ -69,7 +69,7 @@ hefa_others:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [61.0]
         method: linear
@@ -81,7 +81,7 @@ hefa_others:
         particles_number: 8e13
       # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType 
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
         years: []
         values: [0.0299] # Converted 1.052703 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
@@ -113,7 +113,7 @@ ft_msw:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [27.6]
         method: linear
@@ -125,7 +125,7 @@ ft_msw:
         particles_number: 8e13
       # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType 
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
         years: []
         values: [0.0322] # Converted 1.142423 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
@@ -158,7 +158,7 @@ ft_others:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [7.7]
         method: linear
@@ -170,7 +170,7 @@ ft_others:
         particles_number: 8e13
       # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType 
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
         years: []
         values: [0.0392] # Converted 1.378082 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
@@ -202,7 +202,7 @@ atj:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [52.2]
         method: linear
@@ -214,7 +214,7 @@ atj:
         particles_number: 8e13
       # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType 
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
         years: []
         values: [0.0394] # Converted 1.38668 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
@@ -247,7 +247,7 @@ electrofuel:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
@@ -259,11 +259,11 @@ electrofuel:
         particles_number: 8e13
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear
-      unit_subsidy_without_resource: !AeroMapsCustomDataType
+      mean_unit_subsidy_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0496] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
         method: linear 
@@ -285,7 +285,7 @@ fossil_kerosene:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [ 2000, 2050 ]
         values: [ 88.7, 88.7 ]
         method: linear
@@ -297,7 +297,7 @@ fossil_kerosene:
         particles_number: 2e14
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2000, 2001, 2002, 2003, 2004, 2005,
                 2006, 2007, 2008, 2009, 2010, 2011,
                 2012, 2013, 2014, 2015, 2016, 2017,
@@ -333,7 +333,7 @@ hydrogen_electrolysis_grid_fr:
       lhv: 120
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
@@ -369,7 +369,7 @@ hydrogen_electrolysis_grid_us:
       lhv: 120
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
@@ -404,7 +404,7 @@ hydrogen_electrolysis_wind:
       lhv: 120
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
@@ -416,7 +416,7 @@ hydrogen_electrolysis_wind:
         particles_number: 0.0
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2020, 2030, 2040, 2050]
         values: [0.0421, 0.0416, 0.0412, 0.0410] # ARBITRARY FOR POC
         method: linear
@@ -445,7 +445,7 @@ hydrogen_gas:
       lhv: 120
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [100]
         method: linear
@@ -457,7 +457,7 @@ hydrogen_gas:
         particles_number: 0.0
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2020, 2030, 2040, 2050]
         values: [0.0055, 0.0077, 0.0074, 0.0070] # caution no liquefaction there # [0.664742,0.927900,0.884040,0.840180]/120
         method: linear
@@ -479,7 +479,7 @@ hydrogen_coal:
       lhv: 44
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [191.6]
         method: linear
@@ -491,7 +491,7 @@ hydrogen_coal:
         particles_number: 0.0
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2020, 2030, 2040, 2050]
         values: [0.0128, 0.0127, 0.0125, 0.0124] # caution no liquefaction there # [1.535725,1.519058,1.502391,1.491280]/120
         method: linear
@@ -519,7 +519,7 @@ battery_electric:
       lhv: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!! 
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear

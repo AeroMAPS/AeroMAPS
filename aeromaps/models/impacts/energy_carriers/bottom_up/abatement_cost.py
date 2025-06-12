@@ -26,8 +26,8 @@ class EnergyAbatementCost(AeroMAPSModel):
             f"{self.pathway_name}_lifespan_unitary_discounted_costs": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_unitary_emissions": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_discounted_unitary_emissions": pd.Series([0.0]),
-            f"{self.pathway_name}_mfsp": pd.Series([0.0]),
-            f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+            f"{self.pathway_name}_mean_mfsp": pd.Series([0.0]),
+            f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
             f"{self.pathway_name}_eis_plant_lifespan": 0.0,
             "cac_reference_unitary_discounted_costs": pd.Series([0.0]),
             "cac_reference_unitary_discounted_emissions": pd.Series([0.0]),
@@ -59,9 +59,9 @@ class EnergyAbatementCost(AeroMAPSModel):
         unitary_emissions = input_data.get(
             f"{self.pathway_name}_lifespan_unitary_emissions", pd.Series([0.0])
         )
-        mfsp = input_data.get(f"{self.pathway_name}_mfsp", pd.Series([0.0]))
+        mfsp = input_data.get(f"{self.pathway_name}_mean_mfsp", pd.Series([0.0]))
         co2_emission_factor = input_data.get(
-            f"{self.pathway_name}_co2_emission_factor", pd.Series([0.0])
+            f"{self.pathway_name}_mean_co2_emission_factor", pd.Series([0.0])
         )
         fossil_mfsp = input_data.get("cac_reference_mfsp", pd.Series([0.0]))
         fossil_ef = input_data.get("cac_reference_co2_emission_factor", pd.Series([0.0]))
@@ -132,8 +132,8 @@ class ReferenceAbatementCost(AeroMAPSModel):
                     f"{self.pathway_name}_lifespan_unitary_discounted_costs": pd.Series([0.0]),
                     f"{self.pathway_name}_lifespan_unitary_emissions": pd.Series([0.0]),
                     f"{self.pathway_name}_lifespan_discounted_unitary_emissions": pd.Series([0.0]),
-                    f"{self.pathway_name}_mfsp": pd.Series([0.0]),
-                    f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+                    f"{self.pathway_name}_mean_mfsp": pd.Series([0.0]),
+                    f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
                 }
             )
             self.bottom_up_cac = True
@@ -144,8 +144,8 @@ class ReferenceAbatementCost(AeroMAPSModel):
             )
             self.input_names.update(
                 {
-                    f"{self.pathway_name}_mfsp": pd.Series([0.0]),
-                    f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+                    f"{self.pathway_name}_mean_mfsp": pd.Series([0.0]),
+                    f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
                 }
             )
             self.bottom_up_cac = False
@@ -165,8 +165,8 @@ class ReferenceAbatementCost(AeroMAPSModel):
         Compute the specific abatement cost and generic specific abatement cost for each vintage.
         """
 
-        ref_mfsp = input_data.get(f"{self.pathway_name}_mfsp", pd.Series([0.0]))
-        ref_ef = input_data.get(f"{self.pathway_name}_co2_emission_factor", pd.Series([0.0]))
+        ref_mfsp = input_data.get(f"{self.pathway_name}_mean_mfsp", pd.Series([0.0]))
+        ref_ef = input_data.get(f"{self.pathway_name}_mean_co2_emission_factor", pd.Series([0.0]))
 
         if self.bottom_up_cac:
             reference_unitary_discounted_costs = input_data.get(

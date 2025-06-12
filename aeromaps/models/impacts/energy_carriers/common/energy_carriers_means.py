@@ -78,16 +78,16 @@ class EnergyCarriersMeans(AeroMAPSModel):
                 self.input_names.update(
                     {
                         f"{pathway.name}_share_{aircraft_type}": pd.Series([0.0]),
-                        f"{pathway.name}_co2_emission_factor": pd.Series([0.0]),
+                        f"{pathway.name}_mean_co2_emission_factor": pd.Series([0.0]),
                         f"{pathway.name}_net_mfsp": pd.Series([0.0]),
                         f"{pathway.name}_net_mfsp_without_carbon_tax": pd.Series([0.0]),
-                        f"{pathway.name}_mfsp": pd.Series([0.0]),
+                        f"{pathway.name}_mean_mfsp": pd.Series([0.0]),
                         f"{pathway.name}_share_{aircraft_type}_{pathway.energy_origin}": pd.Series(
                             [0.0]
                         ),
-                        f"{pathway.name}_unit_subsidy": pd.Series([0.0]),
-                        f"{pathway.name}_unit_tax": pd.Series([0.0]),
-                        f"{pathway.name}_unit_carbon_tax": pd.Series([0.0]),
+                        f"{pathway.name}_mean_unit_subsidy": pd.Series([0.0]),
+                        f"{pathway.name}_mean_unit_tax": pd.Series([0.0]),
+                        f"{pathway.name}_mean_unit_carbon_tax": pd.Series([0.0]),
                     }
                 )
 
@@ -150,14 +150,16 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
                         # Emission factors
 
-                        pathway_emission_factor = input_data[f"{pathway.name}_co2_emission_factor"]
+                        pathway_emission_factor = input_data[
+                            f"{pathway.name}_mean_co2_emission_factor"
+                        ]
                         mean_emission_factor += (pathway_emission_factor * share).fillna(0) / 100
                         origin_mean_emission_factor += (
                             pathway_emission_factor * origin_share
                         ).fillna(0) / 100
 
                         # MFSP and costs
-                        pathway_mfsp = input_data[f"{pathway.name}_mfsp"]
+                        pathway_mfsp = input_data[f"{pathway.name}_mean_mfsp"]
                         mean_mfsp += (pathway_mfsp * share).fillna(0) / 100
                         origin_mean_mfsp += (pathway_mfsp * origin_share).fillna(0) / 100
 
@@ -183,17 +185,17 @@ class EnergyCarriersMeans(AeroMAPSModel):
                             * origin_share
                         ).fillna(0) / 100
 
-                        pathway_unit_subsidy = input_data[f"{pathway.name}_unit_subsidy"]
+                        pathway_unit_subsidy = input_data[f"{pathway.name}_mean_unit_subsidy"]
                         mean_unit_subsidy += (pathway_unit_subsidy * share).fillna(0) / 100
                         origin_mean_unit_subsidy += (pathway_unit_subsidy * origin_share).fillna(
                             0
                         ) / 100
 
-                        pathway_unit_tax = input_data[f"{pathway.name}_unit_tax"]
+                        pathway_unit_tax = input_data[f"{pathway.name}_mean_unit_tax"]
                         mean_unit_tax += (pathway_unit_tax * share).fillna(0) / 100
                         origin_mean_unit_tax += (pathway_unit_tax * origin_share).fillna(0) / 100
 
-                        pathway_unit_carbon_tax = input_data[f"{pathway.name}_unit_carbon_tax"]
+                        pathway_unit_carbon_tax = input_data[f"{pathway.name}_mean_unit_carbon_tax"]
                         mean_unit_carbon_tax += (pathway_unit_carbon_tax * share).fillna(0) / 100
                         origin_mean_unit_carbon_tax += (
                             pathway_unit_carbon_tax * origin_share

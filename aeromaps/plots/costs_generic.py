@@ -145,7 +145,7 @@ class ScenarioEnergyExpensesPlot:
             data_dict[p.name] = {}
             if "mfsp" in components:
                 data_dict[p.name]["mfsp"] = (
-                    self.df.loc[self.prospective_years, f"{p.name}_mfsp"].fillna(0).values
+                    self.df.loc[self.prospective_years, f"{p.name}_mean_mfsp"].fillna(0).values
                     * self.df.loc[self.prospective_years, f"{p.name}_energy_consumption"]
                     .fillna(0)
                     .values
@@ -153,7 +153,7 @@ class ScenarioEnergyExpensesPlot:
                 )
             if "tax" in components:
                 data_dict[p.name]["tax"] = (
-                    self.df.loc[self.prospective_years, f"{p.name}_unit_tax"].fillna(0).values
+                    self.df.loc[self.prospective_years, f"{p.name}_mean_unit_tax"].fillna(0).values
                     * self.df.loc[self.prospective_years, f"{p.name}_energy_consumption"]
                     .fillna(0)
                     .values
@@ -161,7 +161,7 @@ class ScenarioEnergyExpensesPlot:
                 )
             if "carbon_tax" in components:
                 data_dict[p.name]["carbon_tax"] = (
-                    self.df.loc[self.prospective_years, f"{p.name}_unit_carbon_tax"]
+                    self.df.loc[self.prospective_years, f"{p.name}_mean_unit_carbon_tax"]
                     .fillna(0)
                     .values
                     * self.df.loc[self.prospective_years, f"{p.name}_energy_consumption"]
@@ -171,7 +171,9 @@ class ScenarioEnergyExpensesPlot:
                 )
             if subsidies:
                 data_dict[p.name]["subsidy"] = (
-                    self.df.loc[self.prospective_years, f"{p.name}_unit_subsidy"].fillna(0).values
+                    self.df.loc[self.prospective_years, f"{p.name}_mean_unit_subsidy"]
+                    .fillna(0)
+                    .values
                     * self.df.loc[self.prospective_years, f"{p.name}_energy_consumption"]
                     .fillna(0)
                     .values
@@ -502,7 +504,7 @@ class DetailledMFSPBreakdown:
                 process_resource_pairs.add((process_name, resource))
             for process_name in p.resources_used_processes.keys():
                 process_resource_pairs.add((process_name, "without_resources_unit_cost"))
-        process_resource_pairs.add(("main", "mfsp_without_resource"))
+        process_resource_pairs.add(("main", "mean_mfsp_without_resource"))
         pairs_sorted = sorted(process_resource_pairs)
         cmap = plt.get_cmap("tab20b")
         color_map = {pair: cmap(i % 20) for i, pair in enumerate(pairs_sorted)}
@@ -593,8 +595,8 @@ class DetailledMFSPBreakdown:
         for p in display_pathways:
             is_used = p in used_pathways
             alpha = 1.0 if is_used else 0.3
-            color = self.resource_color_map.get(("main", "mfsp_without_resource"), "grey")
-            mfsp_col = p.name + "_mfsp_without_resource"
+            color = self.resource_color_map.get(("main", "mean_mfsp_without_resource"), "grey")
+            mfsp_col = p.name + "_mean_mfsp_without_resource"
             mfsp_val = self.df.loc[year, mfsp_col] if mfsp_col in self.df.columns else 0
             if self._is_nonzero_or_notnan(mfsp_val):
                 self.ax.bar(
@@ -611,7 +613,7 @@ class DetailledMFSPBreakdown:
                 base = 0
 
             # Taxes and subsidies on the base
-            tax_col = p.name + "_unit_tax_without_resource"
+            tax_col = p.name + "_mean_unit_tax_without_resource"
             tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
             if self._is_nonzero_or_notnan(tax_val):
                 self.ax.bar(
@@ -626,7 +628,7 @@ class DetailledMFSPBreakdown:
                 )
                 base += tax_val
 
-            subsidy_col = p.name + "_unit_subsidy_without_resource"
+            subsidy_col = p.name + "_mean_unit_subsidy_without_resource"
             subsidy_val = self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
             if self._is_nonzero_or_notnan(subsidy_val):
                 self.ax.bar(
@@ -655,7 +657,7 @@ class DetailledMFSPBreakdown:
             # Pathway-specific resources
             for resource in p.resources_used:
                 color = self.resource_color_map.get(("main", resource), None)
-                cost_col = p.name + "_excluding_processes_" + resource + "_unit_cost"
+                cost_col = p.name + "_excluding_processes_" + resource + "_mean_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
@@ -670,7 +672,7 @@ class DetailledMFSPBreakdown:
                     )
                 base += cost_val
                 # Taxes and subsidies on the resource
-                tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
+                tax_col = p.name + "_excluding_processes_" + resource + "_mean_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
@@ -684,7 +686,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                     base += tax_val
-                subsidy_col = p.name + "_excluding_processes_" + resource + "_unit_subsidy"
+                subsidy_col = p.name + "_excluding_processes_" + resource + "_mean_unit_subsidy"
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
@@ -715,7 +717,7 @@ class DetailledMFSPBreakdown:
             process_resources = p.resources_used_processes
             for process_name, resource in process_resources.items():
                 color = self.resource_color_map.get((process_name, resource), None)
-                cost_col = p.name + "_" + process_name + "_" + resource + "_unit_cost"
+                cost_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
@@ -730,7 +732,7 @@ class DetailledMFSPBreakdown:
                     )
                 base += cost_val
                 # Taxes and subsidies on this process/resource
-                tax_col = p.name + "_" + process_name + "_" + resource + "_unit_tax"
+                tax_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
@@ -744,7 +746,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                     base += tax_val
-                subsidy_col = p.name + "_" + process_name + "_" + resource + "_unit_subsidy"
+                subsidy_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_subsidy"
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
@@ -776,7 +778,7 @@ class DetailledMFSPBreakdown:
                 color = self.resource_color_map.get(
                     (process_name, "without_resources_unit_cost"), None
                 )
-                cost_col = p.name + "_" + process_name + "_without_resources_unit_cost"
+                cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
                 cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(cost_val):
                     self.ax.bar(
@@ -791,7 +793,7 @@ class DetailledMFSPBreakdown:
                     )
                 base += cost_val
                 # Taxes and subsidies on this process without resource
-                tax_col = p.name + "_" + process_name + "_without_resources_unit_tax"
+                tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
@@ -805,7 +807,7 @@ class DetailledMFSPBreakdown:
                         alpha=alpha,
                     )
                     base += tax_val
-                subsidy_col = p.name + "_" + process_name + "_without_resources_unit_subsidy"
+                subsidy_col = p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
@@ -833,7 +835,7 @@ class DetailledMFSPBreakdown:
                     )
 
             # Add carbon tax (per pathway only)
-            carbon_tax_col = f"{p.name}_unit_carbon_tax"
+            carbon_tax_col = f"{p.name}_mean_unit_carbon_tax"
             carbon_tax_val = (
                 self.df.loc[year, carbon_tax_col] if carbon_tax_col in self.df.columns else 0
             )
@@ -1006,8 +1008,8 @@ class DetailledMFSPBreakdown:
                     return np.zeros(len(years_subset))
 
             # Base cost (excluding resource)
-            color = self.resource_color_map.get(("main", "mfsp_without_resource"), "grey")
-            mfsp_col = p.name + "_mfsp_without_resource"
+            color = self.resource_color_map.get(("main", "mean_mfsp_without_resource"), "grey")
+            mfsp_col = p.name + "_mean_mfsp_without_resource"
             mfsp_vals = get_vals(mfsp_col)
             if np.any(mfsp_vals != 0):
                 self.ax.fill_between(
@@ -1027,7 +1029,7 @@ class DetailledMFSPBreakdown:
                 )
 
             # Taxes on base
-            tax_col = p.name + "_unit_tax_without_resource"
+            tax_col = p.name + "_mean_unit_tax_without_resource"
             tax_vals = get_vals(tax_col)
             if np.any(tax_vals != 0):
                 self.ax.fill_between(
@@ -1044,7 +1046,7 @@ class DetailledMFSPBreakdown:
                 base += tax_vals
 
             # Subsidy on base
-            subsidy_col = p.name + "_unit_subsidy_without_resource"
+            subsidy_col = p.name + "_mean_unit_subsidy_without_resource"
             subsidy_vals = get_vals(subsidy_col)
             if np.any(subsidy_vals != 0):
                 neg_top = neg_base - subsidy_vals
@@ -1069,7 +1071,7 @@ class DetailledMFSPBreakdown:
             # Pathway-specific resources
             for resource in p.resources_used:
                 color = self.resource_color_map.get(("main", resource), None)
-                cost_col = p.name + "_excluding_processes_" + resource + "_unit_cost"
+                cost_col = p.name + "_excluding_processes_" + resource + "_mean_unit_cost"
                 cost_vals = get_vals(cost_col)
                 if np.any(cost_vals != 0):
                     self.ax.fill_between(
@@ -1084,7 +1086,7 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     base += cost_vals
-                tax_col = p.name + "_excluding_processes_" + resource + "_unit_tax"
+                tax_col = p.name + "_excluding_processes_" + resource + "_mean_unit_tax"
                 tax_vals = get_vals(tax_col)
                 if np.any(tax_vals != 0):
                     self.ax.fill_between(
@@ -1100,7 +1102,7 @@ class DetailledMFSPBreakdown:
                     )
                     base += tax_vals
 
-                subsidy_col = p.name + "_excluding_processes_" + resource + "_unit_subsidy"
+                subsidy_col = p.name + "_excluding_processes_" + resource + "_mean_unit_subsidy"
                 subsidy_vals = get_vals(subsidy_col)
                 if np.any(subsidy_vals != 0):
                     neg_top = neg_base - subsidy_vals
@@ -1125,7 +1127,7 @@ class DetailledMFSPBreakdown:
             process_resources = p.resources_used_processes
             for process_name, resource in process_resources.items():
                 color = self.resource_color_map.get((process_name, resource), None)
-                cost_col = p.name + "_" + process_name + "_" + resource + "_unit_cost"
+                cost_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_cost"
                 cost_vals = get_vals(cost_col)
                 if np.any(cost_vals != 0):
                     self.ax.fill_between(
@@ -1141,7 +1143,7 @@ class DetailledMFSPBreakdown:
                     )
                     base += cost_vals
 
-                tax_col = p.name + "_" + process_name + "_" + resource + "_unit_tax"
+                tax_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_tax"
                 tax_vals = get_vals(tax_col)
                 if np.any(tax_vals != 0):
                     self.ax.fill_between(
@@ -1156,7 +1158,7 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     base += tax_vals
-                subsidy_col = p.name + "_" + process_name + "_" + resource + "_unit_subsidy"
+                subsidy_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_subsidy"
                 subsidy_vals = get_vals(subsidy_col)
                 if np.any(subsidy_vals != 0):
                     neg_top = neg_base - subsidy_vals
@@ -1185,7 +1187,7 @@ class DetailledMFSPBreakdown:
                 color = self.resource_color_map.get(
                     (process_name, "without_resources_unit_cost"), None
                 )
-                cost_col = p.name + "_" + process_name + "_without_resources_unit_cost"
+                cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
                 cost_vals = get_vals(cost_col)
                 if np.any(cost_vals != 0):
                     self.ax.fill_between(

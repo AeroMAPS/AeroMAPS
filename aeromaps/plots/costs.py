@@ -2804,17 +2804,17 @@ class DetailledMFSPBreakdownPerPathway:
 
         if pathway in ["hefa_fog", "hefa_others", "ft_msw", "ft_others", "atj"]:
             capex_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mean_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_capex_share_" + pathway]
                 / 100
             )
             opex_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mean_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_var_opex_share_" + pathway]
                 / 100
             )
             feedstock_val = (
-                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mfsp"]
+                self.df.loc[self.prospective_years, "biofuel_" + pathway + "_mean_mfsp"]
                 * self.df.loc[self.prospective_years, "biofuel_mean_feedstock_share_" + pathway]
                 / 100
             )
@@ -3469,23 +3469,23 @@ class DetailledMFSPBreakdownPerYear:
             ("Bio - ATJ", "atj"),
         ]:
             if not (
-                pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mfsp"])
-                or self.df.loc[year, "biofuel_" + pathway + "_mfsp"] < 1e-9
+                pd.isna(self.df.loc[year, "biofuel_" + pathway + "_mean_mfsp"])
+                or self.df.loc[year, "biofuel_" + pathway + "_mean_mfsp"] < 1e-9
             ):
                 capex_val = (
-                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    self.df.loc[:, "biofuel_" + pathway + "_mean_mfsp"].fillna(0)[year]
                     * self.df.loc[:, "biofuel_mean_capex_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv
                 )
                 opex_val = (
-                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    self.df.loc[:, "biofuel_" + pathway + "_mean_mfsp"].fillna(0)[year]
                     * self.df.loc[:, "biofuel_mean_var_opex_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv
                 )
                 feedstock_val = (
-                    self.df.loc[:, "biofuel_" + pathway + "_mfsp"].fillna(0)[year]
+                    self.df.loc[:, "biofuel_" + pathway + "_mean_mfsp"].fillna(0)[year]
                     * self.df.loc[:, "biofuel_mean_feedstock_share_" + pathway].fillna(0)[year]
                     / 100
                     / bio_vlhv

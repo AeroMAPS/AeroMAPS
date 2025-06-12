@@ -41,7 +41,7 @@ class TopDownCost(AeroMAPSModel):
         self.input_names.update(
             {
                 "carbon_tax": pd.Series([0.0]),
-                f"{self.pathway_name}_co2_emission_factor": pd.Series([0.0]),
+                f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
             }
         )
 
@@ -54,15 +54,15 @@ class TopDownCost(AeroMAPSModel):
 
         for key in self.resource_keys:
             # Outputs.
-            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_unit_cost"] = (
+            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_cost"] = (
                 pd.Series([0.0])
             )
-            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_unit_tax"] = (
+            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_tax"] = (
                 pd.Series([0.0])
             )
-            self.output_names[f"{self.pathway_name}_excluding_processes_{key}_unit_subsidy"] = (
-                pd.Series([0.0])
-            )
+            self.output_names[
+                f"{self.pathway_name}_excluding_processes_{key}_mean_unit_subsidy"
+            ] = pd.Series([0.0])
 
         self.process_keys = (
             configuration_data.get("inputs")
@@ -82,13 +82,13 @@ class TopDownCost(AeroMAPSModel):
                     self.resource_keys.extend(resources)
                     for resource in resources:
                         self.output_names[
-                            f"{self.pathway_name}_{process_key}_{resource}_unit_cost"
+                            f"{self.pathway_name}_{process_key}_{resource}_mean_unit_cost"
                         ] = pd.Series([0.0])
                         self.output_names[
-                            f"{self.pathway_name}_{process_key}_{resource}_unit_tax"
+                            f"{self.pathway_name}_{process_key}_{resource}_mean_unit_tax"
                         ] = pd.Series([0.0])
                         self.output_names[
-                            f"{self.pathway_name}_{process_key}_{resource}_unit_subsidy"
+                            f"{self.pathway_name}_{process_key}_{resource}_mean_unit_subsidy"
                         ] = pd.Series([0.0])
                 else:
                     # TODO initialize with zeros instead of actual val?
@@ -97,14 +97,14 @@ class TopDownCost(AeroMAPSModel):
             for key, val in processes_data[process_key].get("inputs").get("economics", {}).items():
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
-            self.output_names[f"{self.pathway_name}_{process_key}_without_resources_unit_cost"] = (
-                pd.Series([0.0])
-            )
-            self.output_names[f"{self.pathway_name}_{process_key}_without_resources_unit_tax"] = (
-                pd.Series([0.0])
-            )
             self.output_names[
-                f"{self.pathway_name}_{process_key}_without_resources_unit_subsidy"
+                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"
+            ] = pd.Series([0.0])
+            self.output_names[
+                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_tax"
+            ] = pd.Series([0.0])
+            self.output_names[
+                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_subsidy"
             ] = pd.Series([0.0])
 
         # Getting unique resources
@@ -126,10 +126,10 @@ class TopDownCost(AeroMAPSModel):
             {
                 f"{self.pathway_name}_net_mfsp_without_carbon_tax": pd.Series([0.0]),
                 f"{self.pathway_name}_net_mfsp": pd.Series([0.0]),
-                f"{self.pathway_name}_mfsp": pd.Series([0.0]),
-                f"{self.pathway_name}_unit_tax": pd.Series([0.0]),
-                f"{self.pathway_name}_unit_carbon_tax": pd.Series([0.0]),
-                f"{self.pathway_name}_unit_subsidy": pd.Series([0.0]),
+                f"{self.pathway_name}_mean_mfsp": pd.Series([0.0]),
+                f"{self.pathway_name}_mean_unit_tax": pd.Series([0.0]),
+                f"{self.pathway_name}_mean_unit_carbon_tax": pd.Series([0.0]),
+                f"{self.pathway_name}_mean_unit_subsidy": pd.Series([0.0]),
             }
         )
 
@@ -139,22 +139,22 @@ class TopDownCost(AeroMAPSModel):
         output_data = {}
 
         optional_null_series = pd.Series(
-            0.0, index=range(self.prospection_start_year, self.end_year + 1)
+            0.0, index=range(self.historic_start_year, self.end_year + 1)
         )
 
         # Usage of get/ brackets -> get usefull to set null values to optional inputs
         pathway_mfsp_without_resource = input_data.get(
-            f"{self.pathway_name}_mfsp_without_resource", optional_null_series.copy()
+            f"{self.pathway_name}_mean_mfsp_without_resource", optional_null_series.copy()
         )
         pathway_mfsp = pathway_mfsp_without_resource.copy()
 
         pathway_unit_subsidy_without_resource = input_data.get(
-            f"{self.pathway_name}_unit_subsidy_without_resource", optional_null_series.copy()
+            f"{self.pathway_name}_mean_unit_subsidy_without_resource", optional_null_series.copy()
         )
         pathway_unit_subsidy = pathway_unit_subsidy_without_resource.copy()
 
         pathway_unit_tax_without_resource = input_data.get(
-            f"{self.pathway_name}_unit_tax_without_resource", optional_null_series.copy()
+            f"{self.pathway_name}_mean_unit_tax_without_resource", optional_null_series.copy()
         )
         pathway_unit_tax = pathway_unit_tax_without_resource.copy()
 
@@ -171,7 +171,7 @@ class TopDownCost(AeroMAPSModel):
                 # usage of add to avoid getting a nan if one of the series is not defined intentionally
                 pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
 
-                output_data[f"{self.pathway_name}_excluding_processes_{key}_unit_cost"] = (
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_cost"] = (
                     mfsp_ressource
                 )
 
@@ -180,7 +180,7 @@ class TopDownCost(AeroMAPSModel):
                     * specific_consumption
                 )
                 pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
-                output_data[f"{self.pathway_name}_excluding_processes_{key}_unit_subsidy"] = (
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_subsidy"] = (
                     subsidy_ressource
                 )
 
@@ -188,7 +188,7 @@ class TopDownCost(AeroMAPSModel):
                     input_data.get(f"{key}_tax", optional_null_series.copy()) * specific_consumption
                 )
                 pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
-                output_data[f"{self.pathway_name}_excluding_processes_{key}_unit_tax"] = (
+                output_data[f"{self.pathway_name}_excluding_processes_{key}_mean_unit_tax"] = (
                     tax_ressource
                 )
 
@@ -205,7 +205,7 @@ class TopDownCost(AeroMAPSModel):
                     # usage of add to avoid getting a nan if one of the series is not defined intentionally
                     pathway_mfsp = pathway_mfsp.add(mfsp_ressource, fill_value=0)
 
-                    output_data[f"{self.pathway_name}_{process_key}_{key}_unit_cost"] = (
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_cost"] = (
                         mfsp_ressource
                     )
 
@@ -214,7 +214,7 @@ class TopDownCost(AeroMAPSModel):
                         * specific_consumption
                     )
                     pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_ressource, fill_value=0)
-                    output_data[f"{self.pathway_name}_{process_key}_{key}_unit_subsidy"] = (
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_subsidy"] = (
                         subsidy_ressource
                     )
 
@@ -223,31 +223,33 @@ class TopDownCost(AeroMAPSModel):
                         * specific_consumption
                     )
                     pathway_unit_tax = pathway_unit_tax.add(tax_ressource, fill_value=0)
-                    output_data[f"{self.pathway_name}_{process_key}_{key}_unit_tax"] = tax_ressource
+                    output_data[f"{self.pathway_name}_{process_key}_{key}_mean_unit_tax"] = (
+                        tax_ressource
+                    )
 
         # 3 ) --> pathway needs process cost without resources
         for process_key in self.process_keys:
             mfsp_process = input_data.get(
-                f"{process_key}_mfsp_without_resource", optional_null_series.copy()
+                f"{process_key}_mean_mfsp_without_resource", optional_null_series.copy()
             )
             pathway_mfsp = pathway_mfsp.add(mfsp_process, fill_value=0)
-            output_data[f"{self.pathway_name}_{process_key}_without_resources_unit_cost"] = (
+            output_data[f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"] = (
                 mfsp_process
             )
 
             subsidy_process = input_data.get(
-                f"{process_key}_without_resources_unit_subsidy", optional_null_series.copy()
+                f"{process_key}_without_resources_mean_unit_subsidy", optional_null_series.copy()
             )
             pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_process, fill_value=0)
-            output_data[f"{self.pathway_name}_{process_key}_without_resources_unit_subsidy"] = (
-                subsidy_process
-            )
+            output_data[
+                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_subsidy"
+            ] = subsidy_process
 
             tax_process = input_data.get(
-                f"{process_key}_without_resources_unit_tax", optional_null_series.copy()
+                f"{process_key}_without_resources_mean_unit_tax", optional_null_series.copy()
             )
             pathway_unit_tax = pathway_unit_tax.add(tax_process, fill_value=0)
-            output_data[f"{self.pathway_name}_{process_key}_without_resources_unit_tax"] = (
+            output_data[f"{self.pathway_name}_{process_key}_without_resources_mean_unit_tax"] = (
                 tax_process
             )
 
@@ -265,7 +267,7 @@ class TopDownCost(AeroMAPSModel):
             carbon_tax = input_data["carbon_tax"] / 1000  # converted to €/kgCO2
 
         emission_factor = (
-            input_data[f"{self.pathway_name}_co2_emission_factor"] / 1000
+            input_data[f"{self.pathway_name}_mean_co2_emission_factor"] / 1000
         )  # converted to kgCO2/MJ
         pathway_unit_carbon_tax = carbon_tax * emission_factor
 
@@ -277,10 +279,10 @@ class TopDownCost(AeroMAPSModel):
             {
                 f"{self.pathway_name}_net_mfsp_without_carbon_tax": pathway_net_mfsp_without_carbon_tax,
                 f"{self.pathway_name}_net_mfsp": pathway_net_mfsp,
-                f"{self.pathway_name}_mfsp": pathway_mfsp,
-                f"{self.pathway_name}_unit_tax": pathway_unit_tax,
-                f"{self.pathway_name}_unit_carbon_tax": pathway_unit_carbon_tax,
-                f"{self.pathway_name}_unit_subsidy": pathway_unit_subsidy,
+                f"{self.pathway_name}_mean_mfsp": pathway_mfsp,
+                f"{self.pathway_name}_mean_unit_tax": pathway_unit_tax,
+                f"{self.pathway_name}_mean_unit_carbon_tax": pathway_unit_carbon_tax,
+                f"{self.pathway_name}_mean_unit_subsidy": pathway_unit_subsidy,
             }
         )
 

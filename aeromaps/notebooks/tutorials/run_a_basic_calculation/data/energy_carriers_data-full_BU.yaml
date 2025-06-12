@@ -331,7 +331,7 @@ fossil_kerosene:
       plant_lifespan: 25
     # Environmental:
     environmental:
-      co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [ 2000, 2050 ]
         values: [ 88.7, 88.7 ]
         method: linear
@@ -343,7 +343,7 @@ fossil_kerosene:
         particles_number: 2e14
     # Economics:
     economics:
-      mfsp_without_resource: !AeroMapsCustomDataType
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
         years: [2000, 2001, 2002, 2003, 2004, 2005,
                 2006, 2007, 2008, 2009, 2010, 2011,
                 2012, 2013, 2014, 2015, 2016, 2017,
