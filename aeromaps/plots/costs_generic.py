@@ -549,8 +549,18 @@ class DetailledMFSPBreakdown:
             value=True,
         )
 
-        def _update(mode, year, pathway, show_only_used):
+        show_vintage_mean_widget = widgets.ToggleButtons(
+            options=[
+                ("EIS values", "vintage"),
+                ("Mean values", "mean"),
+            ],
+            description="Bottom-up pathways:",
+            value="mean",
+        )
+
+        def _update(mode, year, pathway, show_only_used, show_vintage_mean):
             self.show_only_used = show_only_used
+            self.show_vintage_mean = show_vintage_mean
             if mode == "per_year":
                 year_widget.layout.display = ""
                 pathway_widget.layout.display = "none"
@@ -566,6 +576,7 @@ class DetailledMFSPBreakdown:
             year=year_widget,
             pathway=pathway_widget,
             show_only_used=show_used_widget,
+            show_vintage_mean=show_vintage_mean_widget,
         )
 
     def update_per_year(self, year):
@@ -593,86 +604,547 @@ class DetailledMFSPBreakdown:
             display_pathways = used_pathways + unused_pathways
 
         for p in display_pathways:
-            is_used = p in used_pathways
-            alpha = 1.0 if is_used else 0.3
-            color = self.resource_color_map.get(("main", "mean_mfsp_without_resource"), "grey")
-            mfsp_col = p.name + "_mean_mfsp_without_resource"
-            mfsp_val = self.df.loc[year, mfsp_col] if mfsp_col in self.df.columns else 0
-            if self._is_nonzero_or_notnan(mfsp_val):
-                self.ax.bar(
-                    p.name,
-                    mfsp_val,
-                    linewidth=0.5,
-                    edgecolor="black",
-                    color=color,
-                    hatch=self.hatch_map["cost"],
-                    alpha=alpha,
+            if p.cost_model == "top-down":
+                is_used = p in used_pathways
+                alpha = 1.0 if is_used else 0.3
+                color = self.resource_color_map.get(("main", "mean_mfsp_without_resource"), "grey")
+                mfsp_col = p.name + "_mean_mfsp_without_resource"
+                mfsp_val = self.df.loc[year, mfsp_col] if mfsp_col in self.df.columns else 0
+                if self._is_nonzero_or_notnan(mfsp_val):
+                    self.ax.bar(
+                        p.name,
+                        mfsp_val,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color,
+                        hatch=self.hatch_map["cost"],
+                        alpha=alpha,
+                    )
+                    base = self.df.loc[year, mfsp_col]
+                else:
+                    base = 0
+
+                # Taxes and subsidies on the base
+                tax_col = p.name + "_mean_unit_tax_without_resource"
+                tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
+                if self._is_nonzero_or_notnan(tax_val):
+                    self.ax.bar(
+                        p.name,
+                        tax_val,
+                        bottom=base,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color,
+                        hatch=self.hatch_map["tax"],
+                        alpha=alpha,
+                    )
+                    base += tax_val
+
+                subsidy_col = p.name + "_mean_unit_subsidy_without_resource"
+                subsidy_val = (
+                    self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
-                base = self.df.loc[year, mfsp_col]
-            else:
+                if self._is_nonzero_or_notnan(subsidy_val):
+                    self.ax.bar(
+                        p.name,
+                        -subsidy_val,
+                        bottom=0,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color,
+                        hatch=self.hatch_map["subsidy"],
+                        alpha=alpha,
+                    )
+
+                neg_base = -subsidy_val
+                if self._is_nonzero_or_notnan(mfsp_val, tax_val, subsidy_val):
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label="Base, excluding resource",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Pathway-specific resources
+                for resource in p.resources_used:
+                    color = self.resource_color_map.get(("main", resource), None)
+                    cost_col = p.name + "_excluding_processes_" + resource + "_mean_unit_cost"
+                    cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(cost_val):
+                        self.ax.bar(
+                            p.name,
+                            cost_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                        )
+                    base += cost_val
+                    # Taxes and subsidies on the resource
+                    tax_col = p.name + "_excluding_processes_" + resource + "_mean_unit_tax"
+                    tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(tax_val):
+                        self.ax.bar(
+                            p.name,
+                            tax_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["tax"],
+                            alpha=alpha,
+                        )
+                        base += tax_val
+                    subsidy_col = p.name + "_excluding_processes_" + resource + "_mean_unit_subsidy"
+                    subsidy_val = (
+                        self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
+                    )
+                    if self._is_nonzero_or_notnan(subsidy_val):
+                        self.ax.bar(
+                            p.name,
+                            -subsidy_val,
+                            bottom=neg_base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["subsidy"],
+                            alpha=alpha,
+                        )
+                    neg_base = -subsidy_val
+                    if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"Base - {resource}",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Resources used by each process
+                process_resources = p.resources_used_processes
+                for process_name, resource in process_resources.items():
+                    color = self.resource_color_map.get((process_name, resource), None)
+                    cost_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_cost"
+                    cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(cost_val):
+                        self.ax.bar(
+                            p.name,
+                            cost_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                        )
+                    base += cost_val
+                    # Taxes and subsidies on this process/resource
+                    tax_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_tax"
+                    tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(tax_val):
+                        self.ax.bar(
+                            p.name,
+                            tax_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["tax"],
+                            alpha=alpha,
+                        )
+                        base += tax_val
+                    subsidy_col = (
+                        p.name + "_" + process_name + "_" + resource + "_mean_unit_subsidy"
+                    )
+                    subsidy_val = (
+                        self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
+                    )
+                    if self._is_nonzero_or_notnan(subsidy_val):
+                        self.ax.bar(
+                            p.name,
+                            -subsidy_val,
+                            bottom=neg_base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["subsidy"],
+                            alpha=alpha,
+                        )
+                    neg_base = -subsidy_val
+                    if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name}, {resource}",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Cost without resource for each process
+                for process_name in process_resources.keys():
+                    color = self.resource_color_map.get(
+                        (process_name, "without_resources_unit_cost"), None
+                    )
+                    cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
+                    cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(cost_val):
+                        self.ax.bar(
+                            p.name,
+                            cost_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                        )
+                    base += cost_val
+                    # Taxes and subsidies on this process without resource
+                    tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
+                    tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(tax_val):
+                        self.ax.bar(
+                            p.name,
+                            tax_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["tax"],
+                            alpha=alpha,
+                        )
+                        base += tax_val
+                    subsidy_col = (
+                        p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
+                    )
+                    subsidy_val = (
+                        self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
+                    )
+                    if self._is_nonzero_or_notnan(subsidy_val):
+                        self.ax.bar(
+                            p.name,
+                            -subsidy_val,
+                            bottom=neg_base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["subsidy"],
+                            alpha=alpha,
+                        )
+                    neg_base = -subsidy_val
+                    if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name}, excluding resource",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Add carbon tax (per pathway only)
+                carbon_tax_col = f"{p.name}_mean_unit_carbon_tax"
+                carbon_tax_val = (
+                    self.df.loc[year, carbon_tax_col] if carbon_tax_col in self.df.columns else 0
+                )
+                if carbon_tax_val != 0:
+                    self.ax.bar(
+                        p.name,
+                        carbon_tax_val,
+                        bottom=base,
+                        edgecolor="black",
+                        linewidth=0.5,
+                        color="none",
+                        hatch=self.hatch_map["carbon_tax"],
+                        alpha=alpha,
+                    )
+                    base += carbon_tax_val
+
+                net_col = f"{p.name}_net_mfsp"
+                if net_col in self.df.columns:
+                    net_val = self.df.loc[year, net_col]
+                    self.ax.bar(
+                        p.name,
+                        net_val,
+                        linewidth=2,
+                        color="none",
+                        edgecolor="black",
+                        alpha=alpha,
+                        zorder=2,
+                        fill=False,
+                        hatch=None,
+                    )
+            elif p.cost_model == "bottom-up" and self.show_vintage_mean == "vintage":
+                is_used = p in used_pathways
+                alpha = 1.0 if is_used else 0.3
+
                 base = 0
+                neg_base = 0
 
-            # Taxes and subsidies on the base
-            tax_col = p.name + "_mean_unit_tax_without_resource"
-            tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-            if self._is_nonzero_or_notnan(tax_val):
-                self.ax.bar(
-                    p.name,
-                    tax_val,
-                    bottom=base,
-                    linewidth=0.5,
-                    edgecolor="black",
-                    color=color,
-                    hatch=self.hatch_map["tax"],
-                    alpha=alpha,
+                # Couleurs
+                color_capex = self.resource_color_map.get(
+                    ("main", "mean_mfsp_without_resource"), "grey"
                 )
-                base += tax_val
+                color_fixed_opex = color_capex
+                color_variable_opex = color_capex
 
-            subsidy_col = p.name + "_mean_unit_subsidy_without_resource"
-            subsidy_val = self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
-            if self._is_nonzero_or_notnan(subsidy_val):
-                self.ax.bar(
-                    p.name,
-                    -subsidy_val,
-                    bottom=0,
-                    linewidth=0.5,
-                    edgecolor="black",
-                    color=color,
-                    hatch=self.hatch_map["subsidy"],
-                    alpha=alpha,
-                )
-
-            neg_base = -subsidy_val
-            if self._is_nonzero_or_notnan(mfsp_val, tax_val, subsidy_val):
-                pathway_handles.append(
-                    Patch(
-                        facecolor=color,
-                        edgecolor="black",
-                        label="Base, excluding resource",
-                        alpha=0.8,
-                        hatch=self.hatch_map["cost"],
-                    )
-                )
-
-            # Pathway-specific resources
-            for resource in p.resources_used:
-                color = self.resource_color_map.get(("main", resource), None)
-                cost_col = p.name + "_excluding_processes_" + resource + "_mean_unit_cost"
-                cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnan(cost_val):
+                # Capex vintage
+                capex_col = f"{p.name}_vintage_unit_capex"
+                capex_val = self.df.loc[year, capex_col] if capex_col in self.df.columns else 0
+                if self._is_nonzero_or_notnan(capex_val):
                     self.ax.bar(
                         p.name,
-                        cost_val,
+                        capex_val,
                         bottom=base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color=color_capex,
                         hatch=self.hatch_map["cost"],
                         alpha=alpha,
+                        label=None,
                     )
-                base += cost_val
-                # Taxes and subsidies on the resource
-                tax_col = p.name + "_excluding_processes_" + resource + "_mean_unit_tax"
+                    base += capex_val
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color_capex,
+                            edgecolor="black",
+                            label="Capex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Fixed opex vintage
+                fixed_opex_col = f"{p.name}_vintage_unit_fixed_opex"
+                fixed_opex_val = (
+                    self.df.loc[year, fixed_opex_col] if fixed_opex_col in self.df.columns else 0
+                )
+                if self._is_nonzero_or_notnan(fixed_opex_val):
+                    self.ax.bar(
+                        p.name,
+                        fixed_opex_val,
+                        bottom=base,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color_fixed_opex,
+                        hatch=self.hatch_map["cost"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += fixed_opex_val
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color_fixed_opex,
+                            edgecolor="black",
+                            label="Fixed opex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Variable opex vintage
+                variable_opex_col = f"{p.name}_vintage_unit_variable_opex"
+                variable_opex_val = (
+                    self.df.loc[year, variable_opex_col]
+                    if variable_opex_col in self.df.columns
+                    else 0
+                )
+                if self._is_nonzero_or_notnan(variable_opex_val):
+                    self.ax.bar(
+                        p.name,
+                        variable_opex_val,
+                        bottom=base,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color_variable_opex,
+                        hatch=self.hatch_map["cost"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += variable_opex_val
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color_variable_opex,
+                            edgecolor="black",
+                            label="Variable opex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Ressources vintage
+                for resource in p.resources_used:
+                    color = self.resource_color_map.get(("main", resource), None)
+                    res_col = f"{p.name}_excluding_processes_{resource}_vintage_unit_cost"
+                    res_val = self.df.loc[year, res_col] if res_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(res_val):
+                        self.ax.bar(
+                            p.name,
+                            res_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += res_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"Ressource {resource} (vintage)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Processus vintage
+                for process_name, resource in p.resources_used_processes.items():
+                    color = self.resource_color_map.get((process_name, resource), None)
+                    proc_col = f"{p.name}_{process_name}_{resource}_vintage_unit_cost"
+                    proc_val = self.df.loc[year, proc_col] if proc_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(proc_val):
+                        self.ax.bar(
+                            p.name,
+                            proc_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += proc_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name}, {resource} (vintage)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Capex, opex process vintage (sans ressource)
+                for process_name in p.resources_used_processes.keys():
+                    color = self.resource_color_map.get(
+                        (process_name, "without_resources_unit_cost"), None
+                    )
+                    capex_col = f"{p.name}_{process_name}_vintage_unit_capex"
+                    capex_val = self.df.loc[year, capex_col] if capex_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(capex_val):
+                        self.ax.bar(
+                            p.name,
+                            capex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += capex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} capex (vintage)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+                    fixed_opex_col = f"{p.name}_{process_name}_vintage_unit_fixed_opex"
+                    fixed_opex_val = (
+                        self.df.loc[year, fixed_opex_col]
+                        if fixed_opex_col in self.df.columns
+                        else 0
+                    )
+                    if self._is_nonzero_or_notnan(fixed_opex_val):
+                        self.ax.bar(
+                            p.name,
+                            fixed_opex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += fixed_opex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} fixed opex (vintage)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+                    variable_opex_col = f"{p.name}_{process_name}_vintage_unit_variable_opex"
+                    variable_opex_val = (
+                        self.df.loc[year, variable_opex_col]
+                        if variable_opex_col in self.df.columns
+                        else 0
+                    )
+                    if self._is_nonzero_or_notnan(variable_opex_val):
+                        self.ax.bar(
+                            p.name,
+                            variable_opex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += variable_opex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} variable opex (vintage)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Carbon tax vintage
+                carbon_tax_col = f"{p.name}_vintage_eis_carbon_tax"
+                carbon_tax_val = (
+                    self.df.loc[year, carbon_tax_col] if carbon_tax_col in self.df.columns else 0
+                )
+                if self._is_nonzero_or_notnan(carbon_tax_val):
+                    self.ax.bar(
+                        p.name,
+                        carbon_tax_val,
+                        bottom=base,
+                        edgecolor="black",
+                        linewidth=0.5,
+                        color="none",
+                        hatch=self.hatch_map["carbon_tax"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += carbon_tax_val
+
+                # Unit taxes and subsidies
+                tax_col = f"{p.name}_mean_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
@@ -681,12 +1153,14 @@ class DetailledMFSPBreakdown:
                         bottom=base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color="none",
                         hatch=self.hatch_map["tax"],
                         alpha=alpha,
+                        label=None,
                     )
                     base += tax_val
-                subsidy_col = p.name + "_excluding_processes_" + resource + "_mean_unit_subsidy"
+
+                subsidy_col = f"{p.name}_mean_unit_subsidy"
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
@@ -697,42 +1171,288 @@ class DetailledMFSPBreakdown:
                         bottom=neg_base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color="none",
                         hatch=self.hatch_map["subsidy"],
                         alpha=alpha,
+                        label=None,
                     )
-                neg_base = -subsidy_val
-                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
+
+                # Net MFSP overlay (ligne)
+                net_col = f"{p.name}_net_mfsp"
+                if net_col in self.df.columns:
+                    net_val = self.df.loc[year, net_col]
+                    self.ax.bar(
+                        p.name,
+                        net_val,
+                        linewidth=2,
+                        color="none",
+                        edgecolor="black",
+                        alpha=alpha,
+                        zorder=2,
+                        fill=False,
+                        hatch=None,
+                    )
+            elif p.cost_model == "bottom-up" and self.show_vintage_mean == "mean":
+                is_used = p in used_pathways
+                alpha = 1.0 if is_used else 0.3
+
+                base = 0
+                neg_base = 0
+
+                # Couleurs
+                color_capex = self.resource_color_map.get(
+                    ("main", "mean_mfsp_without_resource"), "grey"
+                )
+                color_fixed_opex = color_capex
+                color_variable_opex = color_capex
+
+                # Capex mean
+                capex_col = f"{p.name}_mean_unit_capex"
+                capex_val = self.df.loc[year, capex_col] if capex_col in self.df.columns else 0
+                if self._is_nonzero_or_notnan(capex_val):
+                    self.ax.bar(
+                        p.name,
+                        capex_val,
+                        bottom=base,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color_capex,
+                        hatch=self.hatch_map["cost"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += capex_val
                     pathway_handles.append(
                         Patch(
-                            facecolor=color,
+                            facecolor=color_capex,
                             edgecolor="black",
-                            label=f"Base - {resource}",
+                            label="Capex (mean)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
                     )
 
-            # Resources used by each process
-            process_resources = p.resources_used_processes
-            for process_name, resource in process_resources.items():
-                color = self.resource_color_map.get((process_name, resource), None)
-                cost_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_cost"
-                cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnan(cost_val):
+                # Fixed opex mean
+                fixed_opex_col = f"{p.name}_mean_unit_fixed_opex"
+                fixed_opex_val = (
+                    self.df.loc[year, fixed_opex_col] if fixed_opex_col in self.df.columns else 0
+                )
+                if self._is_nonzero_or_notnan(fixed_opex_val):
                     self.ax.bar(
                         p.name,
-                        cost_val,
+                        fixed_opex_val,
                         bottom=base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color=color_fixed_opex,
                         hatch=self.hatch_map["cost"],
                         alpha=alpha,
+                        label=None,
                     )
-                base += cost_val
-                # Taxes and subsidies on this process/resource
-                tax_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_tax"
+                    base += fixed_opex_val
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color_fixed_opex,
+                            edgecolor="black",
+                            label="Fixed opex (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Variable opex mean
+                variable_opex_col = f"{p.name}_mean_unit_variable_opex"
+                variable_opex_val = (
+                    self.df.loc[year, variable_opex_col]
+                    if variable_opex_col in self.df.columns
+                    else 0
+                )
+                if self._is_nonzero_or_notnan(variable_opex_val):
+                    self.ax.bar(
+                        p.name,
+                        variable_opex_val,
+                        bottom=base,
+                        linewidth=0.5,
+                        edgecolor="black",
+                        color=color_variable_opex,
+                        hatch=self.hatch_map["cost"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += variable_opex_val
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color_variable_opex,
+                            edgecolor="black",
+                            label="Variable opex (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+                # Ressources mean
+                for resource in p.resources_used:
+                    color = self.resource_color_map.get(("main", resource), None)
+                    res_col = f"{p.name}_excluding_processes_{resource}_mean_unit_cost"
+                    res_val = self.df.loc[year, res_col] if res_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(res_val):
+                        self.ax.bar(
+                            p.name,
+                            res_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += res_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"Ressource {resource} (mean)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Processus mean
+                for process_name, resource in p.resources_used_processes.items():
+                    color = self.resource_color_map.get((process_name, resource), None)
+                    proc_col = f"{p.name}_{process_name}_{resource}_mean_unit_cost"
+                    proc_val = self.df.loc[year, proc_col] if proc_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(proc_val):
+                        self.ax.bar(
+                            p.name,
+                            proc_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += proc_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name}, {resource} (mean)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Capex, opex process mean (sans ressource)
+                for process_name in p.resources_used_processes.keys():
+                    color = self.resource_color_map.get(
+                        (process_name, "without_resources_unit_cost"), None
+                    )
+                    capex_col = f"{p.name}_{process_name}_mean_unit_capex"
+                    capex_val = self.df.loc[year, capex_col] if capex_col in self.df.columns else 0
+                    if self._is_nonzero_or_notnan(capex_val):
+                        self.ax.bar(
+                            p.name,
+                            capex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += capex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} capex (mean)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+                    fixed_opex_col = f"{p.name}_{process_name}_mean_unit_fixed_opex"
+                    fixed_opex_val = (
+                        self.df.loc[year, fixed_opex_col]
+                        if fixed_opex_col in self.df.columns
+                        else 0
+                    )
+                    if self._is_nonzero_or_notnan(fixed_opex_val):
+                        self.ax.bar(
+                            p.name,
+                            fixed_opex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += fixed_opex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} fixed opex (mean)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+                    variable_opex_col = f"{p.name}_{process_name}_mean_unit_variable_opex"
+                    variable_opex_val = (
+                        self.df.loc[year, variable_opex_col]
+                        if variable_opex_col in self.df.columns
+                        else 0
+                    )
+                    if self._is_nonzero_or_notnan(variable_opex_val):
+                        self.ax.bar(
+                            p.name,
+                            variable_opex_val,
+                            bottom=base,
+                            linewidth=0.5,
+                            edgecolor="black",
+                            color=color,
+                            hatch=self.hatch_map["cost"],
+                            alpha=alpha,
+                            label=None,
+                        )
+                        base += variable_opex_val
+                        pathway_handles.append(
+                            Patch(
+                                facecolor=color,
+                                edgecolor="black",
+                                label=f"{process_name} variable opex (mean)",
+                                alpha=0.8,
+                                hatch=self.hatch_map["cost"],
+                            )
+                        )
+
+                # Carbon tax mean
+                carbon_tax_col = f"{p.name}_mean_unit_carbon_tax"
+                carbon_tax_val = (
+                    self.df.loc[year, carbon_tax_col] if carbon_tax_col in self.df.columns else 0
+                )
+                if self._is_nonzero_or_notnan(carbon_tax_val):
+                    self.ax.bar(
+                        p.name,
+                        carbon_tax_val,
+                        bottom=base,
+                        edgecolor="black",
+                        linewidth=0.5,
+                        color="none",
+                        hatch=self.hatch_map["carbon_tax"],
+                        alpha=alpha,
+                        label=None,
+                    )
+                    base += carbon_tax_val
+
+                # Unit taxes and subsidies
+                tax_col = f"{p.name}_mean_unit_tax"
                 tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                 if self._is_nonzero_or_notnan(tax_val):
                     self.ax.bar(
@@ -741,12 +1461,14 @@ class DetailledMFSPBreakdown:
                         bottom=base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color="none",
                         hatch=self.hatch_map["tax"],
                         alpha=alpha,
+                        label=None,
                     )
                     base += tax_val
-                subsidy_col = p.name + "_" + process_name + "_" + resource + "_mean_unit_subsidy"
+
+                subsidy_col = f"{p.name}_mean_unit_subsidy"
                 subsidy_val = (
                     self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
                 )
@@ -757,115 +1479,27 @@ class DetailledMFSPBreakdown:
                         bottom=neg_base,
                         linewidth=0.5,
                         edgecolor="black",
-                        color=color,
+                        color="none",
                         hatch=self.hatch_map["subsidy"],
                         alpha=alpha,
-                    )
-                neg_base = -subsidy_val
-                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
-                    pathway_handles.append(
-                        Patch(
-                            facecolor=color,
-                            edgecolor="black",
-                            label=f"{process_name}, {resource}",
-                            alpha=0.8,
-                            hatch=self.hatch_map["cost"],
-                        )
+                        label=None,
                     )
 
-            # Cost without resource for each process
-            for process_name in process_resources.keys():
-                color = self.resource_color_map.get(
-                    (process_name, "without_resources_unit_cost"), None
-                )
-                cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
-                cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
-                if self._is_nonzero_or_notnan(cost_val):
+                # Net MFSP overlay (ligne)
+                net_col = f"{p.name}_net_mfsp"
+                if net_col in self.df.columns:
+                    net_val = self.df.loc[year, net_col]
                     self.ax.bar(
                         p.name,
-                        cost_val,
-                        bottom=base,
-                        linewidth=0.5,
+                        net_val,
+                        linewidth=2,
+                        color="none",
                         edgecolor="black",
-                        color=color,
-                        hatch=self.hatch_map["cost"],
                         alpha=alpha,
+                        zorder=2,
+                        fill=False,
+                        hatch=None,
                     )
-                base += cost_val
-                # Taxes and subsidies on this process without resource
-                tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
-                tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
-                if self._is_nonzero_or_notnan(tax_val):
-                    self.ax.bar(
-                        p.name,
-                        tax_val,
-                        bottom=base,
-                        linewidth=0.5,
-                        edgecolor="black",
-                        color=color,
-                        hatch=self.hatch_map["tax"],
-                        alpha=alpha,
-                    )
-                    base += tax_val
-                subsidy_col = p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
-                subsidy_val = (
-                    self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
-                )
-                if self._is_nonzero_or_notnan(subsidy_val):
-                    self.ax.bar(
-                        p.name,
-                        -subsidy_val,
-                        bottom=neg_base,
-                        linewidth=0.5,
-                        edgecolor="black",
-                        color=color,
-                        hatch=self.hatch_map["subsidy"],
-                        alpha=alpha,
-                    )
-                neg_base = -subsidy_val
-                if self._is_nonzero_or_notnan(cost_val, tax_val, subsidy_val):
-                    pathway_handles.append(
-                        Patch(
-                            facecolor=color,
-                            edgecolor="black",
-                            label=f"{process_name}, excluding resource",
-                            alpha=0.8,
-                            hatch=self.hatch_map["cost"],
-                        )
-                    )
-
-            # Add carbon tax (per pathway only)
-            carbon_tax_col = f"{p.name}_mean_unit_carbon_tax"
-            carbon_tax_val = (
-                self.df.loc[year, carbon_tax_col] if carbon_tax_col in self.df.columns else 0
-            )
-            if carbon_tax_val != 0:
-                self.ax.bar(
-                    p.name,
-                    carbon_tax_val,
-                    bottom=base,
-                    edgecolor="black",
-                    linewidth=0.5,
-                    color="none",
-                    hatch=self.hatch_map["carbon_tax"],
-                    alpha=alpha,
-                )
-                base += carbon_tax_val
-
-            net_col = f"{p.name}_net_mfsp"
-            if net_col in self.df.columns:
-                net_val = self.df.loc[year, net_col]
-                self.ax.bar(
-                    p.name,
-                    net_val,
-                    linewidth=2,
-                    color="none",
-                    edgecolor="black",
-                    alpha=alpha,
-                    zorder=2,
-                    fill=False,
-                    hatch=None,
-                )
 
         # Draw vertical dashed line to separate used and unused options if needed
         if not self.show_only_used and len(unused_pathways) > 0 and len(used_pathways) > 0:
@@ -937,7 +1571,7 @@ class DetailledMFSPBreakdown:
                 hatch=self.hatch_map["carbon_tax"],
                 label="Carbon tax",
             ),
-            Patch(facecolor="none", edgecolor="black", linewidth=2, label="Net MFSP"),
+            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP"),
         ]
 
         legend1 = self.ax.legend(
@@ -972,6 +1606,12 @@ class DetailledMFSPBreakdown:
         self.fig.canvas.draw()
 
     def update_pathway_over_time(self, pathway):
+        if getattr(pathway, "cost_model", None) == "bottom-up":
+            self.update_pathway_over_time_bottomup(pathway)
+        else:
+            self.update_pathway_over_time_topdown(pathway)
+
+    def update_pathway_over_time_topdown(self, pathway):
         self.ax.cla()
         years = self.prospective_years[1:]
         p = pathway
@@ -1171,7 +1811,6 @@ class DetailledMFSPBreakdown:
                         edgecolor="black",
                         linewidth=0.5,
                         alpha=alpha,
-                        label=f"Subsidy - {process_name}, {resource}",
                         zorder=2,
                     )
                     neg_base = neg_top
@@ -1298,7 +1937,652 @@ class DetailledMFSPBreakdown:
             self.ax.get_ylim()[1] * 1.1,
         )
 
-        # self.ax.set_xticklabels(years, rotation=-30, ha="left")
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+    def update_pathway_over_time_bottomup(self, pathway):
+        self.ax.cla()
+        years = self.prospective_years[1:]
+        p = pathway
+
+        energy_col = f"{p.name}_energy_consumption"
+        if energy_col not in self.df.columns:
+            return
+
+        active_mask = (self.df.loc[years, energy_col] >= 1e-9) & (
+            ~self.df.loc[years, energy_col].isna()
+        )
+        years_active = np.array(years)[active_mask.values]
+        years_inactive = np.array([y for y in years if y not in years_active])
+        years_inactive = np.append(
+            years_inactive,
+            years_active[0]
+            if len(years_active) > 0 and years_active[0] < self.prospective_years[-1]
+            else [],
+        )
+
+        pathway_handles = []
+
+        def plot_for_years_vintage(years_subset, alpha):
+            if len(years_subset) == 0:
+                return
+            base = np.zeros(len(years_subset))
+
+            def get_vals(col):
+                if col in self.df.columns:
+                    return self.df.loc[years_subset, col].fillna(0).values
+                else:
+                    return np.zeros(len(years_subset))
+
+            # Capex vintage
+            color_capex = self.resource_color_map.get(
+                ("main", "mean_mfsp_without_resource"), "grey"
+            )
+            capex_col = f"{p.name}_vintage_unit_capex"
+            capex_vals = get_vals(capex_col)
+            if np.any(capex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + capex_vals,
+                    facecolor=color_capex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += capex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_capex,
+                        edgecolor="black",
+                        label="Capex (vintage)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Fixed opex vintage
+            color_fixed_opex = color_capex
+            fixed_opex_col = f"{p.name}_vintage_unit_fixed_opex"
+            fixed_opex_vals = get_vals(fixed_opex_col)
+            if np.any(fixed_opex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + fixed_opex_vals,
+                    facecolor=color_fixed_opex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += fixed_opex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_fixed_opex,
+                        edgecolor="black",
+                        label="Fixed opex (vintage)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Variable opex vintage
+            color_variable_opex = color_capex
+            variable_opex_col = f"{p.name}_vintage_unit_variable_opex"
+            variable_opex_vals = get_vals(variable_opex_col)
+            if np.any(variable_opex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + variable_opex_vals,
+                    facecolor=color_variable_opex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += variable_opex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_variable_opex,
+                        edgecolor="black",
+                        label="Variable opex (vintage)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Ressources vintage
+            for resource in p.resources_used:
+                color = self.resource_color_map.get(("main", resource), None)
+                res_col = f"{p.name}_excluding_processes_{resource}_vintage_unit_cost"
+                res_vals = get_vals(res_col)
+                if np.any(res_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + res_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += res_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"Ressource {resource} (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Processus vintage
+            for process_name, resource in p.resources_used_processes.items():
+                color = self.resource_color_map.get((process_name, resource), None)
+                proc_col = f"{p.name}_{process_name}_{resource}_vintage_unit_cost"
+                proc_vals = get_vals(proc_col)
+                if np.any(proc_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + proc_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += proc_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name}, {resource} (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Capex, opex process vintage (sans ressource)
+            for process_name in p.resources_used_processes.keys():
+                color = self.resource_color_map.get(
+                    (process_name, "without_resources_unit_cost"), None
+                )
+                capex_col = f"{p.name}_{process_name}_vintage_unit_capex"
+                capex_vals = get_vals(capex_col)
+                if np.any(capex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + capex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += capex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} capex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+                fixed_opex_col = f"{p.name}_{process_name}_vintage_unit_fixed_opex"
+                fixed_opex_vals = get_vals(fixed_opex_col)
+                if np.any(fixed_opex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + fixed_opex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += fixed_opex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} fixed opex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+                variable_opex_col = f"{p.name}_{process_name}_vintage_unit_variable_opex"
+                variable_opex_vals = get_vals(variable_opex_col)
+                if np.any(variable_opex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + variable_opex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += variable_opex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} variable opex (vintage)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Carbon tax vintage
+            carbon_tax_col = f"{p.name}_vintage_eis_carbon_tax"
+            carbon_tax_vals = get_vals(carbon_tax_col)
+            if np.any(carbon_tax_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + carbon_tax_vals,
+                    facecolor="none",
+                    hatch=self.hatch_map["carbon_tax"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += carbon_tax_vals
+
+            # Net MFSP overlay (ligne)
+            net_col = f"{p.name}_net_mfsp"
+            if net_col in self.df.columns:
+                net_vals = self.df.loc[years_subset, net_col].fillna(0).values
+                self.ax.plot(
+                    years_subset,
+                    net_vals,
+                    color="black",
+                    linewidth=2,
+                    alpha=alpha,
+                    linestyle="solid",
+                    zorder=3,
+                    label="Net MFSP",
+                )
+
+        def plot_for_years_mean(years_subset, alpha):
+            if len(years_subset) == 0:
+                return
+            base = np.zeros(len(years_subset))
+
+            def get_vals(col):
+                if col in self.df.columns:
+                    return self.df.loc[years_subset, col].fillna(0).values
+                else:
+                    return np.zeros(len(years_subset))
+
+            # Capex mean
+            color_capex = self.resource_color_map.get(
+                ("main", "mean_mfsp_without_resource"), "grey"
+            )
+            capex_col = f"{p.name}_mean_unit_capex"
+            capex_vals = get_vals(capex_col)
+            if np.any(capex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + capex_vals,
+                    facecolor=color_capex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += capex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_capex,
+                        edgecolor="black",
+                        label="Capex (mean)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Fixed opex mean
+            color_fixed_opex = color_capex
+            fixed_opex_col = f"{p.name}_mean_unit_fixed_opex"
+            fixed_opex_vals = get_vals(fixed_opex_col)
+            if np.any(fixed_opex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + fixed_opex_vals,
+                    facecolor=color_fixed_opex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += fixed_opex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_fixed_opex,
+                        edgecolor="black",
+                        label="Fixed opex (mean)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Variable opex mean
+            color_variable_opex = color_capex
+            variable_opex_col = f"{p.name}_mean_unit_variable_opex"
+            variable_opex_vals = get_vals(variable_opex_col)
+            if np.any(variable_opex_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + variable_opex_vals,
+                    facecolor=color_variable_opex,
+                    hatch=self.hatch_map["cost"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += variable_opex_vals
+                pathway_handles.append(
+                    Patch(
+                        facecolor=color_variable_opex,
+                        edgecolor="black",
+                        label="Variable opex (mean)",
+                        alpha=0.8,
+                        hatch=self.hatch_map["cost"],
+                    )
+                )
+
+            # Ressources mean
+            for resource in p.resources_used:
+                color = self.resource_color_map.get(("main", resource), None)
+                res_col = f"{p.name}_excluding_processes_{resource}_mean_unit_cost"
+                res_vals = get_vals(res_col)
+                if np.any(res_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + res_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += res_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"Ressource {resource} (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Processus mean
+            for process_name, resource in p.resources_used_processes.items():
+                color = self.resource_color_map.get((process_name, resource), None)
+                proc_col = f"{p.name}_{process_name}_{resource}_mean_unit_cost"
+                proc_vals = get_vals(proc_col)
+                if np.any(proc_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + proc_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += proc_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name}, {resource} (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Capex, opex process mean (sans ressource)
+            for process_name in p.resources_used_processes.keys():
+                color = self.resource_color_map.get(
+                    (process_name, "without_resources_unit_cost"), None
+                )
+                capex_col = f"{p.name}_{process_name}_mean_unit_capex"
+                capex_vals = get_vals(capex_col)
+                if np.any(capex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + capex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += capex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} capex (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+                fixed_opex_col = f"{p.name}_{process_name}_mean_unit_fixed_opex"
+                fixed_opex_vals = get_vals(fixed_opex_col)
+                if np.any(fixed_opex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + fixed_opex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += fixed_opex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} fixed opex (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+                variable_opex_col = f"{p.name}_{process_name}_mean_unit_variable_opex"
+                variable_opex_vals = get_vals(variable_opex_col)
+                if np.any(variable_opex_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + variable_opex_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["cost"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += variable_opex_vals
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=f"{process_name} variable opex (mean)",
+                            alpha=0.8,
+                            hatch=self.hatch_map["cost"],
+                        )
+                    )
+
+            # Carbon tax mean
+            carbon_tax_col = f"{p.name}_mean_unit_carbon_tax"
+            carbon_tax_vals = get_vals(carbon_tax_col)
+            if np.any(carbon_tax_vals != 0):
+                self.ax.fill_between(
+                    years_subset,
+                    base,
+                    base + carbon_tax_vals,
+                    facecolor="none",
+                    hatch=self.hatch_map["carbon_tax"],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=alpha,
+                    zorder=2,
+                )
+                base += carbon_tax_vals
+
+            # Net MFSP overlay (ligne)
+            net_col = f"{p.name}_net_mfsp"
+            if net_col in self.df.columns:
+                net_vals = self.df.loc[years_subset, net_col].fillna(0).values
+                self.ax.plot(
+                    years_subset,
+                    net_vals,
+                    color="black",
+                    linewidth=2,
+                    alpha=alpha,
+                    linestyle="solid",
+                    zorder=3,
+                    label="Net MFSP",
+                )
+
+        # Plot inactive years (alpha=0.3) only if self.show_only_used is False
+        if not self.show_only_used:
+            if self.show_vintage_mean == "vintage":
+                plot_for_years_vintage(years_inactive, 0.3)
+            else:
+                plot_for_years_mean(years_active, 0.3)
+
+        if self.show_vintage_mean == "vintage":
+            plot_for_years_vintage(years_active, 0.8)
+        else:
+            plot_for_years_mean(years_active, 0.8)
+
+        # Add vertical dashed line to separate used and unused years
+        if not self.show_only_used and len(years_active) > 0 and len(years_inactive) > 0:
+            first_active_year = years_active[0]
+            self.ax.axvline(
+                x=first_active_year,
+                color="black",
+                linestyle="dashed",
+                linewidth=1,
+                alpha=0.7,
+                zorder=3,
+            )
+            ylim = self.ax.get_ylim()
+            ymid = (ylim[0] + ylim[1]) / 2
+            self.ax.text(
+                first_active_year - 0.2,
+                ymid,
+                "Not used",
+                rotation=90,
+                va="center",
+                ha="right",
+                fontsize=10,
+                color="black",
+                alpha=0.7,
+                backgroundcolor="none",
+            )
+            self.ax.text(
+                first_active_year + 0.2,
+                ymid,
+                "Used",
+                rotation=90,
+                va="center",
+                ha="left",
+                fontsize=10,
+                color="black",
+                alpha=0.7,
+                backgroundcolor="none",
+            )
+
+        # Remove duplicate labels in legend
+        seen = set()
+        unique_pathway_handles = []
+        for h in pathway_handles:
+            if h.get_label() not in seen and h.get_label() is not None:
+                unique_pathway_handles.append(h)
+                seen.add(h.get_label())
+
+        bar_type_handles = [
+            Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="Cost"),
+            Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["tax"], label="Tax"),
+            Patch(
+                facecolor="none",
+                edgecolor="black",
+                hatch=self.hatch_map["subsidy"],
+                label="Subsidy",
+            ),
+            Patch(
+                facecolor="none",
+                edgecolor="black",
+                hatch=self.hatch_map["carbon_tax"],
+                label="Carbon tax",
+            ),
+            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP"),
+        ]
+
+        legend1 = self.ax.legend(
+            handles=unique_pathway_handles,
+            title="Components",
+            loc="upper left",
+            prop={"size": 8},
+        )
+        legend2 = self.ax.legend(
+            handles=bar_type_handles,
+            loc="upper right",
+            prop={"size": 8},
+        )
+        self.ax.add_artist(legend1)
+        self.ax.add_artist(legend2)
+
+        self.ax.grid(axis="y")
+        self.ax.set_title(f"MFSP breakdown over time for {p.name}")
+        self.ax.set_ylabel("MFSP [€/MJ]")
+        self.ax.set_xlabel("Year")
+        self.ax.set_xlim(self.prospective_years[1], self.prospective_years[-1])
+        self.ax.set_ylim(
+            self.ax.get_ylim()[0],
+            self.ax.get_ylim()[1] * 1.1,
+        )
+
         self.fig.tight_layout()
         self.fig.canvas.draw()
 

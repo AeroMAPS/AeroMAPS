@@ -11,6 +11,8 @@ class EnergyCarrierMetadata:
     energy_origin: str = None
     resources_used: List[str] = None
     resources_used_processes: dict = None
+    cost_model: str = None
+    environmental_model: str = None
 
 
 class EnergyCarrierManager:

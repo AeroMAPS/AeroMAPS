@@ -52,8 +52,8 @@ class BottomUpCost(AeroMAPSModel):
             f"{self.pathway_name}_capex_cost": pd.Series([0.0]),
             # Ajout des sorties vintage pour les coûts principaux
             f"{self.pathway_name}_vintage_unit_capex": pd.Series([0.0]),
-            f"{self.pathway_name}_vintage_fixed_opex": pd.Series([0.0]),
-            f"{self.pathway_name}_vintage_variable_opex": pd.Series([0.0]),
+            f"{self.pathway_name}_vintage_unit_fixed_opex": pd.Series([0.0]),
+            f"{self.pathway_name}_vintage_unit_variable_opex": pd.Series([0.0]),
         }
 
         # 3. Getting resources is a bit more complex as we need to get necessary resources for the pathway
@@ -121,10 +121,10 @@ class BottomUpCost(AeroMAPSModel):
             self.output_names[f"{self.pathway_name}_{process_key}_vintage_unit_capex"] = pd.Series(
                 [0.0]
             )
-            self.output_names[f"{self.pathway_name}_{process_key}_vintage_fixed_opex"] = pd.Series(
-                [0.0]
+            self.output_names[f"{self.pathway_name}_{process_key}_vintage_unit_fixed_opex"] = (
+                pd.Series([0.0])
             )
-            self.output_names[f"{self.pathway_name}_{process_key}_vintage_variable_opex"] = (
+            self.output_names[f"{self.pathway_name}_{process_key}_vintage_unit_variable_opex"] = (
                 pd.Series([0.0])
             )
 
@@ -273,7 +273,9 @@ class BottomUpCost(AeroMAPSModel):
                 )
 
                 # compyte the EIS variable opex --> No need, directly from input eis_variable_opex
-                output_data[f"{self.pathway_name}_vintage_variable_opex"].loc[year] = variable_opex
+                output_data[f"{self.pathway_name}_vintage_unit_variable_opex"].loc[year] = (
+                    variable_opex
+                )
 
                 # As fixed opex is in €/year for a plant of 1 MJ/year, we can directly get it in €/MJ
                 fixed_opex = (
@@ -292,7 +294,7 @@ class BottomUpCost(AeroMAPSModel):
                 )
 
                 # compyte the EIS fixed opex
-                output_data[f"{self.pathway_name}_vintage_fixed_opex"].loc[year] = fixed_opex
+                output_data[f"{self.pathway_name}_vintage_unit_fixed_opex"].loc[year] = fixed_opex
 
                 vintage_mfsp = custom_series_addition(
                     vintage_mfsp, mfsp_capex + fixed_opex + variable_opex
@@ -487,7 +489,7 @@ class BottomUpCost(AeroMAPSModel):
                         fixed_opex_process * relative_share,
                     )
                     # compyte the EIS fixed opex
-                    output_data[f"{self.pathway_name}_{process_key}_vintage_fixed_opex"].loc[
+                    output_data[f"{self.pathway_name}_{process_key}_vintage_unit_fixed_opex"].loc[
                         year
                     ] = fixed_opex_process
 
@@ -501,9 +503,9 @@ class BottomUpCost(AeroMAPSModel):
                     )
 
                     # compyte the EIS variable opex
-                    output_data[f"{self.pathway_name}_{process_key}_vintage_variable_opex"].loc[
-                        year
-                    ] = variable_opex_process
+                    output_data[
+                        f"{self.pathway_name}_{process_key}_vintage_unit_variable_opex"
+                    ].loc[year] = variable_opex_process
 
                 output_data[f"{self.pathway_name}_mean_mfsp"].loc[year : year + lifespan - 1] = (
                     custom_series_addition(

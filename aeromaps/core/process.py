@@ -370,6 +370,8 @@ class AeroMAPSProcess(object):
                         .get("technical", {})
                         .get(f"{el}_resource_names", [])
                     },
+                    cost_model=pathway_data.get("cost_model"),
+                    environmental_model=pathway_data.get("environmental_model"),
                 )
             )
 
