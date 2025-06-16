@@ -1,0 +1,79 @@
+# -----------------------------------------------------------------------------
+# Example of a generic process (all possible fields and options)
+# -----------------------------------------------------------------------------
+# generic_process:
+#   # Metadata
+#   name: "generic_process"
+#   inputs:
+#     # Technical:
+#     technical:
+#       resource_names: [ "generic_resource" ]
+#       resource_specific_consumption:
+#         generic_resource: 0.5 # MJ of resource per MJ of process output
+#     plant_load_factor: 0.95
+#     # Environmental:
+#     environmental:
+#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType # co2 ef (MJ/kg) of the process : these can also be part of core/resource depending on user's choices
+#         years: [2020, 2030, 2040, 2050]
+#         values: [10.0, 8.0, 6.0, 4.0]
+#         method: linear
+#     # Economics:
+#     economics:
+#       mean_mfsp_without_resource: !AeroMapsCustomDataType  # Cost/MFSP (€/MJ) of the process : these can also be part of core/resource depending on user's choices
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.01, 0.011, 0.012, 0.013]
+#         method: linear
+#       mean_unit_subsidies_without_resource: !AeroMapsCustomDataType # Subsidies (€/MJ) of the process : these can also be part of core/resource depending on user's choices
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.0, 0.0, 0.0, 0.0]
+#         method: linear
+#       mean_unit_tax_without_resource: !AeroMapsCustomDataType  # Tax (€/MJ) of the process : these can also be part of core/resource depending on user's choices
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.0, 0.0, 0.0, 0.0]
+#         method: linear
+# -----------------------------------------------------------------------------
+
+liquefaction:
+  # Metadata
+  name: "liquefaction"
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 0.25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020,2030,2040,2050]
+        values: [0.01148759, 0.01148759, 0.01148759, 0.01148759] # [1.378511,1.378511,1.378511,1.378511]/120,
+        method: linear
+        
+
+electrolysis:
+  # Metadata
+  name: "electrolysis"
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "grid_electricity" ]
+      resource_specific_consumption:
+        grid_electricity: 1.69
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [0.0421, 0.0416, 0.0412, 0.0410] # [5.047140, 4.994914, 4.949078, 4.924813]/ 120 # caution no liquefaction there
+        method: linear

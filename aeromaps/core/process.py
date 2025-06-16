@@ -56,15 +56,15 @@ DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
 
 # Construct the path to the energy carriers parameters default file
 DEFAULT_ENERGY_CARRIERS_DATA_PATH = os.path.join(
-    CURRENT_DIR, "..", "resources", "data", "energy_carriers_data.yaml"
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "energy_carriers_data.yaml"
 )
 
 DEFAULT_RESOURCES_DATA_PATH = os.path.join(
-    CURRENT_DIR, "..", "resources", "data", "resources_data.yaml"
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "resources_data.yaml"
 )
 
 DEFAULT_PROCESSES_DATA_PATH = os.path.join(
-    CURRENT_DIR, "..", "resources", "data", "processes_data.yaml"
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "processes_data.yaml"
 )
 
 

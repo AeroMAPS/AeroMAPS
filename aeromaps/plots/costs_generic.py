@@ -794,7 +794,7 @@ class DetailledMFSPBreakdown:
                     color = self.resource_color_map.get(
                         (process_name, "without_resources_unit_cost"), None
                     )
-                    cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
+                    cost_col = p.name + "_" + process_name + "_mean_unit_cost_without_resources"
                     cost_val = self.df.loc[year, cost_col] if cost_col in self.df.columns else 0
                     if self._is_nonzero_or_notnan(cost_val):
                         self.ax.bar(
@@ -809,7 +809,7 @@ class DetailledMFSPBreakdown:
                         )
                     base += cost_val
                     # Taxes and subsidies on this process without resource
-                    tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
+                    tax_col = p.name + "_" + process_name + "_mean_unit_tax_without_resources"
                     tax_val = self.df.loc[year, tax_col] if tax_col in self.df.columns else 0
                     if self._is_nonzero_or_notnan(tax_val):
                         self.ax.bar(
@@ -824,7 +824,7 @@ class DetailledMFSPBreakdown:
                         )
                         base += tax_val
                     subsidy_col = (
-                        p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
+                        p.name + "_" + process_name + "_mean_unit_subsidy_without_resources"
                     )
                     subsidy_val = (
                         self.df.loc[year, subsidy_col] if subsidy_col in self.df.columns else 0
@@ -887,6 +887,8 @@ class DetailledMFSPBreakdown:
             elif p.cost_model == "bottom-up" and self.show_vintage_mean == "vintage":
                 is_used = p in used_pathways
                 alpha = 1.0 if is_used else 0.3
+                variable_opex_alpha = 0.8
+                fixed_opex_alpha = 0.6
 
                 base = 0
                 neg_base = 0
@@ -938,7 +940,7 @@ class DetailledMFSPBreakdown:
                         edgecolor="black",
                         color=color_fixed_opex,
                         hatch=self.hatch_map["cost"],
-                        alpha=alpha,
+                        alpha=alpha * fixed_opex_alpha,
                         label=None,
                     )
                     base += fixed_opex_val
@@ -947,7 +949,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color_fixed_opex,
                             edgecolor="black",
                             label="Pathway, fixed Opex (V)",
-                            alpha=0.8,
+                            alpha=0.8 * fixed_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )
@@ -968,7 +970,7 @@ class DetailledMFSPBreakdown:
                         edgecolor="black",
                         color=color_variable_opex,
                         hatch=self.hatch_map["cost"],
-                        alpha=alpha,
+                        alpha=alpha * variable_opex_alpha,
                         label=None,
                     )
                     base += variable_opex_val
@@ -977,7 +979,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color_variable_opex,
                             edgecolor="black",
                             label="Pathway, variable Opex (V)",
-                            alpha=0.8,
+                            alpha=0.8 * variable_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )
@@ -1082,7 +1084,7 @@ class DetailledMFSPBreakdown:
                             edgecolor="black",
                             color=color,
                             hatch=self.hatch_map["cost"],
-                            alpha=alpha,
+                            alpha=alpha * fixed_opex_alpha,
                             label=None,
                         )
                         base += fixed_opex_val
@@ -1091,7 +1093,7 @@ class DetailledMFSPBreakdown:
                                 facecolor=color,
                                 edgecolor="black",
                                 label=f"{process_name}, fixed Opex (V)",
-                                alpha=0.8,
+                                alpha=0.8 * fixed_opex_alpha,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
@@ -1110,7 +1112,7 @@ class DetailledMFSPBreakdown:
                             edgecolor="black",
                             color=color,
                             hatch=self.hatch_map["cost"],
-                            alpha=alpha,
+                            alpha=alpha * variable_opex_alpha,
                             label=None,
                         )
                         base += variable_opex_val
@@ -1119,7 +1121,7 @@ class DetailledMFSPBreakdown:
                                 facecolor=color,
                                 edgecolor="black",
                                 label=f"{process_name}, variable Opex (V)",
-                                alpha=0.8,
+                                alpha=0.8 * variable_opex_alpha,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
@@ -1195,6 +1197,8 @@ class DetailledMFSPBreakdown:
             elif p.cost_model == "bottom-up" and self.show_vintage_mean == "mean":
                 is_used = p in used_pathways
                 alpha = 1.0 if is_used else 0.3
+                variable_opex_alpha = 0.8
+                fixed_opex_alpha = 0.6
 
                 base = 0
                 neg_base = 0
@@ -1246,7 +1250,7 @@ class DetailledMFSPBreakdown:
                         edgecolor="black",
                         color=color_fixed_opex,
                         hatch=self.hatch_map["cost"],
-                        alpha=alpha,
+                        alpha=alpha * fixed_opex_alpha,
                         label=None,
                     )
                     base += fixed_opex_val
@@ -1255,7 +1259,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color_fixed_opex,
                             edgecolor="black",
                             label="Pathway, fixed Opex (M)",
-                            alpha=0.8,
+                            alpha=0.8 * fixed_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )
@@ -1276,7 +1280,7 @@ class DetailledMFSPBreakdown:
                         edgecolor="black",
                         color=color_variable_opex,
                         hatch=self.hatch_map["cost"],
-                        alpha=alpha,
+                        alpha=alpha * variable_opex_alpha,
                         label=None,
                     )
                     base += variable_opex_val
@@ -1285,7 +1289,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color_variable_opex,
                             edgecolor="black",
                             label="Pathway, variable Opex (M)",
-                            alpha=0.8,
+                            alpha=0.8 * variable_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )
@@ -1390,7 +1394,7 @@ class DetailledMFSPBreakdown:
                             edgecolor="black",
                             color=color,
                             hatch=self.hatch_map["cost"],
-                            alpha=alpha,
+                            alpha=alpha * fixed_opex_alpha,
                             label=None,
                         )
                         base += fixed_opex_val
@@ -1399,7 +1403,7 @@ class DetailledMFSPBreakdown:
                                 facecolor=color,
                                 edgecolor="black",
                                 label=f"{process_name}, fixed Opex (M)",
-                                alpha=0.8,
+                                alpha=0.8 * fixed_opex_alpha,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
@@ -1418,7 +1422,7 @@ class DetailledMFSPBreakdown:
                             edgecolor="black",
                             color=color,
                             hatch=self.hatch_map["cost"],
-                            alpha=alpha,
+                            alpha=alpha * variable_opex_alpha,
                             label=None,
                         )
                         base += variable_opex_val
@@ -1427,7 +1431,7 @@ class DetailledMFSPBreakdown:
                                 facecolor=color,
                                 edgecolor="black",
                                 label=f"{process_name}, variable opex (M)",
-                                alpha=0.8,
+                                alpha=0.8 * variable_opex_alpha,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
@@ -1826,7 +1830,7 @@ class DetailledMFSPBreakdown:
                 color = self.resource_color_map.get(
                     (process_name, "without_resources_unit_cost"), None
                 )
-                cost_col = p.name + "_" + process_name + "_without_resources_mean_unit_cost"
+                cost_col = p.name + "_" + process_name + "_mean_unit_cost_without_resources"
                 cost_vals = get_vals(cost_col)
                 if np.any(cost_vals != 0):
                     self.ax.fill_between(
@@ -1841,7 +1845,7 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     base += cost_vals
-                subsidy_col = p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
+                subsidy_col = p.name + "_" + process_name + "_mean_unit_subsidy_without_resources"
                 subsidy_vals = get_vals(subsidy_col)
                 if np.any(subsidy_vals != 0):
                     neg_top = neg_base - subsidy_vals
@@ -1857,7 +1861,7 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     neg_base = neg_top
-                tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
+                tax_col = p.name + "_" + process_name + "_mean_unit_tax_without_resources"
                 tax_vals = get_vals(tax_col)
                 if np.any(tax_vals != 0):
                     self.ax.fill_between(
@@ -2004,6 +2008,9 @@ class DetailledMFSPBreakdown:
 
         pathway_handles = []
 
+        variable_opex_alpha = 0.8
+        fixed_opex_alpha = 0.6
+
         def plot_for_years_vintage(years_subset, alpha):
             if len(years_subset) == 0:
                 return
@@ -2057,7 +2064,7 @@ class DetailledMFSPBreakdown:
                     hatch=self.hatch_map["cost"],
                     edgecolor="black",
                     linewidth=0.5,
-                    alpha=alpha,
+                    alpha=alpha * fixed_opex_alpha,
                     zorder=2,
                 )
                 base += fixed_opex_vals
@@ -2066,7 +2073,7 @@ class DetailledMFSPBreakdown:
                         facecolor=color_fixed_opex,
                         edgecolor="black",
                         label="Pathway, fixed Opex (V)",
-                        alpha=0.8,
+                        alpha=0.8 * fixed_opex_alpha,
                         hatch=self.hatch_map["cost"],
                     )
                 )
@@ -2084,7 +2091,7 @@ class DetailledMFSPBreakdown:
                     hatch=self.hatch_map["cost"],
                     edgecolor="black",
                     linewidth=0.5,
-                    alpha=alpha,
+                    alpha=alpha * variable_opex_alpha,
                     zorder=2,
                 )
                 base += variable_opex_vals
@@ -2093,7 +2100,7 @@ class DetailledMFSPBreakdown:
                         facecolor=color_variable_opex,
                         edgecolor="black",
                         label="Pathway, variable Opex (V)",
-                        alpha=0.8,
+                        alpha=0.8 * variable_opex_alpha,
                         hatch=self.hatch_map["cost"],
                     )
                 )
@@ -2194,7 +2201,7 @@ class DetailledMFSPBreakdown:
                         hatch=self.hatch_map["cost"],
                         edgecolor="black",
                         linewidth=0.5,
-                        alpha=alpha,
+                        alpha=alpha * fixed_opex_alpha,
                         zorder=2,
                     )
                     base += fixed_opex_vals
@@ -2203,7 +2210,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color,
                             edgecolor="black",
                             label=f"{process_name}, fixed Opex (V)",
-                            alpha=0.8,
+                            alpha=0.8 * fixed_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )
@@ -2218,7 +2225,7 @@ class DetailledMFSPBreakdown:
                         hatch=self.hatch_map["cost"],
                         edgecolor="black",
                         linewidth=0.5,
-                        alpha=alpha,
+                        alpha=alpha * variable_opex_alpha,
                         zorder=2,
                     )
                     base += variable_opex_vals
@@ -2227,7 +2234,7 @@ class DetailledMFSPBreakdown:
                             facecolor=color,
                             edgecolor="black",
                             label=f"{process_name}, variable Opex (V)",
-                            alpha=0.8,
+                            alpha=0.8 * variable_opex_alpha,
                             hatch=self.hatch_map["cost"],
                         )
                     )

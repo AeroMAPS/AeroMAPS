@@ -98,13 +98,13 @@ class TopDownCost(AeroMAPSModel):
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
             self.output_names[
-                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"
+                f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"
             ] = pd.Series([0.0])
             self.output_names[
-                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_tax"
+                f"{self.pathway_name}_{process_key}_mean_unit_tax_without_resources"
             ] = pd.Series([0.0])
             self.output_names[
-                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_subsidy"
+                f"{self.pathway_name}_{process_key}_mean_unit_subsidy_without_resources"
             ] = pd.Series([0.0])
 
         # Getting unique resources
@@ -233,23 +233,23 @@ class TopDownCost(AeroMAPSModel):
                 f"{process_key}_mean_mfsp_without_resource", optional_null_series.copy()
             )
             pathway_mfsp = pathway_mfsp.add(mfsp_process, fill_value=0)
-            output_data[f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"] = (
+            output_data[f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"] = (
                 mfsp_process
             )
 
             subsidy_process = input_data.get(
-                f"{process_key}_without_resources_mean_unit_subsidy", optional_null_series.copy()
+                f"{process_key}_mean_unit_subsidy_without_resources", optional_null_series.copy()
             )
             pathway_unit_subsidy = pathway_unit_subsidy.add(subsidy_process, fill_value=0)
             output_data[
-                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_subsidy"
+                f"{self.pathway_name}_{process_key}_mean_unit_subsidy_without_resources"
             ] = subsidy_process
 
             tax_process = input_data.get(
-                f"{process_key}_without_resources_mean_unit_tax", optional_null_series.copy()
+                f"{process_key}_mean_unit_tax_without_resources", optional_null_series.copy()
             )
             pathway_unit_tax = pathway_unit_tax.add(tax_process, fill_value=0)
-            output_data[f"{self.pathway_name}_{process_key}_without_resources_mean_unit_tax"] = (
+            output_data[f"{self.pathway_name}_{process_key}_mean_unit_tax_without_resources"] = (
                 tax_process
             )
 

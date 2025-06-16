@@ -282,7 +282,7 @@ electrofuel:
     technical:
       resource_names: ["grid_electricity", "co2_dac"]
       eis_resource_specific_consumption:
-        grid_electricity: 1.69 
+        grid_electricity: 2.26 
         co2_dac: 0.1015 # KgCO2/MJ
       lhv: 44
       technology_introduction_year: 2020
@@ -305,7 +305,7 @@ electrofuel:
     economics:
       eis_capex: !AeroMapsCustomDataType
         years: []
-        values: [0.0001438]
+        values: [0.1450]
         method: linear
       eis_variable_opex: !AeroMapsCustomDataType
         years: []

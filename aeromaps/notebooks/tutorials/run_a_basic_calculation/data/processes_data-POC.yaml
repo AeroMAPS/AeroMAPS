@@ -52,7 +52,7 @@ electrolysis_grid_us:
         method: linear
     # Economics:
     economics:
-      without_resources_unit_tax: !AeroMapsCustomDataType
+      mean_unit_tax_without_resources: !AeroMapsCustomDataType
         years: []
         values: [0.0030]
         method: linear

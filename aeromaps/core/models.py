@@ -282,7 +282,6 @@ models_efficiency_bottom_up = {
 }
 
 models_energy_without_fuel_effect = {
-    "dropin_fuel_distribution": DropinFuelDistribution("dropin_fuel_distribution"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
     "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency(
         "electricity_based_fuel_efficiency"

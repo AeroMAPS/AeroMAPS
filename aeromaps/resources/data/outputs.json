@@ -37253,7 +37253,7 @@
             0.0,
             0.0
         ],
-        "hydrogen_coal_liquefaction_without_resources_unit_tax": [
+        "hydrogen_coal_liquefaction_mean_unit_tax_without_resources": [
             NaN,
             NaN,
             NaN,
@@ -39532,7 +39532,7 @@
             0.0,
             0.0
         ],
-        "hydrogen_electrolysis_electrolysis_without_resources_unit_tax": [
+        "hydrogen_electrolysis_electrolysis_mean_unit_tax_without_resources": [
             NaN,
             NaN,
             NaN,
@@ -40221,7 +40221,7 @@
             0.0,
             0.0
         ],
-        "hydrogen_electrolysis_liquefaction_without_resources_unit_tax": [
+        "hydrogen_electrolysis_liquefaction_mean_unit_tax_without_resources": [
             NaN,
             NaN,
             NaN,
@@ -42765,7 +42765,7 @@
             0.0,
             0.0
         ],
-        "hydrogen_gas_liquefaction_without_resources_unit_tax": [
+        "hydrogen_gas_liquefaction_mean_unit_tax_without_resources": [
             NaN,
             NaN,
             NaN,

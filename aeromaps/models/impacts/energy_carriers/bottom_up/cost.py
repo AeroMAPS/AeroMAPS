@@ -106,7 +106,7 @@ class BottomUpCost(AeroMAPSModel):
                 # TODO initialize with zeros instead of actual val?
                 self.input_names[key] = val
             self.output_names[
-                f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"
+                f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"
             ] = pd.Series([0.0])
             self.output_names[f"{self.pathway_name}_{process_key}_mean_unit_capex"] = pd.Series(
                 [0.0]
@@ -460,10 +460,10 @@ class BottomUpCost(AeroMAPSModel):
                     vintage_mfsp = custom_series_addition(vintage_mfsp, mfsp_process)
                     # Store the process cost in the output data
                     output_data[
-                        f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"
+                        f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"
                     ].loc[year : year + process_lifespan] = custom_series_addition(
                         output_data[
-                            f"{self.pathway_name}_{process_key}_without_resources_mean_unit_cost"
+                            f"{self.pathway_name}_{process_key}_mean_unit_cost_without_resources"
                         ].loc[year : year + process_lifespan],
                         mfsp_process * relative_share,
                     )
