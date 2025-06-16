@@ -523,10 +523,10 @@ class DetailledMFSPBreakdown:
     def plot_interact(self):
         mode_widget = widgets.ToggleButtons(
             options=[
-                ("All pathways for a year", "per_year"),
-                ("One pathway over time", "pathway_over_time"),
+                ("All pathways - 1 year", "per_year"),
+                ("1 pathway", "pathway_over_time"),
             ],
-            description="Mode:",
+            description="Visualisation mode:",
             value="per_year",
         )
         year_widget = widgets.IntSlider(
@@ -542,19 +542,19 @@ class DetailledMFSPBreakdown:
         )
         show_used_widget = widgets.ToggleButtons(
             options=[
-                ("Show used pathways/years only", True),
-                ("Show all defined", False),
+                ("Used pathways only", True),
+                ("All pathways defined", False),
             ],
-            description="Show:",
+            description="Display option:",
             value=True,
         )
 
         show_vintage_mean_widget = widgets.ToggleButtons(
             options=[
-                ("EIS values", "vintage"),
-                ("Mean values", "mean"),
+                ("EIS vintage values (V)", "vintage"),
+                ("Mean values (M)", "mean"),
             ],
-            description="Bottom-up pathways:",
+            description="Value displayed for bottom-up pathways:",
             value="mean",
         )
 
@@ -662,7 +662,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label="Base, excluding resource",
+                            label="Pathway base",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -721,7 +721,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"Base - {resource}",
+                                label=resource,
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -846,7 +846,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name}, excluding resource",
+                                label=process_name,
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -918,7 +918,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_capex,
                             edgecolor="black",
-                            label="Capex (vintage)",
+                            label="Pathway, Capex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -946,7 +946,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_fixed_opex,
                             edgecolor="black",
-                            label="Fixed opex (vintage)",
+                            label="Pathway, fixed Opex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -976,13 +976,13 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_variable_opex,
                             edgecolor="black",
-                            label="Variable opex (vintage)",
+                            label="Pathway, variable Opex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
                     )
 
-                # Ressources vintage
+                # Resources vintage
                 for resource in p.resources_used:
                     color = self.resource_color_map.get(("main", resource), None)
                     res_col = f"{p.name}_excluding_processes_{resource}_vintage_unit_cost"
@@ -1004,7 +1004,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"Ressource {resource} (vintage)",
+                                label=f"Pathway, {resource} (V)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1032,13 +1032,13 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name}, {resource} (vintage)",
+                                label=f"{process_name}, {resource} (V)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
 
-                # Capex, opex process vintage (sans ressource)
+                # Capex, opex process vintage (sans Resource)
                 for process_name in p.resources_used_processes.keys():
                     color = self.resource_color_map.get(
                         (process_name, "without_resources_unit_cost"), None
@@ -1062,7 +1062,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} capex (vintage)",
+                                label=f"{process_name}, Capex (V)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1090,7 +1090,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} fixed opex (vintage)",
+                                label=f"{process_name}, fixed Opex (V)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1118,7 +1118,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} variable opex (vintage)",
+                                label=f"{process_name}, variable Opex (V)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1177,7 +1177,7 @@ class DetailledMFSPBreakdown:
                         label=None,
                     )
 
-                # Net MFSP overlay (ligne)
+                # Net MFSP overlay
                 net_col = f"{p.name}_net_mfsp"
                 if net_col in self.df.columns:
                     net_val = self.df.loc[year, net_col]
@@ -1226,7 +1226,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_capex,
                             edgecolor="black",
-                            label="Capex (mean)",
+                            label="Pathway, Capex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -1254,7 +1254,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_fixed_opex,
                             edgecolor="black",
-                            label="Fixed opex (mean)",
+                            label="Pathway, fixed Opex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -1284,13 +1284,13 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color_variable_opex,
                             edgecolor="black",
-                            label="Variable opex (mean)",
+                            label="Pathway, variable Opex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
                     )
 
-                # Ressources mean
+                # Resources mean
                 for resource in p.resources_used:
                     color = self.resource_color_map.get(("main", resource), None)
                     res_col = f"{p.name}_excluding_processes_{resource}_mean_unit_cost"
@@ -1312,7 +1312,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"Ressource {resource} (mean)",
+                                label=f"Pathway, {resource} (M)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1340,13 +1340,13 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name}, {resource} (mean)",
+                                label=f"{process_name}, {resource} (M)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
                         )
 
-                # Capex, opex process mean (sans ressource)
+                # Capex, opex process mean
                 for process_name in p.resources_used_processes.keys():
                     color = self.resource_color_map.get(
                         (process_name, "without_resources_unit_cost"), None
@@ -1370,7 +1370,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} capex (mean)",
+                                label=f"{process_name}, Capex (M)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1398,7 +1398,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} fixed opex (mean)",
+                                label=f"{process_name}, fixed Opex (M)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1426,7 +1426,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name} variable opex (mean)",
+                                label=f"{process_name}, variable opex (M)",
                                 alpha=0.8,
                                 hatch=self.hatch_map["cost"],
                             )
@@ -1557,7 +1557,9 @@ class DetailledMFSPBreakdown:
         pathway_handles = unique_pathway_handles
 
         bar_type_handles = [
-            Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="MFSP"),
+            Patch(
+                facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="Cost/MFSP"
+            ),
             Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["tax"], label="Tax"),
             Patch(
                 facecolor="none",
@@ -1590,7 +1592,7 @@ class DetailledMFSPBreakdown:
 
         self.ax.grid(axis="y")
         self.ax.set_title("Mean MFSP breakdown for year " + str(year))
-        self.ax.set_ylabel("MFSP [€/MJ]")
+        self.ax.set_ylabel("MFSP/Cost [€/MJ]")
 
         self.ax.set_xticks(self.ax.get_xticks())
         self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=-30, ha="left")
@@ -1664,9 +1666,7 @@ class DetailledMFSPBreakdown:
                     zorder=2,
                 )
                 base += mfsp_vals
-                pathway_handles.append(
-                    Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
-                )
+                pathway_handles.append(Patch(facecolor=color, edgecolor="black", label="Base cost"))
 
             # Taxes on base
             tax_col = p.name + "_mean_unit_tax_without_resource"
@@ -1705,7 +1705,7 @@ class DetailledMFSPBreakdown:
 
             if np.any(mfsp_vals != 0) or np.any(subsidy_vals != 0) or np.any(tax_vals != 0):
                 pathway_handles.append(
-                    Patch(facecolor=color, edgecolor="black", label="Base, excluding resource")
+                    Patch(facecolor=color, edgecolor="black", label="Pathway base")
                 )
 
             # Pathway-specific resources
@@ -1760,7 +1760,7 @@ class DetailledMFSPBreakdown:
                     neg_base = neg_top
                 if np.any(cost_vals != 0) or np.any(tax_vals != 0) or np.any(subsidy_vals != 0):
                     pathway_handles.append(
-                        Patch(facecolor=color, edgecolor="black", label=f"Base - {resource}")
+                        Patch(facecolor=color, edgecolor="black", label=resource)
                     )
 
             # Resources used by each process
@@ -1841,6 +1841,45 @@ class DetailledMFSPBreakdown:
                         zorder=2,
                     )
                     base += cost_vals
+                subsidy_col = p.name + "_" + process_name + "_without_resources_mean_unit_subsidy"
+                subsidy_vals = get_vals(subsidy_col)
+                if np.any(subsidy_vals != 0):
+                    neg_top = neg_base - subsidy_vals
+                    self.ax.fill_between(
+                        years_subset,
+                        neg_base,
+                        neg_top,
+                        facecolor=color,
+                        hatch=self.hatch_map["subsidy"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    neg_base = neg_top
+                tax_col = p.name + "_" + process_name + "_without_resources_mean_unit_tax"
+                tax_vals = get_vals(tax_col)
+                if np.any(tax_vals != 0):
+                    self.ax.fill_between(
+                        years_subset,
+                        base,
+                        base + tax_vals,
+                        facecolor=color,
+                        hatch=self.hatch_map["tax"],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=alpha,
+                        zorder=2,
+                    )
+                    base += tax_vals
+                if np.any(cost_vals != 0) or np.any(tax_vals != 0) or np.any(subsidy_vals != 0):
+                    pathway_handles.append(
+                        Patch(
+                            facecolor=color,
+                            edgecolor="black",
+                            label=process_name,
+                        )
+                    )
 
         # Plot inactive years (alpha=0.3) only if self.show_only_used is False
         if not self.show_only_used:
@@ -1896,7 +1935,9 @@ class DetailledMFSPBreakdown:
                 seen.add(h.get_label())
 
         bar_type_handles = [
-            Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="Cost"),
+            Patch(
+                facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="MFSP/Cost"
+            ),
             Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["tax"], label="Tax"),
             Patch(
                 facecolor="none",
@@ -1910,7 +1951,7 @@ class DetailledMFSPBreakdown:
                 hatch=self.hatch_map["carbon_tax"],
                 label="Carbon tax",
             ),
-            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP"),
+            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP/Cost"),
         ]
 
         legend1 = self.ax.legend(
@@ -1997,7 +2038,7 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_capex,
                         edgecolor="black",
-                        label="Capex (vintage)",
+                        label="Pathway, Capex (V)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
@@ -2024,7 +2065,7 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_fixed_opex,
                         edgecolor="black",
-                        label="Fixed opex (vintage)",
+                        label="Pathway, fixed Opex (V)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
@@ -2051,13 +2092,13 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_variable_opex,
                         edgecolor="black",
-                        label="Variable opex (vintage)",
+                        label="Pathway, variable Opex (V)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
                 )
 
-            # Ressources vintage
+            # Resources vintage
             for resource in p.resources_used:
                 color = self.resource_color_map.get(("main", resource), None)
                 res_col = f"{p.name}_excluding_processes_{resource}_vintage_unit_cost"
@@ -2079,7 +2120,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"Ressource {resource} (vintage)",
+                            label=f"Pathway, {resource} (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2107,13 +2148,13 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name}, {resource} (vintage)",
+                            label=f"{process_name}, {resource} (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
                     )
 
-            # Capex, opex process vintage (sans ressource)
+            # Capex, opex process vintage (sans Resource)
             for process_name in p.resources_used_processes.keys():
                 color = self.resource_color_map.get(
                     (process_name, "without_resources_unit_cost"), None
@@ -2137,7 +2178,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} capex (vintage)",
+                            label=f"{process_name}, Capex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2161,7 +2202,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} fixed opex (vintage)",
+                            label=f"{process_name}, fixed Opex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2185,7 +2226,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} variable opex (vintage)",
+                            label=f"{process_name}, variable Opex (V)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2257,7 +2298,7 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_capex,
                         edgecolor="black",
-                        label="Capex (mean)",
+                        label="Pathway, Capex (M)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
@@ -2284,7 +2325,7 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_fixed_opex,
                         edgecolor="black",
-                        label="Fixed opex (mean)",
+                        label="Pathway, fixed Opex (M)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
@@ -2311,13 +2352,13 @@ class DetailledMFSPBreakdown:
                     Patch(
                         facecolor=color_variable_opex,
                         edgecolor="black",
-                        label="Variable opex (mean)",
+                        label="Pathway, variable Opex (M)",
                         alpha=0.8,
                         hatch=self.hatch_map["cost"],
                     )
                 )
 
-            # Ressources mean
+            # Resources mean
             for resource in p.resources_used:
                 color = self.resource_color_map.get(("main", resource), None)
                 res_col = f"{p.name}_excluding_processes_{resource}_mean_unit_cost"
@@ -2339,7 +2380,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"Ressource {resource} (mean)",
+                            label=f"Pathway, {resource} (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2367,13 +2408,13 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name}, {resource} (mean)",
+                            label=f"{process_name}, {resource} (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
                     )
 
-            # Capex, opex process mean (sans ressource)
+            # Capex, opex process mean (sans Resource)
             for process_name in p.resources_used_processes.keys():
                 color = self.resource_color_map.get(
                     (process_name, "without_resources_unit_cost"), None
@@ -2397,7 +2438,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} capex (mean)",
+                            label=f"{process_name}, Capex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2421,7 +2462,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} fixed opex (mean)",
+                            label=f"{process_name}, fixed Opex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2445,7 +2486,7 @@ class DetailledMFSPBreakdown:
                         Patch(
                             facecolor=color,
                             edgecolor="black",
-                            label=f"{process_name} variable opex (mean)",
+                            label=f"{process_name}, variable Opex (M)",
                             alpha=0.8,
                             hatch=self.hatch_map["cost"],
                         )
@@ -2542,7 +2583,9 @@ class DetailledMFSPBreakdown:
                 seen.add(h.get_label())
 
         bar_type_handles = [
-            Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="Cost"),
+            Patch(
+                facecolor="none", edgecolor="black", hatch=self.hatch_map["cost"], label="MFSP/Cost"
+            ),
             Patch(facecolor="none", edgecolor="black", hatch=self.hatch_map["tax"], label="Tax"),
             Patch(
                 facecolor="none",
@@ -2556,7 +2599,7 @@ class DetailledMFSPBreakdown:
                 hatch=self.hatch_map["carbon_tax"],
                 label="Carbon tax",
             ),
-            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP"),
+            Line2D([0], [0], color="black", linewidth=2, label="Net MFSP/Cost"),
         ]
 
         legend1 = self.ax.legend(
