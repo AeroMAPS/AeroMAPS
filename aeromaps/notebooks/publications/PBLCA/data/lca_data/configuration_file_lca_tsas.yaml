@@ -41,15 +41,15 @@ premise:
 
 model:
         
-    contrails:
-        custom_attributes:
-            - attribute: 'phase'
-              value: 'non-CO2 contrails'
-        amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending?
-        name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
-        categories:
-            - 'air'
-            - 'lower stratosphere + upper troposphere'
+    #contrails:
+    #    custom_attributes:
+    #        - attribute: 'phase'
+    #          value: 'non-CO2 contrails'
+    #    amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending?
+    #    name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+    #    categories:
+    #        - 'air'
+    #        - 'lower stratosphere + upper troposphere'
             
             
     #co2_concentration:
@@ -473,27 +473,29 @@ custom_methods:
          
     # PBLCIA (without climate change (concentration) and land-system change)
       
-    - name: "('Custom methods', 'PBLCIA - Climate change (radiative forcing)')"
+    - name: "('PBLCIA', 'climate change', 'radiative forcing')"
       filepath: './data/lca_data/lcia_pblcia_climate_change_radiative_forcing.csv'
+      #unit: 'W/m2'
       
-    - name: "('Custom methods', 'PBLCIA - Biosphere integrity (land use)')"
+    - name: "('PBLCIA', 'biosphere integrity', 'land use')"
       filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_land_use.csv'
       
-    #- name: "('Custom methods', 'PBLCIA - Biosphere integrity (climate change)')"
+    #- name: "('PBLCIA', 'biosphere integrity', 'climate change')"
     #  filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_climate_change.csv'
     #  
-    #- name: "('Custom methods', 'PBLCIA - Biosphere integrity (total)')"
+    #- name: "('PBLCIA', 'biosphere integrity', 'total')"
     #  filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_total.csv'
-    #  
-    - name: "('Custom methods', 'PBLCIA - Nitrogen cycle')"
+    #
+    
+    - name: "('PBLCIA', 'biogeochemical', 'nitrogen cycle')"
       filepath: './data/lca_data/lcia_pblcia_nitrogen_cycle.csv'
       
-    - name: "('Custom methods', 'PBLCIA - Phosphorus cycle')"
+    - name: "('PBLCIA', 'biogeochemical', 'phosphorus cycle')"
       filepath: './data/lca_data/lcia_pblcia_phosphorus_cycle.csv'
       
-    - name: "('Custom methods', 'PBLCIA - Freshwater use')"
+    - name: "('PBLCIA', 'freshwater change', 'freshwater use')"
       filepath: './data/lca_data/lcia_pblcia_freshwater_use.csv'
       
-    - name: "('Custom methods', 'PBLCIA - Stratospheric ozone depletion')"
+    - name: "('PBLCIA', 'stratospheric ozone depletion', 'ozone depletion')"
       filepath: './data/lca_data/lcia_pblcia_stratospheric_ozone_depletion.csv'
     

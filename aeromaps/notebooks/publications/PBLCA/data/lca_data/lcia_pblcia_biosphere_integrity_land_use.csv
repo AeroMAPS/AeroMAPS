@@ -1,239 +1,39 @@
-name;categories;amount;unit
-Occupation, annual crop;natural resource::land;6,92308E-13;m2
-Occupation, annual crop, greenhouse;natural resource::land;6,92308E-13;m2
-Occupation, annual crop, irrigated;natural resource::land;6,92308E-13;m2
-Occupation, annual crop, irrigated, extensive;natural resource::land;5,38462E-13;m2
-Occupation, annual crop, irrigated, intensive;natural resource::land;6,92308E-13;m2
-Occupation, annual crop, non-irrigated;natural resource::land;6,92308E-13;m2
-Occupation, annual crop, non-irrigated, extensive;natural resource::land;5,38462E-13;m2
-Occupation, annual crop, non-irrigated, intensive;natural resource::land;6,92308E-13;m2
-Occupation, arable land, unspecified use;natural resource::land;6,92308E-13;m2
-Occupation, construction site;natural resource::land;7,30769E-13;m2
-Occupation, dump site;natural resource::land;7,30769E-13;m2
-Occupation, forest, extensive;natural resource::land;2,30769E-13;m2
-Occupation, forest, intensive;natural resource::land;6,15385E-13;m2
-Occupation, forest, secondary (non-use);natural resource::land;3,84615E-13;m2
-Occupation, forest, unspecified;natural resource::land;3,84615E-13;m2
-Occupation, heterogeneous, agricultural;natural resource::land;3,84615E-13;m2
-Occupation, industrial area;natural resource::land;7,30769E-13;m2
-Occupation, mineral extraction site;natural resource::land;7,30769E-13;m2
-Occupation, pasture, man made;natural resource::land;6,92308E-13;m2
-Occupation, pasture, man made, extensive;natural resource::land;2,30769E-13;m2
-Occupation, pasture, man made, intensive;natural resource::land;6,92308E-13;m2
-Occupation, permanent crop;natural resource::land;6,92308E-13;m2
-Occupation, permanent crop, irrigated;natural resource::land;6,92308E-13;m2
-Occupation, permanent crop, irrigated, extensive;natural resource::land;5,38462E-13;m2
-Occupation, permanent crop, irrigated, intensive;natural resource::land;6,92308E-13;m2
-Occupation, permanent crop, non-irrigated;natural resource::land;6,92308E-13;m2
-Occupation, permanent crop, non-irrigated, extensive;natural resource::land;5,38462E-13;m2
-Occupation, permanent crop, non-irrigated, intensive;natural resource::land;6,92308E-13;m2
-Occupation, river, artificial;natural resource::land;7,69231E-13;m2
-Occupation, lake, artificial;natural resource::land;7,69231E-13;m2
-Occupation, shrub land, sclerophyllous;natural resource::land;0;m2
-Occupation, traffic area, rail network;natural resource::land;7,30769E-13;m2
-Occupation, traffic area, rail/road embankment;natural resource::land;7,30769E-13;m2
-Occupation, traffic area, road network;natural resource::land;7,30769E-13;m2
-Occupation, urban, continuously built;natural resource::land;7,30769E-13;m2
-Occupation, urban, discontinuously built;natural resource::land;7,30769E-13;m2
-Occupation, urban, green area;natural resource::land;7,30769E-13;m2
-Occupation, urban/industrial fallow (non-use);natural resource::land;7,30769E-13;m2
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
+name,categories,amount,unit
+"Occupation, annual crop",natural resource::land,6.92308E-13,m2
+"Occupation, annual crop, greenhouse",natural resource::land,6.92308E-13,m2
+"Occupation, annual crop, irrigated",natural resource::land,6.92308E-13,m2
+"Occupation, annual crop, irrigated, extensive",natural resource::land,5.38462E-13,m2
+"Occupation, annual crop, irrigated, intensive",natural resource::land,6.92308E-13,m2
+"Occupation, annual crop, non-irrigated",natural resource::land,6.92308E-13,m2
+"Occupation, annual crop, non-irrigated, extensive",natural resource::land,5.38462E-13,m2
+"Occupation, annual crop, non-irrigated, intensive",natural resource::land,6.92308E-13,m2
+"Occupation, arable land, unspecified use",natural resource::land,6.92308E-13,m2
+"Occupation, construction site",natural resource::land,7.30769E-13,m2
+"Occupation, dump site",natural resource::land,7.30769E-13,m2
+"Occupation, forest, extensive",natural resource::land,2.30769E-13,m2
+"Occupation, forest, intensive",natural resource::land,6.15385E-13,m2
+"Occupation, forest, secondary (non-use)",natural resource::land,3.84615E-13,m2
+"Occupation, forest, unspecified",natural resource::land,3.84615E-13,m2
+"Occupation, heterogeneous, agricultural",natural resource::land,3.84615E-13,m2
+"Occupation, industrial area",natural resource::land,7.30769E-13,m2
+"Occupation, mineral extraction site",natural resource::land,7.30769E-13,m2
+"Occupation, pasture, man made",natural resource::land,6.92308E-13,m2
+"Occupation, pasture, man made, extensive",natural resource::land,2.30769E-13,m2
+"Occupation, pasture, man made, intensive",natural resource::land,6.92308E-13,m2
+"Occupation, permanent crop",natural resource::land,6.92308E-13,m2
+"Occupation, permanent crop, irrigated",natural resource::land,6.92308E-13,m2
+"Occupation, permanent crop, irrigated, extensive",natural resource::land,5.38462E-13,m2
+"Occupation, permanent crop, irrigated, intensive",natural resource::land,6.92308E-13,m2
+"Occupation, permanent crop, non-irrigated",natural resource::land,6.92308E-13,m2
+"Occupation, permanent crop, non-irrigated, extensive",natural resource::land,5.38462E-13,m2
+"Occupation, permanent crop, non-irrigated, intensive",natural resource::land,6.92308E-13,m2
+"Occupation, river, artificial",natural resource::land,7.69231E-13,m2
+"Occupation, lake, artificial",natural resource::land,7.69231E-13,m2
+"Occupation, shrub land, sclerophyllous",natural resource::land,0,m2
+"Occupation, traffic area, rail network",natural resource::land,7.30769E-13,m2
+"Occupation, traffic area, rail/road embankment",natural resource::land,7.30769E-13,m2
+"Occupation, traffic area, road network",natural resource::land,7.30769E-13,m2
+"Occupation, urban, continuously built",natural resource::land,7.30769E-13,m2
+"Occupation, urban, discontinuously built",natural resource::land,7.30769E-13,m2
+"Occupation, urban, green area",natural resource::land,7.30769E-13,m2
+"Occupation, urban/industrial fallow (non-use)",natural resource::land,7.30769E-13,m2
