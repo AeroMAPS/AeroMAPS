@@ -166,6 +166,8 @@ class BottomUpCost(AeroMAPSModel):
 
         if configuration_data.get("compute_all_years"):
             self.compute_all_years = True
+        else:
+            self.compute_all_years = False
 
     def compute(self, input_data) -> dict:
         optional_nan_series = pd.Series(

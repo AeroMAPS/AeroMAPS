@@ -138,6 +138,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
         if configuration_data.get("compute_all_years"):
             self.compute_all_years = True
+        else:
+            self.compute_all_years = False
 
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(

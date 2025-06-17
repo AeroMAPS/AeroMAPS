@@ -28,8 +28,6 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
         covid_energy_intensity_per_ask_increase_2020: float,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[dict, dict, dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
@@ -104,9 +102,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
                 # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-                extra_cost_fuel = (
-                    aircraft_energy_delta * cac_reference_mfsp / (lhv_kerosene * density_kerosene)
-                )
+                extra_cost_fuel = aircraft_energy_delta * cac_reference_mfsp
 
                 extra_emissions = (
                     -aircraft_energy_delta * cac_reference_co2_emission_factor
@@ -304,8 +300,6 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         cac_reference_mfsp: pd.Series,
         cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
@@ -350,15 +344,9 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
         # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-        extra_cost_fuel_dropin = (
-            aircraft_energy_delta_dropin * cac_reference_mfsp / (lhv_kerosene * density_kerosene)
-        )
-        extra_cost_fuel_hydrogen = (
-            aircraft_energy_delta_hydrogen * cac_reference_mfsp / (lhv_kerosene * density_kerosene)
-        )
-        extra_cost_fuel_electric = (
-            aircraft_energy_delta_electric * cac_reference_mfsp / (lhv_kerosene * density_kerosene)
-        )
+        extra_cost_fuel_dropin = aircraft_energy_delta_dropin * cac_reference_mfsp
+        extra_cost_fuel_hydrogen = aircraft_energy_delta_hydrogen * cac_reference_mfsp
+        extra_cost_fuel_electric = aircraft_energy_delta_electric * cac_reference_mfsp
 
         extra_emissions_dropin = (
             -aircraft_energy_delta_dropin * cac_reference_co2_emission_factor
@@ -628,8 +616,6 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         cac_reference_mfsp: pd.Series,
         cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
@@ -658,9 +644,7 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
         # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-        extra_cost_fuel_mean = (
-            aircraft_energy_delta_mean * cac_reference_mfsp / (lhv_kerosene * density_kerosene)
-        )
+        extra_cost_fuel_mean = aircraft_energy_delta_mean * cac_reference_mfsp
 
         extra_emissions_dropin = (
             -aircraft_energy_delta_mean * cac_reference_co2_emission_factor

@@ -53,7 +53,7 @@ class DropinAbatementPotential(AeroMAPSModel):
         pd.Series,
     ]:
         """Maximal and effective abatement potential through biofuel usage under the allocated biomass hypothesis."""
-
+        # TODO : on the deletion list
         ##### Maximal #####
 
         energy_avail_atj = (
@@ -241,6 +241,8 @@ class EnergyAbatementEffective(AeroMAPSModel):
     ]:
         """Maximal and effective abatement potential through biofuel usage under the allocated biomass hypothesis."""
         ##### Effective #####
+
+        # TODO : on the deletion list
         abatement_effective_atj = (
             biomass_atj_consumption
             * 10**12

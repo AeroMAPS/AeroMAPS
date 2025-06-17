@@ -4,6 +4,7 @@ from aeromaps.models.base import AeroMAPSModel
 from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
     EnergyCarrierManager,
 )
+from aeromaps.utils.functions import custom_series_addition
 
 
 class EnergyResourceConsumption(AeroMAPSModel):
@@ -92,12 +93,14 @@ class EnergyResourceConsumption(AeroMAPSModel):
         for pathway in self.pathways_manager.get(
             resources_used=self.resource_name
         ) + self.pathways_manager.get(resources_used_processes=self.resource_name):
-            total_resource_consumption += input_data[
-                f"{pathway.name}_{self.resource_name}_total_consumption"
-            ]
-            total_resource_mobilised_with_selectivity += input_data[
-                f"{pathway.name}_{self.resource_name}_total_mobilised_with_selectivity"
-            ]
+            total_resource_consumption = custom_series_addition(
+                total_resource_consumption,
+                input_data[f"{pathway.name}_{self.resource_name}_total_consumption"],
+            )
+            total_resource_mobilised_with_selectivity = custom_series_addition(
+                total_resource_mobilised_with_selectivity,
+                input_data[f"{pathway.name}_{self.resource_name}_total_mobilised_with_selectivity"],
+            )
 
         output_data[f"{self.resource_name}_total_consumption"] = total_resource_consumption
         output_data[f"{self.resource_name}_total_necessary_with_selectivity"] = (
@@ -217,8 +220,12 @@ class OverallResourcesConsumption(AeroMAPSModel):
                 input_data[f"{resource}_availability_aviation_allocated_share"] / 100 * availability
             )
 
-            origin_consumption[origin] += total_consumption
-            origin_necessary[origin] += total_necessary
+            origin_consumption[origin] = custom_series_addition(
+                origin_consumption[origin], total_consumption
+            )
+            origin_necessary[origin] = custom_series_addition(
+                origin_necessary[origin], total_necessary
+            )
             origin_availability[origin] += availability
             origin_availability_aviation_allocated[origin] += availability_aviation_allocated
 

@@ -40,10 +40,6 @@ from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import (
 from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
     EnergyCarriersMassicShares,
 )
-from aeromaps.models.impacts.energy_resources.abatement_potential import (
-    DropinAbatementPotential,
-    EnergyAbatementEffective,
-)
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
     RPK,
@@ -397,7 +393,7 @@ models_sustainability_without_equivalent_emissions = {
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
 }
 
-
+# TODO DELTE THIS
 models_energy_cost_complex = {
     "biofuel_capex": BiofuelCapex("biofuel_capex"),
     "kerosene_market_price": KerosenePrice("kerosene_market_price"),
@@ -442,10 +438,13 @@ models_energy_cost_complex = {
     "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
 }
 
-models_energy_cost_simple = {
+models_energy_cost = {
     "carbon_tax": CarbonTax("carbon_tax"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
+        "exogenous_carbon_price_trajectory"
+    ),
 }
 
 
@@ -522,7 +521,7 @@ models_production_cost = {
 }
 
 models_abatements_cost = {
-    "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
+    # "drop_in_abatement_potential": DropinAbatementPotential("drop_in_abatement_potential"),
     # "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_abatement_cost": FleetCarbonAbatementCosts("fleet_abatement_cost"),
@@ -533,7 +532,7 @@ models_abatements_cost = {
 
 
 models_abatements_cost_simplified = {
-    "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
+    # "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
     "fleet_top_down_carbon_abatement_cost": FleetTopDownCarbonAbatementCost(
         "fleet_top_down_carbon_abatement_cost"
@@ -551,7 +550,7 @@ default_models_top_down = {
     "models_offset": models_offset,
     "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
     "models_sustainability": models_sustainability,
-    "models_energy_cost_simple": models_energy_cost_simple,
+    "models_energy_cost": models_energy_cost,
     "models_operation_cost_top_down": models_operation_cost_top_down,
 }
 
