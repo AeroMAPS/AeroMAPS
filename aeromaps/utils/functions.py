@@ -225,7 +225,7 @@ def create_partitioning(file, path=""):
     climate_world_data_path = pth.join(
         climate_data.__path__[0], "temperature_historical_dataset.csv"
     )
-    climate_world_data_df = pd.read_csv(climate_world_data_path, delimiter=";")
+    climate_world_data_df = pd.read_csv(climate_world_data_path, delimiter=";", header=None)
     climate_world_data = climate_world_data_df.values
     climate_world_data_years = climate_world_data[:, 0]
     climate_world_data_co2_emissions = climate_world_data[:, 1]
@@ -267,6 +267,9 @@ def create_partitioning(file, path=""):
         partitioned_historical_climate_dataset[k, 6] = climate_partitioned_data_distance[k]
     climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
+
+    print(partitioned_historical_climate_dataset.shape)
+    print(climate_world_data_df.shape)
 
     return
 
