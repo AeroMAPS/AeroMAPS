@@ -491,14 +491,12 @@ class SimpleCO2Emissions(AeroMAPSModel):
     def compute(
         self,
         energy_consumption_init: pd.Series,
-        biofuel_mean_emission_factor: pd.Series,
-        electrofuel_emission_factor: pd.Series,
-        kerosene_emission_factor: pd.Series,
-        liquid_hydrogen_mean_emission_factor: pd.Series,
-        energy_consumption_kerosene: pd.Series,
-        energy_consumption_biofuel: pd.Series,
-        energy_consumption_electrofuel: pd.Series,
+        dropin_fuel_mean_co2_emission_factor: pd.Series,
+        hydrogen_mean_co2_emission_factor: pd.Series,
+        electric_mean_co2_emission_factor: pd.Series,
+        energy_consumption_dropin_fuel: pd.Series,
         energy_consumption_hydrogen: pd.Series,
+        energy_consumption_electricity: pd.Series,
     ) -> pd.Series:
         """Simple CO2 emissions calculation."""
 
@@ -513,17 +511,20 @@ class SimpleCO2Emissions(AeroMAPSModel):
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df_climate.loc[k, "co2_emissions"] = (
-                kerosene_emission_factor.loc[k] / 10**12 * energy_consumption_init.loc[k]
+                dropin_fuel_mean_co2_emission_factor.loc[k]
+                / 10**12
+                * energy_consumption_init.loc[k]
             )
 
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df_climate.loc[k, "co2_emissions"] = (
-                biofuel_mean_emission_factor.loc[k] / 10**12 * energy_consumption_biofuel.loc[k]
-                + electrofuel_emission_factor.loc[k]
+                dropin_fuel_mean_co2_emission_factor.loc[k]
                 / 10**12
-                * energy_consumption_electrofuel.loc[k]
-                + kerosene_emission_factor.loc[k] / 10**12 * energy_consumption_kerosene.loc[k]
-                + liquid_hydrogen_mean_emission_factor.loc[k]
+                * energy_consumption_dropin_fuel.loc[k]
+                + electric_mean_co2_emission_factor.loc[k]
+                / 10**12
+                * energy_consumption_electricity.loc[k]
+                + hydrogen_mean_co2_emission_factor.loc[k]
                 / 10**12
                 * energy_consumption_hydrogen.loc[k]
             )
