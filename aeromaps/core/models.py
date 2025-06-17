@@ -24,19 +24,9 @@ from aeromaps.models.impacts.costs.energy.detailled.biofuel import (
     BiofuelFeedstock,
     BiofuelCapex,
 )
-from aeromaps.models.impacts.costs.energy.simple.biofuel_simple import (
-    BiofuelCostSimple,
-    BiofuelMfspSimple,
-)
+
 from aeromaps.models.impacts.costs.energy.simple.electricity_direct_use import ElectricityDirectUse
-from aeromaps.models.impacts.costs.energy.simple.liquid_hydrogen_simple import (
-    HydrogenCostSimple,
-    HydrogenMfspSimple,
-)
-from aeromaps.models.impacts.costs.energy.simple.power_to_liquid_simple import (
-    ElectrofuelCostSimple,
-    ElectrofuelMfspSimple,
-)
+
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -103,10 +93,6 @@ from aeromaps.models.air_transport.aircraft_energy.production_choices import (
     BiofuelProduction,
     HydrogenProduction,
 )
-from aeromaps.models.sustainability_assessment.energy.resources_availability import (
-    BiomassAvailability,
-    ElectricityAvailability,
-)
 
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
     SimplifiedERFCo2,
@@ -156,7 +142,6 @@ from aeromaps.models.impacts.others.others import (
 from aeromaps.models.impacts.others.comparison import (
     CarbonBudgetConsumedShare,
     EquivalentCarbonBudgetConsumedShare,
-    ResourcesConsumedShare,
 )
 from aeromaps.models.impacts.emissions.carbon_offset import (
     LevelCarbonOffset,
@@ -282,17 +267,6 @@ models_efficiency_bottom_up = {
 }
 
 models_energy_without_fuel_effect = {
-    "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
-    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency(
-        "electricity_based_fuel_efficiency"
-    ),
-    "biofuel_emission_factor": BiofuelEmissionFactor("biofuel_emission_factor"),
-    "electricity_emission_factor": ElectricityEmissionFactor("electricity_emission_factor"),
-    "hydrogen_emission_factor": HydrogenEmissionFactor("hydrogen_emission_factor"),
-    "electrofuel_emission_factor": ElectrofuelEmissionFactor("electrofuel_emission_factor"),
-    "kerosene_emission_factor": KeroseneEmissionFactor("kerosene_emission_factor"),
-    "biofuel_production": BiofuelProduction("biofuel_production"),
-    "hydrogen_production": HydrogenProduction("hydrogen_production"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "drop_in_fuel_detailed_consumption": DropInFuelDetailledConsumption(
         "drop_in_fuel_detailed_consumption"
@@ -300,8 +274,6 @@ models_energy_without_fuel_effect = {
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
-    "biomass_consumption": BiomassConsumption("biomass_consumption"),
-    "electricity_consumption": ElectricityConsumption("electricity_consumption"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
         "dropin_fuel_consumption_liter_per_pax_100km"
     ),
@@ -413,22 +385,16 @@ models_climate_fair = {
 models_sustainability = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
-    "biomass_availability": BiomassAvailability("biomass_availability"),
-    "electricity_availability": ElectricityAvailability("electricity_availability"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
         "equivalent_carbon_budget_consumed_share"
     ),
-    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 
 models_sustainability_without_equivalent_emissions = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
-    "biomass_availability": BiomassAvailability("biomass_availability"),
-    "electricity_availability": ElectricityAvailability("electricity_availability"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
 }
 
 
@@ -477,17 +443,6 @@ models_energy_cost_complex = {
 }
 
 models_energy_cost_simple = {
-    "kerosene_market_price": KerosenePrice("kerosene_market_price"),
-    "kerosene_cost": KeroseneCost("kerosene_cost"),
-    "biofuel_cost_simple": BiofuelCostSimple("biofuel_cost_simple"),
-    "biofuel_mfsp_simple": BiofuelMfspSimple("biofuel_mfsp_simple"),
-    "electrofuel_cost_simple": ElectrofuelCostSimple("electrofuel_cost_simple"),
-    "electrofuel_mfsp_simple": ElectrofuelMfspSimple("electrofuel_mfsp_simple"),
-    "hydrogen_cost_simple": HydrogenCostSimple("hydrogen_cost_simple"),
-    "hydrogen_mfsp_simple": HydrogenMfspSimple("hydrogen_mfsp_simple"),
-    "electricity_cost": ElectricityCost("electricity_cost"),
-    "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
-    "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
     "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),

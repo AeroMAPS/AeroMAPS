@@ -20,7 +20,7 @@ class BiomassAvailability(AeroMAPSModel):
         aviation_biomass_allocated_share: float,
     ) -> Tuple[float, float, float, float, float, float, float, float, float, float, float]:
         """Biomass distribution for waste and crops, Biomass availability and Biomass for aviation."""
-
+        # TODO ON DELETION LIST
         solid_waste_biomass = waste_biomass - fog_waste_biomass
         oil_crops_biomass = oil_crops_biomass_share / 100 * crops_biomass
         sugarystarchy_crops_biomass = sugarystarchy_crops_biomass_share / 100 * crops_biomass
@@ -83,6 +83,7 @@ class ElectricityAvailability(AeroMAPSModel):
         aviation_electricity_allocated_share: float,
     ) -> float:
         """Aviation electricity availability."""
+        # TODO ON DELETION LIST
         aviation_available_electricity = (
             aviation_electricity_allocated_share / 100 * available_electricity
         )

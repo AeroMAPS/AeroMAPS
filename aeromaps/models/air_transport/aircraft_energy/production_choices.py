@@ -22,7 +22,7 @@ class BiofuelProduction(AeroMAPSModel):
         biofuel_ft_msw_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biomass production calculation using interpolation functions"""
-
+        # TODO ON DELETION LIST
         # HEFA FOG
         biofuel_hefa_fog_share = AeromapsInterpolationFunction(
             self,
@@ -98,7 +98,7 @@ class HydrogenProduction(AeroMAPSModel):
         hydrogen_gas_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen production calculation using interpolation functions"""
-
+        # TODO ON DELETION LIST
         # Electrolysis
         hydrogen_electrolysis_share = AeromapsInterpolationFunction(
             self,

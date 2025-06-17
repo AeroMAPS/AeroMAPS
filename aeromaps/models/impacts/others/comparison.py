@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -49,23 +47,23 @@ class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
         return equivalent_carbon_budget_consumed_share
 
 
-class ResourcesConsumedShare(AeroMAPSModel):
-    def __init__(self, name="resources_consumed_share", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
-
-    def compute(
-        self,
-        biomass_consumption_end_year: float,
-        electricity_consumption_end_year: float,
-        available_biomass_total: float,
-        available_electricity: float,
-    ) -> Tuple[float, float]:
-        """Resources consumption share calculation."""
-
-        biomass_consumed_share = biomass_consumption_end_year / available_biomass_total * 100
-        electricity_consumed_share = electricity_consumption_end_year / available_electricity * 100
-
-        self.float_outputs["biomass_consumed_share"] = biomass_consumed_share
-        self.float_outputs["electricity_consumed_share"] = electricity_consumed_share
-
-        return biomass_consumed_share, electricity_consumed_share
+# class (AeroMAPSModel):
+#     def __init__(self, name="resources_consumed_share", *args, **kwargs):
+#         super().__init__(name=name, *args, **kwargs)
+#
+#     def compute(
+#         self,
+#         biomass_consumption_end_year: float,
+#         electricity_consumption_end_year: float,
+#         available_biomass_total: float,
+#         available_electricity: float,
+#     ) -> Tuple[float, float]:
+#         """Resources consumption share calculation."""
+#         # TODO ON DELETION LIST
+#         biomass_consumed_share = biomass_consumption_end_year / available_biomass_total * 100
+#         electricity_consumed_share = electricity_consumption_end_year / available_electricity * 100
+#
+#         self.float_outputs["biomass_consumed_share"] = biomass_consumed_share
+#         self.float_outputs["electricity_consumed_share"] = electricity_consumed_share
+#
+#         return biomass_consumed_share, electricity_consumed_share

@@ -21,7 +21,7 @@ class BiofuelEfficiency(AeroMAPSModel):
         biofuel_hefa_fuel_efficiency_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel production efficiency calculation using interpolation functions"""
-
+        # TODO ON DELETION LIST
         # FT
         biofuel_ft_efficiency = AeromapsInterpolationFunction(
             self,
@@ -80,7 +80,7 @@ class ElectricityBasedFuelEfficiency(AeroMAPSModel):
         electrofuel_hydrogen_efficiency_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Hydrogen and electrofuel production efficiency calculation using interpolation functions"""
-
+        # TODO ON DELETION LIST
         # Electrolysis
         electrolysis_efficiency = AeromapsInterpolationFunction(
             self,

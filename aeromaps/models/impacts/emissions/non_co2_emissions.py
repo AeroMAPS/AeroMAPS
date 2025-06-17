@@ -107,7 +107,6 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
 
     def custom_setup(self):
         # TODO caution aircraft types not generic there
-        # TODO CAUTION MODEL NOT TESTED => NEED TO CONVERT NOTEBOOK
         self.input_names = {
             "ask_long_range_dropin_fuel": pd.Series([0.0]),
             "ask_medium_range_dropin_fuel": pd.Series([0.0]),
@@ -357,7 +356,6 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 
     def custom_setup(self):
         # TODO caution aircraft types not generic there
-        # TODO CAUTION MODEL NOT TESTED => NEED TO CONVERT NOTEBOOK
         self.input_names = {
             "ask_long_range_dropin_fuel": pd.Series([0.0]),
             "ask_medium_range_dropin_fuel": pd.Series([0.0]),

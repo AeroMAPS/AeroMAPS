@@ -28,7 +28,7 @@ class BiofuelEmissionFactor(AeroMAPSModel):
         biofuel_atj_share: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Biofuel CO2 emission factor calculation using interpolation functions"""
-
+        # TODO ON DELETION LIST
         # HEFA FOG
         biofuel_hefa_fog_emission_factor = AeromapsInterpolationFunction(
             self,
@@ -105,7 +105,7 @@ class ElectricityEmissionFactor(AeroMAPSModel):
         electricity_emission_factor_reference_years_values: list,
     ) -> pd.Series:
         """Electricity CO2 emission factor calculation using interpolation function."""
-
+        # TODO ON DELETION LIST
         electricity_emission_factor = AeromapsInterpolationFunction(
             self,
             electricity_emission_factor_reference_years,
@@ -137,7 +137,7 @@ class HydrogenEmissionFactor(AeroMAPSModel):
         hydrogen_coal_share: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """Hydrogen CO2 emission factor calculation."""
-
+        # TODO ON DELETION LIST
         liquid_hydrogen_electrolysis_emission_factor = (
             electricity_emission_factor / 3.6 / electrolysis_efficiency / liquefaction_efficiency
         )
@@ -209,7 +209,7 @@ class ElectrofuelEmissionFactor(AeroMAPSModel):
         electrofuel_hydrogen_efficiency: pd.Series,
     ) -> pd.Series:
         """Electrofuel CO2 emission factor calculation."""
-
+        # TODO ON DELETION LIST
         electrofuel_emission_factor = (
             electricity_emission_factor
             / 3.6
@@ -232,7 +232,7 @@ class KeroseneEmissionFactor(AeroMAPSModel):
         kerosene_emission_factor_reference_years_values: list,
     ) -> pd.Series:
         """Kerosene CO2 emission factor calculation."""
-
+        # TODO ON DELETION LIST
         kerosene_emission_factor_prospective = AeromapsInterpolationFunction(
             self,
             kerosene_emission_factor_reference_years,

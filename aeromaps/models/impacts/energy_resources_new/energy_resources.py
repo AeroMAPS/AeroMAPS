@@ -152,16 +152,16 @@ class OverallResourcesConsumption(AeroMAPSModel):
         )
 
         # keep only resources whose availability is defined
-        self.resources_names = [
-            resource
+        self.resources_names_origins = {
+            resource: resources_data[resource].get("origin", "unknown")
             for resource in resources_data.keys()
             if f"{resource}_availability_global" in resources_data[resource]["specifications"]
-        ]
+        }
 
         # getting the unique origins of the resources
-        self.resources_origins = set(
-            resources_data[resource].get("origin", "unknown") for resource in self.resources_names
-        )
+        self.resources_origins = set(self.resources_names_origins.values())
+
+        self.resources_names = list(self.resources_names_origins.keys())
 
         # Dynamically build input/output names for all resources
         self.input_names = {}
@@ -182,7 +182,7 @@ class OverallResourcesConsumption(AeroMAPSModel):
             self.output_names[f"{origin}_necessary_global_share_with_selectivity"] = pd.Series(
                 [0.0]
             )
-            self.output_names[f"{origin}_overall_aviation_allocated_share"] = pd.Series([0.0])
+            self.output_names[f"{origin}_overall_aviation_allocated_share"] = 0.0
 
     def compute(self, input_data) -> dict:
         output_data = {}
@@ -201,7 +201,7 @@ class OverallResourcesConsumption(AeroMAPSModel):
 
         # Aggregate by origin
         for resource in self.resources_names:
-            origin = self.input_names.get(resource + "_origin", None)
+            origin = self.resources_names_origins.get(resource, None)
             if origin is None:
                 print(
                     f"Warning: No origin found for resource:{resource}, aggregate shares not computed."

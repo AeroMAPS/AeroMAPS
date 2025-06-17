@@ -26,7 +26,10 @@ from aeromaps.models.impacts.energy_carriers.bottom_up.environmental import (
 from aeromaps.models.impacts.energy_carriers.bottom_up.production_capacity import (
     BottomUpCapacity,
 )
-from aeromaps.models.impacts.energy_resources_new.energy_resources import EnergyResourceConsumption
+from aeromaps.models.impacts.energy_resources_new.energy_resources import (
+    EnergyResourceConsumption,
+    OverallResourcesConsumption,
+)
 
 
 class AviationEnergyCarriersFactory:
@@ -145,4 +148,12 @@ class AviationEnergyCarriersFactory:
                     )
                 }
             )
+        models.update(
+            {
+                "overall_resources_consumption": OverallResourcesConsumption(
+                    "overall_resources_consumption",
+                    resources_data,
+                ),
+            }
+        )
         return models

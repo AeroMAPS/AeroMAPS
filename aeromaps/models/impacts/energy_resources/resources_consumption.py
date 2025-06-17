@@ -23,7 +23,7 @@ class BiomassConsumption(AeroMAPSModel):
         biofuel_hefa_fuel_efficiency: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Biomass consumption calculation."""
-
+        # TODO ON DELETION LIST
         biomass_ft_consumption = (
             (biofuel_ft_others_share + biofuel_ft_msw_share)
             / 100
@@ -91,7 +91,7 @@ class ElectricityConsumption(AeroMAPSModel):
         electrofuel_hydrogen_efficiency: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, float]:
         """Electricity consumption calculation."""
-
+        # TODO ON DELETION LIST
         electricity_hydrogen_electrolysis_consumption = (
             hydrogen_electrolysis_share
             / 100
