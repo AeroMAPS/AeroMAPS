@@ -721,11 +721,15 @@ class BiomassResourceBudgetAssessmentPlot:
 
     def create_plot(self):
         # Data to plot
-        aviation_available_biomass = float(self.float_outputs["aviation_available_biomass"])
-        biomass_consumption_end_year = float(self.float_outputs["biomass_consumption_end_year"])
-        available_biomass_total = float(self.float_outputs["available_biomass_total"])
+        # CAUTION: This plot is not generic - oriented, although made compatible (ie, works only if "biomass" in resource conf file)
+        aviation_available_biomass = float(
+            self.float_outputs["biomass_availability_aviation_allocated"]
+        )
+        biomass_consumption = self.df["biomass_total_consumption"]
+        biomass_consumption_end_year = float(biomass_consumption[self.prospective_years[-1]])
+        available_biomass_total = float(self.float_outputs["biomass_availability_global"])
         aviation_biomass_allocated_share = float(
-            self.parameters["aviation_biomass_allocated_share"]
+            self.parameters["biomass_overall_aviation_allocated_share"]
         )
 
         # Plot
@@ -847,11 +851,15 @@ class BiomassResourceBudgetAssessmentPlot:
 
         self.ax.clear()
 
-        aviation_available_biomass = float(self.float_outputs["aviation_available_biomass"])
-        biomass_consumption_end_year = float(self.float_outputs["biomass_consumption_end_year"])
-        available_biomass_total = float(self.float_outputs["available_biomass_total"])
+        # CAUTION: This plot is not generic - oriented, although made compatible (ie, works only if "biomass" in resource conf file)
+        aviation_available_biomass = float(
+            self.float_outputs["biomass_availability_aviation_allocated"]
+        )
+        biomass_consumption = self.df["biomass_total_consumption"]
+        biomass_consumption_end_year = float(biomass_consumption[self.prospective_years[-1]])
+        available_biomass_total = float(self.float_outputs["biomass_availability_global"])
         aviation_biomass_allocated_share = float(
-            self.parameters["aviation_biomass_allocated_share"]
+            self.parameters["biomass_overall_aviation_allocated_share"]
         )
 
         # Plot
@@ -974,14 +982,17 @@ class ElectricityResourceBudgetAssessmentPlot:
         self.create_plot()
 
     def create_plot(self):
-        # Data to plot
-        aviation_available_electricity = float(self.float_outputs["aviation_available_electricity"])
-        electricity_consumption_end_year = float(
-            self.float_outputs["electricity_consumption_end_year"]
+        # Data to plot (updated to new input format)
+        aviation_available_electricity = float(
+            self.float_outputs["electricity_availability_aviation_allocated"]
         )
-        available_electricity = float(self.parameters["available_electricity"])
+        electricity_consumption = self.df["electricity_total_consumption"]
+        electricity_consumption_end_year = float(
+            electricity_consumption[self.prospective_years[-1]]
+        )
+        available_electricity = float(self.float_outputs["electricity_availability_global"])
         aviation_electricity_allocated_share = float(
-            self.parameters["aviation_electricity_allocated_share"]
+            self.parameters["electricity_overall_aviation_allocated_share"]
         )
 
         # Plot
@@ -1103,13 +1114,17 @@ class ElectricityResourceBudgetAssessmentPlot:
 
         self.ax.clear()
 
-        aviation_available_electricity = float(self.float_outputs["aviation_available_electricity"])
-        electricity_consumption_end_year = float(
-            self.float_outputs["electricity_consumption_end_year"]
+        # Data to plot (updated to new input format)
+        aviation_available_electricity = float(
+            self.float_outputs["electricity_availability_aviation_allocated"]
         )
-        available_electricity = float(self.parameters["available_electricity"])
+        electricity_consumption = self.df["electricity_total_consumption"]
+        electricity_consumption_end_year = float(
+            electricity_consumption[self.prospective_years[-1]]
+        )
+        available_electricity = float(self.float_outputs["electricity_availability_global"])
         aviation_electricity_allocated_share = float(
-            self.parameters["aviation_electricity_allocated_share"]
+            self.parameters["electricity_overall_aviation_allocated_share"]
         )
 
         # Plot
@@ -1238,15 +1253,21 @@ class MultidisciplinaryAssessmentPlot:
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
         cumulative_co2_emissions = float(self.df.loc[2050, "cumulative_co2_emissions"])
 
-        # Biomass
-        available_biomass_total = self.float_outputs["available_biomass_total"]
-        aviation_available_biomass = self.float_outputs["aviation_available_biomass"]
-        biomass_consumption_end_year = self.float_outputs["biomass_consumption_end_year"]
+        # Biomass (new input format)
+        available_biomass_total = self.float_outputs["biomass_availability_global"]
+        aviation_available_biomass = self.float_outputs["biomass_availability_aviation_allocated"]
+        biomass_consumption_end_year = float(
+            self.df["biomass_total_consumption"][self.prospective_years[-1]]
+        )
 
-        # Electricity
-        available_electricity_total = self.parameters["available_electricity"]
-        aviation_available_electricity = self.float_outputs["aviation_available_electricity"]
-        electricity_consumption_end_year = self.float_outputs["electricity_consumption_end_year"]
+        # Electricity (new input format)
+        available_electricity_total = self.float_outputs["electricity_availability_global"]
+        aviation_available_electricity = self.float_outputs[
+            "electricity_availability_aviation_allocated"
+        ]
+        electricity_consumption_end_year = float(
+            self.df["electricity_total_consumption"][self.prospective_years[-1]]
+        )
 
         # Effective radiative forcing
         equivalent_gross_carbon_budget = float(
@@ -1397,15 +1418,21 @@ class MultidisciplinaryAssessmentPlot:
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
         cumulative_co2_emissions = float(self.df.loc[2050, "cumulative_co2_emissions"])
 
-        # Biomass
-        available_biomass_total = self.float_outputs["available_biomass_total"]
-        aviation_available_biomass = self.float_outputs["aviation_available_biomass"]
-        biomass_consumption_end_year = self.float_outputs["biomass_consumption_end_year"]
+        # Biomass (new input format)
+        available_biomass_total = self.float_outputs["biomass_availability_global"]
+        aviation_available_biomass = self.float_outputs["biomass_availability_aviation_allocated"]
+        biomass_consumption_end_year = float(
+            self.df["biomass_total_consumption"][self.prospective_years[-1]]
+        )
 
-        # Electricity
-        available_electricity_total = self.parameters["available_electricity"]
-        aviation_available_electricity = self.float_outputs["aviation_available_electricity"]
-        electricity_consumption_end_year = self.float_outputs["electricity_consumption_end_year"]
+        # Electricity (new input format)
+        available_electricity_total = self.float_outputs["electricity_availability_global"]
+        aviation_available_electricity = self.float_outputs[
+            "electricity_availability_aviation_allocated"
+        ]
+        electricity_consumption_end_year = float(
+            self.df["electricity_total_consumption"][self.prospective_years[-1]]
+        )
 
         # Effective radiative forcing
         equivalent_gross_carbon_budget = float(
