@@ -2652,7 +2652,7 @@ class SimpleMFSP:
         mfsp_toggle = widgets.ToggleButtons(
             options=[
                 ("Net MFSP", "net_mfsp"),
-                ("MFSP", "mfsp"),
+                ("MFSP", "mean_mfsp"),
             ],
             description="MFSP type:",
             value="net_mfsp",

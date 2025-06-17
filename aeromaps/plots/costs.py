@@ -2232,8 +2232,6 @@ class AirfareEvolutionBreakdown:
         self.create_plot()
 
     def create_plot(self):
-        print(self.df.loc[self.prospective_years, "noc_carbon_offset_per_ask"])
-
         (self.line_total_airfare,) = self.ax.plot(
             self.prospective_years,
             self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
