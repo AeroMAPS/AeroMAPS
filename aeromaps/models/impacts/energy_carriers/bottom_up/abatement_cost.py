@@ -23,7 +23,6 @@ class EnergyAbatementCost(AeroMAPSModel):
 
         # Inputs needed: discounted costs, unitary emissions, discounted emissions
         self.input_names = {
-            f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_unitary_discounted_costs": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_unitary_emissions": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_discounted_unitary_emissions": pd.Series([0.0]),

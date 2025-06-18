@@ -165,11 +165,6 @@ class BottomUpCost(AeroMAPSModel):
                 [0.0]
             )
             self.input_names["social_discount_rate"] = 0.0
-            if not self.compute_all_years:
-                print(
-                    f"⚠️ Warning: for {self.pathway_name}, 'compute_all_years' option is set to False and 'compute_abatement_costs' to true. "
-                    "In case of diminishing energy demand, the CAC won't appear on the MACC for such years."
-                )
         else:
             self.compute_abatement_cost = False
 
@@ -207,6 +202,16 @@ class BottomUpCost(AeroMAPSModel):
             # plant production is potentially evaluated beyond scenario end year
             vintage_indexes = range(year, year + lifespan)
             vintage_mfsp = pd.Series(np.nan, index=vintage_indexes)
+            if (
+                energy_consumption[year] > 0
+                and needed_capacity <= 0
+                and self.compute_abatement_cost
+                and not self.compute_all_years
+            ):
+                print(
+                    f"⚠️ Warning:  for {self.pathway_name}, no plants commissioned in {year}. Unable to compute "
+                    f"CAC: compute_all_years = False. Set it true to avoid NaN values in the MACC for this year."
+                )
             if needed_capacity > 0 or self.compute_all_years:
                 if needed_capacity < 0:
                     warnings.warn(
