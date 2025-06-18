@@ -561,6 +561,6 @@ default_models_bottom_up = {
     "models_offset": models_offset,
     "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
     "models_sustainability": models_sustainability,
-    "models_energy_cost_complex": models_energy_cost_complex,
+    "models_energy_cost": models_energy_cost,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
 }

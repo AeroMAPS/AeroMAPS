@@ -121,7 +121,7 @@ available_plots = {
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
     "energy_capex": ScenarioEnergyCapitalPlot,
-    "energy_expenses_with_carbon_tax": ScenarioEnergyExpensesPlot,
+    "energy_expenses": ScenarioEnergyExpensesPlot,
     "energy_mfsp": SimpleMFSP,
     "energy_expenses_discounted": DiscountEffect,
     "energy_expenses_comparison": ScenarioEnergyExpensesComparison,

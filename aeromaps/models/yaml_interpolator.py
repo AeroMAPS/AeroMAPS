@@ -39,15 +39,21 @@ class YAMLInterpolator(AeroMAPSModel):
         self.output_names = {self.value_name: pd.Series([0.0])}
 
     def compute(self, input_data) -> dict:
-        interpolated_value = self._yaml_interpolation_function(
-            reference_years=input_data[f"{self.value_name}_years"],
-            reference_years_values=input_data[f"{self.value_name}_values"],
-            prospection_start_year=self.prospection_start_year,
-            end_year=self.end_year,
-            method=self.custom_data_type.method,
-            positive_constraint=self.custom_data_type.positive_constraint,
-            model_name=self.value_name,
-        )
+        try:
+            interpolated_value = self._yaml_interpolation_function(
+                reference_years=input_data[f"{self.value_name}_years"],
+                reference_years_values=input_data[f"{self.value_name}_values"],
+                prospection_start_year=self.prospection_start_year,
+                end_year=self.end_year,
+                method=self.custom_data_type.method,
+                positive_constraint=self.custom_data_type.positive_constraint,
+                model_name=self.value_name,
+            )
+        except Exception as e:
+            warnings.warn(
+                f"Error when interpolating '{self.value_name}' with '{self.custom_data_type}': {e}"
+            )
+            raise
 
         output_data = {self.value_name: interpolated_value}
         self._store_outputs(output_data)
