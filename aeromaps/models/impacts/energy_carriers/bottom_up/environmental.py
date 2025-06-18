@@ -116,8 +116,8 @@ class BottomUpEnvironmental(AeroMAPSModel):
         self.resource_keys = list(set(self.resource_keys))
 
         for key in self.resource_keys:
-            if f"{key}_mean_co2_emission_factor" in resources_data[key]["specifications"]:
-                self.input_names[f"{key}_mean_co2_emission_factor"] = pd.Series([0.0])
+            if f"{key}_co2_emission_factor" in resources_data[key]["specifications"]:
+                self.input_names[f"{key}_co2_emission_factor"] = pd.Series([0.0])
 
             self.output_names[f"{self.pathway_name}_{key}_total_consumption"] = pd.Series([0.0])
             self.output_names[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
@@ -259,7 +259,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                         # Get the CO2 emission factor for the resource
                         unit_emissions = input_data.get(
-                            f"{key}_mean_co2_emission_factor", optional_nan_series
+                            f"{key}_co2_emission_factor", optional_nan_series
                         )
                         # beyond sceanrio end year, we stick to last known value
                         unit_emissions = unit_emissions.reindex(
@@ -314,7 +314,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                             # Get the CO2 emission factor for the resource
                             unit_emissions = input_data.get(
-                                f"{key}_mean_co2_emission_factor", optional_nan_series
+                                f"{key}_co2_emission_factor", optional_nan_series
                             )
                             # beyond sceanrio end year, we stick to last known value
                             unit_emissions = unit_emissions.reindex(

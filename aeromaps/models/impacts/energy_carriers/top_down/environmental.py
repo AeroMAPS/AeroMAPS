@@ -108,8 +108,8 @@ class TopDownEnvironmental(AeroMAPSModel):
         self.resource_keys = list(set(self.resource_keys))
 
         for key in self.resource_keys:
-            if f"{key}_mean_co2_emission_factor" in resources_data[key]["specifications"]:
-                self.input_names[f"{key}_mean_co2_emission_factor"] = pd.Series([0.0])
+            if f"{key}_co2_emission_factor" in resources_data[key]["specifications"]:
+                self.input_names[f"{key}_co2_emission_factor"] = pd.Series([0.0])
 
             self.output_names[f"{self.pathway_name}_{key}_total_consumption"] = pd.Series([0.0])
             self.output_names[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"] = (
@@ -171,9 +171,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                     f"{self.pathway_name}_excluding_processes_{key}_total_mobilised_with_selectivity"
                 ] = ressource_required_with_selectivity
 
-                unit_emissions = input_data.get(
-                    f"{key}_mean_co2_emission_factor", optional_null_series
-                )
+                unit_emissions = input_data.get(f"{key}_co2_emission_factor", optional_null_series)
                 # get resource emission per unit of energy
                 co2_emission_factor_ressource = specific_consumption * unit_emissions
 
@@ -211,7 +209,7 @@ class TopDownEnvironmental(AeroMAPSModel):
                     ] = ressource_required_with_selectivity
 
                     unit_emissions = input_data.get(
-                        f"{key}_mean_co2_emission_factor", optional_null_series
+                        f"{key}_co2_emission_factor", optional_null_series
                     )
                     # get resource emission per unit of energy
                     co2_emission_factor_ressource = specific_consumption * unit_emissions
