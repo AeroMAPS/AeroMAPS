@@ -7,7 +7,7 @@ hefa_fog:
   energy_origin: "biomass"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   # Until level two used to separate inputs. Then concatenated in variable name.
   inputs:
     # Policy
@@ -60,7 +60,7 @@ hefa_others:
   energy_origin: "biomass"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   # Until level two used to separate inputs. Then concatenated in variable name.
   inputs:
     # Policy
@@ -112,7 +112,7 @@ ft_msw:
   energy_origin: "biomass"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   # Until level two used to separate inputs. Then concatenated in variable name.
   inputs:
     # Policy
@@ -165,7 +165,7 @@ ft_others:
   energy_origin: "biomass"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   # Until level two used to separate inputs. Then concatenated in variable name.
   inputs:
     # Policy
@@ -217,7 +217,7 @@ atj:
   energy_origin: "biomass"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   # Until level two used to separate inputs. Then concatenated in variable name.
   inputs:
     # Policy
@@ -270,7 +270,7 @@ electrofuel:
   energy_origin: "electricity"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     mandate:
       mandate_type: "share"
@@ -374,7 +374,7 @@ hydrogen_electrolysis:
   energy_origin: "electricity"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     mandate:
       mandate_type: "share"
@@ -413,7 +413,7 @@ hydrogen_gas_ccs:
   energy_origin: "fossil"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     mandate:
       mandate_type: "share"
@@ -463,7 +463,7 @@ hydrogen_gas:
   energy_origin: "fossil"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     mandate:
       mandate_type: "share"
@@ -514,7 +514,7 @@ hydrogen_coal:
   energy_origin: "fossil"
   default: True
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     # Mandate
     # Technical:
@@ -558,7 +558,7 @@ hydrogen_coal_ccs:
   energy_origin: "fossil"
   default: False
   abatement_cost: True
-  compute_all_years: False
+  compute_all_years: True
   inputs:
     # Mandate
     mandate:

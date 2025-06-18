@@ -154,20 +154,24 @@ class BottomUpCost(AeroMAPSModel):
             }
         )
 
-        # Ajoute la sortie pour le MFSP actualisé (discounted) uniquement si abatement cost activé
+        if configuration_data.get("compute_all_years"):
+            self.compute_all_years = True
+        else:
+            self.compute_all_years = False
+
         if configuration_data.get("abatement_cost"):
             self.compute_abatement_cost = True
             self.output_names[f"{self.pathway_name}_lifespan_unitary_discounted_costs"] = pd.Series(
                 [0.0]
             )
             self.input_names["social_discount_rate"] = 0.0
+            if not self.compute_all_years:
+                print(
+                    f"⚠️ Warning: for {self.pathway_name}, 'compute_all_years' option is set to False and 'compute_abatement_costs' to true. "
+                    "In case of diminishing energy demand, the CAC won't appear on the MACC for such years."
+                )
         else:
             self.compute_abatement_cost = False
-
-        if configuration_data.get("compute_all_years"):
-            self.compute_all_years = True
-        else:
-            self.compute_all_years = False
 
     def compute(self, input_data) -> dict:
         optional_nan_series = pd.Series(
@@ -539,20 +543,20 @@ class BottomUpCost(AeroMAPSModel):
                     target_common.where(~mask, vintage_common)
                 )
 
-            # compute discounted costs if necessary
-            if self.compute_abatement_cost:
-                if vintage_mfsp.notna().any():
-                    discounted_mfsp = self._unitary_cumulative_discounted_costs_vintage(
-                        mfsp_series=vintage_mfsp,
-                        year=year,
-                        plant_lifespan=lifespan,
-                        discount_rate=input_data["social_discount_rate"],
+                # compute discounted costs if necessary
+                if self.compute_abatement_cost:
+                    if vintage_mfsp.notna().any():
+                        discounted_mfsp = self._unitary_cumulative_discounted_costs_vintage(
+                            mfsp_series=vintage_mfsp,
+                            year=year,
+                            plant_lifespan=lifespan,
+                            discount_rate=input_data["social_discount_rate"],
+                        )
+                    else:
+                        discounted_mfsp = np.NaN
+                    output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] = (
+                        discounted_mfsp
                     )
-                else:
-                    discounted_mfsp = np.NaN
-                output_data[f"{self.pathway_name}_lifespan_unitary_discounted_costs"][year] = (
-                    discounted_mfsp
-                )
 
         ### STEP 2: add taxes and subsidies like in TopDownCost model
         # Only pathway subsidies and taxes are considered here, not resources or processes taxes

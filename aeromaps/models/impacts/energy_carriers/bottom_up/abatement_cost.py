@@ -23,6 +23,7 @@ class EnergyAbatementCost(AeroMAPSModel):
 
         # Inputs needed: discounted costs, unitary emissions, discounted emissions
         self.input_names = {
+            f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_unitary_discounted_costs": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_unitary_emissions": pd.Series([0.0]),
             f"{self.pathway_name}_lifespan_discounted_unitary_emissions": pd.Series([0.0]),
@@ -139,7 +140,7 @@ class ReferenceAbatementCost(AeroMAPSModel):
             self.bottom_up_cac = True
         else:
             print(
-                f"⚠️ Warning:: reference pathway for CAC ({self.pathway_name} is not defined as bottom-up, "
+                f"⚠️ Warning: reference pathway for CAC ({self.pathway_name} is not defined as bottom-up, "
                 f"using top-down values for CAC computation."
             )
             self.input_names.update(

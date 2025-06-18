@@ -124,6 +124,10 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 pd.Series([0.0])
             )
 
+        if configuration_data.get("compute_all_years"):
+            self.compute_all_years = True
+        else:
+            self.compute_all_years = False
         # Checking if we need to compute the CAC
         if configuration_data.get("abatement_cost"):
             self.compute_abatement_cost = True
@@ -133,13 +137,13 @@ class BottomUpEnvironmental(AeroMAPSModel):
             self.output_names[f"{self.pathway_name}_lifespan_discounted_unitary_emissions"] = (
                 pd.Series([0.0])
             )
+            if not self.compute_all_years:
+                print(
+                    f"⚠️ Warning:  for {self.pathway_name}, 'compute_all_years' option is set to False and 'compute_abatement_costs' to true. "
+                    "In case of diminishing energy demand, the CAC won't appear on the MACC for such years."
+                )
         else:
             self.compute_abatement_cost = False
-
-        if configuration_data.get("compute_all_years"):
-            self.compute_all_years = True
-        else:
-            self.compute_all_years = False
 
         # Fill in the other expected outputs with names from the compute method
         self.output_names.update(
