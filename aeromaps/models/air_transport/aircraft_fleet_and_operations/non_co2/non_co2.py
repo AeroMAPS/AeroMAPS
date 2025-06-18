@@ -65,7 +65,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                 ):
                     self.input_names.update(
                         {
-                            f"{pathway.name}_share_{aircraft_type}": pd.Series([0.0]),
+                            f"{pathway.name}_massic_share_{aircraft_type}": pd.Series([0.0]),
                             f"{pathway.name}_emission_index_particles_number": 0.0,
                         }
                     )
@@ -123,7 +123,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
 
                 default_pathway = self.pathways_manager.get(
                     aircraft_type=aircraft_type, default=True
-                )
+                )[0]
                 default_emission_index_number_particles = input_data[
                     f"{default_pathway.name}_emission_index_particles_number"
                 ]
@@ -132,13 +132,13 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
                     aircraft_type=aircraft_type,
                 ):
                     relative_particles_number += (
-                        input_data[f"{pathway.name}_share_{aircraft_type}"]
+                        input_data[f"{pathway.name}_massic_share_{aircraft_type}"]
                         / 100
                         * np.sqrt(
                             input_data[f"{pathway.name}_emission_index_particles_number"]
                             / default_emission_index_number_particles
                         )
-                    )
+                    ).fillna(0)
 
                 fuel_effect_correction_contrails += (
                     distance_share_dropin_fuel * relative_particles_number
@@ -159,8 +159,7 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         }
 
         self._store_outputs(output_data)
-
-        return fuel_effect_correction_contrails
+        return output_data
 
 
 class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):

@@ -307,6 +307,7 @@ models_energy_with_fuel_effect = {
     "fuel_effect_correction_contrails": FuelEffectCorrectionContrails(
         "fuel_effect_correction_contrails"
     ),
+    "energy_carriers_massic_shares": EnergyCarriersMassicShares("energy_carriers_massic_shares"),
 }
 
 models_offset = {

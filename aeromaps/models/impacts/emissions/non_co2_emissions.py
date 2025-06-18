@@ -179,39 +179,21 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
 
             emission_index_aircraft_type = (
                 (
-                    emission_index_nox_short_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_short_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_nox_short_range.loc[self.historic_start_year : self.end_year]
+                    * ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
                 + (
-                    emission_index_nox_medium_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_medium_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_nox_medium_range.loc[self.historic_start_year : self.end_year]
+                    * ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
                 + (
-                    emission_index_nox_long_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_long_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_nox_long_range.loc[self.historic_start_year : self.end_year]
+                    * ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
             ) / (
-                ask_short_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
-                    0
-                )
-                + ask_medium_range.loc[
-                    self.historic_start_year : self.prospection_start_year
-                ].fillna(0)
-                + ask_long_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
-                    0
-                )
+                ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                + ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                + ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
             )
 
             relative_emission_index_aircraft_type = (
@@ -250,6 +232,8 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                         * origin_valid_years
                         * relative_emission_index_aircraft_type
                     )
+
+        # print(output_data)
         self._store_outputs(output_data)
 
         return output_data
@@ -427,39 +411,21 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 
             emission_index_aircraft_type = (
                 (
-                    emission_index_soot_short_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_short_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_soot_short_range.loc[self.historic_start_year : self.end_year]
+                    * ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
                 + (
-                    emission_index_soot_medium_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_medium_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_soot_medium_range.loc[self.historic_start_year : self.end_year]
+                    * ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
                 + (
-                    emission_index_soot_long_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ]
-                    * ask_long_range.loc[
-                        self.historic_start_year : self.prospection_start_year
-                    ].fillna(0)
+                    emission_index_soot_long_range.loc[self.historic_start_year : self.end_year]
+                    * ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
                 )
             ) / (
-                ask_short_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
-                    0
-                )
-                + ask_medium_range.loc[
-                    self.historic_start_year : self.prospection_start_year
-                ].fillna(0)
-                + ask_long_range.loc[self.historic_start_year : self.prospection_start_year].fillna(
-                    0
-                )
+                ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                + ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                + ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
             )
 
             relative_emission_index_aircraft_type = (

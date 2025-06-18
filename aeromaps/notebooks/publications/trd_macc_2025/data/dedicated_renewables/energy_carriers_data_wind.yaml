@@ -37,7 +37,7 @@ hefa_fog:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -90,7 +90,7 @@ hefa_others:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -142,7 +142,7 @@ ft_msw:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -195,7 +195,7 @@ ft_others:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -247,7 +247,7 @@ atj:
         nox: 0.01514
         sulfur: 0.0
         soot: 6.0e-06
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -318,7 +318,7 @@ electrofuel:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3.0e-05
-        particles_number: 2e14
+        particles_number: 2.0e+14
     # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -358,7 +358,7 @@ fossil_kerosene:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3.0e-05
-        particles_number: 2e14
+        particles_number: 2.0e+14
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType

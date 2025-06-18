@@ -32,7 +32,7 @@ hefa_fog:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -76,7 +76,7 @@ graulhet_super_fuel:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -120,7 +120,7 @@ hefa_others:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType 
@@ -163,7 +163,7 @@ ft_msw:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType 
@@ -207,7 +207,7 @@ ft_others:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType 
@@ -250,7 +250,7 @@ atj:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
       # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType 
@@ -294,7 +294,7 @@ electrofuel:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -325,7 +325,7 @@ fossil:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -364,7 +364,7 @@ hydrogen_electrolysis:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -402,7 +402,7 @@ hydrogen_gas:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -435,7 +435,7 @@ hydrogen_coal:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
@@ -471,7 +471,7 @@ battery_electric:
         nox: 0.01514
         sulfur: 0.0012
         soot: 3e-05
-        particles_number: 8e13
+        particles_number: 8.0e+13
     # Economics:
     economics:
       mean_mfsp_without_resource: !AeroMapsCustomDataType
