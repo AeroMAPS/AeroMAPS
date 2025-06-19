@@ -1,0 +1,47 @@
+
+
+generic_electricity:
+  # ID
+  name: "generic_electricity"
+  origin: "electricity"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [7.68243371, 7.41993045, 7.40737902, 7.39482693, 7.38227489, 7.36972286,
+ 7.35717082, 7.34461879, 7.33206675, 7.31951472, 7.30696268, 7.13981481,
+ 6.99032861, 6.85183338, 6.72064206, 6.59455148, 6.47216174, 6.3525446,
+ 6.23505701, 6.13035182, 6.00476021, 5.94651878, 5.87461925, 5.79468156,
+ 5.70898613, 5.6175781, 5.52432965, 5.42886202, 5.33168378, 5.23260358,
+ 5.13355574, 5.0759244, 5.02249578, 4.97159363, 4.92359844, 4.87668428,
+ 4.832372,   4.78997528, 4.74937082, 4.71044859, 4.68149067, 4.59259585,
+ 4.51178533, 4.43011528, 4.34813953, 4.26530081, 4.18104181, 4.09591632,
+ 4.00936702, 3.93147525, 3.85480581]
+        method: linear
+    load_factor: !AeroMapsCustomDataType
+      years: []
+      values: [0.5]
+      method: linear
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.225] #€/kg CO2
+      method: linear
+
+generic_biomass:
+  # ID
+  name: "generic_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 164.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability

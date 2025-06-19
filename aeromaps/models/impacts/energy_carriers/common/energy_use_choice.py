@@ -94,6 +94,15 @@ class EnergyUseChoice(AeroMAPSModel):
                             f"{pathway.name}_share_{aircraft_type}_{energy_origin}"
                         ] = pd.Series([0.0])
 
+        # mandatory outputs for aeromaps models to work even if no pathway is defined for a given type
+        self.output_names.update(
+            {
+                "biomass_share_dropin_fuel": pd.Series([0.0]),
+                "electricity_share_dropin_fuel": pd.Series([0.0]),
+                "fossil_share_dropin_fuel": pd.Series([0.0]),
+            }
+        )
+
     def compute(self, input_data) -> dict:
         """
         Compute the energy consumption of each energy carrier based on the defined pathways and mandates.
@@ -341,7 +350,6 @@ class EnergyUseChoice(AeroMAPSModel):
                             / origin_type_energy_consumption
                             * 100
                         )
-
         # Fill with mandatory inputs for aeromaps models (non_co2) to work even if no pathway is defined for a given type
         mandatory_outputs = [
             "biomass_share_dropin_fuel",

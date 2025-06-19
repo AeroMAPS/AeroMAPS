@@ -79,7 +79,7 @@ class AeroMAPSProcess(object):
         self.configuration_file = configuration_file
         self._initialize_configuration()
         self.use_fleet_model = use_fleet_model
-        self.models = models
+        self.models = models.copy()
 
         # Initialize inputs
         self._initialize_inputs()

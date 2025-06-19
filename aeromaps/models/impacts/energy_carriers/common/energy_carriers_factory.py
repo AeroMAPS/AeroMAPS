@@ -109,6 +109,7 @@ class AviationEnergyCarriersFactory:
                     f"{pathway_name}_bottom_up_abatement_cost": EnergyAbatementCost(
                         f"{pathway_name}_bottom_up_abatement_cost",
                         pathway_name,
+                        pathway_data,
                     ),
                     f"{pathway_name}_abatement_effective": EnergyAbatementEffective(
                         f"{pathway_name}_abatement_effective",

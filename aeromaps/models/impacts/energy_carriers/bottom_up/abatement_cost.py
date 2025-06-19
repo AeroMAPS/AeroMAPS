@@ -12,7 +12,7 @@ class EnergyAbatementCost(AeroMAPSModel):
     based on discounted costs and avoided emissions over the lifespan of each vintage.
     """
 
-    def __init__(self, name, pathway_name, *args, **kwargs):
+    def __init__(self, name, pathway_name, pathways_data, *args, **kwargs):
         super().__init__(
             name=name,
             model_type="custom",
@@ -28,7 +28,6 @@ class EnergyAbatementCost(AeroMAPSModel):
             f"{self.pathway_name}_lifespan_discounted_unitary_emissions": pd.Series([0.0]),
             f"{self.pathway_name}_mean_mfsp": pd.Series([0.0]),
             f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
-            f"{self.pathway_name}_eis_plant_lifespan": 0.0,
             "cac_reference_unitary_discounted_costs": pd.Series([0.0]),
             "cac_reference_unitary_discounted_emissions": pd.Series([0.0]),
             "cac_reference_unitary_emissions": pd.Series([0.0]),
@@ -37,6 +36,9 @@ class EnergyAbatementCost(AeroMAPSModel):
             "social_discount_rate": 0.0,
             "exogenous_carbon_price_trajectory": pd.Series([0.0]),
         }
+
+        if f"{self.pathway_name}_eis_plant_lifespan" in pathways_data:
+            self.input_names[f"{self.pathway_name}_eis_plant_lifespan"] = 0.0
 
         # Outputs: specific abatement cost and generic specific abatement cost
 
