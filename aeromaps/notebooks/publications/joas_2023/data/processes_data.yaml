@@ -51,7 +51,7 @@ electrolysis:
         years: [2020, 2030, 2040, 2050]
         values: [0.000486, 0.000469, 0.000462, 0.000457]
         method: linear
-      eis_var_opex: !AeroMapsCustomDataType
+      eis_variable_opex: !AeroMapsCustomDataType
         years: [2020, 2030, 2040, 2050]
         values: [0.002167, 0.001267, 0.0012, 0.0012]
     

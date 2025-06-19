@@ -453,13 +453,13 @@ class BottomUpCost(AeroMAPSModel):
 
                     # Get the variable and fixed opex for the process
                     variable_opex_process = get_value_for_year(
-                        input_data.get(f"{self.pathway_name}_{process_key}_eis_variable_opex"),
+                        input_data.get(f"{process_key}_eis_variable_opex"),
                         year,
                         0.0,
                     )
                     fixed_opex_process = (
                         get_value_for_year(
-                            input_data.get(f"{self.pathway_name}_{process_key}_eis_fixed_opex"),
+                            input_data.get(f"{process_key}_eis_fixed_opex"),
                             year,
                             0.0,
                         )
