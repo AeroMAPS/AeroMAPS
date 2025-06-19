@@ -6,6 +6,217 @@ from matplotlib.patches import Patch
 from ipywidgets import interact, widgets
 
 
+class ScenarioEnergyCapitalPlot:
+    def __init__(self, process):
+        data = process.data
+        self.df = data["vector_outputs"]
+        self.float_outputs = data["float_outputs"]
+        self.years = data["years"]["full_years"]
+        self.historic_years = data["years"]["historic_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = process.pathways_manager
+
+        self.fig, self.ax = plt.subplots(
+            figsize=(12, 7),
+        )
+
+        self.plot_interact()
+        self.create_plot()
+
+    def plot_interact(self):
+        pathway_widget = widgets.SelectMultiple(
+            options=[("All pathways", "all")]
+            + [(pathway.name, pathway) for pathway in self.pathways_manager.get_all()],
+            description="Energy carrier:",
+            value=["all"],
+        )
+
+        detail_level = widgets.ToggleButtons(
+            options=[
+                ("Overview", "overview"),
+                ("Pathways (Stacked)", "stacked_pathways"),
+                ("Pathways (no stack)", "line_pathways"),
+            ],
+            description="Detail level:",
+            disabled=False,
+            button_style="success",
+            value="stacked_pathways",
+        )
+
+        interact(
+            self.update,
+            pathway_selected=pathway_widget,
+            detail_level_selected=detail_level,
+        )
+
+    def create_plot(self):
+        pass
+
+    def update(
+        self,
+        pathway_selected,
+        detail_level_selected,
+    ):
+        self.ax.cla()
+
+        pathways = self.pathways_manager.get_all()
+
+        def first_usage_year(p):
+            energy_col = f"{p.name}_energy_consumption"
+            if energy_col not in self.df.columns:
+                return max(self.prospective_years) + 1
+            series = self.df.loc[self.prospective_years, energy_col]
+            valid_years = series[~(series.isna() | (series == 0.0))].index.tolist()
+            return min(valid_years) if valid_years else max(self.prospective_years) + 1
+
+        colors = plt.cm.get_cmap("tab20", len(pathways))
+        pathway_colors = {p.name: colors(i) for i, p in enumerate(pathways)}
+
+        if "all" not in pathway_selected:
+            pathways = pathway_selected
+
+        # Sort pathways and filter out those that have no usage within prospective years
+        pathways = [
+            p
+            for p in sorted(pathways, key=first_usage_year)
+            if first_usage_year(p) <= max(self.prospective_years)
+        ]
+
+        # --- MODE STACKED_PATHWAYS ---
+        if detail_level_selected == "stacked_pathways":
+            bottom = np.zeros(len(self.prospective_years))
+            for i, p in enumerate(pathways):
+                # core capex
+                col = f"{p.name}_capex_cost"
+                vals = (
+                    self.df.loc[self.prospective_years, col].fillna(0).values
+                    if col in self.df.columns
+                    else np.zeros(len(self.prospective_years))
+                )
+                top = bottom + vals
+                self.ax.fill_between(
+                    self.prospective_years,
+                    bottom,
+                    top,
+                    facecolor=pathway_colors[p.name],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=0.5,
+                    linestyle=":",
+                    label=p.name,
+                )
+                bottom = top
+
+                # associated process_capex
+                for process_name in p.resources_used_processes.keys():
+                    col_proc = f"{p.name}_{process_name}_capex_cost"
+                    vals = (
+                        self.df.loc[self.prospective_years, col_proc].fillna(0).values
+                        if col_proc in self.df.columns
+                        else np.zeros(len(self.prospective_years))
+                    )
+                    top = bottom + vals
+                    self.ax.fill_between(
+                        self.prospective_years,
+                        bottom,
+                        top,
+                        facecolor=pathway_colors[p.name],
+                        edgecolor="black",
+                        linewidth=0.5,
+                        alpha=0.5,
+                        linestyle=":",
+                        label=f"{p.name} - {process_name}",
+                    )
+                    bottom = top
+
+        elif detail_level_selected == "overview":
+            bottom = np.zeros(len(self.prospective_years))
+            vals = np.zeros(len(self.prospective_years))
+            for i, p in enumerate(pathways):
+                # core capex
+                col = f"{p.name}_capex_cost"
+                vals += (
+                    self.df.loc[self.prospective_years, col].fillna(0).values
+                    if col in self.df.columns
+                    else 0
+                )
+
+                # associated process_capex
+                for process_name in p.resources_used_processes.keys():
+                    col_proc = f"{p.name}_{process_name}_capex_cost"
+                    vals += (
+                        self.df.loc[self.prospective_years, col_proc].fillna(0).values
+                        if col_proc in self.df.columns
+                        else 0
+                    )
+
+            top = bottom + vals
+            self.ax.fill_between(
+                self.prospective_years,
+                bottom,
+                top,
+                facecolor="grey",
+                edgecolor="black",
+                linewidth=0.5,
+                alpha=0.5,
+                label="Total capital expenses",
+            )
+
+        elif detail_level_selected == "line_pathways":
+            for i, p in enumerate(pathways):
+                # core capex
+                col = f"{p.name}_capex_cost"
+                vals = (
+                    self.df.loc[self.prospective_years, col].fillna(0).values
+                    if col in self.df.columns
+                    else np.zeros(len(self.prospective_years))
+                )
+                self.ax.plot(
+                    self.prospective_years,
+                    vals,
+                    color=pathway_colors[p.name],
+                    linewidth=1.5,
+                    alpha=0.5,
+                    label=p.name,
+                )
+                # associated process_capex
+                for process_name in p.resources_used_processes.keys():
+                    col_proc = f"{p.name}_{process_name}_capex_cost"
+                    vals = (
+                        self.df.loc[self.prospective_years, col_proc].fillna(0).values
+                        if col_proc in self.df.columns
+                        else np.zeros(len(self.prospective_years))
+                    )
+                    self.ax.plot(
+                        self.prospective_years,
+                        vals,
+                        color=pathway_colors[p.name],
+                        linewidth=1.5,
+                        alpha=0.5,
+                        label=f"{p.name} - {process_name}",
+                    )
+
+        # Légende adaptée avec mention bottom-up
+        handles, labels = self.ax.get_legend_handles_labels()
+        seen = set()
+        new_handles = []
+        new_labels = []
+        for ha, la in zip(handles, labels):
+            if la not in seen and la is not None:
+                new_handles.append(ha)
+                new_labels.append(la)
+                seen.add(la)
+        # Ajout de la mention bottom-up
+        self.ax.legend(new_handles, new_labels, loc="upper right")
+        self.ax.grid(axis="x")
+        self.ax.set_title("Annual capital expenses (bottom-up pathways only)")
+        self.ax.set_ylabel("Capital expenses [M€]")
+        self.ax.set_xlim(2020, self.years[-1])
+        self.ax.set_ylim()
+        self.ax.autoscale_view()
+        self.fig.canvas.draw()
+
+
 class ScenarioEnergyExpensesPlot:
     def __init__(self, process):
         data = process.data
@@ -17,7 +228,7 @@ class ScenarioEnergyExpensesPlot:
         self.pathways_manager = process.pathways_manager
 
         self.fig, self.ax = plt.subplots(
-            figsize=(15, 9),
+            figsize=(12, 7),
         )
         self.hatch_map = {
             "mfsp": "",
@@ -1430,7 +1641,7 @@ class DetailledMFSPBreakdown:
                             Patch(
                                 facecolor=color,
                                 edgecolor="black",
-                                label=f"{process_name}, variable opex (M)",
+                                label=f"{process_name}, variable Opex (M)",
                                 alpha=0.8 * variable_opex_alpha,
                                 hatch=self.hatch_map["cost"],
                             )

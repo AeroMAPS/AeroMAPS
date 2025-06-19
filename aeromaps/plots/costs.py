@@ -16,7 +16,7 @@ from ipywidgets import interact, widgets
 from .constants import plot_3_x, plot_3_y
 
 
-class ScenarioEnergyCapitalPlot:
+class ScenarioEnergyCapitalPlotD:
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]

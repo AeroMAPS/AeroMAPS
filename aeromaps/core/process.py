@@ -361,14 +361,18 @@ class AeroMAPSProcess(object):
                     .get("technical", {})
                     .get("resource_names", []),
                     resources_used_processes={
-                        el: i
+                        el: (
+                            list(
+                                self.energy_processes_data.get(el, {})
+                                .get("inputs", {})
+                                .get("technical", {})
+                                .get(f"{el}_resource_names", [])
+                            )
+                            or [None]
+                        )[0]
                         for el in pathway_data.get("inputs", {})
                         .get("technical", {})
                         .get("processes_names", [])
-                        for i in self.energy_processes_data.get(el, {})
-                        .get("inputs", {})
-                        .get("technical", {})
-                        .get(f"{el}_resource_names", [])
                     },
                     cost_model=pathway_data.get("cost_model"),
                     environmental_model=pathway_data.get("environmental_model"),

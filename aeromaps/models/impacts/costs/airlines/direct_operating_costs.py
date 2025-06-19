@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -398,33 +399,33 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
     ]:
         # Drop-in
         doc_energy_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_fuel_mean_mfsp
+            energy_per_ask_long_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
         )
         doc_energy_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_fuel_mean_mfsp
+            energy_per_ask_medium_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
         )
         doc_energy_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_fuel_mean_mfsp
+            energy_per_ask_short_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
         )
         # Hydrogen
         doc_energy_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * hydrogen_mean_mfsp
+            energy_per_ask_long_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
         )
         doc_energy_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * hydrogen_mean_mfsp
+            energy_per_ask_medium_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
         )
         doc_energy_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen * hydrogen_mean_mfsp
+            energy_per_ask_short_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
         )
         # Electric
         doc_energy_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric * electric_mean_mfsp
+            energy_per_ask_long_range_electric.replace(0, np.NaN) * electric_mean_mfsp
         )
         doc_energy_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric * electric_mean_mfsp
+            energy_per_ask_medium_range_electric.replace(0, np.NaN) * electric_mean_mfsp
         )
         doc_energy_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric * electric_mean_mfsp
+            energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_mfsp
         )
 
         # Moyennes pondérées

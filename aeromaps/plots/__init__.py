@@ -53,7 +53,6 @@ from .climate import (
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
 from aeromaps.plots.costs import (
-    ScenarioEnergyCapitalPlot,
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
     DropInMACC,
@@ -76,6 +75,7 @@ from aeromaps.plots.costs_generic import (
     ScenarioEnergyExpensesPlot,
     DetailledMFSPBreakdown,
     SimpleMFSP,
+    ScenarioEnergyCapitalPlot,
 )
 
 available_plots = {

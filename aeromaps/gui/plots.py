@@ -1,4 +1,4 @@
-from aeromaps.plots.costs_generic import SimpleMFSP
+from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
 from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
 from aeromaps.plots.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
@@ -52,7 +52,6 @@ from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityC
 
 
 from aeromaps.plots.costs import (
-    ScenarioEnergyCapitalPlot,
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
