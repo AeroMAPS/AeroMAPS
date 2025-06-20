@@ -14,7 +14,7 @@
 #     # Availability
 #     availability:
 #       global: 1.0e+12 # [MJ] Global availability of the resource
-#       aviation_allocated_share: 5 # [%] Share of the global availability alalocated to aviation
+#       aviation_allocated_share: 5.0 # [%] Share of the global availability alalocated to aviation
 #     # Economical
 #     cost: !AeroMapsCustomDataType                   # €/MJ, additional to process/pathways' cost
 #       years: [2020, 2030, 2040, 2050]
@@ -39,7 +39,7 @@ hefa_fog_biomass:
     # Availability
     availability:
       global: 1.0e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
 
 
 hefa_others_biomass:
@@ -50,7 +50,7 @@ hefa_others_biomass:
     # Availability
     availability:
       global: 20.67e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
       
       
 ft_msw_biomass:
@@ -61,7 +61,7 @@ ft_msw_biomass:
     # Availability
     availability:
       global: 11.0e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
       
 
 ft_others_biomass:
@@ -72,7 +72,7 @@ ft_others_biomass:
     # Availability
     availability:
       global: 113.7e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
       
 atj_biomass:
   # ID
@@ -82,7 +82,7 @@ atj_biomass:
     # Availability
     availability:
       global: 17.64e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
 
 
 grid_electricity:
@@ -98,7 +98,7 @@ grid_electricity:
     load_factor: 1.0
     availability:
       global: 250.0e+12 # [EJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
+      aviation_allocated_share: 5.0 # [%] Share of the global availability
 
 co2_dac:
   #ID

@@ -30,6 +30,7 @@ from aeromaps.plots.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
+    ShareFuelPlot,
 )
 from aeromaps.plots.emissions import (
     CumulativeCO2EmissionsPlot,
@@ -50,15 +51,12 @@ from aeromaps.plots.climate import (
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
-
 from aeromaps.plots.costs import (
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
-    DetailledMFSPBreakdownPerPathway,
-    DetailledMFSPBreakdownPerYear,
 )
 
 # Left plot
@@ -97,6 +95,7 @@ plot_3 = {
     "Energy consumption of the aircraft fleet": EnergyConsumptionPlot,
     "Mean fuel emission factor (CO2 emissions per energy)": MeanFuelEmissionFactorPlot,
     "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelCategory,
+    "Fuel share in the aircraft fleet": ShareFuelPlot,
     "Cumulative CO2 emissions": CumulativeCO2EmissionsPlot,
     "Direct H2O emissions": DirectH2OEmissionsPlot,
     "Direct NOx emissions": DirectNOxEmissionsPlot,
@@ -116,6 +115,4 @@ plot_3 = {
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,
     "Airfare breakdown": AirfareEvolutionBreakdown,
-    "Detailled MFSP breakdown per pathway": DetailledMFSPBreakdownPerPathway,
-    "Detailled MFSP breakdown per year": DetailledMFSPBreakdownPerYear,
 }
