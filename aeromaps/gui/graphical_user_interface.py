@@ -2247,10 +2247,10 @@ class GraphicalUserInterface(widgets.VBox):
                     self.process.parameters.hydrogen_gas_mandate_share_values = [71, 50, 20, 0]
                 else:
                     if pathway.mandate_type is not None:
-                        self.process.parameters[
+                        self.process.parameters.__dict__[
                             pathway.name + "_mandate_" + pathway.mandate_type + "_years"
                         ] = []
-                        self.process.parameters[
+                        self.process.parameters.__dict__[
                             pathway.name + "_mandate_" + pathway.mandate_type + "_values"
                         ] = [0.0]
 
@@ -2514,15 +2514,15 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.atj_biomass_availability_global = 60.76e12
 
         if self.w_electricity_available.value == "Current":
-            self.process.parameters.grid_electricity_availability_global = 100.0
+            self.process.parameters.grid_electricity_availability_global = 100.0e12
         elif self.w_electricity_available.value == "Pessimistic":
-            self.process.parameters.grid_electricity_availability_global = 150.0
+            self.process.parameters.grid_electricity_availability_global = 150.0e12
         elif self.w_electricity_available.value == "Realistic":
-            self.process.parameters.grid_electricity_availability_global = 200.0
+            self.process.parameters.grid_electricity_availability_global = 200.0e12
         elif self.w_electricity_available.value == "Optimistic":
-            self.process.parameters.grid_electricity_availability_global = 250.0
+            self.process.parameters.grid_electricity_availability_global = 250.0e12
         elif self.w_electricity_available.value == "Very optimistic":
-            self.process.parameters.grid_electricity_availability_global = 300.0
+            self.process.parameters.grid_electricity_availability_global = 300.0e12
 
         # Allocations
         if self.w_carbon_budget_allocation.value == "2.3%":

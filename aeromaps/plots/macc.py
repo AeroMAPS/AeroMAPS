@@ -470,7 +470,7 @@ class AnnualMACC:
             )
             self.ax.add_patch(polygon)
 
-        if scc_year:
+        if scc_year is not None:
             self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
             self.ax.text(
                 10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8
@@ -2274,7 +2274,7 @@ class AnnualMACCSimple:
             )
             self.ax.add_patch(polygon)
 
-        if scc_year:
+        if scc_year is not None:
             self.ax.axhline(scc_year, color="firebrick", linestyle="--", linewidth=1)
             self.ax.text(
                 10, scc_year * 1.02, "Reference carbon value", color="firebrick", fontsize=8

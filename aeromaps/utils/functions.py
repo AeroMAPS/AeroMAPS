@@ -268,9 +268,6 @@ def create_partitioning(file, path=""):
     climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
     np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
 
-    print(partitioned_historical_climate_dataset.shape)
-    print(climate_world_data_df.shape)
-
     return
 
 
