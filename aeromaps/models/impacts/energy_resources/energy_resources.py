@@ -1,7 +1,7 @@
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     EnergyCarrierManager,
 )
 from aeromaps.utils.functions import custom_series_addition

@@ -1,32 +1,32 @@
 # import all the concrete implementations of the energy carriers
-from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_cost import (
+from aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost import (
     EnergyAbatementCost,
     ReferenceAbatementCost,
 )
-from aeromaps.models.impacts.energy_carriers.bottom_up.abatement_effective import (
+from aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_effective import (
     EnergyAbatementEffective,
 )
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means import (
     EnergyCarriersMeans,
     EnergyCarriersMeanLHV,
 )
-from aeromaps.models.impacts.energy_carriers.common.energy_use_choice import EnergyUseChoice
-from aeromaps.models.impacts.energy_carriers.top_down.cost import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_use_choice import EnergyUseChoice
+from aeromaps.models.impacts.generic_energy_model.top_down.cost import (
     TopDownCost,
 )
-from aeromaps.models.impacts.energy_carriers.top_down.environmental import (
+from aeromaps.models.impacts.generic_energy_model.top_down.environmental import (
     TopDownEnvironmental,
 )
-from aeromaps.models.impacts.energy_carriers.bottom_up.cost import (
+from aeromaps.models.impacts.generic_energy_model.bottom_up.cost import (
     BottomUpCost,
 )
-from aeromaps.models.impacts.energy_carriers.bottom_up.environmental import (
+from aeromaps.models.impacts.generic_energy_model.bottom_up.environmental import (
     BottomUpEnvironmental,
 )
-from aeromaps.models.impacts.energy_carriers.bottom_up.production_capacity import (
+from aeromaps.models.impacts.generic_energy_model.bottom_up.production_capacity import (
     BottomUpCapacity,
 )
-from aeromaps.models.impacts.energy_resources_new.energy_resources import (
+from aeromaps.models.impacts.energy_resources.energy_resources import (
     EnergyResourceConsumption,
     OverallResourcesConsumption,
 )

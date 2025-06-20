@@ -18,15 +18,7 @@ from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cos
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
 )
-from aeromaps.models.impacts.costs.energy.detailled.biofuel import (
-    BiofuelCost,
-    BiofuelVarOpex,
-    BiofuelFeedstock,
-    BiofuelCapex,
-)
-
-from aeromaps.models.impacts.costs.energy.simple.electricity_direct_use import ElectricityDirectUse
-
+from aeromaps.models.impacts.costs.energy.market_prices import CarbonTax
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -37,7 +29,7 @@ from aeromaps.models.impacts.costs.operations.operations_cost import (
 from aeromaps.models.impacts.costs.scenario.exogneous_carbon_price import (
     ExogenousCarbonPriceTrajectory,
 )
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_means import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means import (
     EnergyCarriersMassicShares,
 )
 
@@ -69,25 +61,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
 )
-from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import DropinFuelDistribution
+
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
-)
-from aeromaps.models.air_transport.aircraft_energy.efficiency import (
-    BiofuelEfficiency,
-    ElectricityBasedFuelEfficiency,
-)
-from aeromaps.models.air_transport.aircraft_energy.fuel_emissions import (
-    BiofuelEmissionFactor,
-    ElectricityEmissionFactor,
-    HydrogenEmissionFactor,
-    ElectrofuelEmissionFactor,
-    KeroseneEmissionFactor,
-)
-from aeromaps.models.air_transport.aircraft_energy.production_choices import (
-    BiofuelProduction,
-    HydrogenProduction,
 )
 
 from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
@@ -121,10 +98,7 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     EnergyConsumption,
     DropInFuelDetailledConsumption,
 )
-from aeromaps.models.impacts.energy_resources.resources_consumption import (
-    BiomassConsumption,
-    ElectricityConsumption,
-)
+
 from aeromaps.models.impacts.climate.climate import (
     TemperatureGWPStar,
     TemperatureSimpleGWPStar,
@@ -147,43 +121,6 @@ from aeromaps.models.impacts.emissions.carbon_offset import (
 )
 
 # COSTS
-from aeromaps.models.impacts.costs.energy.market_prices import (
-    ElectricityCost,
-    Co2Cost,
-    KeroseneCost,
-    KerosenePrice,
-    CarbonTax,
-    CoalCost,
-    GasCost,
-    ElectricityLoadFactor,
-)
-from aeromaps.models.impacts.costs.energy.detailled.power_to_liquid import (
-    ElectrofuelCost,
-    ElectrofuelCapex,
-    ElectrofuelFixedOpex,
-    ElectrofuelVarOpex,
-    ElectrofuelSpecificCo2,
-)
-from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
-    LiquidHydrogenCost,
-    ElectrolyserCapex,
-    ElectrolyserFixedOpex,
-    ElectrolyserVarOpex,
-    LiquefierCapex,
-    CcsCost,
-    CoalEfficiency,
-    CoalFixedOpex,
-    CoalCapex,
-    CoalCcsEfficiency,
-    CoalCcsFixedOpex,
-    CoalCcsCapex,
-    GasEfficiency,
-    GasFixedOpex,
-    GasCapex,
-    GasCcsEfficiency,
-    GasCcsFixedOpex,
-    GasCcsCapex,
-)
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedScenarioCost,
     NonDiscountedScenarioCost,
@@ -280,18 +217,6 @@ models_energy_without_fuel_effect = {
 }
 
 models_energy_with_fuel_effect = {
-    "dropin_fuel_distribution": DropinFuelDistribution("dropin_fuel_distribution"),
-    "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
-    "electricity_based_fuel_efficiency": ElectricityBasedFuelEfficiency(
-        "electricity_based_fuel_efficiency"
-    ),
-    "biofuel_emission_factor": BiofuelEmissionFactor("biofuel_emission_factor"),
-    "electricity_emission_factor": ElectricityEmissionFactor("electricity_emission_factor"),
-    "hydrogen_emission_factor": HydrogenEmissionFactor("hydrogen_emission_factor"),
-    "electrofuel_emission_factor": ElectrofuelEmissionFactor("electrofuel_emission_factor"),
-    "kerosene_emission_factor": KeroseneEmissionFactor("kerosene_emission_factor"),
-    "biofuel_production": BiofuelProduction("biofuel_production"),
-    "hydrogen_production": HydrogenProduction("hydrogen_production"),
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "drop_in_fuel_detailed_consumption": DropInFuelDetailledConsumption(
         "drop_in_fuel_detailed_consumption"
@@ -299,8 +224,6 @@ models_energy_with_fuel_effect = {
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
-    "biomass_consumption": BiomassConsumption("biomass_consumption"),
-    "electricity_consumption": ElectricityConsumption("electricity_consumption"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
         "dropin_fuel_consumption_liter_per_pax_100km"
     ),
@@ -394,50 +317,6 @@ models_sustainability_without_equivalent_emissions = {
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
 }
 
-# TODO DELTE THIS
-models_energy_cost_complex = {
-    "biofuel_capex": BiofuelCapex("biofuel_capex"),
-    "kerosene_market_price": KerosenePrice("kerosene_market_price"),
-    "kerosene_cost": KeroseneCost("kerosene_cost"),
-    "biofuel_cost": BiofuelCost("biofuel_cost"),
-    "co2_cost": Co2Cost("co2_cost"),
-    "carbon_tax": CarbonTax("carbon_tax"),
-    "electricity_cost": ElectricityCost("electricity_cost"),
-    "electricity_load_factor": ElectricityLoadFactor("electricity_load_factor"),
-    "coal_cost": CoalCost("coal_cost"),
-    "gas_cost": GasCost("coal_cost"),
-    "liquid_hydrogen_cost": LiquidHydrogenCost("liquid_hydrogen_cost"),
-    "electrolyser_capex": ElectrolyserCapex("electrolyser_capex"),
-    "electrolyser_fixed_opex": ElectrolyserFixedOpex("electrolyser_fixed_opex"),
-    "electrolyser_var_opex": ElectrolyserVarOpex("electrolyser_var_opex"),
-    "gas_ccs_capex": GasCcsCapex("gas_ccs_capex"),
-    "gas_ccs_fixed_opex": GasCcsFixedOpex("gas_ccs_fixed_opex"),
-    "gas_ccs_efficiency": GasCcsEfficiency("gas_ccs_efficiency"),
-    "gas_capex": GasCapex("gas_capex"),
-    "gas_fixed_opex": GasFixedOpex("gas_fixed_opex"),
-    "gas_efficiency": GasEfficiency("gas_efficiency"),
-    "coal_ccs_capex": CoalCcsCapex("coal_ccs_capex"),
-    "coal_ccs_fixed_opex": CoalCcsFixedOpex("coal_ccs_fixed_opex"),
-    "coal_ccs_efficiency": CoalCcsEfficiency("coal_ccs_efficiency"),
-    "coal_capex": CoalCapex("coal_capex"),
-    "coal_fixed_opex": CoalFixedOpex("coal_fixed_opex"),
-    "coal_efficiency": CoalEfficiency("coal_efficiency"),
-    "ccs_cost": CcsCost("ccs_cost"),
-    "liquefier_capex": LiquefierCapex("liquefier_capex"),
-    "electrofuel_cost": ElectrofuelCost("electrofuel_cost"),
-    "electrofuel_capex": ElectrofuelCapex("electrofuel_capex"),
-    "electrofuel_fixed_opex": ElectrofuelFixedOpex("electrofuel_fixed_opex"),
-    "electrofuel_var_opex": ElectrofuelVarOpex("electrofuel_var_opex"),
-    "electrofuel_specific_co2": ElectrofuelSpecificCo2("electrofuel_specific_co2"),
-    "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
-    "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
-    "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
-        "exogenous_carbon_price_trajectory"
-    ),
-    "electricity_direct_use": ElectricityDirectUse("electricity_direct_use"),
-}
 
 models_energy_cost = {
     "carbon_tax": CarbonTax("carbon_tax"),

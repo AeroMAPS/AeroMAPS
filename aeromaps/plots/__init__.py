@@ -59,7 +59,6 @@ from aeromaps.plots.costs import (
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
-    DetailledMFSPBreakdownPerPathway,
 )
 
 from aeromaps.plots.macc import (
@@ -129,7 +128,6 @@ available_plots = {
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
-    "mfsp_detailled_pathway": DetailledMFSPBreakdownPerPathway,
     "mfsp_detailled": DetailledMFSPBreakdown,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,

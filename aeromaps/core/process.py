@@ -13,7 +13,7 @@ from gemseo import generate_n2_plot, create_mda
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_manager import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     EnergyCarrierManager,
     EnergyCarrierMetadata,
 )
@@ -30,7 +30,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_mod
     Fleet,
     FleetModel,
 )
-from aeromaps.models.impacts.energy_carriers.common.energy_carriers_factory import (
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
     AviationEnergyCarriersFactory,
 )
 

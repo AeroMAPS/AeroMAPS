@@ -1534,7 +1534,6 @@ class GraphicalUserInterface(widgets.VBox):
                 rc_cost=1.0,  # Dummy
                 nrc_cost=1.0,  # Dummy
             )
-            print(short_range_aircraft1_params)
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
                 parameters=short_range_aircraft1_params,
