@@ -391,6 +391,9 @@ hydrogen_electrolysis:
     technical:
       processes_names: [ "liquefaction", "electrolysis" ]
       lhv: 120
+      resource_names: [ "transport" ]
+      resource_specific_consumption:
+        transport: 1
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -426,6 +429,9 @@ hydrogen_gas:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 120
+      resource_names: [ "transport" ]
+      resource_specific_consumption:
+        transport: 1
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -465,6 +471,9 @@ hydrogen_gas_ccs:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 120
+      resource_names: [ "transport" ]
+      resource_specific_consumption:
+        transport: 1
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -498,7 +507,7 @@ hydrogen_coal:
     # Technical:
     technical:
       processes_names: [ "liquefaction" ]
-      lhv: 44
+      lhv: 120
       resource_names: [ "transport" ]
       resource_specific_consumption:
         transport: 1
@@ -541,7 +550,7 @@ hydrogen_coal_ccs:
     # Technical:
     technical:
       processes_names: [ "liquefaction" ]
-      lhv: 44
+      lhv: 120
       resource_names: [ "transport" ]
       resource_specific_consumption:
         transport: 1
