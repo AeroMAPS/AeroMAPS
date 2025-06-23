@@ -499,6 +499,9 @@ hydrogen_coal:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 44
+      resource_names: [ "transport" ]
+      resource_specific_consumption:
+        transport: 1
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -539,7 +542,9 @@ hydrogen_coal_ccs:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 44
-    # Environmental:
+      resource_names: [ "transport" ]
+      resource_specific_consumption:
+        transport: 1
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []

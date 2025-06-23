@@ -400,6 +400,9 @@ hydrogen_electrolysis:
       lhv: 120
       eis_plant_load_factor: 0.95
       eis_plant_lifespan: 25
+      resource_names: ["transport"]
+      eis_resource_specific_consumption:
+          transport: 1
     # Environmental:
     environmental:
       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -437,11 +440,13 @@ hydrogen_gas_ccs:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 120
-      resource_names: [ "gas" ]
+      resource_names: ["gas", "transport", "ccs_gas"]
       eis_plant_load_factor: 0.95
       eis_plant_lifespan: 25
       eis_resource_specific_consumption:
         gas: 1.45 # MJ of gas per MJ of hydrogen
+        transport: 1
+        ccs_gas: 1
     # Environmental:
     environmental:
       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -490,9 +495,10 @@ hydrogen_gas:
       lhv: 120
       eis_plant_load_factor: 0.95
       eis_plant_lifespan: 25
-      resource_names: [ "gas" ]
+      resource_names: [ "gas", "transport"]
       eis_resource_specific_consumption:
         gas: 1.32 # MJ of gas per MJ of hydrogen
+        transport: 1
     # Environmental:
     environmental:
       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -533,11 +539,12 @@ hydrogen_coal:
     technical:
       processes_names: [ "liquefaction" ]
       lhv: 120
-      resource_names: [ "coal" ]
+      resource_names: [ "coal" ,"transport"]
       eis_plant_load_factor: 0.9
       eis_plant_lifespan: 25
       eis_resource_specific_consumption:
         coal: 1.66 # MJ of coal per MJ of hydrogen
+        transport: 1
     # Environmental:
     environmental:
       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
@@ -582,13 +589,15 @@ hydrogen_coal_ccs:
     # Technical:
     technical:
       # TODO consider CCS as a resource to track the capture.
-      processes_names: [ "liquefaction" ]
+      processes_names: [ "liquefaction"]
       lhv: 120
-      resource_names: [ "coal" ]
+      resource_names: [ "coal", "ccs_coal", "transport"]
       eis_plant_load_factor: 0.9
       eis_plant_lifespan: 25
       eis_resource_specific_consumption:
         coal: 1.72 # MJ of coal per MJ of hydrogen
+        transport: 1
+        ccs_coal: 1
     # Environmental:
     environmental:
       eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType

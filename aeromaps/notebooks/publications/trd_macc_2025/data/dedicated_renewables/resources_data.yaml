@@ -151,7 +151,7 @@ gas:
   specifications:
     cost: !AeroMapsCustomDataType
       years: [2020, 2030, 2040, 2050]
-      values: [0.005, 0.011, 0.010, 0.009]
+      values: [0.0013889, 0.0030556, 0.0027778, 0.0025] #[0.005, 0.011, 0.010, 0.009] in KWh/3,6
       method: linear
 
 coal:
@@ -160,7 +160,35 @@ coal:
   specifications:
     cost: !AeroMapsCustomDataType
       years: [2020, 2030, 2040, 2050]
-      values: [0.006, 0.0057, 0.0054, 0.0052]
+      values: [0.0016667, 0.0015833, 0.0015, 0.0014444] #[0.006, 0.0057, 0.0054, 0.0052] in KWh/3,6
+      method: linear
+
+
+ccs_coal:
+  # Metadata
+  name: "ccs_coal"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.00302]
+      method: linear
+
+ccs_gas:
+  # Metadata
+  name: "ccs_gas"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.00138]
+      method: linear
+
+transport:
+  # Metadata
+  name: "transport"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.003]
       method: linear
 
 

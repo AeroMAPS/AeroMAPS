@@ -109,3 +109,12 @@ co2_dac:
       years: []
       values: [0.225] #€/kg CO2
       method: linear
+
+transport:
+  # Metadata
+  name: "transport"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.003]
+      method: linear

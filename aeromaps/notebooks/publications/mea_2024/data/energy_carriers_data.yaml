@@ -385,6 +385,9 @@ hydrogen_electrolysis:
     technical:
       processes_names: [ "liquefaction", "electrolysis" ]
       lhv: 120
+      resources_names: ["transport"]
+      resource_specific_consumption:
+        transport: 1.0
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
