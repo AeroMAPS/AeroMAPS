@@ -275,6 +275,7 @@ def compare_json_files(
     file1_path: str,
     file2_path: str,
     ignore_order: bool = True,
+    report_repetition: bool = True,
     verbose: bool = True,
     rtol: float = 0.0001,
     atol: float = 0.1,
@@ -295,7 +296,13 @@ def compare_json_files(
         json1 = json.load(f1)
         json2 = json.load(f2)
 
-    diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
+    diff = DeepDiff(
+        json1,
+        json2,
+        ignore_order=ignore_order,
+        report_repetition=report_repetition,
+        exclude_paths=False or [],
+    )
 
     # Only keep differences with error greater than 0.1%
     if "values_changed" in diff:
@@ -327,13 +334,22 @@ def compare_json_files(
     if verbose:
         if diff:
             print("Differences found:")
-            print(json.dumps(diff, indent=2))
+            print(json.dumps(diff, indent=2, default=convert_non_serializable))
             files_are_different = True
         else:
             print("No differences found.")
             files_are_different = False
 
     return files_are_different
+
+
+def convert_non_serializable(obj):
+    # Annex helper to compare_json_files
+    if isinstance(obj, (set, list, tuple)):
+        return list(obj)
+    if hasattr(obj, "__dict__"):
+        return obj.__dict__
+    return str(obj)
 
 
 def get_value_for_year(value, year, default_return=None):

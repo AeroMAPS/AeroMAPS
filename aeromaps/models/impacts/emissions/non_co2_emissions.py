@@ -712,19 +712,19 @@ class NonCO2Emissions(AeroMAPSModel):
                         / input_data[f"{aircraft_type}_{energy_origin}_mean_lhv"]
                         / 10**9  # convert MJ to Mt
                     )
-                    soot_emissions.loc[self.historic_start_year : self.end_year] += (
+                    soot_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_soot"]
                         * mass_consumption
                     ).fillna(0.0)
-                    h2o_emissions.loc[self.historic_start_year : self.end_year] += (
+                    h2o_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_h2o"]
                         * mass_consumption
                     ).fillna(0.0)
-                    nox_emissions.loc[self.historic_start_year : self.end_year] += (
+                    nox_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_nox"]
                         * mass_consumption
                     ).fillna(0.0)
-                    sulfur_emissions.loc[self.historic_start_year : self.end_year] += (
+                    sulfur_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_sulfur"]
                         * mass_consumption
                     ).fillna(0.0)

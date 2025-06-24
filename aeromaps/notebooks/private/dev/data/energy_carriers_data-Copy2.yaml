@@ -461,7 +461,7 @@ hydrogen_coal:
     # Technical:
     technical:
       processes_names: [ "liquefaction" ]
-      lhv: 44
+      lhv: 120
       resource_names: [ "transport" ]
       resource_specific_consumption:
         transport: 1
