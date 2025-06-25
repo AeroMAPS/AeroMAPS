@@ -1,9 +1,10 @@
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftEfficiencySimple(AeroMAPSModel):
@@ -42,17 +43,17 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years: list,
         relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values: list,
         hydrogen_final_market_share_short_range: float,
-        hydrogen_introduction_year_short_range: int,
+        hydrogen_introduction_year_short_range: Number,
         hydrogen_final_market_share_medium_range: float,
-        hydrogen_introduction_year_medium_range: int,
+        hydrogen_introduction_year_medium_range: Number,
         hydrogen_final_market_share_long_range: float,
-        hydrogen_introduction_year_long_range: int,
+        hydrogen_introduction_year_long_range: Number,
         electric_final_market_share_short_range: float,
-        electric_introduction_year_short_range: int,
+        electric_introduction_year_short_range: Number,
         electric_final_market_share_medium_range: float,
-        electric_introduction_year_medium_range: int,
+        electric_introduction_year_medium_range: Number,
         electric_final_market_share_long_range: float,
-        electric_introduction_year_long_range: int,
+        electric_introduction_year_long_range: Number,
         fleet_renewal_duration: float,
         covid_energy_intensity_per_ask_increase_2020: float,
     ) -> Tuple[
@@ -113,7 +114,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
 
         ## Drop-in
 
-        energy_per_ask_short_range_dropin_fuel_gain = AeromapsInterpolationFunction(
+        energy_per_ask_short_range_dropin_fuel_gain = aeromaps_interpolation_function(
             self,
             energy_per_ask_short_range_dropin_fuel_gain_reference_years,
             energy_per_ask_short_range_dropin_fuel_gain_reference_years_values,
@@ -122,7 +123,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "energy_per_ask_short_range_dropin_fuel_gain"] = (
             energy_per_ask_short_range_dropin_fuel_gain
         )
-        energy_per_ask_medium_range_dropin_fuel_gain = AeromapsInterpolationFunction(
+        energy_per_ask_medium_range_dropin_fuel_gain = aeromaps_interpolation_function(
             self,
             energy_per_ask_medium_range_dropin_fuel_gain_reference_years,
             energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values,
@@ -131,7 +132,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "energy_per_ask_medium_range_dropin_fuel_gain"] = (
             energy_per_ask_medium_range_dropin_fuel_gain
         )
-        energy_per_ask_long_range_dropin_fuel_gain = AeromapsInterpolationFunction(
+        energy_per_ask_long_range_dropin_fuel_gain = aeromaps_interpolation_function(
             self,
             energy_per_ask_long_range_dropin_fuel_gain_reference_years,
             energy_per_ask_long_range_dropin_fuel_gain_reference_years_values,
@@ -179,7 +180,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
 
         ## Hydrogen
 
-        relative_energy_per_ask_hydrogen_wrt_dropin_short_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_hydrogen_wrt_dropin_short_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years,
             relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years_values,
@@ -188,7 +189,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "relative_energy_per_ask_hydrogen_wrt_dropin_short_range"] = (
             relative_energy_per_ask_hydrogen_wrt_dropin_short_range
         )
-        relative_energy_per_ask_hydrogen_wrt_dropin_medium_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_hydrogen_wrt_dropin_medium_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years,
             relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years_values,
@@ -197,7 +198,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "relative_energy_per_ask_hydrogen_wrt_dropin_medium_range"] = (
             relative_energy_per_ask_hydrogen_wrt_dropin_medium_range
         )
-        relative_energy_per_ask_hydrogen_wrt_dropin_long_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_hydrogen_wrt_dropin_long_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years,
             relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values,
@@ -244,7 +245,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
 
         ## Electric
 
-        relative_energy_per_ask_electric_wrt_dropin_short_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_electric_wrt_dropin_short_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years,
             relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years_values,
@@ -253,7 +254,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "relative_energy_per_ask_electric_wrt_dropin_short_range"] = (
             relative_energy_per_ask_electric_wrt_dropin_short_range
         )
-        relative_energy_per_ask_electric_wrt_dropin_medium_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_electric_wrt_dropin_medium_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years,
             relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years_values,
@@ -262,7 +263,7 @@ class PassengerAircraftEfficiencySimple(AeroMAPSModel):
         self.df.loc[:, "relative_energy_per_ask_electric_wrt_dropin_medium_range"] = (
             relative_energy_per_ask_electric_wrt_dropin_medium_range
         )
-        relative_energy_per_ask_electric_wrt_dropin_long_range = AeromapsInterpolationFunction(
+        relative_energy_per_ask_electric_wrt_dropin_long_range = aeromaps_interpolation_function(
             self,
             relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years,
             relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values,
@@ -970,12 +971,14 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
         self.df.loc[:, "rtk_hydrogen_share"] = rtk_hydrogen_share
         self.df.loc[:, "rtk_dropin_fuel_share"] = rtk_dropin_fuel_share
+        self.df.loc[:, "rtk_electric_share"] = rtk_electric_share
 
         rtk_hydrogen = rtk * rtk_hydrogen_share / 100
         rtk_electric = rtk * rtk_electric_share / 100
         rtk_dropin_fuel = rtk * rtk_dropin_fuel_share / 100
         self.df.loc[:, "rtk_hydrogen"] = rtk_hydrogen
         self.df.loc[:, "rtk_dropin_fuel"] = rtk_dropin_fuel
+        self.df.loc[:, "rtk_electric"] = rtk_electric
 
         relative_energy_per_ask_hydrogen_wrt_dropin_short_range = (
             energy_per_ask_without_operations_short_range_hydrogen
@@ -1056,7 +1059,6 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         energy_per_rtk_without_operations_freight_electric = self.df[
             "energy_per_rtk_without_operations_freight_electric"
         ]
-
         return (
             energy_per_rtk_without_operations_freight_dropin_fuel,
             energy_per_rtk_without_operations_freight_hydrogen,

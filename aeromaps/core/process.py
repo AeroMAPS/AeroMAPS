@@ -5,6 +5,14 @@ from json import load, dump
 # Third-party imports
 import numpy as np
 import pandas as pd
+
+from gemseo import generate_n2_plot, create_scenario, generate_coupling_graph
+
+# from gemseo import create_mda
+from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
+from gemseo.mda.mda_chain import MDAChain
+# from gemseo.mda.gauss_seidel import MDAGaussSeidel
+# from gemseo.core.discipline import Discipline
 import xarray as xr
 from gemseo import generate_n2_plot, create_mda
 
@@ -35,6 +43,12 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "config.json")
 
 # Construct the path to the parameters.json file
 DEFAULT_PARAMETERS_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "parameters.json")
+default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
+
+# Construct the path to the vector_inputs.csv file
+default_vector_inputs_data_path = os.path.join(
+    current_dir, "..", "resources", "data", "vector_inputs.csv"
+)
 
 # Construct the path to the climate data .csv file
 DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
@@ -45,14 +59,12 @@ DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
 class AeroMAPSProcess(object):
     def __init__(
         self,
-        configuration_file=None,
-        models=default_models_top_down,
-        use_fleet_model=False,
-        add_examples_aircraft_and_subcategory=True,
+        configuration_file: str = None,
+        models: dict = default_models_top_down,
+        use_fleet_model: bool = False,
+        add_examples_aircraft_and_subcategory: bool = True,
     ):
         self.configuration_file = configuration_file
-        self._initialize_configuration()
-
         self.use_fleet_model = use_fleet_model
         self.models = models
 
@@ -61,7 +73,6 @@ class AeroMAPSProcess(object):
 
         self.setup(add_examples_aircraft_and_subcategory)
 
-    def setup(self, add_examples_aircraft_and_subcategory=True):
         self.disciplines = []
         self.data = {}
         self.json = {}
@@ -395,7 +406,7 @@ class AeroMAPSProcess(object):
 
     def _update_data_from_model(self):
         # Inputs
-        all_inputs = self.process.get_input_data()
+        all_inputs = self.mda_chain.get_input_data()
 
         for name in all_inputs:
             try:

@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class DropinFuelDistribution(AeroMAPSModel):
@@ -13,18 +13,44 @@ class DropinFuelDistribution(AeroMAPSModel):
     def compute(
         self,
         biofuel_share_reference_years: list,
-        biofuel_share_reference_years_values: list,
+        biofuel_share_reference_years_values: np.ndarray,
         electrofuel_share_reference_years: list,
-        electrofuel_share_reference_years_values: list,
+        electrofuel_share_reference_years_values: np.ndarray,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """Fuel distribution calculation using interpolation functions"""
 
+        ######### MOD FOR OPTIM ###########
+
+        # TODO remove if not optim // make generic
+        # Reduce number of optim varaibales and fixes 2020 values to zero
+        biofuel_share_reference_years_local = biofuel_share_reference_years.copy()
+        biofuel_share_reference_years_local.insert(0, 2025)
+        biofuel_share_reference_years_local.insert(0, 2020)
+        biofuel_share_reference_years_values_local = np.insert(
+            biofuel_share_reference_years_values, 0, 2
+        )
+        biofuel_share_reference_years_values_local = np.insert(
+            biofuel_share_reference_years_values_local, 0, 0
+        )
+
+        electrofuel_share_reference_years_local = electrofuel_share_reference_years.copy()
+        electrofuel_share_reference_years_local.insert(0, 2025)
+        electrofuel_share_reference_years_local.insert(0, 2020)
+        electrofuel_share_reference_years_values_local = np.insert(
+            electrofuel_share_reference_years_values, 0, 0
+        )
+        electrofuel_share_reference_years_values_local = np.insert(
+            electrofuel_share_reference_years_values_local, 0, 0
+        )
+
+        ######### END MOD FOR OPTIM ###########
+
         # Biofuel
-        biofuel_share_prospective = AeromapsInterpolationFunction(
+        biofuel_share_prospective = aeromaps_interpolation_function(
             self,
-            biofuel_share_reference_years,
-            biofuel_share_reference_years_values,
-            method="quadratic",
+            biofuel_share_reference_years_local,
+            biofuel_share_reference_years_values_local,
+            method="linear",
             positive_constraint=True,
             model_name=self.name,
         )
@@ -40,11 +66,11 @@ class DropinFuelDistribution(AeroMAPSModel):
         biofuel_share = self.df["biofuel_share"]
 
         # Electrofuel
-        electrofuel_share_prospective = AeromapsInterpolationFunction(
+        electrofuel_share_prospective = aeromaps_interpolation_function(
             self,
-            electrofuel_share_reference_years,
-            electrofuel_share_reference_years_values,
-            method="quadratic",
+            electrofuel_share_reference_years_local,
+            electrofuel_share_reference_years_values_local,
+            method="linear",
             positive_constraint=True,
             model_name=self.name,
         )

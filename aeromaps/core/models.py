@@ -1,3 +1,4 @@
+from aeromaps.models.air_transport.air_traffic.price_elasticity import PriceElasticityAndSurplus
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     DropInMeanMfsp,
@@ -80,6 +81,14 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_
     EnergyIntensity,
 )
 from aeromaps.models.air_transport.aircraft_energy.fuel_distribution import DropinFuelDistribution
+from aeromaps.models.optimisation.constraints.carbon_budget_constraint import CarbonBudgetConstraint
+from aeromaps.models.optimisation.constraints.energy_constraint import (
+    BlendCompletenessConstraint,
+    ElectricityAvailabilityConstraintTrajectory,
+    BiomassAvailabilityConstraintTrajectory,
+    ElectrofuelUseGrowthConstraint,
+    BiofuelUseGrowthConstraint,
+)
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
@@ -131,6 +140,9 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     HydrogenConsumption,
     ElectricConsumption,
     EnergyConsumption,
+    DropinFuelPathwayConsumptionAndGrowth,
+    HydrogenPathwayConsumptionAndGrowth,
+    ElectricPathwayConsumptionAndGrowth,
 )
 from aeromaps.models.impacts.energy_resources.resources_consumption import (
     BiomassConsumption,
@@ -198,8 +210,10 @@ from aeromaps.models.impacts.costs.energy.detailled.liquid_hydrogen import (
     GasCcsCapex,
 )
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
-    DicountedScenarioCost,
-    NonDiscountedScenarioCost,
+    DicountedEnergyCost,
+    NonDiscountedEnergyCost,
+    TotalSurplusLoss,
+    TotalAirlineCost,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -218,6 +232,8 @@ from aeromaps.models.impacts.costs.airlines.operational_profit import (
 
 from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
     PassengerAircraftTotalCostAirfare,
+    PassengerAircraftTotalCost,
+    PassengerAircraftMarginalCost,
 )
 
 models_traffic = {
@@ -269,6 +285,7 @@ models_efficiency_bottom_up = {
     "soot_emission_index_complex": SootEmissionIndexComplex("soot_emission_index_complex"),
 }
 
+
 models_energy_without_fuel_effect = {
     "dropin_fuel_distribution": DropinFuelDistribution("dropin_fuel_distribution"),
     "biofuel_efficiency": BiofuelEfficiency("biofuel_efficiency"),
@@ -286,6 +303,15 @@ models_energy_without_fuel_effect = {
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
     "energy_consumption": EnergyConsumption("energy_consumption"),
+    "dropin_fuel_pathway_consumption_and_growth": DropinFuelPathwayConsumptionAndGrowth(
+        "dropin_fuel_pathway_consumption_and_growth"
+    ),
+    "hydrogen_pathway_consumption_and_growth": HydrogenPathwayConsumptionAndGrowth(
+        "hydrogen_pathway_consumption_and_growth"
+    ),
+    "electric_pathway_consumption_and_growth": ElectricPathwayConsumptionAndGrowth(
+        "electric_pathway_consumption_and_growth"
+    ),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
     "dropin_fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPax100km(
@@ -312,6 +338,15 @@ models_energy_with_fuel_effect = {
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
     "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
     "electric_consumption": ElectricConsumption("electric_consumption"),
+    "dropin_fuel_pathway_consumption_and_growth": DropinFuelPathwayConsumptionAndGrowth(
+        "dropin_fuel_pathway_consumption_and_growth"
+    ),
+    "hydrogen_pathway_consumption_and_growth": HydrogenPathwayConsumptionAndGrowth(
+        "hydrogen_pathway_consumption_and_growth"
+    ),
+    "electric_pathway_consumption_and_growth": ElectricPathwayConsumptionAndGrowth(
+        "electric_pathway_consumption_and_growth"
+    ),
     "energy_consumption": EnergyConsumption("energy_consumption"),
     "biomass_consumption": BiomassConsumption("biomass_consumption"),
     "electricity_consumption": ElectricityConsumption("electricity_consumption"),
@@ -452,8 +487,8 @@ models_energy_cost_complex = {
     "biofuel_var_opex": BiofuelVarOpex("biofuel_var_opex"),
     "biofuel_feedstock_cost": BiofuelFeedstock("biofuel_feedstock_cost"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "discounted_energy_cost": DicountedEnergyCost("discounted_energy_cost"),
+    "non_discounted_energy_cost": NonDiscountedEnergyCost("non_discounted_energy_cost"),
     "exogenous_carbon_price_trajectory": ExogenousCarbonPriceTrajectory(
         "exogenous_carbon_price_trajectory"
     ),
@@ -475,8 +510,8 @@ models_energy_cost_simple = {
     "co2_cost": Co2Cost("co2_cost"),
     "carbon_tax": CarbonTax("carbon_tax"),
     "dropin_mean_mfsp": DropInMeanMfsp("dropin_mean_mfsp"),
-    "discounted_scenario_cost": DicountedScenarioCost("discounted_scenario_cost"),
-    "non_discounted_scenario_cost": NonDiscountedScenarioCost("non_discounted_scenario_cost"),
+    "discounted_energy_cost": DicountedEnergyCost("discounted_energy_cost"),
+    "non_discounted_energy_cost": NonDiscountedEnergyCost("non_discounted_energy_cost"),
 }
 
 
@@ -583,4 +618,65 @@ default_models_bottom_up = {
     "models_sustainability": models_sustainability,
     "models_energy_cost_complex": models_energy_cost_complex,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
+}
+
+models_cost_feedback = {
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+    "price_elasticity_and_surplus": PriceElasticityAndSurplus("price_elasticity_and_surplus"),
+    "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
+    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost"
+    ),
+}
+
+models_optim_simple = {
+    "default_models_top_down": default_models_top_down,
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
+    "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+}
+
+models_optim_complex = {
+    "default_models_top_down": default_models_top_down,
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
+    "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+    "models_cost_feedback": models_cost_feedback,
+    "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
+}
+
+
+models_optim_tsas_custom = {
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
+    "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
 }

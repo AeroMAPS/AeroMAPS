@@ -24,10 +24,7 @@ class ElectricityDirectUse(AeroMAPSModel):
         pd.Series,
     ]:
         electricity_direct_use_total_cost = (
-            energy_consumption_electric
-            * electricity_market_price
-            / 3.6  # kWh to MJ
-            / 1000000
+            energy_consumption_electric * electricity_market_price / 3.6 / 1000000  # kWh to MJ
         )
         self.df.loc[:, "electricity_direct_use_total_cost"] = electricity_direct_use_total_cost
 
