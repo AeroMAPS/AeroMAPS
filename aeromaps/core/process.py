@@ -43,11 +43,10 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "config.json")
 
 # Construct the path to the parameters.json file
 DEFAULT_PARAMETERS_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "parameters.json")
-default_parameters_path = os.path.join(current_dir, "..", "resources", "data", "parameters.json")
 
 # Construct the path to the vector_inputs.csv file
-default_vector_inputs_data_path = os.path.join(
-    current_dir, "..", "resources", "data", "vector_inputs.csv"
+DEFAULT_VECTOR_INPUTS_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "vector_inputs.csv"
 )
 
 # Construct the path to the climate data .csv file
@@ -59,12 +58,14 @@ DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
 class AeroMAPSProcess(object):
     def __init__(
         self,
-        configuration_file: str = None,
-        models: dict = default_models_top_down,
-        use_fleet_model: bool = False,
-        add_examples_aircraft_and_subcategory: bool = True,
+        configuration_file=None,
+        models=default_models_top_down,
+        use_fleet_model=False,
+        add_examples_aircraft_and_subcategory=True,
     ):
         self.configuration_file = configuration_file
+        self._initialize_configuration()
+
         self.use_fleet_model = use_fleet_model
         self.models = models
 
@@ -73,6 +74,7 @@ class AeroMAPSProcess(object):
 
         self.setup(add_examples_aircraft_and_subcategory)
 
+    def setup(self, add_examples_aircraft_and_subcategory=True):
         self.disciplines = []
         self.data = {}
         self.json = {}
@@ -84,14 +86,68 @@ class AeroMAPSProcess(object):
         self._initialize_disciplines(
             add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
         )
+
+        # Initialize the GEMSEO settings
+        self._initialize_gemseo_settings()
+
+        # Create MDA chain
+        self.mda_chain = MDAChain(
+            disciplines=self.disciplines,
+            # grammar_type=Discipline.GrammarType.SIMPLE,
+            tolerance=1e-10,
+            initialize_defaults=True,
+            inner_mda_name="MDAGaussSeidel",
+            log_convergence=True,
+        )
+
+    def create_gemseo_scenario(self):
+        # if no mda_chain is created raise an error setup needs to be called first
+        if self.mda_chain is None:
+            raise ValueError("MDA chain not created. Please call setup() first.")
+
         # Create GEMSEO process
-        self.process = create_mda("MDAChain", disciplines=self.disciplines)
+        self.scenario = create_scenario(
+            disciplines=self.mda_chain,
+            objective_name=self.gemseo_settings["objective_name"],
+            design_space=self.gemseo_settings["design_space"],
+            scenario_type=self.gemseo_settings["scenario_type"],
+            formulation=self.gemseo_settings["formulation"],
+            # grammar_type=self.gemseo_settings["grammar_type"],
+            # input_data=self.input_data,
+        )
+
+    def create_gemseo_doe(self):
+        # if no scenario is created raise an error create_gemseo_scenario needs to be called first
+        if self.scenario is None:
+            raise ValueError(
+                "GEMSEO scenario not created. Please call create_gemseo_scenario() first."
+            )
+
+        # dv_names = self.scenario.formulation.design_variables.keys()
+        self.adapter = MDOScenarioAdapter(
+            # TODO make generic
+            self.scenario,
+            input_names=self.gemseo_settings["doe_input_names"],
+            output_names=self.gemseo_settings["doe_output_names"],
+            # grammar_type=self.gemseo_settings["grammar_type"],
+            set_x0_before_opt=True,
+        )
+
+        self.scenario_doe = create_scenario(
+            self.adapter,
+            formulation=self.gemseo_settings["formulation"],
+            objective_name=self.gemseo_settings["objective_name"],
+            design_space=self.gemseo_settings["design_space"],
+            scenario_type="DOE",
+            # grammar_type=self.gemseo_settings["grammar_type"],
+        )
+
 
     def compute(self):
 
         input_data = self._pre_compute()
         
-        self.process.execute(input_data=input_data)
+        self.mda_chain.execute(input_data=input_data)
 
         self._update_data_from_model()
 
@@ -345,8 +401,37 @@ class AeroMAPSProcess(object):
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
         
+
+        self._initialize_vector_inputs()
+
         # Format input vectors
         self._format_input_vectors()
+
+
+    def _initialize_vector_inputs(self):
+        if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            vector_inputs_data_file_path = os.path.join(
+                configuration_directory, self.config["VECTOR_INPUTS_DATA_FILE"]
+            )
+        else:
+            vector_inputs_data_file_path = DEFAULT_VECTOR_INPUTS_DATA_PATH
+
+        # Read .csv with first line column names
+        vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
+
+        # Generate pd.Series for each column with index the year stored in first column
+        for column in vector_inputs_df.columns:
+            values = vector_inputs_df[column].values
+            index = vector_inputs_df.iloc[:, 0].values
+
+            # TODO remove this: experiment to see if it works
+            # if column == "airfare_per_rpk":
+            #     setattr(self.parameters, column, np.array(values))
+            #
+            # else:
+            setattr(self.parameters, column, pd.Series(values, index=index))
+
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -361,6 +446,23 @@ class AeroMAPSProcess(object):
             climate_historical_data_file_path, delimiter=";", header=None
         )
         self.climate_historical_data = historical_dataset_df.values
+
+    def _initialize_gemseo_settings(self):
+        self.scenario = None
+        self.scenario_doe = None
+        self.gemseo_settings = {}
+
+        # Mandatory settings
+        self.gemseo_settings["design_space"] = None
+        self.gemseo_settings["objective_name"] = None
+        self.gemseo_settings["algorithm"] = None
+
+        # Optional settings
+        self.gemseo_settings["formulation"] = "MDF"
+        self.gemseo_settings["scenario_type"] = "MDO"
+        # self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
+        self.gemseo_settings["doe_input_names"] = None
+        self.gemseo_settings["doe_output_names"] = None
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
