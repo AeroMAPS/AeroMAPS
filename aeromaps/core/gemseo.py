@@ -32,6 +32,7 @@ from typing import Final
 from typing import Union
 from typing import get_type_hints
 from typing import Any
+from typing import cast
 from multiprocessing import cpu_count
 
 import numpy as np
@@ -62,6 +63,9 @@ from aeromaps.models.base import AeroMAPSModel
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from collections.abc import Sequence
+    from gemseo.typing import NumberArray
+
+    ValueType = Union[int, float, complex, NumberArray]
 
 DataType = Union[float, ndarray]
 
@@ -486,7 +490,8 @@ class CustomDataConverter(SimpleGrammarDataConverter):
     _series_indexes = {}
 
     def convert_value_to_array(self, name: str, value: Any) -> ndarray:
-        if isinstance(value, list):
+        if isinstance(value, (list, tuple)):
+            print(name, value)
             self._list_names.add(name)
             value = np.array(value, dtype=float)
 
@@ -495,7 +500,6 @@ class CustomDataConverter(SimpleGrammarDataConverter):
             self._series_names.add(name)
             self._series_indexes[name] = value.index
             return value.values
-
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
@@ -505,6 +509,27 @@ class CustomDataConverter(SimpleGrammarDataConverter):
         if name in self._list_names and not isinstance(array_, list):
             array_ = list(array_)
         return super().convert_array_to_value(name, array_)
+
+    @classmethod
+    def get_value_size(cls, name: str, value: ValueType) -> int:
+        """Return the size of a data value.
+
+        The size is typically what is returned by ``ndarray.size`` or ``len(list)``.
+        The size of a number is 1.
+        Overrides GEMSEO function to handle lists.
+
+        Args:
+            name: The data name.
+            value: The data value to get the size from.
+
+        Returns:
+            The size.
+        """
+        if isinstance(value, cls._NON_ARRAY_TYPES):
+            return 1
+        elif isinstance(value, (list, tuple)):
+            return len(value)
+        return cast("NumberArray", value).size
 
 
 SimpleGrammar.DATA_CONVERTER_CLASS = CustomDataConverter
