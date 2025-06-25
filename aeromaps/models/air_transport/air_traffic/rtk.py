@@ -125,7 +125,7 @@ class RTKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_freight = aeromaps_leveling_function(
+        reference_annual_growth_rate_freight = aeromaps_leveling_function(
             self,
             reference_cagr_freight_reference_periods,
             reference_cagr_freight_reference_periods_values,
