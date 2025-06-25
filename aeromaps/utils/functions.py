@@ -1,7 +1,8 @@
+import logging
 import os.path as pth
 import json
 from json import load
-from typing import Dict, Any
+# from typing import Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -246,6 +247,7 @@ def create_partitioning(file, path=""):
 
     return
 
+
 def merge_json_files(file1, file2, output_file):
     with open(file1, "r") as f1, open(file2, "r") as f2:
         data1 = json.load(f1)
@@ -255,6 +257,7 @@ def merge_json_files(file1, file2, output_file):
 
     with open(output_file, "w") as outfile:
         json.dump(merged_data, outfile, indent=4)
+
 
 def compare_json_files(
     file1_path: str,
@@ -298,12 +301,12 @@ def compare_json_files(
                     keys_to_remove.append(key)
         for key in keys_to_remove:
             del diff["values_changed"][key]
-        
+
         # If values_changed is empty, remove the key
         if not diff["values_changed"]:
             del diff["values_changed"]
 
-    #TODO: investigate why this is necessary with python 3.12
+    # TODO: investigate why this is necessary with python 3.12
     # total_co2_equivalent_emissions_ratio
     # If iterable added, remove it
     if "iterable_item_added" in diff:
@@ -319,3 +322,15 @@ def compare_json_files(
             files_are_different = False
 
     return files_are_different
+
+
+def custom_logger_config(logger):
+    # Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
+    class SuppressArgsSectionWarning(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.getMessage() != "The Args section is missing."
+
+    for handler in logger.handlers:
+        handler.addFilter(SuppressArgsSectionWarning())
+
+    return logger
