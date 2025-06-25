@@ -478,22 +478,34 @@ class ExtendedJSONGrammar(JSONGrammar):
 
 # TRY TO BE CLEAN WITH JSON GRAMMAR DATA CONVERTER
 class CustomDataConverter(SimpleGrammarDataConverter):
-    _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series)
+    _IS_CONTINUOUS_TYPES: ClassVar[tuple[type, ...]] = (float, complex, pd.Series, list)
     _IS_NUMERIC_TYPES: ClassVar[tuple[type, ...]] = (int, *_IS_CONTINUOUS_TYPES)
+    
+    _list_names = set()
+    _series_names = set()
 
     def convert_value_to_array(self, name: str, value: Any) -> ndarray:
+
+        if isinstance(value, list):
+            self._list_names.add(name)
+            value = np.array(value, dtype=float)
+
         if isinstance(value, pd.Series):
             value = value.fillna(-999999)
+            self._series_names.add(name)
             return value.values
+        
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
         array_ = np.nan_to_num(array_, nan=-999999)
-        if isinstance(array_, ndarray) and len(array_) > 1:
+        if isinstance(array_, ndarray) and name in self._series_names:
             # TODO us eend year
             return pd.Series(
                 array_, index=range(2051 - len(array_), 2051), name=name
             )  # very provisory
+        if name in self._list_names and not isinstance(array_, list):
+            array_ = list(array_)
         return super().convert_array_to_value(name, array_)
 
 

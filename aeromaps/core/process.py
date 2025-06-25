@@ -111,7 +111,7 @@ class AeroMAPSProcess(object):
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
-            formulation=self.gemseo_settings["formulation"],
+            formulation_name=self.gemseo_settings["formulation"],
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
         )
@@ -135,7 +135,7 @@ class AeroMAPSProcess(object):
 
         self.scenario_doe = create_scenario(
             self.adapter,
-            formulation=self.gemseo_settings["formulation"],
+            formulation_name=self.gemseo_settings["formulation"],
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type="DOE",
@@ -147,7 +147,22 @@ class AeroMAPSProcess(object):
 
         input_data = self._pre_compute()
         
-        self.mda_chain.execute(input_data=input_data)
+        if self.scenario is not None:
+            if self.scenario_doe is not None:
+                print("Running DOE")
+                self.scenario.default_inputs.update(self.scenario.options)
+                self.scenario_doe.execute(
+                    input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}}
+                )
+            else:
+                print("Running MDO")
+                self.scenario.execute(self.gemseo_settings["algorithm"])
+        else:
+            if self.mda_chain is None:
+                raise ValueError("MDA chain not created. Please call setup() first.")
+            else:
+                print("Running MDA")
+                self.mda_chain.execute(input_data=input_data)
 
         self._update_data_from_model()
 
