@@ -52,8 +52,20 @@ def aeromaps_interpolation_function(
             reference_years_values,
             kind=method,
         )
+
+        # If first reference year is lower than prospection start year, we start interpolating before
+        if reference_years[0] != self.prospection_start_year:
+            warnings.warn(
+                f"\n[Interpolation Model: {model_name} Warning]\n"
+                f"The first reference year ({reference_years[0]}) differs from the prospection start year ({self.prospection_start_year}).\n"
+                f"Interpolation will begin at the first reference year."
+            )
+            prospection_start_year = reference_years[0]
+        else:
+            prospection_start_year = self.prospection_start_year
+
         if reference_years[-1] == self.end_year:
-            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+            for k in range(prospection_start_year, reference_years[-1] + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -66,7 +78,7 @@ def aeromaps_interpolation_function(
                 + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
+            for k in range(prospection_start_year, self.end_year + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -79,7 +91,7 @@ def aeromaps_interpolation_function(
                 + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
             )
-            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+            for k in range(prospection_start_year, reference_years[-1] + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:

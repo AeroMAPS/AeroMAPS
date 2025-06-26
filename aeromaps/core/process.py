@@ -11,6 +11,7 @@ from gemseo import generate_n2_plot, create_scenario, generate_coupling_graph
 # from gemseo import create_mda
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
+
 # from gemseo.mda.gauss_seidel import MDAGaussSeidel
 # from gemseo.core.discipline import Discipline
 import xarray as xr
@@ -142,11 +143,9 @@ class AeroMAPSProcess(object):
             # grammar_type=self.gemseo_settings["grammar_type"],
         )
 
-
     def compute(self):
-
         input_data = self._pre_compute()
-        
+
         if self.scenario is not None:
             if self.scenario_doe is not None:
                 print("Running DOE")
@@ -184,7 +183,11 @@ class AeroMAPSProcess(object):
         return self._data_to_json()
 
     def write_json(self, file_name=None):
-        if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+        if (
+            file_name is None
+            and self.configuration_file is not None
+            and "OUTPUTS_JSON_DATA_FILE" in self.config
+        ):
             configuration_directory = os.path.dirname(self.configuration_file)
             new_output_file_path = os.path.join(
                 configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
@@ -192,7 +195,7 @@ class AeroMAPSProcess(object):
             file_name = new_output_file_path
         elif file_name is None:
             file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
-            
+
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
@@ -256,7 +259,6 @@ class AeroMAPSProcess(object):
         return fig
 
     def _pre_compute(self):
-
         input_data = self.parameters.to_dict()
 
         if self.fleet is not None:
@@ -265,14 +267,14 @@ class AeroMAPSProcess(object):
                 self.fleet_model.fleet.get_all_aircraft_elements()
             )
             self.fleet_model.compute()
-        
+
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.array([1.0])
-                    
+
         # Initialize the dataframes witjh latest parameter values
         for disc in self.disciplines:
             disc.model._initialize_df()
-        
+
         return input_data
 
     def _initialize_configuration(self):
@@ -292,9 +294,8 @@ class AeroMAPSProcess(object):
                 self.config[key] = value
 
     def _initialize_data(self):
-
         # Indexes
-        self._initialize_years() 
+        self._initialize_years()
 
         self._initialize_climate_historical_data()
 
@@ -309,8 +310,6 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
-
-        
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
@@ -415,13 +414,11 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
-        
 
         self._initialize_vector_inputs()
 
         # Format input vectors
         self._format_input_vectors()
-
 
     def _initialize_vector_inputs(self):
         if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:
@@ -446,7 +443,6 @@ class AeroMAPSProcess(object):
             #
             # else:
             setattr(self.parameters, column, pd.Series(values, index=index))
-
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -621,7 +617,7 @@ class AeroMAPSProcess(object):
                 if isinstance(value, (pd.Series, np.ndarray)):
                     d[key] = list(value)
             return d
-        
+
         # Create json data
         json_data = {}
 
