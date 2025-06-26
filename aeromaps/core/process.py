@@ -6,7 +6,7 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 
-from gemseo import generate_n2_plot, create_scenario, generate_coupling_graph
+from gemseo import create_scenario
 
 # from gemseo import create_mda
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
@@ -15,7 +15,7 @@ from gemseo.mda.mda_chain import MDAChain
 # from gemseo.mda.gauss_seidel import MDAGaussSeidel
 # from gemseo.core.discipline import Discipline
 import xarray as xr
-from gemseo import generate_n2_plot, create_mda
+from gemseo import generate_n2_plot
 
 
 # Local application imports
@@ -95,7 +95,7 @@ class AeroMAPSProcess(object):
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
             # grammar_type=Discipline.GrammarType.SIMPLE,
-            tolerance=1e-10,
+            tolerance=1e-7,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
@@ -108,11 +108,16 @@ class AeroMAPSProcess(object):
 
         # Create GEMSEO process
         self.scenario = create_scenario(
-            disciplines=self.mda_chain,
+            disciplines=self.disciplines,
             objective_name=self.gemseo_settings["objective_name"],
             design_space=self.gemseo_settings["design_space"],
             scenario_type=self.gemseo_settings["scenario_type"],
             formulation_name=self.gemseo_settings["formulation"],
+            main_mda_settings={
+                "inner_mda_name": "MDAJacobi",
+                "initialize_defaults": True,
+                "tolerance": 1e-3,
+            },
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
         )

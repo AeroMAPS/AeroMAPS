@@ -7,9 +7,8 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.base import AeroMAPSModel
 
 
 class NonDiscountedEnergyCost(AeroMAPSModel):
@@ -313,15 +312,15 @@ class TotalSurplusLoss(AeroMAPSModel):
         rpk_no_elasticity: pd.Series,
         cumulative_total_airline_cost_increase: pd.Series,
         cumulative_total_airline_cost_increase_discounted: pd.Series,
-        airfare_per_rpk: np.ndarray,
+        airfare_per_rpk: pd.Series,
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
         # airfare_per_rpk = pd.Series(airfare_per_rpk, index= range(2025,2051))
-        interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
-        years_new = np.arange(2025, 2051, 1)
-        airfare_per_rpk = interp_af(years_new)
-        airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
+        # interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
+        # years_new = np.arange(2025, 2051, 1)
+        # airfare_per_rpk = interp_af(years_new)
+        # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
 
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
