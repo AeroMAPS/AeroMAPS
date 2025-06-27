@@ -44,7 +44,9 @@ class LifeCycleAssessment(AeroMAPSModel):
         # See gemseo.py for more details about addition of auto-generated inputs.
         self.auto_inputs = dict()
         json_file_parameters = Parameters()
-        json_file_parameters.read_json(file_name=DEFAULT_PARAMETERS_PATH)  # default json file (parameters.json)
+        json_file_parameters.read_json(
+            file_name=DEFAULT_PARAMETERS_PATH
+        )  # default json file (parameters.json)
         json_parameters_dict = json_file_parameters.to_dict()
 
         for x in self.params_names:
@@ -69,9 +71,7 @@ class LifeCycleAssessment(AeroMAPSModel):
 
             # Parameters that are not in parameters.json are assumed to be outputs from other AeroMAPS models
             else:
-                self.auto_inputs[x] = (
-                    pd.Series
-                )
+                self.auto_inputs[x] = pd.Series
                 # TODO: is their a way to robustify this assumption about data type pd.Series?
                 # Maybe by first running the other models and checking the data type of the outputs.
 
@@ -135,12 +135,14 @@ class LifeCycleAssessment(AeroMAPSModel):
                     kwargs[name + "_reference_years_values"],
                     model_name=self.name,
                 )
-                param_values = param_values.loc[self.prospection_start_year:self.end_year].values
+                param_values = param_values.loc[self.prospection_start_year : self.end_year].values
                 self.params_dict[name] = np.nan_to_num(param_values)
 
             # else: the parameter is not provided and will be set to its default value.
             else:
-                raise UserWarning(f'Value for LCA parameter "{name}" is not provided. Default value will be used.')
+                raise UserWarning(
+                    f'Value for LCA parameter "{name}" is not provided. Default value will be used.'
+                )
 
         # Calculate impacts for all parameters at once
         res = self.multiLCAAlgebraicRaw(**self.params_dict)

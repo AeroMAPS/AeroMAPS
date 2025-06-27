@@ -494,7 +494,7 @@ class AeroMAPSProcess(object):
             if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
-                    field_value,
+                    field_value.astype(float),
                     (0, new_size - field_value.size),
                     mode="constant",
                     constant_values=np.nan,

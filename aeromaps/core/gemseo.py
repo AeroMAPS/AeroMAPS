@@ -510,13 +510,14 @@ class CustomDataConverter(SimpleGrammarDataConverter):
             array_ = list(array_)
         return super().convert_array_to_value(name, array_)
 
+    # Overrides GEMSEO function to handle lists.
     @classmethod
     def get_value_size(cls, name: str, value: ValueType) -> int:
         """Return the size of a data value.
 
         The size is typically what is returned by ``ndarray.size`` or ``len(list)``.
         The size of a number is 1.
-        Overrides GEMSEO function to handle lists.
+
 
         Args:
             name: The data name.

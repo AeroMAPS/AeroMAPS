@@ -12,8 +12,8 @@ from aeromaps.models.base import (
 )
 
 
-class PriceElasticityAndSurplus(AeroMAPSModel):
-    def __init__(self, name="price_elasticity_and_surplus", *args, **kwargs):
+class RPKWithElasticity(AeroMAPSModel):
+    def __init__(self, name="rpk_with_elasticity", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
