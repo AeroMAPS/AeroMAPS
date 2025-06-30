@@ -6,6 +6,7 @@ from json import load
 
 import numpy as np
 import pandas as pd
+from deepdiff.helper import SetOrdered
 from pandas import read_csv
 from deepdiff import DeepDiff
 
@@ -262,7 +263,7 @@ def merge_json_files(file1, file2, output_file):
 def compare_json_files(
     file1_path: str,
     file2_path: str,
-    ignore_order: bool = True,
+    ignore_order: bool = False,
     verbose: bool = True,
     rtol: float = 0.0001,
     atol: float = 0.1,
@@ -283,7 +284,12 @@ def compare_json_files(
         json1 = json.load(f1)
         json2 = json.load(f2)
 
-    diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
+    diff = DeepDiff(
+        json1,
+        json2,
+        ignore_order=ignore_order,
+        exclude_paths=False or [],
+    )
 
     # Only keep differences with error greater than 0.1%
     if "values_changed" in diff:
@@ -312,16 +318,29 @@ def compare_json_files(
     if "iterable_item_added" in diff:
         del diff["iterable_item_added"]
 
+    if "dictionary_item_added" in diff:
+        del diff["dictionary_item_added"]
+
     if verbose:
         if diff:
             print("Differences found:")
-            print(json.dumps(diff, indent=2))
+            print(json.dumps(diff, indent=2, default=convert_non_serializable))
             files_are_different = True
         else:
             print("No differences found.")
             files_are_different = False
 
     return files_are_different
+
+
+def convert_non_serializable(obj):
+    # Annex helper to compare_json_files
+    if isinstance(obj, (set, list, tuple, SetOrdered)):
+        return list(obj)
+    if hasattr(obj, "__dict__"):
+        print(obj.__dict__)
+        return obj.__dict__
+    return str(obj)
 
 
 def custom_logger_config(logger):
