@@ -99,9 +99,13 @@ class AviationEnergyCarriersFactory:
                 }
             )
         if pathway_data.get("abatement_cost"):
-            if environmental_model_type != "bottom-up" or cost_model_type != "bottom-up":
+            if cost_model_type != "bottom-up":
                 raise ValueError(
-                    "Abatement cost model can only be used with bottom-up environmental or cost models."
+                    "Abatement cost model can only be used with bottom-up cost models."
+                )
+            if environmental_model_type != "bottom-up":
+                print(
+                    "⚠️ Warning: Using Top-Down environmental model for abatement cost. Not recommended."
                 )
             # add abatement cost and effective models
             models.update(

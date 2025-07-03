@@ -38,11 +38,16 @@ class BottomUpCost(AeroMAPSModel):
                 f"{self.pathway_name}_energy_consumption": pd.Series([0.0]),
                 f"{self.pathway_name}_energy_unused": pd.Series([0.0]),
                 f"{self.pathway_name}_mean_co2_emission_factor": pd.Series([0.0]),
-                f"{self.pathway_name}_vintage_eis_co2_emission_factor": pd.Series([0.0]),
                 "private_discount_rate": 0.0,
                 "carbon_tax": pd.Series([0.0]),
             }
         )
+        if configuration_data.get("environmental_model") == "bottom_up":
+            self.input_names.update(
+                {
+                    f"{self.pathway_name}_vintage_eis_co2_emission_factor": pd.Series([0.0]),
+                }
+            )
 
         self.output_names = {
             f"{self.pathway_name}_mean_mfsp_without_resource": pd.Series([0.0]),
@@ -150,9 +155,15 @@ class BottomUpCost(AeroMAPSModel):
                 f"{self.pathway_name}_mean_unit_tax": pd.Series([0.0]),
                 f"{self.pathway_name}_mean_unit_carbon_tax": pd.Series([0.0]),
                 f"{self.pathway_name}_mean_unit_subsidy": pd.Series([0.0]),
-                f"{self.pathway_name}_vintage_eis_carbon_tax": pd.Series([0.0]),
             }
         )
+
+        if configuration_data.get("environmental_model") == "bottom_up":
+            self.output_names.update(
+                {
+                    f"{self.pathway_name}_vintage_eis_carbon_tax": pd.Series([0.0]),
+                }
+            )
 
         if configuration_data.get("compute_all_years"):
             self.compute_all_years = True
@@ -595,9 +606,13 @@ class BottomUpCost(AeroMAPSModel):
         )  # converted to kgCO2/MJ
         pathway_unit_carbon_tax = carbon_tax * emission_factor
 
-        vintage_eis_carbon_tax = (
-            input_data[f"{self.pathway_name}_vintage_eis_co2_emission_factor"] / 1000 * carbon_tax
-        )
+        if f"{self.pathway_name}_vintage_eis_co2_emission_factor" in input_data:
+            vintage_eis_carbon_tax = (
+                input_data[f"{self.pathway_name}_vintage_eis_co2_emission_factor"]
+                / 1000
+                * carbon_tax
+            )
+            output_data[f"{self.pathway_name}_vintage_eis_carbon_tax"] = vintage_eis_carbon_tax
 
         pathway_net_mfsp = custom_series_addition(
             pathway_net_mfsp_without_carbon_tax, pathway_unit_carbon_tax
@@ -610,7 +625,6 @@ class BottomUpCost(AeroMAPSModel):
                 f"{self.pathway_name}_mean_unit_tax": pathway_unit_tax_without_resource,
                 f"{self.pathway_name}_mean_unit_carbon_tax": pathway_unit_carbon_tax,
                 f"{self.pathway_name}_mean_unit_subsidy": pathway_unit_subsidy_without_resource,
-                f"{self.pathway_name}_vintage_eis_carbon_tax": vintage_eis_carbon_tax,
             }
         )
 
