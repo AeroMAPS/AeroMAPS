@@ -322,18 +322,19 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         pd.Series,
         # np.ndarray,
     ]:
-        # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025,2051))
-        # interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
-        #
-        # years_new = np.arange(2025, 2051, 1)
-        # airfare_per_rpk = interp_af(years_new)
-        # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
-
         intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[
             self.prospection_start_year - 1
         ]
-        initial_price_per_rpk_corrected = (
-            initial_price_per_rpk - 0.078692893 + intial_total_cost_per_rpk_without_extra_tax
+
+        # initial price => Same markup as iata stats, but using aeromaps cost (~ +0.01 €/RPK)
+        initial_price_per_rpk_corrected = 0.003983 + intial_total_cost_per_rpk_without_extra_tax
+
+        # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis
+        # Calibration of this function is done base on average cost and prices for the last 20 years of IATA data (2020,2021,2022 excluded)
+        # ==> TODO store notebook somewhere
+        average_slope = 1.212e-06
+        average_intercept = (
+            2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
         )
 
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
