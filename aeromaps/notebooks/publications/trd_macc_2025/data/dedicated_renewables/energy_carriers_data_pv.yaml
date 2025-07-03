@@ -316,9 +316,9 @@ electrofuel:
       emission_index:
         h2o: 1.231 # 
         nox: 0.01514
-        sulfur: 0.0012
-        soot: 3.0e-05
-        particles_number: 2.0e+14
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
     # Economics:
     economics:
       eis_capex: !AeroMapsCustomDataType
@@ -411,7 +411,7 @@ hydrogen_electrolysis:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -455,7 +455,7 @@ hydrogen_gas_ccs:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -507,7 +507,7 @@ hydrogen_gas:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -553,7 +553,7 @@ hydrogen_coal:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -606,7 +606,7 @@ hydrogen_coal_ccs:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0

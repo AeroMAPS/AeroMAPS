@@ -1,7 +1,7 @@
 generic_biofuel:
   # Metadata
   name: "generic_biofuel"
-  environmental_model: "bottom-up"
+  environmental_model: "top-down"
   cost_model: "bottom-up"
   aircraft_type: "dropin_fuel"
   energy_origin: "biomass"
@@ -22,11 +22,13 @@ generic_biofuel:
       resource_names: [ "generic_biomass" ]
       eis_resource_specific_consumption:
         generic_biomass: 2.17
+      resource_specific_consumption:
+        generic_biomass: 2.17
       kerosene_selectivity: 0.15
       lhv: 44
     # Environmental:
     environmental:
-      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
         values: [31.48, 31.31, 31.15, 30.98, 30.82, 30.65, 30.49, 30.32, 30.16, 29.99, 29.82, 29.66, 29.49, 29.33, 29.16, 29.0, 29.12, 29.25, 29.38, 29.51, 29.64, 29.76, 29.89, 30.02, 30.15, 30.27, 30.4, 30.53, 30.66, 30.79, 30.91, 30.87, 30.83, 30.79, 30.76, 30.72, 30.68, 30.64, 30.6, 30.56, 30.52, 30.48, 30.44, 30.4, 30.36, 30.32, 30.28, 30.24, 30.2, 30.16, 30.12]
         method: linear
@@ -53,7 +55,7 @@ generic_biofuel:
 electrofuel:
   # Metadata
   name: "electrofuel"
-  environmental_model: "bottom-up"
+  environmental_model: "top-down"
   cost_model: "bottom-up"
   aircraft_type: "dropin_fuel"
   energy_origin: "electricity"
@@ -77,10 +79,16 @@ electrofuel:
           years: [2020, 2030, 2050, 2070]
           values: [0.122857, 0.102286, 0.072914, 0.072914]
           method: linear
+      resource_specific_consumption:
+        generic_electricity: 2.32
+        co2_dac: !AeroMapsCustomDataType
+          years: [ 2020, 2030, 2050, 2070 ]
+          values: [ 0.122857, 0.102286, 0.072914, 0.072914 ]
+          method: linear
       lhv: 44
     # Environmental:
     environmental:
-      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear

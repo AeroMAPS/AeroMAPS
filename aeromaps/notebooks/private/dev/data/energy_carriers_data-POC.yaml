@@ -339,7 +339,7 @@ hydrogen_electrolysis_grid_fr:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -375,7 +375,7 @@ hydrogen_electrolysis_grid_us:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -410,7 +410,7 @@ hydrogen_electrolysis_wind:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -451,7 +451,7 @@ hydrogen_gas:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
@@ -488,7 +488,7 @@ hydrogen_coal:
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0

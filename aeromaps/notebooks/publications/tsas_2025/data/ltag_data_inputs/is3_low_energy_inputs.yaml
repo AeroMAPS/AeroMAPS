@@ -1,7 +1,7 @@
 generic_biofuel:
   # Metadata
   name: "generic_biofuel"
-  environmental_model: "bottom-up"
+  environmental_model: "top-down"
   cost_model: "bottom-up"
   aircraft_type: "dropin_fuel"
   energy_origin: "biomass"
@@ -22,11 +22,13 @@ generic_biofuel:
       resource_names: [ "generic_biomass" ]
       eis_resource_specific_consumption:
         generic_biomass: 2.17
+      resource_specific_consumption:
+        generic_biomass: 2.17
       kerosene_selectivity: 0.15
       lhv: 44
     # Environmental:
     environmental:
-      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
         values:  [33.87, 33.23, 32.59, 31.94, 31.3, 30.66, 30.02, 29.37, 28.73, 28.09, 27.44, 26.8, 26.16, 25.51, 24.87, 24.23, 24.26, 24.29, 24.31, 24.34, 24.37, 24.4, 24.43, 24.46, 24.49, 24.52, 24.55, 24.58, 24.61, 24.64, 24.67, 24.49, 24.31, 24.14, 23.96, 23.78, 23.61, 23.43, 23.25, 23.08, 22.9, 22.73, 22.55, 22.37, 22.2, 22.02, 21.84, 21.67, 21.49, 21.32, 21.14]
         method: linear
@@ -55,7 +57,7 @@ generic_biofuel:
 electrofuel:
   # Metadata
   name: "electrofuel"
-  environmental_model: "bottom-up"
+  environmental_model: "top-down"
   cost_model: "bottom-up"
   aircraft_type: "dropin_fuel"
   energy_origin: "electricity"
@@ -74,16 +76,21 @@ electrofuel:
       kerosene_selectivity: 0.5
       resource_names: [ "generic_electricity", "co2_dac"]
       eis_resource_specific_consumption:
-        # Add a list of resources and their consumption per unit of fuel.
         generic_electricity: 2.32
         co2_dac: !AeroMapsCustomDataType
           years: [2020, 2030, 2050, 2070]
           values: [0.122857, 0.102286, 0.072914, 0.072914]
           method: linear
+      resource_specific_consumption:
+        generic_electricity: 2.32
+        co2_dac: !AeroMapsCustomDataType
+          years: [ 2020, 2030, 2050, 2070 ]
+          values: [ 0.122857, 0.102286, 0.072914, 0.072914 ]
+          method: linear
       lhv: 44
     # Environmental:
     environmental:
-      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
@@ -149,7 +156,7 @@ fossil_kerosene:
 hydrogen_electrolysis:
   # Metadata
   name: "hydrogen_electrolysis"
-  environmental_model: "bottom-up"
+  environmental_model: "top-down"
   cost_model: "bottom-up"
   aircraft_type: "hydrogen"
   energy_origin: "electricity"
@@ -162,16 +169,17 @@ hydrogen_electrolysis:
       lhv: 120
       resource_names: [ "generic_electricity" ]
       eis_resource_specific_consumption:
-        generic_electricity: 1.94
-    # Environmental:
+        generic_electricity: 2.12
+      resource_specific_consumption:
+        generic_electricity: 2.12
     environmental:
-      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
         values: [0.0]
         method: linear
       emission_index:
         h2o: 9.0
-        nox: 0.01514
+        nox: 0.007
         sulfur: 0.0
         soot: 0.0
         particles_number: 0.0
