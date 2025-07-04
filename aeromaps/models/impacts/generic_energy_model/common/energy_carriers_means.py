@@ -178,11 +178,10 @@ class EnergyCarriersMeans(AeroMAPSModel):
                         ).fillna(0) / 100
 
                         mean_carbon_tax_supplement += (
-                            (mean_net_mfsp - mean_net_mfsp_without_carbon_tax) * share
+                            (pathway_net_mfsp - pathway_net_mfsp_without_carbon_tax) * share
                         ).fillna(0) / 100
                         origin_mean_carbon_tax_supplement += (
-                            (origin_mean_net_mfsp - origin_mean_net_mfsp_without_carbon_tax)
-                            * origin_share
+                            (pathway_net_mfsp - pathway_net_mfsp_without_carbon_tax) * origin_share
                         ).fillna(0) / 100
 
                         pathway_unit_subsidy = input_data[f"{pathway.name}_mean_unit_subsidy"]
@@ -429,6 +428,8 @@ class EnergyCarriersMeanLHV(AeroMAPSModel):
                         origin_cumulative_share = (
                             origin_cumulative_share + origin_share.fillna(0) / 100
                         )
+
+                        cumulative_share = cumulative_share + share.fillna(0) / 100
 
                         pathway_lhv = input_data[f"{pathway.name}_lhv"]
 

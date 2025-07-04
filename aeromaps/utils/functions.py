@@ -274,77 +274,99 @@ def create_partitioning(file, path=""):
 def compare_json_files(
     file1_path: str,
     file2_path: str,
-    ignore_order: bool = True,
-    report_repetition: bool = True,
+    ignore_order: bool = False,
     verbose: bool = True,
     rtol: float = 0.0001,
     atol: float = 0.1,
 ) -> bool:
     """
-    Compare two JSON files using deepdiff and return the differences.
-
-    Args:
-        file1_path (str): Path to the first JSON file.
-        file2_path (str): Path to the second JSON file.
-        ignore_order (bool): Whether to ignore the order in lists. Defaults to True.
-        verbose (bool): Whether to print differences. Defaults to True.
-
-    Returns:
-        bool: True if differences exist.
+    Compare two JSON files using DeepDiff for most of the comparison.
+    For differences in iterable items, check if values are close enough numerically.
+    If not, keep them in the diff as DeepDiff does.
     """
     with open(file1_path, "r") as f1, open(file2_path, "r") as f2:
         json1 = json.load(f1)
         json2 = json.load(f2)
 
+    # First run DeepDiff with normal settings
     diff = DeepDiff(
         json1,
         json2,
         ignore_order=ignore_order,
-        report_repetition=report_repetition,
-        exclude_paths=False or [],
     )
 
-    # Only keep differences with error greater than 0.1%
+    # Remove value changes that are within tolerance
     if "values_changed" in diff:
         keys_to_remove = []
         for key, value in diff["values_changed"].items():
             if isinstance(value, dict) and "new_value" in value and "old_value" in value:
                 new_value = value["new_value"]
                 old_value = value["old_value"]
-                # Remove if both are floats and the relative or absolute difference are within the tolerance
                 if (
-                    isinstance(new_value, float)
-                    and isinstance(old_value, float)
-                    and np.isclose(new_value, old_value, rtol=rtol, atol=atol)
+                    isinstance(new_value, (float, int))
+                    and isinstance(old_value, (float, int))
+                    and np.isclose(new_value, old_value, rtol=rtol, atol=atol, equal_nan=True)
                 ):
                     keys_to_remove.append(key)
+                elif isinstance(new_value, dict) and isinstance(old_value, dict):
+                    # Check if all numeric values in the dict are close enough
+                    if all(
+                        np.isclose(new_value[k], old_value[k], rtol=rtol, atol=atol, equal_nan=True)
+                        for k in new_value
+                        if isinstance(new_value[k], (float, int))
+                        and k in old_value
+                        and isinstance(old_value[k], (float, int))
+                    ):
+                        keys_to_remove.append(key)
         for key in keys_to_remove:
             del diff["values_changed"][key]
-
-        # If values_changed is empty, remove the key
         if not diff["values_changed"]:
             del diff["values_changed"]
 
-    # TODO: investigate why this is necessary with python 3.12
-    # total_co2_equivalent_emissions_ratio
-    # If iterable added, remove it
-    if "iterable_item_added" in diff:
-        del diff["iterable_item_added"]
+    # Clean up iterable diffs by removing items that are close enough to something in the other JSON
+    iterable_messages = []
+
+    def cleanup_iterable_diff(tag, other_json):
+        if tag in diff:
+            keys_to_remove = []
+            for key, value in diff[tag].items():
+                # The path looks like "root['some_list'][2]"
+                prefix, idx_str = key.rsplit("[", 1)
+                idx = idx_str[:-1]  # Remove the trailing ']'
+                other_parent = eval(prefix.replace("root", "other_json"))
+                if isinstance(other_parent, list):
+                    if np.isclose(
+                        value, other_parent[int(idx)], rtol=rtol, atol=atol, equal_nan=True
+                    ):
+                        keys_to_remove.append(key)
+                    else:
+                        iterable_messages.append(
+                            f"For: {prefix}, index {idx} beyond tolerance: {value} against {other_parent[int(idx)]}"
+                        )
+                        keys_to_remove.append(key)
+
+            for k in keys_to_remove:
+                del diff[tag][k]
+            if not diff[tag]:
+                del diff[tag]
+
+    cleanup_iterable_diff("iterable_item_added", json1)
+    cleanup_iterable_diff("iterable_item_removed", json2)
 
     if verbose:
-        if diff:
+        if diff or iterable_messages:
             print("Differences found:")
-            print(json.dumps(diff, indent=2, default=convert_non_serializable))
-            files_are_different = True
+            if diff:
+                print(json.dumps(diff, indent=2, default=convert_non_serializable))
+            if iterable_messages:
+                for message in iterable_messages:
+                    print(message)
         else:
             print("No differences found.")
-            files_are_different = False
-
-    return files_are_different
+    return bool(diff)
 
 
 def convert_non_serializable(obj):
-    # Annex helper to compare_json_files
     if isinstance(obj, (set, list, tuple)):
         return list(obj)
     if hasattr(obj, "__dict__"):

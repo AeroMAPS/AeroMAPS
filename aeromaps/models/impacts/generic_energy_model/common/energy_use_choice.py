@@ -359,7 +359,7 @@ class EnergyUseChoice(AeroMAPSModel):
         for output in mandatory_outputs:
             if output not in output_data:
                 output_data[output] = pd.Series(
-                    0.0, index=range(self.prospection_start_year, self.end_year + 1)
+                    0.0, index=range(self.historic_start_year, self.end_year + 1)
                 )
         # Add all output data in self.df and self.float_outputs
         self._store_outputs(output_data)
