@@ -24,7 +24,7 @@ jobs:
       - name: Set sysctl for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          sudo sysctl -w kern.posix.sem.max=20000
+          sudo sysctl -w kern.posix.sem.max=40000
 
 
       - name: Install poetry
