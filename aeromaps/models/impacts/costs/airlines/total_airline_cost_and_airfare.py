@@ -332,10 +332,10 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis
         # Calibration of this function is done base on average cost and prices for the last 20 years of IATA data (2020,2021,2022 excluded)
         # ==> TODO store notebook somewhere
-        average_slope = 1.212e-06
-        average_intercept = (
-            2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
-        )
+        # average_slope = 1.212e-06
+        # average_intercept = (
+        #     2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
+        # )
 
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
         a = (
@@ -346,9 +346,9 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
 
         # For latter update replace total cost by the step component of the marginal cost.
         marginal_cost_per_rpk = (
-            a * rpk
+            a * rpk.loc[self.prospection_start_year : self.end_year]
             + b
-            + total_cost_per_rpk_without_extra_tax
+            + total_cost_per_rpk_without_extra_tax.loc[self.prospection_start_year : self.end_year]
             - intial_total_cost_per_rpk_without_extra_tax
         )
 
@@ -356,28 +356,11 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         airfare_per_rpk_true = airfare_per_rpk_true
         airfare_per_rpk = airfare_per_rpk_true
 
-        # print('a',a[self.end_year], 'b', b + total_cost_per_rpk_without_extra_tax[self.end_year] - intial_total_cost_per_rpk_without_extra_tax + total_extra_tax_per_rpk[self.end_year])
-        # print('checker',marginal_cost_per_rpk[self.end_year], rpk[self.end_year], airfare_per_rpk[self.end_year])
-
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
         self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
-        # self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
-
-        # print('End PaxCostAF: Airfare 2050:{}, A{}'.format(airfare_per_rpk[self.end_year], a[self.end_year]))
-
-        # airfare_per_rpk_real_constraint_consistency = []
-        # for year in [2025, 2030, 2035, 2040, 2045, 2050]:
-        #     airfare_per_rpk_real_constraint_consistency.append(
-        #         (airfare_per_rpk_true[year] - airfare_per_rpk[year]) / airfare_per_rpk_true[year]
-        #     )
-        #
-        # airfare_per_rpk_real_constraint_consistency = np.array(
-        #     airfare_per_rpk_real_constraint_consistency
-        # )
 
         return (
             marginal_cost_per_rpk,
             airfare_per_rpk_true,
             airfare_per_rpk,
-            # airfare_per_rpk_real_constraint_consistency,
         )

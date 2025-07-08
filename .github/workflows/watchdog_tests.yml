@@ -24,7 +24,7 @@ jobs:
       - name: Set sysctl for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          sudo sysctl -w kern.posix.sem.max=20000
+          sudo sysctl -w kern.posix.sem.max=30000
           
       - name: Install poetry
         run: pipx install poetry==${{ vars.POETRY_VERSION }}
@@ -42,5 +42,5 @@ jobs:
           poetry install
 
       - name: Notebook tests
-        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb
+        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb --ignore=aeromaps/notebooks/private/*
         shell: bash
