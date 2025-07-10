@@ -36,9 +36,6 @@ class RPKWithElasticity(AeroMAPSModel):
         rpk_medium_range_measures_impact: pd.Series,
         rpk_long_range_measures_impact: pd.Series,
         airfare_per_rpk: pd.Series,
-        # airfare_per_rpk_short_range: pd.Series,
-        # airfare_per_rpk_medium_range: pd.Series,
-        # airfare_per_rpk_long_range: pd.Series,
         price_elasticity: float,
     ) -> Tuple[
         pd.Series,
@@ -64,35 +61,20 @@ class RPKWithElasticity(AeroMAPSModel):
     ]:
         """Update RPK based on cost increase calculation."""
 
-        # relative_change_airfare_short_range = (
-        #     airfare_per_rpk_short_range - airfare_per_rpk_short_range[self.prospection_start_year - 1]
-        # ) / airfare_per_rpk_short_range[self.prospection_start_year - 1]
-        #
-        # relative_change_airfare_medium_range = (
-        #     airfare_per_rpk_medium_range - airfare_per_rpk_medium_range[self.prospection_start_year - 1]
-        # ) / airfare_per_rpk_medium_range[self.prospection_start_year - 1]
-        #
-        # relative_change_airfare_long_range = (
-        #     airfare_per_rpk_long_range - airfare_per_rpk_long_range[self.prospection_start_year - 1]
-        # ) / airfare_per_rpk_long_range[self.prospection_start_year - 1]
+        hist_index = range(self.historic_start_year, self.prospection_start_year)
+        covid_years = range(covid_start_year, covid_end_year_passenger + 1)
+        proj_years = range(covid_end_year_passenger + 1, self.end_year + 1)
+        # all_years = range(self.historic_start_year, self.end_year + 1)
 
-        #
-        # print(airfare_per_rpk)
-
-        # HArd coded interpollation for tsas
-        # interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
-        # years_new = np.arange(2025, 2051, 1)
-        # airfare_per_rpk = interp_af(years_new)
-        # if len(airfare_per_rpk) > 26:
-        #     airfare_per_rpk = pd.Series(airfare_per_rpk[25:], index=range(2025, 2051))
-        # else:
-        #     airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
-
-        # Initialization based on 2019 share
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
-            self.df.loc[k, "rpk_medium_range"] = medium_range_rpk_share_2019 / 100 * rpk_init.loc[k]
-            self.df.loc[k, "rpk_long_range"] = long_range_rpk_share_2019 / 100 * rpk_init.loc[k]
+        self.df.loc[hist_index, "rpk_short_range"] = (
+            short_range_rpk_share_2019 / 100 * rpk_init.loc[hist_index]
+        )
+        self.df.loc[hist_index, "rpk_medium_range"] = (
+            medium_range_rpk_share_2019 / 100 * rpk_init.loc[hist_index]
+        )
+        self.df.loc[hist_index, "rpk_long_range"] = (
+            long_range_rpk_share_2019 / 100 * rpk_init.loc[hist_index]
+        )
 
         # Covid functions
         reference_years = [covid_start_year, covid_end_year_passenger]
@@ -101,6 +83,7 @@ class RPKWithElasticity(AeroMAPSModel):
             covid_end_year_reference_rpk_ratio / 100,
         ]
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
+        covid_factors = pd.Series([covid_function(k) for k in covid_years], index=covid_years)
 
         # CAGR function
         ## Short range
@@ -134,97 +117,44 @@ class RPKWithElasticity(AeroMAPSModel):
             annual_growth_rate_passenger_long_range_prospective
         )
 
-        # Short range
-        for k in range(covid_start_year, covid_end_year_passenger + 1):
-            self.df.loc[k, "rpk_short_range"] = self.df.loc[
-                covid_start_year - 1, "rpk_short_range"
-            ] * covid_function(k)
+        # Covid période vectorisée
+        prev_short = self.df.loc[covid_start_year - 1, "rpk_short_range"]
+        prev_medium = self.df.loc[covid_start_year - 1, "rpk_medium_range"]
+        prev_long = self.df.loc[covid_start_year - 1, "rpk_long_range"]
+        self.df.loc[covid_years, "rpk_short_range"] = prev_short * covid_factors
+        self.df.loc[covid_years, "rpk_medium_range"] = prev_medium * covid_factors
+        self.df.loc[covid_years, "rpk_long_range"] = prev_long * covid_factors
 
-        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
-            self.df.loc[k, "rpk_short_range"] = self.df.loc[k - 1, "rpk_short_range"] * (
-                1 + self.df.loc[k, "annual_growth_rate_passenger_short_range"] / 100
-            )
+        # Prospective période vectorisée (hors covid)
+        # Short
+        growth_short = 1 + self.df.loc[proj_years, "annual_growth_rate_passenger_short_range"] / 100
+        self.df.loc[proj_years, "rpk_short_range"] = (
+            self.df.loc[covid_end_year_passenger, "rpk_short_range"] * growth_short.cumprod()
+        )
+        # Medium
+        growth_medium = (
+            1 + self.df.loc[proj_years, "annual_growth_rate_passenger_medium_range"] / 100
+        )
+        self.df.loc[proj_years, "rpk_medium_range"] = (
+            self.df.loc[covid_end_year_passenger, "rpk_medium_range"] * growth_medium.cumprod()
+        )
+        # Long
+        growth_long = 1 + self.df.loc[proj_years, "annual_growth_rate_passenger_long_range"] / 100
+        self.df.loc[proj_years, "rpk_long_range"] = (
+            self.df.loc[covid_end_year_passenger, "rpk_long_range"] * growth_long.cumprod()
+        )
 
-        rpk_short_range_no_elasticity = self.df.loc[:, "rpk_short_range"].copy()
+        rpk_short_range_no_elasticity = self.df["rpk_short_range"].copy()
+        rpk_medium_range_no_elasticity = self.df["rpk_medium_range"].copy()
+        rpk_long_range_no_elasticity = self.df["rpk_long_range"].copy()
 
-        # alpha_sr = rpk_short_range_no_elasticity / (
-        #             airfare_per_rpk_short_range[self.prospection_start_year - 1] ** price_elasticity)
-        #
-        # # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_short_range"] = self.df.loc[
-        # #     covid_end_year_passenger + 1 : self.end_year + 1, "rpk_short_range"
-        # # ] * (
-        # #     1
-        # #     + price_elasticity * relative_change_airfare_short_range.loc[covid_end_year_passenger + 1 : self.end_year + 1]
-        # # )
-        # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_short_range"] = alpha_sr * (
-        #     airfare_per_rpk_short_range.loc[covid_end_year_passenger + 1 : self.end_year + 1] ** price_elasticity
-        # )
-
-        # Medium range
-        for k in range(covid_start_year, covid_end_year_passenger + 1):
-            self.df.loc[k, "rpk_medium_range"] = self.df.loc[
-                covid_start_year - 1, "rpk_medium_range"
-            ] * covid_function(k)
-        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
-            self.df.loc[k, "rpk_medium_range"] = self.df.loc[k - 1, "rpk_medium_range"] * (
-                1 + self.df.loc[k, "annual_growth_rate_passenger_medium_range"] / 100
-            )
-
-        rpk_medium_range_no_elasticity = self.df.loc[:, "rpk_medium_range"].copy()
-
-        # alpha_mr = rpk_medium_range_no_elasticity / (
-        #             airfare_per_rpk_medium_range[self.prospection_start_year - 1] ** price_elasticity)
-        #
-        # # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_medium_range"] = self.df.loc[
-        # #     covid_end_year_passenger + 1 : self.end_year + 1, "rpk_medium_range"
-        # # ] * (
-        # #     1
-        # #     + price_elasticity * relative_change_airfare_medium_range.loc[covid_end_year_passenger + 1 : self.end_year + 1]
-        # # )
-        #
-        # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_medium_range"] = alpha_mr * (
-        #     airfare_per_rpk_medium_range.loc[covid_end_year_passenger + 1 : self.end_year + 1] ** price_elasticity
-        # )
-
-        # Long range
-        for k in range(covid_start_year, covid_end_year_passenger + 1):
-            self.df.loc[k, "rpk_long_range"] = self.df.loc[
-                covid_start_year - 1, "rpk_long_range"
-            ] * covid_function(k)
-        for k in range(covid_end_year_passenger + 1, self.end_year + 1):
-            self.df.loc[k, "rpk_long_range"] = self.df.loc[k - 1, "rpk_long_range"] * (
-                1 + self.df.loc[k, "annual_growth_rate_passenger_long_range"] / 100
-            )
-
-        rpk_long_range_no_elasticity = self.df.loc[:, "rpk_long_range"].copy()
-
-        # alpha_lr = rpk_long_range_no_elasticity / (
-        #             airfare_per_rpk_long_range[self.prospection_start_year - 1] ** price_elasticity
-        # )
-        #
-        # # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_long_range"] = self.df.loc[
-        # #     covid_end_year_passenger + 1 : self.end_year + 1, "rpk_long_range"
-        # # ] * (
-        # #     1
-        # #     + price_elasticity * relative_change_airfare_long_range.loc[covid_end_year_passenger + 1 : self.end_year + 1]
-        # # )
-        #
-        # self.df.loc[covid_end_year_passenger + 1 : self.end_year + 1, "rpk_long_range"] = alpha_lr * (
-        #     airfare_per_rpk_long_range.loc[covid_end_year_passenger + 1 : self.end_year + 1] ** price_elasticity
-        # )
-
-        self.df.loc[:, "rpk_short_range_no_elasticity"] = rpk_short_range_no_elasticity
-        self.df.loc[:, "rpk_medium_range_no_elasticity"] = rpk_medium_range_no_elasticity
-        self.df.loc[:, "rpk_long_range_no_elasticity"] = rpk_long_range_no_elasticity
-
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "rpk_no_elasticity"] = rpk_init.loc[k]
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "rpk_no_elasticity"] = (
-                self.df.loc[k, "rpk_short_range_no_elasticity"]
-                + self.df.loc[k, "rpk_medium_range_no_elasticity"]
-                + self.df.loc[k, "rpk_long_range_no_elasticity"]
-            )
+        # rpk_no_elasticity
+        self.df.loc[hist_index, "rpk_no_elasticity"] = rpk_init.loc[hist_index]
+        self.df.loc[self.prospection_start_year : self.end_year, "rpk_no_elasticity"] = (
+            self.df.loc[self.prospection_start_year : self.end_year, "rpk_short_range"].fillna(0)
+            + self.df.loc[self.prospection_start_year : self.end_year, "rpk_medium_range"].fillna(0)
+            + self.df.loc[self.prospection_start_year : self.end_year, "rpk_long_range"].fillna(0)
+        )
         rpk_no_elasticity = self.df["rpk_no_elasticity"]
 
         self.df.loc[self.historic_start_year : covid_end_year_passenger, "rpk"] = (
@@ -249,13 +179,8 @@ class RPKWithElasticity(AeroMAPSModel):
                 ** price_elasticity
             )
         )
-        # self.df.loc[covid_end_year_passenger + 1: self.end_year + 1, "rpk"] = rpk_no_elasticity / (
-        #         airfare_per_rpk[self.prospection_start_year - 1] ** price_elasticity) * (
-        #         airfare_per_rpk.loc[covid_end_year_passenger + 1 : self.end_year + 1] ** price_elasticity
-        #     )
 
-        # print('coef_dem',airfare_per_rpk[self.prospection_start_year - 1]/(rpk_no_elasticity[self.end_year]**(1/price_elasticity)))
-
+        # Répartition par segment vectorisée
         rpk_short_range = self.df["rpk_short_range"] * self.df["rpk"] / rpk_no_elasticity
         rpk_medium_range = self.df["rpk_medium_range"] * self.df["rpk"] / rpk_no_elasticity
         rpk_long_range = self.df["rpk_long_range"] * self.df["rpk"] / rpk_no_elasticity
@@ -269,34 +194,36 @@ class RPKWithElasticity(AeroMAPSModel):
         self.df.loc[:, "rpk_medium_range"] = rpk_medium_range
         self.df.loc[:, "rpk_long_range"] = rpk_long_range
 
-        # Total
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "rpk"] = rpk_init.loc[k]
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "rpk"] = (
-                self.df.loc[k, "rpk_short_range"]
-                + self.df.loc[k, "rpk_medium_range"]
-                + self.df.loc[k, "rpk_long_range"]
-            )
+        # Total RPK vectorisé
+        self.df.loc[hist_index, "rpk"] = rpk_init.loc[hist_index]
+        self.df.loc[self.prospection_start_year : self.end_year, "rpk"] = (
+            self.df.loc[self.prospection_start_year : self.end_year, "rpk_short_range"].fillna(0)
+            + self.df.loc[self.prospection_start_year : self.end_year, "rpk_medium_range"].fillna(0)
+            + self.df.loc[self.prospection_start_year : self.end_year, "rpk_long_range"].fillna(0)
+        )
         rpk = self.df["rpk"]
 
-        # Annual growth rate
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
-            self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
-                self.df.loc[k, "rpk_short_range"] / self.df.loc[k - 1, "rpk_short_range"] - 1
-            ) * 100
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
-            self.df.loc[k, "annual_growth_rate_passenger_short_range"] = (
-                self.df.loc[k, "rpk_medium_range"] / self.df.loc[k - 1, "rpk_medium_range"] - 1
-            ) * 100
-        for k in range(self.historic_start_year + 1, self.prospection_start_year):
-            self.df.loc[k, "annual_growth_rate_passenger_long_range"] = (
-                self.df.loc[k, "rpk_long_range"] / self.df.loc[k - 1, "rpk_long_range"] - 1
-            ) * 100
-        for k in range(self.historic_start_year + 1, self.end_year + 1):
-            self.df.loc[k, "annual_growth_rate_passenger"] = (
-                self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
-            ) * 100
+        # Annual growth rates vectorisés
+        idx_growth = range(self.historic_start_year + 1, self.end_year + 1)
+        self.df.loc[idx_growth, "annual_growth_rate_passenger_short_range"] = (
+            self.df["rpk_short_range"].loc[idx_growth].values
+            / self.df["rpk_short_range"].shift(1).loc[idx_growth].values
+            - 1
+        ) * 100
+        self.df.loc[idx_growth, "annual_growth_rate_passenger_medium_range"] = (
+            self.df["rpk_medium_range"].loc[idx_growth].values
+            / self.df["rpk_medium_range"].shift(1).loc[idx_growth].values
+            - 1
+        ) * 100
+        self.df.loc[idx_growth, "annual_growth_rate_passenger_long_range"] = (
+            self.df["rpk_long_range"].loc[idx_growth].values
+            / self.df["rpk_long_range"].shift(1).loc[idx_growth].values
+            - 1
+        ) * 100
+        self.df.loc[idx_growth, "annual_growth_rate_passenger"] = (
+            self.df["rpk"].loc[idx_growth].values / self.df["rpk"].shift(1).loc[idx_growth].values
+            - 1
+        ) * 100
 
         annual_growth_rate_passenger_short_range = self.df[
             "annual_growth_rate_passenger_short_range"
@@ -376,8 +303,6 @@ class RPKWithElasticity(AeroMAPSModel):
             prospective_evolution_rpk_long_range
         )
         self.float_outputs["prospective_evolution_rpk"] = prospective_evolution_rpk
-
-        # print('In PriceElasticity: Airfare 2050:{}, RPK 2050:{}'.format(airfare_per_rpk[self.end_year], rpk[self.end_year]))
 
         return (
             rpk_short_range,
