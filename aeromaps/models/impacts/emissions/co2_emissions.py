@@ -169,191 +169,212 @@ class CO2Emissions(AeroMAPSModel):
         co2_per_energy_mean: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series]:
         """CO2 emissions calculation."""
-        # To be improved
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "co2_emissions_short_range"] = (
-                rpk_short_range.loc[k]
-                / (load_factor.loc[k] / 100)
-                * energy_per_ask_mean.loc[k]
-                * co2_per_energy_mean.loc[k]
-                * 10 ** (-12)
-            )
-            self.df.loc[k, "co2_emissions_medium_range"] = (
-                rpk_medium_range.loc[k]
-                / (load_factor.loc[k] / 100)
-                * energy_per_ask_mean.loc[k]
-                * co2_per_energy_mean.loc[k]
-                * 10 ** (-12)
-            )
-            self.df.loc[k, "co2_emissions_long_range"] = (
-                rpk_long_range.loc[k]
-                / (load_factor.loc[k] / 100)
-                * energy_per_ask_mean.loc[k]
-                * co2_per_energy_mean.loc[k]
-                * 10 ** (-12)
-            )
-            self.df.loc[k, "co2_emissions_freight"] = (
-                rtk.loc[k] * energy_per_rtk_mean.loc[k] * co2_per_energy_mean.loc[k] * 10 ** (-12)
-            )
+        idx_hist = range(self.historic_start_year, self.prospection_start_year)
+        idx_proj = range(self.prospection_start_year, self.end_year + 1)
 
-        # Short range
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "co2_emissions_short_range"] = (
-                rpk_short_range.loc[k]
-                / (load_factor.loc[k] / 100)
+        # Historique passager
+        self.df.loc[idx_hist, "co2_emissions_short_range"] = (
+            rpk_short_range.loc[idx_hist]
+            / (load_factor.loc[idx_hist] / 100)
+            * energy_per_ask_mean.loc[idx_hist]
+            * co2_per_energy_mean.loc[idx_hist]
+            * 1e-12
+        ).fillna(0)
+        self.df.loc[idx_hist, "co2_emissions_medium_range"] = (
+            rpk_medium_range.loc[idx_hist]
+            / (load_factor.loc[idx_hist] / 100)
+            * energy_per_ask_mean.loc[idx_hist]
+            * co2_per_energy_mean.loc[idx_hist]
+            * 1e-12
+        ).fillna(0)
+        self.df.loc[idx_hist, "co2_emissions_long_range"] = (
+            rpk_long_range.loc[idx_hist]
+            / (load_factor.loc[idx_hist] / 100)
+            * energy_per_ask_mean.loc[idx_hist]
+            * co2_per_energy_mean.loc[idx_hist]
+            * 1e-12
+        ).fillna(0)
+        self.df.loc[idx_hist, "co2_emissions_freight"] = (
+            rtk.loc[idx_hist]
+            * energy_per_rtk_mean.loc[idx_hist]
+            * co2_per_energy_mean.loc[idx_hist]
+            * 1e-12
+        ).fillna(0)
+
+        self.df.loc[idx_proj, "co2_emissions_short_range"] = (
+            rpk_short_range.loc[idx_proj]
+            / (load_factor.loc[idx_proj] / 100)
+            * (
+                ask_short_range_dropin_fuel_share
+                / 100
                 * (
-                    ask_short_range_dropin_fuel_share.loc[k]
-                    / 100
-                    * (
-                        biofuel_share.loc[k]
+                    (
+                        biofuel_share
                         / 100
-                        * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
+                        * energy_per_ask_short_range_dropin_fuel
+                        * biofuel_mean_emission_factor
+                    ).fillna(0)
+                    + (
+                        electrofuel_share
                         / 100
-                        * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
+                        * energy_per_ask_short_range_dropin_fuel
+                        * electrofuel_emission_factor
+                    ).fillna(0)
+                    + (
+                        kerosene_share
                         / 100
-                        * energy_per_ask_short_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
-                    )
-                    + ask_short_range_hydrogen_share.loc[k]
+                        * energy_per_ask_short_range_dropin_fuel
+                        * kerosene_emission_factor
+                    ).fillna(0)
+                ).fillna(0)
+                + (
+                    ask_short_range_hydrogen_share
                     / 100
-                    * energy_per_ask_short_range_hydrogen.loc[k]
-                    * liquid_hydrogen_mean_emission_factor.loc[k]
-                    + ask_short_range_electric_share.loc[k]
+                    * energy_per_ask_short_range_hydrogen
+                    * liquid_hydrogen_mean_emission_factor
+                ).fillna(0)
+                + (
+                    ask_short_range_electric_share
                     / 100
-                    * energy_per_ask_short_range_electric.loc[k]
-                    * electricity_emission_factor.loc[k]
+                    * energy_per_ask_short_range_electric
+                    * electricity_emission_factor
                     / 3.6
-                )
-                * 10 ** (-12)
-            )
+                ).fillna(0)
+            ).loc[idx_proj]
+            * 1e-12
+        ).fillna(0)
 
-        # Medium range
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "co2_emissions_medium_range"] = (
-                rpk_medium_range.loc[k]
-                / (load_factor.loc[k] / 100)
+        self.df.loc[idx_proj, "co2_emissions_medium_range"] = (
+            rpk_medium_range.loc[idx_proj]
+            / (load_factor.loc[idx_proj] / 100)
+            * (
+                ask_medium_range_dropin_fuel_share
+                / 100
                 * (
-                    ask_medium_range_dropin_fuel_share.loc[k]
-                    / 100
-                    * (
-                        biofuel_share.loc[k]
+                    (
+                        biofuel_share
                         / 100
-                        * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
+                        * energy_per_ask_medium_range_dropin_fuel
+                        * biofuel_mean_emission_factor
+                    ).fillna(0)
+                    + (
+                        electrofuel_share
                         / 100
-                        * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
+                        * energy_per_ask_medium_range_dropin_fuel
+                        * electrofuel_emission_factor
+                    ).fillna(0)
+                    + (
+                        kerosene_share
                         / 100
-                        * energy_per_ask_medium_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
-                    )
-                    + ask_medium_range_hydrogen_share.loc[k]
+                        * energy_per_ask_medium_range_dropin_fuel
+                        * kerosene_emission_factor
+                    ).fillna(0)
+                ).fillna(0)
+                + (
+                    ask_medium_range_hydrogen_share
                     / 100
-                    * energy_per_ask_medium_range_hydrogen.loc[k]
-                    * liquid_hydrogen_mean_emission_factor.loc[k]
-                    + ask_medium_range_electric_share.loc[k]
+                    * energy_per_ask_medium_range_hydrogen
+                    * liquid_hydrogen_mean_emission_factor
+                ).fillna(0)
+                + (
+                    ask_medium_range_electric_share
                     / 100
-                    * energy_per_ask_medium_range_electric.loc[k]
-                    * electricity_emission_factor.loc[k]
+                    * energy_per_ask_medium_range_electric
+                    * electricity_emission_factor
                     / 3.6
-                )
-                * 10 ** (-12)
-            )
+                ).fillna(0)
+            ).loc[idx_proj]
+            * 1e-12
+        ).fillna(0)
 
-        # Long range
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "co2_emissions_long_range"] = (
-                rpk_long_range.loc[k]
-                / (load_factor.loc[k] / 100)
+        self.df.loc[idx_proj, "co2_emissions_long_range"] = (
+            rpk_long_range.loc[idx_proj]
+            / (load_factor.loc[idx_proj] / 100)
+            * (
+                ask_long_range_dropin_fuel_share
+                / 100
                 * (
-                    ask_long_range_dropin_fuel_share.loc[k]
-                    / 100
-                    * (
-                        biofuel_share.loc[k]
+                    (
+                        biofuel_share
                         / 100
-                        * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
+                        * energy_per_ask_long_range_dropin_fuel
+                        * biofuel_mean_emission_factor
+                    ).fillna(0)
+                    + (
+                        electrofuel_share
                         / 100
-                        * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
+                        * energy_per_ask_long_range_dropin_fuel
+                        * electrofuel_emission_factor
+                    ).fillna(0)
+                    + (
+                        kerosene_share
                         / 100
-                        * energy_per_ask_long_range_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
-                    )
-                    + ask_long_range_hydrogen_share.loc[k]
+                        * energy_per_ask_long_range_dropin_fuel
+                        * kerosene_emission_factor
+                    ).fillna(0)
+                ).fillna(0)
+                + (
+                    ask_long_range_hydrogen_share
                     / 100
-                    * energy_per_ask_long_range_hydrogen.loc[k]
-                    * liquid_hydrogen_mean_emission_factor.loc[k]
-                    + ask_long_range_electric_share.loc[k]
+                    * energy_per_ask_long_range_hydrogen
+                    * liquid_hydrogen_mean_emission_factor
+                ).fillna(0)
+                + (
+                    ask_long_range_electric_share
                     / 100
-                    * energy_per_ask_long_range_electric.loc[k]
-                    * electricity_emission_factor.loc[k]
+                    * energy_per_ask_long_range_electric
+                    * electricity_emission_factor
                     / 3.6
-                )
-                * 10 ** (-12)
-            )
+                ).fillna(0)
+            ).loc[idx_proj]
+            * 1e-12
+        ).fillna(0)
 
-        # Freight
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "co2_emissions_freight"] = (
-                rtk.loc[k]
-                * (
-                    rtk_dropin_fuel_share.loc[k]
-                    / 100
-                    * (
-                        biofuel_share.loc[k]
-                        / 100
-                        * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * biofuel_mean_emission_factor.loc[k]
-                        + electrofuel_share.loc[k]
-                        / 100
-                        * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * electrofuel_emission_factor.loc[k]
-                        + kerosene_share.loc[k]
-                        / 100
-                        * energy_per_rtk_freight_dropin_fuel.loc[k]
-                        * kerosene_emission_factor.loc[k]
-                    )
-                    + rtk_hydrogen_share.loc[k]
-                    / 100
-                    * energy_per_rtk_freight_hydrogen.loc[k]
-                    * liquid_hydrogen_mean_emission_factor.loc[k]
-                    + rtk_electric_share.loc[k]
-                    / 100
-                    * energy_per_rtk_freight_electric.loc[k]
-                    * electricity_emission_factor.loc[k]
-                    / 3.6
-                )
-                * 10 ** (-12)
-            )
+        dropin_freight = (
+            biofuel_share / 100 * energy_per_rtk_freight_dropin_fuel * biofuel_mean_emission_factor
+            + electrofuel_share
+            / 100
+            * energy_per_rtk_freight_dropin_fuel
+            * electrofuel_emission_factor
+            + kerosene_share / 100 * energy_per_rtk_freight_dropin_fuel * kerosene_emission_factor
+        ).fillna(0)
+        hydro_freight = (
+            rtk_hydrogen_share
+            / 100
+            * energy_per_rtk_freight_hydrogen
+            * liquid_hydrogen_mean_emission_factor
+        ).fillna(0)
+        elec_freight = (
+            rtk_electric_share
+            / 100
+            * energy_per_rtk_freight_electric
+            * electricity_emission_factor
+            / 3.6
+        ).fillna(0)
+        total_freight = (
+            rtk_dropin_fuel_share / 100 * dropin_freight + hydro_freight + elec_freight
+        ).fillna(0)
+        self.df.loc[idx_proj, "co2_emissions_freight"] = (
+            rtk.loc[idx_proj] * total_freight.loc[idx_proj] * 1e-12
+        ).fillna(0)
 
-        # Passenger
-        for k in range(self.historic_start_year, self.end_year + 1):
-            self.df.loc[k, "co2_emissions_passenger"] = (
-                self.df.loc[k, "co2_emissions_short_range"]
-                + self.df.loc[k, "co2_emissions_medium_range"]
-                + self.df.loc[k, "co2_emissions_long_range"]
-            )
+        self.df.loc[:, "co2_emissions_passenger"] = (
+            self.df["co2_emissions_short_range"].fillna(0)
+            + self.df["co2_emissions_medium_range"].fillna(0)
+            + self.df["co2_emissions_long_range"].fillna(0)
+        )
 
-        # Total
         historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
-        for k in range(self.climate_historic_start_year, self.historic_start_year):
-            self.df_climate.loc[k, "co2_emissions"] = historical_co2_emissions_for_temperature[
-                k - self.climate_historic_start_year
-            ]
-        for k in range(self.historic_start_year, self.end_year + 1):
-            self.df_climate.loc[k, "co2_emissions"] = (
-                self.df.loc[k, "co2_emissions_passenger"] + self.df.loc[k, "co2_emissions_freight"]
-            )
+        idx_clim_hist = range(self.climate_historic_start_year, self.historic_start_year)
+        self.df_climate.loc[idx_clim_hist, "co2_emissions"] = [
+            historical_co2_emissions_for_temperature[k - self.climate_historic_start_year]
+            for k in idx_clim_hist
+        ]
+        idx_clim_proj = range(self.historic_start_year, self.end_year + 1)
+        self.df_climate.loc[idx_clim_proj, "co2_emissions"] = self.df.loc[
+            idx_clim_proj, "co2_emissions_passenger"
+        ].fillna(0) + self.df.loc[idx_clim_proj, "co2_emissions_freight"].fillna(0)
 
         co2_emissions_short_range = self.df["co2_emissions_short_range"]
         co2_emissions_medium_range = self.df["co2_emissions_medium_range"]
