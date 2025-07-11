@@ -316,12 +316,6 @@ class TotalSurplusLoss(AeroMAPSModel):
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
-        # airfare_per_rpk = pd.Series(airfare_per_rpk, index= range(2025,2051))
-        # interp_af = interp1d([2025, 2030, 2035, 2040, 2045, 2050], airfare_per_rpk, kind="linear")
-        # years_new = np.arange(2025, 2051, 1)
-        # airfare_per_rpk = interp_af(years_new)
-        # airfare_per_rpk = pd.Series(airfare_per_rpk, index=range(2025, 2051))
-
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
 

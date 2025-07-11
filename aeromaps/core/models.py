@@ -73,9 +73,10 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
     WithoutFuelEffectCorrectionContrails,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency import (
-    PassengerAircraftEfficiencySimple,
+    PassengerAircraftEfficiencySimpleShares,
     PassengerAircraftEfficiencyComplex,
     FreightAircraftEfficiency,
+    PassengerAircraftEfficiencySimpleASK,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
@@ -262,8 +263,11 @@ models_efficiency_top_down = {
     "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
-        "passenger_aircraft_efficiency_simple"
+    "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
+        "passenger_aircraft_efficiency_simple_shares"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
@@ -275,8 +279,11 @@ models_efficiency_top_down_interp = {
     "load_factor": LoadFactor("load_factor"),
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
-        "passenger_aircraft_efficiency_simple"
+    "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
+        "passenger_aircraft_efficiency_simple_shares"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
@@ -665,8 +672,18 @@ models_optim_complex = {
     "models_efficiency_top_down": models_efficiency_top_down,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
-    "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
-    "models_sustainability": models_sustainability,
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "biomass_availability": BiomassAvailability("biomass_availability"),
+    "electricity_availability": ElectricityAvailability("electricity_availability"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
     "models_energy_cost_simple": models_energy_cost_simple,
     "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),

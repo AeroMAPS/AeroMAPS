@@ -311,11 +311,9 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
     def compute(
         self,
         rpk: pd.Series,
-        # airfare_per_rpk: np.ndarray,
         rpk_no_elasticity: pd.Series,
         total_cost_per_rpk_without_extra_tax: pd.Series,
         total_extra_tax_per_rpk: pd.Series,
-        initial_price_per_rpk: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -327,7 +325,7 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         ]
 
         # initial price => Same markup as iata stats, but using aeromaps cost (~ +0.01 €/RPK)
-        initial_price_per_rpk_corrected = 0.003983 + intial_total_cost_per_rpk_without_extra_tax
+        initial_price_per_rpk_corrected = 0.09236379319842411
 
         # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis
         # Calibration of this function is done base on average cost and prices for the last 20 years of IATA data (2020,2021,2022 excluded)
