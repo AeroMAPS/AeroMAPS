@@ -491,7 +491,7 @@ class CustomDataConverter(SimpleGrammarDataConverter):
 
     def convert_value_to_array(self, name: str, value: Any) -> ndarray:
         if isinstance(value, (list, tuple)):
-            print(name, value)
+            # print(name, value)
             self._list_names.add(name)
             value = np.array(value, dtype=float)
 

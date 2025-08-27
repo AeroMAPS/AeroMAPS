@@ -986,7 +986,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             / energy_per_ask_without_operations_long_range_dropin_fuel
         )
 
-        # Vectorized computation for hydrogen
+        # Vectorized computation for hydrogen => direct affectation of dropin fuel average if not used. Strange but kept old way of doing.
         hydrogen_zero_mask = rtk_hydrogen_share == 0
         hydrogen_nonzero_mask = ~hydrogen_zero_mask
 

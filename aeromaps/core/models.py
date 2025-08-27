@@ -652,7 +652,24 @@ default_models_bottom_up = {
 
 
 models_optim_simple = {
-    "default_models_top_down": default_models_top_down,
+    "models_traffic": models_traffic,
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "biomass_availability": BiomassAvailability("biomass_availability"),
+    "electricity_availability": ElectricityAvailability("electricity_availability"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+    "models_energy_cost_simple": models_energy_cost_simple,
+    "models_operation_cost_top_down": models_operation_cost_top_down,
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(

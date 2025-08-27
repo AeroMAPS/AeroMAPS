@@ -330,10 +330,6 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         # Were defining the inverse market-level suppy function ( cost =f (rpk) ) as a linear function by hypothesis
         # Calibration of this function is done base on average cost and prices for the last 20 years of IATA data (2020,2021,2022 excluded)
         # ==> TODO store notebook somewhere
-        # average_slope = 1.212e-06
-        # average_intercept = (
-        #     2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
-        # )
 
         b = 2 * intial_total_cost_per_rpk_without_extra_tax - initial_price_per_rpk_corrected
         a = (

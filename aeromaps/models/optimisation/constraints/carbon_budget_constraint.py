@@ -2,9 +2,6 @@
 # @Author : a.salgas
 # @File : carbon_budget_constraint.py
 # @Software: PyCharm
-from typing import Tuple
-
-import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -19,12 +16,19 @@ class CarbonBudgetConstraint(AeroMAPSModel):
         carbon_budget_consumed_share: float,
         gross_carbon_budget_2050: float,
         aviation_carbon_budget_objective: float,
+        cumulative_co2_emissions: pd.Series,
     ) -> float:
         """Carbon budget consumption share calculation."""
+        cumulative_emissions = (
+            cumulative_co2_emissions.loc[2050] - cumulative_co2_emissions.loc[2025]
+        )
+        adjusted_carbon_budget_2050 = (
+            gross_carbon_budget_2050 * aviation_carbon_budget_objective / 100
+            - cumulative_co2_emissions.loc[2025]
+        )
 
         aviation_carbon_budget_constraint = (
-            +(carbon_budget_consumed_share - aviation_carbon_budget_objective)
-            / aviation_carbon_budget_objective
+            +(cumulative_emissions - adjusted_carbon_budget_2050) / adjusted_carbon_budget_2050
         )
 
         self.float_outputs["aviation_carbon_budget_constraint"] = aviation_carbon_budget_constraint

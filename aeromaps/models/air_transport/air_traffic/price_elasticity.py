@@ -163,16 +163,6 @@ class RPKWithElasticity(AeroMAPSModel):
 
         airfare_init = 0.09236379319842411
 
-        # See total_airline_cost_and_airfare ==> IATA base value calibration
-
-        #  airfare_init = pd.Series([
-        # 0.09539189, 0.09571726, 0.09605239, 0.09639756, 0.09675307,
-        # 0.09711924, 0.09749638, 0.09788483, 0.09828492, 0.09869701,
-        # 0.09912144, 0.0995586 , 0.10000887, 0.10047264, 0.10095031,
-        # 0.1014423 , 0.10194905, 0.10247099, 0.10300858, 0.10356229,
-        # 0.10413261, 0.10472003, 0.10532506, 0.10594824, 0.10659012,
-        # 0.10725124], index=range(2025, 2051))
-
         self.df.loc[covid_end_year_passenger + 1 : self.end_year, "rpk"] = (
             rpk_no_elasticity
             / (airfare_init**price_elasticity)

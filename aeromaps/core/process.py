@@ -114,7 +114,8 @@ class AeroMAPSProcess(object):
             scenario_type=self.gemseo_settings["scenario_type"],
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
-                "inner_mda_name": "MDAJacobi",
+                "inner_mda_name": "MDAGaussSeidel",
+                "max_mda_iter": 8,
                 "initialize_defaults": True,
                 "tolerance": 1e-3,
             },

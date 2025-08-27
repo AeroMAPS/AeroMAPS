@@ -50,7 +50,7 @@ class DropinFuelDistribution(AeroMAPSModel):
             self,
             biofuel_share_reference_years,
             biofuel_share_reference_years_values,
-            method="quadratic",  # linear for optim
+            method="linear",  # linear for optim
             positive_constraint=True,
             model_name=self.name,
         )
@@ -70,7 +70,7 @@ class DropinFuelDistribution(AeroMAPSModel):
             self,
             electrofuel_share_reference_years,
             electrofuel_share_reference_years_values,
-            method="quadratic",  # linear for optim
+            method="linear",  # linear for optim
             positive_constraint=True,
             model_name=self.name,
         )
