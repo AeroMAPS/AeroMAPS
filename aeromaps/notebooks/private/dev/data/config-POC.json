@@ -1,5 +1,0 @@
-{
-    "PARAMETERS_ENERGY_CARRIERS_DATA_FILE": "./energy_carriers_data-POC.yaml",
-    "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data-POC.yaml",
-    "PARAMETERS_PROCESSES_DATA_FILE": "./processes_data-POC.yaml"
-}
