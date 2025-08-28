@@ -21,6 +21,9 @@ def _dict_from_json(file_name="parameters.json") -> dict:
 
 
 def aeromaps_custom_data_type_constructor(loader, node):
+    """
+    Custom constructor to handle specific interpolation input types in yaml files.
+    """
     value = loader.construct_mapping(node, deep=True)
     return AeroMapsCustomDataType(value)
 

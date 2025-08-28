@@ -8,6 +8,18 @@ from fair.interface import fill, initialise
 
 
 class AeroMapsCustomDataType:
+    """
+    Custom type class to handle yaml data input for AeroMAPS models.
+    It contains reference years and values, and interpolation options.
+    When an AeroMapsCustomDataType is found when reading the yaml it
+    instantiates an interpolation model from yaml_interpolator.py
+    Attributes:
+        years (list): List of reference years for the interpolation.
+        values (list): List of reference values for the interpolation.
+        method (str): Interpolation method, default is 'linear'.
+        positive_constraint (bool): If True, ensures interpolated values are non-negative.
+    """
+
     def __init__(self, reference_data: dict):
         self.years = reference_data["years"]
         self.values = reference_data["values"]
