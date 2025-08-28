@@ -554,7 +554,6 @@ models_operation_cost_common = {
         "passenger_aircraft_passenger_tax"
     ),
     "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
-    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
 }
 
 models_operation_cost_top_down = {
@@ -586,6 +585,7 @@ models_operation_cost_top_down_feedback = {
     "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
         "passenger_aircraft_marginal_cost"
     ),
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
 }
 
 models_operation_cost_bottom_up_feedback = {
@@ -596,6 +596,7 @@ models_operation_cost_bottom_up_feedback = {
     "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
         "passenger_aircraft_marginal_cost"
     ),
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
 }
 
 
