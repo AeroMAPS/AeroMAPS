@@ -99,9 +99,7 @@ class AeroMAPSProcess(object):
         self._initialize_data()
 
         # Initialize energy carriers
-        self._read_generic_resources_data()
-        self._read_generic_process_data()
-        self._instantiate_generic_energy_models()
+        self._initialize_generic_energy()
 
         # Initialize disciplines
         self._initialize_disciplines(
@@ -262,6 +260,11 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
+
+    def _initialize_generic_energy(self):
+        self._read_generic_resources_data()
+        self._read_generic_process_data()
+        self._instantiate_generic_energy_models()
 
     def _read_generic_resources_data(self):
         # Read the custom energy config file and instantiate each class
