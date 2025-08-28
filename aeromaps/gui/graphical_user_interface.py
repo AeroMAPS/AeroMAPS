@@ -2033,24 +2033,18 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.operations_contrails_start_year = 2051
             self.process.parameters.operations_contrails_duration = 15.0
 
-        # Refactoring genric energy
+        # Refactoring generic energy
         # Impossible to add/remove dynamically pathways from existing process.
         # We rely on default config and set all share to zero when necessary
         dropin_pathways = self.process.pathways_manager.get(aircraft_type="dropin_fuel")
         # Carbon intensity
         if self.w_energy_mix.value == "Kerosene":
             for pathway in dropin_pathways:
-                if pathway.name == "fossil kerosene":
+                if pathway.name == "fossil_kerosene":
                     if not pathway.default:
                         raise AssertionError('"fossil_kerosene" pathway must be default in the GUI')
                 else:
-                    if pathway.mandate_type is not None:
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                        ] = []
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                        ] = [0.0]
+                    self.reset_pathway_mandate(pathway)
 
                 # as kerosene is default no need to set share for fossil kerosene
         else:
@@ -2085,7 +2079,6 @@ class GraphicalUserInterface(widgets.VBox):
             biofuel_pathways = self.process.pathways_manager.get(
                 aircraft_type="dropin_fuel", energy_origin="biomass"
             )
-            print(biofuel_pathways)
             if self.w_biofuel_production.value == "Current":
                 for pathway in biofuel_pathways:
                     if pathway.name == "hefa_fog":
@@ -2099,13 +2092,7 @@ class GraphicalUserInterface(widgets.VBox):
                             x * 100 / 100 for x in biofuel_share
                         ]
                     else:
-                        if pathway.mandate_type is not None:
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                            ] = []
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                            ] = [0.0]
+                        self.reset_pathway_mandate(pathway)
 
             elif self.w_biofuel_production.value == "High-carbon":
                 for pathway in biofuel_pathways:
@@ -2115,13 +2102,7 @@ class GraphicalUserInterface(widgets.VBox):
                             x * 100 / 100 for x in biofuel_share
                         ]
                     else:
-                        if pathway.mandate_type is not None:
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                            ] = []
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                            ] = [0.0]
+                        self.reset_pathway_mandate(pathway)
 
             elif self.w_biofuel_production.value == "Low-carbon":
                 for pathway in biofuel_pathways:
@@ -2136,13 +2117,7 @@ class GraphicalUserInterface(widgets.VBox):
                             x * 100 / 100 for x in biofuel_share
                         ]
                     else:
-                        if pathway.mandate_type is not None:
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                            ] = []
-                            self.process.parameters.__dict__[
-                                pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                            ] = [0.0]
+                        self.reset_pathway_mandate(pathway)
 
         hydrogen_pathways = self.process.pathways_manager.get(aircraft_type="hydrogen")
         if self.w_hydrogen_production.value == "Current":
@@ -2157,13 +2132,7 @@ class GraphicalUserInterface(widgets.VBox):
                     self.process.parameters.hydrogen_coal_mandate_share_years = []
                     self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27]
                 else:
-                    if pathway.mandate_type is not None:
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                        ] = []
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                        ] = [0.0]
+                    self.reset_pathway_mandate(pathway)
 
         elif self.w_hydrogen_production.value == "Gas without CCS":
             for pathway in hydrogen_pathways:
@@ -2171,13 +2140,7 @@ class GraphicalUserInterface(widgets.VBox):
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
                     self.process.parameters.hydrogen_gas_mandate_share_values = [100]
                 else:
-                    if pathway.mandate_type is not None:
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                        ] = []
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                        ] = [0.0]
+                    self.reset_pathway_mandate(pathway)
 
         elif self.w_hydrogen_production.value == "Gas with CCS":
             for pathway in hydrogen_pathways:
@@ -2205,13 +2168,7 @@ class GraphicalUserInterface(widgets.VBox):
                     ]
                     self.process.parameters.hydrogen_gas_mandate_share_values = [71, 70, 30, 0]
                 else:
-                    if pathway.mandate_type is not None:
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                        ] = []
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                        ] = [0.0]
+                    self.reset_pathway_mandate(pathway)
 
         elif self.w_hydrogen_production.value == "Electrolysis":
             for pathway in hydrogen_pathways:
@@ -2245,13 +2202,7 @@ class GraphicalUserInterface(widgets.VBox):
                     ]
                     self.process.parameters.hydrogen_gas_mandate_share_values = [71, 50, 20, 0]
                 else:
-                    if pathway.mandate_type is not None:
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
-                        ] = []
-                        self.process.parameters.__dict__[
-                            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
-                        ] = [0.0]
+                    self.reset_pathway_mandate(pathway)
 
         if self.w_electricity_production.value == "High-carbon":
             self.process.parameters.grid_electricity_co2_emission_factor_years = []
@@ -2629,3 +2580,11 @@ class GraphicalUserInterface(widgets.VBox):
         self.fig1.fig.savefig(pth.join(FOLDER_PATH, "fig1.pdf"))
         self.fig2.fig.savefig(pth.join(FOLDER_PATH, "fig2.pdf"))
         self.fig3.fig.savefig(pth.join(FOLDER_PATH, "fig3.pdf"))
+
+    def reset_pathway_mandate(self, pathway):
+        self.process.parameters.__dict__[
+            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
+        ] = []
+        self.process.parameters.__dict__[
+            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
+        ] = [0.0]

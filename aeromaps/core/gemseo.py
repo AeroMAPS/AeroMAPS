@@ -465,7 +465,6 @@ class AeroMAPSCustomModelWrapper(Discipline):
 
     def __init__(self, model):
         super().__init__()
-        # TODO @felix/scott can't we use autopy to get grammar names appart from input data (e.g. outputs of other models)?
         # Caution, uses a JSON grammar! Convert to simple grammar?
         self.input_grammar.update_from_data(model.input_names)
         self.output_grammar.update_from_data(model.output_names)
@@ -473,7 +472,7 @@ class AeroMAPSCustomModelWrapper(Discipline):
         self.name = model.__class__.__name__
         self.update_defaults()
 
-        # TODO: explore data converters e.g. to convert pd.Series to np.array for MDA handling
+        # TODO: explore data converters e.g. to convert pd.Series to np.array for MDA handling -- > Done in optim branch
         # self.io.data_processor = AutoDiscDataProcessor()
 
     def _run(self, input_data):
