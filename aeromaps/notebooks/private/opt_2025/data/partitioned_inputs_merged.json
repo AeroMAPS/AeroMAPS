@@ -181,15 +181,15 @@
     ],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [
-        0.91
+        1.35
     ],
     "energy_per_ask_medium_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values": [
-        0.91
+        1.35
     ],
     "energy_per_ask_long_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [
-        0.91
+        1.35
     ],
     "load_factor_end_year": 89.0,
     "operations_final_gain": 8.0,
