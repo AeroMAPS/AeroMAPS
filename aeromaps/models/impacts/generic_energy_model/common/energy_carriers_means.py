@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.defaults import get_default_series
 
 
 class EnergyCarriersMeans(AeroMAPSModel):
@@ -99,27 +100,23 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             # intialize the mean values for the aircraft type
 
-            mean_emission_factor = default_series()
-            mean_mfsp = default_series()
-            mean_net_mfsp = default_series()
-            mean_net_mfsp_without_carbon_tax = default_series()
-            mean_carbon_tax_supplement = default_series()
-            marginal_net_mfsp = default_series()
-            cumulative_share = default_series()
-            mean_unit_subsidy = default_series()
-            mean_unit_tax = default_series()
-            mean_unit_carbon_tax = default_series()
+            mean_emission_factor = get_default_series(self.historic_start_year, self.end_year)
+            mean_mfsp = get_default_series(self.historic_start_year, self.end_year)
+            mean_net_mfsp = get_default_series(self.historic_start_year, self.end_year)
+            mean_net_mfsp_without_carbon_tax = get_default_series(
+                self.historic_start_year, self.end_year
+            )
+            mean_carbon_tax_supplement = get_default_series(self.historic_start_year, self.end_year)
+            marginal_net_mfsp = get_default_series(self.historic_start_year, self.end_year)
+            cumulative_share = get_default_series(self.historic_start_year, self.end_year)
+            mean_unit_subsidy = get_default_series(self.historic_start_year, self.end_year)
+            mean_unit_tax = get_default_series(self.historic_start_year, self.end_year)
+            mean_unit_carbon_tax = get_default_series(self.historic_start_year, self.end_year)
 
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 # Get the pathways for this aircraft type and energy origin
@@ -127,16 +124,34 @@ class EnergyCarriersMeans(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_factor = default_series()
-                    origin_mean_mfsp = default_series()
-                    origin_mean_net_mfsp = default_series()
-                    origin_mean_net_mfsp_without_carbon_tax = default_series()
-                    origin_mean_carbon_tax_supplement = default_series()
-                    origin_marginal_net_mfsp = default_series()
-                    origin_cumulative_share = default_series()
-                    origin_mean_unit_subsidy = default_series()
-                    origin_mean_unit_tax = default_series()
-                    origin_mean_unit_carbon_tax = default_series()
+                    origin_mean_emission_factor = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_mfsp = get_default_series(self.historic_start_year, self.end_year)
+                    origin_mean_net_mfsp = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_net_mfsp_without_carbon_tax = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_carbon_tax_supplement = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_marginal_net_mfsp = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_unit_subsidy = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_unit_tax = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_mean_unit_carbon_tax = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
 
                     for pathway in pathways:
                         share = input_data[f"{pathway.name}_share_{aircraft_type}"]
@@ -311,12 +326,6 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
         # Shares are given per aircraft type and aircraft type + energy origin
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             mass_consumption = sum(
                 input_data[f"{pathway.name}_energy_consumption"].fillna(0)
@@ -402,15 +411,9 @@ class EnergyCarriersMeanLHV(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
-            mean_lhv = default_series()
-            cumulative_share = default_series()
+            mean_lhv = get_default_series(self.historic_start_year, self.end_year)
+            cumulative_share = get_default_series(self.historic_start_year, self.end_year)
             # initialise the mean values for the aircraft type
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 # Get the pathways for this aircraft type and energy origin
@@ -418,8 +421,10 @@ class EnergyCarriersMeanLHV(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_lhv = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_lhv = get_default_series(self.historic_start_year, self.end_year)
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"

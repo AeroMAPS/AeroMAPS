@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.defaults import get_default_series
 
 
 class NOxEmissionIndex(AeroMAPSModel):
@@ -45,12 +46,6 @@ class NOxEmissionIndex(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             cagr_aircraft = input_data.get(f"emission_index_nox_{aircraft_type}_evolution", 0.0)
             growth_series = pd.Series(
@@ -71,8 +66,12 @@ class NOxEmissionIndex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_nox = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_nox = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -154,12 +153,6 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         output_data = {}
         # Getting fleet model data
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
@@ -173,9 +166,18 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                 f"Long Range:emission_index_nox:{aircraft_type}"
             ]
 
-            ask_short_range = input_data.get(f"ask_short_range_{aircraft_type}", default_series())
-            ask_medium_range = input_data.get(f"ask_medium_range_{aircraft_type}", default_series())
-            ask_long_range = input_data.get(f"ask_long_range_{aircraft_type}", default_series())
+            ask_short_range = input_data.get(
+                f"ask_short_range_{aircraft_type}",
+                get_default_series(self.historic_start_year, self.end_year),
+            )
+            ask_medium_range = input_data.get(
+                f"ask_medium_range_{aircraft_type}",
+                get_default_series(self.historic_start_year, self.end_year),
+            )
+            ask_long_range = input_data.get(
+                f"ask_long_range_{aircraft_type}",
+                get_default_series(self.historic_start_year, self.end_year),
+            )
 
             emission_index_aircraft_type = (
                 (
@@ -208,8 +210,12 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_nox = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_nox = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -278,12 +284,6 @@ class SootEmissionIndex(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             cagr_aircraft = input_data.get(f"emission_index_soot_{aircraft_type}_evolution", 0.0)
             growth_series = pd.Series(
@@ -304,8 +304,12 @@ class SootEmissionIndex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_soot = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_soot = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -386,12 +390,6 @@ class SootEmissionIndexComplex(AeroMAPSModel):
         output_data = {}
         # Getting fleet model data
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
@@ -440,8 +438,12 @@ class SootEmissionIndexComplex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_soot = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_soot = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -506,12 +508,6 @@ class H2OEmissionIndex(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             # initialise the mean values for the aircraft type
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -520,8 +516,12 @@ class H2OEmissionIndex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_h2o = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_h2o = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -585,12 +585,6 @@ class SulfurEmissionIndex(AeroMAPSModel):
 
         output_data = {}
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             # initialise the mean values for the aircraft type
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -599,8 +593,12 @@ class SulfurEmissionIndex(AeroMAPSModel):
                     aircraft_type=aircraft_type, energy_origin=energy_origin
                 )
                 if pathways:
-                    origin_mean_emission_index_sulfur = default_series()
-                    origin_cumulative_share = default_series()
+                    origin_mean_emission_index_sulfur = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
+                    origin_cumulative_share = get_default_series(
+                        self.historic_start_year, self.end_year
+                    )
                     for pathway in pathways:
                         origin_share = input_data[
                             f"{pathway.name}_massic_share_{aircraft_type}_{energy_origin}"
@@ -672,16 +670,10 @@ class NonCO2Emissions(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """Non-CO2 emissions calculation."""
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.climate_historic_start_year, self.end_year + 1)),
-                index=range(self.climate_historic_start_year, self.end_year + 1),
-            )
-
-        soot_emissions = default_series()
-        h2o_emissions = default_series()
-        nox_emissions = default_series()
-        sulfur_emissions = default_series()
+        soot_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
+        h2o_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
+        nox_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
+        sulfur_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
 
         ## Initialization
         historical_nox_emissions_for_temperature = self.climate_historical_data[:, 2]

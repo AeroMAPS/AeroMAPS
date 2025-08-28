@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.defaults import get_default_series
 
 
 class OperationsContrailsSimple(AeroMAPSModel):
@@ -105,17 +106,15 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """Fuel effect on contrails for ERF calculation."""
 
-        def default_series():
-            return pd.Series(
-                [0.0] * len(range(self.historic_start_year, self.end_year + 1)),
-                index=range(self.historic_start_year, self.end_year + 1),
-            )
-
-        fuel_effect_correction_contrails = default_series()
+        fuel_effect_correction_contrails = get_default_series(
+            self.historic_start_year, self.end_year
+        )
 
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
             if aircraft_type == "dropin_fuel":
-                relative_particles_number = default_series()
+                relative_particles_number = get_default_series(
+                    self.historic_start_year, self.end_year
+                )
                 distance_share_dropin_fuel = (
                     input_data["total_aircraft_distance_dropin_fuel"]
                     / input_data["total_aircraft_distance"]
