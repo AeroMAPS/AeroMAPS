@@ -34,8 +34,14 @@ class TopDownEnvironmental(AeroMAPSModel):
             # TODO initialize with zeros instead of actual val?
             self.input_names[key] = val
         for key, val in configuration_data.get("inputs").get("technical", {}).items():
-            # TODO initialize with zeros instead of actual val?
-            self.input_names[key] = val
+            # TODO initialize with zeros instead of actual val? How to better get rid of unnecessary variables
+            if (
+                key == f"{self.pathway_name}_resource_names"
+                or key == f"{self.pathway_name}_processes_names"
+            ):
+                pass  # avoid having strings as variable in gemseo, not needed as variables
+            else:
+                self.input_names[key] = val
 
         # 2. Set individual inputs, coming either from other models or from the yaml as well
         # Individual inputs defined in the yaml file
