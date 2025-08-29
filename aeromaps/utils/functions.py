@@ -4,11 +4,9 @@ from json import load
 
 import numpy as np
 import pandas as pd
-import yaml
 from pandas import read_csv
 from deepdiff import DeepDiff
 
-from aeromaps.models.base import AeroMapsCustomDataType
 from aeromaps.resources import data
 from aeromaps.resources import climate_data
 
@@ -18,28 +16,6 @@ def _dict_from_json(file_name="parameters.json") -> dict:
         parameters_dict = load(f)
     dict = _dict_from_parameters_dict(parameters_dict)
     return dict
-
-
-def aeromaps_custom_data_type_constructor(loader, node):
-    """
-    Custom constructor to handle specific interpolation input types in yaml files.
-    """
-    value = loader.construct_mapping(node, deep=True)
-    return AeroMapsCustomDataType(value)
-
-
-yaml.add_constructor("!AeroMapsCustomDataType", aeromaps_custom_data_type_constructor)
-
-
-def read_yaml_file(file_name="parameters.yaml"):
-    """Example function to read a YAML file and returns its contents as a dictionary."""
-    try:
-        with open(file_name, "r", encoding="utf-8") as file:
-            data = yaml.load(file, Loader=yaml.Loader)
-            return data if isinstance(data, dict) else {}
-    except Exception as e:
-        print(f"Error reading YAML file: {e}")
-        return {}
 
 
 def flatten_dict(val, prefix=""):
@@ -378,7 +354,7 @@ def convert_non_serializable(obj):
 
 
 def get_value_for_year(value, year, default_return=None):
-    """Utilitary function for generic bottom up model.
+    """Utility function for generic bottom up model.
     Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series."""
     if isinstance(value, (int, float)):
         return value

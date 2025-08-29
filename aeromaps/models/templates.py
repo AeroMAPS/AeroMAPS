@@ -5,7 +5,7 @@ Template classes to implement models in AeroMAPS.
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 import numpy as np
-from aeromaps.utils.functions import read_yaml_file
+from aeromaps.utils.yaml import read_yaml_file
 from typing import Tuple
 
 

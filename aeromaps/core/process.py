@@ -18,9 +18,9 @@ from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
-    read_yaml_file,
     flatten_dict,
 )
+from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
 
 # Fleet model imports
