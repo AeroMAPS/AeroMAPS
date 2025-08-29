@@ -426,7 +426,7 @@ class AeroMAPSProcess(object):
     def _convert_custom_data_types(self, data):
         """
         This method reads the flattened yaml file. It does two principal things:
-         - it instantiates interpolator models when encountering a custom data type, and add reference tears and values to parameters
+         - it instantiates interpolator models when encountering a custom data type, and add reference years and values to parameters
          - it converts the custom type to a normal series in the flattened yaml file so that generic energy models know the type of the interpolated inputs
         Returns the modified data
         """
@@ -475,9 +475,6 @@ class AeroMAPSProcess(object):
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
                         if model.model_type == "custom":
-                            # complete the parameters with inputs from the config file of custom disciplines
-                            # TODO: @Scott Delbecq: check if this is the right way to do it -> now direct in instanciate_generic
-                            # self.parameters.__dict__.update(model.input_names)
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
@@ -598,16 +595,24 @@ class AeroMAPSProcess(object):
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
             elif not isinstance(field_value, (float, int, list, str)):
-                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
-                new_value = np.pad(
-                    field_value,
-                    (0, new_size - field_value.size),
-                    mode="constant",
-                    constant_values=np.nan,
-                )
-                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
-                new_value = pd.Series(new_value, index=new_index)
-                setattr(self.parameters, field_name, new_value)
+                if (
+                    field_value.size
+                    == self.parameters.end_year - self.parameters.climate_historic_start_year + 1
+                ):
+                    index = range(
+                        self.parameters.climate_historic_start_year, self.parameters.end_year + 1
+                    )
+                    new_value = pd.Series(field_value, index=index)
+                    setattr(self.parameters, field_name, new_value)
+                elif (
+                    field_value.size
+                    == self.parameters.end_year - self.parameters.historic_start_year + 1
+                ):
+                    index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                    new_value = pd.Series(field_value, index=index)
+                    setattr(self.parameters, field_name, new_value)
+                else:
+                    print(f"Field {field_name} has an unexpected size {field_value.size}")
 
     def _update_variables(self):
         self._update_data_from_model()
