@@ -9,8 +9,7 @@ from aeromaps.models.base import AeroMAPSModel
 
 class YAMLInterpolator(AeroMAPSModel):
     """
-    Top down unit cost model for energy carriers.
-    It subtracts subsidies from user provided mfsp and adds taxes to it.
+    Generic interpolation model called each time an AeroMapsCustomDataType is used in the YAML configuration file of generic energy models.
     """
 
     def __init__(
