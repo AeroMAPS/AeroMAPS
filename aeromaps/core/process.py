@@ -399,8 +399,6 @@ class AeroMAPSProcess(object):
             self.energy_carriers_data[pathway] = pathway_data
 
             # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
-            # TODO fix the models handling to keep models dict intact
-            # self.models.update({"nox_emission_index": NOxEmissionIndex("nox_emission_index", self.pathways_manager)})
 
             # TODO would it be simpler to pass the EnergyCarrierMetadata to the models?
             self.models.update(
@@ -579,14 +577,27 @@ class AeroMAPSProcess(object):
 
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
-            if not isinstance(field_value, (float, int, list, str)):
-                # TODO: Antoine
-                # if isinstance(field_value, pd.Series):
-                #     new_index = range(
-                #         self.parameters.historic_start_year, self.parameters.end_year + 1
-                #     )
-                #     field_value = field_value.reindex(new_index, fill_value=np.nan)
-
+            list_init = [
+                "rpk_init",
+                "ask_init",
+                "rtk_init",
+                "pax_init",
+                "freight_init",
+                "energy_consumption_init",
+                "total_aircraft_distance_init",
+            ]
+            if field_name in list_init:
+                new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
+                new_value = np.pad(
+                    field_value.astype(float),
+                    (0, new_size - field_value.size),
+                    mode="constant",
+                    constant_values=np.nan,
+                )
+                new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
+                new_value = pd.Series(new_value, index=new_index)
+                setattr(self.parameters, field_name, new_value)
+            elif not isinstance(field_value, (float, int, list, str)):
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
                     field_value,
