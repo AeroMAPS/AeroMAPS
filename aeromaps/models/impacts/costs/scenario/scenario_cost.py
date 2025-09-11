@@ -258,55 +258,58 @@ class TotalAirlineCost(AeroMAPSModel):
 #         )
 
 
-# class TotalTaxRevenue(AeroMAPSModel):
-#     def __init__(self, name="total_tax_revenue", *args, **kwargs):
-#         super().__init__(name, *args, **kwargs)
-#
-#     def compute(
-#         self,
-#         total_extra_tax_per_rpk: pd.Series,
-#         rpk: pd.Series,
-#         rpk_no_elasticity: pd.Series,
-#         social_discount_rate: float,
-#     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series, pd.Series, pd.Series,]:
-#
-#         # TODO: to deprecate
-#
-#
-#         total_tax_revenue = total_extra_tax_per_rpk * rpk
-#         cumulative_total_tax_revenue = total_tax_revenue.cumsum()
-#         cumulative_total_tax_revenue_discounted = cumulative_total_tax_revenue / (
-#             1 + social_discount_rate
-#         ) ** (self.df.index - self.prospection_start_year)
-#
-#         tax_revenue_loss = (
-#             total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
-#             - total_extra_tax_per_rpk * rpk
-#         )
-#         cumulative_tax_revenue_loss = tax_revenue_loss.cumsum()
-#         cumulative_tax_revenue_loss_discounted = cumulative_tax_revenue_loss / (
-#             1 + social_discount_rate
-#         ) ** (self.df.index - self.prospection_start_year)
-#
-#         self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
-#         self.df.loc[:, "cumulative_total_tax_revenue"] = cumulative_total_tax_revenue
-#         self.df.loc[
-#             :, "cumulative_total_tax_revenue_discounted"
-#         ] = cumulative_total_tax_revenue_discounted
-#         self.df.loc[:, "tax_revenue_loss"] = tax_revenue_loss
-#         self.df.loc[:, "cumulative_tax_revenue_loss"] = cumulative_tax_revenue_loss
-#         self.df.loc[
-#             :, "cumulative_tax_revenue_loss_discounted"
-#         ] = cumulative_tax_revenue_loss_discounted
-#
-#         return (
-#             total_tax_revenue,
-#             cumulative_total_tax_revenue,
-#             cumulative_total_tax_revenue_discounted,
-#             tax_revenue_loss,
-#             cumulative_tax_revenue_loss,
-#             cumulative_tax_revenue_loss_discounted,
-#         )
+class TotalTaxRevenue(AeroMAPSModel):
+    def __init__(self, name="total_tax_revenue", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        total_extra_tax_per_rpk: pd.Series,
+        rpk: pd.Series,
+        rpk_no_elasticity: pd.Series,
+        social_discount_rate: float,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
+    ]:
+        total_tax_revenue = total_extra_tax_per_rpk * rpk
+        cumulative_total_tax_revenue = total_tax_revenue.cumsum()
+        cumulative_total_tax_revenue_discounted = cumulative_total_tax_revenue / (
+            1 + social_discount_rate
+        ) ** (self.df.index - self.prospection_start_year)
+
+        tax_revenue_loss = (
+            total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+            - total_extra_tax_per_rpk * rpk
+        )
+        cumulative_tax_revenue_loss = tax_revenue_loss.cumsum()
+        cumulative_tax_revenue_loss_discounted = cumulative_tax_revenue_loss / (
+            1 + social_discount_rate
+        ) ** (self.df.index - self.prospection_start_year)
+
+        self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
+        self.df.loc[:, "cumulative_total_tax_revenue"] = cumulative_total_tax_revenue
+        self.df.loc[:, "cumulative_total_tax_revenue_discounted"] = (
+            cumulative_total_tax_revenue_discounted
+        )
+        self.df.loc[:, "tax_revenue_loss"] = tax_revenue_loss
+        self.df.loc[:, "cumulative_tax_revenue_loss"] = cumulative_tax_revenue_loss
+        self.df.loc[:, "cumulative_tax_revenue_loss_discounted"] = (
+            cumulative_tax_revenue_loss_discounted
+        )
+
+        return (
+            total_tax_revenue,
+            cumulative_total_tax_revenue,
+            cumulative_total_tax_revenue_discounted,
+            tax_revenue_loss,
+            cumulative_tax_revenue_loss,
+            cumulative_tax_revenue_loss_discounted,
+        )
 
 
 class TotalSurplusLoss(AeroMAPSModel):
