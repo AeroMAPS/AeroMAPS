@@ -53,6 +53,7 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
             annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
         ]
 
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
         self.float_outputs["biomass_trajectory_constraint"] = biomass_trajectory_constraint
         self.df.loc[:, "biofuel_max_availability_viz"] = biofuel_max_availability_viz
 
@@ -108,6 +109,7 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
             annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
         ]
 
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
         self.float_outputs["electricity_trajectory_constraint"] = electricity_trajectory_constraint
         self.df.loc[:, "electrofuel_max_availability_viz"] = electrofuel_max_availability_viz
 
@@ -237,6 +239,7 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
         # else:
         #     biofuel_use_no_degrowth_constraint = -min(biofuel_share_growth) / 0.001
 
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
         self.float_outputs["biofuel_use_growth_constraint"] = biofuel_use_growth_constraint
         # self.float_outputs["biofuel_use_no_degrowth_constraint"] = (
         #     biofuel_use_no_degrowth_constraint
@@ -349,6 +352,7 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
         # else:
         #     electrofuel_use_no_degrowth_constraint = -min(electrofuel_share_growth) / 0.001
 
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
         self.float_outputs["electrofuel_use_growth_constraint"] = electrofuel_use_growth_constraint
         # self.float_outputs["electrofuel_use_no_degrowth_constraint"] = (
         #     electrofuel_use_no_degrowth_constraint
