@@ -215,6 +215,7 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedEnergyCost,
     TotalSurplusLoss,
     TotalAirlineCost,
+    TotalAirlineCostNoElast,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -564,6 +565,7 @@ models_operation_cost_top_down = {
     "passenger_aircraft_simple_airfare": PassengerAircraftSimpleAirfare(
         "passenger_aircraft_simple_airfare"
     ),
+    "total_airline_cost_no_elast": TotalAirlineCostNoElast("total_airline_cost_no_elast"),
 }
 
 models_operation_cost_bottom_up = {
@@ -574,6 +576,7 @@ models_operation_cost_bottom_up = {
     "passenger_aircraft_simple_airfare": PassengerAircraftSimpleAirfare(
         "passenger_aircraft_simple_airfare"
     ),
+    "total_airline_cost_no_elast": TotalAirlineCostNoElast("total_airline_cost_no_elast"),
 }
 
 
