@@ -42,5 +42,24 @@ jobs:
           poetry install
 
       - name: Notebook tests
-        run: poetry run pytest --no-cov --nbval-lax -p no:python aeromaps --ignore=aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb --ignore=aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb --ignore=aeromaps/notebooks/private/*
+        run: |
+          # Find all notebooks under aeromaps, excluding specific ones
+          notebooks=$(find aeromaps -name "*.ipynb" \
+            ! -path "aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb" \
+            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb" \
+            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb" \
+            ! -path "aeromaps/notebooks/private/*")
+      
+          # Loop over each notebook sequentially
+          for notebook in $notebooks; do
+            echo -e "\n\e[1;34m=== Running tests for $notebook ===\e[0m"
+            start_time=$(date +%s)
+      
+            # Run pytest for this notebook in a fresh Python process
+            poetry run python -m pytest --no-cov --nbval-lax -p no:python "$notebook" -s
+      
+            end_time=$(date +%s)
+            duration=$((end_time - start_time))
+            echo -e "\e[1;32m=== Completed $notebook in ${duration}s ===\e[0m"
+          done
         shell: bash
