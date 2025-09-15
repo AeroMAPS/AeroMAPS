@@ -525,7 +525,6 @@
     "rate_ramp_up_constraint_biofuel": 0.2,
     "volume_ramp_up_constraint_electrofuel": 0.15,
     "rate_ramp_up_constraint_electrofuel": 0.2,
-    "energy_replacement_ratio": 1.0,
     "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775],
     "model": "remind",
     "pathway": "SSP2_Base",
