@@ -352,3 +352,30 @@ def custom_logger_config(logger):
         handler.addFilter(SuppressArgsSectionWarning())
 
     return logger
+
+
+def clean_notebooks_on_tests(namespace=None, force_cleanup=False):
+    import os
+    import gc
+
+    logger = logging.getLogger("aeromaps.utils.functions")
+    logger.info("🧹 clean_notebooks_on_tests called")
+
+    if namespace is None:
+        namespace = globals()
+    RUNNING_TEST = os.environ.get("PYTEST_CURRENT_TEST") is not None
+
+    if RUNNING_TEST or force_cleanup:
+        logger.info("🧪 Detected test run or force cleanup")
+        to_delete = [
+            var
+            for var in list(namespace.keys())
+            if not var.startswith("_")
+            and var not in ("os", "gc", "RUNNING_TEST", "clean_notebooks_on_tests", "namespace")
+        ]
+        for var in to_delete:
+            del namespace[var]
+        gc.collect()
+        logger.info(f"✅ Cleaned up {len(to_delete)} variables")
+    else:
+        logger.info("⏭ Skipping cleanup during notebook run")

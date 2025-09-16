@@ -42,6 +42,8 @@ jobs:
         run: |
           poetry env use ${{ matrix.python-version }}
           poetry install
+      - name: Install nbmake and pytest-xdist
+        run: poetry run pip install nbmake pytest-xdist
 
       - name: Notebook tests
         run: |
@@ -59,7 +61,7 @@ jobs:
             start_time=$(date +%s)
       
             # Run pytest in a fresh Python process for deep cleaning
-            poetry run python -m pytest --no-cov --nbval-lax -p no:python "$notebook" -s
+            poetry run python -m --nbmake -v -n=auto
       
             end_time=$(date +%s)
             duration=$((end_time - start_time))
