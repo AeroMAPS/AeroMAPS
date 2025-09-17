@@ -54,5 +54,5 @@ jobs:
             ! -path "aeromaps/notebooks/private/*")
 
           # Run pytest with nbmake on all notebooks in parallel
-          poetry run pytest --no-cov --nbmake -p no:python -n=16 $notebooks -s
+          poetry run pytest --no-cov --nbmake -p no:python -n=32 $notebooks -s
         shell: bash
