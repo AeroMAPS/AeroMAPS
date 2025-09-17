@@ -37,4 +37,4 @@ name,categories,amount,unit
 "Occupation, urban, discontinuously built",natural resource::land,7.30769E-13,m2
 "Occupation, urban, green area",natural resource::land,7.30769E-13,m2
 "Occupation, urban/industrial fallow (non-use)",natural resource::land,7.30769E-13,m2
-radiative forcing, air::lower stratosphere + upper troposphere, 5.15E+00, kilogram
+radiative forcing,air::lower stratosphere + upper troposphere, 5.15, kilogram
