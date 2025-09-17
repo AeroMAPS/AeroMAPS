@@ -52,17 +52,7 @@ jobs:
             ! -path "aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb" \
             ! -path "aeromaps/notebooks/publications/optimisation/*" \
             ! -path "aeromaps/notebooks/private/*")
-      
-          # Loop over each notebook
-          for notebook in $notebooks; do
-            echo -e "\n\e[1;34m=== Running tests for $notebook ===\e[0m"
-            start_time=$(date +%s)
-      
-            # Run pytest in a fresh Python process for deep cleaning
-            poetry run pytest --no-cov --nbmake -p no:python "$notebook" -s
-      
-            end_time=$(date +%s)
-            duration=$((end_time - start_time))
-            echo -e "\e[1;32m=== Completed $notebook in ${duration}s ===\e[0m"
-          done
+
+          # Run pytest with nbmake on all notebooks in parallel
+          poetry run pytest --no-cov --nbmake -p no:python -n=auto $notebooks -s
         shell: bash
