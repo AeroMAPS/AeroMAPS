@@ -1,4 +1,4 @@
-project: aeromaps_pblca
+project: aeromaps_pblca2
 
 reset_project: False
 
@@ -62,12 +62,48 @@ model:
     #        - 'air'
     #        - 'lower stratosphere + upper troposphere'
             
-    
-    radiative_forcing:
+    airports:
+        custom_attributes:
+            - attribute: "phase"
+              value: "airport"
+              
+        name: 'market for airport'
+        amount: 8.88e-14 * rpk_long_range + 2.58e-13 * rpk_medium_range + 6.17e-13 * rpk_short_range  # from ecoinvent 'transport, passenger aircraft, xxx haul'
+        
+
+    aircraft:
+        custom_attributes:
+            - attribute: "phase"
+              value: "aircraft production"
+
+        long_range:
+            name: 'aircraft production, passenger aircraft, long haul'
+            amount: 323.5  # median year value
+
+        medium_range:
+            name: 'aircraft production, passenger aircraft, medium haul'
+            amount: 864.5  # median year value
+
+        short_range:
+            name: 'aircraft production, passenger aircraft, short haul'
+            amount: 700.5  # # median year value
+            
+            
+    radiative_forcing_co2:
         custom_attributes:
             - attribute: 'phase'
-              value: 'radiative forcing'
-        amount: total_erf
+              value: 'CO2 radiative forcing'
+        amount: co2_erf/1000
+        name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+            
+    radiative_forcing_non_co2:
+        custom_attributes:
+            - attribute: 'phase'
+              value: 'non-CO2 radiative forcing'
+        amount: (total_erf - co2_erf)/1000
         name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
         categories:
             - 'air'
@@ -321,8 +357,8 @@ model:
                 custom_attributes:
                     - attribute: "phase"
                       value: "biofuel production"
-                name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
-                #name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
+                #name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
+                name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
                 loc: 'RER'
         
         efuel:
@@ -465,7 +501,7 @@ model:
 
 
 methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods()
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
+     - "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
 
 
     
@@ -473,29 +509,27 @@ custom_methods:
          
     # PBLCIA (without climate change (concentration) and land-system change)
       
-    - name: "('PBLCIA', 'climate change', 'radiative forcing')"
+    - name: "('PBLCIA', 'climate change', 'climate change radiative forcing')"
       filepath: './data/lca_data/lcia_pblcia_climate_change_radiative_forcing.csv'
-      #unit: 'W/m2'
+      unit: 'W/m2'
       
-    - name: "('PBLCIA', 'biosphere integrity', 'land use')"
-      filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_land_use.csv'
-      
-    #- name: "('PBLCIA', 'biosphere integrity', 'climate change')"
-    #  filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_climate_change.csv'
-    #  
-    #- name: "('PBLCIA', 'biosphere integrity', 'total')"
-    #  filepath: './data/lca_data/lcia_pblcia_biosphere_integrity_total.csv'
-    #
+    - name: "('PBLCIA', 'biosphere integrity', 'biosphere integrity')"
+      filepath: './data/lca_data/lcia_pblcia_biosphere_integrity.csv'
+      unit: 'BII loss (%)'
     
     - name: "('PBLCIA', 'biogeochemical', 'nitrogen cycle')"
       filepath: './data/lca_data/lcia_pblcia_nitrogen_cycle.csv'
+      unit: 'TgN/yr'
       
     - name: "('PBLCIA', 'biogeochemical', 'phosphorus cycle')"
       filepath: './data/lca_data/lcia_pblcia_phosphorus_cycle.csv'
+      unit: 'TgP/yr'
       
     - name: "('PBLCIA', 'freshwater change', 'freshwater use')"
       filepath: './data/lca_data/lcia_pblcia_freshwater_use.csv'
+      unit: 'km3'
       
     - name: "('PBLCIA', 'stratospheric ozone depletion', 'ozone depletion')"
       filepath: './data/lca_data/lcia_pblcia_stratospheric_ozone_depletion.csv'
+      unit: 'DU'
     
