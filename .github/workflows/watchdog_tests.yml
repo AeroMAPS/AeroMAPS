@@ -57,7 +57,7 @@ jobs:
             start_time=$(date +%s)
 
             # Run pytest in a fresh Python process for deep cleaning
-            poetry run python -m --nbmake -v -n=auto
+            poetry run pytest --no-cov --nbmake -p no:python "$notebook" -s
 
             end_time=$(date +%s)
             duration=$((end_time - start_time))
