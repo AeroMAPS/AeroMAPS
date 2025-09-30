@@ -215,7 +215,7 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedEnergyCost,
     TotalSurplusLoss,
     TotalAirlineCost,
-    TotalAirlineCostNoElast,
+    TotalAirlineCostNoElast, ConsumerSurplusLoss, AirlineSurplusLoss, TaxRevenueLoss, TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -721,6 +721,47 @@ models_optim_complex = {
     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
+
+
+
+models_optim_complex_v2 = {
+    "models_traffic_cost_feedback": models_traffic_cost_feedback,
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
+    "biomass_availability": BiomassAvailability("biomass_availability"),
+    "electricity_availability": ElectricityAvailability("electricity_availability"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+    "models_energy_cost_simple": models_energy_cost_simple,
+    "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+    "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+        "electricity_availability_constraint_trajectory"
+    ),
+    "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+        "biomass_availability_constraint_trajectory"
+    ),
+    "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+        "electrofuel_use_growth_constraint"
+    ),
+    "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+    "consumer_surplus_loss": ConsumerSurplusLoss("consumer_surplus_loss"),
+    "airline_surplus_loss": AirlineSurplusLoss("airline_surplus_loss"),
+    "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
+    "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
+}
+
 
 
 models_optim_tsas_custom = {

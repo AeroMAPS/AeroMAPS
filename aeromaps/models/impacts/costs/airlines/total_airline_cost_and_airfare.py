@@ -350,6 +350,9 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         airfare_per_rpk_true = airfare_per_rpk_true
         airfare_per_rpk = airfare_per_rpk_true
 
+        # ADD 2019 value to the airfare_per_rpk series
+        airfare_per_rpk.loc[self.prospection_start_year - 1] = initial_price_per_rpk_corrected
+
         self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
         self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
 

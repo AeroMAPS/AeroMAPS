@@ -115,50 +115,49 @@ class AeroMAPSProcess(object):
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
                 "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 8,
+                "max_mda_iter": 10,
                 "initialize_defaults": True,
-                "tolerance": 1e-3,
+                "tolerance": 1e-4,
             },
             # grammar_type=self.gemseo_settings["grammar_type"],
             # input_data=self.input_data,
         )
 
-    def create_gemseo_doe(self):
+    def create_gemseo_bilevel(self):
         # if no scenario is created raise an error create_gemseo_scenario needs to be called first
         if self.scenario is None:
             raise ValueError(
                 "GEMSEO scenario not created. Please call create_gemseo_scenario() first."
             )
 
+        self.scenario.set_algorithm(self.gemseo_settings["algorithm_inner"])
+
         # dv_names = self.scenario.formulation.design_variables.keys()
         self.adapter = MDOScenarioAdapter(
-            # TODO make generic
+            # TODO make generic --> ?
             self.scenario,
             input_names=self.gemseo_settings["doe_input_names"],
             output_names=self.gemseo_settings["doe_output_names"],
-            # grammar_type=self.gemseo_settings["grammar_type"],
-            set_x0_before_opt=True,
+            reset_x0_before_opt=True,
+            set_x0_before_opt=False,
         )
 
-        self.scenario_doe = create_scenario(
+        self.scenario_adapted = create_scenario(
             self.adapter,
             formulation_name=self.gemseo_settings["formulation"],
-            objective_name=self.gemseo_settings["objective_name"],
-            design_space=self.gemseo_settings["design_space"],
-            scenario_type="DOE",
-            # grammar_type=self.gemseo_settings["grammar_type"],
+            objective_name=self.gemseo_settings["objective_name_outer"],
+            design_space=self.gemseo_settings["design_space_outer"],
+            scenario_type="MDO",
         )
 
     def compute(self):
         input_data = self._pre_compute()
 
         if self.scenario is not None:
-            if self.scenario_doe is not None:
-                print("Running DOE")
-                self.scenario.default_inputs.update(self.scenario.options)
-                self.scenario_doe.execute(
-                    input_data={"algo": "CustomDOE", "algo_options": {"samples": self.samples}}
-                )
+            if self.scenario_adapted is not None:
+                print("Running bi-level MDO")
+                # self.scenario.default_inputs.update(self.scenario.options)
+                self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
             else:
                 print("Running MDO")
                 self.scenario.execute(self.gemseo_settings["algorithm"])
@@ -466,7 +465,7 @@ class AeroMAPSProcess(object):
 
     def _initialize_gemseo_settings(self):
         self.scenario = None
-        self.scenario_doe = None
+        self.scenario_adapted = None
         self.gemseo_settings = {}
 
         # Mandatory settings
