@@ -1,4 +1,5 @@
 # Standard library imports
+import logging
 import os
 from json import load, dump
 
@@ -104,7 +105,10 @@ class AeroMAPSProcess(object):
     def create_gemseo_scenario(self):
         # if no mda_chain is created raise an error setup needs to be called first
         if self.mda_chain is None:
-            raise ValueError("MDA chain not created. Please call setup() first.")
+            logging.warning(
+                f"MDA chain was not created. Creating it with the following settings: disciplines={self.disciplines}"
+            )
+            self.setup()
 
         # Create GEMSEO process
         self.scenario = create_scenario(
@@ -126,9 +130,15 @@ class AeroMAPSProcess(object):
     def create_gemseo_bilevel(self):
         # if no scenario is created raise an error create_gemseo_scenario needs to be called first
         if self.scenario is None:
-            raise ValueError(
-                "GEMSEO scenario not created. Please call create_gemseo_scenario() first."
+            logging.warning(
+                f"Inner scenario of the bilevel formulation was not fully defined. Creating it with the following settings:"
+                f"Arguments used: disciplines={self.disciplines}, "
+                f"objective_name={self.gemseo_settings['objective_name']}, "
+                f"design_space={self.gemseo_settings['design_space']}, "
+                f"scenario_type={self.gemseo_settings['scenario_type']}, "
+                f"formulation_name={self.gemseo_settings['formulation']}"
             )
+            self.create_gemseo_scenario()
 
         self.scenario.set_algorithm(self.gemseo_settings["algorithm_inner"])
 
