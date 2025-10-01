@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8.4-beta
+
+Changed:
+- Improved computation time. (#102)
+
+
 ## Version 0.8.3-beta
 
 Fixed:
