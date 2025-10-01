@@ -4,7 +4,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class FinalEffectiveRadiativeForcingPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -88,7 +89,8 @@ class FinalEffectiveRadiativeForcingPlot:
 
 
 class DistributionEffectiveRadiativeForcingPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -217,7 +219,8 @@ class DistributionEffectiveRadiativeForcingPlot:
 
 
 class EquivalentEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -297,7 +300,8 @@ class EquivalentEmissionsPlot:
 
 
 class CumulativeEquivalentEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -382,7 +386,8 @@ class CumulativeEquivalentEmissionsPlot:
 
 
 class EquivalentEmissionsRatioPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -439,7 +444,8 @@ class EquivalentEmissionsRatioPlot:
 
 
 class TemperatureIncreaseFromAirTransportPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -546,7 +552,8 @@ class TemperatureIncreaseFromAirTransportPlot:
 
 
 class DetailedTemperatureIncreaseFromAirTransportPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

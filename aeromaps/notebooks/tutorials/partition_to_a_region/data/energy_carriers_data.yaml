@@ -1,0 +1,41 @@
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:

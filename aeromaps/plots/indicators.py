@@ -4,7 +4,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class MeanCO2PerRPKPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -71,7 +72,8 @@ class MeanCO2PerRPKPlot:
 
 
 class MeanCO2PerRTKPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -138,7 +140,8 @@ class MeanCO2PerRTKPlot:
 
 
 class PassengerKayaFactorsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -245,7 +248,8 @@ class PassengerKayaFactorsPlot:
 
 
 class FreightKayaFactorsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -340,7 +344,8 @@ class FreightKayaFactorsPlot:
 
 
 class LeversOfActionDistributionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

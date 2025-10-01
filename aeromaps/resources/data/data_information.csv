@@ -775,7 +775,7 @@ electrolysis_h2_cost_premium;Vector;M€;H2 produced by water electrolysis cost 
 gas_h2_cost_premium;Vector;M€;H2 produced by steam methane reforming without CCS cost premium over fossil kerosene (without carbon tax)
 gas_ccs_h2_cost_premium;Vector;M€;H2 produced by steam methane reforming with CCS cost premium over fossil kerosene (without carbon tax)
 kerosene_carbon_tax_cost;Vector;M€;Annual kerosene cost attributable to carbon tax
-kerosene_carbon_tax_BAU;Vector;M€;Annual kerosene cost attributable to carbon tax in a full kerosene scenario
+carbon_tax_bau;Vector;M€;Annual kerosene cost attributable to carbon tax in a full kerosene scenario
 kerosene_cost;Vector;M€;Annual kerosene procurement cost without carbon tax
 kerosene_market_price;Vector;€/L;Kerosene (fossil) market price evolution
 kerosene_price_supplement_carbon_tax;Vector;€/L;Kerosene (fossil) supplement to market price due to carbon tax
@@ -786,7 +786,7 @@ liquefaction_h2_total_cost;Vector;M€;Annual liquefaction total cost
 liquefaction_plant_building_cost;Vector;M€;Annual building expenses for liquefaction plants built each year
 liquefaction_plant_building_scenario;Vector;t/day;Annual capacity built for liquefaction plants built each year
 liquefier_eis_capex;Vector;€/(kg/day);Capital expenditures for liquefaction plant building in € per kg/day of nominal hydrogen production capacity (evolution for EIS date);
-non_discounted_BAU_energy_expenses;Vector;M€;Annual expenses for energy in a business as usual scenario that would only use kerosene
+non_discounted_bau_energy_expenses;Vector;M€;Annual expenses for energy in a business as usual scenario that would only use kerosene
 non_discounted_energy_cost_premium;Vector;M€;Annual extra cost for energy in the actual scenario vs a business as usual scenario that would only use kerosene
 non_discounted_energy_expenses;Vector;M€;Annual expenses for energy in the actual scenario
 plant_building_cost_atj;Vector;M€;Annual building expenses for biofuel (ATJ) plants built each year

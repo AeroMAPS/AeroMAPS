@@ -25,12 +25,15 @@ import ast
 import logging
 from inspect import getfullargspec
 from inspect import getsource
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from typing import Callable
 from typing import Final
 from typing import Union
 from typing import get_type_hints
 
+import pandas as pd
+from gemseo.core.data_converters.simple import SimpleGrammarDataConverter
+from gemseo.core.grammars.simple_grammar import SimpleGrammar
 from gemseo.disciplines.auto_py import AutoPyDiscipline
 from numpy import array
 from numpy import atleast_2d
@@ -48,7 +51,6 @@ from aeromaps.models.base import AeroMAPSModel
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from collections.abc import Sequence
 
 DataType = Union[float, ndarray]
 
@@ -345,26 +347,6 @@ class AutoDiscDataProcessor(DataProcessor):
     to NumPy arrays.
     """
 
-    # TODO: API: this is never used, remove?
-    out_names: Sequence[str]
-    """The names of the outputs."""
-
-    # TODO: API: this is never used, remove?
-    one_output: bool
-    """Whether there is a single output."""
-
-    def __init__(
-        self,
-        out_names: Sequence[str],
-    ) -> None:
-        """
-        Args:
-            out_names: The names of the outputs.
-        """  # noqa: D205 D212 D415
-        super().__init__()
-        self.out_names = out_names
-        self.one_output = len(out_names) == 1
-
     def pre_process_data(self, data: dict[str, DataType]) -> dict[str, DataType]:
         """Pre-process the input data.
 
@@ -380,9 +362,9 @@ class AutoDiscDataProcessor(DataProcessor):
             where one-length NumPy arrays have been replaced with floats.
         """
         processed_data = data.copy()
-        for key, val in data.items():
-            if len(val) == 1:
-                processed_data[key] = float(val[0])
+        # for key, val in data.items():
+        #     if len(val) == 1:
+        #          processed_data[key] = float(val[0])
 
         return processed_data
 
@@ -400,9 +382,19 @@ class AutoDiscDataProcessor(DataProcessor):
             The processed data with NumPy arrays as values.
         """
         processed_data = data.copy()
+        outputs_to_remove = []
+        outputs_to_add = {}
         for output_name, output_value in processed_data.items():
-            if not isinstance(output_value, ndarray):
-                processed_data[output_name] = array([output_value])
+            if isinstance(output_value, dict):
+                for key, value in output_value.items():
+                    outputs_to_add[key] = value
+                outputs_to_remove.append(output_name)
+            # if not isinstance(output_value, ndarray):
+            #    processed_data[output_name] = array([output_value])
+
+        # for output_name in outputs_to_remove:
+        #    processed_data.pop(output_name)
+        processed_data.update(outputs_to_add)
 
         return processed_data
 
@@ -423,29 +415,35 @@ def to_arrays_dict(data: dict[str, DataType]) -> dict[str, ndarray]:
     return data
 
 
-class AeroMAPSModelWrapper(AutoPyDiscipline):
+class DataConverter(SimpleGrammarDataConverter):
+    """A data converter where ``x_shared`` is not a ndarray and handles pd.Series."""
+
+    def convert_value_to_array(self, name: str, value: Any) -> ndarray:  # noqa: D102 # pragma: no cover
+        print(f"(Undesired loop ?) using custom data converter for {name}; {value}")
+        if isinstance(value, pd.Series):
+            return value.values
+        return super().convert_value_to_array(name, value)
+
+
+SimpleGrammar.DATA_CONVERTER_CLASS = DataConverter
+
+
+class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
+    """
+    Wraps the AeroMAPSModel class into a discipline.
+    Inputs and outputs are automatically declared from the model's compute() function signature.
+    """
+
     def __init__(self, model):
         self.model: AeroMAPSModel = model
 
         # TODO: Explore possibility to use json grammar
         self.default_grammar_type = Discipline.GrammarType.SIMPLE
 
-        super(AeroMAPSModelWrapper, self).__init__(
+        super(AeroMAPSAutoModelWrapper, self).__init__(
             py_func=self.model.compute,
-            use_arrays=True,
         )
-
-        if hasattr(self.model, "auto_inputs"):
-            self.input_grammar.update_from_types(
-                self.model.auto_inputs
-            )  # Explicit addition of auto-generated inputs
-            if "kwargs" in self.input_grammar.names:
-                self.input_grammar.required_names.remove("kwargs")
-
-        if hasattr(self.model, "auto_outputs"):
-            self.output_grammar.update_from_types(
-                self.model.auto_outputs
-            )  # Explicit addition of auto-generated outputs
+        # self.io.data_processor = AutoDiscDataProcessor()
 
         self.name = model.__class__.__name__
 
@@ -455,5 +453,35 @@ class AeroMAPSModelWrapper(AutoPyDiscipline):
         for input in self.get_input_data():
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
+            if hasattr(self.model.parameters, input):
+                self.default_inputs[input] = getattr(self.model.parameters, input)
+
+
+class AeroMAPSCustomModelWrapper(Discipline):
+    """
+    Wraps the AeroMAPSModel class into a discipline.
+    Inputs and outputs are declared through the attributes 'input_names' and 'output_names' of the model.
+    """
+
+    def __init__(self, model):
+        super().__init__()
+        # Caution, uses a JSON grammar! Convert to simple grammar?
+        self.input_grammar.update_from_data(model.input_names)
+        self.output_grammar.update_from_data(model.output_names)
+        self.model: AeroMAPSModel = model
+        self.name = model.__class__.__name__
+        self.update_defaults()
+
+        # TODO: explore data converters e.g. to convert pd.Series to np.array for MDA handling -- > Done in optim branch
+        # self.io.data_processor = AutoDiscDataProcessor()
+
+    def _run(self, input_data):
+        if hasattr(self.model, "compute"):
+            return self.model.compute(input_data)
+        else:
+            raise AttributeError(f"Model {self.name} does not have a compute method")
+
+    def update_defaults(self):
+        for input in self.get_input_data():
             if hasattr(self.model.parameters, input):
                 self.default_inputs[input] = getattr(self.model.parameters, input)

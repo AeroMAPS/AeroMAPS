@@ -1,0 +1,622 @@
+hefa_fog:
+  # Metadata
+  name: "hefa_fog"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        values: [0.0, 0.366694701, 0.750042052, 1.150042052, 0.981737267, 0.976471916, 0.970079399, 0.963124169, 0.955101422, 0.945668863, 0.937143428, 0.925554196, 0.912995117, 0.899861369, 0.886574588, 0.878976599, 0.868335482, 0.85903233, 0.851332947, 0.845456138, 0.841597838, 0.839942355, 0.840654627, 0.843855112, 0.849578017, 0.863781992, 0.876579956, 0.891912874, 0.909224128, 0.927814814, 0.94703919]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_fog_biomass" ]
+      eis_resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0308 ]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0048 ]
+        method: linear
+  outputs:
+  
+
+hefa_others:
+  # Metadata
+  name: "hefa_others"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.176187628, 3.642204412, 4.099458713, 4.460269403, 4.169819185, 4.29254549, 4.316887622, 4.257561377, 4.202948107, 4.167029428, 4.151048684, 4.154510282, 4.177484219, 4.220058385, 4.282313985]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_others_biomass" ]
+      eis_resource_specific_consumption:
+        hefa_others_biomass: 1.72
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [61.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0410 ]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0037 ]
+        method: linear
+  outputs:
+  
+ft_msw:
+  # Metadata
+  name: "ft_msw"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        values: [0.0, 0.0, 0.0, 0.0, 0.051135352, 0.089473978, 0.129366867, 0.170764674, 0.219249178, 0.308076197, 0.442580839, 0.623110232, 0.849481329, 1.116407197, 1.392336669, 1.671506681, 1.677027068, 1.923083929, 2.164514201, 2.355022245, 2.20166453, 2.266464018, 2.279316664, 2.247992407, 2.2191566, 2.200191538, 2.191753705, 2.193581429, 2.205711668, 2.228190827, 2.261061784]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_msw_biomass" ]
+      eis_resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.1908 ]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0082 ]
+        method: linear
+  outputs:
+
+
+ft_others:
+  # Metadata
+  name: "ft_others"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        values: [0.0, 0.0, 0.0, 0.0, 0.533822083, 0.934054106, 1.350511683, 1.782679702, 2.288828542, 3.216128784, 4.620275732, 6.504893183, 8.868070232, 11.65461453, 14.53515098, 17.44951672, 17.50714621, 20.07583072, 22.59621643, 24.58500495, 22.98404335, 23.66051074, 23.79468457, 23.46767831, 23.16664997, 22.9686662, 22.88058035, 22.89966068, 23.02629301, 23.26096182, 23.60411469]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_others_biomass" ]
+      eis_resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [7.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.1281 ]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0077 ]
+        method: linear
+  outputs:
+  
+atj:
+  # Metadata
+  name: "atj"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050]
+        values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.802875097, 3.914801486, 3.937001511, 3.882895976, 3.833088673, 3.800330838, 3.7857564, 3.788913377, 3.809865608, 3.848693247, 3.905470354]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "atj_biomass" ]
+      eis_resource_specific_consumption:
+        atj_biomass: 2.08
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [52.2]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0970 ]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0058 ]
+        method: linear
+  outputs:
+
+  
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [
+        2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+        2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+        2040,
+        2045,
+        2050
+    ]
+        values: [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,
+        8,
+        35
+    ]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: ["pv_electricity", "co2_dac"]
+      eis_resource_specific_consumption:
+        pv_electricity: !AeroMapsCustomDataType
+          years: [2020,2030,2050]
+          values: [2.111, 2.047, 1.877]
+          method: linear
+        co2_dac: !AeroMapsCustomDataType
+          years: [2020,2030,2050]
+          values: [0.123, 0.102, 0.073] # KgCO2/MJ
+          method: linear
+      lhv: 44
+      technology_introduction_year: 2020
+      technology_introduction_volume: 4.0e+11
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231 # 
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [2020,2030,2050]
+        values: [0.1565,0.0959,0.032]
+        method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [2020,2030,2050]
+        values: [0.0096, 0.0081, 0.0057]
+        method: linear
+  outputs:
+
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  abatement_cost_reference: True # CAUTION: impossible to compute CACs for the reference patwhay.
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 # 
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:
+
+  
+  
+hydrogen_electrolysis:
+  # Metadata
+  name: "hydrogen_electrolysis"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [0.0, 34.6, 54.0, 76.0]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis" ]
+      lhv: 120
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+      resource_names: ["transport"]
+      eis_resource_specific_consumption:
+          transport: 1
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+  outputs:
+  
+hydrogen_gas_ccs:
+  # Metadata
+  name: "hydrogen_gas_ccs"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [0.75, 9.0, 11.9, 15.0]
+        method: linear
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction" ]
+      lhv: 120
+      resource_names: ["gas", "transport", "ccs_gas"]
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+      eis_resource_specific_consumption:
+        gas: 1.45 # MJ of gas per MJ of hydrogen
+        transport: 1
+        ccs_gas: 1
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [30.83]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: []
+        values: [0.0394] # caution no liquefaction there # [0.664742,0.927900,0.884040,0.840180]/120
+        method: linear
+      eis_fixed_opex: !AeroMapsCustomDataType
+        years:  []
+        values: [0.0016] # [0.01944,0.01944,0.01944,0.01944]/120
+        method: linear
+  outputs:
+
+hydrogen_gas:
+  # Metadata
+  name: "hydrogen_gas"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050 ]
+        values: [75.0, 40.0, 22.6, 3.0]
+        method: linear
+    # Technical:
+    technical:
+      # TODO consider CCS as a resource to track the capture.
+      processes_names: [ "liquefaction" ]
+      lhv: 120
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+      resource_names: [ "gas", "transport"]
+      eis_resource_specific_consumption:
+        gas: 1.32 # MJ of gas per MJ of hydrogen
+        transport: 1
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [100]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: []
+        values: [0.0209] # caution no liquefaction there # [0.664742,0.927900,0.884040,0.840180]/120
+        method: linear
+      eis_fixed_opex: !AeroMapsCustomDataType
+        years:  []
+        values: [0.0010] # [0.01944,0.01944,0.01944,0.01944]/120
+        method: linear
+  outputs:
+  
+hydrogen_coal:
+  # Metadata
+  name: "hydrogen_coal"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: True
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    # Mandate
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction" ]
+      lhv: 120
+      resource_names: [ "coal" ,"transport"]
+      eis_plant_load_factor: 0.9
+      eis_plant_lifespan: 25
+      eis_resource_specific_consumption:
+        coal: 1.66 # MJ of coal per MJ of hydrogen
+        transport: 1
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [191.6]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: []
+        values: [0.0526]
+        method: linear
+      eis_fixed_opex: !AeroMapsCustomDataType
+        years:  []
+        values: [0.0026]
+  outputs:
+
+hydrogen_coal_ccs:
+  # Metadata
+  name: "hydrogen_coal_ccs"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "fossil"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    # Mandate
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.25, 3.0, 3.9, 5.0]
+        method: linear
+    # Technical:
+    technical:
+      # TODO consider CCS as a resource to track the capture.
+      processes_names: [ "liquefaction"]
+      lhv: 120
+      resource_names: [ "coal", "ccs_coal", "transport"]
+      eis_plant_load_factor: 0.9
+      eis_plant_lifespan: 25
+      eis_resource_specific_consumption:
+        coal: 1.72 # MJ of coal per MJ of hydrogen
+        transport: 1
+        ccs_coal: 1
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [40.83]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: []
+        values: [0.0547]
+        method: linear
+      eis_fixed_opex: !AeroMapsCustomDataType
+        years:  []
+        values: [0.0027]
+  outputs:

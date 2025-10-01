@@ -1,0 +1,152 @@
+hefa_fog_biomass:
+  # ID
+  name: "hefa_fog_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 1.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0127 ]
+      method: linear
+
+
+hefa_others_biomass:
+  # ID
+  name: "hefa_others_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 20.67e+12 # [MJ] (15 ALGAE + 63 * 9 % CROPS)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0122 ]
+      method: linear
+      
+      
+ft_msw_biomass:
+  # ID
+  name: "ft_msw_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 11.0e+12 # [MJ] (12 EJ WASTE - 1 EJ FOG)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ] # free waste (highly questionable)
+      method: linear
+      
+
+ft_others_biomass:
+  # ID
+  name: "ft_others_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 113.7e+12 # [MJ] (57 + 17 residue + 63 * 63% crops)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.007 ]
+      method: linear
+
+
+atj_biomass:
+  # ID
+  name: "atj_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 17.64e+12 # [MJ] (63 *28% crops)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0102 ]
+      method: linear
+
+
+grid_electricity:
+  # ID
+  name: "grid_electricity"
+  origin: "electricity"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [119.16, 50, 20.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+        method: linear
+    cost: !AeroMapsCustomDataType
+        years: []
+        values: [0.022] 
+        method: linear
+    availability:
+      global: 200.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.225] #€/kg CO2
+      method: linear 
+
+
+gas:
+    # ID
+  name: "gas"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: [2020, 2030, 2040, 2050]
+      values: [0.0013889, 0.0030556, 0.0027778, 0.0025] #[0.005, 0.011, 0.010, 0.009] in KWh/3,6
+      method: linear
+
+coal:
+    # ID
+  name: "coal"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: [2020, 2030, 2040, 2050]
+      values: [0.0016667, 0.0015833, 0.0015, 0.0014444] #[0.006, 0.0057, 0.0054, 0.0052] in KWh/3,6
+      method: linear
+
+
+ccs_coal:
+  # Metadata
+  name: "ccs_coal"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.00302]
+      method: linear
+
+ccs_gas:
+  # Metadata
+  name: "ccs_gas"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.00138]
+      method: linear
+
+transport:
+  # Metadata
+  name: "transport"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.003]
+      method: linear
+
+

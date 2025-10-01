@@ -1,3 +1,4 @@
+from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
 from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
 from aeromaps.plots.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
@@ -27,8 +28,9 @@ from aeromaps.plots.aircraft_fleet_and_operations import (
 )
 from aeromaps.plots.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
-    EmissionFactorPerFuelPlot,
+    EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
+    ShareFuelPlot,
 )
 from aeromaps.plots.emissions import (
     CumulativeCO2EmissionsPlot,
@@ -49,20 +51,12 @@ from aeromaps.plots.climate import (
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
-
 from aeromaps.plots.costs import (
-    ScenarioEnergyCapitalPlot,
-    ScenarioEnergyExpensesPlot,
-    ScenarioEnergyUnitCostPlot,
     DiscountEffect,
-    ScenarioEnergyCarbonTaxPlot,
-    ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
-    DetailledMFSPBreakdownPerPathway,
-    DetailledMFSPBreakdownPerYear,
-    ScenarioEnergyExpensesPlotWithoutCarbonTax,
 )
 
 # Left plot
@@ -100,7 +94,8 @@ plot_3 = {
     "Fuel consumption (fuel consumption per passenger per 100 km)": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "Energy consumption of the aircraft fleet": EnergyConsumptionPlot,
     "Mean fuel emission factor (CO2 emissions per energy)": MeanFuelEmissionFactorPlot,
-    "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelPlot,
+    "Fuel emission factors (CO2 emissions per energy)": EmissionFactorPerFuelCategory,
+    "Fuel share in the aircraft fleet": ShareFuelPlot,
     "Cumulative CO2 emissions": CumulativeCO2EmissionsPlot,
     "Direct H2O emissions": DirectH2OEmissionsPlot,
     "Direct NOx emissions": DirectNOxEmissionsPlot,
@@ -114,15 +109,10 @@ plot_3 = {
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,
-    "Annual expenses for energy procurement": ScenarioEnergyExpensesPlot,
-    "Annual expenses for energy procurement without carbon tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
-    "Effect of a carbon tax on energy expenses": ScenarioEnergyCarbonTaxPlot,
-    "Evolution of pathways MFSP": ScenarioEnergyUnitCostPlot,
-    "Evolution of pathways MFSP, incl carbon cost": ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    "Annual energy expense vs reference situation": ScenarioEnergyExpensesComparison,
+    "Evolution of pathways MFSP": SimpleMFSP,
     "Effect of the discount rate on total energy costs": DiscountEffect,
     "Direct Operating Cost breakdown": DOCEvolutionBreakdown,
     "Direct Operating Cost per aircraft category": DOCEvolutionCategory,
     "Airfare breakdown": AirfareEvolutionBreakdown,
-    "Detailled MFSP breakdown per pathway": DetailledMFSPBreakdownPerPathway,
-    "Detailled MFSP breakdown per year": DetailledMFSPBreakdownPerYear,
 }

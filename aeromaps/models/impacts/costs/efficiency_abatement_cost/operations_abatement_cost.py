@@ -17,8 +17,8 @@ class OperationsAbatementCost(AeroMAPSModel):
         self,
         operational_efficiency_cost_non_energy_per_ask: pd.Series,
         operations_gain: pd.Series,
-        kerosene_market_price: pd.Series,
-        kerosene_emission_factor: pd.Series,
+        cac_reference_mfsp: pd.Series,
+        cac_reference_co2_emission_factor: pd.Series,
         energy_per_ask_mean_without_operations: pd.Series,
         energy_per_ask_mean: pd.Series,
         energy_per_rtk_mean_without_operations: pd.Series,
@@ -31,8 +31,6 @@ class OperationsAbatementCost(AeroMAPSModel):
         social_discount_rate: float,
         operations_duration: float,
         operations_start_year: int,
-        lhv_kerosene: float,
-        density_kerosene: float,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -47,26 +45,20 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        fuel_lhv = lhv_kerosene * density_kerosene
-
         ############### PASSENGER OPERATIONS #############
 
         emissions_reduction_operations = (
             energy_per_ask_mean_without_operations
             * operations_gain
             / 100
-            * kerosene_emission_factor
+            * cac_reference_co2_emission_factor
             / 1000000
         )
 
         extra_cost_operations_non_fuel = operational_efficiency_cost_non_energy_per_ask
 
         extra_cost_operations_fuel = (
-            -energy_per_ask_mean_without_operations
-            * operations_gain
-            / 100
-            * kerosene_market_price
-            / fuel_lhv
+            -energy_per_ask_mean_without_operations * operations_gain / 100 * cac_reference_mfsp
         )
 
         operations_abatement_cost = (
@@ -92,8 +84,8 @@ class OperationsAbatementCost(AeroMAPSModel):
                 operations_duration,
                 extra_cost_operations_non_fuel,
                 extra_cost_operations_fuel,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 emissions_reduction_operations,
                 exogenous_carbon_price_trajectory,
             )
@@ -112,7 +104,7 @@ class OperationsAbatementCost(AeroMAPSModel):
             energy_per_rtk_mean_without_operations
             * operations_gain
             / 100
-            * kerosene_emission_factor
+            * cac_reference_co2_emission_factor
             / 1000000
         )
 
@@ -121,11 +113,7 @@ class OperationsAbatementCost(AeroMAPSModel):
         )
 
         extra_cost_operations_fuel_freight = (
-            -energy_per_rtk_mean_without_operations
-            * operations_gain
-            / 100
-            * kerosene_market_price
-            / fuel_lhv
+            -energy_per_rtk_mean_without_operations * operations_gain / 100 * cac_reference_mfsp
         )
 
         operations_abatement_cost_freight = (
@@ -148,8 +136,8 @@ class OperationsAbatementCost(AeroMAPSModel):
                 operations_duration,
                 extra_cost_operations_non_fuel_freight,
                 extra_cost_operations_fuel_freight,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 emissions_reduction_operations_freight,
                 exogenous_carbon_price_trajectory,
             )
@@ -172,10 +160,12 @@ class OperationsAbatementCost(AeroMAPSModel):
         energy_per_rpk_real = energy_per_ask_mean / load_factor * 100
 
         emissions_reduction_load_factor = (
-            (energy_per_rpk_base - energy_per_rpk_real) * kerosene_emission_factor / 1000000
+            (energy_per_rpk_base - energy_per_rpk_real)
+            * cac_reference_co2_emission_factor
+            / 1000000
         )
         extra_cost_load_factor_fuel = (
-            -(energy_per_rpk_base - energy_per_rpk_real) * kerosene_market_price / fuel_lhv
+            -(energy_per_rpk_base - energy_per_rpk_real) * cac_reference_mfsp
         )
         extra_cost_load_factor_non_fuel = load_factor_cost_non_energy_per_ask
 
@@ -198,8 +188,8 @@ class OperationsAbatementCost(AeroMAPSModel):
                 self.end_year - self.prospection_start_year,
                 extra_cost_load_factor_non_fuel,
                 extra_cost_load_factor_fuel,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 emissions_reduction_load_factor,
                 exogenous_carbon_price_trajectory,
             )
@@ -234,8 +224,8 @@ class OperationsAbatementCost(AeroMAPSModel):
         measure_duration,
         extra_cost_non_fuel,
         extra_cost_fuel,
-        kerosene_market_price,
-        kerosene_emission_factor,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
@@ -246,18 +236,18 @@ class OperationsAbatementCost(AeroMAPSModel):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
-                    + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
+                    + extra_cost_fuel[year] * cac_reference_mfsp[i] / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                     * exogenous_carbon_price_trajectory[i]
                     / exogenous_carbon_price_trajectory[year]
                     / (1 + discount_rate) ** (i - year)
@@ -266,13 +256,13 @@ class OperationsAbatementCost(AeroMAPSModel):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
                     + extra_cost_fuel[year]
-                    * kerosene_market_price[self.end_year]
-                    / kerosene_market_price[year]
+                    * cac_reference_mfsp[self.end_year]
+                    / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[self.end_year]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[self.end_year]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
@@ -283,7 +273,10 @@ class OperationsAbatementCost(AeroMAPSModel):
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        cac_reference_co2_emission_factor[self.end_year]
+                        / cac_reference_co2_emission_factor[year]
+                    )
                     * (
                         exogenous_carbon_price_trajectory[self.end_year]
                         / exogenous_carbon_price_trajectory[year]

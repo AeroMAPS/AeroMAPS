@@ -43,26 +43,15 @@ class DropinFuelConsumptionLiterPerPax100km(AeroMAPSModel):
 
     def compute(
         self,
-        energy_consumption_passenger_kerosene: pd.Series,
-        energy_consumption_passenger_biofuel: pd.Series,
-        energy_consumption_passenger_electrofuel: pd.Series,
-        lhv_kerosene: float,
-        lhv_biofuel: float,
-        lhv_electrofuel: float,
+        energy_consumption_passenger_dropin_fuel: pd.Series,
+        dropin_fuel_mean_lhv: pd.Series,
         rpk: pd.Series,
     ) -> pd.Series:
         """Drop-in fuel consumption in liter per passenger per 100 km calculation."""
 
         density = 0.8
         self.df["dropin_fuel_consumption_liter_per_pax_100km"] = (
-            (
-                energy_consumption_passenger_kerosene / lhv_kerosene
-                + energy_consumption_passenger_biofuel / lhv_biofuel
-                + energy_consumption_passenger_electrofuel / lhv_electrofuel
-            )
-            / density
-            * 100
-            / rpk
+            energy_consumption_passenger_dropin_fuel / dropin_fuel_mean_lhv / density * 100 / rpk
         )
         dropin_fuel_consumption_liter_per_pax_100km = self.df[
             "dropin_fuel_consumption_liter_per_pax_100km"

@@ -4,7 +4,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class CumulativeCO2EmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -75,7 +76,8 @@ class CumulativeCO2EmissionsPlot:
 
 
 class DirectH2OEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -140,7 +142,8 @@ class DirectH2OEmissionsPlot:
 
 
 class DirectNOxEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -205,7 +208,8 @@ class DirectNOxEmissionsPlot:
 
 
 class DirectSulfurEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -270,7 +274,8 @@ class DirectSulfurEmissionsPlot:
 
 
 class DirectSootEmissionsPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df_climate = data["climate_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -335,7 +340,8 @@ class DirectSootEmissionsPlot:
 
 
 class CarbonOffsetPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -398,7 +404,8 @@ class CarbonOffsetPlot:
 
 
 class CumulativeCarbonOffsetPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]

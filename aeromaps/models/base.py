@@ -7,17 +7,47 @@ from fair import FAIR
 from fair.interface import fill, initialise
 
 
+class AeroMapsCustomDataType:
+    """
+    Custom type class to handle yaml data input for AeroMAPS models.
+    It contains reference years and values, and interpolation options.
+    When an AeroMapsCustomDataType is found when reading the yaml it
+    instantiates an interpolation model from yaml_interpolator.py
+    Attributes:
+        years (list): List of reference years for the interpolation.
+        values (list): List of reference values for the interpolation.
+        method (str): Interpolation method, default is 'linear'.
+        positive_constraint (bool): If True, ensures interpolated values are non-negative.
+    """
+
+    def __init__(self, reference_data: dict):
+        self.years = reference_data["years"]
+        self.values = reference_data["values"]
+        if "method" in reference_data:
+            self.method = reference_data["method"]
+        else:
+            self.method = "linear"
+        if "positive_constraint" in reference_data:
+            self.positive_constraint = reference_data["positive_constraint"]
+        else:
+            self.positive_constraint = False
+
+
 class AeroMAPSModel(object):
-    def __init__(
-        self,
-        name,
-        parameters=None,
-    ):
+    def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters
         self.float_outputs = {}
         if self.parameters is not None:
             self._initialize_df()
+
+        # Verify model type
+        self.model_type = model_type
+        if self.model_type == "custom":
+            self.input_names = {}
+            self.output_names = {}
+        elif self.model_type != "auto":
+            raise ValueError("model_type must be either 'auto' or 'custom'")
 
     def _initialize_df(self):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year
@@ -32,6 +62,18 @@ class AeroMAPSModel(object):
         )
         self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
+
+    def _store_outputs(self, output_data):
+        """
+        Store vector outputs in self.df and float outputs in self.float_outputs
+        """
+        for key, val in output_data.items():
+            if isinstance(val, pd.Series):
+                self.df.loc[:, key] = val
+            elif isinstance(val, float):
+                self.float_outputs[key] = val
+            else:
+                raise ValueError(f"Output {key} is not a valid type.")
 
 
 def AeromapsInterpolationFunction(

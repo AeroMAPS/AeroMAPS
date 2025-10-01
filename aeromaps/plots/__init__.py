@@ -27,9 +27,10 @@ from .aircraft_fleet_and_operations import (
 )
 from .aircraft_energy import (
     MeanFuelEmissionFactorPlot,
-    EmissionFactorPerFuelPlot,
+    EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
-    ShareDropinFuelPlot,
+    ShareFuelPlot,
+    EmissionFactorPerFuel,
 )
 from .emissions import (
     CumulativeCO2EmissionsPlot,
@@ -52,27 +53,29 @@ from .climate import (
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
 from aeromaps.plots.costs import (
-    ScenarioEnergyCapitalPlot,
-    ScenarioEnergyExpensesPlot,
-    ScenarioEnergyUnitCostPlot,
     DiscountEffect,
-    ScenarioEnergyCarbonTaxPlot,
-    ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    ScenarioEnergyExpensesComparison,
     DropInMACC,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
+)
+
+from aeromaps.plots.macc import (
     AnnualMACC,
     ScenarioMACC,
-    DetailledMFSPBreakdownPerPathway,
-    DetailledMFSPBreakdownPerYear,
-    ScenarioEnergyExpensesPlotWithoutCarbonTax,
     CumulativeMACC,
     ShadowCarbonPrice,
     AnnualMACCSimple,
     ShadowCarbonPriceSimple,
 )
 
+from aeromaps.plots.costs_generic import (
+    ScenarioEnergyExpensesPlot,
+    DetailledMFSPBreakdown,
+    SimpleMFSP,
+    ScenarioEnergyCapitalPlot,
+)
 
 available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
@@ -101,8 +104,9 @@ available_plots = {
     "energy_consumption": EnergyConsumptionPlot,
     "fuel_consumption_liter_per_pax_100km": DropinFuelConsumptionLiterPerPAX100kmPlot,
     "mean_fuel_emission_factor": MeanFuelEmissionFactorPlot,
-    "emission_factor_per_fuel": EmissionFactorPerFuelPlot,
-    "dropin_fuel_shares": ShareDropinFuelPlot,
+    "emission_factor_per_fuel_category": EmissionFactorPerFuelCategory,
+    "emission_factor_per_fuel": EmissionFactorPerFuel,
+    "fuel_shares": ShareFuelPlot,
     "cumulative_co2_emissions": CumulativeCO2EmissionsPlot,
     "direct_h2o_emissions": DirectH2OEmissionsPlot,
     "direct_nox_emissions": DirectNOxEmissionsPlot,
@@ -116,18 +120,15 @@ available_plots = {
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
     "energy_capex": ScenarioEnergyCapitalPlot,
-    "energy_expenses_with_carbon_tax": ScenarioEnergyExpensesPlot,
-    "energy_expenses_without_carbon_tax": ScenarioEnergyExpensesPlotWithoutCarbonTax,
-    "energy_mfsp": ScenarioEnergyUnitCostPlot,
-    "energy_mfsp_with_carbon_tax": ScenarioEnergyUnitCostWithCarbonTaxPlot,
+    "energy_expenses": ScenarioEnergyExpensesPlot,
+    "energy_mfsp": SimpleMFSP,
     "energy_expenses_discounted": DiscountEffect,
-    "energy_expenses_carbon_tax_effect": ScenarioEnergyCarbonTaxPlot,
+    "energy_expenses_comparison": ScenarioEnergyExpensesComparison,
     "drop_in_macc_curve": DropInMACC,
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
-    "mfsp_detailled_pathway": DetailledMFSPBreakdownPerPathway,
-    "mfsp_detailled_year": DetailledMFSPBreakdownPerYear,
+    "mfsp_detailled": DetailledMFSPBreakdown,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }

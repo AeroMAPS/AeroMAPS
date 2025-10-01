@@ -24,12 +24,10 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
         energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
         energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
-        kerosene_market_price: pd.Series,
-        kerosene_emission_factor: pd.Series,
+        cac_reference_mfsp: pd.Series,
+        cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
         covid_energy_intensity_per_ask_increase_2020: float,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[dict, dict, dict, dict]:
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
@@ -104,13 +102,11 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
                 # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-                extra_cost_fuel = (
-                    aircraft_energy_delta
-                    * kerosene_market_price
-                    / (lhv_kerosene * density_kerosene)
-                )
+                extra_cost_fuel = aircraft_energy_delta * cac_reference_mfsp
 
-                extra_emissions = (-aircraft_energy_delta * kerosene_emission_factor) / 1000000
+                extra_emissions = (
+                    -aircraft_energy_delta * cac_reference_co2_emission_factor
+                ) / 1000000
 
                 aircraft_carbon_abatement_cost = (
                     extra_cost_fuel + aircraft_doc_ne_delta
@@ -133,8 +129,8 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                         self.fleet_model.fleet.categories[category].parameters.life,
                         aircraft_doc_ne_delta,
                         extra_cost_fuel,
-                        kerosene_market_price,
-                        kerosene_emission_factor,
+                        cac_reference_mfsp,
+                        cac_reference_co2_emission_factor,
                         extra_emissions,
                         exogenous_carbon_price_trajectory,
                     )
@@ -162,7 +158,10 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 )
 
                 aircraft_carbon_abatement_volume = -(
-                    aircraft_pseudo_ask * aircraft_energy_delta * kerosene_emission_factor / 1000000
+                    aircraft_pseudo_ask
+                    * aircraft_energy_delta
+                    * cac_reference_co2_emission_factor
+                    / 1000000
                 )  # in tons
 
                 cac_aircraft_var_name = aircraft_var_name + ":aircraft_carbon_abatement_cost"
@@ -216,8 +215,8 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         aircraft_life,
         extra_cost_non_fuel,
         extra_cost_fuel,
-        kerosene_market_price,
-        kerosene_emission_factor,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
@@ -228,19 +227,19 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
-                    + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
+                    + extra_cost_fuel[year] * cac_reference_mfsp[i] / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                     * exogenous_carbon_price_trajectory[i]
                     / exogenous_carbon_price_trajectory[year]
                     / (1 + discount_rate) ** (i - year)
@@ -249,13 +248,13 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
                     + extra_cost_fuel[year]
-                    * kerosene_market_price[self.end_year]
-                    / kerosene_market_price[year]
+                    * cac_reference_mfsp[self.end_year]
+                    / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[self.end_year]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[self.end_year]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
@@ -266,7 +265,10 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        cac_reference_co2_emission_factor[self.end_year]
+                        / cac_reference_co2_emission_factor[year]
+                    )
                     * (
                         exogenous_carbon_price_trajectory[self.end_year]
                         / exogenous_carbon_price_trajectory[year]
@@ -295,11 +297,9 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         rtk_dropin_fuel: pd.Series,
         rtk_hydrogen: pd.Series,
         rtk_electric: pd.Series,
-        kerosene_market_price: pd.Series,
-        kerosene_emission_factor: pd.Series,
+        cac_reference_mfsp: pd.Series,
+        cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
@@ -344,28 +344,18 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
         # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-        extra_cost_fuel_dropin = (
-            aircraft_energy_delta_dropin * kerosene_market_price / (lhv_kerosene * density_kerosene)
-        )
-        extra_cost_fuel_hydrogen = (
-            aircraft_energy_delta_hydrogen
-            * kerosene_market_price
-            / (lhv_kerosene * density_kerosene)
-        )
-        extra_cost_fuel_electric = (
-            aircraft_energy_delta_electric
-            * kerosene_market_price
-            / (lhv_kerosene * density_kerosene)
-        )
+        extra_cost_fuel_dropin = aircraft_energy_delta_dropin * cac_reference_mfsp
+        extra_cost_fuel_hydrogen = aircraft_energy_delta_hydrogen * cac_reference_mfsp
+        extra_cost_fuel_electric = aircraft_energy_delta_electric * cac_reference_mfsp
 
         extra_emissions_dropin = (
-            -aircraft_energy_delta_dropin * kerosene_emission_factor
+            -aircraft_energy_delta_dropin * cac_reference_co2_emission_factor
         ) / 1000000
         extra_emissions_hydrogen = (
-            -aircraft_energy_delta_hydrogen * kerosene_emission_factor
+            -aircraft_energy_delta_hydrogen * cac_reference_co2_emission_factor
         ) / 1000000
         extra_emissions_electric = (
-            -aircraft_energy_delta_electric * kerosene_emission_factor
+            -aircraft_energy_delta_electric * cac_reference_co2_emission_factor
         ) / 1000000
 
         aircraft_carbon_abatement_cost_freight_dropin = (
@@ -403,8 +393,8 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
                 aircraft_life,
                 aircraft_doc_ne_delta_dropin,
                 extra_cost_fuel_dropin,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 extra_emissions_dropin,
                 exogenous_carbon_price_trajectory,
             )
@@ -436,8 +426,8 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
                 aircraft_life,
                 aircraft_doc_ne_delta_hydrogen,
                 extra_cost_fuel_hydrogen,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 extra_emissions_hydrogen,
                 exogenous_carbon_price_trajectory,
             )
@@ -469,8 +459,8 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
                 aircraft_life,
                 aircraft_doc_ne_delta_electric,
                 extra_cost_fuel_electric,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 extra_emissions_electric,
                 exogenous_carbon_price_trajectory,
             )
@@ -494,13 +484,22 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         )
 
         aircraft_carbon_abatement_volume_freight_dropin = -(
-            rtk_dropin_fuel * aircraft_energy_delta_dropin * kerosene_emission_factor / 1000000
+            rtk_dropin_fuel
+            * aircraft_energy_delta_dropin
+            * cac_reference_co2_emission_factor
+            / 1000000
         )
         aircraft_carbon_abatement_volume_freight_hydrogen = -(
-            rtk_hydrogen * aircraft_energy_delta_hydrogen * kerosene_emission_factor / 1000000
+            rtk_hydrogen
+            * aircraft_energy_delta_hydrogen
+            * cac_reference_co2_emission_factor
+            / 1000000
         )
         aircraft_carbon_abatement_volume_freight_electric = -(
-            rtk_electric * aircraft_energy_delta_electric * kerosene_emission_factor / 1000000
+            rtk_electric
+            * aircraft_energy_delta_electric
+            * cac_reference_co2_emission_factor
+            / 1000000
         )
 
         self.df.loc[:, "aircraft_carbon_abatement_volume_freight_dropin"] = (
@@ -535,8 +534,8 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         aircraft_life,
         extra_cost_non_fuel,
         extra_cost_fuel,
-        kerosene_market_price,
-        kerosene_emission_factor,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
@@ -547,19 +546,19 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
-                    + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
+                    + extra_cost_fuel[year] * cac_reference_mfsp[i] / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                     * exogenous_carbon_price_trajectory[i]
                     / exogenous_carbon_price_trajectory[year]
                     / (1 + discount_rate) ** (i - year)
@@ -568,13 +567,13 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel
                     + extra_cost_fuel[year]
-                    * kerosene_market_price[self.end_year]
-                    / kerosene_market_price[year]
+                    * cac_reference_mfsp[self.end_year]
+                    / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[self.end_year]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[self.end_year]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
@@ -585,7 +584,10 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        cac_reference_co2_emission_factor[self.end_year]
+                        / cac_reference_co2_emission_factor[year]
+                    )
                     * (
                         exogenous_carbon_price_trajectory[self.end_year]
                         / exogenous_carbon_price_trajectory[year]
@@ -611,11 +613,9 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         energy_per_ask_mean_without_operations: pd.Series,
         ask: pd.Series,
         doc_non_energy_per_ask_mean: pd.Series,
-        kerosene_market_price: pd.Series,
-        kerosene_emission_factor: pd.Series,
+        cac_reference_mfsp: pd.Series,
+        cac_reference_co2_emission_factor: pd.Series,
         exogenous_carbon_price_trajectory: pd.Series,
-        lhv_kerosene: float,
-        density_kerosene: float,
         social_discount_rate: float,
     ) -> Tuple[
         pd.Series,
@@ -644,11 +644,11 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         # the calculation process. For instance a Hydrogen aircraft, that would consume more energy in this step
         # would result in negative abatement; even though the total lifecycle could actually reduce emissions.
 
-        extra_cost_fuel_mean = (
-            aircraft_energy_delta_mean * kerosene_market_price / (lhv_kerosene * density_kerosene)
-        )
+        extra_cost_fuel_mean = aircraft_energy_delta_mean * cac_reference_mfsp
 
-        extra_emissions_dropin = (-aircraft_energy_delta_mean * kerosene_emission_factor) / 1000000
+        extra_emissions_dropin = (
+            -aircraft_energy_delta_mean * cac_reference_co2_emission_factor
+        ) / 1000000
 
         aircraft_carbon_abatement_cost_passenger_mean = (
             extra_cost_fuel_mean + aircraft_doc_ne_delta_mean
@@ -667,8 +667,8 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
                 aircraft_life,
                 aircraft_doc_ne_delta_mean,
                 extra_cost_fuel_mean,
-                kerosene_market_price,
-                kerosene_emission_factor,
+                cac_reference_mfsp,
+                cac_reference_co2_emission_factor,
                 extra_emissions_dropin,
                 exogenous_carbon_price_trajectory,
             )
@@ -686,7 +686,7 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         ]
 
         aircraft_carbon_abatement_volume_passenger_mean = -(
-            ask * aircraft_energy_delta_mean * kerosene_emission_factor / 1000000
+            ask * aircraft_energy_delta_mean * cac_reference_co2_emission_factor / 1000000
         )
 
         self.df.loc[:, "aircraft_carbon_abatement_volume_passenger_mean"] = (
@@ -707,8 +707,8 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         aircraft_life,
         extra_cost_non_fuel,
         extra_cost_fuel,
-        kerosene_market_price,
-        kerosene_emission_factor,
+        cac_reference_mfsp,
+        cac_reference_co2_emission_factor,
         emissions_reduction,
         exogenous_carbon_price_trajectory,
     ):
@@ -719,19 +719,19 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
             if i < (self.end_year + 1):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
-                    + extra_cost_fuel[year] * kerosene_market_price[i] / kerosene_market_price[year]
+                    + extra_cost_fuel[year] * cac_reference_mfsp[i] / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[i]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[i]
+                    / cac_reference_co2_emission_factor[year]
                     * exogenous_carbon_price_trajectory[i]
                     / exogenous_carbon_price_trajectory[year]
                     / (1 + discount_rate) ** (i - year)
@@ -740,13 +740,13 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
                 discounted_cumul_cost += (
                     extra_cost_non_fuel[year]
                     + extra_cost_fuel[year]
-                    * kerosene_market_price[self.end_year]
-                    / kerosene_market_price[year]
+                    * cac_reference_mfsp[self.end_year]
+                    / cac_reference_mfsp[year]
                 ) / (1 + discount_rate) ** (i - year)
                 cumul_em += (
                     emissions_reduction[year]
-                    * kerosene_emission_factor[self.end_year]
-                    / kerosene_emission_factor[year]
+                    * cac_reference_co2_emission_factor[self.end_year]
+                    / cac_reference_co2_emission_factor[year]
                 )
 
                 # discounting emissions for non-hotelling scc, keep last year scc growth rate as future scc growth rate
@@ -757,7 +757,10 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
 
                 generic_discounted_cumul_em += (
                     emissions_reduction[year]
-                    * (kerosene_emission_factor[self.end_year] / kerosene_emission_factor[year])
+                    * (
+                        cac_reference_co2_emission_factor[self.end_year]
+                        / cac_reference_co2_emission_factor[year]
+                    )
                     * (
                         exogenous_carbon_price_trajectory[self.end_year]
                         / exogenous_carbon_price_trajectory[year]
