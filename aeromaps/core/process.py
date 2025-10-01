@@ -421,7 +421,6 @@ class AeroMAPSProcess(object):
                 setattr(self.parameters, key, value)
 
         self._initialize_vector_inputs()
-
         # Format input vectors
         self._format_input_vectors()
 
@@ -438,9 +437,9 @@ class AeroMAPSProcess(object):
         vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
 
         # Generate pd.Series for each column with index the year stored in first column
-        for column in vector_inputs_df.columns:
+        index = vector_inputs_df.iloc[:, 0].values
+        for column in vector_inputs_df.columns[1:]:
             values = vector_inputs_df[column].values
-            index = vector_inputs_df.iloc[:, 0].values
 
             # TODO remove this: experiment to see if it works
             # if column == "airfare_per_rpk":
