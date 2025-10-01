@@ -138,12 +138,38 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
     def __init__(self, name="biofuel_use_growth_constraint", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
+    def compute(
+        self,
+        rate_ramp_up_constraint_biofuel: float,
+        energy_consumption_biofuel: pd.Series,
+        volume_ramp_up_constraint_biofuel: float,
+    ) -> list:
+        eps = 1e6  # Small value to avoid division by zero
+        biofuel_use_growth_constraint = [
+            (
+                energy_consumption_biofuel.loc[i]
+                - max(
+                    volume_ramp_up_constraint_biofuel * 5 * 1e12,
+                    energy_consumption_biofuel.loc[i - 5]
+                    * (1 + rate_ramp_up_constraint_biofuel) ** 5,
+                )
+            )
+            / (energy_consumption_biofuel.loc[i] + eps)
+            for i in range(2030, 2055, 5)
+        ]
+
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
+        self.float_outputs["biofuel_use_growth_constraint"] = biofuel_use_growth_constraint
+
+        return biofuel_use_growth_constraint
+
     # def compute(
     #     self,
     #     energy_consumption_biofuel: pd.Series,
     #     volume_ramp_up_constraint_biofuel: float,
     #     rate_ramp_up_constraint_biofuel: float,
     # ) -> Tuple[float, float, pd.Series, pd.Series]:
+    #    # Complex version of the constraint, not used anymore but kept for reference
     #
     #     annual_biofuel_growth = energy_consumption_biofuel.diff().loc[2027 : self.end_year]
     #     annual_biofuel_growth_constraint = annual_biofuel_growth.copy()
@@ -206,53 +232,35 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
     #         annual_biofuel_growth,
     #     )
 
-    def compute(
-        self,
-        rate_ramp_up_constraint_biofuel: float,
-        energy_consumption_biofuel: pd.Series,
-        volume_ramp_up_constraint_biofuel: float,
-    ) -> list:
-        # biofuel_share_growth = [biofuel_share_optim[i] - biofuel_share_optim[i-1] for i in range(1, len(biofuel_share_optim))]
-        #
-        # biofuel_share_growth.insert(0, biofuel_share_optim[0])
-        #
-        # biofuel_use_growth_constraint = (max(biofuel_share_growth) - rate_ramp_up_constraint_biofuel * 5 )/(rate_ramp_up_constraint_biofuel* 5)
-
-        eps = 1e6  # Small value to avoid division by zero
-        biofuel_use_growth_constraint = [
-            (
-                energy_consumption_biofuel.loc[i]
-                - max(
-                    volume_ramp_up_constraint_biofuel * 5 * 1e12,
-                    energy_consumption_biofuel.loc[i - 5]
-                    * (1 + rate_ramp_up_constraint_biofuel) ** 5,
-                )
-            )
-            / (energy_consumption_biofuel.loc[i] + eps)
-            for i in range(2030, 2055, 5)
-        ]
-
-        # if np.mean(biofuel_share_growth) != 0:
-        #     biofuel_use_no_degrowth_constraint = -min(biofuel_share_growth) / abs(
-        #         np.mean(biofuel_share_growth)
-        #     )
-        # else:
-        #     biofuel_use_no_degrowth_constraint = -min(biofuel_share_growth) / 0.001
-
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["biofuel_use_growth_constraint"] = biofuel_use_growth_constraint
-        # self.float_outputs["biofuel_use_no_degrowth_constraint"] = (
-        #     biofuel_use_no_degrowth_constraint
-        # )
-        return (
-            biofuel_use_growth_constraint
-            # biofuel_use_no_degrowth_constraint,
-        )
-
 
 class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
     def __init__(self, name="electrofuel_use_growth_constraint", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        rate_ramp_up_constraint_electrofuel: float,
+        energy_consumption_electrofuel: pd.Series,
+        volume_ramp_up_constraint_electrofuel: float,
+    ) -> list:
+        eps = 1e6  # Small value to avoid division by zero
+        electrofuel_use_growth_constraint = [
+            (
+                energy_consumption_electrofuel.loc[i]
+                - max(
+                    volume_ramp_up_constraint_electrofuel * 5 * 1e12,
+                    energy_consumption_electrofuel.loc[i - 5]
+                    * (1 + rate_ramp_up_constraint_electrofuel) ** 5,
+                )
+            )
+            / (energy_consumption_electrofuel.loc[i] + eps)
+            for i in range(2030, 2055, 5)
+        ]
+
+        # TODO its not a float but vector of size 5, not suited for vector outputs...
+        self.float_outputs["electrofuel_use_growth_constraint"] = electrofuel_use_growth_constraint
+
+        return electrofuel_use_growth_constraint
 
     # def compute(
     #     self,
@@ -260,6 +268,7 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
     #     volume_ramp_up_constraint_electrofuel: float,
     #     rate_ramp_up_constraint_electrofuel: float,
     # ) -> Tuple[float, float, pd.Series, pd.Series]:
+    #    # Complex version of the constraint, not used anymore but kept for reference
     #     annual_electrofuel_growth = energy_consumption_electrofuel.diff().loc[2031 : self.end_year]
     #
     #     annual_electrofuel_growth_constraint = annual_electrofuel_growth.copy()
@@ -320,44 +329,3 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
     #         annual_electrofuel_growth_constraint,
     #         annual_electrofuel_growth,
     #     )
-    def compute(
-        self,
-        rate_ramp_up_constraint_electrofuel: float,
-        energy_consumption_electrofuel: pd.Series,
-        volume_ramp_up_constraint_electrofuel: float,
-    ) -> list:
-        # electrofuel_share_growth = [electrofuel_share_optim[i] - electrofuel_share_optim[i-1] for i in range(1, len(electrofuel_share_optim))]
-        #
-        # electrofuel_share_growth.insert(0, electrofuel_share_optim[0])
-        #
-        # electrofuel_use_growth_constraint = (max(electrofuel_share_growth) - rate_ramp_up_constraint_electrofuel * 5 )/(rate_ramp_up_constraint_electrofuel* 5)
-        eps = 1e6  # Small value to avoid division by zero
-        electrofuel_use_growth_constraint = [
-            (
-                energy_consumption_electrofuel.loc[i]
-                - max(
-                    volume_ramp_up_constraint_electrofuel * 5 * 1e12,
-                    energy_consumption_electrofuel.loc[i - 5]
-                    * (1 + rate_ramp_up_constraint_electrofuel) ** 5,
-                )
-            )
-            / (energy_consumption_electrofuel.loc[i] + eps)
-            for i in range(2030, 2055, 5)
-        ]
-
-        # if np.mean(electrofuel_share_growth) != 0:
-        #     electrofuel_use_no_degrowth_constraint = -min(electrofuel_share_growth) / abs(
-        #         np.mean(electrofuel_share_growth)
-        #     )
-        # else:
-        #     electrofuel_use_no_degrowth_constraint = -min(electrofuel_share_growth) / 0.001
-
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["electrofuel_use_growth_constraint"] = electrofuel_use_growth_constraint
-        # self.float_outputs["electrofuel_use_no_degrowth_constraint"] = (
-        #     electrofuel_use_no_degrowth_constraint
-        # )
-        return (
-            electrofuel_use_growth_constraint
-            # electrofuel_use_no_degrowth_constraint,
-        )
