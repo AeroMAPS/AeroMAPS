@@ -16,6 +16,7 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
     def compute(
         self,
         biomass_availability_constraint_trajectory_reference_years: list,
+        biomass_availability_constraint_enforcement_years: list,
         biomass_availability_constraint_trajectory_reference_years_values: list,
         biomass_consumption: pd.Series,
         energy_consumption_biofuel: pd.Series,
@@ -55,7 +56,8 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
         #     annual_constraint.loc[self.prospection_start_year : self.end_year]
         # ) # --> old version based on constraint aggregation.
         biomass_trajectory_constraint = [
-            annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
+            annual_constraint.loc[year]
+            for year in biomass_availability_constraint_enforcement_years
         ]
 
         # TODO its not a float but vector of size 5, not suited for vector outputs...
@@ -73,6 +75,7 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
         self,
         electricity_availability_constraint_trajectory_reference_years: list,
         electricity_availability_constraint_trajectory_reference_years_values: list,
+        electricity_availability_constraint_enforcement_years: list,
         electricity_consumption: pd.Series,
         energy_consumption_electrofuel: pd.Series,
         aviation_electricity_allocated_share: float,
@@ -114,7 +117,8 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
         # ) --> old version based on constraint aggregation.
 
         electricity_trajectory_constraint = [
-            annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
+            annual_constraint.loc[year]
+            for year in electricity_availability_constraint_enforcement_years
         ]
 
         # TODO its not a float but vector of size 5, not suited for vector outputs...
@@ -131,11 +135,13 @@ class BlendCompletenessConstraint(AeroMAPSModel):
     def compute(
         self,
         kerosene_share: pd.Series,
+        blend_completeness_constraint_enforcement_years: list,
     ) -> list:
         # blend_completeness_constraint = -min(kerosene_share) / 100
 
         blend_completeness_constraint = [
-            -kerosene_share.loc[year] / 100 for year in [2030, 2035, 2040, 2045, 2050]
+            -kerosene_share.loc[year] / 100
+            for year in blend_completeness_constraint_enforcement_years
         ]
 
         self.float_outputs["blend_completeness_constraint"] = blend_completeness_constraint
@@ -151,6 +157,7 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
         rate_ramp_up_constraint_biofuel: float,
         energy_consumption_biofuel: pd.Series,
         volume_ramp_up_constraint_biofuel: float,
+        biofuel_use_growth_constraint_enforcement_years: list,
     ) -> list:
         eps = 1e6  # Small value to avoid division by zero
         biofuel_use_growth_constraint = [
@@ -163,7 +170,7 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
                 )
             )
             / (energy_consumption_biofuel.loc[i] + eps)
-            for i in range(2030, 2055, 5)
+            for i in biofuel_use_growth_constraint_enforcement_years
         ]
 
         # TODO its not a float but vector of size 5, not suited for vector outputs...
@@ -250,6 +257,7 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
         rate_ramp_up_constraint_electrofuel: float,
         energy_consumption_electrofuel: pd.Series,
         volume_ramp_up_constraint_electrofuel: float,
+        electrofuel_use_growth_constraint_enforcement_years: list,
     ) -> list:
         eps = 1e6  # Small value to avoid division by zero
         electrofuel_use_growth_constraint = [
@@ -262,7 +270,7 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
                 )
             )
             / (energy_consumption_electrofuel.loc[i] + eps)
-            for i in range(2030, 2055, 5)
+            for i in electrofuel_use_growth_constraint_enforcement_years
         ]
 
         # TODO its not a float but vector of size 5, not suited for vector outputs...
