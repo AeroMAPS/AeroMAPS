@@ -103,13 +103,6 @@ class AeroMAPSProcess(object):
         )
 
     def create_gemseo_scenario(self):
-        # if no mda_chain is created raise an error setup needs to be called first
-        if self.mda_chain is None:
-            logging.warning(
-                f"MDA chain was not created. Creating it with the following settings: disciplines={self.disciplines}"
-            )
-            self.setup()
-
         # Create GEMSEO process
         self.scenario = create_scenario(
             disciplines=self.disciplines,
