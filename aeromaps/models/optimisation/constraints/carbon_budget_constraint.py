@@ -13,7 +13,6 @@ class CarbonBudgetConstraint(AeroMAPSModel):
 
     def compute(
         self,
-        carbon_budget_consumed_share: float,
         gross_carbon_budget_2050: float,
         aviation_carbon_budget_objective: float,
         cumulative_co2_emissions: pd.Series,
