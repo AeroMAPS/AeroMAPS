@@ -29,8 +29,7 @@ class CarbonBudgetConstraint(AeroMAPSModel):
         )
 
         # avoid division by 0: if adjusted carbon budget is lower <= 0, impossible to decarbonise:
-        # trigger infeasibility in the optimisation
-        print(aviation_carbon_budget_objective, cumulative_co2_emissions.loc[2025])
+        # trigger infeasibility warning in the optimisation
         if adjusted_carbon_budget_2050 <= 0:
             logging.warning(
                 "Adjusted carbon budget for aviation in 2050 is <= 0. "

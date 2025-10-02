@@ -37,8 +37,8 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
             aviation_biomass_allocated_share / 100 * biomass_availability_constraint_trajectory
         )
 
-        # Valid only for electrofuel only use case and for vizualisation
-        # All constraints with "VIZ" are for visualisation only !!!
+        # biofuel_max_availability_viz was made are made to visualise
+        # the max potential biofuel produced in post-processing. Not used as a constraint until now.
         avg_eff = energy_consumption_biofuel / biomass_consumption
         biofuel_max_availability_viz = avg_eff * aviation_available_biomass
 
@@ -48,7 +48,7 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         # biomass_trajectory_constraint = np.max(
         #     annual_constraint.loc[self.prospection_start_year : self.end_year]
-        # )
+        # ) # --> old version based on constraint aggregation.
         biomass_trajectory_constraint = [
             annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
         ]
@@ -88,8 +88,8 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
             * electricity_availability_constraint_trajectory
         )
 
-        # Valid only for electrofuel only use case and for vizualisation
-        # All constraints with "VIZ" are for visualisation only !!!
+        # biofuel_max_availability_viz was made are made to visualise
+        # the max potential electrofuel produced in post-processing. Not used as a constraint until now.
         avg_eff = energy_consumption_electrofuel / electricity_consumption
         start_efuel = energy_consumption_electrofuel.first_valid_index()
         for k in range(self.prospection_start_year, start_efuel):
@@ -103,7 +103,7 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         # electricity_trajectory_constraint = np.max(
         #     annual_constraint.loc[self.prospection_start_year : self.end_year]
-        # )
+        # ) --> old version based on constraint aggregation.
 
         electricity_trajectory_constraint = [
             annual_constraint.loc[year] for year in [2030, 2035, 2040, 2045, 2050]
