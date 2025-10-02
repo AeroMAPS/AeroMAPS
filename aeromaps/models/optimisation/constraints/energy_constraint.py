@@ -60,9 +60,11 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
             for year in biomass_availability_constraint_enforcement_years
         ]
 
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["biomass_trajectory_constraint"] = biomass_trajectory_constraint
         self.df.loc[:, "biofuel_max_availability_viz"] = biofuel_max_availability_viz
+
+        # TODO if we want to track constraints, we migh introduce something like self.constraints.
+        #   I'm not sure if it's necessary as gemseo provide good post-processing features.
+        #   So only returning constraints as variables for now. Concerns all constraints.
 
         return biomass_trajectory_constraint, biofuel_max_availability_viz
 
@@ -121,8 +123,6 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
             for year in electricity_availability_constraint_enforcement_years
         ]
 
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["electricity_trajectory_constraint"] = electricity_trajectory_constraint
         self.df.loc[:, "electrofuel_max_availability_viz"] = electrofuel_max_availability_viz
 
         return electricity_trajectory_constraint, electrofuel_max_availability_viz
@@ -144,7 +144,6 @@ class BlendCompletenessConstraint(AeroMAPSModel):
             for year in blend_completeness_constraint_enforcement_years
         ]
 
-        self.float_outputs["blend_completeness_constraint"] = blend_completeness_constraint
         return blend_completeness_constraint
 
 
@@ -172,9 +171,6 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
             / (energy_consumption_biofuel.loc[i] + eps)
             for i in biofuel_use_growth_constraint_enforcement_years
         ]
-
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["biofuel_use_growth_constraint"] = biofuel_use_growth_constraint
 
         return biofuel_use_growth_constraint
 
@@ -272,9 +268,6 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
             / (energy_consumption_electrofuel.loc[i] + eps)
             for i in electrofuel_use_growth_constraint_enforcement_years
         ]
-
-        # TODO its not a float but vector of size 5, not suited for vector outputs...
-        self.float_outputs["electrofuel_use_growth_constraint"] = electrofuel_use_growth_constraint
 
         return electrofuel_use_growth_constraint
 
