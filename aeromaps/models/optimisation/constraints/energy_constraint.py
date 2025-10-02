@@ -2,8 +2,6 @@
 # @Author : a.salgas
 # @File : energy_availability_trajectory.py
 # @Software: PyCharm
-
-
 from typing import Tuple
 
 import pandas as pd
@@ -39,12 +37,19 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         # biofuel_max_availability_viz was made are made to visualise
         # the max potential biofuel produced in post-processing. Not used as a constraint until now.
+        # if no biofuel is used, no efficiency can be calculated, so viz value will be nan.
+        # Not problematic for use case.
         avg_eff = energy_consumption_biofuel / biomass_consumption
+        start_biofuel = energy_consumption_biofuel.first_valid_index()
+        for k in range(self.prospection_start_year, start_biofuel):
+            avg_eff.loc[k] = avg_eff.loc[start_biofuel]
+
         biofuel_max_availability_viz = avg_eff * aviation_available_biomass
 
-        annual_constraint = (
-            biomass_consumption - aviation_available_biomass
-        ) / aviation_available_biomass
+        eps = 1e6  # Small value to avoid division by zero
+        annual_constraint = (biomass_consumption - aviation_available_biomass) / (
+            aviation_available_biomass + eps
+        )
 
         # biomass_trajectory_constraint = np.max(
         #     annual_constraint.loc[self.prospection_start_year : self.end_year]
@@ -88,8 +93,10 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
             * electricity_availability_constraint_trajectory
         )
 
-        # biofuel_max_availability_viz was made are made to visualise
+        # electrofuel_max_availability_viz was made are made to visualise
         # the max potential electrofuel produced in post-processing. Not used as a constraint until now.
+        # if no efuel is used, no efficiency can be calculated, so viz value will be nan.
+        # Not problematic for use case.
         avg_eff = energy_consumption_electrofuel / electricity_consumption
         start_efuel = energy_consumption_electrofuel.first_valid_index()
         for k in range(self.prospection_start_year, start_efuel):
@@ -97,9 +104,10 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         electrofuel_max_availability_viz = avg_eff * aviation_available_electricity
 
-        annual_constraint = (
-            electricity_consumption - aviation_available_electricity
-        ) / aviation_available_electricity
+        eps = 1e6  # Small value to avoid division by zero
+        annual_constraint = (electricity_consumption - aviation_available_electricity) / (
+            aviation_available_electricity + eps
+        )
 
         # electricity_trajectory_constraint = np.max(
         #     annual_constraint.loc[self.prospection_start_year : self.end_year]
