@@ -93,9 +93,9 @@ class AeroMAPSProcess(object):
         self._initialize_gemseo_settings()
 
         # Create MDA chain
+        # TODO: add a possibility to set options at a higher level. --> gemseo_settings as for optiomisation?.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            # grammar_type=Discipline.GrammarType.SIMPLE,
             tolerance=1e-7,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
