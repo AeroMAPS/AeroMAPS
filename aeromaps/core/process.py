@@ -64,6 +64,7 @@ class AeroMAPSProcess(object):
         models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
+        optimisation=False,
     ):
         self.configuration_file = configuration_file
         self._initialize_configuration()
@@ -74,26 +75,22 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
-        self.setup(add_examples_aircraft_and_subcategory)
+        self.common_setup(add_examples_aircraft_and_subcategory)
+        if not optimisation:
+            self.setup_mda()
+        else:
+            self.setup_optimisation()
 
-    def setup(self, add_examples_aircraft_and_subcategory=True):
+    def common_setup(self, add_examples_aircraft_and_subcategory):
         self.disciplines = []
         self.data = {}
         self.json = {}
-
-        # Initialize data
         self._initialize_data()
+        self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
-        # Initialize disciplines
-        self._initialize_disciplines(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
-        )
+    def setup_mda(self):
+        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
 
-        # Initialize the GEMSEO settings
-        self._initialize_gemseo_settings()
-
-        # Create MDA chain
-        # TODO: add a possibility to set options at a higher level. --> gemseo_settings as for optiomisation?.
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
             tolerance=1e-7,
@@ -102,8 +99,13 @@ class AeroMAPSProcess(object):
             log_convergence=True,
         )
 
+    def setup_optimisation(self):
+        self._initialize_gemseo_settings()
+
     def create_gemseo_scenario(self):
         # Create GEMSEO process
+        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
+
         self.scenario = create_scenario(
             disciplines=self.disciplines,
             objective_name=self.gemseo_settings["objective_name"],
@@ -155,9 +157,8 @@ class AeroMAPSProcess(object):
 
     def compute(self):
         input_data = self._pre_compute()
-
-        if self.scenario is not None:
-            if self.scenario_adapted is not None:
+        if hasattr(self, "scenario") and self.scenario:
+            if hasattr(self, "scenario_adapted") and self.scenario_adapted:
                 print("Running bi-level MDO")
                 # self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
@@ -165,8 +166,8 @@ class AeroMAPSProcess(object):
                 print("Running MDO")
                 self.scenario.execute(self.gemseo_settings["algorithm"])
         else:
-            if self.mda_chain is None:
-                raise ValueError("MDA chain not created. Please call setup() first.")
+            if not hasattr(self, "mda_chain") or self.mda_chain is None:
+                raise ValueError("MDA chain not created. Please call setup_mda() first.")
             else:
                 print("Running MDA")
                 self.mda_chain.execute(input_data=input_data)
@@ -525,8 +526,15 @@ class AeroMAPSProcess(object):
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
 
     def _update_data_from_model(self):
-        # Inputs
-        all_inputs = self.mda_chain.get_input_data()
+        # Inputs: if we have and mda_cain (no optim), we get the inputs from there, else we get them from each discipline
+        if hasattr(self, "mda_chain") and self.mda_chain:
+            all_inputs = self.mda_chain.get_input_data()
+        else:
+            all_inputs = {}
+            for discipline in self.disciplines:
+                inputs = discipline.get_input_data()
+                if isinstance(inputs, dict):
+                    all_inputs.update(inputs)
 
         for name in all_inputs:
             try:

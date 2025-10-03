@@ -8,6 +8,7 @@ def create_process(
     models=default_models_top_down,
     use_fleet_model=False,
     add_examples_aircraft_and_subcategory=True,
+    optimisation=False,
 ) -> AeroMAPSProcess:
     """
     Create an AeroMAPS process.
@@ -18,4 +19,5 @@ def create_process(
         models=models,
         use_fleet_model=use_fleet_model,
         add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
+        optimisation=optimisation,
     )
