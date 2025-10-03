@@ -3,6 +3,7 @@
 # @File : operations_abatement_cost.py
 # @Software: PyCharm
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -30,7 +31,7 @@ class OperationsAbatementCost(AeroMAPSModel):
         exogenous_carbon_price_trajectory: pd.Series,
         social_discount_rate: float,
         operations_duration: float,
-        operations_start_year: int,
+        operations_start_year: Number,
         lhv_kerosene: float,
         density_kerosene: float,
     ) -> Tuple[

@@ -4,8 +4,8 @@ import pandas as pd
 
 from aeromaps.models.base import (
     AeroMAPSModel,
-    AeromapsInterpolationFunction,
-    AeromapsLevelingFunction,
+    aeromaps_interpolation_function,
+    aeromaps_leveling_function,
 )
 
 
@@ -19,7 +19,7 @@ class LevelCarbonOffset(AeroMAPSModel):
         carbon_offset_baseline_level_vs_2019_reference_periods: list,
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-        carbon_offset_baseline_level_vs_2019 = AeromapsLevelingFunction(
+        carbon_offset_baseline_level_vs_2019 = aeromaps_leveling_function(
             self,
             carbon_offset_baseline_level_vs_2019_reference_periods,
             carbon_offset_baseline_level_vs_2019_reference_periods_values,
@@ -64,7 +64,7 @@ class ResidualCarbonOffset(AeroMAPSModel):
         residual_carbon_offset_share_reference_years: list,
         residual_carbon_offset_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-        residual_carbon_offset_share_prospective = AeromapsInterpolationFunction(
+        residual_carbon_offset_share_prospective = aeromaps_interpolation_function(
             self,
             residual_carbon_offset_share_reference_years,
             residual_carbon_offset_share_reference_years_values,

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftNonOpCosts(AeroMAPSModel):
@@ -13,7 +13,7 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
         noc_reference_years_values: list,
     ) -> pd.Series:
         # Simple computation of airline non-operating costs (NOC)
-        noc_prospective = AeromapsInterpolationFunction(
+        noc_prospective = aeromaps_interpolation_function(
             self,
             noc_reference_years,
             noc_reference_years_values,
@@ -39,7 +39,7 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
     ) -> pd.Series:
         # Simple computation of airline non-operating costs (NOC)
 
-        passenger_tax_prospective = AeromapsInterpolationFunction(
+        passenger_tax_prospective = aeromaps_interpolation_function(
             self,
             passenger_tax_reference_years,
             passenger_tax_reference_years_values,

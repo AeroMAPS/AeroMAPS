@@ -1,7 +1,9 @@
+from numbers import Number
+
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class OperationsLogistic(AeroMAPSModel):
@@ -11,7 +13,7 @@ class OperationsLogistic(AeroMAPSModel):
     def compute(
         self,
         operations_final_gain: float,
-        operations_start_year: int,
+        operations_start_year: Number,
         operations_duration: float,
     ) -> pd.Series:
         """Operations gain for efficiency calculation."""
@@ -48,7 +50,7 @@ class OperationsInterpolation(AeroMAPSModel):
     ) -> pd.Series:
         """Operations gain for efficiency calculation."""
 
-        operations_gain_prospective = AeromapsInterpolationFunction(
+        operations_gain_prospective = aeromaps_interpolation_function(
             self,
             operations_gain_reference_years,
             operations_gain_reference_years_values,

@@ -8,14 +8,17 @@ on:
       - '**'
     tags-ignore:
       - '**'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   tests:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [ '3.9', '3.10', '3.11', '3.12' ]
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: ${{ fromJson(github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,7 +27,7 @@ jobs:
       - name: Set sysctl for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          sudo sysctl -w kern.posix.sem.max=20000
+          sudo sysctl -w kern.posix.sem.max=30000
 
 
       - name: Install poetry
@@ -42,13 +45,14 @@ jobs:
 
       - name: Notebook tests
         run: |
-          for notebook in $(find aeromaps -name "*.ipynb" \
+          # Find all notebooks to test, excluding specified paths
+          notebooks=$(find aeromaps -name "*.ipynb" \
             ! -path "aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb" \
-            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb"); do
-            echo "Running tests for $notebook"
-            start_time=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$notebook" -s
-            end_time=$(date +%s)
-            echo "Tests for $notebook completed in $((end_time - start_time)) seconds."
-          done
+            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb" \
+            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb" \
+            ! -path "aeromaps/notebooks/publications/optimisation/*" \
+            ! -path "aeromaps/notebooks/private/*")
+
+          # Run pytest with nbmake on all notebooks in parallel
+          poetry run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
         shell: bash

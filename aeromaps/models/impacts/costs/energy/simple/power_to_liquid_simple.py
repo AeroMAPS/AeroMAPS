@@ -5,7 +5,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class ElectrofuelCostSimple(AeroMAPSModel):
@@ -72,7 +72,7 @@ class ElectrofuelMfspSimple(AeroMAPSModel):
     ) -> pd.Series:
         """Electrofuel MFSP (Minimal fuel selling price) estimates"""
 
-        electrofuel_mean_mfsp_litre = AeromapsInterpolationFunction(
+        electrofuel_mean_mfsp_litre = aeromaps_interpolation_function(
             self,
             electrofuel_mfsp_simple_reference_years,
             electrofuel_mfsp_simple_reference_years_values,

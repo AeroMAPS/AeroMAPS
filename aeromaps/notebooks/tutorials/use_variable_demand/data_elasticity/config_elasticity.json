@@ -1,0 +1,4 @@
+{
+    "PARAMETERS_JSON_DATA_FILE": "./parameters_elasticity.json",
+    "OUTPUTS_JSON_DATA_FILE": "./outputs_elasticity.json"
+}

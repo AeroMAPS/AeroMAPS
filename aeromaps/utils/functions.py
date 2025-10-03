@@ -1,10 +1,11 @@
+import logging
 import os.path as pth
 import json
 from json import load
-from typing import Dict, Any
 
 import numpy as np
 import pandas as pd
+from deepdiff.helper import SetOrdered
 from pandas import read_csv
 from deepdiff import DeepDiff
 
@@ -179,6 +180,24 @@ def create_partitioning(file, path=""):
     with open(partitioned_inputs_path, "w") as outfile:
         json.dump(partitioned_inputs_dict, outfile)
 
+    # Create a CSV file for initialisation of vector inputs.
+    # TODO: not necessary without optim, check relevance of the process?
+    vector_inputs_df = pd.DataFrame(
+        {
+            "rpk_init": rpk_init_partitioned,
+            "ask_init": ask_init_partitioned,
+            "rtk_init": rtk_init_partitioned,
+            "pax_init": pax_init_partitioned,
+            "freight_init": freight_init_partitioned,
+            "energy_consumption_init": energy_consumption_init_partitioned,
+            "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
+        },
+        index=range(historic_start_year_partitioned, prospection_start_year_partitioned),
+    )
+
+    vector_inputs_path = pth.join(path, "vector_inputs_partitioned.csv")
+    vector_inputs_df.to_csv(vector_inputs_path, sep=";")
+
     # Generation of a CSV file for using climate models
     climate_world_data_path = pth.join(
         climate_data.__path__[0], "temperature_historical_dataset.csv"
@@ -229,10 +248,21 @@ def create_partitioning(file, path=""):
     return
 
 
+def merge_json_files(file1, file2, output_file):
+    with open(file1, "r") as f1, open(file2, "r") as f2:
+        data1 = json.load(f1)
+        data2 = json.load(f2)
+
+    merged_data = {**data1, **data2}
+
+    with open(output_file, "w") as outfile:
+        json.dump(merged_data, outfile, indent=4)
+
+
 def compare_json_files(
     file1_path: str,
     file2_path: str,
-    ignore_order: bool = True,
+    ignore_order: bool = False,
     verbose: bool = True,
     rtol: float = 0.0001,
     atol: float = 0.1,
@@ -253,7 +283,12 @@ def compare_json_files(
         json1 = json.load(f1)
         json2 = json.load(f2)
 
-    diff = DeepDiff(json1, json2, ignore_order=ignore_order, exclude_paths=False or [])
+    diff = DeepDiff(
+        json1,
+        json2,
+        ignore_order=ignore_order,
+        exclude_paths=False or [],
+    )
 
     # Only keep differences with error greater than 0.1%
     if "values_changed" in diff:
@@ -271,24 +306,76 @@ def compare_json_files(
                     keys_to_remove.append(key)
         for key in keys_to_remove:
             del diff["values_changed"][key]
-        
+
         # If values_changed is empty, remove the key
         if not diff["values_changed"]:
             del diff["values_changed"]
 
-    #TODO: investigate why this is necessary with python 3.12
+    # TODO: investigate why this is necessary with python 3.12
     # total_co2_equivalent_emissions_ratio
     # If iterable added, remove it
     if "iterable_item_added" in diff:
         del diff["iterable_item_added"]
 
+    if "dictionary_item_added" in diff:
+        del diff["dictionary_item_added"]
+
     if verbose:
         if diff:
             print("Differences found:")
-            print(json.dumps(diff, indent=2))
+            print(json.dumps(diff, indent=2, default=convert_non_serializable))
             files_are_different = True
         else:
             print("No differences found.")
             files_are_different = False
 
     return files_are_different
+
+
+def convert_non_serializable(obj):
+    # Annex helper to compare_json_files
+    if isinstance(obj, (set, list, tuple, SetOrdered)):
+        return list(obj)
+    if hasattr(obj, "__dict__"):
+        print(obj.__dict__)
+        return obj.__dict__
+    return str(obj)
+
+
+def custom_logger_config(logger):
+    # Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
+    class SuppressArgsSectionWarning(logging.Filter):
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.getMessage() != "The Args section is missing."
+
+    for handler in logger.handlers:
+        handler.addFilter(SuppressArgsSectionWarning())
+
+    return logger
+
+
+def clean_notebooks_on_tests(namespace=None, force_cleanup=False):
+    import os
+    import gc
+
+    logger = logging.getLogger("aeromaps.utils.functions")
+    logger.info("🧹 clean_notebooks_on_tests called")
+
+    if namespace is None:
+        namespace = globals()
+    RUNNING_TEST = os.environ.get("PYTEST_CURRENT_TEST") is not None
+
+    if RUNNING_TEST or force_cleanup:
+        logger.info("🧪 Detected test run or force cleanup")
+        to_delete = [
+            var
+            for var in list(namespace.keys())
+            if not var.startswith("_")
+            and var not in ("os", "gc", "RUNNING_TEST", "clean_notebooks_on_tests", "namespace")
+        ]
+        for var in to_delete:
+            del namespace[var]
+        gc.collect()
+        logger.info(f"✅ Cleaned up {len(to_delete)} variables")
+    else:
+        logger.info("⏭ Skipping cleanup during notebook run")

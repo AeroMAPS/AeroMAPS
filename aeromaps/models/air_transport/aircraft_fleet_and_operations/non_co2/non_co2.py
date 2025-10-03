@@ -1,4 +1,5 @@
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -14,7 +15,7 @@ class OperationsContrailsSimple(AeroMAPSModel):
         self,
         operations_contrails_final_gain: float,
         operations_contrails_final_overconsumption: float,
-        operations_contrails_start_year: int,
+        operations_contrails_start_year: Number,
         operations_contrails_duration: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """Operations contrails gain for ERF calculation."""

@@ -5,7 +5,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class BiofuelCostSimple(AeroMAPSModel):
@@ -270,7 +270,7 @@ class BiofuelMfspSimple(AeroMAPSModel):
         """Biofuel MFSP (Minimal fuel selling price) estimates"""
 
         # HEFA FOG
-        biofuel_hefa_fog_mfsp = AeromapsInterpolationFunction(
+        biofuel_hefa_fog_mfsp = aeromaps_interpolation_function(
             self,
             biofuel_hefa_fog_mfsp_simple_reference_years,
             biofuel_hefa_fog_mfsp_simple_reference_years_values,
@@ -279,7 +279,7 @@ class BiofuelMfspSimple(AeroMAPSModel):
         self.df.loc[:, "biofuel_hefa_fog_mfsp"] = biofuel_hefa_fog_mfsp
 
         # HEFA OTHERS
-        biofuel_hefa_others_mfsp = AeromapsInterpolationFunction(
+        biofuel_hefa_others_mfsp = aeromaps_interpolation_function(
             self,
             biofuel_hefa_others_mfsp_simple_reference_years,
             biofuel_hefa_others_mfsp_simple_reference_years_values,
@@ -288,7 +288,7 @@ class BiofuelMfspSimple(AeroMAPSModel):
         self.df.loc[:, "biofuel_hefa_others_mfsp"] = biofuel_hefa_others_mfsp
 
         # FT OTHERS
-        biofuel_ft_others_mfsp = AeromapsInterpolationFunction(
+        biofuel_ft_others_mfsp = aeromaps_interpolation_function(
             self,
             biofuel_ft_others_mfsp_simple_reference_years,
             biofuel_ft_others_mfsp_simple_reference_years_values,
@@ -297,7 +297,7 @@ class BiofuelMfspSimple(AeroMAPSModel):
         self.df.loc[:, "biofuel_ft_others_mfsp"] = biofuel_ft_others_mfsp
 
         # FT MSW
-        biofuel_ft_msw_mfsp = AeromapsInterpolationFunction(
+        biofuel_ft_msw_mfsp = aeromaps_interpolation_function(
             self,
             biofuel_ft_msw_mfsp_simple_reference_years,
             biofuel_ft_msw_mfsp_simple_reference_years_values,
@@ -306,7 +306,7 @@ class BiofuelMfspSimple(AeroMAPSModel):
         self.df.loc[:, "biofuel_ft_msw_mfsp"] = biofuel_ft_msw_mfsp
 
         # ATJ
-        biofuel_atj_mfsp = AeromapsInterpolationFunction(
+        biofuel_atj_mfsp = aeromaps_interpolation_function(
             self,
             biofuel_atj_mfsp_simple_reference_years,
             biofuel_atj_mfsp_simple_reference_years_values,

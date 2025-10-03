@@ -5,7 +5,7 @@
 
 from typing import Tuple
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
@@ -19,7 +19,7 @@ class PassengerAircraftIndirectOpCosts(AeroMAPSModel):
     ) -> pd.Series:
         # Simple computation of airline indirect-operating costs (NOC)
 
-        ioc_prospective = AeromapsInterpolationFunction(
+        ioc_prospective = aeromaps_interpolation_function(
             self,
             ioc_reference_years,
             ioc_reference_years_values,
@@ -45,7 +45,7 @@ class PassengerAircraftNocCarbonOffset(AeroMAPSModel):
         carbon_offset_price_reference_years: list,
         carbon_offset_price_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-        carbon_offset_price_prospective = AeromapsInterpolationFunction(
+        carbon_offset_price_prospective = aeromaps_interpolation_function(
             self,
             carbon_offset_price_reference_years,
             carbon_offset_price_reference_years_values,

@@ -1,12 +1,22 @@
 # Standard library imports
+import logging
 import os
 from json import load, dump
 
 # Third-party imports
 import numpy as np
 import pandas as pd
+
+from gemseo import create_scenario
+
+# from gemseo import create_mda
+from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
+from gemseo.mda.mda_chain import MDAChain
+
+# from gemseo.mda.gauss_seidel import MDAGaussSeidel
+# from gemseo.core.discipline import Discipline
 import xarray as xr
-from gemseo import generate_n2_plot, create_mda
+from gemseo import generate_n2_plot
 
 
 # Local application imports
@@ -36,6 +46,11 @@ DEFAULT_CONFIG_PATH = os.path.join(CURRENT_DIR, "config.json")
 # Construct the path to the parameters.json file
 DEFAULT_PARAMETERS_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "parameters.json")
 
+# Construct the path to the vector_inputs.csv file
+DEFAULT_VECTOR_INPUTS_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "vector_inputs.csv"
+)
+
 # Construct the path to the climate data .csv file
 DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
@@ -49,6 +64,7 @@ class AeroMAPSProcess(object):
         models=default_models_top_down,
         use_fleet_model=False,
         add_examples_aircraft_and_subcategory=True,
+        optimisation=False,
     ):
         self.configuration_file = configuration_file
         self._initialize_configuration()
@@ -59,28 +75,102 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
-        self.setup(add_examples_aircraft_and_subcategory)
+        self.common_setup(add_examples_aircraft_and_subcategory)
+        if not optimisation:
+            self.setup_mda()
+        else:
+            self.setup_optimisation()
 
-    def setup(self, add_examples_aircraft_and_subcategory=True):
+    def common_setup(self, add_examples_aircraft_and_subcategory):
         self.disciplines = []
         self.data = {}
         self.json = {}
-
-        # Initialize data
         self._initialize_data()
+        self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
-        # Initialize disciplines
-        self._initialize_disciplines(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory
+    def setup_mda(self):
+        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
+
+        self.mda_chain = MDAChain(
+            disciplines=self.disciplines,
+            tolerance=1e-7,
+            initialize_defaults=True,
+            inner_mda_name="MDAGaussSeidel",
+            log_convergence=True,
         )
+
+    def setup_optimisation(self):
+        self._initialize_gemseo_settings()
+
+    def create_gemseo_scenario(self):
         # Create GEMSEO process
-        self.process = create_mda("MDAChain", disciplines=self.disciplines)
+        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
+
+        self.scenario = create_scenario(
+            disciplines=self.disciplines,
+            objective_name=self.gemseo_settings["objective_name"],
+            design_space=self.gemseo_settings["design_space"],
+            scenario_type=self.gemseo_settings["scenario_type"],
+            formulation_name=self.gemseo_settings["formulation"],
+            main_mda_settings={
+                "inner_mda_name": "MDAGaussSeidel",
+                "max_mda_iter": 10,
+                "initialize_defaults": True,
+                "tolerance": 1e-4,
+            },
+            # grammar_type=self.gemseo_settings["grammar_type"],
+            # input_data=self.input_data,
+        )
+
+    def create_gemseo_bilevel(self):
+        # if no scenario is created raise an error create_gemseo_scenario needs to be called first
+        if self.scenario is None:
+            logging.warning(
+                f"Inner scenario of the bilevel formulation was not fully defined. Creating it with the following settings:"
+                f"Arguments used: disciplines={self.disciplines}, "
+                f"objective_name={self.gemseo_settings['objective_name']}, "
+                f"design_space={self.gemseo_settings['design_space']}, "
+                f"scenario_type={self.gemseo_settings['scenario_type']}, "
+                f"formulation_name={self.gemseo_settings['formulation']}"
+            )
+            self.create_gemseo_scenario()
+
+        self.scenario.set_algorithm(self.gemseo_settings["algorithm_inner"])
+
+        # dv_names = self.scenario.formulation.design_variables.keys()
+        self.adapter = MDOScenarioAdapter(
+            # TODO make generic --> ?
+            self.scenario,
+            input_names=self.gemseo_settings["doe_input_names"],
+            output_names=self.gemseo_settings["doe_output_names"],
+            reset_x0_before_opt=True,
+            set_x0_before_opt=False,
+        )
+
+        self.scenario_adapted = create_scenario(
+            self.adapter,
+            formulation_name=self.gemseo_settings["formulation"],
+            objective_name=self.gemseo_settings["objective_name_outer"],
+            design_space=self.gemseo_settings["design_space_outer"],
+            scenario_type="MDO",
+        )
 
     def compute(self):
-
         input_data = self._pre_compute()
-        
-        self.process.execute(input_data=input_data)
+        if hasattr(self, "scenario") and self.scenario:
+            if hasattr(self, "scenario_adapted") and self.scenario_adapted:
+                print("Running bi-level MDO")
+                # self.scenario.default_inputs.update(self.scenario.options)
+                self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
+            else:
+                print("Running MDO")
+                self.scenario.execute(self.gemseo_settings["algorithm"])
+        else:
+            if not hasattr(self, "mda_chain") or self.mda_chain is None:
+                raise ValueError("MDA chain not created. Please call setup_mda() first.")
+            else:
+                print("Running MDA")
+                self.mda_chain.execute(input_data=input_data)
 
         self._update_data_from_model()
 
@@ -102,7 +192,11 @@ class AeroMAPSProcess(object):
         return self._data_to_json()
 
     def write_json(self, file_name=None):
-        if file_name is None and self.configuration_file is not None and "OUTPUTS_JSON_DATA_FILE" in self.config:
+        if (
+            file_name is None
+            and self.configuration_file is not None
+            and "OUTPUTS_JSON_DATA_FILE" in self.config
+        ):
             configuration_directory = os.path.dirname(self.configuration_file)
             new_output_file_path = os.path.join(
                 configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
@@ -110,7 +204,7 @@ class AeroMAPSProcess(object):
             file_name = new_output_file_path
         elif file_name is None:
             file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
-            
+
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
@@ -174,7 +268,6 @@ class AeroMAPSProcess(object):
         return fig
 
     def _pre_compute(self):
-
         input_data = self.parameters.to_dict()
 
         if self.fleet is not None:
@@ -183,14 +276,14 @@ class AeroMAPSProcess(object):
                 self.fleet_model.fleet.get_all_aircraft_elements()
             )
             self.fleet_model.compute()
-        
+
             # This is needed since fleet model is particular discipline
             input_data["dummy_fleet_model_output"] = np.array([1.0])
-                    
+
         # Initialize the dataframes witjh latest parameter values
         for disc in self.disciplines:
             disc.model._initialize_df()
-        
+
         return input_data
 
     def _initialize_configuration(self):
@@ -210,9 +303,8 @@ class AeroMAPSProcess(object):
                 self.config[key] = value
 
     def _initialize_data(self):
-
         # Indexes
-        self._initialize_years() 
+        self._initialize_years()
 
         self._initialize_climate_historical_data()
 
@@ -227,8 +319,6 @@ class AeroMAPSProcess(object):
         self.data["vector_outputs"] = pd.DataFrame(index=self.data["years"]["full_years"])
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
-
-        
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
@@ -333,9 +423,34 @@ class AeroMAPSProcess(object):
                 new_index = range(self.parameters.historic_start_year, self.parameters.end_year + 1)
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
-        
+
+        self._initialize_vector_inputs()
         # Format input vectors
         self._format_input_vectors()
+
+    def _initialize_vector_inputs(self):
+        if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            vector_inputs_data_file_path = os.path.join(
+                configuration_directory, self.config["VECTOR_INPUTS_DATA_FILE"]
+            )
+        else:
+            vector_inputs_data_file_path = DEFAULT_VECTOR_INPUTS_DATA_PATH
+
+        # Read .csv with first line column names
+        vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
+
+        # Generate pd.Series for each column with index the year stored in first column
+        index = vector_inputs_df.iloc[:, 0].values
+        for column in vector_inputs_df.columns[1:]:
+            values = vector_inputs_df[column].values
+
+            # TODO remove this: experiment to see if it works
+            # if column == "airfare_per_rpk":
+            #     setattr(self.parameters, column, np.array(values))
+            #
+            # else:
+            setattr(self.parameters, column, pd.Series(values, index=index))
 
     def _initialize_climate_historical_data(self):
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
@@ -351,6 +466,23 @@ class AeroMAPSProcess(object):
         )
         self.climate_historical_data = historical_dataset_df.values
 
+    def _initialize_gemseo_settings(self):
+        self.scenario = None
+        self.scenario_adapted = None
+        self.gemseo_settings = {}
+
+        # Mandatory settings
+        self.gemseo_settings["design_space"] = None
+        self.gemseo_settings["objective_name"] = None
+        self.gemseo_settings["algorithm"] = None
+
+        # Optional settings
+        self.gemseo_settings["formulation"] = "MDF"
+        self.gemseo_settings["scenario_type"] = "MDO"
+        # self.gemseo_settings["grammar_type"] = Discipline.GrammarType.SIMPLE
+        self.gemseo_settings["doe_input_names"] = None
+        self.gemseo_settings["doe_output_names"] = None
+
     def _format_input_vectors(self):
         for field_name, field_value in self.parameters.__dict__.items():
             list_init = [
@@ -365,7 +497,7 @@ class AeroMAPSProcess(object):
             if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1
                 new_value = np.pad(
-                    field_value,
+                    field_value.astype(float),
                     (0, new_size - field_value.size),
                     mode="constant",
                     constant_values=np.nan,
@@ -394,8 +526,15 @@ class AeroMAPSProcess(object):
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
 
     def _update_data_from_model(self):
-        # Inputs
-        all_inputs = self.process.get_input_data()
+        # Inputs: if we have and mda_cain (no optim), we get the inputs from there, else we get them from each discipline
+        if hasattr(self, "mda_chain") and self.mda_chain:
+            all_inputs = self.mda_chain.get_input_data()
+        else:
+            all_inputs = {}
+            for discipline in self.disciplines:
+                inputs = discipline.get_input_data()
+                if isinstance(inputs, dict):
+                    all_inputs.update(inputs)
 
         for name in all_inputs:
             try:
@@ -493,7 +632,7 @@ class AeroMAPSProcess(object):
                 if isinstance(value, (pd.Series, np.ndarray)):
                     d[key] = list(value)
             return d
-        
+
         # Create json data
         json_data = {}
 

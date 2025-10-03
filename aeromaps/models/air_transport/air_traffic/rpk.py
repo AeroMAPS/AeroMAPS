@@ -1,10 +1,11 @@
 from typing import Tuple
+from numbers import Number
 
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
 
 
 class RPK(AeroMAPSModel):
@@ -17,9 +18,9 @@ class RPK(AeroMAPSModel):
         short_range_rpk_share_2019: float,
         medium_range_rpk_share_2019: float,
         long_range_rpk_share_2019: float,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year_passenger: int,
+        covid_end_year_passenger: Number,
         covid_end_year_reference_rpk_ratio: float,
         cagr_passenger_short_range_reference_periods: list,
         cagr_passenger_short_range_reference_periods_values: list,
@@ -65,7 +66,7 @@ class RPK(AeroMAPSModel):
 
         # CAGR function
         ## Short range
-        annual_growth_rate_passenger_short_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_short_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_short_range_reference_periods,
             cagr_passenger_short_range_reference_periods_values,
@@ -75,7 +76,7 @@ class RPK(AeroMAPSModel):
             annual_growth_rate_passenger_short_range_prospective
         )
         ## Medium range
-        annual_growth_rate_passenger_medium_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_medium_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_medium_range_reference_periods,
             cagr_passenger_medium_range_reference_periods_values,
@@ -85,7 +86,7 @@ class RPK(AeroMAPSModel):
             annual_growth_rate_passenger_medium_range_prospective
         )
         ## Long range
-        annual_growth_rate_passenger_long_range_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_passenger_long_range_prospective = aeromaps_leveling_function(
             self,
             cagr_passenger_long_range_reference_periods,
             cagr_passenger_long_range_reference_periods_values,
@@ -274,9 +275,9 @@ class RPKReference(AeroMAPSModel):
         rpk: pd.Series,
         reference_cagr_passenger_reference_periods: list,
         reference_cagr_passenger_reference_periods_values: list,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rpk_drop_start_year: float,
-        covid_end_year_passenger: int,
+        covid_end_year_passenger: Number,
         covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """RPK reference calculation."""
@@ -300,7 +301,7 @@ class RPKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_rate_passenger = AeromapsLevelingFunction(
+        reference_annual_growth_rate_passenger = aeromaps_leveling_function(
             self,
             reference_cagr_passenger_reference_periods,
             reference_cagr_passenger_reference_periods_values,
@@ -334,9 +335,9 @@ class RPKMeasures(AeroMAPSModel):
         rpk_short_range_measures_final_impact: float,
         rpk_medium_range_measures_final_impact: float,
         rpk_long_range_measures_final_impact: float,
-        rpk_short_range_measures_start_year: int,
-        rpk_medium_range_measures_start_year: int,
-        rpk_long_range_measures_start_year: int,
+        rpk_short_range_measures_start_year: Number,
+        rpk_medium_range_measures_start_year: Number,
+        rpk_long_range_measures_start_year: Number,
         rpk_short_range_measures_duration: float,
         rpk_medium_range_measures_duration: float,
         rpk_long_range_measures_duration: float,

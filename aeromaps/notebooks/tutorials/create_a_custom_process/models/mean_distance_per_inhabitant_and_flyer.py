@@ -2,7 +2,7 @@ from typing import Tuple
 import pandas as pd
 from aeromaps.models.base import (
     AeroMAPSModel,
-    AeromapsInterpolationFunction,
+    aeromaps_interpolation_function,
 )
 
 
@@ -21,7 +21,7 @@ class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
         """Mean distance per inhabitant reference calculation."""
         # Calculation of the mean distance per inhabitant
 
-        world_inhabitant_number = AeromapsInterpolationFunction(
+        world_inhabitant_number = aeromaps_interpolation_function(
             self,
             world_inhabitant_number_reference_years,
             world_inhabitant_number_reference_years_values,
@@ -32,7 +32,7 @@ class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
         self.df.loc[:, "mean_distance_per_inhabitant"] = mean_distance_per_inhabitant
 
         # Calculation of the mean distance per flyer
-        inhabitant_flyer_share = AeromapsInterpolationFunction(
+        inhabitant_flyer_share = aeromaps_interpolation_function(
             self,
             inhabitant_flyer_share_reference_years,
             inhabitant_flyer_share_reference_years_values,

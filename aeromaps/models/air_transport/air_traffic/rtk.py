@@ -1,9 +1,10 @@
 from typing import Tuple
+from numbers import Number
 
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsLevelingFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
 
 
 class RTK(AeroMAPSModel):
@@ -13,9 +14,9 @@ class RTK(AeroMAPSModel):
     def compute(
         self,
         rtk_init: pd.Series,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rtk_drop_start_year: float,
-        covid_end_year_freight: int,
+        covid_end_year_freight: Number,
         covid_end_year_reference_rtk_ratio: float,
         cagr_freight_reference_periods: list,
         cagr_freight_reference_periods_values: list,
@@ -36,7 +37,7 @@ class RTK(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        annual_growth_rate_freight_prospective = AeromapsLevelingFunction(
+        annual_growth_rate_freight_prospective = aeromaps_leveling_function(
             self,
             cagr_freight_reference_periods,
             cagr_freight_reference_periods_values,
@@ -98,9 +99,9 @@ class RTKReference(AeroMAPSModel):
         rtk: pd.Series,
         reference_cagr_freight_reference_periods: list,
         reference_cagr_freight_reference_periods_values: list,
-        covid_start_year: int,
+        covid_start_year: Number,
         covid_rtk_drop_start_year: float,
-        covid_end_year_freight: int,
+        covid_end_year_freight: Number,
         covid_end_year_reference_rtk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
         """RTK reference calculation."""
@@ -124,7 +125,7 @@ class RTKReference(AeroMAPSModel):
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
         # CAGR function
-        reference_annual_growth_rate_freight = AeromapsLevelingFunction(
+        reference_annual_growth_rate_freight = aeromaps_leveling_function(
             self,
             reference_cagr_freight_reference_periods,
             reference_cagr_freight_reference_periods_values,
