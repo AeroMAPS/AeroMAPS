@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class DropinFuelDistribution(AeroMAPSModel):
@@ -20,7 +20,7 @@ class DropinFuelDistribution(AeroMAPSModel):
         """Fuel distribution calculation using interpolation functions"""
 
         # Biofuel
-        biofuel_share_prospective = AeromapsInterpolationFunction(
+        biofuel_share_prospective = aeromaps_interpolation_function(
             self,
             biofuel_share_reference_years,
             biofuel_share_reference_years_values,
@@ -40,7 +40,7 @@ class DropinFuelDistribution(AeroMAPSModel):
         biofuel_share = self.df["biofuel_share"]
 
         # Electrofuel
-        electrofuel_share_prospective = AeromapsInterpolationFunction(
+        electrofuel_share_prospective = aeromaps_interpolation_function(
             self,
             electrofuel_share_reference_years,
             electrofuel_share_reference_years_values,

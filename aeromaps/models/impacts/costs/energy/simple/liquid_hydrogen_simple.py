@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class HydrogenCostSimple(AeroMAPSModel):
@@ -319,7 +319,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         """Hydrogen mfsp_simple (Minimal fuel selling price) estimates"""
 
         # Electrolysis
-        electrolysis_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        electrolysis_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             gh2_electrolysis_mfsp_simple_reference_years,
             gh2_electrolysis_mfsp_simple_reference_years_values,
@@ -328,7 +328,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         self.df.loc[:, "electrolysis_h2_mean_mfsp_kg"] = electrolysis_h2_mean_mfsp_kg
 
         # Gas CCS
-        gas_ccs_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        gas_ccs_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             gh2_gas_ccs_mfsp_simple_reference_years,
             gh2_gas_ccs_mfsp_simple_reference_years_values,
@@ -337,7 +337,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         self.df.loc[:, "gas_ccs_h2_mean_mfsp_kg"] = gas_ccs_h2_mean_mfsp_kg
 
         # Gas
-        gas_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        gas_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             gh2_gas_mfsp_simple_reference_years,
             gh2_gas_mfsp_simple_reference_years_values,
@@ -346,7 +346,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         self.df.loc[:, "gas_h2_mean_mfsp_kg"] = gas_h2_mean_mfsp_kg
 
         # Coal CCS
-        coal_ccs_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        coal_ccs_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             gh2_coal_ccs_mfsp_simple_reference_years,
             gh2_coal_ccs_mfsp_simple_reference_years_values,
@@ -355,7 +355,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         self.df.loc[:, "coal_ccs_h2_mean_mfsp_kg"] = coal_ccs_h2_mean_mfsp_kg
 
         # Coal
-        coal_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        coal_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             gh2_coal_mfsp_simple_reference_years,
             gh2_coal_mfsp_simple_reference_years_values,
@@ -364,7 +364,7 @@ class HydrogenMfspSimple(AeroMAPSModel):
         self.df.loc[:, "coal_h2_mean_mfsp_kg"] = coal_h2_mean_mfsp_kg
 
         # Liquefaction
-        liquefaction_h2_mean_mfsp_kg = AeromapsInterpolationFunction(
+        liquefaction_h2_mean_mfsp_kg = aeromaps_interpolation_function(
             self,
             liquefaction_mfsp_simple_reference_years,
             liquefaction_mfsp_simple_reference_years_values,

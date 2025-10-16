@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class BiofuelProduction(AeroMAPSModel):
@@ -24,7 +24,7 @@ class BiofuelProduction(AeroMAPSModel):
         """Biomass production calculation using interpolation functions"""
 
         # HEFA FOG
-        biofuel_hefa_fog_share = AeromapsInterpolationFunction(
+        biofuel_hefa_fog_share = aeromaps_interpolation_function(
             self,
             biofuel_hefa_fog_share_reference_years,
             biofuel_hefa_fog_share_reference_years_values,
@@ -33,7 +33,7 @@ class BiofuelProduction(AeroMAPSModel):
         self.df.loc[:, "biofuel_hefa_fog_share"] = biofuel_hefa_fog_share
 
         # HEFA OTHERS
-        biofuel_hefa_others_share = AeromapsInterpolationFunction(
+        biofuel_hefa_others_share = aeromaps_interpolation_function(
             self,
             biofuel_hefa_others_share_reference_years,
             biofuel_hefa_others_share_reference_years_values,
@@ -42,7 +42,7 @@ class BiofuelProduction(AeroMAPSModel):
         self.df.loc[:, "biofuel_hefa_others_share"] = biofuel_hefa_others_share
 
         # FT OTHERS
-        biofuel_ft_others_share = AeromapsInterpolationFunction(
+        biofuel_ft_others_share = aeromaps_interpolation_function(
             self,
             biofuel_ft_others_share_reference_years,
             biofuel_ft_others_share_reference_years_values,
@@ -51,7 +51,7 @@ class BiofuelProduction(AeroMAPSModel):
         self.df.loc[:, "biofuel_ft_others_share"] = biofuel_ft_others_share
 
         # FT MSW
-        biofuel_ft_msw_share = AeromapsInterpolationFunction(
+        biofuel_ft_msw_share = aeromaps_interpolation_function(
             self,
             biofuel_ft_msw_share_reference_years,
             biofuel_ft_msw_share_reference_years_values,
@@ -100,7 +100,7 @@ class HydrogenProduction(AeroMAPSModel):
         """Hydrogen production calculation using interpolation functions"""
 
         # Electrolysis
-        hydrogen_electrolysis_share = AeromapsInterpolationFunction(
+        hydrogen_electrolysis_share = aeromaps_interpolation_function(
             self,
             hydrogen_electrolysis_share_reference_years,
             hydrogen_electrolysis_share_reference_years_values,
@@ -109,7 +109,7 @@ class HydrogenProduction(AeroMAPSModel):
         self.df.loc[:, "hydrogen_electrolysis_share"] = hydrogen_electrolysis_share
 
         # Gas CCS
-        hydrogen_gas_ccs_share = AeromapsInterpolationFunction(
+        hydrogen_gas_ccs_share = aeromaps_interpolation_function(
             self,
             hydrogen_gas_ccs_share_reference_years,
             hydrogen_gas_ccs_share_reference_years_values,
@@ -118,7 +118,7 @@ class HydrogenProduction(AeroMAPSModel):
         self.df.loc[:, "hydrogen_gas_ccs_share"] = hydrogen_gas_ccs_share
 
         # Coal CCS
-        hydrogen_coal_ccs_share = AeromapsInterpolationFunction(
+        hydrogen_coal_ccs_share = aeromaps_interpolation_function(
             self,
             hydrogen_coal_ccs_share_reference_years,
             hydrogen_coal_ccs_share_reference_years_values,
@@ -127,7 +127,7 @@ class HydrogenProduction(AeroMAPSModel):
         self.df.loc[:, "hydrogen_coal_ccs_share"] = hydrogen_coal_ccs_share
 
         # Gas
-        hydrogen_gas_share = AeromapsInterpolationFunction(
+        hydrogen_gas_share = aeromaps_interpolation_function(
             self,
             hydrogen_gas_share_reference_years,
             hydrogen_gas_share_reference_years_values,
