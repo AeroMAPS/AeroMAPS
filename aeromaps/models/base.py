@@ -44,8 +44,10 @@ class AeroMAPSModel(object):
         # Verify model type
         self.model_type = model_type
         if self.model_type == "custom":
-            self.input_names = {}
-            self.output_names = {}
+            self.input_names = {}  # Dictionary to store input names and their types (or values)
+            self.output_names = {}  # Dictionary to store output names and their types (or values)
+            self.default_input_data = {}  # Dictionary to store default input data (i.e. provided internally by the model rather than parameters.json)
+            self._skip_data_type_validation = False  # Whether to skip input/output data type validation. If True, input_names and output_names can be lists of names only.
         elif self.model_type != "auto":
             raise ValueError("model_type must be either 'auto' or 'custom'")
 
@@ -67,13 +69,16 @@ class AeroMAPSModel(object):
         """
         Store vector outputs in self.df and float outputs in self.float_outputs
         """
-        for key, val in output_data.items():
-            if isinstance(val, pd.Series):
-                self.df.loc[:, key] = val
-            elif isinstance(val, float):
-                self.float_outputs[key] = val
-            else:
-                raise ValueError(f"Output {key} is not a valid type.")
+        if all(isinstance(val, pd.Series) for val in output_data.values()):
+            self.df = self.df.join(pd.DataFrame(output_data))
+        else:
+            for key, val in output_data.items():
+                if isinstance(val, pd.Series):
+                    self.df.loc[:, key] = val
+                elif isinstance(val, float):
+                    self.float_outputs[key] = val
+                else:
+                    raise ValueError(f"Output {key} is not a valid type.")
 
 
 def AeromapsInterpolationFunction(
