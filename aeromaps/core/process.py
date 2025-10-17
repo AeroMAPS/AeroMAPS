@@ -6,6 +6,7 @@ from json import load, dump
 import numpy as np
 import pandas as pd
 import xarray as xr
+from copy import deepcopy
 from gemseo import generate_n2_plot, create_mda
 
 
@@ -83,7 +84,14 @@ class AeroMAPSProcess(object):
         self.configuration_file = configuration_file
         self._initialize_configuration()
         self.use_fleet_model = use_fleet_model
-        self.models = models.copy()
+
+        # Recopy models to avoid shared state between instances.
+        # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
+        # E.g., models that load large datasets that are read-only (c.f. LCA model).
+        self.models = {
+            k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v
+            for k, v in models.items()
+        }
 
         # Initialize inputs
         self._initialize_inputs()
