@@ -514,12 +514,5 @@
     "liquefaction_mfsp_simple_reference_years_values": [1.378511,1.378511,1.378511,1.378511],
     "electrofuel_mfsp_simple_reference_years": [],
     "electrofuel_mfsp_simple_reference_years_values": [3.504428],
-    "energy_replacement_ratio": 1.0,
-    "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775],
-    "model": "remind",
-    "pathway": "SSP2_Base",
-    "elec_solar_share_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070],
-    "elec_solar_share_reference_years_values": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-    "load_factor_photovoltaic_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070],
-    "load_factor_photovoltaic_reference_years_values": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    "energy_replacement_ratio": 1.0
 }

@@ -49,9 +49,6 @@ class LifeCycleAssessment(AeroMAPSModel):
         self.axis = split_by
         self.params_names = agb.all_params().keys()
         self.xarray_lca = xr.DataArray()
-        json_file_parameters = Parameters()
-        json_file_parameters.read_json(file_name=DEFAULT_PARAMETERS_PATH)  # default json file (parameters.json)
-        json_parameters_dict = json_file_parameters.to_dict()
 
         # --- Add LCA parameters as inputs of this AeroMAPSModel ---
         self._skip_data_type_validation = True  # see aeromaps/core/gemseo.py
@@ -64,22 +61,13 @@ class LifeCycleAssessment(AeroMAPSModel):
             if x == KEY_YEAR:
                 continue
 
-            # Some LCA parameters are not available as is.
-            # They should be provided as reference years and corresponding values before interpolation.
-            # These parameters are identified by the suffix "_reference_years" in the json file.
-            elif x + "_reference_years" in json_parameters_dict.keys():
-                self.input_names.append(x + "_reference_years")
-                self.input_names.append(x + "_reference_years_values")
+            self.input_names.append(x)
+            self.input_names.append(x + "_reference_years")
+            self.input_names.append(x + "_reference_years_values")
 
-            # Other parameters
-            else:
-                self.input_names.append(x)
-
-                # If default value not provided in json file, take the default value from lca_modeller
-                # Note: this default value might be a float (e.g. 0.) or a string ("SS2-Base")
-                # This will raise a warning during process execution
-                if x not in json_parameters_dict.keys():
-                    self.default_input_data[x] = agb.all_params()[x].default
+            self.default_input_data[x] = np.nan
+            self.default_input_data[x + "_reference_years"] = np.nan
+            self.default_input_data[x + "_reference_years_values"] = np.nan
 
         # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
         print("Parametrizing LCIA impacts...", end=" ")
@@ -116,6 +104,86 @@ class LifeCycleAssessment(AeroMAPSModel):
         self._store_outputs(output_data)
 
         return output_data
+
+    def _get_param_values(self, input_data) -> dict:
+        """
+        Extract LCA parameter values from input_data, handling different formats
+        """
+        params_dict = {}
+
+        for name in self.params_names:
+
+            # --- Year parameter is obtained from AeroMAPS timeline ---
+            if name == KEY_YEAR:
+                # params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
+                # replace by self.data["years"]["prospective_years"] ?
+                params_dict[name] = self.years
+                continue
+
+            # --- Parameter provided directly (either single value or list of values) ---
+            if is_not_nan(input_data[name]):  # np.nan is the default value set in __init__
+
+                input_value = input_data[name]
+
+                # Single value
+                if isinstance(input_value, str | float | int):
+                    params_dict[name] = input_value
+
+                # Multiple values
+                elif isinstance(input_value, (list, np.ndarray, pd.Series)):
+                    if len(input_data[name]) == 1:
+                        params_dict[name] = input_value[0]
+
+                    elif len(input_value) == len(self.years):
+                        params_dict[name] = np.nan_to_num(input_value)
+
+                    elif len(input_value) > len(self.years):
+                        n = len(input_value) - len(self.years)
+
+                        # If it's a pandas Series, try to align on the years index
+                        if isinstance(input_value, pd.Series):
+                            # Attempt to reindex on self.years, dropping missing values or filling with NaN
+                            input_value = input_value.reindex(self.years)
+                        else:
+                            # If not a Series, fall back to slicing and warn user
+                            input_value = input_value[-len(self.years):]
+                            warnings.warn(f"Too many values for parameter {name}: first {n} values will be dropped.")
+
+                        # Finally, convert safely
+                        params_dict[name] = np.nan_to_num(input_value)
+
+                    else:
+                        raise ValueError(
+                            f"Parameter '{name}' has not enough values for the simulation period {self.historic_start_year} - {self.end_year}."
+                        )
+
+                else:
+                    raise TypeError(
+                        f"Parameter '{name}' has unsupported type {type(input_value)}."
+                    )
+
+            # --- Parameter value not provided directly, try to interpolate from parameters.json ---
+            elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(input_data[name + "_reference_years_values"]):
+                param_values = AeromapsInterpolationFunction(
+                    self,
+                    input_data[name + "_reference_years"],
+                    input_data[name + "_reference_years_values"],
+                    model_name=self.name,
+                )
+                # param_values = param_values.loc[self.prospection_start_year:self.end_year].values
+                params_dict[name] = np.nan_to_num(param_values)
+
+            # --- Parameter value not provided, use default value from lca_modeller ---
+            else:
+                default_val = agb.all_params()[name].default
+                warnings.warn(f'Value for LCA parameter "{name}" is not provided. Default value {default_val} will be used.')
+                params_dict[name] = default_val
+
+            # --- Warn if both direct value and reference years/values were provided ---
+            if is_not_nan(input_data[name]) and is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(input_data[name + "_reference_years_values"]):
+                    warnings.warn(f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.')
+
+        return params_dict
 
     def _multi_lca_algebraic_raw(self, **params):
         """
@@ -300,59 +368,6 @@ class LifeCycleAssessment(AeroMAPSModel):
 
         return output_data
 
-    def _get_param_values(self, input_data) -> dict:
-        """
-        Extract LCA parameter values from input_data, handling different formats
-        """
-        params_dict = {}
-
-        for name in self.params_names:
-            # KEY_YEAR is a special parameter treated separately
-            if name == KEY_YEAR:
-                params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
-                # replace by self.data["years"]["prospective_years"] ?
-
-            # String parameter
-            elif isinstance(input_data.get(name), str):
-                params_dict[name] = input_data[name]
-
-            # Single float/int value
-            elif isinstance(input_data.get(name), float | int):
-                params_dict[name] = input_data[name]
-
-            # Multiple values
-            elif isinstance(input_data.get(name), (list, np.ndarray, pd.Series)):
-                param_values = input_data[name].copy()
-                # Check if the length of the parameter values is consistent with the years
-                if len(param_values) > self.end_year - self.prospection_start_year + 1:
-                    param_values = param_values[
-                        -(self.end_year - self.prospection_start_year + 1) :
-                    ]
-                elif len(param_values) < self.end_year - self.prospection_start_year + 1:
-                    raise ValueError(
-                        f"Parameter '{name}' has not enough values for the simulation period."
-                    )
-                params_dict[name] = np.nan_to_num(param_values)
-
-            # Parameters that should be interpolated from multiple values provided in json file
-            # (reference years and corresponding values)
-            elif name + "_reference_years" in input_data and name + "_reference_years_values" in input_data:
-                param_values = AeromapsInterpolationFunction(
-                    self,
-                    input_data[name + "_reference_years"],
-                    input_data[name + "_reference_years_values"],
-                    model_name=self.name,
-                )
-                param_values = param_values.loc[self.prospection_start_year:self.end_year].values
-                params_dict[name] = np.nan_to_num(param_values)
-
-            # else: the parameter is not provided and will be set to its default value.
-            else:
-                default_val = agb.all_params()[name].default
-                warnings.warn(f'Value for LCA parameter "{name}" is not provided. Default value {default_val} will be used.')
-
-        return params_dict
-
 
 def tuple_to_varname(items):
     """
@@ -376,3 +391,14 @@ def tuple_to_varname(items):
     text = "lca_" + text
 
     return text
+
+
+def is_not_nan(x):
+    """Return True if x is not NaN or None."""
+    if x is None:
+        return False
+    if isinstance(x, (float, int, np.number)):
+        return not pd.isna(x)
+    if isinstance(x, (pd.Series, np.ndarray, list, tuple)):
+        return pd.notna(np.asarray(x)).any()
+    return True
