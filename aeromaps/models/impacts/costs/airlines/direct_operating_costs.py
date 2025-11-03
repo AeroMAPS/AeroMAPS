@@ -428,7 +428,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_mfsp
         )
 
-        # Moyennes pondérées
+        # Means
         doc_energy_per_ask_long_range_mean = (
             doc_energy_per_ask_long_range_hydrogen.fillna(0) * ask_long_range_hydrogen_share / 100
             + doc_energy_per_ask_long_range_dropin_fuel.fillna(0)
@@ -462,7 +462,6 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             + doc_energy_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
-        # Stockage dans le DataFrame
         self.df.loc[:, "doc_energy_per_ask_long_range_dropin_fuel"] = (
             doc_energy_per_ask_long_range_dropin_fuel
         )
@@ -561,39 +560,45 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         pd.Series,
         pd.Series,
         pd.Series,
+        pd.Series,
+        pd.Series,
+        pd.Series,
     ]:
         # Drop-in
         doc_energy_carbon_tax_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_fuel_mean_unit_carbon_tax
+            energy_per_ask_long_range_dropin_fuel.replace(0, np.NaN)
+            * dropin_fuel_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_fuel_mean_unit_carbon_tax
+            energy_per_ask_medium_range_dropin_fuel.replace(0, np.NaN)
+            * dropin_fuel_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_fuel_mean_unit_carbon_tax
+            energy_per_ask_short_range_dropin_fuel.replace(0, np.NaN)
+            * dropin_fuel_mean_unit_carbon_tax
         )
         # Hydrogen
         doc_energy_carbon_tax_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_long_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_medium_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_short_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
         )
         # Electric
         doc_energy_carbon_tax_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric * electric_mean_unit_carbon_tax
+            energy_per_ask_long_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric * electric_mean_unit_carbon_tax
+            energy_per_ask_medium_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric * electric_mean_unit_carbon_tax
+            energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
         )
 
-        # Moyennes pondérées
+        # Means
         doc_energy_carbon_tax_per_ask_long_range_mean = (
             doc_energy_carbon_tax_per_ask_long_range_hydrogen.fillna(0)
             * ask_long_range_hydrogen_share
@@ -635,6 +640,24 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
 
         doc_carbon_tax_lowering_offset_per_ask_mean = (
             doc_energy_carbon_tax_per_ask_mean
+            * (co2_emissions - carbon_offset.fillna(0))
+            / co2_emissions
+        )
+
+        doc_carbon_tax_lowering_offset_per_ask_short_range_mean = (
+            doc_energy_carbon_tax_per_ask_short_range_mean
+            * (co2_emissions - carbon_offset.fillna(0))
+            / co2_emissions
+        )
+
+        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean = (
+            doc_energy_carbon_tax_per_ask_medium_range_mean
+            * (co2_emissions - carbon_offset.fillna(0))
+            / co2_emissions
+        )
+
+        doc_carbon_tax_lowering_offset_per_ask_long_range_mean = (
+            doc_energy_carbon_tax_per_ask_long_range_mean
             * (co2_emissions - carbon_offset.fillna(0))
             / co2_emissions
         )
@@ -681,6 +704,16 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             doc_carbon_tax_lowering_offset_per_ask_mean
         )
 
+        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_short_range_mean"] = (
+            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
+        )
+        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_medium_range_mean"] = (
+            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
+        )
+        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_long_range_mean"] = (
+            doc_carbon_tax_lowering_offset_per_ask_long_range_mean
+        )
+
         return (
             doc_energy_carbon_tax_per_ask_long_range_dropin_fuel,
             doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel,
@@ -696,6 +729,9 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             doc_energy_carbon_tax_per_ask_short_range_mean,
             doc_energy_carbon_tax_per_ask_mean,
             doc_carbon_tax_lowering_offset_per_ask_mean,
+            doc_carbon_tax_lowering_offset_per_ask_short_range_mean,
+            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean,
+            doc_carbon_tax_lowering_offset_per_ask_long_range_mean,
         )
 
 

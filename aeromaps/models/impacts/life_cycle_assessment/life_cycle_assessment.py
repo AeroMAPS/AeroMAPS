@@ -1,6 +1,7 @@
 """
 Model for Life Cycle Assessment (LCA) of air transportation systems
 """
+
 import warnings
 import re
 
@@ -20,8 +21,9 @@ KEY_METHOD = "method"
 
 
 class LifeCycleAssessment(AeroMAPSModel):
-
-    deepcopy_at_init = False  # --> do not re-instantiate model at each process run since LCA model is heavy
+    deepcopy_at_init = (
+        False  # --> do not re-instantiate model at each process run since LCA model is heavy
+    )
     # (see aeromaps/core/process.py)
 
     def __init__(
@@ -56,7 +58,6 @@ class LifeCycleAssessment(AeroMAPSModel):
         self.output_names = []
 
         for x in self.params_names:
-
             # Years of simulation are directly taken from AeroMAPS timeline and not as an input parameter
             if x == KEY_YEAR:
                 continue
@@ -84,10 +85,7 @@ class LifeCycleAssessment(AeroMAPSModel):
             for method in self.methods:
                 self.output_names.append(tuple_to_varname(method))
 
-    def compute(
-        self, input_data
-    ) -> dict:
-
+    def compute(self, input_data) -> dict:
         # --- Assign values to parameters ---
         params_dict = self._get_param_values(input_data)
 
@@ -112,7 +110,6 @@ class LifeCycleAssessment(AeroMAPSModel):
         params_dict = {}
 
         for name in self.params_names:
-
             # --- Year parameter is obtained from AeroMAPS timeline ---
             if name == KEY_YEAR:
                 # params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
@@ -122,7 +119,6 @@ class LifeCycleAssessment(AeroMAPSModel):
 
             # --- Parameter provided directly (either single value or list of values) ---
             if is_not_nan(input_data[name]):  # np.nan is the default value set in __init__
-
                 input_value = input_data[name]
 
                 # Single value
@@ -146,8 +142,10 @@ class LifeCycleAssessment(AeroMAPSModel):
                             input_value = input_value.reindex(self.years)
                         else:
                             # If not a Series, fall back to slicing and warn user
-                            input_value = input_value[-len(self.years):]
-                            warnings.warn(f"Too many values for parameter {name}: first {n} values will be dropped.")
+                            input_value = input_value[-len(self.years) :]
+                            warnings.warn(
+                                f"Too many values for parameter {name}: first {n} values will be dropped."
+                            )
 
                         # Finally, convert safely
                         params_dict[name] = np.nan_to_num(input_value)
@@ -158,12 +156,12 @@ class LifeCycleAssessment(AeroMAPSModel):
                         )
 
                 else:
-                    raise TypeError(
-                        f"Parameter '{name}' has unsupported type {type(input_value)}."
-                    )
+                    raise TypeError(f"Parameter '{name}' has unsupported type {type(input_value)}.")
 
             # --- Parameter value not provided directly, try to interpolate from parameters.json ---
-            elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(input_data[name + "_reference_years_values"]):
+            elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(
+                input_data[name + "_reference_years_values"]
+            ):
                 param_values = AeromapsInterpolationFunction(
                     self,
                     input_data[name + "_reference_years"],
@@ -176,12 +174,20 @@ class LifeCycleAssessment(AeroMAPSModel):
             # --- Parameter value not provided, use default value from lca_modeller ---
             else:
                 default_val = agb.all_params()[name].default
-                warnings.warn(f'Value for LCA parameter "{name}" is not provided. Default value {default_val} will be used.')
+                warnings.warn(
+                    f'Value for LCA parameter "{name}" is not provided. Default value {default_val} will be used.'
+                )
                 params_dict[name] = default_val
 
             # --- Warn if both direct value and reference years/values were provided ---
-            if is_not_nan(input_data[name]) and is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(input_data[name + "_reference_years_values"]):
-                    warnings.warn(f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.')
+            if (
+                is_not_nan(input_data[name])
+                and is_not_nan(input_data[name + "_reference_years"])
+                and is_not_nan(input_data[name + "_reference_years_values"])
+            ):
+                warnings.warn(
+                    f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.'
+                )
 
         return params_dict
 

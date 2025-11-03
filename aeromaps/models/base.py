@@ -81,7 +81,7 @@ class AeroMAPSModel(object):
                     raise ValueError(f"Output {key} is not a valid type.")
 
 
-def AeromapsInterpolationFunction(
+def aeromaps_interpolation_function(
     self,
     reference_years,
     reference_years_values,
@@ -99,8 +99,20 @@ def AeromapsInterpolationFunction(
             reference_years_values,
             kind=method,
         )
+
+        # If first reference year is lower than prospection start year, we start interpolating before
+        if reference_years[0] != self.prospection_start_year:
+            warnings.warn(
+                f"\n[Interpolation Model: {model_name} Warning]\n"
+                f"The first reference year ({reference_years[0]}) differs from the prospection start year ({self.prospection_start_year}).\n"
+                f"Interpolation will begin at the first reference year."
+            )
+            prospection_start_year = reference_years[0]
+        else:
+            prospection_start_year = self.prospection_start_year
+
         if reference_years[-1] == self.end_year:
-            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+            for k in range(prospection_start_year, reference_years[-1] + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -110,10 +122,10 @@ def AeromapsInterpolationFunction(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
+                + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is higher than end_year, the interpolation function is therefore not used in its entirety.",
             )
-            for k in range(self.prospection_start_year, self.end_year + 1):
+            for k in range(prospection_start_year, self.end_year + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -123,10 +135,10 @@ def AeromapsInterpolationFunction(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsInterpolationFunction:"
+                + " - Warning on aeromaps_interpolation_function:"
                 + " The last reference year for the interpolation is lower than end_year, the value associated to the last reference year is therefore used as a constant for the upper years.",
             )
-            for k in range(self.prospection_start_year, reference_years[-1] + 1):
+            for k in range(prospection_start_year, reference_years[-1] + 1):
                 if positive_constraint and interpolation_function(k) <= 0.0:
                     self.df.loc[k, "interpolation_function_values"] = 0.0
                 else:
@@ -144,7 +156,7 @@ def AeromapsInterpolationFunction(
     return interpolation_function_values
 
 
-def AeromapsLevelingFunction(
+def aeromaps_leveling_function(
     self, reference_periods, reference_periods_values, model_name="Not provided"
 ):
     # Main
@@ -161,7 +173,7 @@ def AeromapsLevelingFunction(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsLevelingFunction:"
+                + " - Warning on aeromaps_leveling_function:"
                 + " The last reference year for the leveling is higher than end_year, the leveling function is therefore not used in its entirety.",
             )
             for i in range(0, len(reference_periods) - 1):
@@ -175,7 +187,7 @@ def AeromapsLevelingFunction(
                 "Warning Message - "
                 + "Model name: "
                 + model_name
-                + " - Warning on AeromapsLevelingFunction:"
+                + " - Warning on aeromaps_leveling_function:"
                 + " The last reference year for the leveling is lower than end_year, the value associated to the last reference period is therefore used as a constant for the upper period.",
             )
             for i in range(0, len(reference_periods) - 1):

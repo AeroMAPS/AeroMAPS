@@ -5,7 +5,7 @@
 
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
@@ -17,7 +17,7 @@ class ExogenousCarbonPriceTrajectory(AeroMAPSModel):
         exogenous_carbon_price_reference_years: list,
         exogenous_carbon_price_reference_years_values: list,
     ) -> pd.Series:
-        exogenous_carbon_price_trajectory = AeromapsInterpolationFunction(
+        exogenous_carbon_price_trajectory = aeromaps_interpolation_function(
             self,
             exogenous_carbon_price_reference_years,
             exogenous_carbon_price_reference_years_values,

@@ -158,6 +158,7 @@
         56199000000.0
     ],
     "commercial_aviation_coefficient": 0.88,
+    "aviation_carbon_budget_objective": 2.40,
     "load_factor_end_year": 85.0,
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [2.0],
@@ -514,5 +515,21 @@
     "liquefaction_mfsp_simple_reference_years_values": [1.378511,1.378511,1.378511,1.378511],
     "electrofuel_mfsp_simple_reference_years": [],
     "electrofuel_mfsp_simple_reference_years_values": [3.504428],
-    "energy_replacement_ratio": 1.0
+    "energy_replacement_ratio": 1.0,
+    "initial_price_per_rpk": 0.082949239,
+    "biomass_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
+    "biomass_availability_constraint_trajectory_reference_years_values": [62.8,72.1,97.8,101.8],
+    "electricity_availability_constraint_trajectory_reference_years": [2020,2030,2040,2050],
+    "electricity_availability_constraint_trajectory_reference_years_values": [102.0456,137.5452,212.7996,276.6168],
+    "volume_ramp_up_constraint_biofuel": 0.15,
+    "rate_ramp_up_constraint_biofuel": 0.2,
+    "volume_ramp_up_constraint_electrofuel": 0.15,
+    "rate_ramp_up_constraint_electrofuel": 0.2,
+    "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775],
+    "model": "remind",
+    "pathway": "SSP2_Base",
+    "elec_solar_share_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070],
+    "elec_solar_share_reference_years_values": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "load_factor_photovoltaic_reference_years": [2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070],
+    "load_factor_photovoltaic_reference_years_values": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 }

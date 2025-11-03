@@ -1,3 +1,4 @@
+from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -54,14 +55,23 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
     WithoutFuelEffectCorrectionContrails,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency import (
-    PassengerAircraftEfficiencySimple,
+    PassengerAircraftEfficiencySimpleShares,
     PassengerAircraftEfficiencyComplex,
     FreightAircraftEfficiency,
+    PassengerAircraftEfficiencySimpleASK,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
     EnergyIntensity,
 )
 
+from aeromaps.models.optimisation.constraints.carbon_budget_constraint import CarbonBudgetConstraint
+from aeromaps.models.optimisation.constraints.energy_constraint import (
+    BlendCompletenessConstraint,
+    ElectricityAvailabilityConstraintTrajectory,
+    BiomassAvailabilityConstraintTrajectory,
+    ElectrofuelUseGrowthConstraint,
+    BiofuelUseGrowthConstraint,
+)
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
@@ -124,6 +134,13 @@ from aeromaps.models.impacts.emissions.carbon_offset import (
 from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     DicountedScenarioCost,
     NonDiscountedScenarioCost,
+    TotalSurplusLoss,
+    TotalAirlineCost,
+    TotalAirlineCostNoElast,
+    ConsumerSurplusLoss,
+    AirlineSurplusLoss,
+    TaxRevenueLoss,
+    TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -141,7 +158,9 @@ from aeromaps.models.impacts.costs.airlines.operational_profit import (
 )
 
 from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare import (
-    PassengerAircraftTotalCostAirfare,
+    PassengerAircraftSimpleAirfare,
+    PassengerAircraftTotalCost,
+    PassengerAircraftMarginalCost,
 )
 
 models_traffic = {
@@ -154,12 +173,27 @@ models_traffic = {
     "ask": ASK("ask"),
 }
 
+
+models_traffic_cost_feedback = {
+    "rpk_with_elasticity": RPKWithElasticity("rpk_with_elasticity"),
+    "rpk_measures": RPKMeasures("rpk_measures"),
+    "rpk_reference": RPKReference("rpk_reference"),
+    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
+    "rtk": RTK("rtk"),
+    "rtk_reference": RTKReference("rtk_reference"),
+    "ask": ASK("ask"),
+}
+
+
 models_efficiency_top_down = {
     "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
-        "passenger_aircraft_efficiency_simple"
+    "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
+        "passenger_aircraft_efficiency_simple_shares"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
@@ -173,8 +207,11 @@ models_efficiency_top_down_interp = {
     "load_factor": LoadFactor("load_factor"),
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
-    "passenger_aircraft_efficiency_simple": PassengerAircraftEfficiencySimple(
-        "passenger_aircraft_efficiency_simple"
+    "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
+        "passenger_aircraft_efficiency_simple_shares"
+    ),
+    "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
+        "passenger_aircraft_efficiency_simple_ask"
     ),
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
@@ -198,6 +235,7 @@ models_efficiency_bottom_up = {
     "h2o_emission_index": H2OEmissionIndex("h2o_emission_index"),
     "sulfur_emission_index": SulfurEmissionIndex("sulfur_emission_index"),
 }
+
 
 models_energy_without_fuel_effect = {
     "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
@@ -328,7 +366,7 @@ models_energy_cost = {
 }
 
 
-models_operation_cost_top_down = {
+models_operation_cost_common = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
@@ -353,46 +391,54 @@ models_operation_cost_top_down = {
     "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
         "passenger_aircraft_passenger_tax"
     ),
-    "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
-        "passenger_aircraft_total_cost_and_airfare"
-    ),
+    "passenger_aircraft_total_cost": PassengerAircraftTotalCost("passenger_aircraft_total_cost"),
+}
+
+models_operation_cost_top_down = {
+    "models_operation_cost_common": models_operation_cost_common,
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
         "passenger_aircraft_doc_non_energy_simple"
     ),
+    "passenger_aircraft_simple_airfare": PassengerAircraftSimpleAirfare(
+        "passenger_aircraft_simple_airfare"
+    ),
+    "total_airline_cost_no_elast": TotalAirlineCostNoElast("total_airline_cost_no_elast"),
 }
 
 models_operation_cost_bottom_up = {
-    "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
-    "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
-    "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aricraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
-        "passenger_aricraft_doc_energy_carbon_tax"
-    ),
-    "passenger_aricraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
-        "passenger_aricraft_doc_energy_tax"
-    ),
-    "passenger_aircraft_doc_energy_subsidy": PassengerAircraftDocEnergySubsidy(
-        "passenger_aircraft_doc_energy_subsidy"
-    ),
-    "passenger_aircraft_total_doc": PassengerAircraftTotalDoc("passenger_aircraft_total_doc"),
-    "passenger_aircraft_noc_carbon_offset": PassengerAircraftNocCarbonOffset(
-        "passenger_aircraft_noc_carbon_offset"
-    ),
-    "passenger_aircraft_noc": PassengerAircraftNonOpCosts("passenger_aircraft_noc"),
-    "passenger_aircraft_ioc": PassengerAircraftIndirectOpCosts("passenger_aircraft_ioc"),
-    "passenger_aircraft_operational_profit": PassengerAircraftOperationalProfit(
-        "passenger_aircraft_operational_profit"
-    ),
-    "passenger_aircraft_passenger_tax": PassengerAircraftPassengerTax(
-        "passenger_aircraft_passenger_tax"
-    ),
-    "passenger_aircraft_total_cost_and_airfare": PassengerAircraftTotalCostAirfare(
-        "passenger_aircraft_total_cost_and_airfare"
-    ),
+    "models_operation_cost_common": models_operation_cost_common,
     "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
         "passenger_aircraft_doc_non_energy_complex"
     ),
+    "passenger_aircraft_simple_airfare": PassengerAircraftSimpleAirfare(
+        "passenger_aircraft_simple_airfare"
+    ),
+    "total_airline_cost_no_elast": TotalAirlineCostNoElast("total_airline_cost_no_elast"),
 }
+
+
+models_operation_cost_top_down_feedback = {
+    "models_operation_cost_common": models_operation_cost_common,
+    "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
+        "passenger_aircraft_doc_non_energy_simple"
+    ),
+    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost"
+    ),
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+}
+
+models_operation_cost_bottom_up_feedback = {
+    "models_operation_cost_common": models_operation_cost_common,
+    "passenger_aircraft_doc_non_energy_complex": PassengerAircraftDocNonEnergyComplex(
+        "passenger_aircraft_doc_non_energy_complex"
+    ),
+    "passenger_aircraft_marginal_cost": PassengerAircraftMarginalCost(
+        "passenger_aircraft_marginal_cost"
+    ),
+    "total_airline_cost": TotalAirlineCost("total_airline_cost"),
+}
+
 
 models_production_cost = {
     "fleet_numeric": FleetEvolution("fleet_numeric"),
@@ -444,3 +490,128 @@ default_models_bottom_up = {
     "models_energy_cost": models_energy_cost,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
 }
+
+
+# models_optim_simple = {
+#     "models_traffic": models_traffic,
+#     "models_efficiency_top_down": models_efficiency_top_down,
+#     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+#     "models_offset": models_offset,
+#     "kaya_factors": KayaFactors("kaya_factors"),
+#     "co2_emissions": CO2Emissions("co2_emissions"),
+#     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+#     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+#     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+#         "detailed_cumulative_co2_emissions"
+#     ),
+#     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+#     "biomass_availability": BiomassAvailability("biomass_availability"),
+#     "electricity_availability": ElectricityAvailability("electricity_availability"),
+#     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+#     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+#     "models_energy_cost_simple": models_energy_cost_simple,
+#     "models_operation_cost_top_down": models_operation_cost_top_down,
+#     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+#     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+#     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+#         "electricity_availability_constraint_trajectory"
+#     ),
+#     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+#         "biomass_availability_constraint_trajectory"
+#     ),
+#     "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+#         "electrofuel_use_growth_constraint"
+#     ),
+#     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+# }
+#
+# models_optim_complex = {
+#     "models_traffic_cost_feedback": models_traffic_cost_feedback,
+#     "models_efficiency_top_down": models_efficiency_top_down,
+#     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+#     "models_offset": models_offset,
+#     "kaya_factors": KayaFactors("kaya_factors"),
+#     "co2_emissions": CO2Emissions("co2_emissions"),
+#     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+#     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+#     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+#         "detailed_cumulative_co2_emissions"
+#     ),
+#     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+#     "biomass_availability": BiomassAvailability("biomass_availability"),
+#     "electricity_availability": ElectricityAvailability("electricity_availability"),
+#     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+#     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+#     "models_energy_cost_simple": models_energy_cost_simple,
+#     "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
+#     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+#     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+#     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+#         "electricity_availability_constraint_trajectory"
+#     ),
+#     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+#         "biomass_availability_constraint_trajectory"
+#     ),
+#     "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+#         "electrofuel_use_growth_constraint"
+#     ),
+#     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+#     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
+# }
+#
+#
+#
+# models_optim_complex_v2 = {
+#     "models_traffic_cost_feedback": models_traffic_cost_feedback,
+#     "models_efficiency_top_down": models_efficiency_top_down,
+#     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+#     "models_offset": models_offset,
+#     "kaya_factors": KayaFactors("kaya_factors"),
+#     "co2_emissions": CO2Emissions("co2_emissions"),
+#     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+#     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+#     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+#         "detailed_cumulative_co2_emissions"
+#     ),
+#     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+#     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
+#     "biomass_availability": BiomassAvailability("biomass_availability"),
+#     "electricity_availability": ElectricityAvailability("electricity_availability"),
+#     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+#     "resources_consumed_share": ResourcesConsumedShare("resources_consumed_share"),
+#     "models_energy_cost_simple": models_energy_cost_simple,
+#     "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
+#     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+#     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+#     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+#         "electricity_availability_constraint_trajectory"
+#     ),
+#     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+#         "biomass_availability_constraint_trajectory"
+#     ),
+#     "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+#         "electrofuel_use_growth_constraint"
+#     ),
+#     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+#     "consumer_surplus_loss": ConsumerSurplusLoss("consumer_surplus_loss"),
+#     "airline_surplus_loss": AirlineSurplusLoss("airline_surplus_loss"),
+#     "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
+#     "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
+# }
+#
+#
+#
+# models_optim_tsas_custom = {
+#     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+#     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
+#     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
+#         "electricity_availability_constraint_trajectory"
+#     ),
+#     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
+#         "biomass_availability_constraint_trajectory"
+#     ),
+#     "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
+#         "electrofuel_use_growth_constraint"
+#     ),
+#     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
+# }
