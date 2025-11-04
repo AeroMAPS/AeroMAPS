@@ -656,6 +656,7 @@ class AeroMAPSProcess(object):
                 setattr(self.parameters, key, value)
 
         self._initialize_vector_inputs()
+        # TODO clarify the role of _initialize_vector_inputs vs read_json_direct @Scott?
         # Format input vectors
         self._format_input_vectors()
 
