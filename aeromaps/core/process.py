@@ -670,7 +670,6 @@ class AeroMAPSProcess(object):
 
         # Read .csv with first line column names
         vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
-
         # Generate pd.Series for each column with index the year stored in first column
         index = vector_inputs_df.iloc[:, 0].values
         for column in vector_inputs_df.columns[1:]:
