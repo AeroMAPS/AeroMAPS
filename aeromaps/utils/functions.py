@@ -360,8 +360,6 @@ def compare_json_files(
                         iterable_messages.append(
                             f"For: {prefix}, index {idx} beyond tolerance: {value} against {other_parent[int(idx)]}"
                         )
-                        keys_to_remove.append(key)
-
             for k in keys_to_remove:
                 del diff[tag][k]
             if not diff[tag]:
@@ -384,10 +382,28 @@ def compare_json_files(
 
 
 def convert_non_serializable(obj):
+    # Native containers -> convert to list
     if isinstance(obj, (set, list, tuple)):
         return list(obj)
-    if hasattr(obj, "__dict__"):
+
+    # If it's an iterable (but not a string/bytes/mapping), try to convert to list.
+    # This handles deepdiff.SetOrdered and similar container-like types that don't
+    # expose useful __dict__ contents.
+    if not isinstance(obj, (str, bytes, dict)) and hasattr(obj, "__iter__"):
+        try:
+            lst = list(obj)
+            return lst
+        except Exception:
+            # If it cannot be converted to a list, fall through to other handlers
+            pass
+
+    # If object has a non-empty __dict__, prefer that (useful for plain objects)
+    if hasattr(obj, "__dict__") and obj.__dict__:
+        # Optional debug left intentionally minimal
+        # print('Converting using __dict__', obj)
         return obj.__dict__
+
+    # Last resort: convert to string
     return str(obj)
 
 

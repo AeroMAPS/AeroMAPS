@@ -5,14 +5,14 @@ Model for Life Cycle Assessment (LCA) of air transportation systems
 import warnings
 import re
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator
 
-from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
-from aeromaps.models.parameters import Parameters
+# from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
+# from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
 
@@ -162,7 +162,7 @@ class LifeCycleAssessment(AeroMAPSModel):
             elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(
                 input_data[name + "_reference_years_values"]
             ):
-                param_values = AeromapsInterpolationFunction(
+                param_values = aeromaps_interpolation_function(
                     self,
                     input_data[name + "_reference_years"],
                     input_data[name + "_reference_years_values"],

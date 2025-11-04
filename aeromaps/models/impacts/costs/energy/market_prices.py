@@ -4,7 +4,7 @@
 # @Software: PyCharm
 
 import pandas as pd
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class CarbonTax(AeroMAPSModel):
@@ -16,7 +16,7 @@ class CarbonTax(AeroMAPSModel):
         carbon_tax_reference_years: list,
         carbon_tax_reference_years_values: list,
     ) -> pd.Series:
-        carbon_tax_prospective = AeromapsInterpolationFunction(
+        carbon_tax_prospective = aeromaps_interpolation_function(
             self,
             carbon_tax_reference_years,
             carbon_tax_reference_years_values,

@@ -5,6 +5,7 @@
 
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -133,7 +134,7 @@ class DicountedScenarioCost(AeroMAPSModel):
         self,
         non_discounted_energy_expenses: pd.Series,
         social_discount_rate: float,
-    ) -> Tuple[pd.Series, pd.Series]:
+    ) -> Tuple[pd.Series, float]:
         discounted_energy_expenses = non_discounted_energy_expenses.copy()
         for k in range(self.prospection_start_year, self.end_year + 1):
             # Compute the discounter at year k

@@ -638,28 +638,24 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             + doc_energy_carbon_tax_per_ask_short_range_mean * ask_short_range
         ) / (ask_long_range + ask_medium_range + ask_short_range)
 
+        carbon_remaining_ratio = (
+            co2_emissions.loc[self.historic_start_year : self.end_year] - carbon_offset.fillna(0)
+        ) / co2_emissions.loc[self.historic_start_year : self.end_year]
+
         doc_carbon_tax_lowering_offset_per_ask_mean = (
-            doc_energy_carbon_tax_per_ask_mean
-            * (co2_emissions - carbon_offset.fillna(0))
-            / co2_emissions
+            doc_energy_carbon_tax_per_ask_mean * carbon_remaining_ratio
         )
 
         doc_carbon_tax_lowering_offset_per_ask_short_range_mean = (
-            doc_energy_carbon_tax_per_ask_short_range_mean
-            * (co2_emissions - carbon_offset.fillna(0))
-            / co2_emissions
+            doc_energy_carbon_tax_per_ask_short_range_mean * carbon_remaining_ratio
         )
 
         doc_carbon_tax_lowering_offset_per_ask_medium_range_mean = (
-            doc_energy_carbon_tax_per_ask_medium_range_mean
-            * (co2_emissions - carbon_offset.fillna(0))
-            / co2_emissions
+            doc_energy_carbon_tax_per_ask_medium_range_mean * carbon_remaining_ratio
         )
 
         doc_carbon_tax_lowering_offset_per_ask_long_range_mean = (
-            doc_energy_carbon_tax_per_ask_long_range_mean
-            * (co2_emissions - carbon_offset.fillna(0))
-            / co2_emissions
+            doc_energy_carbon_tax_per_ask_long_range_mean * carbon_remaining_ratio
         )
 
         # Stockage dans le DataFrame
