@@ -94,7 +94,9 @@ class CustomDataConverter(SimpleGrammarDataConverter):
         return super().convert_value_to_array(name, value)
 
     def convert_array_to_value(self, name: str, array_: Any) -> Any:
-        array_ = np.nan_to_num(array_, nan=-999999)
+        array_ = np.asarray(array_, dtype=float)
+        array_ = np.where(array_ == -999999, np.nan, array_)
+        # TODO check if we shoudl keep large value or nan
         if isinstance(array_, ndarray) and name in self._series_names:
             return pd.Series(array_, index=self._series_indexes[name], name=name)  # very provisory
         if name in self._list_names and not isinstance(array_, list):

@@ -67,18 +67,39 @@ class AeroMAPSModel(object):
 
     def _store_outputs(self, output_data):
         """
-        Store vector outputs in self.df and float outputs in self.float_outputs
+        Store vector outputs in self.df and float outputs in self.float_outputs.
+        Checks if the columns already exist in self.df to update them in place, otherwise joins new columns.
+        Args:
+            output_data (dict): Dictionary with output names as keys and output data as values.
         """
-        if all(isinstance(val, pd.Series) for val in output_data.values()):
-            self.df = self.df.join(pd.DataFrame(output_data))
-        else:
-            for key, val in output_data.items():
-                if isinstance(val, pd.Series):
-                    self.df.loc[:, key] = val
-                elif isinstance(val, float):
-                    self.float_outputs[key] = val
-                else:
-                    raise ValueError(f"Output {key} is not a valid type.")
+        # Separate series-like outputs and scalar outputs
+        series_items = {k: v for k, v in output_data.items() if isinstance(v, pd.Series)}
+        other_items = {k: v for k, v in output_data.items() if k not in series_items}
+
+        # If there are Series outputs, update existing columns and join new ones
+        if series_items:
+            df_series = pd.DataFrame(series_items)
+
+            # Columns that already exist in self.df -> update in place
+            existing_cols = [c for c in df_series.columns if c in self.df.columns]
+            for c in existing_cols:
+                self.df.loc[:, c] = df_series[c]
+
+            # New columns -> join to self.df
+            new_cols = [c for c in df_series.columns if c not in self.df.columns]
+            if new_cols:
+                self.df = self.df.join(df_series[new_cols])
+
+        # Handle non-series outputs (floats) and validate types
+        for key, val in other_items.items():
+            if isinstance(val, float) or isinstance(val, (int, np.floating, np.integer)):
+                # store numeric scalars as float_outputs (coerce ints)
+                self.float_outputs[key] = float(val)
+            elif isinstance(val, pd.Series):
+                # Shouldn't reach here, but handle defensively
+                self.df.loc[:, key] = val
+            else:
+                raise ValueError(f"Output {key} is not a valid type.")
 
 
 def aeromaps_interpolation_function(

@@ -83,7 +83,9 @@ class RPKWithElasticity(AeroMAPSModel):
             covid_end_year_reference_rpk_ratio / 100,
         ]
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
-        covid_factors = pd.Series([covid_function(k) for k in covid_years], index=covid_years)
+        covid_factors = pd.Series(
+            [float(covid_function(k)) for k in covid_years], index=covid_years, dtype=float
+        )
 
         # CAGR function
         ## Short range

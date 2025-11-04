@@ -297,7 +297,7 @@ class EnergyUseChoice(AeroMAPSModel):
             for pathway in self.pathways_manager.get(aircraft_type=aircraft_type):
                 output_data[f"{pathway.name}_share_{aircraft_type}"] = (
                     output_data[f"{pathway.name}_energy_consumption"]
-                    / type_energy_consumption
+                    / type_energy_consumption.replace(0, np.nan)
                     * 100
                 )
 
@@ -310,7 +310,7 @@ class EnergyUseChoice(AeroMAPSModel):
             for pathway in self.pathways_manager.get(energy_origin=energy_origin):
                 output_data[f"{pathway.name}_share_{energy_origin}"] = (
                     output_data[f"{pathway.name}_energy_consumption"]
-                    / origin_energy_consumption
+                    / origin_energy_consumption.replace(0, np.nan)
                     * 100
                 )
             output_data[f"{energy_origin}_share_total_energy"] = (
@@ -336,18 +336,22 @@ class EnergyUseChoice(AeroMAPSModel):
                     )
 
                     output_data[f"{energy_origin}_share_{aircraft_type}"] = (
-                        origin_type_energy_consumption / type_energy_consumption * 100
+                        origin_type_energy_consumption
+                        / type_energy_consumption.replace(0, np.nan)
+                        * 100
                     )
 
                     output_data[f"{aircraft_type}_share_{energy_origin}"] = (
-                        origin_type_energy_consumption / origin_energy_consumption * 100
+                        origin_type_energy_consumption
+                        / origin_energy_consumption.replace(0, np.nan)
+                        * 100
                     )
                     for pathway in self.pathways_manager.get(
                         energy_origin=energy_origin, aircraft_type=aircraft_type
                     ):
                         output_data[f"{pathway.name}_share_{aircraft_type}_{energy_origin}"] = (
                             output_data[f"{pathway.name}_energy_consumption"]
-                            / origin_type_energy_consumption
+                            / origin_type_energy_consumption.replace(0, np.nan)
                             * 100
                         )
         # Fill with mandatory inputs for aeromaps models (non_co2) to work even if no pathway is defined for a given type
