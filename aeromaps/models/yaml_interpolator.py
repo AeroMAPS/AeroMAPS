@@ -49,10 +49,11 @@ class YAMLInterpolator(AeroMAPSModel):
                 model_name=self.value_name,
             )
         except Exception as e:
-            warnings.warn(
-                f"Error when interpolating '{self.value_name}' with '{self.custom_data_type}': {e}"
-            )
-            raise
+            raise RuntimeError(
+                f"[YAMLInterpolator] Error while interpolating '{self.value_name}' "
+                f"with method '{self.custom_data_type.method}' "
+                f"(years and values lengths may mismatch): {e}"
+            ) from e
 
         output_data = {self.value_name: interpolated_value}
         self._store_outputs(output_data)

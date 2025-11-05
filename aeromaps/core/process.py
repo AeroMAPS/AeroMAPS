@@ -139,13 +139,10 @@ class AeroMAPSProcess(object):
 
     def setup_optimisation(self):
         self._initialize_gemseo_settings()
-
-    def create_gemseo_scenario(self):
-        # Initialize energy carriers
         self._initialize_generic_energy()
-
         self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
 
+    def create_gemseo_scenario(self):
         self.scenario = create_scenario(
             disciplines=self.disciplines,
             objective_name=self.gemseo_settings["objective_name"],
