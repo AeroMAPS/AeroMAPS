@@ -150,7 +150,7 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
         self.update_defaults()
 
     def update_defaults(self):
-        for input in self.get_input_data():
+        for input in self.input_grammar.names:
             # if self.model.parameters is None:
             #     self.default_inputs[input] = array([0])
             if hasattr(self.model.parameters, input):
@@ -203,7 +203,6 @@ class AeroMAPSCustomModelWrapper(Discipline):
         if self.model.default_input_data:
             self.default_input_data.update(self.model.default_input_data)
 
-        # TODO: check if the following is still used because main branch uses obsolete self.default_inputs instead of self.default_input_data and still works
-        for input in self.get_input_data():
+        for input in self.input_grammar.names:
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)

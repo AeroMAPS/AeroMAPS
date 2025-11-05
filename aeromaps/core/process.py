@@ -131,7 +131,7 @@ class AeroMAPSProcess(object):
 
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-7,
+            tolerance=1e-5,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
@@ -139,10 +139,11 @@ class AeroMAPSProcess(object):
 
     def setup_optimisation(self):
         self._initialize_gemseo_settings()
+
+    def create_gemseo_scenario(self):
         self._initialize_generic_energy()
         self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
 
-    def create_gemseo_scenario(self):
         self.scenario = create_scenario(
             disciplines=self.disciplines,
             objective_name=self.gemseo_settings["objective_name"],
@@ -151,7 +152,7 @@ class AeroMAPSProcess(object):
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
                 "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 10,
+                "max_mda_iter": 12,
                 "initialize_defaults": True,
                 "tolerance": 1e-4,
             },

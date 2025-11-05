@@ -65,13 +65,14 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_
 )
 
 from aeromaps.models.optimisation.constraints.carbon_budget_constraint import CarbonBudgetConstraint
-from aeromaps.models.optimisation.constraints.energy_constraint import (
-    BlendCompletenessConstraint,
-    ElectricityAvailabilityConstraintTrajectory,
-    BiomassAvailabilityConstraintTrajectory,
-    ElectrofuelUseGrowthConstraint,
-    BiofuelUseGrowthConstraint,
-)
+
+# from aeromaps.models.optimisation.constraints.energy_constraint import (
+#     BlendCompletenessConstraint,
+#     ElectricityAvailabilityConstraintTrajectory,
+#     BiomassAvailabilityConstraintTrajectory,
+#     ElectrofuelUseGrowthConstraint,
+#     BiofuelUseGrowthConstraint,
+# )
 from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
 from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
     EquivalentGrossCarbonBudget,
@@ -137,10 +138,10 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     TotalSurplusLoss,
     TotalAirlineCost,
     TotalAirlineCostNoElast,
-    ConsumerSurplusLoss,
-    AirlineSurplusLoss,
-    TaxRevenueLoss,
-    TotalWelfareLoss,
+    # ConsumerSurplusLoss,
+    # AirlineSurplusLoss,
+    # TaxRevenueLoss,
+    # TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -511,36 +512,25 @@ models_optim_simple = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
 }
 
-# models_optim_complex = {
-#     "models_traffic_cost_feedback": models_traffic_cost_feedback,
-#     "models_efficiency_top_down": models_efficiency_top_down,
-#     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
-#     "models_offset": models_offset,
-#     "kaya_factors": KayaFactors("kaya_factors"),
-#     "co2_emissions": CO2Emissions("co2_emissions"),
-#     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
-#     "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
-#     "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
-#         "detailed_cumulative_co2_emissions"
-#     ),
-#     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
-#     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-#     "models_energy_cost": models_energy_cost,
-#     "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
-#     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
-#     "blend_completeness_constraint": BlendCompletenessConstraint("blend_completeness_constraint"),
-#     "electricity_availability_constraint_trajectory": ElectricityAvailabilityConstraintTrajectory(
-#         "electricity_availability_constraint_trajectory"
-#     ),
-#     "biomass_availability_constraint_trajectory": BiomassAvailabilityConstraintTrajectory(
-#         "biomass_availability_constraint_trajectory"
-#     ),
-#     "electrofuel_use_growth_constraint": ElectrofuelUseGrowthConstraint(
-#         "electrofuel_use_growth_constraint"
-#     ),
-#     "biofuel_use_growth_constraint": BiofuelUseGrowthConstraint("biofuel_use_growth_constraint"),
-#     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
-# }
+models_optim_complex = {
+    "models_traffic_cost_feedback": models_traffic_cost_feedback,
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
+    "models_offset": models_offset,
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "models_energy_cost": models_energy_cost,
+    "models_operation_cost_top_down_feedback": models_operation_cost_top_down_feedback,
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+    "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
+}
 #
 #
 #

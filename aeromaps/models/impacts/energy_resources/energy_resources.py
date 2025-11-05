@@ -172,20 +172,25 @@ class OverallResourcesConsumption(AeroMAPSModel):
         for resource in self.resources_names:
             self.input_names[f"{resource}_total_consumption"] = pd.Series([0.0])
             self.input_names[f"{resource}_total_necessary_with_selectivity"] = pd.Series([0.0])
-            self.input_names[f"{resource}_availability_global"] = 0.0
-            self.input_names[f"{resource}_availability_aviation_allocated_share"] = 0.0
+            self.input_names[f"{resource}_availability_global"] = resources_data[resource][
+                "specifications"
+            ][f"{resource}_availability_global"]
+            # Todo make this conditional
+            self.input_names[f"{resource}_availability_aviation_allocated_share"] = resources_data[
+                resource
+            ]["specifications"][f"{resource}_availability_aviation_allocated_share"]
 
         for origin in self.resources_origins:
             self.output_names[f"{origin}_total_consumption"] = pd.Series([0.0])
             self.output_names[f"{origin}_total_necessary_with_selectivity"] = pd.Series([0.0])
-            self.output_names[f"{origin}_availability_global"] = 0.0
-            self.output_names[f"{origin}_availability_aviation_allocated"] = 0.0
+            self.output_names[f"{origin}_availability_global"] = pd.Series([0.0])
+            self.output_names[f"{origin}_availability_aviation_allocated"] = pd.Series([0.0])
             self.output_names[f"{origin}_consumed_global_share"] = pd.Series([0.0])
             self.output_names[f"{origin}_consumed_aviation_allocated_share"] = pd.Series([0.0])
             self.output_names[f"{origin}_necessary_global_share_with_selectivity"] = pd.Series(
                 [0.0]
             )
-            self.output_names[f"{origin}_overall_aviation_allocated_share"] = 0.0
+            self.output_names[f"{origin}_overall_aviation_allocated_share"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
         output_data = {}
@@ -199,8 +204,12 @@ class OverallResourcesConsumption(AeroMAPSModel):
         origin_necessary = {
             origin: pd.Series(0.0, index=index) for origin in self.resources_origins
         }
-        origin_availability = {origin: 0.0 for origin in self.resources_origins}
-        origin_availability_aviation_allocated = {origin: 0.0 for origin in self.resources_origins}
+        origin_availability = {
+            origin: pd.Series(0.0, index=index) for origin in self.resources_origins
+        }
+        origin_availability_aviation_allocated = {
+            origin: pd.Series(0.0, index=index) for origin in self.resources_origins
+        }
 
         # Aggregate by origin
         for resource in self.resources_names:
