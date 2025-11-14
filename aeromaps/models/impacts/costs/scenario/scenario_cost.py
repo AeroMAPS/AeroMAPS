@@ -11,128 +11,138 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-class NonDiscountedEnergyCost(AeroMAPSModel):
-    def __init__(self, name="non_discounted_energy_cost", *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
+class NonDiscountedScenarioCost(AeroMAPSModel):
+    def __init__(self, name="non_discounted_scenario_cost", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.pathways_manager = None
+        # TODO rename in EnergyCost. Same for discounted function below.
 
-    def compute(
-        self,
-        kerosene_cost: pd.Series,
-        biofuel_cost_hefa_fog: pd.Series,
-        biofuel_cost_hefa_others: pd.Series,
-        biofuel_cost_ft_others: pd.Series,
-        biofuel_cost_ft_msw: pd.Series,
-        biofuel_cost_atj: pd.Series,
-        electrofuel_total_cost: pd.Series,
-        total_hydrogen_supply_cost: pd.Series,
-        electricity_direct_use_total_cost: pd.Series,
-        co2_emissions_2019technology: pd.Series,
-        co2_emissions_including_load_factor: pd.Series,
-        kerosene_emission_factor: pd.Series,
-        kerosene_market_price: pd.Series,
-        density_kerosene: float,
-        lhv_kerosene: float,
-    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
+    def custom_setup(self):
+        """
+        Dynamically add all pathway mfsps and associated energy consumption variables to input_names.
+        """
+        self.input_names = {}
+        if self.pathways_manager is not None:
+            for p in self.pathways_manager.get_all():
+                self.input_names[f"{p.name}_net_mfsp"] = pd.Series([0.0])
+                self.input_names[f"{p.name}_mean_mfsp"] = pd.Series([0.0])
+                self.input_names[f"{p.name}_energy_consumption"] = pd.Series([0.0])
+                if p.name == "fossil_kerosene":
+                    self.input_names["fossil_kerosene_mean_co2_emission_factor"] = pd.Series([0.0])
+
+        # Add BAU computation
+        self.input_names["co2_emissions_2019technology"] = pd.Series([0.0])
+        self.input_names["co2_emissions_including_load_factor"] = pd.Series([0.0])
+        self.input_names["carbon_tax"] = pd.Series([0.0])
+
+        self.output_names = {
+            "non_discounted_energy_expenses": pd.Series([0.0]),
+            "non_discounted_net_energy_expenses": pd.Series([0.0]),
+            "non_discounted_bau_energy_expenses": pd.Series([0.0]),
+            "non_discounted_full_kero_energy_expenses": pd.Series([0.0]),
+        }
+
+    def compute(self, input_data) -> dict:
         # Compute the total energy expenses of the scenario
+        non_discounted_energy_expenses = None
+        non_discounted_net_energy_expenses = None
+        for p in self.pathways_manager.get_all():
+            net_mfsp = input_data.get(f"{p.name}_net_mfsp", pd.Series([0.0])).fillna(0)
+            mfsp = input_data.get(f"{p.name}_mean_mfsp", pd.Series([0.0])).fillna(0)
+            energy_consumption = input_data.get(
+                f"{p.name}_energy_consumption", pd.Series([0.0])
+            ).fillna(0)
+            cost = mfsp * energy_consumption
+            net_cost = net_mfsp * energy_consumption
+            if non_discounted_energy_expenses is None:
+                non_discounted_energy_expenses = cost
+                non_discounted_net_energy_expenses = net_cost
+            else:
+                non_discounted_energy_expenses = non_discounted_energy_expenses.add(
+                    cost, fill_value=0
+                )
+                non_discounted_net_energy_expenses = non_discounted_net_energy_expenses.add(
+                    net_cost, fill_value=0
+                )
+
         non_discounted_energy_expenses = (
-            kerosene_cost.fillna(0)
-            + biofuel_cost_hefa_fog.fillna(0)
-            + biofuel_cost_hefa_others.fillna(0)
-            + biofuel_cost_ft_others.fillna(0)
-            + biofuel_cost_ft_msw.fillna(0)
-            + biofuel_cost_atj.fillna(0)
-            + electrofuel_total_cost.fillna(0)
-            + total_hydrogen_supply_cost.fillna(0)
-            + electricity_direct_use_total_cost.fillna(0)
-        )
+            non_discounted_energy_expenses / 1000000
+        )  # Convert to millions euros
+        non_discounted_net_energy_expenses = (
+            non_discounted_net_energy_expenses / 1000000
+        )  # Convert to millions euros
 
         # Compute the business as usual energy expenses
 
+        if "fossil_kerosene_mean_co2_emission_factor" not in input_data:
+            print(
+                "Warning: fossil_kerosene pathway not found in input data. Illustrative kerosene costs computed using default values."
+            )
+            kerosene_emission_factor = 88.7
+            kerosene_market_price = 0.013921201
+        else:
+            kerosene_emission_factor = input_data["fossil_kerosene_mean_co2_emission_factor"].loc[
+                self.prospection_start_year - 1
+            ]
+            kerosene_market_price = input_data["fossil_kerosene_mean_mfsp"]
+
+        co2_emissions_including_load_factor = input_data["co2_emissions_including_load_factor"]
+        carbon_tax = input_data["carbon_tax"]
         energy_consumption_full_kero = (
-            co2_emissions_including_load_factor
-            * 1e12
-            / kerosene_emission_factor.loc[self.prospection_start_year - 1]
+            co2_emissions_including_load_factor * 1e12 / kerosene_emission_factor
         )
 
-        energy_consumption_BAU = (
-            co2_emissions_2019technology
-            * 1e12
-            / kerosene_emission_factor.loc[self.prospection_start_year - 1]
-        )
-
-        non_discounted_BAU_energy_expenses = (
-            energy_consumption_BAU
-            / (density_kerosene * lhv_kerosene)
-            * kerosene_market_price
-            / 1000000
-        )
         non_discounted_full_kero_energy_expenses = (
-            energy_consumption_full_kero
-            / (density_kerosene * lhv_kerosene)
-            * kerosene_market_price
-            / 1000000
-        )
+            energy_consumption_full_kero * kerosene_market_price / 1000000
+        )  # in million euros
 
-        self.df.loc[:, "non_discounted_energy_expenses"] = non_discounted_energy_expenses
-        self.df.loc[:, "non_discounted_BAU_energy_expenses"] = non_discounted_BAU_energy_expenses
-        self.df.loc[:, "non_discounted_full_kero_energy_expenses"] = (
-            non_discounted_full_kero_energy_expenses
-        )
+        carbon_tax_full_kero = (
+            co2_emissions_including_load_factor * carbon_tax
+        )  # * 1e6 / 1e6 : to t co2 and to million euros
 
-        return (
-            non_discounted_energy_expenses,
-            non_discounted_full_kero_energy_expenses,
-            non_discounted_BAU_energy_expenses,
-        )
+        co2_emissions_2019technology = input_data["co2_emissions_2019technology"]
+
+        energy_consumption_bau = co2_emissions_2019technology * 1e12 / kerosene_emission_factor
+
+        non_discounted_bau_energy_expenses = (
+            energy_consumption_bau * kerosene_market_price / 1000000
+        )  # in million euros
+
+        carbon_tax_bau = (
+            co2_emissions_2019technology * carbon_tax
+        )  # * 1e6 / 1e6 : to t co2 and to million euros
+
+        output_data = {
+            "non_discounted_energy_expenses": non_discounted_energy_expenses,
+            "non_discounted_net_energy_expenses": non_discounted_net_energy_expenses,
+            "non_discounted_bau_energy_expenses": non_discounted_bau_energy_expenses,
+            "non_discounted_full_kero_energy_expenses": non_discounted_full_kero_energy_expenses,
+            "carbon_tax_full_kero": carbon_tax_full_kero,
+            "carbon_tax_bau": carbon_tax_bau,
+        }
+
+        self._store_outputs(output_data)
+
+        return output_data
 
 
-class DicountedEnergyCost(AeroMAPSModel):
-    def __init__(self, name="discounted_energy_cost", *args, **kwargs):
+class DicountedScenarioCost(AeroMAPSModel):
+    def __init__(self, name="discounted_scenario_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
     def compute(
         self,
+        non_discounted_energy_expenses: pd.Series,
         social_discount_rate: float,
-        kerosene_cost: pd.Series,
-        biofuel_cost_hefa_fog: pd.Series,
-        biofuel_cost_hefa_others: pd.Series,
-        biofuel_cost_ft_others: pd.Series,
-        biofuel_cost_ft_msw: pd.Series,
-        biofuel_cost_atj: pd.Series,
-        electrofuel_total_cost: pd.Series,
-        total_hydrogen_supply_cost: pd.Series,
-        electricity_direct_use_total_cost: pd.Series,
     ) -> Tuple[pd.Series, float]:
+        discounted_energy_expenses = non_discounted_energy_expenses.copy()
         for k in range(self.prospection_start_year, self.end_year + 1):
             # Compute the discounter at year k
             discount_k = (1 + social_discount_rate) ** (k - self.prospection_start_year)
+            # Apply the discount to the non-discounted energy expenses
+            discounted_energy_expenses.loc[k] = discounted_energy_expenses.loc[k] / discount_k
 
-            # Compute the discounted expenses for each energy pathway
-            kerosene_discounted = kerosene_cost.fillna(0)[k] / discount_k
-            biofuel_hefa_fog_discounted = biofuel_cost_hefa_fog.fillna(0)[k] / discount_k
-            biofuel_hefa_others_discounted = biofuel_cost_hefa_others.fillna(0)[k] / discount_k
-            biofuel_ft_others_discounted = biofuel_cost_ft_others.fillna(0)[k] / discount_k
-            biofuel_ft_msw_discounted = biofuel_cost_ft_msw.fillna(0)[k] / discount_k
-            biofuel_atj_discounted = biofuel_cost_atj.fillna(0)[k] / discount_k
-            electrofuel_discounted = electrofuel_total_cost.fillna(0)[k] / discount_k
-            hydrogen_discounted = total_hydrogen_supply_cost.fillna(0)[k] / discount_k
-            electricity_direct_use_discounted = (
-                electricity_direct_use_total_cost.fillna(0)[k] / discount_k
-            )
-
-            self.df.loc[k, "discounted_energy_expenses"] = (
-                kerosene_discounted
-                + biofuel_atj_discounted
-                + biofuel_ft_msw_discounted
-                + biofuel_ft_others_discounted
-                + biofuel_hefa_others_discounted
-                + biofuel_hefa_fog_discounted
-                + electrofuel_discounted
-                + hydrogen_discounted
-                + electricity_direct_use_discounted
-            )
-
-        discounted_energy_expenses = self.df.loc[:, "discounted_energy_expenses"]
+        self.df.loc[:, "discounted_energy_expenses"] = discounted_energy_expenses
 
         discounted_energy_expenses_obj = discounted_energy_expenses.cumsum()[self.end_year]
 
@@ -277,6 +287,7 @@ class TotalSurplusLoss(AeroMAPSModel):
     Class to compute directly the total surplus loss (area loss + airline cost increase)
     No distinction between consumer surplus and producer surplus / tax revenues
     """
+
     def __init__(self, name="total_surplus_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -341,12 +352,12 @@ class TotalSurplusLoss(AeroMAPSModel):
         )
 
 
-
 class ConsumerSurplusLoss(AeroMAPSModel):
     """
     Class to compute the consumer surplus loss (area loss)
     Should not be used alongside TotalSurplusLoss
     """
+
     def __init__(self, name="consumer_surplus_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -386,13 +397,17 @@ class ConsumerSurplusLoss(AeroMAPSModel):
 
         self.df.loc[:, "delta_consumer_surplus_discounted"] = delta_consumer_surplus_discounted
 
-        cumulative_delta_consumer_surplus_obj = delta_consumer_surplus_discounted.cumsum()[self.end_year] - delta_consumer_surplus_discounted.cumsum()[2025]
+        cumulative_delta_consumer_surplus_obj = (
+            delta_consumer_surplus_discounted.cumsum()[self.end_year]
+            - delta_consumer_surplus_discounted.cumsum()[2025]
+        )
 
         return (
             delta_consumer_surplus,
             delta_consumer_surplus_discounted,
-            cumulative_delta_consumer_surplus_obj
+            cumulative_delta_consumer_surplus_obj,
         )
+
 
 class AirlineSurplusLoss(AeroMAPSModel):
     def __init__(self, name="airline_surplus_loss", *args, **kwargs):
@@ -406,15 +421,16 @@ class AirlineSurplusLoss(AeroMAPSModel):
         social_discount_rate: float,
         airfare_per_rpk: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
-
-
         total_airline_cost = total_cost_per_rpk * rpk
         total_airline_revenue = airfare_per_rpk * rpk
         total_airline_surplus = total_airline_revenue - total_airline_cost
 
-
-        initial_airline_cost = total_cost_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
-        initial_airline_revenue = airfare_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+        initial_airline_cost = (
+            total_cost_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+        )
+        initial_airline_revenue = (
+            airfare_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+        )
         initial_airline_surplus = initial_airline_revenue - initial_airline_cost
 
         delta_airline_surplus = initial_airline_surplus - total_airline_surplus
@@ -422,58 +438,63 @@ class AirlineSurplusLoss(AeroMAPSModel):
             self.df.index - self.prospection_start_year
         )
 
-        cumulative_delta_airline_surplus_obj = delta_airline_surplus_discounted.cumsum()[self.end_year] - delta_airline_surplus_discounted.cumsum()[2025]
+        cumulative_delta_airline_surplus_obj = (
+            delta_airline_surplus_discounted.cumsum()[self.end_year]
+            - delta_airline_surplus_discounted.cumsum()[2025]
+        )
 
         self.df.loc[:, "delta_airline_surplus"] = delta_airline_surplus
         self.df.loc[:, "delta_airline_surplus_discounted"] = delta_airline_surplus_discounted
         self.df.loc[:, "total_airline_surplus"] = total_airline_surplus
 
-
         return (
             delta_airline_surplus,
             delta_airline_surplus_discounted,
             total_airline_surplus,
-            cumulative_delta_airline_surplus_obj
+            cumulative_delta_airline_surplus_obj,
         )
 
 
-
 class TaxRevenueLoss(AeroMAPSModel):
-   def __init__(self, name="tax_revenue_loss", *args, **kwargs):
-       super().__init__(name, *args, **kwargs)
+    def __init__(self, name="tax_revenue_loss", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
 
-   def compute(
-       self,
-       total_extra_tax_per_rpk: pd.Series,
-       rpk: pd.Series,
-       rpk_no_elasticity: pd.Series,
-       social_discount_rate: float,
-       ) -> Tuple[
-           pd.Series,
-           pd.Series,
-           pd.Series,
-              float,
-          ]:
+    def compute(
+        self,
+        total_extra_tax_per_rpk: pd.Series,
+        rpk: pd.Series,
+        rpk_no_elasticity: pd.Series,
+        social_discount_rate: float,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        float,
+    ]:
+        total_tax_revenue = total_extra_tax_per_rpk * rpk
+        initial_tax_revenue = (
+            total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
+        )
+        delta_tax_revenue = initial_tax_revenue - total_tax_revenue
 
-       total_tax_revenue = total_extra_tax_per_rpk * rpk
-       initial_tax_revenue = total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
-       delta_tax_revenue = (
-              initial_tax_revenue - total_tax_revenue
-       )
+        delta_tax_revenue_discounted = delta_tax_revenue / (1 + social_discount_rate) ** (
+            self.df.index - self.prospection_start_year
+        )
 
-       delta_tax_revenue_discounted = delta_tax_revenue / (
-                1 + social_discount_rate
-        ) ** (self.df.index - self.prospection_start_year)
+        cumulative_delta_tax_revenue_obj = (
+            delta_tax_revenue_discounted.cumsum()[self.end_year]
+            - delta_tax_revenue_discounted.cumsum()[2025]
+        )
 
-       cumulative_delta_tax_revenue_obj = delta_tax_revenue_discounted.cumsum()[self.end_year] - delta_tax_revenue_discounted.cumsum()[2025]
+        self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
+        self.df.loc[:, "delta_tax_revenue"] = delta_tax_revenue
+        self.df.loc[:, "delta_tax_revenue_discounted"] = delta_tax_revenue_discounted
 
-       self.df.loc[:, "total_tax_revenue"] = total_tax_revenue
-       self.df.loc[:, "delta_tax_revenue"] = delta_tax_revenue
-       self.df.loc[:, "delta_tax_revenue_discounted"] = delta_tax_revenue_discounted
-
-
-       return (
-            total_tax_revenue,delta_tax_revenue, delta_tax_revenue_discounted, cumulative_delta_tax_revenue_obj
+        return (
+            total_tax_revenue,
+            delta_tax_revenue,
+            delta_tax_revenue_discounted,
+            cumulative_delta_tax_revenue_obj,
         )
 
 
@@ -487,30 +508,28 @@ class TotalWelfareLoss(AeroMAPSModel):
         delta_consumer_surplus: pd.Series,
         delta_airline_surplus: pd.Series,
         social_discount_rate: float,
-    ) -> Tuple[pd.Series,
-    pd.Series,
-    pd.Series, float]:
-
+    ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
         total_welfare_loss = delta_consumer_surplus + delta_airline_surplus + delta_tax_revenue
         total_welfare_loss_discounted = total_welfare_loss / (1 + social_discount_rate) ** (
             self.df.index - self.prospection_start_year
         )
 
-
         cumulative_total_welfare_loss_discounted = total_welfare_loss_discounted.cumsum()
 
-
-        cumulative_total_welfare_loss_obj = cumulative_total_welfare_loss_discounted[self.end_year] - cumulative_total_welfare_loss_discounted[2025]
+        cumulative_total_welfare_loss_obj = (
+            cumulative_total_welfare_loss_discounted[self.end_year]
+            - cumulative_total_welfare_loss_discounted[2025]
+        )
 
         self.df.loc[:, "total_welfare_loss"] = total_welfare_loss
         self.df.loc[:, "total_welfare_loss_discounted"] = total_welfare_loss_discounted
-        self.df.loc[
-            :, "cumulative_total_welfare_loss_discounted"
-        ] = cumulative_total_welfare_loss_discounted
+        self.df.loc[:, "cumulative_total_welfare_loss_discounted"] = (
+            cumulative_total_welfare_loss_discounted
+        )
 
         return (
             total_welfare_loss,
             total_welfare_loss_discounted,
             cumulative_total_welfare_loss_discounted,
-            cumulative_total_welfare_loss_obj
+            cumulative_total_welfare_loss_obj,
         )

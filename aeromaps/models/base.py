@@ -7,17 +7,49 @@ from fair import FAIR
 from fair.interface import fill, initialise
 
 
+class AeroMapsCustomDataType:
+    """
+    Custom type class to handle yaml data input for AeroMAPS models.
+    It contains reference years and values, and interpolation options.
+    When an AeroMapsCustomDataType is found when reading the yaml it
+    instantiates an interpolation model from yaml_interpolator.py
+    Attributes:
+        years (list): List of reference years for the interpolation.
+        values (list): List of reference values for the interpolation.
+        method (str): Interpolation method, default is 'linear'.
+        positive_constraint (bool): If True, ensures interpolated values are non-negative.
+    """
+
+    def __init__(self, reference_data: dict):
+        self.years = reference_data["years"]
+        self.values = reference_data["values"]
+        if "method" in reference_data:
+            self.method = reference_data["method"]
+        else:
+            self.method = "linear"
+        if "positive_constraint" in reference_data:
+            self.positive_constraint = reference_data["positive_constraint"]
+        else:
+            self.positive_constraint = False
+
+
 class AeroMAPSModel(object):
-    def __init__(
-        self,
-        name,
-        parameters=None,
-    ):
+    def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters
         self.float_outputs = {}
         if self.parameters is not None:
             self._initialize_df()
+
+        # Verify model type
+        self.model_type = model_type
+        if self.model_type == "custom":
+            self.input_names = {}  # Dictionary to store input names and their types (or values)
+            self.output_names = {}  # Dictionary to store output names and their types (or values)
+            self.default_input_data = {}  # Dictionary to store default input data (i.e. provided internally by the model rather than parameters.json)
+            self._skip_data_type_validation = False  # Whether to skip input/output data type validation. If True, input_names and output_names can be lists of names only.
+        elif self.model_type != "auto":
+            raise ValueError("model_type must be either 'auto' or 'custom'")
 
     def _initialize_df(self):
         self.climate_historic_start_year = self.parameters.climate_historic_start_year
@@ -32,6 +64,42 @@ class AeroMAPSModel(object):
         )
         self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
+
+    def _store_outputs(self, output_data):
+        """
+        Store vector outputs in self.df and float outputs in self.float_outputs.
+        Checks if the columns already exist in self.df to update them in place, otherwise joins new columns.
+        Args:
+            output_data (dict): Dictionary with output names as keys and output data as values.
+        """
+        # Separate series-like outputs and scalar outputs
+        series_items = {k: v for k, v in output_data.items() if isinstance(v, pd.Series)}
+        other_items = {k: v for k, v in output_data.items() if k not in series_items}
+
+        # If there are Series outputs, update existing columns and join new ones
+        if series_items:
+            df_series = pd.DataFrame(series_items)
+
+            # Columns that already exist in self.df -> update in place
+            existing_cols = [c for c in df_series.columns if c in self.df.columns]
+            for c in existing_cols:
+                self.df.loc[:, c] = df_series[c]
+
+            # New columns -> join to self.df
+            new_cols = [c for c in df_series.columns if c not in self.df.columns]
+            if new_cols:
+                self.df = self.df.join(df_series[new_cols])
+
+        # Handle non-series outputs (floats) and validate types
+        for key, val in other_items.items():
+            if isinstance(val, float) or isinstance(val, (int, np.floating, np.integer)):
+                # store numeric scalars as float_outputs (coerce ints)
+                self.float_outputs[key] = float(val)
+            elif isinstance(val, pd.Series):
+                # Shouldn't reach here, but handle defensively
+                self.df.loc[:, key] = val
+            else:
+                raise ValueError(f"Output {key} is not a valid type.")
 
 
 def aeromaps_interpolation_function(

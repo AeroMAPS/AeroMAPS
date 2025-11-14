@@ -8,6 +8,7 @@ EXCLUDE_PATTERNS = [
     "aeromaps/notebooks/publications/optimisation",
     "aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb",
     "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb",
+    "aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb",
 ]
 
 

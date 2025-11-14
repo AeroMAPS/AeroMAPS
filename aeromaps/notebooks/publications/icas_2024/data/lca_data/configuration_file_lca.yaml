@@ -112,10 +112,9 @@ model:
             amount: aircraft_production_short_range
         
     fuel:
-        unit: MJ
         
         kerosene:
-            amount: energy_consumption_kerosene / lhv_kerosene  # conversion MJ to kg
+            amount: fossil_kerosene_mass_consumption
             unit: kilogram
             
             combustion:
@@ -124,32 +123,27 @@ model:
                       value: 'combustion kerosene'
                       
                 CO2:
-                    amount: 0.074 * lhv_kerosene  # amount from aeromaps
+                    amount: 0.074 * fossil_kerosene_lhv   # 74gCO2/MJ L. Jing et al. 2022 - doi: 10.1038/s41467-022-35392-1
                     name: 'carbon dioxide, fossil'  # this is a biosphere process   
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 NOx:
-                    amount: emission_index_nox_kerosene
+                    amount: fossil_kerosene_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: emission_index_sulfur_kerosene
+                    amount: fossil_kerosene_emission_index_sulfur
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
-                #H2O:
-                #    amount: emission_index_h2o_kerosene  # TODO: fix water use LCIA method
-                #    name: 'water'
-                #    categories:
-                #        - 'air'
-                #        - 'lower stratosphere + upper troposphere'
+
                 PM:
-                    amount: emission_index_soot_kerosene
+                    amount: fossil_kerosene_emission_index_soot
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -284,7 +278,7 @@ model:
                             
                 
         biofuel:
-            amount: energy_consumption_biofuel / lhv_biofuel  # conversion MJ to kg
+            amount: generic_biofuel_mass_consumption
             unit: kilogram
             
             combustion:
@@ -293,32 +287,26 @@ model:
                       value: 'combustion biofuel'
                       
                 CO2:
-                    amount: 0.074 * lhv_biofuel
+                    amount: 0.074 * generic_biofuel_lhv
                     name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 NOx:
-                    amount: emission_index_nox_biofuel
+                    amount: generic_biofuel_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: emission_index_sulfur_biofuel
+                    amount: generic_biofuel_emission_index_sulfur
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
-                #H2O:
-                #    amount: emission_index_h2o_biofuel  # TODO: fix water use LCIA method
-                #    name: 'water'
-                #    categories:
-                #        - 'air'
-                #        - 'lower stratosphere + upper troposphere'
                 PM:
-                    amount: emission_index_soot_biofuel
+                    amount: generic_biofuel_emission_index_soot
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -365,7 +353,7 @@ model:
                 loc: 'RER'
         
         efuel:
-            amount: energy_consumption_electrofuel / lhv_electrofuel  # conversion MJ to kg
+            amount: electrofuel_mass_consumption
             unit: kilogram
             
             combustion:
@@ -374,32 +362,27 @@ model:
                       value: 'combustion electrofuel'
                       
                 CO2:
-                    amount: 0.074 * lhv_electrofuel
+                    amount: 0.074 * electrofuel_lhv
                     name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 NOx:
-                    amount: emission_index_nox_electrofuel
+                    amount: electrofuel_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: emission_index_sulfur_electrofuel
+                    amount: electrofuel_emission_index_sulfur
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
-                #H2O:
-                #    amount: emission_index_h2o_electrofuel  # TODO: fix water use LCIA method
-                #    name: 'water'
-                #    categories:
-                #        - 'air'
-                #        - 'lower stratosphere + upper troposphere'
+
                 PM:
-                    amount: emission_index_soot_electrofuel
+                    amount: electrofuel_emission_index_soot
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'

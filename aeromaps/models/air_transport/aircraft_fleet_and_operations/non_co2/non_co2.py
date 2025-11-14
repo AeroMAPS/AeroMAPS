@@ -1,3 +1,4 @@
+import warnings
 from typing import Tuple
 from numbers import Number
 
@@ -5,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.defaults import get_default_series
 
 
 class OperationsContrailsSimple(AeroMAPSModel):
@@ -51,55 +53,113 @@ class OperationsContrailsSimple(AeroMAPSModel):
 
 class FuelEffectCorrectionContrails(AeroMAPSModel):
     def __init__(self, name="fuel_effect_correction_contrails", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.pathways_manager = None
 
-    def compute(
-        self,
-        total_aircraft_distance_dropin_fuel: pd.Series,
-        total_aircraft_distance: pd.Series,
-        total_aircraft_distance_hydrogen: pd.Series,
-        total_aircraft_distance_electric: pd.Series,
-        biofuel_share: pd.Series,
-        electrofuel_share: pd.Series,
-        kerosene_share: pd.Series,
-        emission_index_number_particles_biofuel: float,
-        emission_index_number_particles_electrofuel: float,
-        emission_index_number_particles_kerosene: float,
-        contrails_relative_effect_hydrogen_wrt_kerosene: float,
-    ) -> pd.Series:
+    def custom_setup(self):
+        self.input_names = {}
+        self.output_names = {}
+
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            if aircraft_type == "dropin_fuel":
+                for pathway in self.pathways_manager.get(
+                    aircraft_type=aircraft_type,
+                ):
+                    self.input_names.update(
+                        {
+                            f"{pathway.name}_massic_share_{aircraft_type}": pd.Series([0.0]),
+                            f"{pathway.name}_emission_index_particles_number": 0.0,
+                        }
+                    )
+                self.input_names.update(
+                    {
+                        "total_aircraft_distance_dropin_fuel": pd.Series([0.0]),
+                    }
+                )
+            elif aircraft_type == "hydrogen":
+                self.input_names.update(
+                    {
+                        "contrails_relative_effect_hydrogen_wrt_kerosene": 0.0,
+                        "total_aircraft_distance_hydrogen": pd.Series([0.0]),
+                    }
+                )
+            elif aircraft_type == "electric":
+                self.input_names.update(
+                    {
+                        "total_aircraft_distance_electric": pd.Series([0.0]),
+                    }
+                )
+            else:
+                warnings.warn(f"Aircraft type '{aircraft_type}' not supported.", UserWarning)
+
+        self.input_names.update(
+            {
+                "total_aircraft_distance": pd.Series([0.0]),
+            }
+        )
+
+        self.output_names.update(
+            {
+                "fuel_effect_correction_contrails": pd.Series([0.0]),
+            }
+        )
+
+    def compute(self, input_data) -> dict:
         """Fuel effect on contrails for ERF calculation."""
 
-        fuel_effect_correction_contrails = (
-            total_aircraft_distance_dropin_fuel
-            / total_aircraft_distance
-            * (
-                kerosene_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_kerosene
-                    / emission_index_number_particles_kerosene
-                )
-                + biofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_biofuel
-                    / emission_index_number_particles_kerosene
-                )
-                + electrofuel_share
-                / 100
-                * np.sqrt(
-                    emission_index_number_particles_electrofuel
-                    / emission_index_number_particles_kerosene
-                )
-            )
-            + total_aircraft_distance_hydrogen
-            / total_aircraft_distance
-            * contrails_relative_effect_hydrogen_wrt_kerosene
-            + total_aircraft_distance_electric / total_aircraft_distance * 0
+        fuel_effect_correction_contrails = get_default_series(
+            self.historic_start_year, self.end_year
         )
-        self.df["fuel_effect_correction_contrails"] = fuel_effect_correction_contrails
 
-        return fuel_effect_correction_contrails
+        for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
+            if aircraft_type == "dropin_fuel":
+                relative_particles_number = get_default_series(
+                    self.historic_start_year, self.end_year
+                )
+                distance_share_dropin_fuel = (
+                    input_data["total_aircraft_distance_dropin_fuel"]
+                    / input_data["total_aircraft_distance"]
+                )
+
+                default_pathway = self.pathways_manager.get(
+                    aircraft_type=aircraft_type, default=True
+                )[0]
+                default_emission_index_number_particles = input_data[
+                    f"{default_pathway.name}_emission_index_particles_number"
+                ]
+
+                for pathway in self.pathways_manager.get(
+                    aircraft_type=aircraft_type,
+                ):
+                    relative_particles_number += (
+                        input_data[f"{pathway.name}_massic_share_{aircraft_type}"]
+                        / 100
+                        * np.sqrt(
+                            input_data[f"{pathway.name}_emission_index_particles_number"]
+                            / default_emission_index_number_particles
+                        )
+                    ).fillna(0)
+
+                fuel_effect_correction_contrails += (
+                    distance_share_dropin_fuel * relative_particles_number
+                )
+            elif aircraft_type == "hydrogen":
+                fuel_effect_correction_contrails += (
+                    input_data["total_aircraft_distance_hydrogen"]
+                    / input_data["total_aircraft_distance"]
+                    * input_data["contrails_relative_effect_hydrogen_wrt_kerosene"]
+                )
+            elif aircraft_type == "electric":
+                pass
+            else:
+                warnings.warn(f"Aircraft type '{aircraft_type}' not supported.", UserWarning)
+
+        output_data = {
+            "fuel_effect_correction_contrails": fuel_effect_correction_contrails,
+        }
+
+        self._store_outputs(output_data)
+        return output_data
 
 
 class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):

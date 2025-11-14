@@ -9,26 +9,43 @@ import pandas as pd
 
 from gemseo import create_scenario
 
-# from gemseo import create_mda
+
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
 
-# from gemseo.mda.gauss_seidel import MDAGaussSeidel
-# from gemseo.core.discipline import Discipline
+
 import xarray as xr
+from copy import deepcopy
 from gemseo import generate_n2_plot
 
 
 # Local application imports
-from aeromaps.models.base import AeroMAPSModel
-from aeromaps.core.gemseo import AeroMAPSModelWrapper
+from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
+from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
 from aeromaps.core.models import default_models_top_down
+
 from aeromaps.models.parameters import Parameters
-from aeromaps.utils.functions import _dict_to_df
+from aeromaps.models.yaml_interpolator import YAMLInterpolator
+from aeromaps.utils.functions import (
+    _dict_to_df,
+    flatten_dict,
+)
+from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
+
+# Fleet model imports
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
     FleetModel,
+)
+
+# Generic energy models imports
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
+    EnergyCarrierManager,
+    EnergyCarrierMetadata,
+)
+from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory import (
+    AviationEnergyCarriersFactory,
 )
 
 # Settings
@@ -56,6 +73,19 @@ DEFAULT_CLIMATE_HISTORICAL_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "climate_data", "temperature_historical_dataset.csv"
 )
 
+# Construct the path to the energy carriers parameters default file
+DEFAULT_ENERGY_CARRIERS_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "energy_carriers_data.yaml"
+)
+
+DEFAULT_RESOURCES_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "resources_data.yaml"
+)
+
+DEFAULT_PROCESSES_DATA_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "processes_data.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -68,9 +98,14 @@ class AeroMAPSProcess(object):
     ):
         self.configuration_file = configuration_file
         self._initialize_configuration()
-
         self.use_fleet_model = use_fleet_model
-        self.models = models
+
+        # Recopy models to avoid shared state between instances.
+        # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
+        # E.g., models that load large datasets that are read-only (c.f. LCA model).
+        self.models = {
+            k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
+        }
 
         # Initialize inputs
         self._initialize_inputs()
@@ -89,11 +124,14 @@ class AeroMAPSProcess(object):
         self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
     def setup_mda(self):
+        # Initialize energy carriers
+        self._initialize_generic_energy()
+
         self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
 
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
-            tolerance=1e-7,
+            tolerance=1e-5,
             initialize_defaults=True,
             inner_mda_name="MDAGaussSeidel",
             log_convergence=True,
@@ -103,7 +141,7 @@ class AeroMAPSProcess(object):
         self._initialize_gemseo_settings()
 
     def create_gemseo_scenario(self):
-        # Create GEMSEO process
+        self._initialize_generic_energy()
         self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
 
         self.scenario = create_scenario(
@@ -114,7 +152,7 @@ class AeroMAPSProcess(object):
             formulation_name=self.gemseo_settings["formulation"],
             main_mda_settings={
                 "inner_mda_name": "MDAGaussSeidel",
-                "max_mda_iter": 10,
+                "max_mda_iter": 12,
                 "initialize_defaults": True,
                 "tolerance": 1e-4,
             },
@@ -242,7 +280,8 @@ class AeroMAPSProcess(object):
     def plot(self, name, save=False, size_inches=None, remove_title=False):
         if name in available_plots_fleet:
             try:
-                fig = available_plots_fleet[name](self.data, self.fleet_model)
+                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
+                fig = available_plots_fleet[name](self, self.fleet_model)
                 if save:
                     if size_inches is not None:
                         fig.fig.set_size_inches(size_inches)
@@ -254,7 +293,7 @@ class AeroMAPSProcess(object):
                     f"Plot {name} requires using bottom up fleet model. Original error: {e}"
                 )
         elif name in available_plots:
-            fig = available_plots[name](self.data)
+            fig = available_plots[name](self)
             if save:
                 if size_inches is not None:
                     fig.fig.set_size_inches(size_inches)
@@ -269,7 +308,6 @@ class AeroMAPSProcess(object):
 
     def _pre_compute(self):
         input_data = self.parameters.to_dict()
-
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
             self.fleet_model.fleet.all_aircraft_elements = (
@@ -320,6 +358,189 @@ class AeroMAPSProcess(object):
         self.data["climate_outputs"] = pd.DataFrame(index=self.data["years"]["climate_full_years"])
         self.data["lca_outputs"] = xr.DataArray()
 
+    def _initialize_generic_energy(self):
+        self._read_generic_resources_data()
+        self._read_generic_process_data()
+        self._instantiate_generic_energy_models()
+
+    def _read_generic_resources_data(self):
+        # Read the custom energy config file and instantiate each class
+        if self.configuration_file is not None and "PARAMETERS_RESOURCES_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            resources_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_RESOURCES_DATA_FILE"]
+            )
+        else:
+            resources_data_file_path = DEFAULT_RESOURCES_DATA_PATH
+
+        self.energy_resources_data = read_yaml_file(resources_data_file_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        resources = list(self.energy_resources_data.keys())
+
+        for resource in resources:
+            resource_data = self.energy_resources_data[resource]
+            if "name" not in resource_data:
+                raise ValueError("The resource configuration file should contain its name")
+
+            # Flatten the inputs dictionary and interpolate the necessary values
+
+            flattened_yaml = flatten_dict(resource_data["specifications"], resource_data["name"])
+            resource_data["specifications"] = self._convert_custom_data_types(flattened_yaml)
+
+            self.parameters.from_dict(resource_data["specifications"])
+
+            self.energy_resources_data[resource] = resource_data
+
+    def _read_generic_process_data(self):
+        # Read the custom energy config file and instantiate each class
+        if self.configuration_file is not None and "PARAMETERS_PROCESSES_DATA_FILE" in self.config:
+            configuration_directory = os.path.dirname(self.configuration_file)
+            processes_data_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_PROCESSES_DATA_FILE"]
+            )
+        else:
+            processes_data_path = DEFAULT_PROCESSES_DATA_PATH
+
+        self.energy_processes_data = read_yaml_file(processes_data_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        processes = list(self.energy_processes_data.keys())
+
+        for process in processes:
+            process_data = self.energy_processes_data[process]
+            if "name" not in process_data:
+                raise ValueError("The process configuration file should contain its name")
+
+            # Flatten the inputs dictionary and interpolate the necessary values
+
+            inputs = process_data["inputs"]
+            # Flatten the inputs dictionary and interpolate the necessary values
+            for key, value in inputs.items():
+                flattened_yaml = flatten_dict(value, process_data["name"])
+                inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                # set data to parameters
+                self.parameters.from_dict(inputs[key])
+
+            process_data["inputs"] = inputs
+
+            self.energy_processes_data[process] = process_data
+
+    def _instantiate_generic_energy_models(self):
+        # Read the custom energy config file and instantiate each class from it using the factory method
+        # Add the instantiated classes to the models dictionary
+        if (
+            self.configuration_file is not None
+            and "PARAMETERS_ENERGY_CARRIERS_DATA_FILE" in self.config
+        ):
+            configuration_directory = os.path.dirname(self.configuration_file)
+            energy_carriers_data_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_ENERGY_CARRIERS_DATA_FILE"]
+            )
+        else:
+            energy_carriers_data_file_path = DEFAULT_ENERGY_CARRIERS_DATA_PATH
+
+        self.energy_carriers_data = read_yaml_file(energy_carriers_data_file_path)
+
+        # The first level of the yaml conf file contains all the pathways
+        pathways = list(self.energy_carriers_data.keys())
+
+        # create a metadata manager for the pathways to easily sort them later
+        self.pathways_manager = EnergyCarrierManager()
+
+        for pathway in pathways:
+            pathway_data = self.energy_carriers_data[pathway]
+            if "name" not in pathway_data:
+                raise ValueError("The pathway configuration file should contain its name")
+            if "inputs" not in pathway_data:
+                raise ValueError("The pathway configuration file should contain inputs")
+            self.pathways_manager.add(
+                EnergyCarrierMetadata(
+                    name=pathway,
+                    aircraft_type=pathway_data.get("aircraft_type"),
+                    default=pathway_data.get("default"),
+                    mandate_type=pathway_data.get("inputs").get("mandate", {}).get("mandate_type"),
+                    energy_origin=pathway_data.get("energy_origin"),
+                    resources_used=pathway_data.get("inputs")
+                    .get("technical", {})
+                    .get("resource_names", []),
+                    resources_used_processes={
+                        el: (
+                            list(
+                                self.energy_processes_data.get(el, {})
+                                .get("inputs", {})
+                                .get("technical", {})
+                                .get(f"{el}_resource_names", [])
+                            )
+                            or [None]
+                        )[0]
+                        for el in pathway_data.get("inputs", {})
+                        .get("technical", {})
+                        .get("processes_names", [])
+                    },
+                    cost_model=pathway_data.get("cost_model"),
+                    environmental_model=pathway_data.get("environmental_model"),
+                )
+            )
+
+            inputs = pathway_data["inputs"]
+            # Flatten the inputs dictionary and interpolate the necessary values
+            for key, value in inputs.items():
+                flattened_yaml = flatten_dict(value, pathway_data["name"])
+                inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                # set data to parameters
+                self.parameters.from_dict(inputs[key])
+
+            pathway_data["inputs"] = inputs
+
+            self.energy_carriers_data[pathway] = pathway_data
+
+            # Use the energy_carriers_factory to instantiate the adequate models based on the conf file and ad these to the models dictionary
+
+            # TODO would it be simpler to pass the EnergyCarrierMetadata to the models?
+            self.models.update(
+                AviationEnergyCarriersFactory.create_carrier(
+                    pathway,
+                    self.energy_carriers_data,
+                    self.energy_resources_data,
+                    self.energy_processes_data,
+                )
+            )
+        # Instantiate resources use models
+        self.models.update(
+            AviationEnergyCarriersFactory.instantiate_resource_consumption_models(
+                self.energy_resources_data, self.pathways_manager
+            )
+        )
+
+        # Instantiate the energy use choice model
+        self.models.update(
+            AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
+                self.energy_carriers_data, self.pathways_manager
+            )
+        )
+
+    def _convert_custom_data_types(self, data):
+        """
+        This method reads the flattened yaml file. It does two principal things:
+         - it instantiates interpolator models when encountering a custom data type, and add reference years and values to parameters
+         - it converts the custom type to a normal series in the flattened yaml file so that generic energy models know the type of the interpolated inputs
+        Returns the modified data
+        """
+        for key, value in data.items():
+            if isinstance(value, AeroMapsCustomDataType):
+                # add an interpolator model for each custom data type
+                self.models.update({key: YAMLInterpolator(key, value)})
+                self.parameters.from_dict(
+                    {
+                        f"{key}_years": value.years,
+                        f"{key}_values": value.values,
+                    }
+                )
+                # set a normal series to provide carrier model with the name/type result of the interpolation
+                data[key] = pd.Series([0.0])  # initialize to future interpolation type.
+        return data
+
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
             self.fleet = Fleet(
@@ -333,6 +554,7 @@ class AeroMAPSProcess(object):
             self.fleet = None
 
         def check_instance_in_dict(d):
+            # todo rename that function as it is now clearly much more than just checking instance in dict... ;)
             for key, value in d.items():
                 if isinstance(value, dict):
                     check_instance_in_dict(value)
@@ -341,12 +563,19 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+                        # TODO harmonise the way to pass the pathways manager with generic models
+                        model.pathways_manager = self.pathways_manager
+                        model.custom_setup()
                     if self.use_fleet_model and hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        model = AeroMAPSModelWrapper(model=model)
+                        if model.model_type == "custom":
+                            model = AeroMAPSCustomModelWrapper(model=model)
+                        else:
+                            model = AeroMAPSAutoModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
                         print(model.name)
@@ -425,6 +654,7 @@ class AeroMAPSProcess(object):
                 setattr(self.parameters, key, value)
 
         self._initialize_vector_inputs()
+        # TODO clarify the role of _initialize_vector_inputs vs read_json_direct @Scott?
         # Format input vectors
         self._format_input_vectors()
 
@@ -439,13 +669,13 @@ class AeroMAPSProcess(object):
 
         # Read .csv with first line column names
         vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
-
         # Generate pd.Series for each column with index the year stored in first column
         index = vector_inputs_df.iloc[:, 0].values
         for column in vector_inputs_df.columns[1:]:
             values = vector_inputs_df[column].values
 
             # TODO remove this: experiment to see if it works
+            # TODO remove this TODO !
             # if column == "airfare_per_rpk":
             #     setattr(self.parameters, column, np.array(values))
             #
@@ -524,6 +754,13 @@ class AeroMAPSProcess(object):
                     setattr(self.parameters, field_name, new_value)
                 else:
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
+
+    def _update_variables(self):
+        self._update_data_from_model()
+
+        self._update_dataframes_from_data()
+
+        self._update_json_from_data()
 
     def _update_data_from_model(self):
         # Inputs: if we have and mda_cain (no optim), we get the inputs from there, else we get them from each discipline

@@ -4,7 +4,8 @@ from .constants import plot_3_x, plot_3_y
 
 
 class BiomassConsumptionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -19,7 +20,7 @@ class BiomassConsumptionPlot:
     def create_plot(self):
         (self.line_biomass_consumption,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "biomass_consumption"],
+            self.df.loc[self.prospective_years, "biomass_total_consumption"] / 1e12,
             color="blue",
             linestyle="-",
             label="Aviation biomass consumption",
@@ -48,7 +49,7 @@ class BiomassConsumptionPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_biomass_consumption.set_ydata(
-            self.df.loc[self.prospective_years, "biomass_consumption"]
+            self.df.loc[self.prospective_years, "biomass_total_consumption"] / 1e12
         )
 
         for collection in self.ax.collections:
@@ -60,7 +61,8 @@ class BiomassConsumptionPlot:
 
 
 class ElectricityConsumptionPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -75,7 +77,7 @@ class ElectricityConsumptionPlot:
     def create_plot(self):
         (self.line_electricity_consumption,) = self.ax.plot(
             self.prospective_years,
-            self.df.loc[self.prospective_years, "electricity_consumption"],
+            self.df.loc[self.prospective_years, "electricity_total_consumption"] / 1e12,
             color="blue",
             linestyle="-",
             label="Aviation electricity consumption",
@@ -120,7 +122,7 @@ class ElectricityConsumptionPlot:
         self.prospective_years = data["years"]["prospective_years"]
 
         self.line_electricity_consumption.set_ydata(
-            self.df.loc[self.prospective_years, "electricity_consumption"]
+            self.df.loc[self.prospective_years, "electricity_total_consumption"] / 1e12
         )
 
         self.line_france_production_2019.set_ydata(

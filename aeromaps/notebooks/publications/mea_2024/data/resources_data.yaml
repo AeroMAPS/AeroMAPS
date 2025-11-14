@@ -1,0 +1,121 @@
+# -----------------------------------------------------------------------------
+# Example of a generic resource (all possible fields and options)
+# -----------------------------------------------------------------------------
+# generic_resource:
+#   # ID
+#   name: "generic_resource"
+#   specifications:
+#     # Technical:
+#     co2_emission_factor: !AeroMapsCustomDataType    # gCO2/MJ, additional to process/pathways' emission factor
+#       years: [2020, 2030, 2040, 2050]
+#       values: [100, 80, 60, 40] # gCO2/MJ
+#       method: linear
+#     load_factor: 1.0                                # Resource max LF (e.g. for renewables)
+#     # Availability
+#     availability:
+#       global: 1.0e+12 # [MJ] Global availability of the resource
+#       aviation_allocated_share: 5 # [%] Share of the global availability alalocated to aviation
+#     # Economical
+#     cost: !AeroMapsCustomDataType                   # €/MJ, additional to process/pathways' cost
+#       years: [2020, 2030, 2040, 2050]
+#       values: [0.01, 0.012, 0.013, 0.014] # €/MJ
+#       method: linear
+#     subsidies: !AeroMapsCustomDataType              # €/MJ, additional to process/pathways' subsidies
+#       years: [2020, 2030, 2040, 2050]
+#       values: [0.0, 0.0, 0.0, 0.0] # €/MJ
+#       method: linear
+#     tax: !AeroMapsCustomDataType                # €/MJ, additional to process/pathways' tax
+#       years: [2020, 2030, 2040, 2050]
+#       values: [0.0, 0.0, 0.0, 0.0] # €/MJ
+#       method: linear
+
+# -----------------------------------------------------------------------------
+
+hefa_fog_biomass:
+  # ID
+  name: "hefa_fog_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 1.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+hefa_others_biomass:
+  # ID
+  name: "hefa_others_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 20.67e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+      
+ft_msw_biomass:
+  # ID
+  name: "ft_msw_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 11.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+
+ft_others_biomass:
+  # ID
+  name: "ft_others_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 113.7e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+      
+atj_biomass:
+  # ID
+  name: "atj_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: 17.64e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+generic_electricity:
+  # ID
+  name: "generic_electricity"
+  origin: "electricity" # can't name the name/origin the same !!
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ 2020, 2030, 2040, 2050 ]
+      values: [119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+      method: linear
+    load_factor: 1.0
+    availability:
+      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.225] #€/kg CO2
+      method: linear
+
+
+transport:
+  # Metadata
+  name: "transport"
+  specifications:
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.003]
+      method: linear

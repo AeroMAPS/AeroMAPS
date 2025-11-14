@@ -69,7 +69,7 @@ jobs:
             nb_trimmed=$(echo "$nb" | tr -d '\r')
             echo "Timing $nb_trimmed on main"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
+            poetry run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").main.time"
           done
@@ -100,7 +100,7 @@ jobs:
             safe_branch=$(echo "$BRANCH_NAME" | tr '/' '_')
             echo "Timing $nb_trimmed on $BRANCH_NAME"
             start=$(date +%s)
-            poetry run pytest --no-cov --nbval-lax -p no:python "$nb_trimmed"
+            poetry run pytest --no-cov --nbval-lax -p no:python -n 0 "$nb_trimmed"
             end=$(date +%s)
             echo "$((end - start))" > "${RUNNER_TEMP}/timings/$(basename "$nb_trimmed").$safe_branch.time"
           done

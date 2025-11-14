@@ -1,0 +1,5 @@
+{
+    "OUTPUTS_JSON_DATA_FILE": "./outputs.json",
+    "PARAMETERS_ENERGY_CARRIERS_DATA_FILE": "./energy_carriers_data.yaml",
+    "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data.yaml"
+}

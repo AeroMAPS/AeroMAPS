@@ -2,15 +2,17 @@
 Model for Life Cycle Assessment (LCA) of air transportation systems
 """
 
-from aeromaps.models.base import AeroMAPSModel, AeromapsInterpolationFunction
+import warnings
+import re
+
+from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 import pandas as pd
 import numpy as np
 import lca_algebraic as agb
 from lca_modeller.io.configuration import LCAProblemConfigurator
-from typing import Tuple
 
-from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
-from aeromaps.models.parameters import Parameters
+# from aeromaps.core.process import DEFAULT_PARAMETERS_PATH
+# from aeromaps.models.parameters import Parameters
 from typing import Dict
 import xarray as xr
 
@@ -19,6 +21,11 @@ KEY_METHOD = "method"
 
 
 class LifeCycleAssessment(AeroMAPSModel):
+    deepcopy_at_init = (
+        False  # --> do not re-instantiate model at each process run since LCA model is heavy
+    )
+    # (see aeromaps/core/process.py)
+
     def __init__(
         self,
         name: str = "life_cycle_assessment",
@@ -27,7 +34,13 @@ class LifeCycleAssessment(AeroMAPSModel):
         *args,
         **kwargs,
     ):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(
+            name=name,
+            model_type="custom",
+            # inputs/outputs are defined in __init__ rather than auto generated from compute() signature
+            *args,
+            **kwargs,
+        )
 
         # Get LCA model and LCIA methods
         if configuration_file is None:
@@ -37,141 +50,148 @@ class LifeCycleAssessment(AeroMAPSModel):
         self.methods = methods
         self.axis = split_by
         self.params_names = agb.all_params().keys()
-        self.params_dict = dict()
         self.xarray_lca = xr.DataArray()
 
-        # Automatically add LCA parameters (except strings) as inputs of this AeroMAPSModel.
-        # See gemseo.py for more details about addition of auto-generated inputs.
-        self.auto_inputs = dict()
-        json_file_parameters = Parameters()
-        json_file_parameters.read_json(
-            file_name=DEFAULT_PARAMETERS_PATH
-        )  # default json file (parameters.json)
-        json_parameters_dict = json_file_parameters.to_dict()
+        # --- Add LCA parameters as inputs of this AeroMAPSModel ---
+        self._skip_data_type_validation = True  # see aeromaps/core/gemseo.py
+        self.input_names = []
+        self.output_names = []
 
         for x in self.params_names:
-            # KEY_YEAR is a special parameter treated separately
+            # Years of simulation are directly taken from AeroMAPS timeline and not as an input parameter
             if x == KEY_YEAR:
                 continue
 
-            # Inputs provided in json file
-            elif x in json_parameters_dict.keys():
-                value = json_parameters_dict[x]
-                self.auto_inputs[x] = type(value)
+            self.input_names.append(x)
+            self.input_names.append(x + "_reference_years")
+            self.input_names.append(x + "_reference_years_values")
 
-            # Parameters that should be interpolated from multiple values provided in json file
-            # (reference years and corresponding values)
-            elif x + "_reference_years" in json_parameters_dict.keys():
-                self.auto_inputs[x + "_reference_years"] = type(
-                    json_parameters_dict[x + "_reference_years"]
-                )
-                self.auto_inputs[x + "_reference_years_values"] = type(
-                    json_parameters_dict[x + "_reference_years_values"]
-                )
-
-            # Parameters that are not in parameters.json are assumed to be outputs from other AeroMAPS models
-            else:
-                self.auto_inputs[x] = pd.Series
-                # TODO: is their a way to robustify this assumption about data type pd.Series?
-                # Maybe by first running the other models and checking the data type of the outputs.
+            self.default_input_data[x] = np.nan
+            self.default_input_data[x + "_reference_years"] = np.nan
+            self.default_input_data[x + "_reference_years_values"] = np.nan
 
         # Dry run with lca_algebraic to build symbolic expressions of LCIA impacts
         print("Parametrizing LCIA impacts...", end=" ")
         self.lambdas = agb.lca._preMultiLCAAlgebric(self.model, self.methods, axis=self.axis)
         print("Done.")
 
-        # Add the auto-generated outputs to the AeroMAPSModel
-        # FIXME: this is a temporary solution. Not defining explicitly the output type cause issue since gemseo is expecting a np.ndarray or pd.Series as output type.
-        self.auto_outputs = {"outputs_lca": xr.DataArray}
+        # --- Add LCA impact categories the outputs to the AeroMAPSModel ---
+        if getattr(self.lambdas[0], "axis_keys", None):
+            for method in self.methods:
+                for phase in self.lambdas[0].axis_keys:
+                    method_with_axis = method + (phase,)
+                    self.output_names.append(tuple_to_varname(method_with_axis))
+        else:
+            for method in self.methods:
+                self.output_names.append(tuple_to_varname(method))
 
-        # Alternative?
-        # This doesn't work for now because the return value of compute() must be a tuple of explicit variables
-        # self.auto_outputs = dict()
-        # for i, method in enumerate(self.methods):
-        #    if self.lambdas[0].axis_keys:
-        #        for j, phase in enumerate(self.lambdas[0].axis_keys):
-        #            self.auto_outputs[f"ImpactScore_Method_{i}_Axis_{j}"] = pd.Series
-        #    else:
-        #        self.auto_outputs[f"ImpactScore_Method_{i}"] = pd.Series
+    def compute(self, input_data) -> dict:
+        # --- Assign values to parameters ---
+        params_dict = self._get_param_values(input_data)
 
-    def compute(
-        self, **kwargs
-    ) -> xr.DataArray:  # Python 3.9+: use builtins tuple instead of Tuple from typing lib
-        # Assign values to parameters
+        # --- Calculate impacts for all parameters at once ---
+        res = self._multi_lca_algebraic_raw(**params_dict)
+
+        # --- Store xarray to enable user to access data after process calculation ---
+        res["params"] = params_dict[KEY_YEAR]  # replace param index by actual years
+        res = res.rename({"params": KEY_YEAR})  # rename 'params' dimension to 'year'
+        self.xarray_lca = res
+
+        # --- Convert xarray to pd.Series to enable connection with other models ---
+        output_data = self._convert_xarray_to_series(res)
+        self._store_outputs(output_data)
+
+        return output_data
+
+    def _get_param_values(self, input_data) -> dict:
+        """
+        Extract LCA parameter values from input_data, handling different formats
+        """
+        params_dict = {}
+
         for name in self.params_names:
-            # KEY_YEAR is a special parameter treated separately
+            # --- Year parameter is obtained from AeroMAPS timeline ---
             if name == KEY_YEAR:
-                self.params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
+                # params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
                 # replace by self.data["years"]["prospective_years"] ?
+                params_dict[name] = self.years
+                continue
 
-            # String parameter
-            elif isinstance(kwargs.get(name), str):
-                self.params_dict[name] = kwargs[name]
+            # --- Parameter provided directly (either single value or list of values) ---
+            if is_not_nan(input_data[name]):  # np.nan is the default value set in __init__
+                input_value = input_data[name]
 
-            # Single float value
-            elif isinstance(kwargs.get(name), float):
-                self.params_dict[name] = kwargs[name]
+                # Single value
+                if isinstance(input_value, str | float | int):
+                    params_dict[name] = input_value
 
-            # Multiple values
-            elif isinstance(kwargs.get(name), (list, np.ndarray, pd.Series)):
-                param_values = kwargs[name].copy()
-                # Check if the length of the parameter values is consistent with the years
-                if len(param_values) > self.end_year - self.prospection_start_year + 1:
-                    param_values = param_values[
-                        -(self.end_year - self.prospection_start_year + 1) :
-                    ]
-                elif len(param_values) < self.end_year - self.prospection_start_year + 1:
-                    raise ValueError(
-                        f"Parameter '{name}' has not enough values for the simulation period."
-                    )
-                self.params_dict[name] = np.nan_to_num(param_values)
+                # Multiple values
+                elif isinstance(input_value, (list, np.ndarray, pd.Series)):
+                    if len(input_data[name]) == 1:
+                        params_dict[name] = input_value[0]
 
-            # Parameters that should be interpolated from multiple values provided in json file
-            # (reference years and corresponding values)
-            elif name + "_reference_years" in kwargs and name + "_reference_years_values" in kwargs:
-                param_values = AeromapsInterpolationFunction(
+                    elif len(input_value) == len(self.years):
+                        params_dict[name] = np.nan_to_num(input_value)
+
+                    elif len(input_value) > len(self.years):
+                        n = len(input_value) - len(self.years)
+
+                        # If it's a pandas Series, try to align on the years index
+                        if isinstance(input_value, pd.Series):
+                            # Attempt to reindex on self.years, dropping missing values or filling with NaN
+                            input_value = input_value.reindex(self.years)
+                        else:
+                            # If not a Series, fall back to slicing and warn user
+                            input_value = input_value[-len(self.years) :]
+                            warnings.warn(
+                                f"Too many values for parameter {name}: first {n} values will be dropped."
+                            )
+
+                        # Finally, convert safely
+                        params_dict[name] = np.nan_to_num(input_value)
+
+                    else:
+                        raise ValueError(
+                            f"Parameter '{name}' has not enough values for the simulation period {self.historic_start_year} - {self.end_year}."
+                        )
+
+                else:
+                    raise TypeError(f"Parameter '{name}' has unsupported type {type(input_value)}.")
+
+            # --- Parameter value not provided directly, try to interpolate from parameters.json ---
+            elif is_not_nan(input_data[name + "_reference_years"]) and is_not_nan(
+                input_data[name + "_reference_years_values"]
+            ):
+                param_values = aeromaps_interpolation_function(
                     self,
-                    kwargs[name + "_reference_years"],
-                    kwargs[name + "_reference_years_values"],
+                    input_data[name + "_reference_years"],
+                    input_data[name + "_reference_years_values"],
                     model_name=self.name,
                 )
-                param_values = param_values.loc[self.prospection_start_year : self.end_year].values
-                self.params_dict[name] = np.nan_to_num(param_values)
+                # param_values = param_values.loc[self.prospection_start_year:self.end_year].values
+                params_dict[name] = np.nan_to_num(param_values)
 
-            # else: the parameter is not provided and will be set to its default value.
+            # --- Parameter value not provided, use default value from lca_modeller ---
             else:
-                raise UserWarning(
-                    f'Value for LCA parameter "{name}" is not provided. Default value will be used.'
+                default_val = agb.all_params()[name].default
+                warnings.warn(
+                    f'Value for LCA parameter "{name}" is not provided. Default value {default_val} will be used.'
+                )
+                params_dict[name] = default_val
+
+            # --- Warn if both direct value and reference years/values were provided ---
+            if (
+                is_not_nan(input_data[name])
+                and is_not_nan(input_data[name + "_reference_years"])
+                and is_not_nan(input_data[name + "_reference_years_values"])
+            ):
+                warnings.warn(
+                    f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.'
                 )
 
-        # Calculate impacts for all parameters at once
-        res = self.multiLCAAlgebraicRaw(**self.params_dict)
+        return params_dict
 
-        # Set the year as the 'x' axis and rename
-        res["params"] = self.params_dict[KEY_YEAR]
-        res = res.rename({"params": KEY_YEAR})
-
-        # Store xarray to enable user to access data after process calculation
-        self.xarray_lca = outputs_lca = res
-
-        # Test: convert xarray to pd.Series to enable connection with other models.
-        # Convert each (impact, axis) pair into a pd.Series
-        # if self.lambdas[0].axis_keys:
-        #    outputs_lca = tuple([
-        #        res.sel(impacts=impact, axis=ax).to_series()
-        #        for impact in res.coords["impacts"].values
-        #        for ax in res.coords["axis"].values
-        #    ])
-        # else:
-        #    outputs_lca = tuple([
-        #        res.sel(impacts=impact).to_series() for impact in res.coords["impacts"].values
-        #    ])
-        # Issue to solve: how to set return with explicit variables? E.g. return tuple(outputs_lca) doesn't work.
-        # It has to be for example return (my_var1, my_var2, my_var3, ..., my_var_n) with each variable being a pd.Series or ndarray.
-
-        return outputs_lca
-
-    def multiLCAAlgebraicRaw(self, **params):
+    def _multi_lca_algebraic_raw(self, **params):
         """
         Main parametric LCIA method : Computes LCA by expressing the foreground
         model as symbolic expression of background activities and parameters.
@@ -263,7 +283,7 @@ class LifeCycleAssessment(AeroMAPSModel):
             )
         return res
 
-    def compute_impacts_from_lambdas(
+    def _compute_impacts_from_lambdas(
         self,
         **params: Dict[str, agb.SingleOrMultipleFloat],
     ):
@@ -332,3 +352,59 @@ class LifeCycleAssessment(AeroMAPSModel):
             df = pd.concat(list(dfs.values()))
 
         return df
+
+    def _convert_xarray_to_series(self, res: xr.DataArray) -> dict:
+        """
+        Convert xarray DataArray to dictionary of pd.Series
+        """
+        output_data = {}
+
+        if getattr(self.lambdas[0], "axis_keys", None):
+            for method in res.coords["impacts"].values:
+                for phase in res.coords["axis"].values:
+                    method_with_axis = method + (phase,)
+                    value = res.sel(systems=self.model.key, impacts=method, axis=phase).to_series()
+                    value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                    output_data[tuple_to_varname(method_with_axis)] = value
+        else:
+            for method in res.coords["impacts"].values:
+                value = res.sel(systems=self.model.key, impacts=method).to_series()
+                value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                output_data[tuple_to_varname(method)] = value
+
+        return output_data
+
+
+def tuple_to_varname(items):
+    """
+    Convert a tuple or list of strings into a clean, Python-friendly variable name.
+    """
+    if isinstance(items, (list, tuple)):
+        text = "__".join(items)  # join parts with double underscores
+    else:
+        text = str(items)
+
+    # Lowercase everything
+    text = text.lower()
+
+    # Replace anything that’s not alphanumeric or underscore with underscore
+    text = re.sub(r"[^0-9a-zA-Z_]+", "_", text)
+
+    # Remove leading/trailing underscores and collapse multiple underscores
+    text = re.sub(r"_+", "_", text).strip("_")
+
+    # Add lca to variable
+    text = "lca_" + text
+
+    return text
+
+
+def is_not_nan(x):
+    """Return True if x is not NaN or None."""
+    if x is None:
+        return False
+    if isinstance(x, (float, int, np.number)):
+        return not pd.isna(x)
+    if isinstance(x, (pd.Series, np.ndarray, list, tuple)):
+        return pd.notna(np.asarray(x)).any()
+    return True

@@ -93,5 +93,8 @@
   "exogenous_carbon_price_reference_years": [2020, 2030, 2040, 2050, 2060, 2070],
   "exogenous_carbon_price_reference_years_values": [54, 250, 500, 775, 1203, 1869],
   "kerosene_price_reference_years": [],
-  "kerosene_price_reference_years_values": [0.54]
+  "kerosene_price_reference_years_values": [0.54],
+  "model": "remind",
+  "pathway": "SSP2_Base",
+  "elec_solar_share": 1.0
 }

@@ -861,7 +861,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.out1 = widgets.Output()
         with self.out1:
             plt.ioff()
-            self.fig1 = plot_1[self.graph1.value](self.process.data)
+            self.fig1 = plot_1[self.graph1.value](self.process)
             display(self.fig1.fig.canvas)
 
     def _create_graph_2_en(self, change):
@@ -873,7 +873,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.out2 = widgets.Output()
         with self.out2:
             plt.ioff()
-            self.fig2 = plot_2[self.graph2.value](self.process.data)
+            self.fig2 = plot_2[self.graph2.value](self.process)
             display(self.fig2.fig.canvas)
 
     def _create_graph_3_en(self, change):
@@ -885,7 +885,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.out3 = widgets.Output()
         with self.out3:
             plt.ioff()
-            self.fig3 = plot_3[self.graph3.value](self.process.data)
+            self.fig3 = plot_3[self.graph3.value](self.process)
             display(self.fig3.fig.canvas)
 
     def _create_graph12_output(self):
@@ -1534,7 +1534,6 @@ class GraphicalUserInterface(widgets.VBox):
                 rc_cost=1.0,  # Dummy
                 nrc_cost=1.0,  # Dummy
             )
-            print(short_range_aircraft1_params)
             short_range_aircraft1 = Aircraft(
                 "New Short-range Aircraft 1",
                 parameters=short_range_aircraft1_params,
@@ -2034,158 +2033,227 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.operations_contrails_start_year = 2051
             self.process.parameters.operations_contrails_duration = 15.0
 
+        # Refactoring generic energy
+        # Impossible to add/remove dynamically pathways from existing process.
+        # We rely on default config and set all share to zero when necessary
+        dropin_pathways = self.process.pathways_manager.get(aircraft_type="dropin_fuel")
         # Carbon intensity
         if self.w_energy_mix.value == "Kerosene":
-            self.process.parameters.biofuel_share_reference_years = []
-            self.process.parameters.biofuel_share_reference_years_values = [0.0]
-            self.process.parameters.electrofuel_share_reference_years = []
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0]
-        elif self.w_energy_mix.value == "Biofuel":
-            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.0, 30.0, 100.0]
-            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
-        elif self.w_energy_mix.value == "Electrofuel":
-            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.biofuel_share_reference_years_values = [0.0, 0.0, 0.0, 0.0]
-            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [
-                0.0,
-                0.0,
-                25.0,
-                100.0,
-            ]
-        elif self.w_energy_mix.value == "ReFuelEU":
-            self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.biofuel_share_reference_years_values = [0.0, 4.8, 24.0, 35.0]
-            self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.electrofuel_share_reference_years_values = [
-                0.0,
-                1.2,
-                10.0,
-                35.0,
-            ]
+            for pathway in dropin_pathways:
+                if pathway.name == "fossil_kerosene":
+                    if not pathway.default:
+                        raise AssertionError('"fossil_kerosene" pathway must be default in the GUI')
+                else:
+                    self.reset_pathway_mandate(pathway)
 
-        if self.w_biofuel_production.value == "Current":
-            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
-            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [100]
-            self.process.parameters.biofuel_hefa_others_share_reference_years = []
-            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_ft_others_share_reference_years = []
-            self.process.parameters.biofuel_ft_others_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_ft_msw_share_reference_years = []
-            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
-        elif self.w_biofuel_production.value == "High-carbon":
-            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
-            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_hefa_others_share_reference_years = []
-            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_ft_others_share_reference_years = []
-            self.process.parameters.biofuel_ft_others_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_ft_msw_share_reference_years = []
-            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
-        elif self.w_biofuel_production.value == "Low-carbon":
-            self.process.parameters.biofuel_hefa_fog_share_reference_years = []
-            self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_hefa_others_share_reference_years = []
-            self.process.parameters.biofuel_hefa_others_share_reference_years_values = [0.0]
-            self.process.parameters.biofuel_ft_others_share_reference_years = []
-            self.process.parameters.biofuel_ft_others_share_reference_years_values = [100.0]
-            self.process.parameters.biofuel_ft_msw_share_reference_years = []
-            self.process.parameters.biofuel_ft_msw_share_reference_years_values = [0.0]
+                # as kerosene is default no need to set share for fossil kerosene
+        else:
+            if self.w_energy_mix.value == "Electrofuel":
+                biofuel_share = [0.0, 0.0, 0.0, 0.0]
+                electrofuel_share = [0.0, 0.0, 25.0, 100.0]
 
+            elif self.w_energy_mix.value == "Biofuel":
+                biofuel_share = [0.0, 4.0, 30.0, 100.0]
+                electrofuel_share = [0.0, 0.0, 0.0, 0.0]
+
+            elif self.w_energy_mix.value == "ReFuelEU":
+                biofuel_share = [0.0, 4.8, 24.0, 35.0]
+                electrofuel_share = [
+                    0.0,
+                    1.2,
+                    10.0,
+                    35.0,
+                ]
+
+            for pathway in dropin_pathways:
+                if pathway.name == "electrofuel":
+                    if pathway.mandate_type is not None:
+                        self.process.parameters.electrofuel_mandate_share_years = [
+                            2020,
+                            2030,
+                            2040,
+                            2050,
+                        ]
+                        self.process.parameters.electrofuel_mandate_share_values = electrofuel_share
+
+            biofuel_pathways = self.process.pathways_manager.get(
+                aircraft_type="dropin_fuel", energy_origin="biomass"
+            )
+            if self.w_biofuel_production.value == "Current":
+                for pathway in biofuel_pathways:
+                    if pathway.name == "hefa_fog":
+                        self.process.parameters.hefa_fog_mandate_share_years = [
+                            2020,
+                            2030,
+                            2040,
+                            2050,
+                        ]
+                        self.process.parameters.hefa_fog_mandate_share_values = [
+                            x * 100 / 100 for x in biofuel_share
+                        ]
+                    else:
+                        self.reset_pathway_mandate(pathway)
+
+            elif self.w_biofuel_production.value == "High-carbon":
+                for pathway in biofuel_pathways:
+                    if pathway.name == "atj":
+                        self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
+                        self.process.parameters.atj_mandate_share_values = [
+                            x * 100 / 100 for x in biofuel_share
+                        ]
+                    else:
+                        self.reset_pathway_mandate(pathway)
+
+            elif self.w_biofuel_production.value == "Low-carbon":
+                for pathway in biofuel_pathways:
+                    if pathway.name == "ft_others":
+                        self.process.parameters.ft_others_mandate_share_years = [
+                            2020,
+                            2030,
+                            2040,
+                            2050,
+                        ]
+                        self.process.parameters.ft_others_mandate_share_values = [
+                            x * 100 / 100 for x in biofuel_share
+                        ]
+                    else:
+                        self.reset_pathway_mandate(pathway)
+
+        hydrogen_pathways = self.process.pathways_manager.get(aircraft_type="hydrogen")
         if self.w_hydrogen_production.value == "Current":
-            self.process.parameters.hydrogen_electrolysis_share_reference_years = []
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_gas_share_reference_years = []
-            self.process.parameters.hydrogen_gas_share_reference_years_values = [71]
+            for pathway in hydrogen_pathways:
+                if pathway.name == "hydrogen_electrolysis":
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_years = []
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2]
+                elif pathway.name == "hydrogen_gas":
+                    self.process.parameters.hydrogen_gas_mandate_share_years = []
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71]
+                elif pathway.name == "hydrogen_coal":
+                    self.process.parameters.hydrogen_coal_mandate_share_years = []
+                    self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27]
+                else:
+                    self.reset_pathway_mandate(pathway)
+
         elif self.w_hydrogen_production.value == "Gas without CCS":
-            self.process.parameters.hydrogen_electrolysis_share_reference_years = []
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_gas_share_reference_years = []
-            self.process.parameters.hydrogen_gas_share_reference_years_values = [100]
+            for pathway in hydrogen_pathways:
+                if pathway.name == "hydrogen_gas":
+                    self.process.parameters.hydrogen_gas_mandate_share_years = []
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [100]
+                else:
+                    self.reset_pathway_mandate(pathway)
+
         elif self.w_hydrogen_production.value == "Gas with CCS":
-            self.process.parameters.hydrogen_electrolysis_share_reference_years = [2020, 2030, 2050]
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [2, 0, 0]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
-                2020,
-                2030,
-                2040,
-                2050,
-            ]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 30, 70, 100]
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_gas_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.hydrogen_gas_share_reference_years_values = [71, 70, 30, 0]
+            for pathway in hydrogen_pathways:
+                if pathway.name == "hydrogen_electrolysis":
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_years = [
+                        2020,
+                        2030,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2, 0, 0]
+                elif pathway.name == "hydrogen_gas_ccs":
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
+                        2020,
+                        2030,
+                        2040,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 30, 70, 100]
+                elif pathway.name == "hydrogen_gas":
+                    self.process.parameters.hydrogen_gas_mandate_share_years = [
+                        2020,
+                        2030,
+                        2040,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 70, 30, 0]
+                else:
+                    self.reset_pathway_mandate(pathway)
+
         elif self.w_hydrogen_production.value == "Electrolysis":
-            self.process.parameters.hydrogen_electrolysis_share_reference_years = [
-                2020,
-                2030,
-                2040,
-                2050,
-            ]
-            self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [
-                2,
-                30,
-                50,
-                100,
-            ]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years = [
-                2020,
-                2030,
-                2040,
-                2050,
-            ]
-            self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0, 20, 30, 0]
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
-            self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
-            self.process.parameters.hydrogen_gas_share_reference_years = [2020, 2030, 2040, 2050]
-            self.process.parameters.hydrogen_gas_share_reference_years_values = [71, 50, 20, 0]
+            for pathway in hydrogen_pathways:
+                if pathway.name == "hydrogen_electrolysis":
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_years = [
+                        2020,
+                        2030,
+                        2040,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [
+                        2,
+                        30,
+                        50,
+                        100,
+                    ]
+                elif pathway.name == "hydrogen_gas_ccs":
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
+                        2020,
+                        2030,
+                        2040,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 20, 30, 0]
+                elif pathway.name == "hydrogen_gas":
+                    self.process.parameters.hydrogen_gas_mandate_share_years = [
+                        2020,
+                        2030,
+                        2040,
+                        2050,
+                    ]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 50, 20, 0]
+                else:
+                    self.reset_pathway_mandate(pathway)
 
         if self.w_electricity_production.value == "High-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = []
-            self.process.parameters.electricity_emission_factor_reference_years_values = [1100.0]
+            self.process.parameters.grid_electricity_co2_emission_factor_years = []
+            self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                x / 3.6 for x in [1100.0]
+            ]  # conversion from KWh to MJ
         elif self.w_electricity_production.value == "Current":
-            self.process.parameters.electricity_emission_factor_reference_years = []
-            self.process.parameters.electricity_emission_factor_reference_years_values = [429.0]
+            self.process.parameters.grid_electricity_co2_emission_factor_years = []
+            self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                x / 3.6 for x in [429.0]
+            ]
         elif self.w_electricity_production.value == "Medium-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = [
+            self.process.parameters.grid_electricity_co2_emission_factor_years = [
                 2020,
                 2030,
                 2040,
                 2050,
             ]
-            self.process.parameters.electricity_emission_factor_reference_years_values = [
-                429,
-                300,
-                240,
-                240,
+            self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                x / 3.6
+                for x in [
+                    429,
+                    300,
+                    240,
+                    240,
+                ]
             ]
         elif self.w_electricity_production.value == "Low-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = [
-                2020,
-                2030,
-                2040,
-                2050,
+            self.process.parameters.grid_electricity_co2_emission_factor_years = [
+                x / 3.6
+                for x in [
+                    2020,
+                    2030,
+                    2040,
+                    2050,
+                ]
             ]
-            self.process.parameters.electricity_emission_factor_reference_years_values = [
-                429,
-                200,
-                120,
-                70,
+            self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                x / 3.6
+                for x in [
+                    429,
+                    200,
+                    120,
+                    70,
+                ]
             ]
         elif self.w_electricity_production.value == "Dedicated low-carbon":
-            self.process.parameters.electricity_emission_factor_reference_years = []
-            self.process.parameters.electricity_emission_factor_reference_years_values = [20.0]
+            self.process.parameters.grid_electricity_co2_emission_factor_years = []
+            self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                x / 3.6 for x in [20.0]
+            ]
 
         # SCENARIOS
         if self.w_accordion.selected_index == 1:
@@ -2226,48 +2294,57 @@ class GraphicalUserInterface(widgets.VBox):
                 self.process.parameters.operations_contrails_start_year = 2051
                 self.process.parameters.operations_contrails_duration = 15.0
                 # Fuels
-                self.process.parameters.biofuel_share_reference_years = [2020, 2030, 2040, 2050]
-                self.process.parameters.biofuel_share_reference_years_values = [
-                    0.0,
-                    4.0,
-                    24.0,
-                    35.0,
-                ]
-                self.process.parameters.electrofuel_share_reference_years = [2020, 2030, 2040, 2050]
-                self.process.parameters.electrofuel_share_reference_years_values = [
+                self.process.parameters.electrofuel_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.electrofuel_mandate_share_years_values = [
                     0.0,
                     2,
                     13.0,
                     50.0,
                 ]
-                self.process.parameters.biofuel_hefa_fog_share_reference_years = []
-                self.process.parameters.biofuel_hefa_fog_share_reference_years_values = [0.7]
-                self.process.parameters.biofuel_hefa_others_share_reference_years = []
-                self.process.parameters.biofuel_hefa_others_share_reference_years_values = [3.8]
-                self.process.parameters.biofuel_ft_others_share_reference_years = []
-                self.process.parameters.biofuel_ft_others_share_reference_years_values = [76.3]
-                self.process.parameters.biofuel_ft_msw_share_reference_years = []
-                self.process.parameters.biofuel_ft_msw_share_reference_years_values = [7.4]
-                self.process.parameters.electricity_emission_factor_reference_years = [
+                self.process.parameters.hefa_fog_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.hefa_fog_mandate_share_values = [
+                    x * 0.7 / 100 for x in [0.0, 4.0, 24.0, 35.0]
+                ]
+                self.process.parameters.hefa_others_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.hefa_others_mandate_share_years_values = [
+                    x * 3.8 / 100 for x in [0.0, 4.0, 24.0, 35.0]
+                ]
+                self.process.parameters.ft_others_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.ft_others_mandate_share_years_values = [
+                    x * 76.3 / 100 for x in [0.0, 4.0, 24.0, 35.0]
+                ]
+                self.process.parameters.ft_msw_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.ft_msw_mandate_share_years_values = [
+                    x * 7.4 / 100 for x in [0.0, 4.0, 24.0, 35.0]
+                ]
+                self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
+                self.process.parameters.atj_mandate_share_years_values = [
+                    x * 11.8 / 100 for x in [0.0, 4.0, 24.0, 35.0]
+                ]
+
+                self.process.parameters.grid_electricity_co2_emission_factor_years = [
                     2020,
                     2030,
                     2040,
                     2050,
                 ]
-                self.process.parameters.electricity_emission_factor_reference_years_values = [
-                    429.0,
-                    160.0,
-                    60.0,
-                    20.0,
+                self.process.parameters.grid_electricity_co2_emission_factor_values = [
+                    x / 3.6
+                    for x in [
+                        429.0,
+                        160.0,
+                        60.0,
+                        20.0,
+                    ]
                 ]
-                self.process.parameters.hydrogen_electrolysis_share_reference_years = []
-                self.process.parameters.hydrogen_electrolysis_share_reference_years_values = [100]
-                self.process.parameters.hydrogen_gas_ccs_share_reference_years = []
-                self.process.parameters.hydrogen_gas_ccs_share_reference_years_values = [0]
-                self.process.parameters.hydrogen_coal_ccs_share_reference_years = []
-                self.process.parameters.hydrogen_coal_ccs_share_reference_years_values = [0]
-                self.process.parameters.hydrogen_gas_share_reference_years = []
-                self.process.parameters.hydrogen_gas_share_reference_years_values = [0]
+                self.process.parameters.hydrogen_electrolysis_mandate_share_years = []
+                self.process.parameters.hydrogen_electrolysis_mandate_share_years_values = [100]
+                self.process.parameters.hydrogen_gas_ccs_mandate_share_years = []
+                self.process.parameters.hydrogen_gas_ccs_mandate_share_years_values = [0]
+                self.process.parameters.hydrogen_coal_ccs_mandate_share_years = []
+                self.process.parameters.hydrogen_coal_ccs_mandate_share_years_values = [0]
+                self.process.parameters.hydrogen_gas_mandate_share_years = []
+                self.process.parameters.hydrogen_gas_mandate_share_years_values = [0]
 
         # DISCOVERY AND SCENARIOS
         # Environment
@@ -2348,46 +2425,54 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.carbon_dioxyde_removal_2100 = 733.0
 
         if self.w_biomass_available.value == "Very pessimistic":
-            self.process.parameters.waste_biomass = 9.0
-            self.process.parameters.crops_biomass = 8.0
-            self.process.parameters.forest_residues_biomass = 5.0
-            self.process.parameters.agricultural_residues_biomass = 10.0
-            self.process.parameters.algae_biomass = 5.0
+            # NB conversion to generic models
+            # hefa_fog = > 1EJ
+            # hefa other => 9% crops + algae
+            # ft msw => waste - hefa_fog
+            # ft others => 63% crops + forest residues + agri residues
+            # atj => 28% crops + algae
+
+            self.process.parameters.hefa_fog_biomass_availability_global = 1.0e12
+            self.process.parameters.hefa_others_biomass_availability_global = 5.72e12
+            self.process.parameters.ft_msw_biomass_availability_global = 8.0e12
+            self.process.parameters.ft_others_biomass_availability_global = 20.04e12
+            self.process.parameters.atj_biomass_availability_global = 2.24e12
+
         elif self.w_biomass_available.value == "Pessimistic":
-            self.process.parameters.waste_biomass = 10.0
-            self.process.parameters.crops_biomass = 37.0
-            self.process.parameters.forest_residues_biomass = 15.0
-            self.process.parameters.agricultural_residues_biomass = 30.0
-            self.process.parameters.algae_biomass = 8.0
+            self.process.parameters.hefa_fog_biomass_availability_global = 1.0e12
+            self.process.parameters.hefa_others_biomass_availability_global = 11.33e12
+            self.process.parameters.ft_msw_biomass_availability_global = 9.0e12
+            self.process.parameters.ft_others_biomass_availability_global = 68.31e12
+            self.process.parameters.atj_biomass_availability_global = 10.36e12
         elif self.w_biomass_available.value == "Realistic":
-            self.process.parameters.waste_biomass = 12.0
-            self.process.parameters.crops_biomass = 63.0
-            self.process.parameters.forest_residues_biomass = 17.0
-            self.process.parameters.agricultural_residues_biomass = 57.0
-            self.process.parameters.algae_biomass = 15.0
+            self.process.parameters.hefa_fog_biomass_availability_global = 1.0e12
+            self.process.parameters.hefa_others_biomass_availability_global = 20.67e12
+            self.process.parameters.ft_msw_biomass_availability_global = 11.0e12
+            self.process.parameters.ft_others_biomass_availability_global = 113.7e12
+            self.process.parameters.atj_biomass_availability_global = 17.64e12
         elif self.w_biomass_available.value == "Optimistic":
-            self.process.parameters.waste_biomass = 20.0
-            self.process.parameters.crops_biomass = 109.0
-            self.process.parameters.forest_residues_biomass = 39.0
-            self.process.parameters.agricultural_residues_biomass = 103.0
-            self.process.parameters.algae_biomass = 31.0
+            self.process.parameters.hefa_fog_biomass_availability_global = 1.0e12
+            self.process.parameters.hefa_others_biomass_availability_global = 40, 81e12
+            self.process.parameters.ft_msw_biomass_availability_global = 19.0e12
+            self.process.parameters.ft_others_biomass_availability_global = 210.67e12
+            self.process.parameters.atj_biomass_availability_global = 30.52e12
         elif self.w_biomass_available.value == "Very optimistic":
-            self.process.parameters.waste_biomass = 27.0
-            self.process.parameters.crops_biomass = 217.0
-            self.process.parameters.forest_residues_biomass = 59.0
-            self.process.parameters.agricultural_residues_biomass = 204.0
-            self.process.parameters.algae_biomass = 50.0
+            self.process.parameters.hefa_fog_biomass_availability_global = 1.0e12
+            self.process.parameters.hefa_others_biomass_availability_global = 69.53e12
+            self.process.parameters.ft_msw_biomass_availability_global = 26.0e12
+            self.process.parameters.ft_others_biomass_availability_global = 399.71e12
+            self.process.parameters.atj_biomass_availability_global = 60.76e12
 
         if self.w_electricity_available.value == "Current":
-            self.process.parameters.available_electricity = 100.0
+            self.process.parameters.grid_electricity_availability_global = 100.0e12
         elif self.w_electricity_available.value == "Pessimistic":
-            self.process.parameters.available_electricity = 150.0
+            self.process.parameters.grid_electricity_availability_global = 150.0e12
         elif self.w_electricity_available.value == "Realistic":
-            self.process.parameters.available_electricity = 200.0
+            self.process.parameters.grid_electricity_availability_global = 200.0e12
         elif self.w_electricity_available.value == "Optimistic":
-            self.process.parameters.available_electricity = 250.0
+            self.process.parameters.grid_electricity_availability_global = 250.0e12
         elif self.w_electricity_available.value == "Very optimistic":
-            self.process.parameters.available_electricity = 300.0
+            self.process.parameters.grid_electricity_availability_global = 300.0e12
 
         # Allocations
         if self.w_carbon_budget_allocation.value == "2.3%":
@@ -2408,23 +2493,40 @@ class GraphicalUserInterface(widgets.VBox):
         elif self.w_equivalent_carbon_budget_allocation.value == "15%":
             self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 15
 
+        allocated_biomass = 0.0
         if self.w_biomass_allocation.value == "0%":
-            self.process.parameters.aviation_biomass_allocated_share = 0.0
+            allocated_biomass = 0.0
         elif self.w_biomass_allocation.value == "2.3%":
-            self.process.parameters.aviation_biomass_allocated_share = 2.3
+            allocated_biomass = 2.3
         elif self.w_biomass_allocation.value == "7.5%":
-            self.process.parameters.aviation_biomass_allocated_share = 7.5
+            allocated_biomass = 7.5
         elif self.w_biomass_allocation.value == "14.7%":
-            self.process.parameters.aviation_biomass_allocated_share = 14.7
+            allocated_biomass = 14.7
+
+        self.process.parameters.hefa_fog_biomass_availability_aviation_allocated_share = (
+            allocated_biomass
+        )
+        self.process.parameters.hefa_others_biomass_availability_aviation_allocated_share = (
+            allocated_biomass
+        )
+        self.process.parameters.ft_msw_biomass_availability_aviation_allocated_share = (
+            allocated_biomass
+        )
+        self.process.parameters.ft_others_biomass_availability_aviation_allocated_share = (
+            allocated_biomass
+        )
+        self.process.parameters.atj_biomass_availability_aviation_allocated_share = (
+            allocated_biomass
+        )
 
         if self.w_electricity_allocation.value == "0%":
-            self.process.parameters.aviation_electricity_allocated_share = 0.0
+            self.process.parameters.grid_electricity_availability_aviation_allocated_share = 0.0
         elif self.w_electricity_allocation.value == "2.3%":
-            self.process.parameters.aviation_electricity_allocated_share = 2.3
+            self.process.parameters.grid_electricity_availability_aviation_allocated_share = 2.3
         elif self.w_electricity_allocation.value == "7.5%":
-            self.process.parameters.aviation_electricity_allocated_share = 7.5
+            self.process.parameters.grid_electricity_availability_aviation_allocated_share = 7.5
         elif self.w_electricity_allocation.value == "15.0%":
-            self.process.parameters.aviation_electricity_allocated_share = 15.0
+            self.process.parameters.grid_electricity_availability_aviation_allocated_share = 15.0
 
     def _update_plots(self):
         self.fig1.update(self.process.data)
@@ -2478,3 +2580,11 @@ class GraphicalUserInterface(widgets.VBox):
         self.fig1.fig.savefig(pth.join(FOLDER_PATH, "fig1.pdf"))
         self.fig2.fig.savefig(pth.join(FOLDER_PATH, "fig2.pdf"))
         self.fig3.fig.savefig(pth.join(FOLDER_PATH, "fig3.pdf"))
+
+    def reset_pathway_mandate(self, pathway):
+        self.process.parameters.__dict__[
+            pathway.name + "_mandate_" + pathway.mandate_type + "_years"
+        ] = []
+        self.process.parameters.__dict__[
+            pathway.name + "_mandate_" + pathway.mandate_type + "_values"
+        ] = [0.0]

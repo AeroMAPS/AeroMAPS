@@ -1,0 +1,448 @@
+### DEFAULT ENERGY CARRIERS DATA - TOP-DOWN MODEL ###
+# This file contains the default energy carriers data for the generic energy models
+
+# -----------------------------------------------------------------------------
+# Example of a generic pathway for the top-down model (all possible fields) and options
+# -----------------------------------------------------------------------------
+# generic_example:
+#   # Metadata
+#   name: "generic_example"
+#   environmental_model: "top-down" # or "bottom-up", used to select the model used to compute energy carrier outputs
+#   cost_model: "top-down"
+#   aircraft_type: "dropin_fuel"  # or "hydrogen", "electric", based on the fleet model output and downstream processes
+#   energy_origin: "biomass"      # or "fossil", "electricity", free to add more : "nuclear", "solar" ==> used to compute usage of resources
+#   default: False                # if True, this energy carrier is used as default and the mandate specified is not used
+#   inputs:
+#     # Policy
+#     mandate:
+#       mandate_type: "share"    # or "volume". If "share", the mandate is a share of the aircraft-type fuel demand, if "volume", it is directly a volume of fuel.
+#       mandate_share: !AeroMapsCustomDataType
+#         years: [2020, 2030, 2040, 2050]
+#         values: [0.0, 1.0, 2.0, 3.0]
+#         method: linear
+#     # Technical
+#     technical:
+#       resource_names: [ "generic_resource" ]      # List of resources used to produce the energy carrier, excluding those used in processes
+#       resource_specific_consumption:
+#         generic_resource: 1.0                               # MJ of resource consumed per MJ of energy carrier produced
+#       kerosene_selectivity: 0.15            # Share of the fuel that is for aviation (used for resource mobilized, ..)
+#       lhv: 44                                                     # Lower Heating Value of the energy carrier in MJ/kg
+#       plant_load_factor: 0.95
+#       plant_lifespan: 25
+#       processes_names: [ "process1", "process2" ]             # List of processes used to produce the energy carrier
+#     # Environmental
+#     environmental:
+#       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType   # co2 ef (MJ/kg) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
+#         years: []
+#         values: [50.0]
+#         method: linear
+#       emission_index:
+#         h2o: 1.0
+#         nox: 0.01
+#         sulfur: 0.0
+#         soot: 0.0
+#         particles_number: 1e13
+#     # Economics
+#     economics:
+#       mean_mfsp_without_resource: !AeroMapsCustomDataType     # Cost/minimum fuel selling price (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
+#         years: []
+#         values: [0.02]
+#         method: linear
+#       mean_unit_subsidy_without_resource: !AeroMapsCustomDataType # Subsidy (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
+#        years: []
+#        values: [0.0496]
+#        method: linear
+#       mean_unit_tax_without_resource: !AeroMapsCustomDataType # Tax (€/MJ) of the energy carrier "core" : these can also be part of resource/processes depending on user's choices
+#         years: []
+#         values: [0.0]
+#         method: linear
+#   outputs:
+#     # --> This is not used yet, but possible development would be to select what to compute based on user-defined outputs
+# -----------------------------------------------------------------------------
+
+
+hefa_fog:
+  # Metadata
+  name: "hefa_fog"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 4.8, 0.168, 0.245]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_fog_biomass" ]
+      resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.02317] # Converted 0.815488 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+  
+
+hefa_others:
+  # Metadata
+  name: "hefa_others"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 0.91, 1.33]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "hefa_others_biomass" ]
+      resource_specific_consumption:
+        hefa_others_biomass: 1.72
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [61.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0299] # Converted 1.052703 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+  
+ft_msw:
+  # Metadata
+  name: "ft_msw"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 1.78, 2.59]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_msw_biomass" ]
+      resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0322] # Converted 1.142423 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+
+ft_others:
+  # Metadata
+  name: "ft_others"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 18.31, 26.705]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_others_biomass" ]
+      resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [7.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0392] # Converted 1.378082 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+  
+atj:
+  # Metadata
+  name: "atj"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 0.0, 2.8320000000000003, 4.13]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "atj_biomass" ]
+      resource_specific_consumption:
+        atj_biomass: 2.08
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [52.2]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType 
+        years: []
+        values: [0.0394] # Converted 1.38668 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ 2020, 2030, 2040, 2050 ]
+        values: [0.0, 1.2, 10.0, 35.0]
+        method: linear
+    # Technical:
+    technical:
+      kerosene_selectivity: 0.5 # TODO chose
+      resource_names: [ "generic_electricity" ]
+      resource_specific_consumption:
+        # Add a list of resources and their consumption per unit of fuel.
+        generic_electricity: 2.32
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0996] # Converted 3.504428 €/L to €/MJ with 0.8 density and 44 LHV
+        method: linear
+  outputs:
+
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 # 
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [2000, 2001, 2002, 2003, 2004, 2005,
+                2006, 2007, 2008, 2009, 2010, 2011,
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024, 2050]
+        values: [0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+        0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+        0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+        0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+        0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
+        method: linear
+  outputs:
+  
+  
+hydrogen_electrolysis:
+  # Metadata
+  name: "hydrogen_electrolysis"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      processes_names: [ "liquefaction", "electrolysis" ]
+      lhv: 120
+      resources_names: ["transport"]
+      resource_specific_consumption:
+        transport: 1.0
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+  outputs:
+  
+
+
+battery_electric:
+  # Metadata
+  name: "battery_electric"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "electric"
+  energy_origin: "electricity"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "generic_electricity" ]
+      resource_specific_consumption:
+      # Add a list of resources and their consumption per unit of fuel.
+        generic_electricity: 1
+      lhv: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!! 
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index: # CAUTION: INDEX PER KG, UNDIFINED FOR ELECTRIC!! 
+        h2o: 0.0
+        nox: 0.0
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.022] # Converted 0.8 €/kWh to €/MJ with 3.6 MJ/kWh
+        method: linear
+  outputs:
+
+
+
+
+

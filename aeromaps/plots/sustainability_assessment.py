@@ -7,7 +7,8 @@ from .constants import plot_2_x, plot_2_y
 
 
 class CarbonBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -278,7 +279,8 @@ class CarbonBudgetAssessmentPlot:
 
 
 class EquivalentCarbonBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]
@@ -600,7 +602,8 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
 
 class EquivalentCarbonBudgetAssessmentPlotOld:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -702,7 +705,8 @@ class EquivalentCarbonBudgetAssessmentPlotOld:
 
 
 class BiomassResourceBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -717,11 +721,15 @@ class BiomassResourceBudgetAssessmentPlot:
 
     def create_plot(self):
         # Data to plot
-        aviation_available_biomass = float(self.float_outputs["aviation_available_biomass"])
-        biomass_consumption_end_year = float(self.float_outputs["biomass_consumption_end_year"])
-        available_biomass_total = float(self.float_outputs["available_biomass_total"])
+        # CAUTION: This plot is not generic - oriented, although made compatible (ie, works only if "biomass" in resource conf file)
+        aviation_available_biomass = (
+            float(self.df["biomass_availability_aviation_allocated"][2050]) / 1e12
+        )
+        biomass_consumption = self.df["biomass_total_consumption"] / 1e12
+        biomass_consumption_end_year = float(biomass_consumption[self.prospective_years[-1]])
+        available_biomass_total = float(self.df["biomass_availability_global"][2050]) / 1e12
         aviation_biomass_allocated_share = float(
-            self.parameters["aviation_biomass_allocated_share"]
+            self.df["biomass_overall_aviation_allocated_share"][2050]
         )
 
         # Plot
@@ -843,11 +851,15 @@ class BiomassResourceBudgetAssessmentPlot:
 
         self.ax.clear()
 
-        aviation_available_biomass = float(self.float_outputs["aviation_available_biomass"])
-        biomass_consumption_end_year = float(self.float_outputs["biomass_consumption_end_year"])
-        available_biomass_total = float(self.float_outputs["available_biomass_total"])
+        # CAUTION: This plot is not generic - oriented, although made compatible (ie, works only if "biomass" in resource conf file)
+        aviation_available_biomass = (
+            float(self.df["biomass_availability_aviation_allocated"][2050]) / 1e12
+        )
+        biomass_consumption = self.df["biomass_total_consumption"] / 1e12
+        biomass_consumption_end_year = float(biomass_consumption[self.prospective_years[-1]])
+        available_biomass_total = float(self.df["biomass_availability_global"][2050]) / 1e12
         aviation_biomass_allocated_share = float(
-            self.parameters["aviation_biomass_allocated_share"]
+            self.df["biomass_overall_aviation_allocated_share"][2050]
         )
 
         # Plot
@@ -955,7 +967,8 @@ class BiomassResourceBudgetAssessmentPlot:
 
 
 class ElectricityResourceBudgetAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -969,14 +982,17 @@ class ElectricityResourceBudgetAssessmentPlot:
         self.create_plot()
 
     def create_plot(self):
-        # Data to plot
-        aviation_available_electricity = float(self.float_outputs["aviation_available_electricity"])
-        electricity_consumption_end_year = float(
-            self.float_outputs["electricity_consumption_end_year"]
+        # Data to plot (updated to new input format)
+        aviation_available_electricity = float(
+            self.df["electricity_availability_aviation_allocated"][2050] / 1e12
         )
-        available_electricity = float(self.parameters["available_electricity"])
+        electricity_consumption = self.df["electricity_total_consumption"] / 1e12
+        electricity_consumption_end_year = float(
+            electricity_consumption[self.prospective_years[-1]]
+        )
+        available_electricity = float(self.df["electricity_availability_global"][2050]) / 1e12
         aviation_electricity_allocated_share = float(
-            self.parameters["aviation_electricity_allocated_share"]
+            self.df["electricity_overall_aviation_allocated_share"][2050]
         )
 
         # Plot
@@ -1098,13 +1114,17 @@ class ElectricityResourceBudgetAssessmentPlot:
 
         self.ax.clear()
 
-        aviation_available_electricity = float(self.float_outputs["aviation_available_electricity"])
-        electricity_consumption_end_year = float(
-            self.float_outputs["electricity_consumption_end_year"]
+        # Data to plot (updated to new input format)
+        aviation_available_electricity = (
+            float(self.df["electricity_availability_aviation_allocated"][2050]) / 1e12
         )
-        available_electricity = float(self.parameters["available_electricity"])
+        electricity_consumption = self.df["electricity_total_consumption"] / 1e12
+        electricity_consumption_end_year = float(
+            electricity_consumption[self.prospective_years[-1]]
+        )
+        available_electricity = float(self.df["electricity_availability_global"][2050]) / 1e12
         aviation_electricity_allocated_share = float(
-            self.parameters["aviation_electricity_allocated_share"]
+            self.df["electricity_overall_aviation_allocated_share"][2050]
         )
 
         # Plot
@@ -1212,7 +1232,8 @@ class ElectricityResourceBudgetAssessmentPlot:
 
 
 class MultidisciplinaryAssessmentPlot:
-    def __init__(self, data):
+    def __init__(self, process):
+        data = process.data
         self.parameters = data["float_inputs"]
         self.df = data["vector_outputs"]
         self.df_climate = data["climate_outputs"]
@@ -1232,15 +1253,21 @@ class MultidisciplinaryAssessmentPlot:
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
         cumulative_co2_emissions = float(self.df.loc[2050, "cumulative_co2_emissions"])
 
-        # Biomass
-        available_biomass_total = self.float_outputs["available_biomass_total"]
-        aviation_available_biomass = self.float_outputs["aviation_available_biomass"]
-        biomass_consumption_end_year = self.float_outputs["biomass_consumption_end_year"]
+        # Biomass (new input format)
+        available_biomass_total = self.df["biomass_availability_global"][2050] / 1e12
+        aviation_available_biomass = self.df["biomass_availability_aviation_allocated"][2050] / 1e12
+        biomass_consumption_end_year = float(
+            self.df["biomass_total_consumption"][self.prospective_years[-1]] / 1e12
+        )
 
-        # Electricity
-        available_electricity_total = self.parameters["available_electricity"]
-        aviation_available_electricity = self.float_outputs["aviation_available_electricity"]
-        electricity_consumption_end_year = self.float_outputs["electricity_consumption_end_year"]
+        # Electricity (new input format)
+        available_electricity_total = self.df["electricity_availability_global"][2050] / 1e12
+        aviation_available_electricity = (
+            self.df["electricity_availability_aviation_allocated"][2050] / 1e12
+        )
+        electricity_consumption_end_year = float(
+            self.df["electricity_total_consumption"][self.prospective_years[-1]] / 1e12
+        )
 
         # Effective radiative forcing
         equivalent_gross_carbon_budget = float(
@@ -1391,15 +1418,21 @@ class MultidisciplinaryAssessmentPlot:
         aviation_carbon_budget = float(self.float_outputs["aviation_carbon_budget"])
         cumulative_co2_emissions = float(self.df.loc[2050, "cumulative_co2_emissions"])
 
-        # Biomass
-        available_biomass_total = self.float_outputs["available_biomass_total"]
-        aviation_available_biomass = self.float_outputs["aviation_available_biomass"]
-        biomass_consumption_end_year = self.float_outputs["biomass_consumption_end_year"]
+        # Biomass (new input format)
+        available_biomass_total = self.df["biomass_availability_global"][2050] / 1e12
+        aviation_available_biomass = self.df["biomass_availability_aviation_allocated"][2050] / 1e12
+        biomass_consumption_end_year = float(
+            self.df["biomass_total_consumption"][self.prospective_years[-1]] / 1e12
+        )
 
-        # Electricity
-        available_electricity_total = self.parameters["available_electricity"]
-        aviation_available_electricity = self.float_outputs["aviation_available_electricity"]
-        electricity_consumption_end_year = self.float_outputs["electricity_consumption_end_year"]
+        # Electricity (new input format)
+        available_electricity_total = self.df["electricity_availability_global"][2050] / 1e12
+        aviation_available_electricity = (
+            self.df["electricity_availability_aviation_allocated"][2050] / 1e12
+        )
+        electricity_consumption_end_year = float(
+            self.df["electricity_total_consumption"][self.prospective_years[-1]] / 1e12
+        )
 
         # Effective radiative forcing
         equivalent_gross_carbon_budget = float(

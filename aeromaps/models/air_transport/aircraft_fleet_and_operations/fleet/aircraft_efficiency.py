@@ -1004,7 +1004,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             + relative_energy_per_ask_hydrogen_wrt_dropin_long_range
             * ask_long_range_hydrogen_share
             * (ask_long_range / ask)
-        ) / rtk_hydrogen_share
+        ) / rtk_hydrogen_share.loc[hydrogen_nonzero_mask]
 
         self.df.loc[hydrogen_nonzero_mask, "energy_per_rtk_without_operations_freight_hydrogen"] = (
             energy_per_rtk_without_operations_freight_dropin_fuel.loc[hydrogen_nonzero_mask]
@@ -1029,7 +1029,7 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             + relative_energy_per_ask_electric_wrt_dropin_long_range
             * ask_long_range_electric_share
             * (ask_long_range / ask)
-        ) / rtk_electric_share
+        ) / rtk_electric_share.loc[electric_nonzero_mask]
 
         self.df.loc[electric_nonzero_mask, "energy_per_rtk_without_operations_freight_electric"] = (
             energy_per_rtk_without_operations_freight_dropin_fuel.loc[electric_nonzero_mask]
