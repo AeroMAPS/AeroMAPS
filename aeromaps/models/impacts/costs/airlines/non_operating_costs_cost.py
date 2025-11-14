@@ -1,9 +1,20 @@
-import pandas as pd
+"""
+Module for computing non-operating costs and passenger taxes.
+"""
 
+import pandas as pd
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftNonOpCosts(AeroMAPSModel):
+    """
+    Class to compute non-operating costs for passenger aircraft based on user-defined reference years and values.
+
+    Parameters
+    ----------
+    (none)
+    """
+
     def __init__(self, name="passenger_aircraft_noc", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -12,7 +23,23 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
         noc_reference_years: list,
         noc_reference_years_values: list,
     ) -> pd.Series:
-        # Simple computation of airline non-operating costs (NOC)
+        """
+        Execute the computation of non-operating costs.
+
+        Parameters
+        ----------
+        noc_reference_years : list
+            Scenario years corresponding to interpolation values specified in noc_reference_years_values.
+        noc_reference_years_values : list
+            User-defined interpolation values for non-operating costs [€/ASK].
+            :units: €/ASK
+
+        Returns
+        -------
+        pd.Series
+            annual non-operating cost per available seat kilometer.
+            :units: €/ASK
+        """
         noc_prospective = aeromaps_interpolation_function(
             self,
             noc_reference_years,
@@ -29,6 +56,14 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
 
 
 class PassengerAircraftPassengerTax(AeroMAPSModel):
+    """
+    Class to compute basic passenger taxes for passenger aircraft based on user-defined reference years and values.
+
+    Notes
+    -----
+    NB: fuel based taxes are not included here.
+    """
+
     def __init__(self, name="passenger_aircraft_passenger_tax", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -37,7 +72,23 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
         passenger_tax_reference_years: list,
         passenger_tax_reference_years_values: list,
     ) -> pd.Series:
-        # Simple computation of airline non-operating costs (NOC)
+        """
+        Execute the computation of basic passenger taxes.
+
+        Parameters
+        ----------
+        passenger_tax_reference_years : list
+            (no additional description provided)
+        passenger_tax_reference_years_values : list
+            (no additional description provided)
+            :units: €/ASK
+
+        Returns
+        -------
+        pd.Series
+            (no return description provided)
+            :units: €/ASK
+        """
 
         passenger_tax_prospective = aeromaps_interpolation_function(
             self,
