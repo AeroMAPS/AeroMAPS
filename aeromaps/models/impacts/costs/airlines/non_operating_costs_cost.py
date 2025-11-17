@@ -12,7 +12,8 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
 
     Parameters
     ----------
-    (none)
+    name : str
+        Name of the model instance ('passenger_aircraft_noc' by default).
     """
 
     def __init__(self, name="passenger_aircraft_noc", *args, **kwargs):
@@ -58,6 +59,11 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
 class PassengerAircraftPassengerTax(AeroMAPSModel):
     """
     Class to compute basic passenger taxes for passenger aircraft based on user-defined reference years and values.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('passenger_aircraft_passenger_tax' by default).
 
     Notes
     -----
