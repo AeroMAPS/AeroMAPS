@@ -33,13 +33,11 @@ class PassengerAircraftNonOpCosts(AeroMAPSModel):
             Scenario years corresponding to interpolation values specified in noc_reference_years_values.
         noc_reference_years_values : list
             User-defined interpolation values for non-operating costs [€/ASK].
-            :units: €/ASK
 
         Returns
         -------
         pd.Series
-            annual non-operating cost per available seat kilometer.
-            :units: €/ASK
+            Annual non-operating cost per ASK [€/ASK].
         """
         noc_prospective = aeromaps_interpolation_function(
             self,
@@ -84,16 +82,14 @@ class PassengerAircraftPassengerTax(AeroMAPSModel):
         Parameters
         ----------
         passenger_tax_reference_years : list
-            (no additional description provided)
+            Scenario years corresponding to interpolation values specified in passenger_tax_reference_years_values.
         passenger_tax_reference_years_values : list
-            (no additional description provided)
-            :units: €/ASK
+            User-defined interpolation values for basic passenger taxes [€/ASK].
 
         Returns
         -------
         pd.Series
-            (no return description provided)
-            :units: €/ASK
+            Annual passenger tax per ASK [€/ASK].
         """
 
         passenger_tax_prospective = aeromaps_interpolation_function(

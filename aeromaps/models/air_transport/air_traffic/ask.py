@@ -1,3 +1,7 @@
+"""
+Module for computing Available Seat Kilometers (ASK).
+"""
+
 from typing import Tuple
 
 import pandas as pd
@@ -6,6 +10,15 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class ASK(AeroMAPSModel):
+    """
+    Class to compute Available Seat Kilometers (ASK) and its breakdown by range for passenger aircraft, based on load factor and revenue passenger kilometers [RPK].
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('ask' by default).
+    """
+
     def __init__(self, name="ask", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -17,7 +30,34 @@ class ASK(AeroMAPSModel):
         rpk_medium_range: pd.Series,
         rpk_long_range: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-        """ASK calculation."""
+        """
+        Execute the computation of Available Seat Kilometers (ASK) and its breakdown by range.
+
+        Parameters
+        ----------
+        load_factor : pd.Series
+            Annual passenger load factor [%].
+        rpk : pd.Series
+            Annual RPKs [passenger·km].
+        rpk_short_range : pd.Series
+            Annual RPKs for short range flights [passenger·km].
+        rpk_medium_range : pd.Series
+            Annual RPKs for medium range flights [passenger·km].
+        rpk_long_range : pd.Series
+            Annual RPKs for long range flights [passenger·km].
+
+        Returns
+        -------
+        tuple of pandas.Series
+            ask : pandas.Series
+                Annual ASKs [seat·km].
+            ask_short_range : pandas.Series
+                Annual ASKs for short range flights [seat·km].
+            ask_medium_range : pandas.Series
+                Annual ASKs for medium range flights [seat·km].
+            ask_long_range : pandas.Series
+                Annual ASKs for long range flights [seat·km].
+        """
 
         # ASK calculation
         ask = rpk / (load_factor / 100)
