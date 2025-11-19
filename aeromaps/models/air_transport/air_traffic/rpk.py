@@ -1,3 +1,10 @@
+"""
+rpk
+=============================
+
+Module for computing air traffic (RPK) without price elasticity and effect of ad-hoc measures to reduce traffic.
+"""
+
 from typing import Tuple
 from numbers import Number
 
@@ -9,6 +16,15 @@ from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
 
 
 class RPK(AeroMAPSModel):
+    """
+    Class to compute traffic (RPK) without price elasticity considering COVID-19 impact and exogenous growth rates by segment.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('rpk' by default).
+    """
+
     def __init__(self, name="rpk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -49,7 +65,81 @@ class RPK(AeroMAPSModel):
         float,
         float,
     ]:
-        """RPK calculation."""
+        """
+        RPK calculation.
+
+        Parameters
+        ----------
+        rpk_init : pd.Series
+            Historical number of Revenue Passenger Kilometer (RPK) over 2000-2019 [RPK].
+        short_range_rpk_share_2019 : float
+            Share of RPK from short-range market in 2019 [%].
+        medium_range_rpk_share_2019 : float
+            Share of RPK from medium-range market in 2019 [%].
+        long_range_rpk_share_2019 : float
+            Share of RPK from long-range market in 2019 [%].
+        covid_start_year : Number
+            Covid-19 start year [yr].
+        covid_rpk_drop_start_year : float
+            Drop in RPK due to Covid-19 for the start year [%].
+        covid_end_year_passenger : Number
+            Covid-19 end year [yr].
+        covid_end_year_reference_rpk_ratio : float
+            Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year [%].
+        cagr_passenger_short_range_reference_periods : list
+            Reference periods for the CAGR for passenger short-range market [yr].
+        cagr_passenger_short_range_reference_periods_values : list
+            CAGR for passenger short-range market for the reference periods [%].
+        cagr_passenger_medium_range_reference_periods : list
+            Reference periods for the CAGR for passenger medium-range market [yr].
+        cagr_passenger_medium_range_reference_periods_values : list
+            CAGR for passenger medium-range market for the reference periods [%].
+        cagr_passenger_long_range_reference_periods : list
+            Reference periods for the CAGR for passenger long-range market [yr].
+        cagr_passenger_long_range_reference_periods_values : list
+            CAGR for passenger long-range market for the reference periods [%].
+        rpk_short_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger short-range market [%].
+        rpk_medium_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger medium-range market [%].
+        rpk_long_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger long-range market [%].
+
+        Returns
+        -------
+        rpk_short_range : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for passenger short-range market [RPK].
+        rpk_medium_range : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for passenger medium-range market [RPK].
+        rpk_long_range : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for passenger long-range market [RPK].
+        rpk : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for total passenger air transport [RPK].
+        annual_growth_rate_passenger_short_range : pd.Series
+            Annual growth rate for short-range passengers [%/year].
+        annual_growth_rate_passenger_medium_range : pd.Series
+            Annual growth rate for medium-range passengers [%/year].
+        annual_growth_rate_passenger_long_range : pd.Series
+            Annual growth rate for long-range passengers [%/year].
+        annual_growth_rate_passenger : pd.Series
+            Annual growth rate for total passengers [%/year].
+        cagr_rpk_short_range : float
+            Air traffic CAGR over prospective_years for passenger short-range market [%].
+        cagr_rpk_medium_range : float
+            Air traffic CAGR over prospective_years for passenger medium-range market [%].
+        cagr_rpk_long_range : float
+            Air traffic CAGR over prospective_years for passenger long-range market [%].
+        cagr_rpk : float
+            Air traffic CAGR over prospective_years for total passenger market [%].
+        prospective_evolution_rpk_short_range : float
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger short-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk_medium_range : float
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger medium-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk_long_range : float
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger long-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk : float
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for total passenger market between prospection_start_year and end_year [%].
+        """
         # Initialization based on 2019 share
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_short_range"] = short_range_rpk_share_2019 / 100 * rpk_init.loc[k]
@@ -267,6 +357,15 @@ class RPK(AeroMAPSModel):
 
 
 class RPKReference(AeroMAPSModel):
+    """
+    Class to compute reference Revenue Passenger Kilometers (RPK) with baseline air traffic growth.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('rpk_reference' by default).
+    """
+
     def __init__(self, name="rpk_reference", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -280,8 +379,33 @@ class RPKReference(AeroMAPSModel):
         covid_end_year_passenger: Number,
         covid_end_year_reference_rpk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
-        """RPK reference calculation."""
+        """
+        RPK reference calculation.
 
+        Parameters
+        ----------
+        rpk : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for all passenger air transport [RPK].
+        reference_cagr_passenger_reference_periods : list
+            Reference periods for the reference CAGR for passenger market [yr].
+        reference_cagr_passenger_reference_periods_values : list
+            Reference CAGR for passenger market for the reference periods [%].
+        covid_start_year : Number
+            Covid-19 start year [yr].
+        covid_rpk_drop_start_year : float
+            Drop in RPK due to Covid-19 for the start year [%].
+        covid_end_year_passenger : Number
+            Covid-19 end year [yr].
+        covid_end_year_reference_rpk_ratio : float
+            Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year [%].
+
+        Returns
+        -------
+        rpk_reference : pd.Series
+            Number of Revenue Passenger Kilometer (RPK) for all passenger air transport with a baseline air traffic growth [RPK].
+        reference_annual_growth_rate_passenger : pd.Series
+            Reference annual growth rate for passenger market [%/year].
+        """
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rpk_reference"] = rpk.loc[k]
 
@@ -327,6 +451,15 @@ class RPKReference(AeroMAPSModel):
 
 
 class RPKMeasures(AeroMAPSModel):
+    """
+    Class to compute the impact of ad-hoc measures to reduce short, medium, and long-range traffic.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('rpk_measures' by default).
+    """
+
     def __init__(self, name="rpk_measures", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -342,8 +475,39 @@ class RPKMeasures(AeroMAPSModel):
         rpk_medium_range_measures_duration: float,
         rpk_long_range_measures_duration: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
-        """RPK measures impact calculation."""
+        """
+        RPK measures impact calculation.
 
+        Parameters
+        ----------
+        rpk_short_range_measures_final_impact : float
+            Final impact of specific measures in terms of percentage reduction in RPK for short-range market [%].
+        rpk_medium_range_measures_final_impact : float
+            Final impact of specific measures in terms of percentage reduction in RPK for medium-range market [%].
+        rpk_long_range_measures_final_impact : float
+            Final impact of specific measures in terms of percentage reduction in RPK for long-range market [%].
+        rpk_short_range_measures_start_year : Number
+            Start year for implementing specific measures to reduce RPK on short-range market [yr].
+        rpk_medium_range_measures_start_year : Number
+            Start year for implementing specific measures to reduce RPK on medium-range market [yr].
+        rpk_long_range_measures_start_year : Number
+            Start year for implementing specific measures to reduce RPK on long-range market [yr].
+        rpk_short_range_measures_duration : float
+            Duration for implementing 98% of specific measures to reduce RPK on short-range market [yr].
+        rpk_medium_range_measures_duration : float
+            Duration for implementing 98% of specific measures to reduce RPK on medium-range market [yr].
+        rpk_long_range_measures_duration : float
+            Duration for implementing 98% of specific measures to reduce RPK on long-range market [yr].
+
+        Returns
+        -------
+        rpk_short_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger short-range market [%].
+        rpk_medium_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger medium-range market [%].
+        rpk_long_range_measures_impact : pd.Series
+            Traffic reduction impact of specific measures for passenger long-range market [%].
+        """
         short_range_transition_year = (
             rpk_short_range_measures_start_year + rpk_short_range_measures_duration / 2
         )

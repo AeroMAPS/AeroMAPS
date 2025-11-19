@@ -1,4 +1,7 @@
 """
+ask
+===============
+
 Module for computing Available Seat Kilometers (ASK).
 """
 
@@ -38,24 +41,24 @@ class ASK(AeroMAPSModel):
         load_factor
             Annual passenger load factor [%].
         rpk
-            Annual RPKs [passenger·km].
+            Annual RPKs [RPK].
         rpk_short_range
-            Annual RPKs for short-range flights [passenger·km].
+            Annual RPKs for short-range flights [RPK].
         rpk_medium_range
-            Annual RPKs for medium-range flights [passenger·km].
+            Annual RPKs for medium-range flights [RPK].
         rpk_long_range
-            Annual RPKs for long-range flights [passenger·km].
+            Annual RPKs for long-range flights [RPK].
 
         Returns
         -------
         ask
-            Annual ASKs [seat·km].
+            Annual ASKs [ASK].
         ask_short_range
-            ASKs for short-range flights [seat·km].
+            ASKs for short-range flights [ASK].
         ask_medium_range
-            ASKs for medium-range flights [seat·km].
+            ASKs for medium-range flights [ASK].
         ask_long_range
-            ASKs for long-range flights [seat·km].
+            ASKs for long-range flights [ASK].
         """
 
         # ASK calculation
