@@ -1,25 +1,20 @@
-aeromaps.models.impacts package
-===============================
-
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   aeromaps.models.impacts.climate
-   aeromaps.models.impacts.costs
-   aeromaps.models.impacts.effective_radiative_forcing
-   aeromaps.models.impacts.emissions
-   aeromaps.models.impacts.energy_resources
-   aeromaps.models.impacts.generic_energy_model
-   aeromaps.models.impacts.life_cycle_assessment
-   aeromaps.models.impacts.others
-
-Module contents
----------------
+aeromaps.models.impacts
+=======================
 
 .. automodule:: aeromaps.models.impacts
-   :members:
-   :show-inheritance:
-   :undoc-members:
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   climate
+   costs
+   effective_radiative_forcing
+   emissions
+   energy_resources
+   generic_energy_model
+   life_cycle_assessment
+   others

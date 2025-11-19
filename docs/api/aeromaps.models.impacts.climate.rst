@@ -1,21 +1,13 @@
-aeromaps.models.impacts.climate package
-=======================================
-
-Submodules
-----------
-
-aeromaps.models.impacts.climate.climate module
-----------------------------------------------
-
-.. automodule:: aeromaps.models.impacts.climate.climate
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-Module contents
----------------
+aeromaps.models.impacts.climate
+===============================
 
 .. automodule:: aeromaps.models.impacts.climate
-   :members:
-   :show-inheritance:
-   :undoc-members:
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   climate

@@ -1,10 +1,6 @@
-aeromaps.notebooks.private package
-==================================
-
-Module contents
----------------
+aeromaps.notebooks.private
+==========================
 
 .. automodule:: aeromaps.notebooks.private
-   :members:
-   :show-inheritance:
-   :undoc-members:
+
+   

@@ -1,18 +1,13 @@
-aeromaps.notebooks package
-==========================
-
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   aeromaps.notebooks.private
-
-Module contents
----------------
+﻿aeromaps.notebooks
+==================
 
 .. automodule:: aeromaps.notebooks
-   :members:
-   :show-inheritance:
-   :undoc-members:
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   private
