@@ -1328,6 +1328,188 @@ class Fleet(object):
 
         return all_aircraft_elements
 
+    def pretty_print(
+        self,
+        include_aircraft=True,
+        indent=2,
+        display=True,
+        absolute=False,
+        reference="recent",
+    ):
+        """Return (and optionally print) a summary of the fleet.
+
+        Parameters
+        ----------
+        include_aircraft : bool
+            Whether to list individual aircraft under each subcategory.
+        indent : int
+            Number of spaces used for indentation when printing nested entries.
+        display : bool
+            If True, print the generated summary; otherwise only return the string.
+        absolute : bool
+            When True, convert aircraft deltas (consumption, DOC, NOx, soot) into
+            absolute values using the selected reference aircraft as the baseline.
+        reference : str
+            Which reference aircraft to use for absolute conversions; accepts
+            "recent" (default) or "old". If the requested reference is missing,
+            the method falls back to the other available reference.
+        """
+
+        reference_mode = reference.lower()
+        if reference_mode not in {"recent", "old"}:
+            raise ValueError("reference must be 'recent' or 'old'")
+
+        def _format_value(label, value, suffix=""):
+            if value is None:
+                return None
+            if isinstance(value, float) and value.is_integer():
+                value = int(value)
+            return f"{label}={value}{suffix}"
+
+        def _format_absolute(label, base_value, delta_percent, unit=""):
+            if base_value is None or delta_percent is None:
+                return None
+            absolute_value = base_value * (1 + delta_percent / 100.0)
+            return f"{label}={absolute_value:.4g}{unit}"
+
+        def _format_reference_line(label, reference_obj):
+            if reference_obj is None:
+                return None
+            bits = list(
+                filter(
+                    None,
+                    [
+                        _format_value("EIS", reference_obj.entry_into_service_year, " y"),
+                        _format_value("energy/ASK", reference_obj.energy_per_ask, " MJ/ASK"),
+                        _format_value("DOC", reference_obj.doc_non_energy_base, " €/ASK"),
+                        _format_value("NOx", reference_obj.emission_index_nox, " kg/ASK"),
+                        _format_value("soot", reference_obj.emission_index_soot, " kg/ASK"),
+                    ],
+                )
+            )
+            descriptor = ", ".join(bits) if bits else "no data"
+            return f"{level_two}- {label} reference ({descriptor})"
+
+        def _select_base_reference(subcategory):
+            preferred = (
+                subcategory.recent_reference_aircraft
+                if reference_mode == "recent"
+                else subcategory.old_reference_aircraft
+            )
+            fallback = (
+                subcategory.old_reference_aircraft
+                if reference_mode == "recent"
+                else subcategory.recent_reference_aircraft
+            )
+            return preferred or fallback
+
+        def _format_aircraft_line(aircraft, base_reference=None):
+            params = aircraft.parameters or AircraftParameters()
+            if absolute and base_reference is not None:
+                bits = list(
+                    filter(
+                        None,
+                        [
+                            aircraft.energy_type or "UNKNOWN",
+                            _format_value("EIS", params.entry_into_service_year, "y"),
+                            _format_absolute(
+                                "energy/ASK",
+                                base_reference.energy_per_ask,
+                                params.consumption_evolution,
+                                " MJ/ASK",
+                            ),
+                            _format_absolute(
+                                "DOC",
+                                base_reference.doc_non_energy_base,
+                                params.doc_non_energy_evolution,
+                                " €/ASK",
+                            ),
+                            _format_absolute(
+                                "NOx",
+                                base_reference.emission_index_nox,
+                                params.nox_evolution,
+                                " kg/ASK",
+                            ),
+                            _format_absolute(
+                                "soot",
+                                base_reference.emission_index_soot,
+                                params.soot_evolution,
+                                " kg/ASK",
+                            ),
+                        ],
+                    )
+                )
+            else:
+                bits = list(
+                    filter(
+                        None,
+                        [
+                            aircraft.energy_type or "UNKNOWN",
+                            _format_value("EIS", params.entry_into_service_year, "y"),
+                            _format_value("cons", params.consumption_evolution, "%"),
+                            _format_value("NOx", params.nox_evolution, "%"),
+                            _format_value("soot", params.soot_evolution, "%"),
+                            _format_value("DOC", params.doc_non_energy_evolution, "%"),
+                        ],
+                    )
+                )
+            descriptor = ", ".join(bits) if bits else "no data"
+            return f"{level_two}- {aircraft.name} ({descriptor})"
+
+        lines = []
+        indent = max(indent, 0)
+        level_one = " " * indent
+        level_two = " " * (indent * 2)
+
+        if not self.categories:
+            lines.append("Fleet has no categories configured.")
+        for category in self.categories.values():
+            subcategories = list(category.subcategories.values())
+            share_sum = sum(float(sub.parameters.share or 0.0) for sub in subcategories)
+            meta_bits = []
+            if category.parameters is not None:
+                if category.parameters.life is not None:
+                    meta_bits.append(f"life={category.parameters.life:g}y")
+                if category.parameters.limit is not None:
+                    meta_bits.append(f"limit={category.parameters.limit:g}")
+            meta_bits.append(f"subcategories={len(subcategories)}")
+            if subcategories:
+                meta_bits.append(f"share_sum={share_sum:.1f}%")
+            category_header = f"{category.name} ({', '.join(meta_bits)})"
+            lines.append(category_header)
+
+            for subcategory in subcategories:
+                share_value = subcategory.parameters.share if subcategory.parameters else None
+                share_str = f"{share_value:.1f}%" if share_value is not None else "n/a"
+                aircraft_count = len(subcategory.aircraft)
+                sub_line = (
+                    f"{level_one}- {subcategory.name} "
+                    f"(share={share_str}, aircraft={aircraft_count})"
+                )
+                lines.append(sub_line)
+
+                # Reference aircraft details
+                ref_old_line = _format_reference_line("old", subcategory.old_reference_aircraft)
+                if ref_old_line:
+                    lines.append(ref_old_line)
+                ref_recent_line = _format_reference_line(
+                    "recent", subcategory.recent_reference_aircraft
+                )
+                if ref_recent_line:
+                    lines.append(ref_recent_line)
+
+                if include_aircraft and aircraft_count:
+                    base_reference = _select_base_reference(subcategory) if absolute else None
+                    for aircraft in subcategory.aircraft.values():
+                        lines.append(
+                            _format_aircraft_line(aircraft, base_reference=base_reference)
+                        )
+
+        output = "\n".join(lines)
+        if display:
+            print(output)
+        return output
+
     def _build_default_fleet(self, add_examples_aircraft_and_subcategory=True):
         if self.aircraft_inventory_path.exists() and self.fleet_config_path.exists():
             self._build_fleet_from_yaml(add_examples_aircraft_and_subcategory)
