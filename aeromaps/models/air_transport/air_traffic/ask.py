@@ -35,28 +35,27 @@ class ASK(AeroMAPSModel):
 
         Parameters
         ----------
-        load_factor : pd.Series
+        load_factor
             Annual passenger load factor [%].
-        rpk : pd.Series
+        rpk
             Annual RPKs [passenger·km].
-        rpk_short_range : pd.Series
-            Annual RPKs for short range flights [passenger·km].
-        rpk_medium_range : pd.Series
-            Annual RPKs for medium range flights [passenger·km].
-        rpk_long_range : pd.Series
-            Annual RPKs for long range flights [passenger·km].
+        rpk_short_range
+            Annual RPKs for short-range flights [passenger·km].
+        rpk_medium_range
+            Annual RPKs for medium-range flights [passenger·km].
+        rpk_long_range
+            Annual RPKs for long-range flights [passenger·km].
 
         Returns
         -------
-        tuple of pandas.Series
-            ask : pandas.Series
-                Annual ASKs [seat·km].
-            ask_short_range : pandas.Series
-                Annual ASKs for short range flights [seat·km].
-            ask_medium_range : pandas.Series
-                Annual ASKs for medium range flights [seat·km].
-            ask_long_range : pandas.Series
-                Annual ASKs for long range flights [seat·km].
+        ask
+            Annual ASKs [seat·km].
+        ask_short_range
+            ASKs for short-range flights [seat·km].
+        ask_medium_range
+            ASKs for medium-range flights [seat·km].
+        ask_long_range
+            ASKs for long-range flights [seat·km].
         """
 
         # ASK calculation

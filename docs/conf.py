@@ -52,8 +52,8 @@ autodoc_default_options = {
 }
 
 # Show type hints in the description, not in the function signature
-set_type_checking_flag = True
-typehints_fully_qualified = False
+# set_type_checking_flag = True
+# typehints_fully_qualified = False
 
 
 templates_path = ["_templates"]
