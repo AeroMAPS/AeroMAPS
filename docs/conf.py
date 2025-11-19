@@ -29,13 +29,12 @@ release = "v0.9.0-beta"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-# Autosummary: generate stub files automatically
-autosummary_generate = True
 
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
+    "sphinx.ext.autosummary",
 ]
 
 napoleon_google_docstring = False
@@ -51,6 +50,9 @@ autodoc_default_options = {
     "show-inheritance": True,
 }
 
+# Autosummary: generate stub files automatically
+autosummary_generate = True
+
 # Show type hints in the description, not in the function signature
 # set_type_checking_flag = True
 # typehints_fully_qualified = False
@@ -63,6 +65,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 
 # Use the Read the Docs theme (cleaner and more standard for Sphinx projects)
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_book_theme"
 
 html_static_path = ["_static"]

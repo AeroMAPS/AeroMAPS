@@ -9,7 +9,7 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: None
    :caption: Contents:
 
    api                 # API reference folder (we’ll generate it)
