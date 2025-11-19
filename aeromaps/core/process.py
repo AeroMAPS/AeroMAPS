@@ -2,6 +2,7 @@
 import logging
 import os
 from json import load, dump
+from pathlib import Path
 
 # Third-party imports
 import numpy as np
@@ -85,6 +86,14 @@ DEFAULT_RESOURCES_DATA_PATH = os.path.join(
 DEFAULT_PROCESSES_DATA_PATH = os.path.join(
     CURRENT_DIR, "..", "resources", "data", "default_energy_carriers", "processes_data.yaml"
 )
+
+DEFAULT_FLEET_DATA_PATH = os.path.join(CURRENT_DIR, "..", "resources", "data", "default_fleet")
+
+DEFAULT_AIRCRAFT_INVENTORY_CONFIG_PATH = os.path.join(
+    DEFAULT_FLEET_DATA_PATH, "aircraft_inventory.yaml"
+)
+
+DEFAULT_FLEET_CONFIG_PATH = os.path.join(DEFAULT_FLEET_DATA_PATH, "fleet.yaml")
 
 
 class AeroMAPSProcess(object):
@@ -340,6 +349,27 @@ class AeroMAPSProcess(object):
             for key, value in new_config.items():
                 self.config[key] = value
 
+    def _resolve_config_path(self, key, default_path=None):
+        path_value = self.config.get(key)
+        if not path_value or isinstance(path_value, list):
+            return Path(default_path) if default_path is not None else None
+        path_str = str(path_value)
+        if os.path.isabs(path_str):
+            resolved_path = Path(path_str)
+            if resolved_path.exists() or default_path is None:
+                return resolved_path
+            return Path(default_path)
+
+        base_dir = (
+            os.path.dirname(self.configuration_file)
+            if self.configuration_file is not None
+            else CURRENT_DIR
+        )
+        resolved_path = Path(os.path.join(base_dir, path_str))
+        if resolved_path.exists() or default_path is None:
+            return resolved_path
+        return Path(default_path)
+
     def _initialize_data(self):
         # Indexes
         self._initialize_years()
@@ -543,9 +573,19 @@ class AeroMAPSProcess(object):
 
     def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
         if self.use_fleet_model:
+            aircraft_inventory_path = self._resolve_config_path(
+                "AIRCRAFT_INVENTORY_CONFIG_FILE",
+                default_path=DEFAULT_AIRCRAFT_INVENTORY_CONFIG_PATH,
+            )
+            fleet_config_path = self._resolve_config_path(
+                "FLEET_CONFIG_FILE",
+                default_path=DEFAULT_FLEET_CONFIG_PATH,
+            )
             self.fleet = Fleet(
                 add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
                 parameters=self.parameters,
+                aircraft_inventory_path=aircraft_inventory_path,
+                fleet_config_path=fleet_config_path,
             )
             self.fleet_model = FleetModel(fleet=self.fleet)
             self.fleet_model.parameters = self.parameters

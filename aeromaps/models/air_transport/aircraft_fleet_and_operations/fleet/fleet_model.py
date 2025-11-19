@@ -30,9 +30,10 @@ AIRCRAFT_COLUMNS = [
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
-CONFIG_DIR = Path(__file__).resolve().parent / "config"
-DEFAULT_AIRCRAFT_CATALOG = CONFIG_DIR / "aircraft_catalog.yaml"
-DEFAULT_FLEET_CONFIG = CONFIG_DIR / "fleet.yaml"
+PACKAGE_ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_FLEET_DATA_DIR = PACKAGE_ROOT / "resources" / "data" / "default_fleet"
+DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "aircraft_inventory.yaml"
+DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 
 
 @dataclass
@@ -1267,18 +1268,18 @@ class Fleet(object):
         self,
         add_examples_aircraft_and_subcategory=True,
         parameters=None,
-        aircraft_catalog_path: Optional[Path] = None,
+        aircraft_inventory_path: Optional[Path] = None,
         fleet_config_path: Optional[Path] = None,
     ):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
-        self.aircraft_catalog_path = (
-            Path(aircraft_catalog_path)
-            if aircraft_catalog_path is not None
-            else DEFAULT_AIRCRAFT_CATALOG
+        self.aircraft_inventory_path = (
+            Path(aircraft_inventory_path)
+            if aircraft_inventory_path is not None
+            else DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE
         )
         self.fleet_config_path = (
-            Path(fleet_config_path) if fleet_config_path is not None else DEFAULT_FLEET_CONFIG
+            Path(fleet_config_path) if fleet_config_path is not None else DEFAULT_FLEET_CONFIG_FILE
         )
 
         self._build_default_fleet(
@@ -1328,7 +1329,7 @@ class Fleet(object):
         return all_aircraft_elements
 
     def _build_default_fleet(self, add_examples_aircraft_and_subcategory=True):
-        if self.aircraft_catalog_path.exists() and self.fleet_config_path.exists():
+        if self.aircraft_inventory_path.exists() and self.fleet_config_path.exists():
             self._build_fleet_from_yaml(add_examples_aircraft_and_subcategory)
         else:
             warnings.warn(
@@ -1337,30 +1338,30 @@ class Fleet(object):
             )
             self._build_default_fleet_legacy(add_examples_aircraft_and_subcategory)
 
-    def _load_aircraft_catalog(self):
-        data = read_yaml_file(str(self.aircraft_catalog_path))
-        aircraft_catalog: Dict[str, Aircraft] = {}
-        reference_catalog: Dict[str, ReferenceAircraftParameters] = {}
+    def _load_aircraft_inventory(self):
+        data = read_yaml_file(str(self.aircraft_inventory_path))
+        aircraft_inventory: Dict[str, Aircraft] = {}
+        reference_inventory: Dict[str, ReferenceAircraftParameters] = {}
 
         for reference_entry in data.get("reference_aircraft", []):
             reference_id = reference_entry.get("id")
             if reference_id is None:
                 continue
             params = ReferenceAircraftParameters(**reference_entry.get("parameters", {}))
-            reference_catalog[reference_id] = params
+            reference_inventory[reference_id] = params
 
         for entry in data.get("aircraft", []):
             aircraft_id = entry.get("id")
             if aircraft_id is None:
                 continue
             params = AircraftParameters(**entry.get("parameters", {}))
-            aircraft_catalog[aircraft_id] = Aircraft(
+            aircraft_inventory[aircraft_id] = Aircraft(
                 name=entry.get("name"),
                 parameters=params,
                 energy_type=entry.get("energy_type", "DROP_IN_FUEL"),
             )
 
-        return aircraft_catalog, reference_catalog
+        return aircraft_inventory, reference_inventory
 
     @staticmethod
     def _populate_reference_aircraft(reference, data):
@@ -1370,10 +1371,10 @@ class Fleet(object):
             setattr(reference, attr, value)
 
     def _build_fleet_from_yaml(self, add_examples_aircraft_and_subcategory=True):
-        catalog, reference_catalog = self._load_aircraft_catalog()
+        inventory, reference_inventory = self._load_aircraft_inventory()
         fleet_config = read_yaml_file(str(self.fleet_config_path))
         categories: Dict[str, Category] = {}
-        subcategory_catalog = self._build_subcategory_catalog(
+        subcategory_inventory = self._build_subcategory_inventory(
             fleet_config.get("subcategories", [])
         )
 
@@ -1386,7 +1387,7 @@ class Fleet(object):
 
             for sub_cfg_entry in category_cfg.get("subcategories", []):
                 sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
-                resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_catalog)
+                resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_inventory)
 
                 requires_examples = resolved_sub_cfg.get("requires_examples", False)
                 if requires_examples and not add_examples_aircraft_and_subcategory:
@@ -1405,23 +1406,23 @@ class Fleet(object):
                 subcategory.old_reference_aircraft = self._select_reference_aircraft(
                     reference_cfg,
                     "old",
-                    reference_catalog,
+                    reference_inventory,
                     subcategory.old_reference_aircraft,
                 )
                 subcategory.recent_reference_aircraft = self._select_reference_aircraft(
                     reference_cfg,
                     "recent",
-                    reference_catalog,
+                    reference_inventory,
                     subcategory.recent_reference_aircraft,
                 )
 
                 for aircraft_entry in resolved_sub_cfg.get("aircraft", []):
                     aircraft_id = self._extract_aircraft_id(aircraft_entry)
-                    if aircraft_id not in catalog:
+                    if aircraft_id not in inventory:
                         raise KeyError(
-                            f"Aircraft '{aircraft_id}' is missing from catalog {self.aircraft_catalog_path}"
+                            f"Aircraft '{aircraft_id}' is missing from inventory {self.aircraft_inventory_path}"
                         )
-                    subcategory.add_aircraft(aircraft=deepcopy(catalog[aircraft_id]))
+                    subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
 
                 category.add_subcategory(subcategory=subcategory)
 
@@ -1432,24 +1433,24 @@ class Fleet(object):
         self._calibrate_reference_aircraft()
 
     @staticmethod
-    def _build_subcategory_catalog(entries):
-        catalog: Dict[str, Dict[str, Any]] = {}
+    def _build_subcategory_inventory(entries):
+        inventory: Dict[str, Dict[str, Any]] = {}
         for entry in entries:
             sub_id = entry.get("id")
             if sub_id is None:
                 continue
-            catalog[sub_id] = entry
-        return catalog
+            inventory[sub_id] = entry
+        return inventory
 
-    def _resolve_subcategory_config(self, sub_cfg, subcategory_catalog):
+    def _resolve_subcategory_config(self, sub_cfg, subcategory_inventory):
         sub_id = sub_cfg.get("id")
         base_cfg: Dict[str, Any] = {}
         if sub_id is not None:
-            if sub_id not in subcategory_catalog:
+            if sub_id not in subcategory_inventory:
                 raise KeyError(
                     f"Subcategory '{sub_id}' referenced in {self.fleet_config_path} is undefined"
                 )
-            base_cfg = deepcopy(subcategory_catalog[sub_id])
+            base_cfg = deepcopy(subcategory_inventory[sub_id])
 
         resolved_cfg = deepcopy(base_cfg)
         for key, value in sub_cfg.items():
@@ -1490,16 +1491,16 @@ class Fleet(object):
         self,
         reference_cfg: Dict[str, Any],
         key: str,
-        reference_catalog: Dict[str, ReferenceAircraftParameters],
+        reference_inventory: Dict[str, ReferenceAircraftParameters],
         default_reference: ReferenceAircraftParameters,
     ) -> ReferenceAircraftParameters:
         ref_id = reference_cfg.get(f"{key}_ref")
         if ref_id is not None:
-            if ref_id not in reference_catalog:
+            if ref_id not in reference_inventory:
                 raise KeyError(
-                    f"Reference aircraft '{ref_id}' is missing from catalog {self.aircraft_catalog_path}"
+                    f"Reference aircraft '{ref_id}' is missing from inventory {self.aircraft_inventory_path}"
                 )
-            return deepcopy(reference_catalog[ref_id])
+            return deepcopy(reference_inventory[ref_id])
 
         inline_data = reference_cfg.get(key, {})
         self._populate_reference_aircraft(default_reference, inline_data)

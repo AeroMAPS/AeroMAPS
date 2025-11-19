@@ -1,0 +1,5 @@
+{
+    "OUTPUTS_JSON_DATA_FILE": "../outputs.json",
+    "FLEET_CONFIG_FILE": "./fleet.yaml",
+    "AIRCRAFT_INVENTORY_CONFIG_FILE": "./aircraft_inventory.yaml"
+}
