@@ -21,6 +21,11 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_doc_non_energy_complex' by default).
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
     """
 
     def __init__(self, name="passenger_aircraft_doc_non_energy_complex", *args, **kwargs):
