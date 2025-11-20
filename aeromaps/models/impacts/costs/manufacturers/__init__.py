@@ -5,5 +5,5 @@
 """
 efficiency_abatement_cost
 ===============================
-Module to compute aircraft manufacturers' costs.
+Package to compute aircraft manufacturers' costs.
 """

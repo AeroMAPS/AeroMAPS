@@ -2,3 +2,8 @@
 # @Author : a.salgas
 # @File : __init__.py.py
 # @Software: PyCharm
+"""
+carbon_tax
+===============================
+Package to compute carbon tax costs.
+"""

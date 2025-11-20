@@ -6,5 +6,5 @@
 efficiency_abatement_cost
 
 ================================
-Module to compute efficiency-related carbon abatement costs.
+Package to compute efficiency-related carbon abatement costs.
 """
