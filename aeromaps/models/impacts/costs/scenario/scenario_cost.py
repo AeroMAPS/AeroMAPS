@@ -82,6 +82,7 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """
         Compute the total energy expenses of the scenario
+
         Parameters
         ----------
         input_data

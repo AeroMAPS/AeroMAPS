@@ -1,3 +1,10 @@
+"""
+non_co2_emissions
+
+=========================
+Module to compute non-CO2 emissions from various aircraft types and energy origins.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -6,11 +13,47 @@ from aeromaps.utils.defaults import get_default_series
 
 
 class NOxEmissionIndex(AeroMAPSModel):
+    """
+    Class to compute NOx emission index.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('nox_emission_index' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="nox_emission_index", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
+        # TODO Provide detailed i/o documentation.
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         # TODO caution aircraft types not generic there
         self.input_names = {
             "emission_index_nox_dropin_fuel_evolution": 0.0,
@@ -42,7 +85,20 @@ class NOxEmissionIndex(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        """NOx emission index calculation using simple method."""
+        """
+        NOx emission index calculation using simple method.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
 
         output_data = {}
 
@@ -99,12 +155,48 @@ class NOxEmissionIndex(AeroMAPSModel):
 
 
 class NOxEmissionIndexComplex(AeroMAPSModel):
+    """
+    Class to compute NOx emission index using fleet renewal models.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('nox_emission_index_complex' by default).
+
+    Attributes
+    --------------
+    fleet_model : FleetModel(AeroMAPSModel)
+        AeroMAPSModel instance to provide fleet renewal data for NOx emission index calculation.
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="nox_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         # TODO caution aircraft types not generic there
         self.input_names = {
             "ask_long_range_dropin_fuel": pd.Series([0.0]),
@@ -149,7 +241,19 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         self,
         input_data,
     ) -> dict:
-        """NOx emission index calculation using fleet renewal models."""
+        """
+        NOx emission index calculation using fleet renewal models.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         output_data = {}
         # Getting fleet model data
 
@@ -246,11 +350,45 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
 
 
 class SootEmissionIndex(AeroMAPSModel):
+    """
+    Class to compute Soot emission index.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('soot_emission_index' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="soot_emission_index", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         # TODO caution aircraft types not generic there
         self.input_names = {"emission_index_soot_dropin_fuel_evolution": 0.0}
 
@@ -280,7 +418,20 @@ class SootEmissionIndex(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        """Soot emission index calculation using simple method."""
+        """
+        Execute Soot emission index calculation using simple method.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
 
         output_data = {}
 
@@ -337,12 +488,48 @@ class SootEmissionIndex(AeroMAPSModel):
 
 
 class SootEmissionIndexComplex(AeroMAPSModel):
+    """
+    Class to compute Soot emission index using fleet renewal models.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('soot_emission_index_complex' by default).
+
+    Attributes
+    --------------
+    fleet_model : FleetModel(AeroMAPSModel)
+        AeroMAPSModel instance to provide fleet renewal data for Soot emission index calculation.
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="soot_emission_index_complex", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         # TODO caution aircraft types not generic there
         self.input_names = {
             "ask_long_range_dropin_fuel": pd.Series([0.0]),
@@ -386,7 +573,19 @@ class SootEmissionIndexComplex(AeroMAPSModel):
         self,
         input_data,
     ) -> dict:
-        """NOx emission index calculation using fleet renewal models."""
+        """Soot emission index calculation using fleet renewal models.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         output_data = {}
         # Getting fleet model data
 
@@ -472,11 +671,45 @@ class SootEmissionIndexComplex(AeroMAPSModel):
 
 
 class H2OEmissionIndex(AeroMAPSModel):
+    """
+    Class to compute H2O emission index.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('h2o_emission_index' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="h2o_emission_index", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.input_names = {}
         self.output_names = {}
 
@@ -504,7 +737,19 @@ class H2OEmissionIndex(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        """Average H20 emission index calculation"""
+        """Average H20 emission index calculation
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
 
         output_data = {}
 
@@ -549,11 +794,45 @@ class H2OEmissionIndex(AeroMAPSModel):
 
 
 class SulfurEmissionIndex(AeroMAPSModel):
+    """
+    Class to compute Sulfur emission index.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('sulfur_emission_index' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="sulfur_emission_index", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.input_names = {}
         self.output_names = {}
 
@@ -581,7 +860,19 @@ class SulfurEmissionIndex(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        """Average H20 emission index calculation"""
+        """Average H20 emission index calculation
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
 
         output_data = {}
 
@@ -626,12 +917,46 @@ class SulfurEmissionIndex(AeroMAPSModel):
 
 
 class NonCO2Emissions(AeroMAPSModel):
+    """
+    Class to compute non-CO2 emissions.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('non_co2_emissions' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="non_co2_emissions", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.climate_historical_data = None
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Dynamically add all pathways variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         aircraft_type = ["dropin_fuel", "hydrogen"]
 
         for aircraft_type in aircraft_type:
@@ -668,7 +993,18 @@ class NonCO2Emissions(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
-        """Non-CO2 emissions calculation."""
+        """Non-CO2 emissions calculation.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
 
         soot_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
         h2o_emissions = get_default_series(self.climate_historic_start_year, self.end_year)
