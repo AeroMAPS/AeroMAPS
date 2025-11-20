@@ -144,7 +144,7 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     # TotalWelfareLoss,
 )
 
-from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
+from aeromaps.models.impacts.costs.airlines.non_operating_costs import (
     PassengerAircraftNonOpCosts,
     PassengerAircraftPassengerTax,
 )
