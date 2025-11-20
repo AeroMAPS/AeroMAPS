@@ -76,6 +76,7 @@ class LoadFactor(AeroMAPSModel):
     def parameters_load_factor_model(end_year, load_factor_2019, load_factor_end_year):
         """
         Compute the parameters of the quadratic model for load factor evolution.
+
         Parameters
         ----------
         end_year
