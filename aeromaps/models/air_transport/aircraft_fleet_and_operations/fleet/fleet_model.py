@@ -1571,13 +1571,7 @@ class Fleet(object):
                 sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
                 resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_inventory)
 
-                requires_examples = resolved_sub_cfg.get("requires_examples", False)
-                if requires_examples and not add_examples_aircraft_and_subcategory:
-                    continue
-
                 share_value = resolved_sub_cfg.get("share", 0.0)
-                if not add_examples_aircraft_and_subcategory:
-                    share_value = resolved_sub_cfg.get("share_no_examples", share_value)
 
                 subcategory = SubCategory(
                     resolved_sub_cfg.get("name"),
