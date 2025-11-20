@@ -697,6 +697,11 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_efficiency_complex' by default).
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
     """
 
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
