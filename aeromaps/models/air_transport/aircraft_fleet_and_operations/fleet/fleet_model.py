@@ -79,8 +79,6 @@ class CategoryParameters:
     limit: float = 2
 
 
-
-
 class Aircraft(object):
     def __init__(
         self,
@@ -765,8 +763,6 @@ class Fleet(object):
             lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
     def _build_default_fleet_legacy(self, add_examples_aircraft_and_subcategory=True):
-        if self.parameters is None:
-            raise ValueError("Fleet parameters must be provided to build the legacy fleet.")
         # Short range narrow-body
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
@@ -841,6 +837,47 @@ class Fleet(object):
             energy_type="DROP_IN_FUEL",
         )
 
+        # Short range regional turbofan
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2035,
+        #     consumption_evolution=-15.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=30000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
+
+        # sr_tf_aircraft_1 = Aircraft(
+        #     "New Regional turbofan 1",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
+
+        # aircraft_params = AircraftParameters(
+        #     entry_into_service_year=2045,
+        #     consumption_evolution=-30.0,
+        #     nox_evolution=0.0,
+        #     soot_evolution=0.0,
+        #     doc_non_energy_evolution=0.0,
+        #     cruise_altitude=12000.0,
+        #     ask_year=280000000.0,
+        #     rc_cost=40000000.0,
+        #     nrc_cost=5000000000.0,
+        #     oew=15.0,
+        # )
+
+        # sr_tf_aircraft_2 = Aircraft(
+        #     "New Regional turbofan 2",
+        #     parameters=aircraft_params,
+        #     energy_type="DROP_IN_FUEL",
+        # )
+
+        # Short range hydrogen aircraft
+
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
             consumption_evolution=10.0,
@@ -855,142 +892,10 @@ class Fleet(object):
         )
 
         sr_aircraft_hydrogen = Aircraft(
-            "SR hydrogen narrow-body",
-            parameters=aircraft_params,
-            energy_type="HYDROGEN",
+            "New Short-range hydrogen", parameters=aircraft_params, energy_type="HYDROGEN"
         )
 
-        cat_params = CategoryParameters(life=25)
-        sr_cat = Category(name="Short Range", parameters=cat_params)
-
-        subcat_params = SubcategoryParameters(share=70.0)
-        sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
-        sr_nb_cat.old_reference_aircraft.entry_into_service_year = 1970
-        sr_nb_cat.old_reference_aircraft.energy_per_ask = 58.1 / 73.2 * 0.824
-        sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
-        sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.old_reference_aircraft.ask_year = 280000000.0
-        sr_nb_cat.old_reference_aircraft.rc_cost = 80000000.0
-        sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
-        sr_nb_cat.old_reference_aircraft.oew = 37.0
-
-        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2014.28
-        sr_nb_cat.recent_reference_aircraft.energy_per_ask = 46.5 / 73.2 * 0.824
-        sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
-        sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.recent_reference_aircraft.ask_year = 280000000.0
-        sr_nb_cat.recent_reference_aircraft.rc_cost = 80000000.0
-        sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
-        sr_nb_cat.recent_reference_aircraft.oew = 41.0
-
-        mean_energy_init_ask_short_range = (
-            self.parameters.energy_consumption_init[2019]
-            * self.parameters.short_range_energy_share_2019
-        ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
-
-        share_recent_short_range = (
-            mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
-        ) / (
-            sr_nb_cat.recent_reference_aircraft.energy_per_ask
-            - sr_nb_cat.old_reference_aircraft.energy_per_ask
-        )
-
-        lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
-
-        if 1 > share_recent_short_range > 0:
-            t0_sr = np.log(
-                (1 - share_recent_short_range) / share_recent_short_range
-            ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
-
-            t_eis_short_range = t0_sr - sr_cat.parameters.life / 2
-
-        elif share_recent_short_range > 1:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: Short Range Aircraft: "
-                + "Average initial short-range fleet energy per ASK is lower than default energy per ASK "
-                + "for the recent reference aircraft - AeroMAPS is using initial short-range fleet energy per ASK "
-                + "as old and recent reference aircraft energy performances!"
-            )
-
-            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
-            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-            sr_nb_cat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-
-        else:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: Short Range Aircraft: "
-                + "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                + "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. "
-                + "Recent reference aircraft is introduced on first prospective year"
-            )
-
-            t_eis_short_range = self.parameters.prospection_start_year
-            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-
-        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
-
-        if add_examples_aircraft_and_subcategory:
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
-
-        subcat_params = SubcategoryParameters(share=30.0)
-        sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
-        sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
-        sr_rp_cat.old_reference_aircraft.energy_per_ask = 39.0 / 73.2 * 0.824
-        sr_rp_cat.old_reference_aircraft.emission_index_nox = 0.01514
-        sr_rp_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        sr_rp_cat.old_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_rp_cat.old_reference_aircraft.cruise_altitude = 6000.0
-        sr_rp_cat.old_reference_aircraft.ask_year = 280000000.0
-        sr_rp_cat.old_reference_aircraft.rc_cost = 60000000.0
-        sr_rp_cat.old_reference_aircraft.nrc_cost = 10000000000.0
-        sr_rp_cat.old_reference_aircraft.oew = 15.0
-
-        sr_rp_cat.recent_reference_aircraft.entry_into_service_year = 2010.35
-        sr_rp_cat.recent_reference_aircraft.energy_per_ask = 35.1 / 73.2 * 0.824
-        sr_rp_cat.recent_reference_aircraft.emission_index_nox = 0.01514
-        sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        sr_rp_cat.recent_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
-        sr_rp_cat.recent_reference_aircraft.ask_year = 280000000.0
-        sr_rp_cat.recent_reference_aircraft.rc_cost = 60000000.0
-        sr_rp_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
-        sr_rp_cat.recent_reference_aircraft.oew = 15.0
-
-        if add_examples_aircraft_and_subcategory:
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
-
-        subcat_params = SubcategoryParameters(share=0.0)
-        sr_subcat_hydrogen = SubCategory("SR hydrogen narrow-body", parameters=subcat_params)
-        sr_subcat_hydrogen.old_reference_aircraft.entry_into_service_year = 2035
-        sr_subcat_hydrogen.old_reference_aircraft.energy_per_ask = 45.0 / 73.2 * 0.824
-        sr_subcat_hydrogen.old_reference_aircraft.emission_index_nox = 0.01514
-        sr_subcat_hydrogen.old_reference_aircraft.emission_index_soot = 0.0
-        sr_subcat_hydrogen.old_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_subcat_hydrogen.old_reference_aircraft.cruise_altitude = 12000.0
-
-        sr_subcat_hydrogen.recent_reference_aircraft.entry_into_service_year = 2050
-        sr_subcat_hydrogen.recent_reference_aircraft.energy_per_ask = 40.0 / 73.2 * 0.824
-        sr_subcat_hydrogen.recent_reference_aircraft.emission_index_nox = 0.0
-        sr_subcat_hydrogen.recent_reference_aircraft.emission_index_soot = 0.0
-        sr_subcat_hydrogen.recent_reference_aircraft.doc_non_energy_base = 0.026125
-        sr_subcat_hydrogen.recent_reference_aircraft.cruise_altitude = 12000.0
-
-        if add_examples_aircraft_and_subcategory:
-            sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
-
-        sr_cat.add_subcategory(subcategory=sr_nb_cat)
-        if add_examples_aircraft_and_subcategory:
-            sr_cat.add_subcategory(subcategory=sr_rp_cat)
-            sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
-
+        # Medium range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
             consumption_evolution=-15.0,
@@ -1025,85 +930,7 @@ class Fleet(object):
             "New Medium-range narrow-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
         )
 
-        cat_params = CategoryParameters(life=25)
-        mr_cat = Category(name="Medium Range", parameters=cat_params)
-
-        subcat_params = SubcategoryParameters(share=100.0)
-        mr_subcat = SubCategory("MR conventional narrow-body", parameters=subcat_params)
-        mr_subcat.old_reference_aircraft.entry_into_service_year = 1970
-        mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824
-        mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
-        mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.0301
-        mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.old_reference_aircraft.ask_year = 352000000.0
-        mr_subcat.old_reference_aircraft.rc_cost = 60000000.0
-        mr_subcat.old_reference_aircraft.nrc_cost = 10000000000.0
-        mr_subcat.old_reference_aircraft.oew = 37.0
-
-        mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
-        mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824
-        mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
-        mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.0301
-        mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.recent_reference_aircraft.ask_year = 352000000.0
-        mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
-        mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
-        mr_subcat.recent_reference_aircraft.oew = 43.0
-
-        mean_energy_init_ask_medium_range = (
-            self.parameters.energy_consumption_init[2019]
-            * self.parameters.medium_range_energy_share_2019
-        ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
-
-        share_recent_medium_range = (
-            mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
-        ) / (
-            mr_subcat.recent_reference_aircraft.energy_per_ask
-            - mr_subcat.old_reference_aircraft.energy_per_ask
-        )
-
-        lambda_medium_range = np.log(100 / 2 - 1) / (mr_cat.parameters.life / 2)
-
-        if 1 > share_recent_medium_range > 0:
-            t0_mr = np.log(
-                (1 - share_recent_medium_range) / share_recent_medium_range
-            ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
-
-            t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
-
-        elif share_recent_medium_range > 1:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: medium Range Aircraft: "
-                + "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                + "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-            )
-
-            t_eis_medium_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
-            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-            mr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-        else:
-            t_eis_medium_range = self.parameters.prospection_start_year
-            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: medium Range Aircraft: "
-                + "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                + "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
-            )
-
-        mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
-
-        if add_examples_aircraft_and_subcategory:
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
-
-        mr_cat.add_subcategory(subcategory=mr_subcat)
-
+        # Long range
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
             consumption_evolution=-15.0,
@@ -1138,27 +965,267 @@ class Fleet(object):
             "New Long-range wide-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
         )
 
+        # Short range
+        cat_params = CategoryParameters(life=25)
+        sr_cat = Category("Short Range", parameters=cat_params)
+
+        # Short range narrow-body
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=20.0)
+        else:
+            subcat_params = SubcategoryParameters(share=100.0)
+        sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
+        # Reference aircraft
+        # Old
+        sr_nb_cat.old_reference_aircraft.entry_into_service_year = (
+            1970  # Not used: old iarcraft starts at 100
+        )
+        sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
+        sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
+        sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.048375  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
+        sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
+        sr_nb_cat.old_reference_aircraft.ask_year = 280000000.0
+        sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
+        sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
+        sr_nb_cat.old_reference_aircraft.oew = 37.0
+
+        # Recent
+        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2007.13
+        sr_nb_cat.recent_reference_aircraft.energy_per_ask = 84.2 / 73.2 * 0.824  # [MJ/ASK]
+        sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
+        sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.048375  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
+        sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
+        sr_nb_cat.recent_reference_aircraft.ask_year = 280000000
+        sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
+        sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
+        sr_nb_cat.recent_reference_aircraft.oew = 43.0
+
+        mean_energy_init_ask_short_range = (
+            self.parameters.energy_consumption_init[2019]
+            * self.parameters.short_range_energy_share_2019
+        ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+
+        share_recent_short_range = (
+            mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
+        ) / (
+            sr_nb_cat.recent_reference_aircraft.energy_per_ask
+            - sr_nb_cat.old_reference_aircraft.energy_per_ask
+        )
+
+        lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
+
+        # nominal case where mean fleet energy is between old and recent aircraft performances
+        if 1 > share_recent_short_range > 0:
+            t0_mr = np.log(
+                (1 - share_recent_short_range) / share_recent_short_range
+            ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
+
+            t_eis_short_range = t0_mr - sr_cat.parameters.life / 2
+
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
+        elif share_recent_short_range > 1:
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: Short Range Aircraft: "
+                + "Average initial short-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                + "AeroMAPS is using initial short-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+            )
+
+            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+            sr_nb_cat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
+        else:
+            t_eis_short_range = self.parameters.prospection_start_year
+            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: Short Range Aircraft: "
+                + "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                + "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
+            )
+
+        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
+
+        if add_examples_aircraft_and_subcategory:
+            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
+            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
+
+        # Short range hydrogen aircraft
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=50.0)
+            sr_subcat_hydrogen = SubCategory(
+                "SR hydrogen conventional narrow-body", parameters=subcat_params
+            )
+
+        if add_examples_aircraft_and_subcategory:
+            sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
+
+        # Short range regional turboprop
+        if add_examples_aircraft_and_subcategory:
+            subcat_params = SubcategoryParameters(share=30.0)
+            sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
+        # Reference aircraft
+        # Old
+        # sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
+        # sr_rp_cat.old_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
+        # sr_rp_cat.old_reference_aircraft.emission_index_nox = 0.01514
+        # sr_rp_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        # sr_rp_cat.old_reference_aircraft.cruise_altitude = 6000.0
+
+        # Recent
+        # sr_rp_cat.recent_reference_aircraft.entry_into_service_year = 2005
+        # sr_rp_cat.recent_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
+        # sr_rp_cat.recent_reference_aircraft.emission_index_nox = 0.01514
+        # sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        # sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
+
+        if add_examples_aircraft_and_subcategory:
+            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
+            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
+
+        # Short range regional turbofan
+        # subcat_params = SubcategoryParameters(share=0.0)
+        # sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
+        # Reference aircraft
+        # Old
+        # sr_tf_cat.old_reference_aircraft.entry_into_service_year = 1970
+        # sr_tf_cat.old_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
+        # sr_tf_cat.old_reference_aircraft.emission_index_nox = 0.01514
+        # sr_tf_cat.old_reference_aircraft.emission_index_soot = 3e-5
+        # sr_tf_cat.old_reference_aircraft.cruise_altitude = 12000.0
+
+        # Recent
+        # sr_tf_cat.recent_reference_aircraft.entry_into_service_year = 2000
+        # sr_tf_cat.recent_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
+        # sr_tf_cat.recent_reference_aircraft.emission_index_nox = 0.01514
+        # sr_tf_cat.recent_reference_aircraft.emission_index_soot = 3e-5
+        # sr_tf_cat.recent_reference_aircraft.cruise_altitude = 12000.0
+
+        # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_1)
+        # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
+
+        sr_cat.add_subcategory(subcategory=sr_nb_cat)
+        if add_examples_aircraft_and_subcategory:
+            sr_cat.add_subcategory(subcategory=sr_rp_cat)
+            sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
+        # sr_cat.add_subcategory(subcategory=sr_tf_cat)
+
+        # Medium range
+
+        cat_params = CategoryParameters(life=25)
+        mr_cat = Category(name="Medium Range", parameters=cat_params)
+
+        subcat_params = SubcategoryParameters(share=100.0)
+        mr_subcat = SubCategory("MR conventional narrow-body", parameters=subcat_params)
+        # Reference aircraft
+        # Old
+        mr_subcat.old_reference_aircraft.entry_into_service_year = 1970
+        mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824  # [MJ/ASK]
+        mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
+        mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
+        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.0301  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
+        mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
+        mr_subcat.old_reference_aircraft.ask_year = 352000000.0
+        mr_subcat.old_reference_aircraft.rc_cost = 60000000.0
+        mr_subcat.old_reference_aircraft.nrc_cost = 10000000000.0
+        mr_subcat.old_reference_aircraft.oew = 37.0
+
+        # Recent
+        mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
+        mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824  # [MJ/ASK]
+        mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
+        mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
+        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.0301  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
+        mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
+        mr_subcat.recent_reference_aircraft.ask_year = 352000000.0
+        mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
+        mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
+        mr_subcat.recent_reference_aircraft.oew = 43.0
+
+        mean_energy_init_ask_medium_range = (
+            self.parameters.energy_consumption_init[2019]
+            * self.parameters.medium_range_energy_share_2019
+        ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
+
+        share_recent_medium_range = (
+            mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
+        ) / (
+            mr_subcat.recent_reference_aircraft.energy_per_ask
+            - mr_subcat.old_reference_aircraft.energy_per_ask
+        )
+
+        lambda_medium_range = np.log(100 / 2 - 1) / (mr_cat.parameters.life / 2)
+
+        if 1 > share_recent_medium_range > 0:
+            t0_mr = np.log(
+                (1 - share_recent_medium_range) / share_recent_medium_range
+            ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
+
+            t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
+
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
+        elif share_recent_medium_range > 1:
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: medium Range Aircraft: "
+                + "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                + "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+            )
+
+            t_eis_medium_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
+            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+            mr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
+        else:
+            t_eis_medium_range = self.parameters.prospection_start_year
+            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+
+            warnings.warn(
+                "Warning Message - "
+                + "Fleet Model: medium Range Aircraft: "
+                + "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                + "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
+            )
+
+        mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
+
+        if add_examples_aircraft_and_subcategory:
+            mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
+            mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
+
+        mr_cat.add_subcategory(subcategory=mr_subcat)
+
+        # Long range
         cat_params = CategoryParameters(life=25)
         lr_cat = Category("Long Range", parameters=cat_params)
 
         subcat_params = SubcategoryParameters(share=100.0)
         lr_subcat = SubCategory("LR conventional wide-body", parameters=subcat_params)
+        # Reference aircraft
+        # Old
         lr_subcat.old_reference_aircraft.entry_into_service_year = 1970
-        lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824
+        lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.024725
+        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.024725  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
         lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
         lr_subcat.old_reference_aircraft.ask_year = 912000000.0
         lr_subcat.old_reference_aircraft.rc_cost = 150000000.0
         lr_subcat.old_reference_aircraft.nrc_cost = 25000000000.0
         lr_subcat.old_reference_aircraft.oew = 135.0
 
+        # Recent
         lr_subcat.recent_reference_aircraft.entry_into_service_year = 2009.36
-        lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824
+        lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824  # [MJ/ASK]
         lr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
         lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.024725
+        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.024725  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
         lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
         lr_subcat.recent_reference_aircraft.ask_year = 912000000.0
         lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
@@ -1186,6 +1253,7 @@ class Fleet(object):
 
             t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
 
+        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
         elif share_recent_long_range > 1:
             warnings.warn(
                 "Warning Message - "
@@ -1198,6 +1266,7 @@ class Fleet(object):
             lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
             lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
 
+        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
         else:
             t_eis_long_range = self.parameters.prospection_start_year
             lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
@@ -1217,16 +1286,9 @@ class Fleet(object):
 
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
-        sr_cat._check_shares()
-        mr_cat._check_shares()
-        lr_cat._check_shares()
-
-        self.categories = {
-            sr_cat.name: sr_cat,
-            mr_cat.name: mr_cat,
-            lr_cat.name: lr_cat,
-        }
-
+        self.categories[sr_cat.name] = sr_cat
+        self.categories[mr_cat.name] = mr_cat
+        self.categories[lr_cat.name] = lr_cat
 
 
 
