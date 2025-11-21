@@ -3,6 +3,7 @@ import logging
 import os
 from json import load, dump
 from pathlib import Path
+from typing import Union
 
 # Third-party imports
 import numpy as np
@@ -102,10 +103,13 @@ class AeroMAPSProcess(object):
         configuration_file=None,
         models=default_models_top_down,
         use_fleet_model=False,
-        add_examples_aircraft_and_subcategory=True,
         optimisation=False,
     ):
-        self.configuration_file = configuration_file
+        self.configuration_file = (
+            os.path.abspath(os.fspath(configuration_file))
+            if configuration_file is not None
+            else None
+        )
         self._initialize_configuration()
         self.use_fleet_model = use_fleet_model
 
@@ -119,24 +123,23 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
-        self.common_setup(add_examples_aircraft_and_subcategory)
+        self.common_setup()
         if not optimisation:
             self.setup_mda()
         else:
             self.setup_optimisation()
 
-    def common_setup(self, add_examples_aircraft_and_subcategory):
+    def common_setup(self):
         self.disciplines = []
         self.data = {}
         self.json = {}
         self._initialize_data()
-        self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
     def setup_mda(self):
         # Initialize energy carriers
         self._initialize_generic_energy()
 
-        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
+        self._initialize_disciplines()
 
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
@@ -151,7 +154,7 @@ class AeroMAPSProcess(object):
 
     def create_gemseo_scenario(self):
         self._initialize_generic_energy()
-        self._initialize_disciplines(self.add_examples_aircraft_and_subcategory)
+        self._initialize_disciplines()
 
         self.scenario = create_scenario(
             disciplines=self.disciplines,
@@ -345,20 +348,29 @@ class AeroMAPSProcess(object):
         if self.configuration_file is not None:
             with open(self.configuration_file, "r") as f:
                 new_config = load(f)
+                
+            configuration_directory = os.path.dirname(self.configuration_file)
             # Replace the default configuration with the new configuration
             for key, value in new_config.items():
+                if (
+                    isinstance(value, str)
+                    and not os.path.isabs(value)
+                ):
+                    value = os.path.normpath(os.path.join(configuration_directory, value))
                 self.config[key] = value
 
-    def _resolve_config_path(self, key, default_path=None):
+
+    def _resolve_config_path(self, key: str, default_path: Union[Path, str]) -> Path:
+        default_path_obj = Path(default_path)
         path_value = self.config.get(key)
         if not path_value or isinstance(path_value, list):
-            return Path(default_path) if default_path is not None else None
+            return default_path_obj
         path_str = str(path_value)
         if os.path.isabs(path_str):
             resolved_path = Path(path_str)
-            if resolved_path.exists() or default_path is None:
+            if resolved_path.exists():
                 return resolved_path
-            return Path(default_path)
+            return default_path_obj
 
         base_dir = (
             os.path.dirname(self.configuration_file)
@@ -366,9 +378,16 @@ class AeroMAPSProcess(object):
             else CURRENT_DIR
         )
         resolved_path = Path(os.path.join(base_dir, path_str))
-        if resolved_path.exists() or default_path is None:
+        if resolved_path.exists():
             return resolved_path
-        return Path(default_path)
+        else:
+            print(
+                "Resolved path ",
+                path_value,
+                " does not exist. Using default path:",
+                default_path_obj,
+            )
+        return default_path_obj
 
     def _initialize_data(self):
         # Indexes
@@ -571,18 +590,19 @@ class AeroMAPSProcess(object):
                 data[key] = pd.Series([0.0])  # initialize to future interpolation type.
         return data
 
-    def _initialize_disciplines(self, add_examples_aircraft_and_subcategory=True):
+    def _initialize_disciplines(self):
         if self.use_fleet_model:
+
             aircraft_inventory_path = self._resolve_config_path(
                 "AIRCRAFT_INVENTORY_CONFIG_FILE",
                 default_path=DEFAULT_AIRCRAFT_INVENTORY_CONFIG_PATH,
             )
+
             fleet_config_path = self._resolve_config_path(
                 "FLEET_CONFIG_FILE",
                 default_path=DEFAULT_FLEET_CONFIG_PATH,
             )
             self.fleet = Fleet(
-                add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
                 parameters=self.parameters,
                 aircraft_inventory_path=aircraft_inventory_path,
                 fleet_config_path=fleet_config_path,

@@ -182,7 +182,6 @@ class Category(object):
 class Fleet(object):
     def __init__(
         self,
-        add_examples_aircraft_and_subcategory=True,
         parameters=None,
         aircraft_inventory_path: Optional[Path] = None,
         fleet_config_path: Optional[Path] = None,
@@ -198,9 +197,7 @@ class Fleet(object):
             Path(fleet_config_path) if fleet_config_path is not None else DEFAULT_FLEET_CONFIG_FILE
         )
 
-        self._build_default_fleet(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
-        )
+        self._build_default_fleet()
         self.all_aircraft_elements = self.get_all_aircraft_elements()
 
     def compute(self):
@@ -426,15 +423,15 @@ class Fleet(object):
             print(output)
         return output
 
-    def _build_default_fleet(self, add_examples_aircraft_and_subcategory=True):
+    def _build_default_fleet(self):
         if self.aircraft_inventory_path.exists() and self.fleet_config_path.exists():
-            self._build_fleet_from_yaml(add_examples_aircraft_and_subcategory)
+            self._build_fleet_from_yaml()
         else:
             warnings.warn(
                 "Fleet configuration YAML files were not found; falling back to legacy defaults.",
                 UserWarning,
             )
-            self._build_default_fleet_legacy(add_examples_aircraft_and_subcategory)
+            self._build_default_fleet_legacy()
 
     def _load_aircraft_inventory(self):
         data = read_yaml_file(str(self.aircraft_inventory_path))
@@ -468,7 +465,7 @@ class Fleet(object):
         for attr, value in data.items():
             setattr(reference, attr, value)
 
-    def _build_fleet_from_yaml(self, add_examples_aircraft_and_subcategory=True):
+    def _build_fleet_from_yaml(self):
         inventory, reference_inventory = self._load_aircraft_inventory()
         fleet_config = read_yaml_file(str(self.fleet_config_path))
         categories: Dict[str, Category] = {}
@@ -762,7 +759,7 @@ class Fleet(object):
 
             lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
-    def _build_default_fleet_legacy(self, add_examples_aircraft_and_subcategory=True):
+    def _build_default_fleet_legacy(self):
         # Short range narrow-body
         aircraft_params = AircraftParameters(
             entry_into_service_year=2035,
@@ -970,10 +967,7 @@ class Fleet(object):
         sr_cat = Category("Short Range", parameters=cat_params)
 
         # Short range narrow-body
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=20.0)
-        else:
-            subcat_params = SubcategoryParameters(share=100.0)
+        subcat_params = SubcategoryParameters(share=20.0)
         sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
         # Reference aircraft
         # Old
@@ -1051,24 +1045,19 @@ class Fleet(object):
 
         sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
 
-        if add_examples_aircraft_and_subcategory:
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
+        sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
+        sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
 
         # Short range hydrogen aircraft
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=50.0)
-            sr_subcat_hydrogen = SubCategory(
-                "SR hydrogen conventional narrow-body", parameters=subcat_params
-            )
-
-        if add_examples_aircraft_and_subcategory:
-            sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
+        subcat_params = SubcategoryParameters(share=50.0)
+        sr_subcat_hydrogen = SubCategory(
+            "SR hydrogen conventional narrow-body", parameters=subcat_params
+        )
+        sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
 
         # Short range regional turboprop
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=30.0)
-            sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
+        subcat_params = SubcategoryParameters(share=30.0)
+        sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
         # Reference aircraft
         # Old
         # sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
@@ -1084,9 +1073,8 @@ class Fleet(object):
         # sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
         # sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
 
-        if add_examples_aircraft_and_subcategory:
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
+        sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
+        sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
 
         # Short range regional turbofan
         # subcat_params = SubcategoryParameters(share=0.0)
@@ -1110,9 +1098,8 @@ class Fleet(object):
         # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
 
         sr_cat.add_subcategory(subcategory=sr_nb_cat)
-        if add_examples_aircraft_and_subcategory:
-            sr_cat.add_subcategory(subcategory=sr_rp_cat)
-            sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
+        sr_cat.add_subcategory(subcategory=sr_rp_cat)
+        sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
         # sr_cat.add_subcategory(subcategory=sr_tf_cat)
 
         # Medium range
@@ -1195,9 +1182,8 @@ class Fleet(object):
 
         mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
 
-        if add_examples_aircraft_and_subcategory:
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
+        mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
+        mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
 
         mr_cat.add_subcategory(subcategory=mr_subcat)
 
@@ -1280,9 +1266,8 @@ class Fleet(object):
 
         lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
 
-        if add_examples_aircraft_and_subcategory:
-            lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
-            lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
+        lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
+        lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
 
         lr_cat.add_subcategory(subcategory=lr_subcat)
 
