@@ -1,0 +1,85 @@
+subcategories:
+  - id: sr_conventional_nb
+    name: "SR conventional narrow-body"
+    share: 0.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+    aircraft:
+      - sr_nb_conventional
+
+  - id: sr_electric_nb
+    name: "SR electric"
+    share: 28.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+    aircraft:
+      - sr_nb_electric
+
+  - id: sr_hydrogen_he_nb
+    name: "SR hydrogen / hybrid-electric"
+    share: 72.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+    aircraft:
+      - sr_nb_hybrid
+      - sr_nb_hydrogen
+
+  - id: mr_conventional_nb
+    name: "MR conventional narrow-body"
+    share: 68.0
+    reference_aircraft:
+      old_ref: mr_conventional_nb_old
+      recent_ref: mr_conventional_nb_recent
+    aircraft:
+      - mr_nb_conventional
+
+  - id: mr_hydrogen_he_nb
+    name: "MR hydrogen / hybrid-electric"
+    share: 32.0
+    reference_aircraft:
+      old_ref: mr_conventional_nb_old
+      recent_ref: mr_conventional_nb_recent
+    aircraft:
+      - mr_nb_hybrid
+      - mr_nb_hydrogen
+
+  - id: lr_conventional_wb
+    name: "LR conventional wide-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: lr_conventional_wb_old
+      recent_ref: lr_conventional_wb_recent
+    aircraft:
+      - lr_wb_conventional
+
+
+categories:
+  - id: short_range
+    name: "Short Range"
+    parameters:
+      life: 20
+      limit: 2
+    subcategories:
+      - sr_conventional_nb
+      - sr_electric_nb
+      - sr_hydrogen_he_nb
+
+  - id: medium_range
+    name: "Medium Range"
+    parameters:
+      life: 20
+      limit: 2
+    subcategories:
+      - mr_conventional_nb
+      - mr_hydrogen_he_nb
+
+  - id: long_range
+    name: "Long Range"
+    parameters:
+      life: 20
+      limit: 2
+    subcategories:
+      - lr_conventional_wb

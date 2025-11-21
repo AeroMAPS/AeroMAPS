@@ -3,5 +3,5 @@
     "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data.yaml",
     "PARAMETERS_PROCESSES_DATA_FILE": "./processes_data.yaml",
     "AIRCRAFT_INVENTORY_CONFIG_FILE": "./aircraft_inventory.yaml",
-    "FLEET_CONFIG_FILE": "./fleet_mix.yaml"
+    "FLEET_CONFIG_FILE": "./fleet_others.yaml"
 }
