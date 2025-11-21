@@ -14,6 +14,19 @@ from aeromaps.resources import climate_data
 
 
 def _dict_from_json(file_name="parameters.json") -> dict:
+    """
+    Convert a JSON parameters file into a dictionary
+
+    Parameters
+    ----------
+    file_name
+        Name of the JSON file to read.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the parameters from the JSON file.
+    """
     with open(file_name, "r", encoding="utf-8") as f:
         parameters_dict = load(f)
     dict = _dict_from_parameters_dict(parameters_dict)
@@ -22,14 +35,19 @@ def _dict_from_json(file_name="parameters.json") -> dict:
 
 def flatten_dict(val, prefix=""):
     """
-    Recursively flattens a nested dictionary by concatenating keys with an underscore.
+    Recursively flatten a nested dictionary by concatenating keys with an underscore.
 
-    Args:
-        val (dict): The dictionary to flatten.
-        prefix (str): The prefix to prepend to each key.
+    Parameters
+    ----------
+    val
+        The dictionary to flatten.
+    prefix
+        The prefix to prepend to each key.
 
-    Returns:
-        dict: A flattened dictionary with concatenated keys.
+    Returns
+    -------
+    flattened
+        A flattened dictionary where nested keys are concatenated using underscores.
     """
     flattened = {}
     if val:
@@ -43,6 +61,19 @@ def flatten_dict(val, prefix=""):
 
 
 def _dict_from_parameters_dict(parameters_dict) -> dict:
+    """
+    Convert specific lists in the parameters dictionary to pandas Series with appropriate indices.
+
+    Parameters
+    ----------
+    parameters_dict
+        Dictionary containing parameters to be converted.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with specified lists converted to pandas Series.
+    """
     for key, value in parameters_dict.items():
         # TODO: generic handling of timetables
         if isinstance(value, list) and key in [
@@ -63,6 +94,21 @@ def _dict_from_parameters_dict(parameters_dict) -> dict:
 
 
 def _dict_to_df(data, orient="index") -> pd.DataFrame:
+    """
+    Convert a dictionary to a pandas DataFrame, ensuring all values have the same length by padding with NaN if necessary.
+    Parameters
+    ----------
+    data
+        Dictionary to convert to DataFrame.
+    orient
+        Orientation of the DataFrame ('index' as default).
+
+    Returns
+    -------
+    df
+        DataFrame created from the dictionary.
+
+    """
     # Check if values from data have the same length or else populate with NaN
     max_len = max([len(v) for v in data.values()])
     for key, value in data.items():
@@ -74,7 +120,21 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
 
 
 def create_partitioning(file, path=""):
-    """Generation of a JSON input file (air transport data) and a CSV file (climate data) for running an AeroMAPS process for a partitioned scope."""
+    """
+    Generation of a JSON input file (air transport data) and a CSV file (climate data) for running an AeroMAPS process for a partitioned scope.
+
+    Parameters
+    ----------
+    file
+        Path to the CSV file containing AeroSCOPE data for the partitioned scope.
+    path
+        Directory path where the generated files will be saved.
+
+    Returns
+    -------
+    None
+
+    """
 
     # World input data recovery
     world_data_path = pth.join(data.__path__[0], "parameters.json")
@@ -271,6 +331,23 @@ def create_partitioning(file, path=""):
 
 
 def merge_json_files(file1, file2, output_file):
+    """
+    Merge two JSON files into a single JSON file.
+
+    Parameters
+    ----------
+    file1
+        Path to the first JSON file.
+    file2
+        Path to the second JSON file.
+    output_file
+        Path to the output JSON file where the merged content will be saved.
+
+    Returns
+    -------
+    None
+
+    """
     with open(file1, "r") as f1, open(file2, "r") as f2:
         data1 = json.load(f1)
         data2 = json.load(f2)
@@ -290,16 +367,27 @@ def compare_json_files(
     atol: float = 0.1,
 ) -> bool:
     """
-    Compare two JSON files using deepdiff and return the differences.
+    Compare two JSON files using deepdiff and return whether differences exist.
 
-    Args:
-        file1_path (str): Path to the first JSON file.
-        file2_path (str): Path to the second JSON file.
-        ignore_order (bool): Whether to ignore the order in lists. Defaults to True.
-        verbose (bool): Whether to print differences. Defaults to True.
+    Parameters
+    ----------
+    file1_path
+        Path to the first JSON file.
+    file2_path
+        Path to the second JSON file.
+    ignore_order
+        Whether to ignore the order in lists.
+    verbose
+        Whether to print differences.
+    rtol
+        Relative tolerance for numeric comparisons.
+    atol
+        Absolute tolerance for numeric comparisons.
 
-    Returns:
-        bool: True if differences exist.
+    Returns
+    -------
+    differences_exist
+        True if differences exist between the two JSON files, False otherwise.
     """
     with open(file1_path, "r") as f1, open(file2_path, "r") as f2:
         json1 = json.load(f1)
@@ -382,6 +470,20 @@ def compare_json_files(
 
 
 def convert_non_serializable(obj):
+    """
+    Convert non-serializable objects to a serializable format for JSON output.
+
+    Parameters
+    ----------
+    obj
+        The object to convert.
+
+    Returns
+    -------
+    serializable
+        A JSON-serializable representation of the object.
+
+    """
     # Native containers -> convert to list
     if isinstance(obj, (set, list, tuple)):
         return list(obj)
@@ -408,8 +510,24 @@ def convert_non_serializable(obj):
 
 
 def get_value_for_year(value, year, default_return=None):
-    """Utility function for generic bottom up model.
-    Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series."""
+    """
+    Utility function for generic bottom up model.
+    Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series.
+
+    Parameters
+    ----------
+    value
+        The value to retrieve from (can be int, float, or pd.Series).
+    year
+        The year for which to retrieve the value.
+    default_return
+        The default value to return if the year is not found in the Series.
+
+    Returns
+    -------
+    result
+        The retrieved value for the specified year, or the default return value.
+    """
     if isinstance(value, (int, float)):
         return value
     elif isinstance(value, pd.Series):
@@ -426,12 +544,17 @@ def custom_series_addition(s1, s2) -> pd.Series:
       - If only one value is NaN, the other value is used.
       - Otherwise, the two values are summed.
 
-    Args:
-        s1: First Series (or scalar) to add.
-        s2: Second Series (or scalar) to add.
+    Parameters
+    ----------
+    s1
+        First Series (or scalar) to add.
+    s2
+        Second Series (or scalar) to add.
 
-    Returns:
-        pd.Series: Resulting Series from the addition, aligned on the union of indices.
+    Returns
+    -------
+    pd.Series
+        Resulting Series from the addition, aligned on the union of indices.
     """
 
     if np.isscalar(s1):
@@ -463,6 +586,23 @@ def custom_series_addition(s1, s2) -> pd.Series:
 
 
 def custom_logger_config(logger):
+    """
+    Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
+    Hopefully temporary!!!
+
+
+    Parameters
+    ----------
+    logger
+        The logger to configure.
+
+    Returns
+    -------
+    logger
+        The configured logger with the custom filter applied.
+
+    """
+
     # Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
     class SuppressArgsSectionWarning(logging.Filter):
         def filter(self, record: logging.LogRecord) -> bool:
@@ -475,6 +615,21 @@ def custom_logger_config(logger):
 
 
 def clean_notebooks_on_tests(namespace=None, force_cleanup=False):
+    """
+    Clean up the notebook namespace by deleting variables when running tests or when forced to save semaphore memory.
+
+    Parameters
+    ----------
+    namespace
+        The namespace (dictionary) to clean. If None, uses globals().
+    force_cleanup
+        If True, forces cleanup regardless of test detection.
+
+    Returns
+    -------
+    None
+
+    """
     import os
     import gc
 
