@@ -1,0 +1,4 @@
+{
+    "AIRCRAFT_INVENTORY_CONFIG_FILE": "./aircraft_inventory.yaml",
+    "FLEET_CONFIG_FILE": "./fleet_calibration2.yaml"
+}
