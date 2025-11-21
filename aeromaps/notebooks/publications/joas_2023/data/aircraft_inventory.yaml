@@ -1,0 +1,123 @@
+reference_aircraft:
+  - id: sr_conventional_nb_old
+    name: "SR conventional narrow-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.2472568306010927
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.048375
+      cruise_altitude: 12000.0
+      ask_year: 280000000.0
+      rc_cost: 40000000.0
+      nrc_cost: 10000000000.0
+      oew: 37.0
+  - id: sr_conventional_nb_recent
+    name: "SR conventional narrow-body recent"
+    parameters:
+      entry_into_service_year: 2007.13
+      energy_per_ask: 0.9478251366120218
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.048375
+      cruise_altitude: 12000.0
+      ask_year: 280000000.0
+      rc_cost: 40000000.0
+      nrc_cost: 10000000000.0
+      oew: 43.0
+  - id: mr_conventional_nb_old
+    name: "MR conventional narrow-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 0.9163060109289617
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 37.0
+  - id: mr_conventional_nb_recent
+    name: "MR conventional narrow-body recent"
+    parameters:
+      entry_into_service_year: 2010.35
+      energy_per_ask: 0.6979234972677595
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 43.0
+  - id: lr_conventional_wb_old
+    name: "LR conventional wide-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.0879726775956282
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 135.0
+  - id: lr_conventional_wb_recent
+    name: "LR conventional wide-body recent"
+    parameters:
+      entry_into_service_year: 2009.36
+      energy_per_ask: 0.8268142076502732
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 129.0
+
+aircraft:
+  - id: sr_h2_2035
+    name: "New Short-range hydrogen"
+    energy_type: HYDROGEN
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -20.0
+      nox_evolution: -75.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 10.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 50000000.0
+      nrc_cost: 10000000000.0
+  - id: mr_nb_2035
+    name: "New Medium-range narrow-body 1"
+    energy_type: DROP_IN_FUEL
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -20.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 352000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+  - id: lr_wb_2035
+    name: "New Long-range wide-body 1"
+    energy_type: DROP_IN_FUEL
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -20.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
