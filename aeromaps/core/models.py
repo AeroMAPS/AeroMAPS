@@ -19,7 +19,7 @@ from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cos
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
 )
-from aeromaps.models.impacts.costs.energy.market_prices import CarbonTax
+from aeromaps.models.impacts.costs.carbon_tax.carbon_tax import CarbonTax
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
