@@ -1,3 +1,10 @@
+"""
+cost
+
+======
+Module to compute pathway mfsp and investments using the bottom-up techno-economic model.
+"""
+
 import warnings
 
 import numpy as np
@@ -10,6 +17,32 @@ from aeromaps.utils.functions import get_value_for_year, custom_series_addition
 class BottomUpCost(AeroMAPSModel):
     """
     Bottom-up techno-economic cost model for a given pathway, based on annual plant additions.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_bottom_up_unit_cost"' by default).
+    configuration_data : dict
+        Configuration data for the pathway from the yaml file.
+    resources_data : dict
+        Configuration data for the resources from the yaml file.
+    processes_data : dict
+        Configuration data for the processes from the yaml file.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    resource_keys : list
+        List of resource keys used in the pathway.
+    process_keys : list
+        List of process keys used in the pathway.
+    compute_all_years : bool
+        Flag indicating whether to compute costs for all years or only for years with commissioned capacity.
+    compute_abatement_cost : bool
+        Flag indicating whether to compute abatement costs.
     """
 
     def __init__(self, name, configuration_data, resources_data, processes_data, *args, **kwargs):
@@ -185,6 +218,21 @@ class BottomUpCost(AeroMAPSModel):
             self.compute_abatement_cost = False
 
     def compute(self, input_data) -> dict:
+        """
+        Execute the bottom-up techno-economic cost computation for the pathway.
+        Each plant (vintage) is commissioned with the characteristics of its commissioning year,
+        and its emissions are distributed over its lifespan, weighted by its share in annual production.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         optional_nan_series = pd.Series(
             np.nan, index=range(self.historic_start_year, self.end_year + 1)
         )

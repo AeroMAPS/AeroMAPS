@@ -1,3 +1,10 @@
+"""
+production_capacity
+
+=======================
+Computes annual capacity additions required to follow an energy consumption trajectory.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -8,6 +15,22 @@ from aeromaps.utils.functions import get_value_for_year
 class BottomUpCapacity(AeroMAPSModel):
     """
     Computes annual capacity additions required to follow an energy consumption trajectory.
+
+    Parameters
+    ------------
+    name : str
+        Name of the model instance ('f"{pathway_name}_production_capacity"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the config file.
+    processes_data : dict
+        Configuration data for all processes from the config file.
+
+    Attributes
+    ------------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(self, name, configuration_data, processes_data, *args, **kwargs):
@@ -70,6 +93,19 @@ class BottomUpCapacity(AeroMAPSModel):
             )
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the annual capacity additions required to follow the energy consumption trajectory.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         output_data = {}
 
         # Get the energy consumption trajectory and capacity factor

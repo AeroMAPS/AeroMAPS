@@ -1,3 +1,10 @@
+"""
+environmental
+
+======
+Module to compute pathway emissions based on bottom-up plant descriptions (EIS and capacity).
+"""
+
 import warnings
 
 import numpy as np
@@ -9,7 +16,30 @@ from aeromaps.utils.functions import get_value_for_year, custom_series_addition
 
 class BottomUpEnvironmental(AeroMAPSModel):
     """
-    Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
+    Generic environmental model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_bottom_up_unit_environmental"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the configuration file.
+    resources_data : dict
+        Configuration data for the resources from the configuration file.
+    processes_data : dict
+        Configuration data for the processes from the configuration file.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warning
+    -------
+    Description of i/o variables is very limited for models with dynamic i/o names. They are defined in .yaml configuration files.
+
     """
 
     def __init__(
@@ -159,7 +189,17 @@ class BottomUpEnvironmental(AeroMAPSModel):
         """
         Compute the environmental impact of the energy carrier pathway.
         Each plant (vintage) is commissioned with the characteristics of its commissioning year,
-            and its emissions are distributed over its lifespan, weighted by its share in annual production.
+        and its emissions are distributed over its lifespan, weighted by its share in annual production.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
 
         optional_nan_series = pd.Series(
