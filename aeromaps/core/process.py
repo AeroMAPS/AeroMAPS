@@ -211,19 +211,21 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
-        self.common_setup(add_examples_aircraft_and_subcategory)
+        self._common_setup(add_examples_aircraft_and_subcategory)
         if not optimisation:
-            self.setup_mda()
+            self._setup_mda()
         else:
-            self.setup_optimisation()
+            self._setup_optimisation()
 
-    def common_setup(self, add_examples_aircraft_and_subcategory):
+    def _common_setup(self, add_examples_aircraft_and_subcategory):
         """Perform common setup steps independent of analysis type.
 
         This method initializes the disciplines list, the main data
         container, and JSON storage, and computes index structures and
         climate data. It also stores the flag indicating whether to add
         example aircraft and subcategories to the fleet.
+
+        It has to be called if end year is modified.
 
         Parameters
         ----------
@@ -237,12 +239,14 @@ class AeroMAPSProcess(object):
         self._initialize_data()
         self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
-    def setup_mda(self):
+    def _setup_mda(self):
         """Configure the process for a standalone MDA chain.
 
         This method initializes generic energy inputs and disciplines,
         then builds a GEMSEO MDAChain with default convergence settings
         for multidisciplinary analysis execution of AeroMAPS.
+
+        It has to be called if end year is modified.
         """
         # Initialize energy carriers
         self._initialize_generic_energy()
@@ -257,7 +261,7 @@ class AeroMAPSProcess(object):
             log_convergence=True,
         )
 
-    def setup_optimisation(self):
+    def _setup_optimisation(self):
         """Configure the process for GEMSEO-based optimization.
 
         This method initializes the internal GEMSEO settings dictionary
