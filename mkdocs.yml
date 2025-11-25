@@ -120,7 +120,8 @@ nav:
           - Basic usage:
               - notebooks/examples_basic.ipynb
           - Other examples: books/other_examples.md
-      - GUI: books/documentation_gui.md
+      - GUI:
+          - books/documentation_gui.md
       - Models documentation:
         - Air transport: books/documentation_airtransport.md
         - Impacts: books/documentation_impacts.md
@@ -182,11 +183,20 @@ plugins:
             inherited_members: false
             members_order: source
   - mkdocs-jupyter
+  - bibtex:
+      bib_file: "docs/references.bib"
+
 
 markdown_extensions:
   - admonition
   - toc:
       permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
   project_name: AeroMAPS
