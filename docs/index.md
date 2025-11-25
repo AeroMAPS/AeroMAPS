@@ -9,8 +9,8 @@ transport transition scenarios on multiple criteria.
 The objective of this documentation is to provide the main elements concerning AeroMAPS.
 
 In particular, see:  
-- [API Reference](api/index.md) — understanding the intended use of user-facing functions and classes.  
-- [AeroMAPS Models](models/index.md) — details on each model used by the framework.  
+- [API Reference](full_doc/index.md) — understanding the intended use of user-facing functions and classes.  
+- [AeroMAPS Models](full_doc/index.md) — details on each model used by the framework.  
 - [User documentation](documentation/index.md) — general principles of AeroMAPS, including example applications.  
 
 
