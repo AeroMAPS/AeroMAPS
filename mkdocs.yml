@@ -5,7 +5,9 @@ repo_name: AeroMAPS
 
 nav:
   - Home: index.md
+  - Installation: books/installation.md
   - API Reference:
+      - Overview: api/index.md
       - Package:
           - aeromaps: api/aeromaps.md
       - Core:
@@ -23,6 +25,7 @@ nav:
           - Functions: api/aeromaps.utils.functions.md
           - YAML helpers: api/aeromaps.utils.yaml.md
   - AeroMAPS Models:
+      - Overview: models/index.md
       - Base classes: api/aeromaps.models.base.md
       - Constants: api/aeromaps.models.constants.md
       - Parameters: api/aeromaps.models.parameters.md
@@ -113,22 +116,19 @@ nav:
               - equivalent_carbon_budgets: api/aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets.md
 
   - Documentation:
-      - Overview: books/documentation.md
-      - Installation: books/installation.md
-      - About: books/about.md
+      - books/index.md # Main documentation page
+      - GUI:
+          - books/documentation_gui.md
+      - Models documentation:
+          - Air transport: books/documentation_airtransport.md
+          - Impacts: books/documentation_impacts.md
+          - Architecture: books/documentation_architecture.md
       - Examples:
           - Basic usage:
               - notebooks/examples_basic.ipynb
           - Other examples: books/other_examples.md
-      - GUI:
-          - books/documentation_gui.md
-      - Models documentation:
-        - Air transport: books/documentation_airtransport.md
-        - Impacts: books/documentation_impacts.md
-        - Architecture: books/documentation_architecture.md
       - Software: books/documentation_software.md
-      - Bibliography: books/bibliography.md
-      - Citations: books/citations.md
+      - References: books/references.md
 
 theme:
   name: material
@@ -140,6 +140,7 @@ theme:
     - search.suggest
     - toc.integrate
     - content.code.annotate
+    - navigation.indexes
   icon:
     repo: fontawesome/brands/github
   palette:

@@ -1,6 +1,10 @@
 # Citations
 
+!!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
+    It will be updated soon.!
+
 ## Main reference
+
 
 Please cite this article when using AeroMAPS in your research works:
 
