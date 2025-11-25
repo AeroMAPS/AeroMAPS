@@ -1,3 +1,7 @@
+"""
+This module creates dictionaries of default models for various AeroMAPS configurations.
+"""
+
 from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,

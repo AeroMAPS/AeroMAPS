@@ -35,7 +35,7 @@ from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
-    flatten_dict,
+    _flatten_dict,
 )
 from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
@@ -211,13 +211,13 @@ class AeroMAPSProcess(object):
         # Initialize inputs
         self._initialize_inputs()
 
-        self._common_setup(add_examples_aircraft_and_subcategory)
+        self.common_setup(add_examples_aircraft_and_subcategory)
         if not optimisation:
-            self._setup_mda()
+            self.setup_mda()
         else:
-            self._setup_optimisation()
+            self.setup_optimisation()
 
-    def _common_setup(self, add_examples_aircraft_and_subcategory):
+    def common_setup(self, add_examples_aircraft_and_subcategory):
         """Perform common setup steps independent of analysis type.
 
         This method initializes the disciplines list, the main data
@@ -225,7 +225,9 @@ class AeroMAPSProcess(object):
         climate data. It also stores the flag indicating whether to add
         example aircraft and subcategories to the fleet.
 
-        It has to be called if end year is modified.
+        Warning
+        ---------
+        This method should be called only if end year was modified, otherwise it is called in __init__.
 
         Parameters
         ----------
@@ -239,14 +241,16 @@ class AeroMAPSProcess(object):
         self._initialize_data()
         self.add_examples_aircraft_and_subcategory = add_examples_aircraft_and_subcategory
 
-    def _setup_mda(self):
+    def setup_mda(self):
         """Configure the process for a standalone MDA chain.
 
         This method initializes generic energy inputs and disciplines,
         then builds a GEMSEO MDAChain with default convergence settings
         for multidisciplinary analysis execution of AeroMAPS.
 
-        It has to be called if end year is modified.
+        Warning
+        ---------
+        This method should be called only if end year was modified, otherwise it is called in __init__.
         """
         # Initialize energy carriers
         self._initialize_generic_energy()
@@ -261,7 +265,7 @@ class AeroMAPSProcess(object):
             log_convergence=True,
         )
 
-    def _setup_optimisation(self):
+    def setup_optimisation(self):
         """Configure the process for GEMSEO-based optimization.
 
         This method initializes the internal GEMSEO settings dictionary
@@ -656,7 +660,7 @@ class AeroMAPSProcess(object):
 
             # Flatten the inputs dictionary and interpolate the necessary values
 
-            flattened_yaml = flatten_dict(resource_data["specifications"], resource_data["name"])
+            flattened_yaml = _flatten_dict(resource_data["specifications"], resource_data["name"])
             resource_data["specifications"] = self._convert_custom_data_types(flattened_yaml)
 
             self.parameters.from_dict(resource_data["specifications"])
@@ -694,7 +698,7 @@ class AeroMAPSProcess(object):
             inputs = process_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
-                flattened_yaml = flatten_dict(value, process_data["name"])
+                flattened_yaml = _flatten_dict(value, process_data["name"])
                 inputs[key] = self._convert_custom_data_types(flattened_yaml)
                 # set data to parameters
                 self.parameters.from_dict(inputs[key])
@@ -771,7 +775,7 @@ class AeroMAPSProcess(object):
             inputs = pathway_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
-                flattened_yaml = flatten_dict(value, pathway_data["name"])
+                flattened_yaml = _flatten_dict(value, pathway_data["name"])
                 inputs[key] = self._convert_custom_data_types(flattened_yaml)
                 # set data to parameters
                 self.parameters.from_dict(inputs[key])

@@ -1,5 +1,5 @@
 """
-Contains the principal high-level functions of AeroMAPS
+Initialization module for the AeroMAPS package, which provides the function to create an AeroMAPSProcess.
 """
 
 from aeromaps.core.models import default_models_top_down

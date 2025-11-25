@@ -1,14 +1,10 @@
 # API Reference
-**AeroMAPS Models**.
-`aeromaps.core.process.AeroMAPSProcess` and the models documented under
-If you are getting started with the programmatic API, a good entry point is
 
-- GUI modules and utility helpers.
-- Core services such as processes, model registry, and GEMSEO helpers.
-- The top-level `aeromaps` package.
+This section documents the AeroMAPS Python API, including user-facing functions and classes.
 
-Use the navigation on the left to explore:
+All user-facing execution is performed through an AeroMAPSProcess object,
+with the exception of configuration files operations, provided as utility functions. 
 
-This section documents the AeroMAPS Python API.
+
 
 

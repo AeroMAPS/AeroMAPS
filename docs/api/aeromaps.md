@@ -1,9 +1,10 @@
-# `aeromaps`
-      show_source: true
-      members_order: source
-      docstring_style: numpy
-    options:
-    handler: python
+# `AeroMAPS`
+
 ::: aeromaps
+    handler: python
+    options:
+      docstring_style: numpy
+      members_order: source
+      show_source: true
 
 

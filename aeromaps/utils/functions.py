@@ -33,7 +33,7 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     return dict
 
 
-def flatten_dict(val, prefix=""):
+def _flatten_dict(val, prefix=""):
     """
     Recursively flatten a nested dictionary by concatenating keys with an underscore.
 
@@ -54,7 +54,7 @@ def flatten_dict(val, prefix=""):
         for param_name, param_value in val.items():
             full_param_name = f"{prefix}_{param_name}" if prefix else param_name
             if isinstance(param_value, dict):
-                flattened.update(flatten_dict(param_value, full_param_name))
+                flattened.update(_flatten_dict(param_value, full_param_name))
             else:
                 flattened[full_param_name] = param_value
     return flattened
@@ -509,7 +509,7 @@ def convert_non_serializable(obj):
     return str(obj)
 
 
-def get_value_for_year(value, year, default_return=None):
+def _get_value_for_year(value, year, default_return=None):
     """
     Utility function for generic bottom up model.
     Retrieve a value for a specific year from a given value, which can be an integer, float, or pandas Series.
@@ -535,7 +535,7 @@ def get_value_for_year(value, year, default_return=None):
     return default_return
 
 
-def custom_series_addition(s1, s2) -> pd.Series:
+def _custom_series_addition(s1, s2) -> pd.Series:
     """
     Adds two pandas Series, handling missing indices (NaN) gracefully.
 

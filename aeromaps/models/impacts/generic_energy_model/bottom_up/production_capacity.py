@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.utils.functions import get_value_for_year
+from aeromaps.utils.functions import _get_value_for_year
 
 
 class BottomUpCapacity(AeroMAPSModel):
@@ -153,10 +153,10 @@ class BottomUpCapacity(AeroMAPSModel):
 
         for year in years:
             # getting entry into service (eis) plant charcteristics
-            plant_load_factor = get_value_for_year(
+            plant_load_factor = _get_value_for_year(
                 input_data.get(f"{self.pathway_name}_eis_plant_load_factor"), year, 1
             )
-            plant_lifespan = get_value_for_year(
+            plant_lifespan = _get_value_for_year(
                 input_data.get(f"{self.pathway_name}_eis_plant_lifespan"), year, 25
             )
 
@@ -167,7 +167,7 @@ class BottomUpCapacity(AeroMAPSModel):
                 # Calculate the required capacity to meet the energy demand
                 for key in self.resource_keys:
                     if f"{key}_load_factor" in input_data:
-                        resource_load_factor = get_value_for_year(
+                        resource_load_factor = _get_value_for_year(
                             input_data.get(f"{key}_load_factor"), year
                         )
                         if resource_load_factor is not None:
@@ -194,12 +194,12 @@ class BottomUpCapacity(AeroMAPSModel):
         for process_key in self.process_keys:
             process_building_scenario = pd.Series(np.zeros(len(years)), years)
             for year in years:
-                process_load_factor = get_value_for_year(
+                process_load_factor = _get_value_for_year(
                     input_data.get(f"{process_key}_load_factor", 1), year
                 )
                 for resource in self.process_resource_keys[process_key]:
                     if f"{resource}_load_factor" in input_data:
-                        resource_load_factor = get_value_for_year(
+                        resource_load_factor = _get_value_for_year(
                             input_data.get(f"{resource}_load_factor"), year
                         )
                         if resource_load_factor is not None:
