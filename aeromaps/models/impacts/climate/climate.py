@@ -87,27 +87,41 @@ class ClimateModel(AeroMAPSModel):
         """Run the climate simulation for aviation emissions."""
 
         # --- Prepare species inventory (and converting to ndarray) ---
+        # Preprocess contrails
+        idx1 = slice(self.climate_historic_start_year, self.end_year)
+        self.df_climate.loc[idx1, "contrails_distance_corrected"] = (
+                input_data["total_aircraft_distance"].loc[idx1]
+        )
+        idx2 = slice(self.historic_start_year, self.end_year)
+        self.df_climate.loc[idx2, "contrails_distance_corrected"] = (
+                input_data["total_aircraft_distance"].loc[idx2]
+                * (1 - input_data["operations_contrails_gain"].loc[idx2] / 100)
+                * input_data["fuel_effect_correction_contrails"].loc[idx2]
+        )
+        contrails_distance_corrected = self.df_climate["contrails_distance_corrected"]
+
+        # Create species inventory dictionary
         species_inventory = {
-            "CO2": input_data["co2_emissions"].to_numpy(),
-            "Contrails": input_data["total_aircraft_distance"].to_numpy(),   # TODO: adjust with operations and fuel effect
-            "NOx - ST O3 increase": input_data["nox_emissions"].to_numpy(),
-            "NOx - CH4 decrease and induced": input_data["nox_emissions"].to_numpy(),
-            "H2O": input_data["h2o_emissions"].to_numpy(),
-            "Soot": input_data["soot_emissions"].to_numpy(),
-            "Sulfur": input_data["sulfur_emissions"].to_numpy(),
+            "CO2": input_data["co2_emissions"].to_numpy() * 1e9,  # convert from Mt to kg
+            "Contrails": contrails_distance_corrected.to_numpy(),  # in km
+            "NOx - ST O3 increase": input_data["nox_emissions"].to_numpy() * 1e9,  # in kg
+            "NOx - CH4 decrease and induced": input_data["nox_emissions"].to_numpy() * 1e9,  # in kg
+            "H2O": input_data["h2o_emissions"].to_numpy() * 1e9,  # in kg
+            "Soot": input_data["soot_emissions"].to_numpy() * 1e9,  # in kg
+            "Sulfur": input_data["sulfur_emissions"].to_numpy() * 1e9,  # in kg
         }
 
         # --- Run climate simulation ---
         results = AviationClimateSimulation(
-            self.climate_model,
-            self.climate_historic_start_year,
-            self.end_year,
-            species_inventory,
-            self.species_settings,
-            self.model_settings
+            climate_model=self.climate_model,
+            start_year=self.climate_historic_start_year,
+            end_year=self.end_year,
+            species_inventory=species_inventory,
+            species_settings=self.species_settings,
+            model_settings=self.model_settings
         ).run()
 
-        # --- Convert results from np.ndarray (list) to pd.Series ---
+        # --- Convert back results from np.ndarray (list) to pd.Series ---
         for key in results.keys():
             for subkey in results[key].keys():
                 results[key][subkey] = pd.Series(
@@ -115,7 +129,7 @@ class ClimateModel(AeroMAPSModel):
                     index=pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1),
                 )
 
-        # --- Extract results (and store in climate dataframe) ---
+        # --- Extract results, store in climate dataframe, and return outputs dict ---
         output_data = {}
         for key_in_results, aeromaps_name in self.mapping.items():
             # --- temperature ---
@@ -140,12 +154,6 @@ class ClimateModel(AeroMAPSModel):
             output_data[var_rf] = rf
 
         return output_data
-
-    def _read_climate_configuration(self):
-        """
-        Read the climate configuration file and set parameters accordingly.
-        """
-        pass
 
 
 class TemperatureGWPStar(AeroMAPSModel):
