@@ -179,6 +179,7 @@ theme:
 
 plugins:
   - search
+  - mike
   - mkdocstrings:
       handlers:
         python:
@@ -208,4 +209,5 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
-  project_name: AeroMAPS
+  version:
+    provider: mike
