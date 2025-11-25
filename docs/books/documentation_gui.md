@@ -1,5 +1,8 @@
 # Use of the graphical user interface
 
+!!! warning "This documentation supports the V1 graphical user interface (GUI) for AeroMAPS"
+    [A new UI is now deployed](https://www.aeromaps.eu), in which most of the advice presented here still apply. The documentation will be updated soon.
+
 This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
 it on a computer. First, a tutorial is provided for understanding the use of the GUI. Then, the 
 default settings used on the GUI are provided (for details concerning the models, refer to the dedicated sections of 

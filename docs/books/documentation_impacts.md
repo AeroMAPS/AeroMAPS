@@ -1,5 +1,8 @@
 # Impact modeling and sustainability assessment
 
+!!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
+    It will be updated soon.!
+
 After defining the evolution of air transport via dedicated models, specific models evaluate the associated 
 impacts, and then compare them with limits via a sustainability assessment.
 
