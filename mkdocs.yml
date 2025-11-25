@@ -1,0 +1,174 @@
+site_name: AeroMAPS API Documentation
+site_url: https://aeromaps.readthedocs.io/
+repo_url: https://github.com/AeroMAPS/AeroMAPS
+repo_name: AeroMAPS
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - Package:
+          - aeromaps: api/aeromaps.md
+      - Core:
+          - Core package: api/aeromaps.core.md
+          - GEMSEO helpers: api/aeromaps.core.gemseo.md
+          - Models registry: api/aeromaps.core.models.md
+          - Process: api/aeromaps.core.process.md
+      - GUI:
+          - gui package: api/aeromaps.gui.md
+          - Graphical user interface: api/aeromaps.gui.graphical_user_interface.md
+          - GUI plots: api/aeromaps.gui.plots.md
+      - Models:
+          - Base classes: api/aeromaps.models.base.md
+          - Constants: api/aeromaps.models.constants.md
+          - Parameters: api/aeromaps.models.parameters.md
+          - Templates: api/aeromaps.models.templates.md
+          - YAML interpolator: api/aeromaps.models.yaml_interpolator.md
+          - Air transport:
+              - Package: api/aeromaps.models.air_transport.md
+              - Constants: api/aeromaps.models.air_transport.constants.md
+              - Air traffic:
+                  - Package: api/aeromaps.models.air_transport.air_traffic.md
+                  - ask: api/aeromaps.models.air_transport.air_traffic.ask.md
+                  - price_elasticity: api/aeromaps.models.air_transport.air_traffic.price_elasticity.md
+                  - rpk: api/aeromaps.models.air_transport.air_traffic.rpk.md
+                  - rtk: api/aeromaps.models.air_transport.air_traffic.rtk.md
+                  - short_range_distribution: api/aeromaps.models.air_transport.air_traffic.short_range_distribution.md
+                  - total_aircraft_distance: api/aeromaps.models.air_transport.air_traffic.total_aircraft_distance.md
+              - Aircraft fleet and operations:
+                  - Package: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.md
+                  - Fleet:
+                      - Package: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.md
+                      - aircraft_efficiency: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency.md
+                      - fleet_model: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model.md
+                      - fleet_numeric: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric.md
+                  - Load factor:
+                      - Package: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.md
+                      - load_factor: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor.md
+                  - Non-CO2:
+                      - Package: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.md
+                      - non_co2: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2.md
+                  - Operations:
+                      - Package: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.md
+                      - operations: api/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.md
+          - Impacts:
+              - Package: api/aeromaps.models.impacts.md
+              - Climate:
+                  - Package: api/aeromaps.models.impacts.climate.md
+                  - climate: api/aeromaps.models.impacts.climate.climate.md
+              - Effective radiative forcing:
+                  - Package: api/aeromaps.models.impacts.effective_radiative_forcing.md
+                  - effective_radiative_forcing: api/aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing.md
+              - Emissions:
+                  - Package: api/aeromaps.models.impacts.emissions.md
+                  - co2_emissions: api/aeromaps.models.impacts.emissions.co2_emissions.md
+                  - non_co2_emissions: api/aeromaps.models.impacts.emissions.non_co2_emissions.md
+                  - carbon_offset: api/aeromaps.models.impacts.emissions.carbon_offset.md
+              - Energy resources:
+                  - Package: api/aeromaps.models.impacts.energy_resources.md
+                  - energy_resources: api/aeromaps.models.impacts.energy_resources.energy_resources.md
+                  - energy_consumption: api/aeromaps.models.impacts.energy_resources.energy_consumption.md
+              - Generic energy model:
+                  - Package: api/aeromaps.models.impacts.generic_energy_model.md
+                  - Common:
+                      - Package: api/aeromaps.models.impacts.generic_energy_model.common.md
+                      - energy_carriers_factory: api/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory.md
+                      - energy_carriers_manager: api/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager.md
+                      - energy_carriers_means: api/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means.md
+                      - energy_use_choice: api/aeromaps.models.impacts.generic_energy_model.common.energy_use_choice.md
+                  - Bottom-up:
+                      - Package: api/aeromaps.models.impacts.generic_energy_model.bottom_up.md
+                      - abatement_cost: api/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost.md
+                      - abatement_effective: api/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_effective.md
+                      - cost: api/aeromaps.models.impacts.generic_energy_model.bottom_up.cost.md
+                      - environmental: api/aeromaps.models.impacts.generic_energy_model.bottom_up.environmental.md
+                      - production_capacity: api/aeromaps.models.impacts.generic_energy_model.bottom_up.production_capacity.md
+                  - Top-down:
+                      - Package: api/aeromaps.models.impacts.generic_energy_model.top_down.md
+                      - cost: api/aeromaps.models.impacts.generic_energy_model.top_down.cost.md
+                      - environmental: api/aeromaps.models.impacts.generic_energy_model.top_down.environmental.md
+              - Life cycle assessment:
+                  - Package: api/aeromaps.models.impacts.life_cycle_assessment.md
+                  - life_cycle_assessment: api/aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment.md
+                  - plots: api/aeromaps.models.impacts.life_cycle_assessment.plots.md
+              - Others:
+                  - Package: api/aeromaps.models.impacts.others.md
+                  - others: api/aeromaps.models.impacts.others.others.md
+                  - comparison: api/aeromaps.models.impacts.others.comparison.md
+          - Optimisation:
+              - Package: api/aeromaps.models.optimisation.md
+              - Constraints:
+                  - Package: api/aeromaps.models.optimisation.constraints.md
+                  - carbon_budget_constraint: api/aeromaps.models.optimisation.constraints.carbon_budget_constraint.md
+                  - energy_constraint: api/aeromaps.models.optimisation.constraints.energy_constraint.md
+          - Sustainability assessment:
+              - Package: api/aeromaps.models.sustainability_assessment.md
+              - Climate:
+                  - Package: api/aeromaps.models.sustainability_assessment.climate.md
+                  - carbon_budgets: api/aeromaps.models.sustainability_assessment.climate.carbon_budgets.md
+                  - equivalent_carbon_budgets: api/aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets.md
+      - Utils:
+          - utils package: api/aeromaps.utils.md
+          - Defaults: api/aeromaps.utils.defaults.md
+          - Functions: api/aeromaps.utils.functions.md
+          - YAML helpers: api/aeromaps.utils.yaml.md
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.path
+    - search.highlight
+    - search.suggest
+    - toc.integrate
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+      primary: indigo
+      accent: teal
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: indigo
+      accent: teal
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+      primary: indigo
+      accent: teal
+  logo: assets/logo_white.png
+
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            docstring_section_style: table
+            show_source: true
+            separate_signature: true
+            merge_init_into_class: true
+            inherited_members: false
+            members_order: source
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+extra:
+  project_name: AeroMAPS
