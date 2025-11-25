@@ -111,6 +111,7 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
 )
 
 from aeromaps.models.impacts.climate.climate import (
+    ClimateModel,
     TemperatureGWPStar,
     TemperatureSimpleGWPStar,
     TemperatureFair,
@@ -277,6 +278,33 @@ models_offset = {
     "residual_carbon_offset": ResidualCarbonOffset("residual_carbon_offset"),
     "carbon_offset": CarbonOffset("carbon_offset"),
     "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
+}
+
+models_emissions = {
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
+    "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
+    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
+}
+
+models_climate = {
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
+    "climate_model": ClimateModel("climate_model"),
+    "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
+    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
 models_climate_simple_gwpstar = {

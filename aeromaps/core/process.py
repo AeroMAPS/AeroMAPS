@@ -50,6 +50,9 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
     AviationEnergyCarriersFactory,
 )
 
+# Climate model imports
+from aeromaps.models.impacts.climate.climate import ClimateModel
+
 # Settings
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
@@ -96,6 +99,10 @@ DEFAULT_AIRCRAFT_INVENTORY_CONFIG_PATH = os.path.join(
 
 DEFAULT_FLEET_CONFIG_PATH = os.path.join(DEFAULT_FLEET_DATA_PATH, "fleet.yaml")
 
+DEFAULT_CLIMATE_MODEL_PATH = os.path.join(
+    CURRENT_DIR, "..", "resources", "data", "default_climate_models", "climate_model_gwpstar.yaml"
+)
+
 
 class AeroMAPSProcess(object):
     def __init__(
@@ -138,7 +145,8 @@ class AeroMAPSProcess(object):
     def setup_mda(self):
         # Initialize energy carriers
         self._initialize_generic_energy()
-
+        # Initialize climate model
+        self._initialize_climate_model()
         self._initialize_disciplines()
 
         self.mda_chain = MDAChain(
@@ -154,6 +162,7 @@ class AeroMAPSProcess(object):
 
     def create_gemseo_scenario(self):
         self._initialize_generic_energy()
+        self._initialize_climate_model()
         self._initialize_disciplines()
 
         self.scenario = create_scenario(
@@ -567,6 +576,30 @@ class AeroMAPSProcess(object):
             AviationEnergyCarriersFactory.instantiate_energy_carriers_models(
                 self.energy_carriers_data, self.pathways_manager
             )
+        )
+
+    def _initialize_climate_model(self):
+        """ Read the climate config file and instantiate ClimateModel accordingly. """
+        if (
+            self.configuration_file is not None
+            and "PARAMETERS_CLIMATE_MODEL_FILE" in self.config
+        ):
+            configuration_directory = os.path.dirname(self.configuration_file)
+            climate_model_file_path = os.path.join(
+                configuration_directory, self.config["PARAMETERS_CLIMATE_MODEL_FILE"]
+            )
+        else:
+            climate_model_file_path = DEFAULT_CLIMATE_MODEL_PATH
+
+        climate_model_data = read_yaml_file(climate_model_file_path)
+        self.models.update(
+            {"climate_model": ClimateModel(
+                name="climate_model",
+                climate_model=climate_model_data.get("climate_model"),
+                species_settings=climate_model_data.get("species_settings", {}),
+                model_settings=climate_model_data.get("model_settings", {})
+            )
+            }
         )
 
     def _convert_custom_data_types(self, data):

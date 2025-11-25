@@ -11,6 +11,141 @@ from aeromaps.models.base import (
     RunFair,
 )
 from aeromaps.resources.climate_data import RCP
+from aerocm.climate_models.aviation_climate_simulation import AviationClimateSimulation
+
+
+class ClimateModel(AeroMAPSModel):
+    """
+    Class to run a climate simulation for aviation emissions using one of the available climate models
+    available in AeroCM.
+    """
+
+    def __init__(
+            self,
+            name="climate",
+            climate_model: str = "",
+            species_settings: dict | None = None,
+            model_settings: dict | None = None,
+            *args,
+            **kwargs
+    ):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+
+        # --- Configuration ---
+        self.climate_model = climate_model
+        self.species_settings = species_settings
+        self.model_settings = model_settings
+
+        # --- Declare input names ---
+        self.input_names = [
+            "co2_emissions",
+            "nox_emissions",
+            "h2o_emissions",
+            "sulfur_emissions",
+            "soot_emissions",
+            "total_aircraft_distance",
+            "operations_contrails_gain",
+            "fuel_effect_correction_contrails",
+        ]
+
+        # --- Declare output names ---
+        # Mapping between AeroCM model keys and AeroMAPS variable names
+        self.mapping = {
+            "Total": "total",
+            "CO2": "co2",
+            "Non-CO2": "non_co2",
+            "Contrails": "contrails",
+            "NOx - ST O3 increase": "nox_short_term_o3_increase",
+            "NOX - CH4 induced O3": "nox_long_term_o3_decrease",
+            "NOX - CH4 decrease": "nox_ch4_decrease",
+            "NOX - CH4 induced H2O": "nox_stratospheric_water_vapor_decrease",
+            "H2O": "h2o",
+            "Sulfur": "sulfur",
+            "Soot": "soot",
+            "Aerosols": "aerosol",
+        }
+
+        # Output names list
+        self.output_names = []
+        for aeromaps_name in self.mapping.values():
+            # Temperature increase
+            if aeromaps_name == "total":
+                var_temp = "temperature_increase_from_aviation"
+            else:
+                var_temp = f"temperature_increase_from_{aeromaps_name}_from_aviation"
+            self.output_names.append(var_temp)
+
+            # Effective Radiative Forcing
+            var_erf = f"{aeromaps_name}_erf"
+            self.output_names.append(var_erf)
+
+            # Radiative Forcing
+            var_rf = f"{aeromaps_name}_rf"
+            self.output_names.append(var_rf)
+
+    def compute(self, input_data) -> dict:
+        """Run the climate simulation for aviation emissions."""
+
+        # --- Prepare species inventory (and converting to ndarray) ---
+        species_inventory = {
+            "CO2": input_data["co2_emissions"].to_numpy(),
+            "Contrails": input_data["total_aircraft_distance"].to_numpy(),   # TODO: adjust with operations and fuel effect
+            "NOx - ST O3 increase": input_data["nox_emissions"].to_numpy(),
+            "NOx - CH4 decrease and induced": input_data["nox_emissions"].to_numpy(),
+            "H2O": input_data["h2o_emissions"].to_numpy(),
+            "Soot": input_data["soot_emissions"].to_numpy(),
+            "Sulfur": input_data["sulfur_emissions"].to_numpy(),
+        }
+
+        # --- Run climate simulation ---
+        results = AviationClimateSimulation(
+            self.climate_model,
+            self.climate_historic_start_year,
+            self.end_year,
+            species_inventory,
+            self.species_settings,
+            self.model_settings
+        ).run()
+
+        # --- Convert results from np.ndarray (list) to pd.Series ---
+        for key in results.keys():
+            for subkey in results[key].keys():
+                results[key][subkey] = pd.Series(
+                    results[key][subkey],
+                    index=pd.RangeIndex(self.climate_historic_start_year, self.end_year + 1),
+                )
+
+        # --- Extract results (and store in climate dataframe) ---
+        output_data = {}
+        for key_in_results, aeromaps_name in self.mapping.items():
+            # --- temperature ---
+            temp = results[key_in_results]["temperature"]  # get result
+            if aeromaps_name == "total":
+                var_temp = "temperature_increase_from_aviation"  # create variable name
+            else:
+                var_temp = f"temperature_increase_from_{aeromaps_name}_from_aviation"  # create variable name
+            self.df_climate[var_temp] = temp  # store in dataframe
+            output_data[var_temp] = temp  # store in output dictionary
+
+            # --- effective radiative forcing ---
+            erf = results[key_in_results]["effective_radiative_forcing"]
+            var_erf = f"{aeromaps_name}_erf"
+            self.df_climate[var_erf] = erf
+            output_data[var_erf] = erf
+
+            # --- radiative forcing ---
+            rf = results[key_in_results]["radiative_forcing"]
+            var_rf = f"{aeromaps_name}_rf"
+            self.df_climate[var_rf] = rf
+            output_data[var_rf] = rf
+
+        return output_data
+
+    def _read_climate_configuration(self):
+        """
+        Read the climate configuration file and set parameters accordingly.
+        """
+        pass
 
 
 class TemperatureGWPStar(AeroMAPSModel):
