@@ -66,10 +66,11 @@ nbmake = "^1.5.0"
 pytest-xdist = "^3.7.0"
 
 [tool.poetry.group.doc.dependencies]
-jupyter-book = "^1.0.0"
-sphinx = ">=5,<8"
-sphinx-rtd-theme = "^1.0"
-sphinxcontrib-bibtex = "^2.3.0"
+mkdocs = "^1.6.1"
+mkdocs-bibtex = "^2.16.0"
+mkdocs-jupyter = "^0.25.1"
+mkdocs-material = "^9.7.0"
+mkdocstrings = { version = "^0.30.0", extras = ["python"] }
 
 [tool.poetry.group.lint.dependencies]
 pre-commit = "^3.5.0"
