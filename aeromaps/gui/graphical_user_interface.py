@@ -2083,7 +2083,9 @@ class GraphicalUserInterface(widgets.VBox):
                 for pathway in biofuel_pathways:
                     if pathway.name == "atj":
                         self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
-                        self.process.parameters.atj_mandate_share_values = [2020, 2023, 2030, 2035, 2050]
+                        self.process.parameters.atj_mandate_share_values = [
+                            x * 100 / 100 for x in biofuel_share
+                        ]
                     else:
                         self.reset_pathway_mandate(pathway)
 
@@ -2102,13 +2104,13 @@ class GraphicalUserInterface(widgets.VBox):
             for pathway in hydrogen_pathways:
                 if pathway.name == "hydrogen_electrolysis":
                     self.process.parameters.hydrogen_electrolysis_mandate_share_years = []
-                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2.0]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0]
                 elif pathway.name == "hydrogen_coal":
                     self.process.parameters.hydrogen_coal_mandate_share_years = []
-                    self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27]
+                    self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27.0]
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2116,7 +2118,7 @@ class GraphicalUserInterface(widgets.VBox):
             for pathway in hydrogen_pathways:
                 if pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [100]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [100.0]
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2128,7 +2130,7 @@ class GraphicalUserInterface(widgets.VBox):
                         2030,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2, 0, 0]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2.0, 0.0, 0.0]
                 elif pathway.name == "hydrogen_gas_ccs":
                     self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
                         2020,
@@ -2136,7 +2138,7 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 30, 70, 100]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0.0, 30.0, 70.0, 100.0]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2144,7 +2146,7 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 70, 30, 0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0, 70.0, 30.0, 0.0]
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2158,10 +2160,10 @@ class GraphicalUserInterface(widgets.VBox):
                         2050,
                     ]
                     self.process.parameters.hydrogen_electrolysis_mandate_share_values = [
-                        2,
-                        30,
-                        50,
-                        100,
+                        2.0,
+                        30.0,
+                        50.0,
+                        100.0,
                     ]
                 elif pathway.name == "hydrogen_gas_ccs":
                     self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
@@ -2170,7 +2172,7 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 20, 30, 0]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0.0, 20.0, 30.0, 0.0]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2178,7 +2180,7 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 50, 20, 0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0, 50.0, 20.0, 0.0]
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2202,10 +2204,10 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.grid_electricity_co2_emission_factor_values = [
                 x / 3.6
                 for x in [
-                    429,
-                    300,
-                    240,
-                    240,
+                    429.0,
+                    300.0,
+                    240.0,
+                    240.0,
                 ]
             ]
         elif self.w_electricity_production.value == "Low-carbon":
@@ -2221,10 +2223,10 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.grid_electricity_co2_emission_factor_values = [
                 x / 3.6
                 for x in [
-                    429,
-                    200,
-                    120,
-                    70,
+                    429.0,
+                    200.0,
+                    120.0,
+                    70.0,
                 ]
             ]
         elif self.w_electricity_production.value == "Dedicated low-carbon":
