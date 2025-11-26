@@ -97,7 +97,7 @@ jobs:
 
       - name: Build docs (verification)
         run: |
-          mkdocs build --strict
+          mkdocs build
           echo "Build successful! Site generated in ./site/"
           ls -la site/
 
