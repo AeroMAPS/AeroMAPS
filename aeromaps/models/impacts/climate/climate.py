@@ -18,12 +18,43 @@ class ClimateModel(AeroMAPSModel):
     """
     Class to run a climate simulation for aviation emissions using one of the available climate models
     available in AeroCM.
+
+    Parameters
+    ----------
+    climate_model : str
+        Name of the climate model to use (e.g., "LWE", "GWP*", "IPCC", etc.). See AeroCM documentation for available models.
+    name : str, optional
+        Name of the model when implemented in AeroMAPS, by default "climate".
+    species_settings : dict | None, optional
+        Dictionary containing species-specific settings for the climate model, by default None (which uses default settings from AeroCM).
+    model_settings : dict | None, optional
+        Dictionary containing model-wide settings for the climate model, by default None (which uses default settings from AeroCM).
+
+    Attributes
+    ----------
+    climate_model : str
+        Name of the climate model used to run the simulation.
+    species_settings : dict | None
+        Species-specific settings for the climate model.
+    model_settings : dict | None
+        Model settings for the climate model.
+    mapping : dict
+        Mapping between AeroCM output keys and AeroMAPS variable names.
+
+    Notes
+    -----
+    This class is automatically implemented by the AeroMAPSProcess when a climate configuration file is provided
+    through the 'PARAMETERS_CLIMATE_MODEL_FILE' key. The CLIMATE_MODEL_FILE should be a YAML file containing the keys
+    'climate_model', 'species_settings', and 'model_settings'.
+
+    The climate simulation is performed using the `AviationClimateSimulation` class from AeroCM.
+    More details can be found on the AeroCM repository: https://github.com/AeroMAPS/AeroCM
     """
 
     def __init__(
             self,
-            name="climate",
-            climate_model: str = "",
+            climate_model: str,
+            name: str = "climate",
             species_settings: dict | None = None,
             model_settings: dict | None = None,
             *args,
@@ -84,7 +115,9 @@ class ClimateModel(AeroMAPSModel):
             self.output_names.append(var_rf)
 
     def compute(self, input_data) -> dict:
-        """Run the climate simulation for aviation emissions."""
+        """Run the climate simulation for aviation emissions.
+        This method is a wrapper for the `AviationClimateSimulation` class from AeroCM.
+        """
 
         # --- Prepare species inventory (and converting to ndarray) ---
         # Preprocess contrails
