@@ -5,6 +5,11 @@
     "aliases": []
   },
   {
+    "version": "fleet_refactoring",
+    "title": "fleet_refactoring",
+    "aliases": []
+  },
+  {
     "version": "docstring_completion",
     "title": "docstring_completion",
     "aliases": []
