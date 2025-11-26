@@ -1,3 +1,10 @@
+"""
+abatement_cost
+
+======================
+Module to compute energy abatement costs for different pathways.
+"""
+
 from typing import Tuple
 
 import numpy as np
@@ -10,6 +17,22 @@ class EnergyAbatementCost(AeroMAPSModel):
     """
     Computes specific abatement cost and generic specific abatement cost for a pathway,
     based on discounted costs and avoided emissions over the lifespan of each vintage.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_bottom_up_abatement_cost"' by default).
+    pathway_name : str
+        Name of the energy pathway for which the abatement cost is computed.
+    pathways_data : dict
+        Dictionary containing data for all pathways, used to complete inputs names necessary.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(self, name, pathway_name, pathways_data, *args, **kwargs):
@@ -51,6 +74,16 @@ class EnergyAbatementCost(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """
         Compute the specific abatement cost and generic specific abatement cost for each vintage.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
         unitary_discounted_costs = input_data.get(
             f"{self.pathway_name}_lifespan_unitary_discounted_costs", pd.Series([0.0])
@@ -104,10 +137,28 @@ class EnergyAbatementCost(AeroMAPSModel):
 
 class ReferenceAbatementCost(AeroMAPSModel):
     """
-    Computes specific abatement cost and generic specific abatement cost for a pathway,
+    Computes specific abatement cost and generic specific abatement cost for a reference pathway,
     based on discounted costs and avoided emissions over the lifespan of each vintage.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_bottom_up_abatement_cost"' by default).
+    pathway_name : str
+        Name of the energy pathway for which the abatement cost is computed.
+    pathways_data : dict
+        Dictionary containing data for all pathways, used to complete inputs names necessary.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
+    # TODO : clarify the role of this class compared to EnergyAbatementCost, i can't remember
+    #  --> I suppose it's to allow computing ref if the ref pathway is not used (no energy consumed)
     def __init__(self, name, pathway_name, configuration_data, *args, **kwargs):
         super().__init__(
             name=name,
@@ -165,6 +216,16 @@ class ReferenceAbatementCost(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """
         Compute the specific abatement cost and generic specific abatement cost for each vintage.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
 
         ref_mfsp = input_data.get(f"{self.pathway_name}_mean_mfsp", pd.Series([0.0]))

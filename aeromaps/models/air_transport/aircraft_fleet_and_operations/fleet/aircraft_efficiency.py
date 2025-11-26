@@ -1,3 +1,10 @@
+"""
+aicraft_efficiency
+=====================
+
+This module contains models to compute aircraft efficiency, either using simple models or outputs from generic fleet model.
+"""
+
 from typing import Tuple
 from numbers import Number
 
@@ -8,6 +15,15 @@ from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
+    """
+    Class to compute energy consumption per ASK (without operations) using simple annual improvement rates.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('passenger_aircraft_efficiency_simple_shares' by default).
+    """
+
     def __init__(self, name="passenger_aircraft_efficiency_simple_shares", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -73,7 +89,131 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        """Energy consumption per ASK (without operations) calculation using simple models."""
+        """
+        Compute energy consumption per ASK (without operations) using simple annual improvement rates.
+
+        Parameters
+        ----------
+        energy_consumption_init
+            Historical energy consumption of aviation over 2000-2019 [MJ].
+        ask_init
+            Historical number of Available Seat Kilometer (ASK) over 2000-2019 [ASK].
+        short_range_energy_share_2019
+            Share of aviation energy consumed by passenger short-range market in 2019 [%].
+        medium_range_energy_share_2019
+            Share of aviation energy consumed by passenger medium-range market in 2019 [%].
+        long_range_energy_share_2019
+            Share of aviation energy consumed by passenger long-range market in 2019 [%].
+        short_range_rpk_share_2019
+            Share of RPK from short-range market in 2019 [%].
+        medium_range_rpk_share_2019
+            Share of RPK from medium-range market in 2019 [%].
+        long_range_rpk_share_2019
+            Share of RPK from long-range market in 2019 [%].
+        energy_per_ask_short_range_dropin_fuel_gain_reference_years
+            Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft [yr].
+        energy_per_ask_short_range_dropin_fuel_gain_reference_years_values
+            Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft for the reference years [%].
+        energy_per_ask_medium_range_dropin_fuel_gain_reference_years
+            Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft [yr].
+        energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values
+            Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft for the reference years [%].
+        energy_per_ask_long_range_dropin_fuel_gain_reference_years
+            Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft [yr].
+        energy_per_ask_long_range_dropin_fuel_gain_reference_years_values
+            Mean annual efficiency gains in terms of energy consumption per ASK for long-range drop-in fuel aircraft for the reference years [%].
+        relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years
+            Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market [yr].
+        relative_energy_per_ask_hydrogen_wrt_dropin_short_range_reference_years_values
+            Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger short-range market for the reference years [-].
+        relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years
+            Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market [yr].
+        relative_energy_per_ask_hydrogen_wrt_dropin_medium_range_reference_years_values
+            Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger medium-range market for the reference years [-].
+        relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years
+            Reference years for the relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market [yr].
+        relative_energy_per_ask_hydrogen_wrt_dropin_long_range_reference_years_values
+            Relative energy consumption per ASK of hydrogen aircraft with respect to drop-in aircraft for passenger long-range market for the reference years [-].
+        relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years
+            Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger short-range market [yr].
+        relative_energy_per_ask_electric_wrt_dropin_short_range_reference_years_values
+            Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger short-range market for the reference years [-].
+        relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years
+            Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger medium-range market [yr].
+        relative_energy_per_ask_electric_wrt_dropin_medium_range_reference_years_values
+            Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger medium-range market for the reference years [-].
+        relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years
+            Reference years for the relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market [yr].
+        relative_energy_per_ask_electric_wrt_dropin_long_range_reference_years_values
+            Relative energy consumption per ASK of electric aircraft with respect to drop-in aircraft for passenger long-range market for the reference years [-].
+        hydrogen_final_market_share_short_range
+            Share of hydrogen aircraft in the passenger short-range market [%].
+        hydrogen_introduction_year_short_range
+            Entry-Into-Service year of hydrogen aircraft for short-range market [yr].
+        hydrogen_final_market_share_medium_range
+            Share of hydrogen aircraft in the passenger medium-range market [%].
+        hydrogen_introduction_year_medium_range
+            Entry-Into-Service year of hydrogen aircraft for medium-range market [yr].
+        hydrogen_final_market_share_long_range
+            Share of hydrogen aircraft in the passenger long-range market [%].
+        hydrogen_introduction_year_long_range
+            Entry-Into-Service year of hydrogen aircraft for long-range market [yr].
+        electric_final_market_share_short_range
+            Share of electric aircraft in the passenger short-range market [%].
+        electric_introduction_year_short_range
+            Entry-Into-Service year of electric aircraft for short-range market [yr].
+        electric_final_market_share_medium_range
+            Share of electric aircraft in the passenger medium-range market [%].
+        electric_introduction_year_medium_range
+            Entry-Into-Service year of electric aircraft for medium-range market [yr].
+        electric_final_market_share_long_range
+            Share of electric aircraft in the passenger long-range market [%].
+        electric_introduction_year_long_range
+            Entry-Into-Service year of electric aircraft for long-range market [yr].
+        fleet_renewal_duration
+            Duration for renewing 98% of the aircraft fleet [yr].
+        covid_energy_intensity_per_ask_increase_2020
+            Increase in energy intensity per ASK due to Covid-19 for the start year [%].
+
+        Returns
+        -------
+        energy_per_ask_without_operations_short_range_dropin_fuel
+            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_dropin_fuel
+            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_dropin_fuel
+            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_hydrogen
+            Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_hydrogen
+            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_hydrogen
+            Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_electric
+            Energy consumption per ASK for passenger short-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_electric
+            Energy consumption per ASK for passenger medium-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_electric
+            Energy consumption per ASK for passenger long-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        ask_short_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
+        ask_medium_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
+        ask_long_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
+        ask_short_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
+        ask_medium_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
+        ask_long_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
+        ask_short_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
+        ask_medium_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
+        ask_long_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
+        """
 
         # Initialization based on 2019 share
         energy_consumption_per_ask_init = energy_consumption_init / ask_init
@@ -396,6 +536,15 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
 
 
 class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
+    """
+    Class to compute ASK for each aircraft type when using simple efficiency models.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('passenger_aircraft_efficiency_simple_ask' by default).
+    """
+
     def __init__(self, name="passenger_aircraft_efficiency_simple_ask", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -424,6 +573,58 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        """
+        Compute ASK breakdown by aircraft type and range.
+
+        Parameters
+        ----------
+        ask_short_range
+            Number of Available Seat Kilometre (ASK) for passenger short-range market [ASK].
+        ask_medium_range
+            Number of Available Seat Kilometre (ASK) for passenger medium-range market [ASK].
+        ask_long_range
+            Number of Available Seat Kilometre (ASK) for passenger long-range market [ASK].
+        ask_short_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger short-range market from hydrogen aircraft [%].
+        ask_medium_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger medium-range market from hydrogen aircraft [%].
+        ask_long_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger long-range market from hydrogen aircraft [%].
+        ask_short_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger short-range market from electric aircraft [%].
+        ask_medium_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger medium-range market from electric aircraft [%].
+        ask_long_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger long-range market from electric aircraft [%].
+
+        Returns
+        -------
+        ask_short_range_dropin_fuel
+            ASK for short-range market from drop-in fuel aircraft [ASK].
+        ask_medium_range_dropin_fuel
+            ASK for medium-range market from drop-in fuel aircraft [ASK].
+        ask_long_range_dropin_fuel
+            ASK for long-range market from drop-in fuel aircraft [ASK].
+        ask_short_range_hydrogen
+            ASK for short-range market from hydrogen aircraft [ASK].
+        ask_medium_range_hydrogen
+            ASK for medium-range market from hydrogen aircraft [ASK].
+        ask_long_range_hydrogen
+            ASK for long-range market from hydrogen aircraft [ASK].
+        ask_short_range_electric
+            ASK for short-range market from electric aircraft [ASK].
+        ask_medium_range_electric
+            ASK for medium-range market from electric aircraft [ASK].
+        ask_long_range_electric
+            ASK for long-range market from electric aircraft [ASK].
+        ask_dropin_fuel
+            Total ASK for drop-in fuel aircraft across ranges [ASK].
+        ask_hydrogen
+            Total ASK for hydrogen aircraft across ranges [ASK].
+        ask_electric
+            Total ASK for electric aircraft across ranges [ASK].
+        """
+
         # ASK Hydrogen
         ask_short_range_hydrogen = ask_short_range * ask_short_range_hydrogen_share / 100
         ask_medium_range_hydrogen = ask_medium_range * ask_medium_range_hydrogen_share / 100
@@ -489,6 +690,20 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
 
 
 class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
+    """
+    Class to compute energy consumption per ASK (without operations) using complex models.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('passenger_aircraft_efficiency_complex' by default).
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
+    """
+
     def __init__(self, name="passenger_aircraft_efficiency_complex", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = None
@@ -540,6 +755,97 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        """
+        Compute energy consumption per ASK (without operations) using complex fleet-model outputs.
+
+        Parameters
+        ----------
+        dummy_fleet_model_output
+            Dummy fleet model output to ensure the prior execution of the generic fleet model [-].
+        energy_consumption_init
+            Historical energy consumption of aviation over 2000-2019 [MJ].
+        ask
+            Number of Available Seat Kilometre (ASK) for all commercial air transport [ASK].
+        short_range_energy_share_2019
+            Share of aviation energy consumed by passenger short-range market in 2019 [%].
+        medium_range_energy_share_2019
+            Share of aviation energy consumed by passenger medium-range market in 2019 [%].
+        long_range_energy_share_2019
+            Share of aviation energy consumed by passenger long-range market in 2019 [%].
+        short_range_rpk_share_2019
+            Share of RPK from short-range market in 2019 [%].
+        medium_range_rpk_share_2019
+            Share of RPK from medium-range market in 2019 [%].
+        long_range_rpk_share_2019
+            Share of RPK from long-range market in 2019 [%].
+        covid_energy_intensity_per_ask_increase_2020
+            Increase in energy intensity per ASK due to Covid-19 for the start year [%].
+        ask_short_range
+            Number of Available Seat Kilometre (ASK) for passenger short-range market [ASK].
+        ask_medium_range
+            Number of Available Seat Kilometre (ASK) for passenger medium-range market [ASK].
+        ask_long_range
+            Number of Available Seat Kilometre (ASK) for passenger long-range market [ASK].
+
+        Returns
+        -------
+        energy_per_ask_without_operations_short_range_dropin_fuel
+            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_dropin_fuel
+            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_dropin_fuel
+            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_hydrogen
+            Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_hydrogen
+            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_hydrogen
+            Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_electric
+            Energy consumption per ASK for passenger short-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_electric
+            Energy consumption per ASK for passenger medium-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_electric
+            Energy consumption per ASK for passenger long-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        ask_short_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
+        ask_medium_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
+        ask_long_range_dropin_fuel_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
+        ask_short_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
+        ask_medium_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
+        ask_long_range_hydrogen_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
+        ask_short_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
+        ask_medium_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
+        ask_long_range_electric_share
+            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
+        ask_short_range_dropin_fuel
+            ASK for short-range market from drop-in fuel aircraft [ASK].
+        ask_medium_range_dropin_fuel
+            ASK for medium-range market from drop-in fuel aircraft [ASK].
+        ask_long_range_dropin_fuel
+            ASK for long-range market from drop-in fuel aircraft [ASK].
+        ask_short_range_hydrogen
+            ASK for short-range market from hydrogen aircraft [ASK].
+        ask_medium_range_hydrogen
+            ASK for medium-range market from hydrogen aircraft [ASK].
+        ask_long_range_hydrogen
+            ASK for long-range market from hydrogen aircraft [ASK].
+        ask_short_range_electric
+            ASK for short-range market from electric aircraft [ASK].
+        ask_medium_range_electric
+            ASK for medium-range market from electric aircraft [ASK].
+        ask_long_range_electric
+            ASK for long-range market from electric aircraft [ASK].
+        """
+
+        # Pull outputs produced by the external fleet model
         ask_short_range_dropin_fuel_share = self.fleet_model.df["Short Range:share:dropin_fuel"]
         ask_medium_range_dropin_fuel_share = self.fleet_model.df["Medium Range:share:dropin_fuel"]
         ask_long_range_dropin_fuel_share = self.fleet_model.df["Long Range:share:dropin_fuel"]
@@ -577,8 +883,6 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         energy_per_ask_without_operations_long_range_electric = self.fleet_model.df[
             "Long Range:energy_consumption:electric"
         ]
-
-        """Energy consumption per ASK (without operations) calculation using complex models."""
 
         # Drop-in - Initialization based on 2019 share - To check for consistency
         energy_consumption_per_ask_init = energy_consumption_init / ask
@@ -823,6 +1127,14 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
 
 class FreightAircraftEfficiency(AeroMAPSModel):
+    """Class to compute energy consumption per RTK (without operations) for freight aircraft.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('freight_aircraft_efficiency' by default).
+    """
+
     def __init__(self, name="freight_aircraft_efficiency", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -865,10 +1177,88 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
-        """Energy consumption per RTK (without operations) calculation."""
+        """
+        Compute energy consumption per RTK (without operations) for freight aircraft.
+
+        Parameters
+        ----------
+        energy_consumption_init
+            Historical energy consumption of aviation over 2000-2019 [MJ].
+        rtk
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport [RTK].
+        freight_energy_share_2019
+            Share of aviation energy consumed by freight market in 2019 [%].
+        energy_per_ask_without_operations_short_range_dropin_fuel
+            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_dropin_fuel
+            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_dropin_fuel
+            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_hydrogen
+            Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_hydrogen
+            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_hydrogen
+            Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_short_range_electric
+            Energy consumption per ASK for passenger short-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_medium_range_electric
+            Energy consumption per ASK for passenger medium-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        energy_per_ask_without_operations_long_range_electric
+            Energy consumption per ASK for passenger long-range market aircraft using electric propulsion without considering operation improvements [MJ/ASK].
+        ask
+            Number of Available Seat Kilometre (ASK) for all commercial air transport [ASK].
+        ask_short_range
+            Number of Available Seat Kilometre (ASK) for passenger short-range market [ASK].
+        ask_medium_range
+            Number of Available Seat Kilometre (ASK) for passenger medium-range market [ASK].
+        ask_long_range
+            Number of Available Seat Kilometre (ASK) for passenger long-range market [ASK].
+        ask_short_range_dropin_fuel
+            ASK for short-range market from drop-in fuel aircraft [ASK].
+        ask_medium_range_dropin_fuel
+            ASK for medium-range market from drop-in fuel aircraft [ASK].
+        ask_long_range_dropin_fuel
+            ASK for long-range market from drop-in fuel aircraft [ASK].
+        ask_short_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger short-range market from hydrogen aircraft [%].
+        ask_medium_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger medium-range market from hydrogen aircraft [%].
+        ask_long_range_hydrogen_share
+            Share of Available Seat Kilometre (ASK) for passenger long-range market from hydrogen aircraft [%].
+        ask_short_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger short-range market from electric aircraft [%].
+        ask_medium_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger medium-range market from electric aircraft [%].
+        ask_long_range_electric_share
+            Share of Available Seat Kilometre (ASK) for passenger long-range market from electric aircraft [%].
+        covid_energy_intensity_per_ask_increase_2020
+            Increase in energy intensity per ASK due to Covid-19 for the start year [%].
+
+        Returns
+        -------
+        energy_per_rtk_without_operations_freight_dropin_fuel
+            Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements [MJ/RTK].
+        energy_per_rtk_without_operations_freight_hydrogen
+            Energy consumption per RTK for freight market aircraft using hydrogen without considering operation improvements [MJ/RTK].
+        energy_per_rtk_without_operations_freight_electric
+            Energy consumption per RTK for freight market aircraft using electric propulsion without considering operation improvements [MJ/RTK].
+        rtk_dropin_fuel_share
+            Share of Revenue Tonne Kilometer (RTK) for freight air transport from drop-in fuel aircraft [%].
+        rtk_hydrogen_share
+            Share of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft [%].
+        rtk_electric_share
+            Share of Revenue Tonne Kilometer (RTK) for freight air transport from electric aircraft [%].
+        rtk_dropin_fuel
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport from drop-in fuel aircraft [RTK].
+        rtk_hydrogen
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft [RTK].
+        rtk_electric
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport from electric aircraft [RTK].
+        """
 
         # Initialization based on 2019 share: to correct to include load factor
-        hist_years = range(self.historic_start_year, self.prospection_start_year)
+        hist_years = list(range(self.historic_start_year, self.prospection_start_year))
         self.df.loc[hist_years, "energy_per_rtk_without_operations_freight_dropin_fuel"] = (
             energy_consumption_init.loc[hist_years]
             / rtk.loc[hist_years]

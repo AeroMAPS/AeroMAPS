@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.9.0-beta
+
+Changed:
+- Added scenario optimisation feature. (#104)
+
+
 ## Version 0.8.4-beta
 
 Changed:

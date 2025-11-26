@@ -1,3 +1,10 @@
+"""High-level AeroMAPS process orchestration.
+
+This module defines the main process class that orchestrates parameter
+initialization, model instantiation, GEMSEO configuration, generic energy carrier handling, and data export for the
+AeroMAPS framework.
+"""
+
 # Standard library imports
 import logging
 import os
@@ -30,7 +37,7 @@ from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
-    flatten_dict,
+    _flatten_dict,
 )
 from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
@@ -98,12 +105,92 @@ DEFAULT_FLEET_CONFIG_PATH = os.path.join(DEFAULT_FLEET_DATA_PATH, "fleet.yaml")
 
 
 class AeroMAPSProcess(object):
+    """High-level AeroMAPS process driver.
+
+    This class configures parameters, instantiates discipline models,
+    builds GMESEO objects, handles generic energy carrier pathways, and manages input and output data
+    structures for AeroMAPS studies.
+
+    Parameters
+    ----------
+    configuration_file
+        Path to a configuration JSON file overriding default settings.
+    models
+        Dictionary of model instances to be used in the process.
+    optimisation
+        Whether to configure GEMSEO for optimisation instead of a pure
+        MDA chain.
+
+    Attributes
+    ----------
+    configuration_file
+        Path of the active configuration JSON file.
+    models
+        Dictionary of discipline and auxiliary models used in the
+        process.
+    parameters
+        Central parameter container used by all models and disciplines.
+    disciplines
+        List of wrapped discipline objects used by GEMSEO or the MDA
+        chain.
+    data
+        Dictionary storing structured inputs and outputs, including
+        scalar, string, vector, climate, and LCA results.
+    json
+        Dictionary reserved for JSON-compatible representations of
+        results.
+    mda_chain
+        GEMSEO MDAChain instance used when running pure MDA analyses.
+    scenario
+        GEMSEO scenario instance for conventional MDO.
+    scenario_adapted
+        GEMSEO scenario of scenario instance for the bilevel optimization
+        problem.
+    gemseo_settings
+        Dictionary containing all GEMSEO-related configuration options.
+    fleet
+        Fleet instance when the bottom-up fleet model is activated, else
+        None.
+    fleet_model
+        FleetModel instance wrapping the fleet when the bottom-up model
+        is used.
+    energy_resources_data
+        Parsed configuration data for generic energy resources.
+    energy_processes_data
+        Parsed configuration data for generic energy processes.
+    energy_carriers_data
+        Parsed configuration data for aviation energy carrier pathways.
+    pathways_manager
+        EnergyCarrierManager instance describing available energy
+        pathways.
+    climate_historical_data
+        Historical climate dataset used by climate-related models.
+    """
+
     def __init__(
         self,
         configuration_file=None,
         models=default_models_top_down,
         optimisation=False,
     ):
+        """Initialize an AeroMAPSProcess instance.
+
+        This method loads configuration settings, initializes parameters,
+        deep-copies the provided models dictionary when needed, and
+        performs the common setup. It then configures either an MDA chain
+        or an optimization scenario depending on the specified mode.
+
+        Parameters
+        ----------
+        configuration_file
+            Path to a configuration JSON file overriding default
+            settings.
+        models
+            Dictionary of model instances to be used in the process.
+        optimisation
+            Whether to configure GEMSEO for optimization instead of a
+            pure MDA chain.
+        """
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
@@ -128,12 +215,34 @@ class AeroMAPSProcess(object):
             self.setup_optimisation()
 
     def common_setup(self):
+        """Perform common setup steps independent of analysis type.
+
+        This method initializes the disciplines list, the main data
+        container, and JSON storage, and computes index structures and
+        climate data. It also stores the flag indicating whether to add
+        example aircraft and subcategories to the fleet.
+
+        Warning
+        ---------
+        This method should be called only if end year was modified, otherwise it is called in __init__.
+
+        """
         self.disciplines = []
         self.data = {}
         self.json = {}
         self._initialize_data()
 
     def setup_mda(self):
+        """Configure the process for a standalone MDA chain.
+
+        This method initializes generic energy inputs and disciplines,
+        then builds a GEMSEO MDAChain with default convergence settings
+        for multidisciplinary analysis execution of AeroMAPS.
+
+        Warning
+        ---------
+        This method should be called only if end year was modified, otherwise it is called in __init__.
+        """
         # Initialize energy carriers
         self._initialize_generic_energy()
 
@@ -148,9 +257,21 @@ class AeroMAPSProcess(object):
         )
 
     def setup_optimisation(self):
+        """Configure the process for GEMSEO-based optimization.
+
+        This method initializes the internal GEMSEO settings dictionary
+        so that optimization scenarios can be defined and executed later.
+        """
         self._initialize_gemseo_settings()
 
     def create_gemseo_scenario(self):
+        """Build a single-level GEMSEO MDO scenario.
+
+        This method initializes generic energy inputs and disciplines,
+        and then creates a GEMSEO scenario using the current
+        ``gemseo_settings`` for objective, design space, scenario type,
+        and formulation.
+        """
         self._initialize_generic_energy()
         self._initialize_disciplines()
 
@@ -171,6 +292,13 @@ class AeroMAPSProcess(object):
         )
 
     def create_gemseo_bilevel(self):
+        """Build a GEMSEO bilevel optimization formulation.
+
+        This method wraps an inner GEMSEO scenario in an
+        ``MDOScenarioAdapter`` and creates an outer scenario that
+        optimizes over the adapter. If the inner scenario is not yet
+        defined, it is created using the current ``gemseo_settings``.
+        """
         # if no scenario is created raise an error create_gemseo_scenario needs to be called first
         if self.scenario is None:
             logging.warning(
@@ -204,6 +332,13 @@ class AeroMAPSProcess(object):
         )
 
     def compute(self):
+        """Run the configured analysis or optimization.
+
+        This method prepares input data, then executes either a bilevel
+        optimization, a single-level GEMSEO scenario, or an MDA chain
+        depending on the current configuration. After execution, it
+        updates the internal data structures with model outputs.
+        """
         input_data = self._pre_compute()
         if hasattr(self, "scenario") and self.scenario:
             if hasattr(self, "scenario_adapted") and self.scenario_adapted:
@@ -223,7 +358,18 @@ class AeroMAPSProcess(object):
         self._update_data_from_model()
 
     def get_dataframes(self):
-        """Return all main DataFrames as a dictionary, generated on demand."""
+        """Return all main DataFrames as a dictionary, generated on demand.
+
+        This method generates and returns a dictionary of key DataFrames
+        representing inputs, outputs, and climate-related quantities in a
+        tabular form suitable for inspection or export.
+
+        Returns
+        -------
+        dataframes
+            Dictionary mapping DataFrame names to pandas DataFrame
+            instances for data information, inputs, and outputs.
+        """
         return {
             "data_information": self._get_data_information_df(),
             "vector_inputs": self._get_vector_inputs_df(),
@@ -236,10 +382,29 @@ class AeroMAPSProcess(object):
         }
 
     def get_json(self):
-        """Return the model outputs as a JSON-serializable dictionary."""
+        """
+        Return the model outputs as a JSON-serializable dictionary.
+
+        Returns
+        -------
+        json_data
+            Dictionary containing JSON-compatible inputs and outputs.
+        """
         return self._data_to_json()
 
     def write_json(self, file_name=None):
+        """Write model inputs and outputs to a JSON file.
+
+        This method builds the JSON-compatible data and writes it to
+        disk, using either the provided file name or the path defined in
+        the configuration.
+
+        Parameters
+        ----------
+        file_name
+            Path to the output JSON file. If None, the path from the
+            configuration is used.
+        """
         if (
             file_name is None
             and self.configuration_file is not None
@@ -263,6 +428,17 @@ class AeroMAPSProcess(object):
             dump(json_data, f, ensure_ascii=False, indent=4)
 
     def write_excel(self, file_name=None):
+        """Write main result tables to an Excel workbook.
+
+        This method exports data information, inputs, and outputs into
+        separate sheets of a single Excel file.
+
+        Parameters
+        ----------
+        file_name
+            Path to the output Excel file. If None, the path from the
+            configuration is used.
+        """
         if file_name is None:
             file_name = self.config["EXCEL_DATA_FILE"]
         with pd.ExcelWriter(file_name) as writer:
@@ -276,18 +452,67 @@ class AeroMAPSProcess(object):
             # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
 
     def generate_n2(self):
+        """Generate an N2 diagram for the current disciplines.
+
+        This method calls GEMSEO to create an N2 plot describing the
+        coupling structure between the configured disciplines.
+        """
         generate_n2_plot(self.disciplines)
 
     def list_available_plots(self):
+        """List the names of supported plots.
+
+        Returns
+        -------
+        plot_names
+            List of strings identifying available plot functions.
+        """
         return list(available_plots.keys())
 
     def list_float_inputs(self):
+        """Return the current scalar input values.
+
+        Returns
+        -------
+        float_inputs
+            Dictionary of scalar input names and their values.
+        """
         return self.data["float_inputs"]
 
     def list_str_inputs(self):
+        """Return the current string input values.
+
+        Returns
+        -------
+        str_inputs
+            Dictionary of string input names and their values.
+        """
         return self.data["str_inputs"]
 
     def plot(self, name, save=False, size_inches=None, remove_title=False):
+        """Generate a predefined AeroMAPS plot.
+
+        Depending on the plot name, this method uses either generic or
+        fleet-specific plotting functions and optionally saves the figure
+        to a PDF file.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate, possible to obtain from list_available_plots().
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple or list.
+        remove_title
+            Whether to remove the plot title before saving.
+
+        Returns
+        -------
+        fig
+            Object holding the created plot, as returned by the plot
+            function.
+        """
         if name in available_plots_fleet:
             try:
                 # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
@@ -317,6 +542,19 @@ class AeroMAPSProcess(object):
         return fig
 
     def _pre_compute(self):
+        """Prepare inputs and dependent models before execution.
+
+        This method builds the input data dictionary from parameters,
+        computes the fleet model if used, initializes discipline data
+        frames, and returns the input mapping for the MDA chain or
+        scenarios.
+
+        Returns
+        -------
+        input_data
+            Dictionary of input variable names and values for
+            execution.
+        """
         input_data = self.parameters.to_dict()
         if self.fleet is not None:
             # Necessary when user hard coded the fleet
@@ -335,6 +573,12 @@ class AeroMAPSProcess(object):
         return input_data
 
     def _initialize_configuration(self):
+        """Load and merge configuration settings.
+
+        This method reads the default configuration JSON file, converts
+        relative paths to absolute paths, and merges in overrides from
+        the user-specified configuration file if provided.
+        """
         # Load the default configuration file
         with open(DEFAULT_CONFIG_PATH, "r") as f:
             self.config = load(f)
@@ -390,6 +634,7 @@ class AeroMAPSProcess(object):
         return default_path_obj
 
     def _initialize_data(self):
+        """Initialize core data containers and indices."""
         # Indexes
         self._initialize_years()
 
@@ -408,11 +653,22 @@ class AeroMAPSProcess(object):
         self.data["lca_outputs"] = xr.DataArray()
 
     def _initialize_generic_energy(self):
+        """Initialize generic energy resources, processes, and carriers.
+
+        This method calls the internal methods to read resource and
+        process data, and to instantiate the generic energy carrier models.
+        """
         self._read_generic_resources_data()
         self._read_generic_process_data()
         self._instantiate_generic_energy_models()
 
     def _read_generic_resources_data(self):
+        """Read and process generic energy resources data.
+
+        This method loads resource specifications from a YAML file,
+        flattens nested inputs, converts custom data types, and updates
+        parameters and internal resource metadata.
+        """
         # Read the custom energy config file and instantiate each class
         if self.configuration_file is not None and "PARAMETERS_RESOURCES_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -434,7 +690,7 @@ class AeroMAPSProcess(object):
 
             # Flatten the inputs dictionary and interpolate the necessary values
 
-            flattened_yaml = flatten_dict(resource_data["specifications"], resource_data["name"])
+            flattened_yaml = _flatten_dict(resource_data["specifications"], resource_data["name"])
             resource_data["specifications"] = self._convert_custom_data_types(flattened_yaml)
 
             self.parameters.from_dict(resource_data["specifications"])
@@ -442,6 +698,12 @@ class AeroMAPSProcess(object):
             self.energy_resources_data[resource] = resource_data
 
     def _read_generic_process_data(self):
+        """Read and process generic energy process data.
+
+        This method loads process specifications from a YAML file,
+        flattens nested inputs, converts custom data types, and updates
+        parameters and internal process metadata.
+        """
         # Read the custom energy config file and instantiate each class
         if self.configuration_file is not None and "PARAMETERS_PROCESSES_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
@@ -466,7 +728,7 @@ class AeroMAPSProcess(object):
             inputs = process_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
-                flattened_yaml = flatten_dict(value, process_data["name"])
+                flattened_yaml = _flatten_dict(value, process_data["name"])
                 inputs[key] = self._convert_custom_data_types(flattened_yaml)
                 # set data to parameters
                 self.parameters.from_dict(inputs[key])
@@ -476,6 +738,14 @@ class AeroMAPSProcess(object):
             self.energy_processes_data[process] = process_data
 
     def _instantiate_generic_energy_models(self):
+        """Instantiate generic energy carrier and resource models.
+
+        This method reads energy carrier pathway configurations, builds
+        carrier metadata, flattens and converts inputs, and uses the
+        ``AviationEnergyCarriersFactory`` to create carrier, resource
+        consumption, and choice models, which are added to the models
+        dictionary.
+        """
         # Read the custom energy config file and instantiate each class from it using the factory method
         # Add the instantiated classes to the models dictionary
         if (
@@ -535,7 +805,7 @@ class AeroMAPSProcess(object):
             inputs = pathway_data["inputs"]
             # Flatten the inputs dictionary and interpolate the necessary values
             for key, value in inputs.items():
-                flattened_yaml = flatten_dict(value, pathway_data["name"])
+                flattened_yaml = _flatten_dict(value, pathway_data["name"])
                 inputs[key] = self._convert_custom_data_types(flattened_yaml)
                 # set data to parameters
                 self.parameters.from_dict(inputs[key])
@@ -570,11 +840,24 @@ class AeroMAPSProcess(object):
         )
 
     def _convert_custom_data_types(self, data):
-        """
-        This method reads the flattened yaml file. It does two principal things:
-         - it instantiates interpolator models when encountering a custom data type, and add reference years and values to parameters
-         - it converts the custom type to a normal series in the flattened yaml file so that generic energy models know the type of the interpolated inputs
-        Returns the modified data
+        """Convert custom YAML data types and register interpolators.
+
+        This method reads a flattened YAML mapping, instantiates
+        interpolator models when encountering a custom data type, adds
+        reference years and values to parameters, and converts the custom
+        type to a normal series in the flattened YAML so that generic
+        energy models receive interpolated input types.
+
+        Parameters
+        ----------
+        data
+            Flattened dictionary of configuration entries to inspect.
+
+        Returns
+        -------
+        data_converted
+            Modified dictionary with custom types converted to standard
+            series values.
         """
         for key, value in data.items():
             if isinstance(value, AeroMapsCustomDataType):
@@ -591,6 +874,15 @@ class AeroMAPSProcess(object):
         return data
 
     def _initialize_disciplines(self):
+        """Wrap models as GEMSEO disciplines and configure coupling.
+
+        This method optionally instantiates the bottom-up fleet model,
+        assigns shared parameters and climate data to each AeroMAPS
+        model, applies custom setups when needed, wraps models into
+        GEMSEO discipline adapters, and stores them in the disciplines
+        list.
+
+        """
         if bool(self.config.get("USE_FLEET_MODEL", False)):
 
             aircraft_inventory_path = self._resolve_config_path(
@@ -645,6 +937,12 @@ class AeroMAPSProcess(object):
         check_instance_in_dict(self.models)
 
     def _initialize_years(self):
+        """Initialize year index ranges for all time series.
+
+        This method computes historic, climate historic, and prospective
+        year ranges from the parameters and stores them in the data
+        dictionary.
+        """
         # Years
         self.data["years"] = {}
         self.data["years"]["full_years"] = list(
@@ -670,6 +968,18 @@ class AeroMAPSProcess(object):
         )
 
     def _initialize_inputs(self, use_defaults=True):
+        """Initialize model parameters from JSON and vector inputs.
+
+        This method creates a parameters instance, reads default and
+        optional configuration-specific JSON files, normalizes time
+        series indices, and initializes and formats vector inputs.
+
+        Parameters
+        ----------
+        use_defaults
+            Whether to load the default parameters JSON file before
+            applying configuration-specific overrides.
+        """
         self.parameters = Parameters()
 
         # First use main parameters.json as default values
@@ -719,6 +1029,12 @@ class AeroMAPSProcess(object):
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
+        """Load and register vector input time series.
+
+        This method reads the vector inputs CSV file, converts each
+        column into a pandas Series indexed by year, and attaches them as
+        attributes to the parameters object.
+        """
         if self.configuration_file is not None and "VECTOR_INPUTS_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
             vector_inputs_data_file_path = os.path.join(
@@ -743,6 +1059,11 @@ class AeroMAPSProcess(object):
             setattr(self.parameters, column, pd.Series(values, index=index))
 
     def _initialize_climate_historical_data(self):
+        """Load the historical climate dataset.
+
+        This method reads the configured climate data CSV file and stores
+        its numeric values as a NumPy array for climate-related models.
+        """
         if self.configuration_file is not None and "PARAMETERS_CLIMATE_DATA_FILE" in self.config:
             configuration_directory = os.path.dirname(self.configuration_file)
             climate_historical_data_file_path = os.path.join(
@@ -757,6 +1078,12 @@ class AeroMAPSProcess(object):
         self.climate_historical_data = historical_dataset_df.values
 
     def _initialize_gemseo_settings(self):
+        """Initialize default GEMSEO configuration settings.
+
+        This method resets GEMSEO scenario-related attributes and
+        populates the settings dictionary with default values for design
+        space, objective, algorithm, and formulation options.
+        """
         self.scenario = None
         self.scenario_adapted = None
         self.gemseo_settings = {}
@@ -774,6 +1101,12 @@ class AeroMAPSProcess(object):
         self.gemseo_settings["doe_output_names"] = None
 
     def _format_input_vectors(self):
+        """Normalize parameter vector shapes and indices.
+
+        This method pads or reindexes selected initialization vectors and
+        other time series so that they match the expected year ranges for
+        historic and climate data in the parameters.
+        """
         for field_name, field_value in self.parameters.__dict__.items():
             list_init = [
                 "rpk_init",
@@ -816,6 +1149,12 @@ class AeroMAPSProcess(object):
                     print(f"Field {field_name} has an unexpected size {field_value.size}")
 
     def _update_variables(self):
+        """Refresh data, DataFrames, and JSON cache from model results.
+
+        This convenience method updates internal data structures from the
+        discipline models, regenerates derived DataFrames, and rebuilds
+        the JSON-compatible representation of inputs and outputs.
+        """
         self._update_data_from_model()
 
         self._update_dataframes_from_data()
@@ -823,6 +1162,13 @@ class AeroMAPSProcess(object):
         self._update_json_from_data()
 
     def _update_data_from_model(self):
+        """Update internal input and output data from disciplines.
+
+        This method collects input values from the MDA chain or
+        individual disciplines, categorizes them into scalar, string, and
+        vector inputs, and aggregates all discipline outputs into shared
+        vector, climate, and LCA output structures.
+        """
         # Inputs: if we have and mda_cain (no optim), we get the inputs from there, else we get them from each discipline
         if hasattr(self, "mda_chain") and self.mda_chain:
             all_inputs = self.mda_chain.get_input_data()
@@ -885,6 +1231,13 @@ class AeroMAPSProcess(object):
             self.data["float_outputs"].update(disc.model.float_outputs)
 
     def _get_float_inputs_df(self):
+        """Build a DataFrame of scalar input values.
+
+        Returns
+        -------
+        float_inputs_df
+            DataFrame with scalar input names and values.
+        """
         data = {
             "Name": self.data["float_inputs"].keys(),
             "Value": self.data["float_inputs"].values(),
@@ -892,6 +1245,13 @@ class AeroMAPSProcess(object):
         return pd.DataFrame(data=data)
 
     def _get_str_inputs_df(self):
+        """Build a DataFrame of string input values.
+
+        Returns
+        -------
+        str_inputs_df
+            DataFrame with string input names and values.
+        """
         data = {
             "Name": self.data["str_inputs"].keys(),
             "Value": self.data["str_inputs"].values(),
@@ -899,11 +1259,26 @@ class AeroMAPSProcess(object):
         return pd.DataFrame(data=data)
 
     def _get_vector_inputs_df(self):
+        """Build a DataFrame of vector input time series.
+
+        Returns
+        -------
+        vector_inputs_df
+            DataFrame with one column per vector input and years as
+            index.
+        """
         df = _dict_to_df(self.data["vector_inputs"], orient="columns")
         df.sort_index(axis=1, inplace=True)
         return df
 
     def _get_float_outputs_df(self):
+        """Build a DataFrame of scalar output values.
+
+        Returns
+        -------
+        float_outputs_df
+            DataFrame with scalar output names and values.
+        """
         data = {
             "Name": self.data["float_outputs"].keys(),
             "Value": self.data["float_outputs"].values(),
@@ -911,19 +1286,54 @@ class AeroMAPSProcess(object):
         return pd.DataFrame(data=data)
 
     def _get_vector_outputs_df(self):
+        """Build a DataFrame of vector output time series.
+
+        Returns
+        -------
+        vector_outputs_df
+            DataFrame with one column per vector output and years as
+            index.
+        """
         df = self.data["vector_outputs"].copy()
         df.sort_index(axis=1, inplace=True)
         return df
 
     def _get_climate_outputs_df(self):
+        """Build a DataFrame of climate-related outputs.
+
+        Returns
+        -------
+        climate_outputs_df
+            DataFrame with climate output time series and years as
+            index.
+        """
         df = self.data["climate_outputs"].copy()
         df.sort_index(axis=1, inplace=True)
         return df
 
     def _get_data_information_df(self):
+        """Build the consolidated data information table.
+
+        Returns
+        -------
+        data_information_df
+            DataFrame summarizing inputs and outputs with metadata from
+            the data information CSV file.
+        """
         return self._read_data_information()
 
     def _data_to_json(self):
+        """Convert internal data structures into JSON-compatible containers.
+
+        This method converts series and arrays into lists and returns a
+        dictionary containing all main input and output categories.
+
+        Returns
+        -------
+        json_data
+            Dictionary with JSON-serializable inputs and outputs.
+        """
+
         def convert_values_from_array_to_list(d):
             for key, value in d.items():
                 if isinstance(value, (pd.Series, np.ndarray)):
@@ -963,6 +1373,25 @@ class AeroMAPSProcess(object):
         return json_data
 
     def _read_data_information(self, file_name=None):
+        """Read and merge data descriptions from the information CSV file.
+
+        This method scans the current inputs and outputs, looks up their
+        metadata in the data information CSV file, and builds a
+        consolidated table including type, unit, and description for each
+        variable.
+
+        Parameters
+        ----------
+        file_name
+            Path to the data information CSV file. If None, the path
+            from the configuration is used.
+
+        Returns
+        -------
+        data_information_df
+            DataFrame containing metadata for all current inputs and
+            outputs.
+        """
         if file_name is None:
             file_name = self.config["CSV_DATA_INFORMATION_FILE"]
         df = pd.read_csv(file_name, encoding="utf-8", sep=";")

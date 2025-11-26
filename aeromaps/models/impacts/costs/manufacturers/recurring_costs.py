@@ -2,12 +2,33 @@
 # @Author : a.salgas
 # @File : recurring_costs.py
 # @Software: PyCharm
+"""
+recurring_costs
+===============================
+
+Module to compute recurring costs (RC) for aircraft defined by the fleet model.
+"""
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 
 
 class RecurringCosts(AeroMAPSModel):
+    """
+    Class to compute recurring costs (RC) for aircraft defined by the fleet model.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "recurring_costs").
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
+    """
+
     def __init__(self, name="recurring_costs", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
@@ -16,6 +37,20 @@ class RecurringCosts(AeroMAPSModel):
         self,
         aircraft_in_out_value_dict: dict,
     ) -> dict:
+        """
+        Compute recurring costs (RC) for each aircraft defined in the fleet model.
+        Parameters
+        ----------
+        aircraft_in_out_value_dict
+            Dummy dictionary containing in-service and out-of-service values for each aircraft.
+            Real inputs are read from the fleet model dataframe.
+
+        Returns
+        -------
+        rc_aircraft_value_dict
+            Dummy dictionary containing RC values for each aircraft.
+            Real outputs are stored in the fleet model dataframe.
+        """
         rc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
             # Calculating values of interest for each aircraft

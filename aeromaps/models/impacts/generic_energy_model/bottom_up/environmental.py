@@ -1,15 +1,45 @@
+"""
+environmental
+
+======
+Module to compute pathway emissions based on bottom-up plant descriptions (EIS and capacity).
+"""
+
 import warnings
 
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.utils.functions import get_value_for_year, custom_series_addition
+from aeromaps.utils.functions import _get_value_for_year, _custom_series_addition
 
 
 class BottomUpEnvironmental(AeroMAPSModel):
     """
-    Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
+    Generic environmental model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_bottom_up_unit_environmental"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the configuration file.
+    resources_data : dict
+        Configuration data for the resources from the configuration file.
+    processes_data : dict
+        Configuration data for the processes from the configuration file.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warning
+    -------
+    Description of i/o variables is very limited for models with dynamic i/o names. They are defined in .yaml configuration files.
+
     """
 
     def __init__(
@@ -159,7 +189,17 @@ class BottomUpEnvironmental(AeroMAPSModel):
         """
         Compute the environmental impact of the energy carrier pathway.
         Each plant (vintage) is commissioned with the characteristics of its commissioning year,
-            and its emissions are distributed over its lifespan, weighted by its share in annual production.
+        and its emissions are distributed over its lifespan, weighted by its share in annual production.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
 
         optional_nan_series = pd.Series(
@@ -178,7 +218,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
         # For each vintage, compute its emission factor and contribution
         for year, needed_capacity in energy_production_commissioned.items():
-            lifespan = get_value_for_year(
+            lifespan = _get_value_for_year(
                 input_data.get(f"{self.pathway_name}_eis_plant_lifespan"), year, 25
             )
             # The plant will operate from year to year+lifespan (or until end_year)
@@ -206,21 +246,21 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                 # I -- First lets compute the core MFSP (no resources, no processes)
                 # Get the inputs for the year
-                core_emission_factor = get_value_for_year(
+                core_emission_factor = _get_value_for_year(
                     input_data.get(f"{self.pathway_name}_eis_co2_emission_factor_without_resource"),
                     year,
                     0.0,
                 )
-                kerosene_selectivity = get_value_for_year(
+                kerosene_selectivity = _get_value_for_year(
                     input_data.get(f"{self.pathway_name}_eis_kerosene_selectivity"), year, 1.0
                 )
 
-                vintage_emission_factor = custom_series_addition(
+                vintage_emission_factor = _custom_series_addition(
                     vintage_emission_factor, core_emission_factor
                 )
                 output_data[f"{self.pathway_name}_mean_co2_emission_factor_without_resource"].loc[
                     year : year + lifespan - 1
-                ] = custom_series_addition(
+                ] = _custom_series_addition(
                     output_data[
                         f"{self.pathway_name}_mean_co2_emission_factor_without_resource"
                     ].loc[year : year + lifespan - 1],
@@ -229,7 +269,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                 # II) Now let's compute the emissions from resources that are linked to the pathway itself
                 for key in self.resource_keys:
-                    specific_consumption = get_value_for_year(
+                    specific_consumption = _get_value_for_year(
                         input_data.get(
                             f"{self.pathway_name}_eis_resource_specific_consumption_{key}"
                         ),
@@ -273,12 +313,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
 
                         # get resource emission per unit of energy
                         co2_emission_factor_ressource = specific_consumption * unit_emissions
-                        vintage_emission_factor = custom_series_addition(
+                        vintage_emission_factor = _custom_series_addition(
                             vintage_emission_factor, co2_emission_factor_ressource
                         )
                         output_data[
                             f"{self.pathway_name}_excluding_processes_{key}_mean_co2_emission_factor"
-                        ].loc[year : year + lifespan - 1] = custom_series_addition(
+                        ].loc[year : year + lifespan - 1] = _custom_series_addition(
                             output_data[
                                 f"{self.pathway_name}_excluding_processes_{key}_mean_co2_emission_factor"
                             ].loc[year : year + lifespan - 1],
@@ -286,7 +326,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                         )
                     # III) Now let's compute the emissions from processes that gets a ressource
                     for process_key in self.process_keys:
-                        specific_consumption = get_value_for_year(
+                        specific_consumption = _get_value_for_year(
                             input_data.get(
                                 f"{process_key}_eis_resource_specific_consumption_{key}"
                             ),
@@ -327,12 +367,12 @@ class BottomUpEnvironmental(AeroMAPSModel):
                             )
                             # get resource emission per unit of energy
                             co2_emission_factor_ressource = specific_consumption * unit_emissions
-                            vintage_emission_factor = custom_series_addition(
+                            vintage_emission_factor = _custom_series_addition(
                                 vintage_emission_factor, co2_emission_factor_ressource
                             )
                             output_data[
                                 f"{self.pathway_name}_{process_key}_{key}_mean_co2_emission_factor"
-                            ].loc[year : year + lifespan - 1] = custom_series_addition(
+                            ].loc[year : year + lifespan - 1] = _custom_series_addition(
                                 output_data[
                                     f"{self.pathway_name}_{process_key}_{key}_mean_co2_emission_factor"
                                 ].loc[year : year + lifespan - 1],
@@ -341,7 +381,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     # store the total consumption of the resource
                     output_data[f"{self.pathway_name}_{key}_total_consumption"].loc[
                         year : year + lifespan - 1
-                    ] = custom_series_addition(
+                    ] = _custom_series_addition(
                         output_data[f"{self.pathway_name}_{key}_total_consumption"].loc[
                             year : year + lifespan - 1
                         ],
@@ -349,7 +389,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     )
                     output_data[f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"].loc[
                         year : year + lifespan - 1
-                    ] = custom_series_addition(
+                    ] = _custom_series_addition(
                         output_data[
                             f"{self.pathway_name}_{key}_total_mobilised_with_selectivity"
                         ].loc[year : year + lifespan - 1],
@@ -359,17 +399,17 @@ class BottomUpEnvironmental(AeroMAPSModel):
                 # IV) Now let's compute the emissions from processes themselves
                 for process_key in self.process_keys:
                     # Get the inputs for the year
-                    process_emission_factor = get_value_for_year(
+                    process_emission_factor = _get_value_for_year(
                         input_data.get(f"{process_key}_eis_co2_emission_factor_without_resources"),
                         year,
                         0.0,
                     )
-                    vintage_emission_factor = custom_series_addition(
+                    vintage_emission_factor = _custom_series_addition(
                         vintage_emission_factor, process_emission_factor
                     )
                     output_data[
                         f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
-                    ].loc[year : year + lifespan - 1] = custom_series_addition(
+                    ].loc[year : year + lifespan - 1] = _custom_series_addition(
                         output_data[
                             f"{self.pathway_name}_{process_key}_without_resources_mean_co2_emission_factor"
                         ].loc[year : year + lifespan - 1],
@@ -377,7 +417,7 @@ class BottomUpEnvironmental(AeroMAPSModel):
                     )
 
                 # Compute the average emission factor from the vintage
-                co2_emission_factor.loc[year : year + lifespan - 1] = custom_series_addition(
+                co2_emission_factor.loc[year : year + lifespan - 1] = _custom_series_addition(
                     co2_emission_factor.loc[year : year + lifespan - 1],
                     vintage_emission_factor * relative_share,
                 )

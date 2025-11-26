@@ -1,3 +1,10 @@
+"""
+carbon_budgets
+
+================
+This module contains models compute gross carbon budget related metrics.
+"""
+
 from typing import Tuple
 from scipy.optimize import fsolve
 
@@ -5,6 +12,15 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class GrossCarbonBudget(AeroMAPSModel):
+    """
+    This class computes gross carbon budget related metrics.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('gross_carbon_budget' by default).
+    """
+
     def __init__(self, name="gross_carbon_budget", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -15,7 +31,20 @@ class GrossCarbonBudget(AeroMAPSModel):
         world_co2_emissions_2019: float,
         aviation_carbon_budget_allocated_share: float,
     ) -> Tuple[float, float, float]:
-        """Gross carbon budget."""
+        """
+        Gross carbon budget.
+
+        Parameters
+        ----------
+        net_carbon_budget
+            Considered (net) carbon budget [GtCO2].
+        carbon_dioxyde_removal_2100
+            Cumulative Carbon Dioxide Removal (CDR) over 2020-2100 [GtCO2].
+        world_co2_emissions_2019
+            World CO2 emissions in 2019 [GtCO2].
+        aviation_carbon_budget_allocated_share
+            Share of the carbon budget allocated to aviation over 2020-2050 [%].
+        """
 
         gross_carbon_budget = net_carbon_budget + carbon_dioxyde_removal_2100
 

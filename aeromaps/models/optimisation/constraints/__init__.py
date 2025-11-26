@@ -2,3 +2,9 @@
 # @Author : a.salgas
 # @File : __init__.py.py
 # @Software: PyCharm
+"""
+constraints
+
+===============
+This package contains models related to constraints used in optimisation processes within the AeroMAPS framework.
+"""

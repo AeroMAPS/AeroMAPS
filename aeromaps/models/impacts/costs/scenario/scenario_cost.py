@@ -2,6 +2,11 @@
 # @Author : a.salgas
 # @File : scenario_cost.py
 # @Software: PyCharm
+"""
+scenario_cost
+===============================
+Module to compute overall scenario costs.
+"""
 
 from typing import Tuple
 
@@ -12,14 +17,46 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class NonDiscountedScenarioCost(AeroMAPSModel):
+    """
+    Class to compute the non-discounted energy expenses of the scenario.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('non_discounted_scenario_cost' by default).
+
+    Attributes
+    --------------
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
+    """
+
     def __init__(self, name="non_discounted_scenario_cost", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
         # TODO rename in EnergyCost. Same for discounted function below.
+        #   Provide detailed i/o documentation.
 
     def custom_setup(self):
         """
-        Dynamically add all pathway mfsps and associated energy consumption variables to input_names.
+        Dynamically add all pathway MFSPs and associated energy consumption variables to input_names and function outputs to output_names.
+        Specific function for custom AeroMAPSModel instances.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
         self.input_names = {}
         if self.pathways_manager is not None:
@@ -43,6 +80,20 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
         }
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the total energy expenses of the scenario
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         # Compute the total energy expenses of the scenario
         non_discounted_energy_expenses = None
         non_discounted_net_energy_expenses = None
@@ -127,6 +178,15 @@ class NonDiscountedScenarioCost(AeroMAPSModel):
 
 
 class DicountedScenarioCost(AeroMAPSModel):
+    """
+    Class to compute the discounted energy expenses of the scenario.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('discounted_scenario_cost' by default).
+    """
+
     def __init__(self, name="discounted_scenario_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -135,6 +195,24 @@ class DicountedScenarioCost(AeroMAPSModel):
         non_discounted_energy_expenses: pd.Series,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, float]:
+        """
+        Execute the computation of discounted energy expenses of the scenario.
+
+        Parameters
+        ----------
+        non_discounted_energy_expenses
+            Non-discounted energy expenses [M€].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        discounted_energy_expenses
+            Discounted energy expenses [M€].
+        discounted_energy_expenses_obj
+            Cumulative discounted energy expenses at the end of the prospection period [M€].
+
+        """
         discounted_energy_expenses = non_discounted_energy_expenses.copy()
         for k in range(self.prospection_start_year, self.end_year + 1):
             # Compute the discounter at year k
@@ -150,6 +228,16 @@ class DicountedScenarioCost(AeroMAPSModel):
 
 
 class TotalAirlineCostNoElast(AeroMAPSModel):
+    """
+    Class to compute total airline costs without considering demand elasticity.
+    To be used with a fixed demand configuration only.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('total_airline_cost_no_elast' by default).
+    """
+
     def __init__(self, name="total_airline_cost_no_elast", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -166,6 +254,34 @@ class TotalAirlineCostNoElast(AeroMAPSModel):
         pd.Series,
         float,
     ]:
+        """
+        Execute the computation of total airline costs (to be used with a fixed demand configuration only).
+
+        Parameters
+        ----------
+        total_cost_per_rpk
+            Total cost per RPK [€/RPK].
+        rpk
+            Revenue passenger kilometers [RPK].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        total_airline_cost
+            Total airline cost [M€].
+        cumulative_total_airline_cost
+            Cumulative total airline cost [M€].
+        cumulative_total_airline_cost_discounted
+            Cumulative total airline cost discounted [M€].
+        cumulative_total_airline_cost_increase
+            Cumulative total airline cost increase [M€].
+        cumulative_total_airline_cost_increase_discounted
+            Cumulative total airline cost increase discounted [M€].
+        cumulative_total_airline_cost_discounted_obj
+            Cumulative total airline cost increase discounted at the end of the prospection period [M€].
+
+        """
         initial_airline_cost = total_cost_per_rpk[self.prospection_start_year - 1] * rpk
         total_airline_cost = total_cost_per_rpk * rpk
         total_airline_cost_increase = total_airline_cost - initial_airline_cost
@@ -215,6 +331,15 @@ class TotalAirlineCostNoElast(AeroMAPSModel):
 
 
 class TotalAirlineCost(AeroMAPSModel):
+    """
+    Class to compute total airline costs (to be used when considering demand elasticity).
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('total_airline_cost' by default).
+    """
+
     def __init__(self, name="total_airline_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -232,6 +357,36 @@ class TotalAirlineCost(AeroMAPSModel):
         pd.Series,
         float,
     ]:
+        """
+        Execute the computation of total airline costs.
+
+        Parameters
+        ----------
+        total_cost_per_rpk
+            Total cost per RPK [€/RPK].
+        rpk
+            Revenue passenger kilometers [RPK].
+        rpk_no_elasticity
+            Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        total_airline_cost
+            Total airline cost [M€].
+        cumulative_total_airline_cost
+            Cumulative total airline cost [M€].
+        cumulative_total_airline_cost_discounted
+            Cumulative total airline cost discounted [M€].
+        cumulative_total_airline_cost_increase
+            Cumulative total airline cost increase [M€].
+        cumulative_total_airline_cost_increase_discounted
+            Cumulative total airline cost increase discounted [M€].
+        cumulative_total_airline_cost_discounted_obj
+            Cumulative total airline cost increase discounted at the end of the prospection period [M€].
+
+        """
         initial_airline_cost = (
             total_cost_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
         )
@@ -286,6 +441,11 @@ class TotalSurplusLoss(AeroMAPSModel):
     """
     Class to compute directly the total surplus loss (area loss + airline cost increase)
     No distinction between consumer surplus and producer surplus / tax revenues
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('total_surplus_loss' by default).
     """
 
     def __init__(self, name="total_surplus_loss", *args, **kwargs):
@@ -301,6 +461,38 @@ class TotalSurplusLoss(AeroMAPSModel):
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
+        """
+        Execute the computation of total surplus loss.
+
+        Parameters
+        ----------
+        rpk
+            Revenue passenger kilometers [RPK].
+        rpk_no_elasticity
+            Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
+        cumulative_total_airline_cost_increase
+            Cumulative total airline cost increase [M€].
+        cumulative_total_airline_cost_increase_discounted
+            Cumulative total airline cost increase discounted [M€].
+        airfare_per_rpk
+            Airfare per RPK [€/RPK].
+        price_elasticity
+            Price elasticity of demand [-].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        area_loss
+            Area loss under the demand curve [M€].
+        cumulative_total_surplus_loss
+            Cumulative relative total surplus loss [M€].
+        cumulative_total_surplus_loss_discounted
+            Cumulative relative total surplus loss discounted [M€].
+        cumulative_total_surplus_loss_discounted_obj
+            Cumulative relative total surplus loss discounted at the end of the prospection period [M€].
+        """
+
         # computation of demand function parameters: asummption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
 
@@ -354,8 +546,14 @@ class TotalSurplusLoss(AeroMAPSModel):
 
 class ConsumerSurplusLoss(AeroMAPSModel):
     """
-    Class to compute the consumer surplus loss (area loss)
-    Should not be used alongside TotalSurplusLoss
+    Class to compute the consumer surplus loss.
+    Should not be used alongside TotalSurplusLoss.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('consumer_surplus_loss' by default).
+
     """
 
     def __init__(self, name="consumer_surplus_loss", *args, **kwargs):
@@ -369,6 +567,29 @@ class ConsumerSurplusLoss(AeroMAPSModel):
         price_elasticity: float,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, float]:
+        """
+
+        Parameters
+        ----------
+        rpk
+            Revenue passenger kilometers [RPK].
+        rpk_no_elasticity
+            Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
+        airfare_per_rpk
+            Airfare per RPK [€/RPK].
+        price_elasticity
+            Price elasticity of demand [-].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        delta_consumer_surplus
+            Consumer relative surplus loss [M€].
+        delta_consumer_surplus_discounted
+            Consumer relative surplus loss discounted [M€].
+
+        """
         # computation of demand function parameters: assumption => constant elasticity => P= beta * Q**(1/elasticity)
         beta = airfare_per_rpk[2025] / (rpk_no_elasticity ** (1 / price_elasticity))
 
@@ -377,6 +598,7 @@ class ConsumerSurplusLoss(AeroMAPSModel):
         if price_elasticity == -1:
             # surplus delta expresssed by CS= beta * np.log(Qref/Qi)
             delta_consumer_surplus = beta * np.log(rpk_no_elasticity / rpk)
+            # FIXME SHOULD NOT BE THE SAME AS IN TOTAL SURPLUS LOSS WITH E=1
 
         else:
             # surplus delta expressed by
@@ -410,6 +632,16 @@ class ConsumerSurplusLoss(AeroMAPSModel):
 
 
 class AirlineSurplusLoss(AeroMAPSModel):
+    """
+    Class to compute the airline surplus loss.
+    Should not be used alongside TotalSurplusLoss.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('airline_surplus_loss' by default).
+    """
+
     def __init__(self, name="airline_surplus_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -421,6 +653,34 @@ class AirlineSurplusLoss(AeroMAPSModel):
         social_discount_rate: float,
         airfare_per_rpk: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
+        """
+        Execute the computation of airline surplus loss.
+
+        Parameters
+        ----------
+        total_cost_per_rpk
+            Total cost per RPK [€/RPK].
+        rpk
+            Revenue passenger kilometers [RPK].
+        rpk_no_elasticity
+            Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
+        social_discount_rate
+            Social discount rate [%].
+        airfare_per_rpk
+            Airfare per RPK [€/RPK].
+
+        Returns
+        -------
+        delta_airline_surplus
+            Airline relative surplus loss [M€].
+        delta_airline_surplus_discounted
+            Airline relative surplus loss discounted [M€].
+        total_airline_surplus
+            Total airline surplus [M€].
+        cumulative_delta_airline_surplus_obj
+            Cumulative airline relative surplus loss discounted at the end of the prospection period [M€
+
+        """
         total_airline_cost = total_cost_per_rpk * rpk
         total_airline_revenue = airfare_per_rpk * rpk
         total_airline_surplus = total_airline_revenue - total_airline_cost
@@ -456,6 +716,16 @@ class AirlineSurplusLoss(AeroMAPSModel):
 
 
 class TaxRevenueLoss(AeroMAPSModel):
+    """
+    Class to compute the tax revenue loss.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('tax_revenue_loss' by default).
+
+    """
+
     def __init__(self, name="tax_revenue_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -471,6 +741,32 @@ class TaxRevenueLoss(AeroMAPSModel):
         pd.Series,
         float,
     ]:
+        """
+        Execute the computation of tax revenue loss.
+
+        Parameters
+        ----------
+        total_extra_tax_per_rpk
+            Total extra tax per RPK [€/RPK].
+        rpk
+            Revenue passenger kilometers [RPK].
+        rpk_no_elasticity
+            Revenue passenger kilometers without demand elasticity (exogenous growth assumption) [RPK].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        total_tax_revenue
+            Total tax revenue [M€].
+        delta_tax_revenue
+            Tax revenue loss [M€].
+        delta_tax_revenue_discounted
+            Tax revenue loss discounted [M€].
+        cumulative_delta_tax_revenue_obj
+            Cumulative tax revenue loss discounted at the end of the prospection period [M€].
+
+        """
         total_tax_revenue = total_extra_tax_per_rpk * rpk
         initial_tax_revenue = (
             total_extra_tax_per_rpk[self.prospection_start_year - 1] * rpk_no_elasticity
@@ -499,6 +795,15 @@ class TaxRevenueLoss(AeroMAPSModel):
 
 
 class TotalWelfareLoss(AeroMAPSModel):
+    """
+    Class to compute the total welfare loss.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('total_welfare_loss' by default).
+    """
+
     def __init__(self, name="total_welfare_loss", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -509,6 +814,32 @@ class TotalWelfareLoss(AeroMAPSModel):
         delta_airline_surplus: pd.Series,
         social_discount_rate: float,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, float]:
+        """
+        Execute the computation of total welfare loss.
+
+        Parameters
+        ----------
+        delta_tax_revenue
+            Tax revenue loss [M€].
+        delta_consumer_surplus
+            Consumer relative surplus loss [M€].
+        delta_airline_surplus
+            Airline relative surplus loss [M€].
+        social_discount_rate
+            Social discount rate [%].
+
+        Returns
+        -------
+        total_welfare_loss
+            Total welfare loss [M€].
+        total_welfare_loss_discounted
+            Total welfare loss discounted [M€].
+        cumulative_total_welfare_loss_discounted
+            Cumulative total welfare loss discounted [M€].
+        cumulative_total_welfare_loss_obj
+            Cumulative total welfare loss discounted at the end of the prospection period [M€].
+        """
+
         total_welfare_loss = delta_consumer_surplus + delta_airline_surplus + delta_tax_revenue
         total_welfare_loss_discounted = total_welfare_loss / (1 + social_discount_rate) ** (
             self.df.index - self.prospection_start_year

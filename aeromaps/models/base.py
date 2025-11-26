@@ -1,3 +1,7 @@
+"""
+Utility base classes and climate-related helper functions used by AeroMAPS models.
+"""
+
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -13,11 +17,22 @@ class AeroMapsCustomDataType:
     It contains reference years and values, and interpolation options.
     When an AeroMapsCustomDataType is found when reading the yaml it
     instantiates an interpolation model from yaml_interpolator.py
-    Attributes:
-        years (list): List of reference years for the interpolation.
-        values (list): List of reference values for the interpolation.
-        method (str): Interpolation method, default is 'linear'.
-        positive_constraint (bool): If True, ensures interpolated values are non-negative.
+
+    Parameters
+    ----------
+    reference_data
+        Dictionary containing interpolation attributes.
+
+    Attributes
+    ----------
+    years
+        List of reference years for the interpolation.
+    values
+        List of reference values for the interpolation.
+    method
+        Interpolation method, default is 'linear'.
+    positive_constraint
+        If True, ensures interpolated values are non-negative.
     """
 
     def __init__(self, reference_data: dict):
@@ -34,6 +49,54 @@ class AeroMapsCustomDataType:
 
 
 class AeroMAPSModel(object):
+    """
+    Base class for AeroMAPS model components that provides shared state and utilities.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance.
+    parameters
+        AeroMAPS process parameters object containing model inputs.
+    model_type
+        Type of the model, either 'auto' or 'custom'.
+
+    Attributes
+    ----------
+    name
+        Name of the model instance.
+    parameters
+        Reference to the parameters object passed at construction.
+    float_outputs
+        Dictionary storing scalar outputs produced by the model.
+    model_type
+        Configured model type, either 'auto' or 'custom'.
+    input_names
+        Dictionary of expected input names and types (only for 'custom' models).
+    output_names
+        Dictionary of output names and types (only for 'custom' models).
+    default_input_data
+        Default input data provided internally by the model (only for 'custom' models).
+    _skip_data_type_validation
+        Flag to skip input/output data type validation for custom models.
+    climate_historic_start_year
+        Start year for climate-related historical data.
+    historic_start_year
+        Start year for general historical data.
+    prospection_start_year
+        First year of the prospection/projection period.
+    end_year
+        Last year of the model time horizon.
+    df
+        pandas DataFrame indexed by model years for vector outputs.
+    df_climate
+        pandas DataFrame indexed by climate years for climate-specific outputs.
+    xarray_lca
+        xarray DataArray placeholder used by some LCA computations.
+    years
+        Numpy array of years spanning the model horizon.
+    """
+
     def __init__(self, name, parameters=None, model_type="auto"):
         self.name = name
         self.parameters = parameters
@@ -69,8 +132,11 @@ class AeroMAPSModel(object):
         """
         Store vector outputs in self.df and float outputs in self.float_outputs.
         Checks if the columns already exist in self.df to update them in place, otherwise joins new columns.
-        Args:
-            output_data (dict): Dictionary with output names as keys and output data as values.
+
+        Parameters
+        ----------
+        output_data
+            Dictionary with output names as keys and output data as values.
         """
         # Separate series-like outputs and scalar outputs
         series_items = {k: v for k, v in output_data.items() if isinstance(v, pd.Series)}
@@ -110,6 +176,27 @@ def aeromaps_interpolation_function(
     positive_constraint=False,
     model_name="Not provided",
 ):
+    """
+    Interpolate values across the scenario horizon from reference years and values.
+
+    Parameters
+    ----------
+    reference_years
+        Sequence of reference years used for interpolation.
+    reference_years_values
+        Sequence of values corresponding to the reference years.
+    method
+        Interpolation method to use (e.g. 'linear').
+    positive_constraint
+        If True, negative interpolated values are clipped to zero.
+    model_name
+        Optional name used in warnings.
+
+    Returns
+    -------
+    interpolation_function_values
+        Series of interpolated values indexed by year taken from the model's DataFrame.
+    """
     # Main
     if len(reference_years) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -180,6 +267,23 @@ def aeromaps_interpolation_function(
 def aeromaps_leveling_function(
     self, reference_periods, reference_periods_values, model_name="Not provided"
 ):
+    """
+    Build a stepwise series that holds values constant across defined reference periods.
+
+    Parameters
+    ----------
+    reference_periods
+        Sequence of period boundary years used to define steps.
+    reference_periods_values
+        Sequence of values corresponding to each reference period.
+    model_name
+        Optional name used in warnings.
+
+    Returns
+    -------
+    leveling_function_values
+        Series of leveled values indexed by year taken from the model's DataFrame.
+    """
     # Main
     if len(reference_periods) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
@@ -228,6 +332,20 @@ def aeromaps_leveling_function(
 
 
 def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
+    """
+    Compute the absolute global warming potential (AGWP) for CO2 for a given time horizon.
+    TODO: is base.py the appropriate location for this function?
+
+    Parameters
+    ----------
+    climate_time_horizon
+        Time horizon over which to compute the AGWP.
+
+    Returns
+    -------
+    co2_agwp_h
+        Absolute global warming potential value computed for CO2.
+    """
     # Reference: IPCC AR5 - https://www.ipcc.ch/site/assets/uploads/2018/07/WGI_AR5.Chap_.8_SM.pdf
 
     # Parameter: climate time horizon
@@ -259,6 +377,24 @@ def AbsoluteGlobalWarmingPotentialCO2Function(climate_time_horizon):
 def GWPStarEquivalentEmissionsFunction(
     self, emissions_erf, gwpstar_variation_duration, gwpstar_s_coefficient
 ):
+    """
+    Compute equivalent CO2 emissions according to the GWP* formulation.
+    TODO: is base.py the appropriate location for this function?
+
+    Parameters
+    ----------
+    emissions_erf
+        Time series of emissions expressed as effective radiative forcing or equivalent values.
+    gwpstar_variation_duration
+        Duration over which emission rate changes are evaluated for GWP*.
+    gwpstar_s_coefficient
+        S coefficient used in the GWP* formulation to weight instantaneous forcing.
+
+    Returns
+    -------
+    emissions_equivalent_emissions
+        Series of GWP*-equivalent CO2 emissions indexed by climate years.
+    """
     # Reference: Smith et al. (2021), https://doi.org/10.1038/s41612-021-00169-8
     # Global
     climate_time_horizon = 100
@@ -301,6 +437,22 @@ def GWPStarEquivalentEmissionsFunction(
 
 
 def RunFair(self, species_quantities, without="None"):
+    """
+    Configure and run the FaIR climate model using provided species inputs.
+    TODO: is base.py the appropriate location for this function?
+
+    Parameters
+    ----------
+    species_quantities
+        List or sequence of species input arrays used to fill FaIR emissions and forcings.
+    without
+        Optional string controlling which aviation components are excluded from the run.
+
+    Returns
+    -------
+    temperature, forcing_sum
+        Temperature time series and total forcing time series produced by the FaIR run.
+    """
     # Creation of FaIR instance
     f = FAIR()
 
