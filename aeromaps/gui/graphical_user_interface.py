@@ -536,7 +536,7 @@ class GraphicalUserInterface(widgets.VBox):
 
         self.w_temperature_target_allocation = widgets.SelectionSlider(
             options=["0%", "3.8%", "5.1%", "15%"],
-            value="5.1%",
+            value="3.8%",
             description="Temperature target",
             description_tooltip="Share of the remaining world temperature target allocated to aviation\nThe term "
             "allocation here refers to the result of complex mechanisms of negotiation, \n"
@@ -2475,7 +2475,7 @@ class GraphicalUserInterface(widgets.VBox):
         elif self.w_temperature_target_allocation.value == "5.1%":
             self.process.parameters.aviation_temperature_target_allocated_share = 5.1
         elif self.w_temperature_target_allocation.value == "15%":
-            self.process.parameters.aviation_temperature_target_allocated_share = 15
+            self.process.parameters.aviation_temperature_target_allocated_share = 15.0
 
         allocated_biomass = 0.0
         if self.w_biomass_allocation.value == "0%":
