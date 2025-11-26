@@ -102,7 +102,6 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelDetailledConsumption,
 )
 
-from aeromaps.models.impacts.climate.climate import ClimateModel
 from aeromaps.models.impacts.others.others import (
     EmissionsPerRPK,
     EmissionsPerRTK,
@@ -280,10 +279,6 @@ models_emissions = {
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
-models_climate = {
-    "climate_model": ClimateModel("climate_model"),
-}
-
 models_sustainability = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "temperature_target": TemperatureTarget("temperature_target"),
@@ -405,7 +400,6 @@ default_models_top_down = {
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
     "models_emissions": models_emissions,
-    "models_climate": models_climate,
     "models_sustainability": models_sustainability,
     "models_energy_cost": models_energy_cost,
     "models_operation_cost_top_down": models_operation_cost_top_down,
@@ -417,7 +411,6 @@ default_models_bottom_up = {
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
     "models_emissions": models_emissions,
-    "models_climate": models_climate,
     "models_sustainability": models_sustainability,
     "models_energy_cost": models_energy_cost,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
