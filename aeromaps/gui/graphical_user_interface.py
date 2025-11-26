@@ -377,15 +377,14 @@ class GraphicalUserInterface(widgets.VBox):
         # Carbon intensity
 
         self.w_energy_mix = widgets.SelectionSlider(
-            options=["Kerosene", "Biofuel", "Electrofuel", "ReFuelEU"],
+            options=["Kerosene", "STEPS", "APS", "NZE"],
             value="Kerosene",
             description="Energy mix",
             description_tooltip="Drop-in fuels used into the fleet until 2050\n"
             "- Kerosene: exclusive use of fossil kerosene\n"
-            "- Biofuel: exclusive use of biofuel with deployment starting in 2025\n"
-            "- Electrofuel: exclusive use of electrofuel with deployment starting in 2030\n"
-            "- ReFuelEU: balanced energy mix relying mainly on electrofuels and biofuels,\n"
-            "   based on ReFuelEU targets",
+            "- STEPS: blending mandates from IEA STEPS scenario\n"
+            "- APS: blending mandates from IEA APS scenario\n"
+            "- NZE: blending mandates from IEA NZE scenario",
         )
         self.w_energy_mix.observe(self.update, "value")
 
@@ -2049,32 +2048,22 @@ class GraphicalUserInterface(widgets.VBox):
 
                 # as kerosene is default no need to set share for fossil kerosene
         else:
-            if self.w_energy_mix.value == "Electrofuel":
-                biofuel_share = [0.0, 0.0, 0.0, 0.0]
-                electrofuel_share = [0.0, 0.0, 25.0, 100.0]
+            if self.w_energy_mix.value == "STEPS":
+                biofuel_share = [0.0, 0.02, 1.6, 3.3, 7.4]
+                electrofuel_share = [0.0, 0.2, 0.6, 3.7]
 
-            elif self.w_energy_mix.value == "Biofuel":
-                biofuel_share = [0.0, 4.0, 30.0, 100.0]
-                electrofuel_share = [0.0, 0.0, 0.0, 0.0]
+            elif self.w_energy_mix.value == "APS":
+                biofuel_share = [0.0, 0.02, 5.1, 11.8, 23.2]
+                electrofuel_share = [0.0, 0.2, 1.3, 14.1]
 
-            elif self.w_energy_mix.value == "ReFuelEU":
-                biofuel_share = [0.0, 4.8, 24.0, 35.0]
-                electrofuel_share = [
-                    0.0,
-                    1.2,
-                    10.0,
-                    35.0,
-                ]
+            elif self.w_energy_mix.value == "NZE":
+                biofuel_share = [0.0, 0.02, 9.4, 19.3, 33.6]
+                electrofuel_share = [0.0, 1.6, 6.5, 44.8]
 
             for pathway in dropin_pathways:
                 if pathway.name == "electrofuel":
                     if pathway.mandate_type is not None:
-                        self.process.parameters.electrofuel_mandate_share_years = [
-                            2020,
-                            2030,
-                            2040,
-                            2050,
-                        ]
+                        self.process.parameters.electrofuel_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
                         self.process.parameters.electrofuel_mandate_share_values = electrofuel_share
 
             biofuel_pathways = self.process.pathways_manager.get(
@@ -2083,12 +2072,7 @@ class GraphicalUserInterface(widgets.VBox):
             if self.w_biofuel_production.value == "Current":
                 for pathway in biofuel_pathways:
                     if pathway.name == "hefa_fog":
-                        self.process.parameters.hefa_fog_mandate_share_years = [
-                            2020,
-                            2030,
-                            2040,
-                            2050,
-                        ]
+                        self.process.parameters.hefa_fog_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
                         self.process.parameters.hefa_fog_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
@@ -2099,21 +2083,14 @@ class GraphicalUserInterface(widgets.VBox):
                 for pathway in biofuel_pathways:
                     if pathway.name == "atj":
                         self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
-                        self.process.parameters.atj_mandate_share_values = [
-                            x * 100 / 100 for x in biofuel_share
-                        ]
+                        self.process.parameters.atj_mandate_share_values = [2020, 2023, 2030, 2035, 2050]
                     else:
                         self.reset_pathway_mandate(pathway)
 
             elif self.w_biofuel_production.value == "Low-carbon":
                 for pathway in biofuel_pathways:
                     if pathway.name == "ft_others":
-                        self.process.parameters.ft_others_mandate_share_years = [
-                            2020,
-                            2030,
-                            2040,
-                            2050,
-                        ]
+                        self.process.parameters.ft_others_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
                         self.process.parameters.ft_others_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
