@@ -1,13 +1,36 @@
+"""
+production_capacity
+
+=======================
+Computes annual capacity additions required to follow an energy consumption trajectory.
+"""
+
 import numpy as np
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
-from aeromaps.utils.functions import get_value_for_year
+from aeromaps.utils.functions import _get_value_for_year
 
 
 class BottomUpCapacity(AeroMAPSModel):
     """
     Computes annual capacity additions required to follow an energy consumption trajectory.
+
+    Parameters
+    ------------
+    name : str
+        Name of the model instance ('f"{pathway_name}_production_capacity"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the config file.
+    processes_data : dict
+        Configuration data for all processes from the config file.
+
+    Attributes
+    ------------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(self, name, configuration_data, processes_data, *args, **kwargs):
@@ -70,6 +93,19 @@ class BottomUpCapacity(AeroMAPSModel):
             )
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the annual capacity additions required to follow the energy consumption trajectory.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         output_data = {}
 
         # Get the energy consumption trajectory and capacity factor
@@ -117,10 +153,10 @@ class BottomUpCapacity(AeroMAPSModel):
 
         for year in years:
             # getting entry into service (eis) plant charcteristics
-            plant_load_factor = get_value_for_year(
+            plant_load_factor = _get_value_for_year(
                 input_data.get(f"{self.pathway_name}_eis_plant_load_factor"), year, 1
             )
-            plant_lifespan = get_value_for_year(
+            plant_lifespan = _get_value_for_year(
                 input_data.get(f"{self.pathway_name}_eis_plant_lifespan"), year, 25
             )
 
@@ -131,7 +167,7 @@ class BottomUpCapacity(AeroMAPSModel):
                 # Calculate the required capacity to meet the energy demand
                 for key in self.resource_keys:
                     if f"{key}_load_factor" in input_data:
-                        resource_load_factor = get_value_for_year(
+                        resource_load_factor = _get_value_for_year(
                             input_data.get(f"{key}_load_factor"), year
                         )
                         if resource_load_factor is not None:
@@ -158,12 +194,12 @@ class BottomUpCapacity(AeroMAPSModel):
         for process_key in self.process_keys:
             process_building_scenario = pd.Series(np.zeros(len(years)), years)
             for year in years:
-                process_load_factor = get_value_for_year(
+                process_load_factor = _get_value_for_year(
                     input_data.get(f"{process_key}_load_factor", 1), year
                 )
                 for resource in self.process_resource_keys[process_key]:
                     if f"{resource}_load_factor" in input_data:
-                        resource_load_factor = get_value_for_year(
+                        resource_load_factor = _get_value_for_year(
                             input_data.get(f"{resource}_load_factor"), year
                         )
                         if resource_load_factor is not None:

@@ -1,3 +1,10 @@
+"""
+energy_carriers_means
+
+=======================
+This module contains models to compute mean emissions and costs
+"""
+
 import warnings
 
 import numpy as np
@@ -10,6 +17,22 @@ from aeromaps.utils.defaults import get_default_series
 class EnergyCarriersMeans(AeroMAPSModel):
     """
     This model loops through the pathways and computes mean emissions
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('energy_carriers_means' by default).
+    configuration_data : dict
+        Dictionary containing generic pathways configuration data.
+    pathways_manager : PathwaysManager
+        Instance of the PathwaysManager containing all defined energy pathways.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(
@@ -95,7 +118,17 @@ class EnergyCarriersMeans(AeroMAPSModel):
     def compute(self, input_data) -> dict:
         """
         This function loops through different energy types and computes the mean emissions and costs
-        TODO: SPLIT COST AND EMISSIONS....
+        TODO: SPLIT COST AND EMISSIONS
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
 
         output_data = {}
@@ -295,11 +328,37 @@ class EnergyCarriersMeans(AeroMAPSModel):
 
 
 class EnergyCarriersMassicShares(AeroMAPSModel):
+    """
+    This model computes the massic shares of each pathway using its lhv and its energy consumption
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('energy_carriers_massic_shares' by default).
+
+    Attributes
+    ----------
+    pathways_manager : EnergyCarrierManager
+        Instance of the EnergyCarrierManager containing all defined energy pathways.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
     def __init__(self, name="energy_carriers_massic_shares", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Sets up input and output names for the model based on the pathways in the pathways_manager.
+
+        Returns
+        -------
+        None
+
+        """
         self.input_names = {}
         self.output_names = {}
 
@@ -322,8 +381,20 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        # This function computes the massic shares of each pathway using its lhv and its energy consumption
-        # Shares are given per aircraft type and aircraft type + energy origin
+        """
+        This function computes the massic shares of each pathway using its lhv and its energy consumption
+        Shares are given per aircraft type and aircraft type + energy origin
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         output_data = {}
 
         for aircraft_type in self.pathways_manager.get_all_types("aircraft_type"):
@@ -371,11 +442,36 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
 
 
 class EnergyCarriersMeanLHV(AeroMAPSModel):
+    """
+    This model computes the mean energy LHV for each aircraft type and energy origin
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('energy_carriers_mean_lhv' by default).
+
+    Attributes
+    ----------
+    pathways_manager : EnergyCarrierManager
+        Instance of the EnergyCarrierManager containing all defined energy pathways.
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+    """
+
     def __init__(self, name="energy_carriers_mean_lhv", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """
+        Sets up input and output names for the model based on the pathways in the pathways_manager.
+
+        Returns
+        -------
+        None
+        """
         self.input_names = {}
         self.output_names = {}
 
@@ -407,7 +503,21 @@ class EnergyCarriersMeanLHV(AeroMAPSModel):
                 )
 
     def compute(self, input_data) -> dict:
-        """Average H20 emission index calculation"""
+        """
+        Average H20 emission index calculation.
+        This function computes the mean LHV for each aircraft type and energy origin using the massic shares of each pathway.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
 
         output_data = {}
 

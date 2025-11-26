@@ -1,3 +1,10 @@
+"""
+rtk
+===
+
+Module to compute freight traffic.
+"""
+
 from typing import Tuple
 from numbers import Number
 
@@ -8,6 +15,15 @@ from aeromaps.models.base import AeroMAPSModel, aeromaps_leveling_function
 
 
 class RTK(AeroMAPSModel):
+    """
+    Class to compute freight traffic considering COVID-19 impact and exogenous growth rates.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('rtk' by default).
+    """
+
     def __init__(self, name="rtk", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -21,7 +37,37 @@ class RTK(AeroMAPSModel):
         cagr_freight_reference_periods: list,
         cagr_freight_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series, float, float]:
-        """RTK calculation."""
+        """
+        RTK calculation.
+
+        Parameters
+        ----------
+        rtk_init
+            Historical number of Revenue Tonne Kilometer (RTK) over 2000-2019 [RTK].
+        covid_start_year
+            Covid-19 start year [yr].
+        covid_rtk_drop_start_year
+            Drop in RTK due to Covid-19 for the start year [%].
+        covid_end_year_freight
+            Covid-19 end year [yr].
+        covid_end_year_reference_rtk_ratio
+            Percentage of cargo traffic level reached in Covid-19 end year compared with the one in Covid-19 start year [%].
+        cagr_freight_reference_periods
+            Reference periods for the CAGR for freight market [yr].
+        cagr_freight_reference_periods_values
+            CAGR for freight market for the reference periods [%].
+
+        Returns
+        -------
+        rtk
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport [RTK].
+        annual_growth_rate_freight
+            Annual growth rate for freight [%/year].
+        cagr_rtk
+            Air traffic CAGR for freight market [%].
+        prospective_evolution_rtk
+            Evolution in percentage of Revenue Tonne Kilometer (RTK) for freight market between prospection_start_year and end_year [%].
+        """
 
         # Initialization
         self.df.loc[self.prospection_start_year - 1, "rtk"] = rtk_init.loc[
@@ -91,6 +137,15 @@ class RTK(AeroMAPSModel):
 
 
 class RTKReference(AeroMAPSModel):
+    """
+    Class to compute reference Revenue Tonne Kilometers (RTK) with baseline air traffic growth.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('rtk_reference' by default).
+    """
+
     def __init__(self, name="rtk_reference", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -104,7 +159,33 @@ class RTKReference(AeroMAPSModel):
         covid_end_year_freight: Number,
         covid_end_year_reference_rtk_ratio: float,
     ) -> Tuple[pd.Series, pd.Series]:
-        """RTK reference calculation."""
+        """
+        RTK reference calculation.
+
+        Parameters
+        ----------
+        rtk
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport [RTK].
+        reference_cagr_freight_reference_periods
+            Reference periods for the reference CAGR for freight market [yr].
+        reference_cagr_freight_reference_periods_values
+            Reference CAGR for freight market for the reference periods [%].
+        covid_start_year
+            Covid-19 start year [yr].
+        covid_rtk_drop_start_year
+            Drop in RTK due to Covid-19 for the start year [%].
+        covid_end_year_freight
+            Covid-19 end year [yr].
+        covid_end_year_reference_rtk_ratio
+            Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year [%].
+
+        Returns
+        -------
+        rtk_reference
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport with a baseline air traffic growth [RTK].
+        reference_annual_growth_rate_freight
+            Reference annual growth rate for freight market [%/year].
+        """
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, "rtk_reference"] = rtk.loc[k]

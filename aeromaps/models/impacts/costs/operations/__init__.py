@@ -2,3 +2,8 @@
 # @Author : a.salgas
 # @File : __init__.py.py
 # @Software: PyCharm
+"""
+operations_costs
+===============================
+Package to compute aircraft operations costs.
+"""

@@ -2,6 +2,10 @@
 # @Author : a.salgas
 # @File : operations_abatement_cost.py
 # @Software: PyCharm
+"""
+Module to compute operations efficiency-related carbon abatement costs.
+"""
+
 from typing import Tuple
 
 import numpy as np
@@ -10,6 +14,15 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class OperationsAbatementCost(AeroMAPSModel):
+    """
+    Class to compute operations efficiency-related carbon abatement costs.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "operations_abatement_cost").
+    """
+
     def __init__(self, name="operations_abatement_cost", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
 
@@ -45,6 +58,70 @@ class OperationsAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        """
+        Executes the computation of operations-related efficiency carbon abatement costs.
+        Parameters
+        ----------
+        operational_efficiency_cost_non_energy_per_ask
+            Non-energy operational efficiency cost per available seat kilometer [€/ASK].
+        operations_gain
+            Operations efficiency gain percentage [%].
+        cac_reference_mfsp
+            CAC Reference fuel's MFSP [€/MJ].
+        cac_reference_co2_emission_factor
+            CAC Reference fuel's CO2 emission factor [gCO2/MJ].
+        energy_per_ask_mean_without_operations
+            Mean energy consumption per ASK for passenger market  without operations efficiency measures [MJ/ASK].
+        energy_per_ask_mean
+            Mean energy consumption per ASK for passenger market [MJ/ASK].
+        energy_per_rtk_mean_without_operations
+            Mean energy consumption per RTK for freight market without considering operation improvements [MJ/RTK].
+        energy_per_rtk_mean
+            Mean energy consumption per RTK for freight market [MJ/RTK].
+        rpk
+            Revenue passenger kilometers [RPK].
+        rtk
+            Revenue tonne kilometers [RTK].
+        load_factor
+            Passenger load factor [%].
+        load_factor_cost_non_energy_per_ask
+            Non-energy load factor improvement cost per available seat kilometer [€/ASK].
+        exogenous_carbon_price_trajectory
+            Exogenous carbon price trajectory [€/tCO2].
+        social_discount_rate
+            Social discount rate [-]
+        operations_duration
+            Duration for implementing 98% of operational improvements to reduce fuel consumption [years].
+        operations_start_year
+            Start year for implementing operational improvements to reduce fuel consumption [year].
+
+        Returns
+        -------
+        operations_abatement_cost
+            Operations abatement cost for passenger market [€/tCO2].
+        operations_abatement_effective
+            Effective operations abatement volume for passenger market [tCO2].
+        operations_specific_abatement_cost
+            Specific operations abatement cost for passenger market [€/tCO2].
+        operations_generic_specific_abatement_cost
+            Generic specific operations abatement cost for passenger market [€/tCO2].
+        operations_abatement_cost_freight
+            Operations abatement cost for freight market [€/tCO2].
+        operations_abatement_effective_freight
+            Effective operations abatement volume for freight market [tCO2].
+        operations_specific_abatement_cost_freight
+            Specific operations abatement cost for freight market [€/tCO2].
+        operations_generic_specific_abatement_cost_freight
+            Generic specific operations abatement cost for freight market [€/tCO2].
+        load_factor_abatement_cost
+            Load factor abatement cost [€/tCO2].
+        load_factor_abatement_effective
+            Effective load factor abatement volume [tCO2].
+        load_factor_specific_abatement_cost
+            Specific load factor abatement cost [€/tCO2].
+        load_factor_generic_specific_abatement_cost
+            Generic specific load factor abatement cost [€/tCO2].
+        """
         ############### PASSENGER OPERATIONS #############
 
         emissions_reduction_operations = (

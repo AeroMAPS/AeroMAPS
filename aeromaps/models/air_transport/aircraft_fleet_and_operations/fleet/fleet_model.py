@@ -1,3 +1,20 @@
+"""
+fleet_model
+===========
+
+Module for modeling aircraft fleet composition and renewal over time.
+
+This module provides data structures and models for representing aircraft fleets,
+including individual aircraft, subcategories (e.g., narrow-body, wide-body), and
+categories (e.g., short-range, medium-range, long-range). It supports fleet
+evolution modeling using S-shaped logistic functions for aircraft market share
+transitions, and computes energy consumption, emissions (NOx, soot), and
+operating costs based on fleet composition.
+
+The module uses YAML configuration files to define aircraft inventories and
+fleet structures, allowing flexible customization of fleet scenarios.
+"""
+
 from __future__ import annotations
 
 import warnings
@@ -38,6 +55,36 @@ DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 
 @dataclass
 class AircraftParameters:
+    """Parameters defining an aircraft's characteristics and performance.
+
+    Attributes
+    ----------
+    entry_into_service_year
+        Year when the aircraft enters service [yr].
+    consumption_evolution
+        Relative change in energy consumption compared to reference aircraft [%].
+    nox_evolution
+        Relative change in NOx emissions compared to reference aircraft [%].
+    soot_evolution
+        Relative change in soot emissions compared to reference aircraft [%].
+    doc_non_energy_evolution
+        Relative change in non-energy direct operating costs compared to reference aircraft [%].
+    cruise_altitude
+        Typical cruise altitude of the aircraft [m].
+    hybridization_factor
+        Degree of hybridization for hybrid-electric aircraft, from 0 (conventional) to 1 (fully electric) [-].
+    ask_year
+        Average number of Available Seat Kilometers produced per aircraft per year [ASK/yr].
+    nrc_cost
+        Non-recurring costs (development costs) [M€].
+    rc_cost
+        Recurring costs (manufacturing cost per unit) [M€].
+    oew
+        Operational Empty Weight of the aircraft [t].
+    full_name
+        Full qualified name including category and subcategory path.
+    """
+
     entry_into_service_year: Optional[float] = None
     consumption_evolution: Optional[float] = None
     nox_evolution: Optional[float] = None
@@ -54,6 +101,39 @@ class AircraftParameters:
 
 @dataclass
 class ReferenceAircraftParameters:
+    """Parameters defining a reference aircraft used as baseline for comparisons.
+
+    Reference aircraft serve as the baseline against which new aircraft performance
+    improvements are measured. Each subcategory has an "old" and a "recent" reference.
+
+    Attributes
+    ----------
+    energy_per_ask
+        Energy consumption per Available Seat Kilometer [MJ/ASK].
+    emission_index_nox
+        NOx emission index per ASK [kg/ASK].
+    emission_index_soot
+        Soot emission index per ASK [kg/ASK].
+    doc_non_energy_base
+        Base non-energy direct operating cost per ASK [€/ASK].
+    entry_into_service_year
+        Year when the reference aircraft entered service [yr].
+    cruise_altitude
+        Typical cruise altitude of the aircraft [m].
+    hybridization_factor
+        Degree of hybridization, from 0 (conventional) to 1 (fully electric) [-].
+    ask_year
+        Average number of Available Seat Kilometers produced per aircraft per year [ASK/yr].
+    nrc_cost
+        Non-recurring costs (development costs) [M€].
+    rc_cost
+        Recurring costs (manufacturing cost per unit) [M€].
+    oew
+        Operational Empty Weight of the aircraft [t].
+    full_name
+        Full qualified name including category and subcategory path.
+    """
+
     energy_per_ask: Optional[float] = None
     emission_index_nox: Optional[float] = None
     emission_index_soot: Optional[float] = None
@@ -70,16 +150,58 @@ class ReferenceAircraftParameters:
 
 @dataclass
 class SubcategoryParameters:
+    """Parameters for an aircraft subcategory.
+
+    Attributes
+    ----------
+    share
+        Market share of this subcategory within its parent category [%].
+    """
+
     share: Optional[float] = None
 
 
 @dataclass
 class CategoryParameters:
+    """Parameters for an aircraft category.
+
+    Attributes
+    ----------
+    life
+        Average operational lifetime of aircraft in this category [yr].
+    limit
+        Lower threshold for market share below which aircraft share is set to zero [%] (needed for S-curve parametrization).
+    """
+
     life: float
     limit: float = 2
 
 
 class Aircraft(object):
+    """Represents an individual aircraft type in the fleet.
+
+    An aircraft belongs to a subcategory and has parameters that define its
+    performance relative to a reference aircraft.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the aircraft type.
+    parameters
+        Aircraft performance and cost parameters.
+    energy_type
+        Type of energy used: 'DROP_IN_FUEL', 'HYDROGEN', 'ELECTRIC', or 'HYBRID_ELECTRIC'.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the aircraft type.
+    parameters : AircraftParameters
+        Aircraft performance and cost parameters.
+    energy_type : str
+        Type of energy used by the aircraft.
+    """
+
     def __init__(
         self,
         name: str = None,
@@ -93,6 +215,18 @@ class Aircraft(object):
         self.energy_type = energy_type
 
     def from_dataframe_row(self, row):
+        """Populate aircraft attributes from a DataFrame row.
+
+        Parameters
+        ----------
+        row
+            DataFrame row containing aircraft data with columns matching AIRCRAFT_COLUMNS.
+
+        Returns
+        -------
+        Aircraft
+            Self, with attributes populated from the row data.
+        """
         self.name = row[AIRCRAFT_COLUMNS[0]]
         self.parameters.entry_into_service_year = row[AIRCRAFT_COLUMNS[1]]
         self.parameters.consumption_evolution = row[AIRCRAFT_COLUMNS[2]]
@@ -111,6 +245,33 @@ class Aircraft(object):
 
 
 class SubCategory(object):
+    """Represents a subcategory of aircraft within a category.
+
+    Subcategories group similar aircraft types (e.g., conventional narrow-body,
+    hydrogen narrow-body) within a category. Each subcategory has reference
+    aircraft (old and recent) that serve as baselines for performance comparisons.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the subcategory.
+    parameters
+        Subcategory parameters including market share.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the subcategory.
+    parameters : SubcategoryParameters
+        Subcategory parameters including market share.
+    aircraft : Dict[int, Aircraft]
+        Dictionary of aircraft belonging to this subcategory.
+    old_reference_aircraft : ReferenceAircraftParameters
+        Parameters for the older reference aircraft baseline.
+    recent_reference_aircraft : ReferenceAircraftParameters
+        Parameters for the more recent reference aircraft baseline.
+    """
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -123,9 +284,23 @@ class SubCategory(object):
         self.recent_reference_aircraft = ReferenceAircraftParameters()
 
     def add_aircraft(self, aircraft: Aircraft) -> None:
+        """Add an aircraft to this subcategory.
+
+        Parameters
+        ----------
+        aircraft
+            Aircraft instance to add to the subcategory.
+        """
         self.aircraft[len(self.aircraft)] = aircraft
 
     def remove_aircraft(self, aircraft_name: str) -> None:
+        """Remove an aircraft from this subcategory by name.
+
+        Parameters
+        ----------
+        aircraft_name
+            Name of the aircraft to remove.
+        """
         self.aircraft = {
             i: aircraft
             for i, aircraft in enumerate(
@@ -134,6 +309,7 @@ class SubCategory(object):
         }
 
     def compute(self) -> None:
+        """Execute compute method on all aircraft in the subcategory."""
         for aircraft in self.aircraft.values():
             compute_method = getattr(aircraft, "compute", None)
             if callable(compute_method):
@@ -142,6 +318,30 @@ class SubCategory(object):
 
 
 class Category(object):
+    """Represents a category of aircraft in the fleet (e.g., Short Range, Medium Range).
+
+    Categories group subcategories of aircraft that operate in similar market segments.
+    Each category has parameters defining aircraft lifetime and market share thresholds.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the category (e.g., 'Short Range', 'Medium Range', 'Long Range').
+    parameters
+        Category parameters including aircraft lifetime.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the category.
+    parameters : CategoryParameters
+        Category parameters including aircraft lifetime.
+    subcategories : Dict[int, SubCategory]
+        Dictionary of subcategories within this category.
+    total_shares : float
+        Sum of all subcategory market shares (should equal 100%).
+    """
+
     def __init__(self, name: str, parameters: CategoryParameters):
         self.name = name
         self.parameters = parameters
@@ -149,14 +349,29 @@ class Category(object):
         self.total_shares = 0.0
 
     def _compute(self) -> None:
+        """Validate shares and compute all subcategories."""
         self._check_shares()
         for subcategory in self.subcategories.values():
             subcategory.compute()
 
     def add_subcategory(self, subcategory: SubCategory) -> None:
+        """Add a subcategory to this category.
+
+        Parameters
+        ----------
+        subcategory
+            SubCategory instance to add.
+        """
         self.subcategories[len(self.subcategories)] = subcategory
 
     def remove_subcategory(self, subcategory_name: str) -> None:
+        """Remove a subcategory from this category by name.
+
+        Parameters
+        ----------
+        subcategory_name
+            Name of the subcategory to remove.
+        """
         self.subcategories = {
             i: subcat
             for i, subcat in enumerate(
@@ -166,6 +381,7 @@ class Category(object):
         self._check_shares()
 
     def _check_shares(self) -> None:
+        """Validate that subcategory shares sum to 100%."""
         if not self.subcategories:
             self.total_shares = 0.0
             return
@@ -180,6 +396,37 @@ class Category(object):
 
 
 class Fleet(object):
+    """Represents the complete aircraft fleet structure.
+
+    The Fleet class manages the hierarchical structure of aircraft categories,
+    subcategories, and individual aircraft types. It loads configuration from
+    YAML files and provides methods for fleet manipulation and display.
+
+    Parameters
+    ----------
+    parameters
+        External parameters used for reference aircraft calibration (e.g., energy shares).
+    aircraft_inventory_path
+        Path to the YAML file containing the aircraft inventory definitions.
+        Defaults to the package's default aircraft inventory.
+    fleet_config_path
+        Path to the YAML file containing the fleet structure configuration.
+        Defaults to the package's default fleet configuration.
+
+    Attributes
+    ----------
+    categories : Dict[str, Category]
+        Dictionary of aircraft categories indexed by category name.
+    parameters
+        External parameters for reference aircraft calibration.
+    aircraft_inventory_path : Path
+        Path to the aircraft inventory YAML file.
+    fleet_config_path : Path
+        Path to the fleet configuration YAML file.
+    all_aircraft_elements : dict
+        Flattened dictionary of all aircraft elements per category.
+    """
+
     def __init__(
         self,
         parameters=None,
@@ -201,11 +448,13 @@ class Fleet(object):
         self.all_aircraft_elements = self.get_all_aircraft_elements()
 
     def compute(self):
+        """Execute compute on all categories in the fleet."""
         for cat in self.categories.values():
             cat._compute()
 
     @property
     def categories(self):
+        """Dict[str, Category]: Dictionary of aircraft categories."""
         return self._categories
 
     @categories.setter
@@ -214,6 +463,17 @@ class Fleet(object):
         self.all_aircraft_elements = self.get_all_aircraft_elements()
 
     def get_all_aircraft_elements(self):
+        """Retrieve all aircraft elements organized by category.
+
+        Creates a flattened view of all aircraft in the fleet, including reference
+        aircraft, with their full qualified names set.
+
+        Returns
+        -------
+        dict
+            Dictionary mapping category names to lists of aircraft elements
+            (reference aircraft parameters and Aircraft instances).
+        """
         all_aircraft_elements = {}
 
         for category in self.categories.values():
@@ -761,6 +1021,41 @@ class Fleet(object):
 
 
 class FleetModel(AeroMAPSModel):
+    """AeroMAPS model for computing fleet evolution and characteristics over time.
+
+    This model computes the temporal evolution of the aircraft fleet composition,
+    including market shares for each aircraft type, energy consumption, emissions
+    (NOx, soot), and non-energy direct operating costs. It uses S-shaped logistic
+    functions to model the gradual introduction and retirement of aircraft types.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('fleet_model' by default).
+    fleet
+        Fleet instance containing the fleet structure and aircraft definitions.
+    *args
+        Additional positional arguments passed to parent class.
+    **kwargs
+        Additional keyword arguments passed to parent class.
+
+    Attributes
+    ----------
+    fleet : Fleet
+        The Fleet instance used for computations.
+
+    Notes
+    -----
+    The model computes several categories of outputs stored in self.df:
+
+    - **Single aircraft shares**: Individual aircraft cumulative market penetration
+    - **Aircraft shares**: Actual market share for each aircraft type
+    - **Energy consumption**: Energy per ASK by subcategory and energy type
+    - **DOC non-energy**: Non-energy direct operating costs by subcategory
+    - **Non-CO2 emissions**: NOx and soot emission indices by subcategory
+    - **Category means**: Weighted averages across subcategories for each category
+    """
+
     def __init__(self, name="fleet_model", fleet=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
@@ -768,6 +1063,24 @@ class FleetModel(AeroMAPSModel):
     def compute(
         self,
     ):
+        """Compute fleet evolution and all derived metrics.
+
+        Executes the complete fleet model computation pipeline:
+
+        1. Single aircraft share computation (cumulative S-curve penetration)
+        2. Aircraft share computation (differential market shares)
+        3. Energy consumption and share by energy type
+        4. Non-energy direct operating costs (DOC)
+        5. Non-CO2 emission indices (NOx, soot)
+        6. Category-level mean energy consumption
+        7. Category-level mean DOC
+        8. Category-level mean emission indices
+
+        Returns
+        -------
+        np.ndarray
+            Dummy output array (actual results stored in self.df).
+        """
         # Start from empty dataframe (necessary for multiple runs of the model)
         self.df = pd.DataFrame(index=self.df.index)
 
@@ -796,6 +1109,29 @@ class FleetModel(AeroMAPSModel):
         self._compute_mean_non_co2_emission_index()
 
     def _compute_single_aircraft_share(self):
+        """Compute cumulative single aircraft market penetration shares.
+
+        Uses S-shaped logistic functions to model the gradual introduction of
+        aircraft into the fleet based on their entry-into-service year and
+        the category's fleet renewal lifetime.
+
+        Handles two configuration modes:
+
+        - Single subcategory: All aircraft compete for the full 100% market share,
+          with reference aircraft (old and recent) taking the remaining share.
+        - Multiple subcategories: Each subcategory has a target share parameter,
+          and aircraft within subcategories compete for that share. The last
+          subcategory fills the remainder.
+
+        The computation adjusts reference aircraft curves to match historical
+        fleet composition by scaling between a baseline 25-year lifetime and
+        the actual category lifetime.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:{aircraft}:single_aircraft_share``
+        ``{category}:{subcategory}:old_reference:single_aircraft_share``
+        ``{category}:{subcategory}:recent_reference:single_aircraft_share``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -968,6 +1304,24 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_aircraft_share(self):
+        """Compute individual aircraft share in the fleet.
+
+        Calculates each aircraft's share (not cumulative) by differencing
+        single_aircraft_share values. The share represents the actual portion
+        of the fleet using that specific aircraft type, computed by subtracting
+        the single_aircraft_share of the next aircraft in sequence.
+
+        For the last aircraft in a subcategory/category, the share equals its
+        single_aircraft_share. For others, the share is the difference between
+        consecutive single_aircraft_share values.
+
+        Also computes reference aircraft shares:
+        - recent_reference: first subcategory reference minus first new aircraft
+        - old_reference: 100% minus recent_reference single_aircraft_share
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:{aircraft}:aircraft_share``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -1032,6 +1386,25 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
+        """Compute energy consumption and fleet share by energy type.
+
+        For each category and subcategory, calculates:
+
+        - Total energy consumption weighted by aircraft share
+        - Energy consumption broken down by energy type (drop-in fuel, hydrogen,
+          electric, hybrid electric)
+        - Fleet share by energy type
+
+        Reference aircraft (old and recent) are assumed to use drop-in fuel.
+        New aircraft contribute based on their defined energy type. Hybrid
+        electric aircraft split their consumption and share between drop-in
+        fuel and electric based on their hybridization factor.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:energy_consumption:{energy_type}``
+        ``{category}:{subcategory}:share:{energy_type}``
+        ``{category}:share:{energy_type}``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -1158,6 +1531,27 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_doc_non_energy(self):
+        """Compute direct operating costs excluding energy costs.
+
+        Calculates the non-energy portion of direct operating costs (DOC)
+        for each category and subcategory, weighted by aircraft share.
+        This includes costs like maintenance, crew, insurance, etc.
+
+        Reference aircraft use their base DOC values. New aircraft apply
+        their doc_non_energy_evolution percentage to the recent reference
+        aircraft's base value.
+
+        Results are broken down by energy type for allocation purposes:
+
+        - dropin_fuel: Drop-in fuel aircraft DOC
+        - hydrogen: Hydrogen aircraft DOC
+        - electric: Electric aircraft DOC
+        - hybrid_electric: Hybrid electric aircraft DOC
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:doc_non_energy:{energy_type}``
+        ``{category}:doc_non_energy:{energy_type}``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -1247,6 +1641,29 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_non_co2_emission_index(self):
+        """Compute NOx and soot emission indices for the fleet.
+
+        Calculates emission indices for non-CO2 pollutants (NOx and soot)
+        for each category and subcategory. Reference aircraft use their
+        base emission index values. New aircraft apply evolution factors
+        (nox_evolution, soot_evolution) to the recent reference values.
+
+        Emission indices are computed per energy type:
+
+        - dropin_fuel: Conventional and SAF-powered aircraft emissions
+        - hydrogen: Hydrogen aircraft emissions (NOx only, no soot)
+        - electric: Electric aircraft emissions (none)
+        - hybrid_electric: Hybrid electric aircraft emissions
+
+        Category-level emission indices are computed as share-weighted
+        averages across all subcategories and energy types.
+
+        Results are stored directly in the DataFrame with keys like:
+        ``{category}:{subcategory}:emission_index_nox:{energy_type}``
+        ``{category}:{subcategory}:emission_index_soot:{energy_type}``
+        ``{category}:emission_index_nox``
+        ``{category}:emission_index_soot``
+        """
         # Non-CO2 (NOx and soot) emission index calculations for drop-in fuel and hydrogen
         for category in self.fleet.categories.values():
             # Reference aircraft information
@@ -1470,6 +1887,21 @@ class FleetModel(AeroMAPSModel):
                     )
 
     def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
+        """Compute mean energy consumption per category by energy type.
+
+        Aggregates subcategory-level energy consumption values to the category
+        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
+        electric), calculates the share-weighted mean energy consumption.
+
+        The mean consumption for each energy type is computed by dividing
+        the total energy consumption by the corresponding share. The overall
+        category mean consumption is then computed as a weighted average
+        across all energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:energy_consumption:{energy_type}``
+        ``{category}:energy_consumption``
+        """
         for category in self.fleet.categories.values():
             # Mean energy consumption per category
             # Initialization
@@ -1551,6 +1983,20 @@ class FleetModel(AeroMAPSModel):
                 )
 
     def _compute_mean_doc_non_energy(self):
+        """Compute mean non-energy DOC per category by energy type.
+
+        Aggregates subcategory-level DOC (non-energy) values to the category
+        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
+        electric), calculates the share-weighted mean DOC.
+
+        The mean DOC for each energy type is computed by dividing the total
+        DOC by the corresponding share. The overall category mean DOC is
+        then computed as a weighted average across all energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:doc_non_energy:{energy_type}``
+        ``{category}:doc_non_energy``
+        """
         for category in self.fleet.categories.values():
             # Mean non energy DOC per category
             # Initialization
@@ -1620,6 +2066,23 @@ class FleetModel(AeroMAPSModel):
                 )
 
     def _compute_mean_non_co2_emission_index(self):
+        """Compute mean NOx and soot emission indices per category.
+
+        Aggregates subcategory-level emission indices to the category level.
+        For each energy type (drop-in fuel, hydrogen, electric, hybrid electric),
+        calculates the share-weighted mean emission index.
+
+        The mean emission index for each energy type is computed by dividing
+        the total emission index by the corresponding share. The overall
+        category mean is then computed as a weighted average across all
+        energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:emission_index_nox:{energy_type}``
+        ``{category}:emission_index_soot:{energy_type}``
+        ``{category}:emission_index_nox``
+        ``{category}:emission_index_soot``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -1737,6 +2200,17 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def plot(self):
+        """Generate fleet renewal visualization plots.
+
+        Creates a 2-row matplotlib figure with one column per category.
+        The top row shows stacked area plots of aircraft shares over time,
+        including old reference, recent reference, and new aircraft types.
+        The bottom row shows the evolution of mean fleet energy consumption.
+
+        The plot displays data from prospection_start_year to end_year.
+        Aircraft shares are shown as cumulative (stacked) areas, while
+        energy consumption is shown as a line plot.
+        """
         x = np.linspace(
             self.prospection_start_year,
             self.end_year,
@@ -1820,6 +2294,33 @@ class FleetModel(AeroMAPSModel):
         # plt.savefig("fleet_renewal.pdf")
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
+        """Compute S-shaped aircraft market penetration curve.
+
+        Calculates the share of an aircraft type in the fleet over time
+        using a logistic (S-shaped) function. The curve models the typical
+        technology adoption pattern where market share grows slowly at first,
+        then accelerates, and finally levels off.
+
+        Parameters
+        ----------
+        life : float
+            Aircraft operational lifetime in years. Determines the slope
+            of the S-curve (shorter life = steeper curve).
+        entry_into_service_year : int
+            Year when the aircraft enters commercial service.
+        share : float
+            Target maximum market share for this aircraft type [%].
+        recent : bool, optional
+            If True, the midpoint is at entry_into_service_year (for recent
+            reference aircraft). If False, the midpoint is at entry + life/2
+            (for new aircraft). Default is False.
+
+        Returns
+        -------
+        numpy.ndarray
+            Array of share values [%] for each year from historic_start_year
+            to end_year. Values below a 2% threshold are set to zero.
+        """
         x = np.linspace(
             self.historic_start_year,
             self.end_year,

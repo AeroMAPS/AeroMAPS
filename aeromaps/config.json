@@ -9,4 +9,6 @@
     "FLEET_CONFIG_FILE": "./resources/data/default_fleet/fleet_no_new_aircraft.yaml",
     "OUTPUTS_JSON_DATA_FILE": "./resources/data/outputs.json",
     "PARAMETERS_CLIMATE_MODEL_FILE":"./resources/climate_data/climate_model_fair.yaml"
+    "OUTPUTS_JSON_DATA_FILE": "./resources/data/outputs.json",
+    "USE_FLEET_MODEL": true
 }

@@ -1,3 +1,7 @@
+"""
+This module creates dictionaries of default models for various AeroMAPS configurations.
+"""
+
 from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
@@ -19,7 +23,7 @@ from aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cos
 from aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost import (
     OperationsAbatementCost,
 )
-from aeromaps.models.impacts.costs.energy.market_prices import CarbonTax
+from aeromaps.models.impacts.costs.carbon_tax.carbon_tax import CarbonTax
 
 from aeromaps.models.impacts.costs.manufacturers.non_recurring_costs import NonRecurringCosts
 from aeromaps.models.impacts.costs.manufacturers.recurring_costs import RecurringCosts
@@ -131,7 +135,7 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     # TotalWelfareLoss,
 )
 
-from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
+from aeromaps.models.impacts.costs.airlines.non_operating_costs import (
     PassengerAircraftNonOpCosts,
     PassengerAircraftPassengerTax,
 )
