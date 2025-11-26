@@ -36,7 +36,7 @@ Quick installation
 The use of the Python Package Index ([PyPI](https://pypi.org/)) is the simplest method for installing AeroMAPS.
 More details and other solutions are provided in the documentation.
 
-**Prerequisite**: AeroMAPS needs at least Python 3.9.0.
+**Prerequisite**: AeroMAPS needs at least Python 3.10.0.
 
 You can install the latest version with this command:
 
@@ -44,7 +44,7 @@ You can install the latest version with this command:
 $ pip install --upgrade aeromaps
 ```
 
-If you also want to use the life cycle assessment models, it requires at least Python 3.10.0. In this case, you can install the latest version with this command:
+If you also want to use the life cycle assessment models, you can install the latest version with this command:
 
 ``` {.bash}
 $ pip install --upgrade aeromaps[lca]
