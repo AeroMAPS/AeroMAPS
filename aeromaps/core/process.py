@@ -102,7 +102,6 @@ class AeroMAPSProcess(object):
         self,
         configuration_file=None,
         models=default_models_top_down,
-        use_fleet_model=False,
         optimisation=False,
     ):
         self.configuration_file = (
@@ -111,7 +110,6 @@ class AeroMAPSProcess(object):
             else None
         )
         self._initialize_configuration()
-        self.use_fleet_model = use_fleet_model
 
         # Recopy models to avoid shared state between instances.
         # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
@@ -388,6 +386,7 @@ class AeroMAPSProcess(object):
                 default_path_obj,
             )
         return default_path_obj
+        return default_path_obj
 
     def _initialize_data(self):
         # Indexes
@@ -591,7 +590,7 @@ class AeroMAPSProcess(object):
         return data
 
     def _initialize_disciplines(self):
-        if self.use_fleet_model:
+        if bool(self.config.get("USE_FLEET_MODEL", False)):
 
             aircraft_inventory_path = self._resolve_config_path(
                 "AIRCRAFT_INVENTORY_CONFIG_FILE",
@@ -627,7 +626,7 @@ class AeroMAPSProcess(object):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
-                    if self.use_fleet_model and hasattr(model, "fleet_model"):
+                    if hasattr(model, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data
