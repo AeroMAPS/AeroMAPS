@@ -340,7 +340,8 @@ class AeroMAPSProcess(object):
             self.config = load(f)
         # Update paths in the configuration file with absolute paths
         for key, value in self.config.items():
-            self.config[key] = os.path.join(CURRENT_DIR, value)
+            if isinstance(value, str):
+                self.config[key] = os.path.join(CURRENT_DIR, value)
 
         # Load the new configuration file
         if self.configuration_file is not None:
@@ -626,7 +627,7 @@ class AeroMAPSProcess(object):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
-                    if hasattr(model, "fleet_model"):
+                    if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
                         model.climate_historical_data = self.climate_historical_data

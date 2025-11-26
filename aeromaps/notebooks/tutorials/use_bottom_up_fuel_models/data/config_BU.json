@@ -2,5 +2,6 @@
     "PARAMETERS_ENERGY_CARRIERS_DATA_FILE": "./energy_carriers_data-full_BU.yaml",
     "PARAMETERS_RESOURCES_DATA_FILE": "./resources_data-full_BU.yaml",
     "PARAMETERS_PROCESSES_DATA_FILE": "./processes_data-full_BU.yaml",
-    "FLEET_CONFIG_FILE": "../../../../resources/data/default_fleet/fleet_no_new_aircraft.yaml"
+    "FLEET_CONFIG_FILE": "../../../../resources/data/default_fleet/fleet_no_new_aircraft.yaml",
+    "USE_FLEET_MODEL": true
 }
