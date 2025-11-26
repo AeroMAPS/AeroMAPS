@@ -1,6 +1,0 @@
-mkdocs==1.6.1
-mkdocs-material==9.7.0
-mkdocstrings[python]==0.30.0
-mkdocs-jupyter==0.25.1
-mkdocs-bibtex==2.21.0
-mike==2.1.3
