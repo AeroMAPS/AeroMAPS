@@ -95,6 +95,12 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Build docs (verification)
+        run: |
+          mkdocs build --strict
+          echo "Build successful! Site generated in ./site/"
+          ls -la site/
+
       - name: Determine version alias
         id: version
         run: |
