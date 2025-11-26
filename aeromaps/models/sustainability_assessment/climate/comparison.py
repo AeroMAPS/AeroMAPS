@@ -23,25 +23,24 @@ class CarbonBudgetConsumedShare(AeroMAPSModel):
         return carbon_budget_consumed_share
 
 
-class EquivalentCarbonBudgetConsumedShare(AeroMAPSModel):
-    def __init__(self, name="equivalent_carbon_budget_consumed_share", *args, **kwargs):
+class TemperatureTargetConsumedShare(AeroMAPSModel):
+    def __init__(self, name="carbon_budget_consumed_share", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
     def compute(
         self,
-        cumulative_total_equivalent_emissions: pd.Series,
-        equivalent_gross_carbon_budget_2050: float,
+        historical_temperature_increase: float,
+        temperature_target: float,
+        temperature_increase_from_aviation: pd.Series,
     ) -> float:
-        """Equivalent Carbon budget consumption share calculation."""
+        """Temperature target consumption share calculation."""
 
-        equivalent_carbon_budget_consumed_share = (
-            cumulative_total_equivalent_emissions.loc[self.end_year]
-            / equivalent_gross_carbon_budget_2050
-            * 100
-        )
+        temperature_target_consumed_share = (
+            (temperature_increase_from_aviation.loc[self.end_year] -
+            temperature_increase_from_aviation.loc[self.prospection_start_year]) / (
+                         temperature_target - historical_temperature_increase) * 100
+             )
 
-        self.float_outputs["equivalent_carbon_budget_consumed_share"] = (
-            equivalent_carbon_budget_consumed_share
-        )
+        self.float_outputs["temperature_target_consumed_share"] = temperature_target_consumed_share
 
-        return equivalent_carbon_budget_consumed_share
+        return temperature_target_consumed_share

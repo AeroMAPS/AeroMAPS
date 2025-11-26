@@ -7,5 +7,6 @@
     "PARAMETERS_PROCESSES_DATA_FILE": "./resources/data/default_energy_carriers/processes_data.yaml",
     "AIRCRAFT_INVENTORY_CONFIG_FILE": "./resources/data/default_fleet/aircraft_inventory.yaml",
     "FLEET_CONFIG_FILE": "./resources/data/default_fleet/fleet_no_new_aircraft.yaml",
-    "OUTPUTS_JSON_DATA_FILE": "./resources/data/outputs.json"
+    "OUTPUTS_JSON_DATA_FILE": "./resources/data/outputs.json",
+    "PARAMETERS_CLIMATE_MODEL_FILE":"./resources/climate_data/climate_model_fair.yaml"
 }

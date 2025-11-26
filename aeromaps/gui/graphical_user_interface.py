@@ -535,11 +535,11 @@ class GraphicalUserInterface(widgets.VBox):
         )
         self.w_carbon_budget_allocation.observe(self.update, "value")
 
-        self.w_equivalent_carbon_budget_allocation = widgets.SelectionSlider(
+        self.w_temperature_target_allocation = widgets.SelectionSlider(
             options=["0%", "3.8%", "5.1%", "15%"],
             value="5.1%",
-            description="Equivalent carbon budget",
-            description_tooltip="Share of the world equivalent carbon budget allocated to aviation\nThe term "
+            description="Temperature target",
+            description_tooltip="Share of the remaining world temperature target allocated to aviation\nThe term "
             "allocation here refers to the result of complex mechanisms of negotiation, \n"
             "competition, arbitration and regulation for access to resources\n- 0%: share "
             "equivalent to a stabilization of the climate impact of aviation at 2019 levels\n"
@@ -548,7 +548,7 @@ class GraphicalUserInterface(widgets.VBox):
             "- 15%: share consumed in terms of remaining temperature increase in the BAU scenario "
             "\n   for +1.8°C from Klower et al. (2021)",
         )
-        self.w_equivalent_carbon_budget_allocation.observe(self.update, "value")
+        self.w_temperature_target_allocation.observe(self.update, "value")
 
         self.w_biomass_allocation = widgets.SelectionSlider(
             options=["0%", "2.3%", "7.5%", "14.7%"],
@@ -685,7 +685,7 @@ class GraphicalUserInterface(widgets.VBox):
                 widgets.VBox(
                     [
                         self.w_carbon_budget_allocation,
-                        self.w_equivalent_carbon_budget_allocation,
+                        self.w_temperature_target_allocation,
                         self.w_biomass_allocation,
                         self.w_electricity_allocation,
                     ]
@@ -2350,6 +2350,7 @@ class GraphicalUserInterface(widgets.VBox):
         # DISCOVERY AND SCENARIOS
         # Environment
         if self.w_temperature.value == "+1.5°C":
+            self.process.parameters.temperature_target = 1.5
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 900.0
             elif self.w_success_percentage.value == "33%":
@@ -2361,6 +2362,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 300.0
         elif self.w_temperature.value == "+1.6°C":
+            self.process.parameters.temperature_target = 1.6
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1200.0
             elif self.w_success_percentage.value == "33%":
@@ -2372,6 +2374,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 400.0
         elif self.w_temperature.value == "+1.7°C":
+            self.process.parameters.temperature_target = 1.7
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1450.0
             elif self.w_success_percentage.value == "33%":
@@ -2383,6 +2386,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 550.0
         elif self.w_temperature.value == "+1.8°C":
+            self.process.parameters.temperature_target = 1.8
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1750.0
             elif self.w_success_percentage.value == "33%":
@@ -2394,6 +2398,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 650.0
         elif self.w_temperature.value == "+1.9°C":
+            self.process.parameters.temperature_target = 1.9
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 2000.0
             elif self.w_success_percentage.value == "33%":
@@ -2405,6 +2410,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 800.0
         elif self.w_temperature.value == "+2.0°C":
+            self.process.parameters.temperature_target = 2.0
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 2300.0
             elif self.w_success_percentage.value == "33%":
@@ -2485,14 +2491,14 @@ class GraphicalUserInterface(widgets.VBox):
         elif self.w_carbon_budget_allocation.value == "6.8%":
             self.process.parameters.aviation_carbon_budget_allocated_share = 6.8
 
-        if self.w_equivalent_carbon_budget_allocation.value == "0%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 0.0
-        elif self.w_equivalent_carbon_budget_allocation.value == "3.8%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 3.8
-        elif self.w_equivalent_carbon_budget_allocation.value == "5.1%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 5.1
-        elif self.w_equivalent_carbon_budget_allocation.value == "15%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 15
+        if self.w_temperature_target_allocation.value == "0%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 0.0
+        elif self.w_temperature_target_allocation.value == "3.8%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 3.8
+        elif self.w_temperature_target_allocation.value == "5.1%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 5.1
+        elif self.w_temperature_target_allocation.value == "15%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 15
 
         allocated_biomass = 0.0
         if self.w_biomass_allocation.value == "0%":

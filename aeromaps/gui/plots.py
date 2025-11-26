@@ -2,7 +2,7 @@ from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
 from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
 from aeromaps.plots.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
-    EquivalentCarbonBudgetAssessmentPlot,
+    TemperatureTargetAssessmentPlot,
     BiomassResourceBudgetAssessmentPlot,
     ElectricityResourceBudgetAssessmentPlot,
     MultidisciplinaryAssessmentPlot,
@@ -69,7 +69,7 @@ plot_1 = {
 plot_2 = {
     "Multidisciplinary assessment": MultidisciplinaryAssessmentPlot,
     "Carbon budget assessment": CarbonBudgetAssessmentPlot,
-    "Equivalent carbon budget assessment": EquivalentCarbonBudgetAssessmentPlot,
+    "Temperature target assessment": TemperatureTargetAssessmentPlot,
     "Biomass resource budget assessment": BiomassResourceBudgetAssessmentPlot,
     "Electricity resource budget assessment": ElectricityResourceBudgetAssessmentPlot,
 }

@@ -1,7 +1,7 @@
 from .main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
 from .sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
-    EquivalentCarbonBudgetAssessmentPlot,
+    TemperatureTargetAssessmentPlot,
     BiomassResourceBudgetAssessmentPlot,
     ElectricityResourceBudgetAssessmentPlot,
     MultidisciplinaryAssessmentPlot,
@@ -81,7 +81,7 @@ available_plots = {
     "air_transport_co2_emissions": AirTransportCO2EmissionsPlot,
     "air_transport_climate_impacts": AirTransportClimateImpactsPlot,
     "carbon_budget_assessment": CarbonBudgetAssessmentPlot,
-    "equivalent_carbon_budget_assessment": EquivalentCarbonBudgetAssessmentPlot,
+    "temperature_target_assessment": TemperatureTargetAssessmentPlot,
     "biomass_resource_budget_assessment": BiomassResourceBudgetAssessmentPlot,
     "electricity_resource_budget_assessment": ElectricityResourceBudgetAssessmentPlot,
     "multidisciplinary_assessment": MultidisciplinaryAssessmentPlot,
