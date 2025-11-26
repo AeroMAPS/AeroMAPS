@@ -579,7 +579,13 @@ class AeroMAPSProcess(object):
         )
 
     def _initialize_climate_model(self):
-        """ Read the climate config file and instantiate ClimateModel accordingly. """
+        """ Read the climate config file and instantiate ClimateModel accordingly.
+        The config file should contain:
+        - climate_model: str, name of the climate model to use
+        - species_settings: dict, settings for each species
+        - model_settings: dict, settings for the climate model
+        Refer to the documentation of AeroCM for more details: https://github.com/AeroMAPS/AeroCM
+        """
         if (
             self.configuration_file is not None
             and "PARAMETERS_CLIMATE_MODEL_FILE" in self.config
