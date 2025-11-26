@@ -1,3 +1,13 @@
+"""
+operations
+===============
+
+Module for computing operational improvements (efficiency gains) used in
+energy and emissions calculations. Provides logistic and interpolation-based
+models to produce an annual `operations_gain` series representing percentage
+reductions in fuel consumption per ASK.
+"""
+
 from numbers import Number
 
 import numpy as np
@@ -7,6 +17,14 @@ from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
 
 class OperationsLogistic(AeroMAPSModel):
+    """Logistic model implementation to project operational efficiency gains.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('operations_logistic' by default).
+    """
+
     def __init__(self, name="operations_logistic", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -16,7 +34,22 @@ class OperationsLogistic(AeroMAPSModel):
         operations_start_year: Number,
         operations_duration: float,
     ) -> pd.Series:
-        """Operations gain for efficiency calculation."""
+        """Compute the annual operational efficiency gains.
+
+        Parameters
+        ----------
+        operations_final_gain
+            Final impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].
+        operations_start_year
+            Start year for implementing operational improvements to reduce fuel consumption [yr].
+        operations_duration
+            Duration for implementing 98% of operational improvements to reduce fuel consumption [yr].
+
+        Returns
+        -------
+        operations_gain
+            Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].
+        """
 
         transition_year = operations_start_year + operations_duration / 2
         operations_limit = 0.02 * operations_final_gain
@@ -40,6 +73,14 @@ class OperationsLogistic(AeroMAPSModel):
 
 
 class OperationsInterpolation(AeroMAPSModel):
+    """Interpolation-based implementation to project operational efficiency gains.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('operations_interpolation' by default).
+    """
+
     def __init__(self, name="operations_interpolation", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -48,7 +89,20 @@ class OperationsInterpolation(AeroMAPSModel):
         operations_gain_reference_years: list,
         operations_gain_reference_years_values: list,
     ) -> pd.Series:
-        """Operations gain for efficiency calculation."""
+        """Compute the annual operations efficiency gain by interpolating provided reference points.
+
+        Parameters
+        ----------
+        operations_gain_reference_years
+            Reference years for the operations gain [yr].
+        operations_gain_reference_years_values
+            Operations gain for the reference years [%].
+
+        Returns
+        -------
+        operations_gain
+            Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].
+        """
 
         operations_gain_prospective = aeromaps_interpolation_function(
             self,

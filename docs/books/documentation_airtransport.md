@@ -1,5 +1,8 @@
 # Air transport modeling
 
+!!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
+    It will be updated soon.!
+
 The air transport system model presented in the AeroMAPS architecture rely on the modeling of levers of 
 action to reduce the environmental impacts of the sector. Before describing their implementation in AeroMAPS, these 
 levers of action are identified.
@@ -13,17 +16,17 @@ main elements of the air transport system described in the AeroMAPS architecture
 
 The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population $POP$), 
 economic (GDP per capita $GDP/POP$), and technological factors (energy intensity $E/GDP$ which can be assimilated to 
-an output and the CO<sub>2</sub> content $CO_2/E$) {cite}`kaya1997environment`. The interest of this identity is that 
-it indicates different levers to act on CO<sub>2</sub> {cite}`friedl2003determinants, lamb2021review`. Different 
+an output and the CO<sub>2</sub> content $CO_2/E$) [@kaya1997environment]. The interest of this identity is that 
+it indicates different levers to act on CO<sub>2</sub> [@friedl2003determinants; @lamb2021review]. Different 
 studies, often based on specific decomposition methods, justify the choice of relevant parameters for decomposing 
-emissions {cite}`ang2000survey, wang2015driving`. Nevertheless, some parameters are interdependent and interpretations 
-can be complex {cite}`schandl2016decoupling`.
+emissions [@ang2000survey; @wang2015driving]. Nevertheless, some parameters are interdependent and interpretations 
+can be complex [@schandl2016decoupling].
 
 $CO_2 = POP \times \frac{GDP}{POP} \times \frac{E}{GDP} \times \frac{CO_2}{E}$
 
 This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via 
 the following equation. The different parameters are justified by other works related to transportation and aviation 
-{cite}`andreoni2012european, bigo2020transports, liu2017drives, sharmina2021decarbonising`. The first factor $RPK$ 
+[@andreoni2012european; @bigo2020transports; @liu2017drives; @sharmina2021decarbonising]. The first factor $RPK$ 
 corresponds to air traffic. The second factor $E/RPK$ represents the ratio between the energy $E$ consumed by the 
 sector and the air traffic. It corresponds to the average energy consumption of aircraft per passenger and 
 per kilometer. The last factor $CO_2/E$ is the ratio between the sector's CO<sub>2</sub> emissions and the energy 
@@ -69,17 +72,17 @@ such as annual passenger numbers, RPK, RTK (Revenue Tonne Kilometer), ASK (Avail
 factor. Then, the historical evolution of the term $\frac{E}{RPK}$ is obtained using the previous traffic data and data 
 on world kerosene consumption by the aviation sector, extracted and adapted from 
 <a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
-Indeed, not all kerosene is consumed by commercial aviation alone. According to {cite}`gossling2020global`, 
+Indeed, not all kerosene is consumed by commercial aviation alone. According to [@gossling2020global], 
 military aviation consumes 8% of kerosene and general and private aviation 4%. The consumption of alternative energy 
 carriers is considered as negligible in the last decades. Lastly, the term $\frac{CO_2}{E}$ is considered as constant 
 for the same reason. The values considered depend on the scope chosen, in particular the inclusion of emissions related 
-to fossil kerosene production. Here, mean values from a review paper {cite}`jing2022understanding` are used: a direct 
+to fossil kerosene production. Here, mean values from a review paper [@jing2022understanding] are used: a direct 
 emission factor of 74.0 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> and a global (including fuel production) emission factor 
 of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is considered by default to facilitate the 
 comparison with alternative energy carriers. As a consequence, using these data and including indirect CO<sub>2</sub> 
 emissions, commercial aviation was for instance responsible for 2.6% of world CO<sub>2</sub> emissions in 2019 
 (compared with data from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a> 
-including fossil fuel combustion and land use). See for instance {cite}`delbecq2022isae` for more details. 
+including fossil fuel combustion and land use). See for instance [@delbecq2022isae] for more details. 
 
 
 ## Air traffic: usage evolution
@@ -118,7 +121,7 @@ actually more complex. In the following, the method is illustrated for the passe
 
 First, the energy consumption per ASK is estimated for each category. The value per ASK is used to isolate the 
 influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are 
-derived from the analysis of {cite}`icctco2`. They are then converted to energy consumption per ASK 
+derived from the analysis of [@icctco2]. They are then converted to energy consumption per ASK 
 using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
 given in Tab.1.
 
@@ -134,7 +137,7 @@ given in Tab.1.
 Then, for each category, two representative planes are considered: one for the old generation, another for the 
 most recent. The characteristics of these aircraft are constructed using a weighting of different aircraft on the 
 market. This is done using data on the number of aircraft in service, their performance and their missions 
-{cite}`icao18`. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
+[@icao18]. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
 Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
 Airbus A320neo. The results of energy consumption by ASK are then given in Tab.2.
 
@@ -192,10 +195,10 @@ year of air traffic recovery compared to a certain level of air traffic compared
 
 Various industrial and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
 respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017 
-{cite}`fichert2020aviation`. The ICAO projected an air traffic growth of 4.1% per year between 2015 and 2045. However, 
+[@fichert2020aviation]. The ICAO projected an air traffic growth of 4.1% per year between 2015 and 2045. However, 
 the Covid-19 epidemic has led to a downwards revision of these projections. ATAG now projects a 3.1% annual growth in 
-air passenger traffic between 2019 and 2050 in its median scenario {cite}`atagwaypoint`, while Airbus projects a 3.6% 
-annual growth for the period 2019-2041 {cite}`airbus`. Despite the Covid-19 health crisis, all the scenarios presented 
+air passenger traffic between 2019 and 2050 in its median scenario [@atagwaypoint], while Airbus projects a 3.6% 
+annual growth for the period 2019-2041 [@airbus]. Despite the Covid-19 health crisis, all the scenarios presented 
 thus forecast a growth in air traffic in the coming decades.
 
 
@@ -244,9 +247,9 @@ $f(x) = \frac{A}{1+e^{-k~(x-x_0)}}$
 
 These functions, also called sigmoids or S-shaped curves, are particularly relevant to model the introduction of a 
 product in a market. Consequently, they are used in multiple disciplinary fields 
-{cite}`jarne2007s, kucharavy2011application, kucharavy2015application`: economics, sociology, demography, 
+[@jarne2007s; @kucharavy2011application; @kucharavy2015application]: economics, sociology, demography,
 technology or even medicine. This type of functions has already been used in the scientific literature to study the 
-renewal of aircraft fleets {cite}`grewe2021evaluating, hassan2017quantifying, hassan2015framework, hassan2018impact`.
+renewal of aircraft fleets [@grewe2021evaluating; @hassan2017quantifying; @hassan2015framework; @hassan2018impact].
 
 In this work, the logistic functions correspond to the shares that different aircraft architectures represent in the 
 fleet. In order to use these functions, a calibration of the different coefficients is necessary. The initialization 
@@ -348,20 +351,20 @@ are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</su
 Regarding NO<sub>x</sub> emissions, their reduction could lead to a reduction of the aviation effective radiative 
 forcing, although there are still uncertainties about the future effect of NO<sub>x</sub> emissions on climate, 
 depending in particular on NO<sub>x</sub> and methane background concentrations 
-{cite}`skowron2021greater, terrenoire2022impact`. The reduction of emissions could nevertheless be achieved by reducing 
+[@skowron2021greater; @terrenoire2022impact]. The reduction of emissions could nevertheless be achieved by reducing 
 fuel consumption and/or lowering the NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via 
 fleet turnover are used to estimate the NO<sub>x</sub> emission factor. In particular, the equation for estimating the 
 energy consumption in the bottom-up approach can be adapted by replacing the energy consumptions $E_i$ with the 
 NO<sub>x</sub> emission factors per aircraft.
 
 As far as contrails are concerned, several mitigation measures are studied. For instance, operational strategies, based 
-on trajectory modification, are modeled since they represent promising strategies {cite}`gierens2008review`. These 
+on trajectory modification, are modeled since they represent promising strategies [@gierens2008review]. These 
 strategies could be applied on a reduced number of flights. Indeed, a study in the Japanese airspace shows that 2% of 
-the flights are responsible for 80% of the contrails {cite}`teoh2020mitigating`. Another possibility is to modify 
-the engines, in particular for reducing the amount of particles emitted {cite}`noppel2007overview`.
+the flights are responsible for 80% of the contrails [@teoh2020mitigating]. Another possibility is to modify 
+the engines, in particular for reducing the amount of particles emitted [@noppel2007overview].
 Overall, the implementation of operational strategies, possibly coupled with improved 
 engines, could reduce the radiative forcing induced by condensation trails from 20% to more than 90%, for marginal 
-additional fuel consumption {cite}`matthes2020climate, teoh2020mitigating`. In this work, simplified models, 
+additional fuel consumption [@matthes2020climate; @teoh2020mitigating]. In this work, simplified models, 
 based on logistic functions as in fleet renewal models, are used to model the reduction of contrail-induced radiative 
 forcing. This time, the parameter $A$ represents the final reduction allowed by the adopted measures. The parameter 
 $k$ corresponds to the speed of implementation of the strategies, while the parameter $x_0$ allows to set the timing 
@@ -379,9 +382,9 @@ over their entire life cycle. The latter is expressed in gCO<sub>2</sub>-eq/MJ<s
 be directly assimilated to CO<sub>2</sub> for simplification purposes. In the following, two approaches are proposed. 
 The first one is based on a detailed modeling of the fuels and their integration in the fleet. The second is a 
 simplified approach based on a representative alternative energy carrier. However, the direct impact of alternative 
-energy carriers on non-CO<sub>2</sub>, which is complex to evaluate {cite}`marquart2005upgraded, noppel2007overview`, 
+energy carriers on non-CO<sub>2</sub>, which is complex to evaluate [@marquart2005upgraded; @noppel2007overview], 
 is not directly considered so far because of the low maturity of the few models present in the literature 
-{cite}`grewe2021evaluating, klower2021quantifying`.
+[@grewe2021evaluating; @klower2021quantifying].
 
 
 ### Detailed modeling
@@ -403,9 +406,9 @@ of the different biofuels differs.
 
 The characteristics of these representative biofuels are statistically estimated to obtain the first quartile Q1, 
 the median and the third quartile Q3. The data used are from 
-{cite}`elgowainy2012development, prussi2021corsia, staples2014lifecycle, staples2018aviation, stratton2010life, zhao2021estimating` 
+[@elgowainy2012development; @prussi2021corsia; @staples2014lifecycle; @staples2018aviation; @stratton2010life; @zhao2021estimating] 
 for emission factors, as well as from 
-{cite}`de2015feasibility, han2013life, kreutz2008fischer, o2021estimating, pearlson2013techno, wise2017biojet` 
+[@de2015feasibility; @han2013life; @kreutz2008fischer; @o2021estimating; @pearlson2013techno; @wise2017biojet] 
 for other data. Emission factors and energy efficiencies are given in Tab. 3 and Tab.4 respectively. In addition, 
 the HEFA process to convert oil to fuel requires the addition of hydrogen. A median value of 
 9 MJ<sub>H</sub>2<sub></sub>/MJ</sub>fuel</sub> is used. 
@@ -431,7 +434,7 @@ the HEFA process to convert oil to fuel requires the addition of hydrogen. A med
 
 Hydrogen can be produced in several ways. In this work, five main pathways are considered. The estimated characteristics 
 are derived from a statistical analysis of data from the references 
-{cite}`aiehydrogen, dincer2016review, ji2021review, parkinson2019levelized, siddiqui2019well`. On the one hand, its 
+[@aiehydrogen; @dincer2016review; @ji2021review; @parkinson2019levelized; @siddiqui2019well]. On the one hand, its 
 production can be based on the use of fossil resources via the steam reformation of methane or the gasification of 
 coal. These are the two most commonly used production methods today. The median values of the emission factors of 
 these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 
@@ -446,7 +449,7 @@ liquefaction stage.
 Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require 
 hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which could be captured directly from CO<sub>2</sub> emitting
 plants or directly into the atmosphere. In this work, the emission factor of this type of fuel is obtained from the
-emission factor of the electricity used and an energy efficiency of 0.4 {cite}`ueckerdt2021potential`.
+emission factor of the electricity used and an energy efficiency of 0.4 [@ueckerdt2021potential].
 
 In a second step, fleet introduction models are used for the drop-in fuels(biofuels and electrofuels). For this, 
 reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
@@ -480,4 +483,6 @@ In this approach, to model the rate of decarbonization of the fleet, logistic fu
 parameter $A$ represents the final decarbonization rate of the fleet. This parameter corresponds to the 
 decarbonization rate of the average alternative energy carrier considered. The parameter $k$ corresponds to the 
 introduction speed of the alternative energy carriers in the fleet, while the parameter $x_0$ allows to set the 
-integration timing. 
+integration timing.
+
+### Bibliography   

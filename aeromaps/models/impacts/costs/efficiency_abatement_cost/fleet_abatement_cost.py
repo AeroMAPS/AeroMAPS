@@ -2,6 +2,10 @@
 # @Author : a.salgas
 # @File : fleet_abatement_cost.py
 # @Software: PyCharm
+"""
+Module to compute aircraft efficiency-related carbon abatement costs.
+"""
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -9,6 +13,20 @@ from typing import Tuple
 
 
 class FleetCarbonAbatementCosts(AeroMAPSModel):
+    """
+    Class for aircraft efficiency-related carbon abatement costs with bottom-up fleet.
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "fleet_abatement_cost").
+    """
+
     def __init__(self, name="fleet_abatement_cost", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
@@ -30,6 +48,54 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
         covid_energy_intensity_per_ask_increase_2020: float,
         social_discount_rate: float,
     ) -> Tuple[dict, dict, dict, dict]:
+        """
+        Executes the computation of aircraft efficiency-related carbon abatement costs.
+        Parameters
+        ----------
+        ask_aircraft_value_dict
+            dummy output of fleet model TODO: check for necessity?
+        rpk_aircraft_value_dict
+            dummy output of fleet model TODO: check for necessity?
+        load_factor
+            Mean aircraft load factor [%]
+        doc_non_energy_per_ask_short_range_dropin_fuel_init
+            Initial non-energy DOC per ASK for short-range aircraft with drop-in fuel [€/ASK]
+        doc_non_energy_per_ask_medium_range_dropin_fuel_init
+            Initial non-energy DOC per ASK for medium-range aircraft with drop-in fuel [€/ASK]
+        doc_non_energy_per_ask_long_range_dropin_fuel_init
+            Initial non-energy DOC per ASK for long-range aircraft with drop-in fuel [€/ASK]
+        energy_per_ask_without_operations_short_range_dropin_fuel
+            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
+        energy_per_ask_without_operations_medium_range_dropin_fuel
+            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
+        energy_per_ask_without_operations_long_range_dropin_fuel
+            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK]
+        cac_reference_mfsp
+            CAC Reference fuel's MFSP [€/MJ]
+        cac_reference_co2_emission_factor
+            CAC Reference fuel's CO2 emission factor [gCO2/MJ]
+        exogenous_carbon_price_trajectory
+            Exogenous carbon price trajectory [€/tCO2]
+        covid_energy_intensity_per_ask_increase_2020
+            Increase in energy intensity per ASK due to Covid-19 for the start year [%]
+        social_discount_rate
+            Social discount rate [-]
+
+        Returns
+        ---------
+        dummy_carbon_abatement_cost_aircraft_value_dict
+            Dictionary with aircraft names as keys and their carbon abatement cost series as values [€/tCO2]
+        dummy_carbon_abatement_volume_aircraft_value_dict
+            Dictionary with aircraft names as keys and their carbon abatement volume series as values [tCO2]
+        dummy_specific_carbon_abatement_cost_aircraft_value_dict
+            Dictionary with aircraft names as keys and their specific carbon abatement cost series as values [€/tCO2]
+        dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict
+            Dictionary with aircraft names as keys and their generic specific carbon abatement cost series as values [€/tCO2]
+
+        Warning
+        -------
+        This model stores its outputs in fleet df. # TODO: as it is now possible to use dicts in gemseo, make non-dummy outputs?
+        """
         dummy_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_specific_carbon_abatement_cost_aircraft_value_dict = {}
         dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict = {}
@@ -284,6 +350,15 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
 
 
 class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
+    """
+    Class for computing freighter efficiency-related carbon abatement costs.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "cargo_efficiency_carbon_abatement_cost").
+    """
+
     def __init__(
         self, name="cargo_efficiency_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):
@@ -315,6 +390,58 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        """
+        Executes the computation of freighter efficiency-related carbon abatement costs.
+        Parameters
+        ----------
+        energy_per_rtk_without_operations_freight_dropin_fuel
+            Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements [MJ/RTK].
+        energy_per_rtk_without_operations_freight_hydrogen
+            Energy consumption per RTK for freight market aircraft using hydrogen without considering operation improvements [MJ/RTK].
+        energy_per_rtk_without_operations_freight_electric
+            Energy consumption per RTK for freight market aircraft using electricity without considering operation improvements [MJ/RTK].
+        rtk_dropin_fuel
+            RTK for freight market aircraft using drop-in fuel [RTK].
+        rtk_hydrogen
+            RTK for freight market aircraft using hydrogen [RTK].
+        rtk_electric
+            RTK for freight market aircraft using electricity [RTK].
+        cac_reference_mfsp
+            CAC Reference fuel's MFSP [€/MJ].
+        cac_reference_co2_emission_factor
+            CAC Reference fuel's CO2 emission factor [gCO2/MJ].
+        exogenous_carbon_price_trajectory
+            Exogenous carbon price trajectory [€/tCO2].
+        social_discount_rate
+            Social discount rate [-].
+
+        Returns
+        -------
+        aircraft_carbon_abatement_cost_freight_dropin
+            Carbon abatement cost for freight market aircraft using drop-in fuel [€/tCO2].
+        aircraft_carbon_abatement_cost_freight_hydrogen
+            Carbon abatement cost for freight market aircraft using hydrogen [€/tCO2].
+        aircraft_carbon_abatement_cost_freight_electric
+            Carbon abatement cost for freight market aircraft using electricity [€/tCO2].
+        aircraft_generic_specific_carbon_abatement_cost_freight_dropin
+            Generic specific carbon abatement cost for freight market aircraft using drop-in fuel [€/tCO2].
+        aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen
+            Generic specific carbon abatement cost for freight market aircraft using hydrogen [€/tCO2].
+        aircraft_generic_specific_carbon_abatement_cost_freight_electric
+            Generic specific carbon abatement cost for freight market aircraft using electricity [€/tCO2].
+        aircraft_specific_carbon_abatement_cost_freight_dropin
+            Specific carbon abatement cost for freight market aircraft using drop-in fuel [€/tCO2].
+        aircraft_specific_carbon_abatement_cost_freight_hydrogen
+            Specific carbon abatement cost for freight market aircraft using hydrogen [€/tCO2].
+        aircraft_specific_carbon_abatement_cost_freight_electric
+            Specific carbon abatement cost for freight market aircraft using electricity [€/tCO2].
+        aircraft_carbon_abatement_volume_freight_dropin
+            Carbon abatement volume for freight market aircraft using drop-in fuel [tCO2].
+        aircraft_carbon_abatement_volume_freight_hydrogen
+            Carbon abatement volume for freight market aircraft using hydrogen [tCO2].
+        aircraft_carbon_abatement_volume_freight_electric
+            Carbon abatement volume for freight market aircraft using electricity [tCO2].
+        """
         ### WARNING => Cargo DOC are not modelled so far in AeroMAPS (April 2024).
         # However, energy abatement are computed based on energy volumes used by the whole fleet.
         # For consistency, we compute a cargo abatement cost based on the hypothesis that
@@ -603,6 +730,15 @@ class CargoEfficiencyCarbonAbatementCosts(AeroMAPSModel):
 
 
 class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
+    """
+    Class for aircraft efficiency-related carbon abatement costs with top-down fleet modelling.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "fleet_top_down_carbon_abatement_cost").
+    """
+
     def __init__(
         self, name="fleet_top_down_carbon_abatement_cost", fleet_model=None, *args, **kwargs
     ):
@@ -623,6 +759,37 @@ class FleetTopDownCarbonAbatementCost(AeroMAPSModel):
         pd.Series,
         pd.Series,
     ]:
+        """
+        Executes the computation of aircraft efficiency-related carbon abatement costs with top-down fleet modelling.
+        Parameters
+        ----------
+        energy_per_ask_mean_without_operations
+            Energy consumption per ASK for the mean aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
+        ask
+            Available seat kilometers [ASK].
+        doc_non_energy_per_ask_mean
+            Non-energy DOC per ASK for the mean aircraft using drop-in fuel [€/ASK].
+        cac_reference_mfsp
+            CAC Reference fuel's MFSP [€/MJ].
+        cac_reference_co2_emission_factor
+            CAC Reference fuel's CO2 emission factor [gCO2/MJ].
+        exogenous_carbon_price_trajectory
+            Exogenous carbon price trajectory [€/tCO2].
+        social_discount_rate
+            Social discount rate [-].
+
+        Returns
+        -------
+        aircraft_carbon_abatement_cost_passenger_mean
+            Mean carbon abatement cost for passenger aircraft [€/tCO2].
+        aircraft_generic_specific_carbon_abatement_cost_passenger_mean
+            Mean generic specific carbon abatement cost for passenger aircraft [€/tCO2].
+        aircraft_specific_carbon_abatement_cost_passenger_mean
+            Mean specific carbon abatement cost for passenger aircraft [€/tCO2].
+        aircraft_carbon_abatement_volume_passenger_mean
+            Mean carbon abatement volume for passenger aircraft [tCO2].
+
+        """
         ### WARNING => VERY SIMPLIFIED CARBON ABATEMENT COST MODEL; IT IS NOT CONSISTENT WITH FULL IMPLEMENTATION PRESENTED WITH THE TOP-DOWN MODEL
         # IT IS A TEMPORARY SOLUTION TO ENABLE PLOTTING MACC EVEN WHEN THE TOP DOWN MDOEL IS USED.
         # In particular, only mean costs are used and not representative of aircraft entering in service in a given year.

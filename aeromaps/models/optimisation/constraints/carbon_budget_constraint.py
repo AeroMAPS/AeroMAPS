@@ -2,6 +2,13 @@
 # @Author : a.salgas
 # @File : carbon_budget_constraint.py
 # @Software: PyCharm
+"""
+carbon_budget_constraint
+================
+This module contains the CarbonBudgetConstraint model,
+which defines and enforces the constraint on aviation's carbon budget consumption.
+"""
+
 import logging
 
 import pandas as pd
@@ -10,6 +17,15 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class CarbonBudgetConstraint(AeroMAPSModel):
+    """
+    This class computes the constraint on aviation's carbon budget consumption.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('carbon_budget_constraint' by default).
+    """
+
     def __init__(self, name="carbon_budget_constraint", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -19,7 +35,24 @@ class CarbonBudgetConstraint(AeroMAPSModel):
         aviation_carbon_budget_objective: float,
         cumulative_co2_emissions: pd.Series,
     ) -> float:
-        """Carbon budget consumption share calculation."""
+        """
+        Carbon budget consumption share calculation.
+
+        Parameters
+        ----------
+        gross_carbon_budget_2050
+            World gross carbon budget until 2050 [GtCO2].
+        aviation_carbon_budget_objective
+            Constraint set as a share of gross carbon budget allocated to aviation [%].
+        cumulative_co2_emissions
+            Cumulative CO2 emissions from all commercial air transport [GtCO2].
+
+        Returns
+        -------
+        aviation_carbon_budget_constraint
+            Constraint value indicating how close aviation is to its allocated carbon budget by 2050 [-].
+
+        """
         cumulative_emissions = (
             cumulative_co2_emissions.loc[2050] - cumulative_co2_emissions.loc[2025]
         )

@@ -1,3 +1,9 @@
+"""
+Warning
+-------
+Module to be deprecated before V1
+"""
+
 from typing import Tuple
 import pandas as pd
 

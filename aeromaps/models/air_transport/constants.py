@@ -1,3 +1,9 @@
+"""
+Constants for air transport energy and fuel types.
+FIXME: Typo in 'HYDROGENE' should be 'HYDROGEN'.
+FIXME: Where are the constants used?
+"""
+
 from aenum import Enum
 
 

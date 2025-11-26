@@ -1,3 +1,10 @@
+"""
+price_elasticity
+=============================
+
+Module for computing air traffic (RPK) with price elasticity effects.
+"""
+
 from typing import Tuple
 from numbers import Number
 
@@ -13,6 +20,15 @@ from aeromaps.models.base import (
 
 
 class RPKWithElasticity(AeroMAPSModel):
+    """
+    Class to compute Revenue Passenger Kilometers (RPK) with price elasticity and COVID-19 impact, considering exogenous growth rates by segment.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('rpk_with_elasticity' by default).
+    """
+
     def __init__(self, name="rpk_with_elasticity", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -59,7 +75,93 @@ class RPKWithElasticity(AeroMAPSModel):
         float,
         float,
     ]:
-        """Update RPK based on cost increase calculation."""
+        """
+        Execute the computation of prospective air traffic.
+
+        Parameters
+        ----------
+        rpk_init
+            Historical number of Revenue Passenger Kilometer (RPK) over 2000-2019 [RPK].
+        short_range_rpk_share_2019
+            Share of RPK from short-range market in 2019 [%].
+        medium_range_rpk_share_2019
+            Share of RPK from medium-range market in 2019 [%].
+        long_range_rpk_share_2019
+            Share of RPK from long-range market in 2019 [%].
+        covid_start_year
+            Covid-19 start year [yr].
+        covid_rpk_drop_start_year
+            Drop in RPK due to Covid-19 for the start year [%].
+        covid_end_year_passenger
+            Covid-19 end year [yr].
+        covid_end_year_reference_rpk_ratio
+            Percentage of traffic level reached in Covid-19 end year compared with the one in Covid-19 start year [%].
+        cagr_passenger_short_range_reference_periods
+            Reference periods for the CAGR for passenger short-range market [yr].
+        cagr_passenger_short_range_reference_periods_values
+            CAGR for passenger short-range market for the reference periods [%].
+        cagr_passenger_medium_range_reference_periods
+            Reference periods for the CAGR for passenger medium-range market [yr].
+        cagr_passenger_medium_range_reference_periods_values
+            CAGR for passenger medium-range market for the reference periods [%].
+        cagr_passenger_long_range_reference_periods
+            Reference periods for the CAGR for passenger long-range market [yr].
+        cagr_passenger_long_range_reference_periods_values
+            CAGR for passenger long-range market for the reference periods [%].
+        rpk_short_range_measures_impact
+            Traffic reduction impact of specific measures for passenger short-range market [%].
+        rpk_medium_range_measures_impact
+            Traffic reduction impact of specific measures for passenger medium-range market [%].
+        rpk_long_range_measures_impact
+            Traffic reduction impact of specific measures for passenger long-range market [%].
+        airfare_per_rpk
+            Airfare per RPK [€/RPK].
+        price_elasticity
+            Price elasticity of demand [-].
+
+        Returns
+        -------
+        rpk_short_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger short-range market [RPK].
+        rpk_medium_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger medium-range market [RPK].
+        rpk_long_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger long-range market [RPK].
+        rpk
+            Number of Revenue Passenger Kilometer (RPK) for total passenger air transport [RPK].
+        rpk_no_elasticity
+            RPKs without considering price elasticity [RPK].
+        rpk_short_range_no_elasticity
+            Short-range RPKs without considering price elasticity [RPK].
+        rpk_medium_range_no_elasticity
+            Medium-range RPKs without considering price elasticity [RPK].
+        rpk_long_range_no_elasticity
+            Long-range RPKs without considering price elasticity [RPK].
+        annual_growth_rate_passenger_short_range
+            Annual growth rate for short-range passengers [%/year].
+        annual_growth_rate_passenger_medium_range
+            Annual growth rate for medium-range passengers [%/year].
+        annual_growth_rate_passenger_long_range
+            Annual growth rate for long-range passengers [%/year].
+        annual_growth_rate_passenger
+            Annual growth rate for total passengers [%/year].
+        cagr_rpk_short_range
+            Air traffic CAGR over prospective_years for passenger short-range market [%].
+        cagr_rpk_medium_range
+            Air traffic CAGR over prospective_years for passenger medium-range market [%].
+        cagr_rpk_long_range
+            Air traffic CAGR over prospective_years for passenger long-range market [%].
+        cagr_rpk
+            Air traffic CAGR over prospective_years for total passenger market [%].
+        prospective_evolution_rpk_short_range
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger short-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk_medium_range
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger medium-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk_long_range
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for passenger long-range market between prospection_start_year and end_year [%].
+        prospective_evolution_rpk
+            Evolution in percentage of Revenue Passenger Kilometer (RPK) for total passenger market between prospection_start_year and end_year [%].
+        """
 
         hist_index = range(self.historic_start_year, self.prospection_start_year)
         covid_years = range(covid_start_year, covid_end_year_passenger + 1)

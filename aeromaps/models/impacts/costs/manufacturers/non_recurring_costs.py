@@ -2,6 +2,13 @@
 # @Author : a.salgas
 # @File : non_recurring_costs.py
 # @Software: PyCharm
+"""
+non_recurring_costs
+===============================
+
+Module to compute non-recurring costs (NRC) for aircraft defined by the fleet model.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -9,6 +16,22 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class NonRecurringCosts(AeroMAPSModel):
+    """
+    Class to compute non-recurring costs (NRC) for aircraft defined by the fleet model.
+    NRC are distributed over a development period prior to the entry into service year,
+    following a tweaked distribution.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance (default is "non_recurring_costs").
+
+    Attributes
+    ----------
+    fleet_model : FleetModel(AeroMAPSModel)
+        FleetModel instance to be used for complex efficiency computations.
+    """
+
     def __init__(self, name="non_recurring_costs", fleet_model=None, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.fleet_model = fleet_model
@@ -17,6 +40,22 @@ class NonRecurringCosts(AeroMAPSModel):
         self,
         aircraft_in_out_value_dict: dict,
     ) -> dict:
+        """
+        Compute non-recurring costs (NRC) for each aircraft defined in the fleet model.
+        TODO: Currently uses dummy input and output dictionaries. Possible to use these now?
+
+        Parameters
+        ----------
+        aircraft_in_out_value_dict :
+            Dummy dictionary containing in-service and out-of-service values for each aircraft.
+            Real inputs are read from the fleet model dataframe.
+
+        Returns
+        -------
+        nrc_aircraft_value_dict : dict
+            Dummy dictionary containing NRC values for each aircraft.
+            Real outputs are stored in the fleet model dataframe.
+        """
         nrc_aircraft_value_dict = {}
         for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
             # Calculating values of interest for each aircraft

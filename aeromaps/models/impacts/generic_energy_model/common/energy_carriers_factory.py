@@ -1,3 +1,7 @@
+"""
+Factory to create energy carriers models based on yaml configuration files.
+"""
+
 # import all the concrete implementations of the energy carriers
 from aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost import (
     EnergyAbatementCost,
@@ -33,8 +37,31 @@ from aeromaps.models.impacts.energy_resources.energy_resources import (
 
 
 class AviationEnergyCarriersFactory:
+    """
+    Factory to create energy carriers models based on yaml configuration files.
+    """
+
     @staticmethod
-    def create_carrier(pathway_name, energy_carriers_data, resources_data, processs_data):
+    def create_carrier(pathway_name, energy_carriers_data, resources_data, process_data):
+        """
+        Create energy carrier models based on the configuration data.
+
+        Parameters
+        ----------
+        pathway_name : str
+            Name of the energy pathway to create models for.
+        energy_carriers_data : dict
+            Configuration data for energy carriers.
+        resources_data : dict
+            Configuration data for energy resources.
+        process_data : dict
+            Configuration data for processes.
+
+        Returns
+        -------
+        dict
+            Dictionary of instantiated energy carrier models.
+        """
         pathway_data = energy_carriers_data[pathway_name]
         environmental_model_type = pathway_data["environmental_model"]
         cost_model_type = pathway_data["cost_model"]
@@ -48,7 +75,7 @@ class AviationEnergyCarriersFactory:
                         f"{pathway_name}_top_down_unit_environmental",
                         pathway_data,
                         resources_data,
-                        processs_data,
+                        process_data,
                     )
                 }
             )
@@ -59,7 +86,7 @@ class AviationEnergyCarriersFactory:
                         f"{pathway_name}_bottom_up_unit_environmental",
                         pathway_data,
                         resources_data,
-                        processs_data,
+                        process_data,
                     )
                 }
             )
@@ -72,7 +99,7 @@ class AviationEnergyCarriersFactory:
                         f"{pathway_name}_top_down_unit_cost",
                         pathway_data,
                         resources_data,
-                        processs_data,
+                        process_data,
                     )
                 }
             )
@@ -83,7 +110,7 @@ class AviationEnergyCarriersFactory:
                         f"{pathway_name}_bottom_up_unit_cost",
                         pathway_data,
                         resources_data,
-                        processs_data,
+                        process_data,
                     )
                 }
             )
@@ -94,7 +121,7 @@ class AviationEnergyCarriersFactory:
             models.update(
                 {
                     f"{pathway_name}_bottom_up_capacity": BottomUpCapacity(
-                        f"{pathway_name}_bottom_up_capacity", pathway_data, processs_data
+                        f"{pathway_name}_bottom_up_capacity", pathway_data, process_data
                     )
                 }
             )
@@ -135,7 +162,21 @@ class AviationEnergyCarriersFactory:
 
     @staticmethod
     def instantiate_energy_carriers_models(energy_carriers_data, pathways_manager):
-        """Instantiates energy carriers models."""
+        """
+        Instantiates energy carriers related models. Energy use choice, means, mean LHV, ...
+
+        Parameters
+        ----------
+        energy_carriers_data : dict
+            Configuration data for energy carriers.
+        pathways_manager : PathwaysManager
+            Manager for handling energy pathways.
+
+        Returns
+        -------
+        dict
+            Dictionary of instantiated energy carriers models.
+        """
         return {
             "energy_use_choice": EnergyUseChoice(
                 "energy_use_choice", energy_carriers_data, pathways_manager
@@ -148,7 +189,21 @@ class AviationEnergyCarriersFactory:
 
     @staticmethod
     def instantiate_resource_consumption_models(resources_data, pathways_manager):
-        """Instantiates energy carriers models."""
+        """
+        Instantiates energy resource consumption models.
+
+        Parameters
+        ----------
+        resources_data : dict
+            Configuration data for energy resources.
+        pathways_manager : PathwaysManager
+            Manager for handling energy pathways.
+
+        Returns
+        -------
+        dict
+            Dictionary of instantiated energy resource consumption models.
+        """
         models = {}
         for resource in resources_data.keys():
             models.update(

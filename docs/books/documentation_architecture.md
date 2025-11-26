@@ -1,5 +1,8 @@
 # Architecture
 
+!!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
+    It will be updated soon.!
+
 The simplified current architecture of AeroMAPS is given in Fig.1.
 
 ![](/figs/architecture.png)

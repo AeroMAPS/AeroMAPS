@@ -1,3 +1,12 @@
+"""
+non_co2
+===============
+
+Module for computing non-CO2 climate effects related to aircraft operations,
+including contrail-related adjustments and fuel-effect corrections used in ERF
+calculations.
+"""
+
 import warnings
 from typing import Tuple
 from numbers import Number
@@ -10,6 +19,14 @@ from aeromaps.utils.defaults import get_default_series
 
 
 class OperationsContrailsSimple(AeroMAPSModel):
+    """Simple operational model computing contrails gains for ERF calculation and overconsumption associated with contrail avoidance.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('operations_contrails_simple' by default).
+    """
+
     def __init__(self, name="operations_contrails_simple", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -20,7 +37,26 @@ class OperationsContrailsSimple(AeroMAPSModel):
         operations_contrails_start_year: Number,
         operations_contrails_duration: float,
     ) -> Tuple[pd.Series, pd.Series]:
-        """Operations contrails gain for ERF calculation."""
+        """Execute computation for contrails gains for ERF calculation and overconsumption associated with contrail avoidance.
+
+        Parameters
+        ----------
+        operations_contrails_final_gain
+            Final impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts [%].
+        operations_contrails_final_overconsumption
+            Final impact of contrail operational improvements in terms of percentage increase in fuel consumption [%].
+        operations_contrails_start_year
+            Start year for implementing contrail operational improvements to reduce contrail climate impacts [yr].
+        operations_contrails_duration
+            Duration for implementing 98% of contrail operational improvements to reduce contrail climate impacts [yr].
+
+        Returns
+        -------
+        operations_contrails_gain
+            Impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts [%].
+        operations_contrails_overconsumption
+            Impact of contrail operational improvements in terms of percentage increase in fuel consumption [%].
+        """
 
         transition_year = operations_contrails_start_year + operations_contrails_duration / 2
         operations_contrails_limit = 0.02 * operations_contrails_final_gain
@@ -52,11 +88,33 @@ class OperationsContrailsSimple(AeroMAPSModel):
 
 
 class FuelEffectCorrectionContrails(AeroMAPSModel):
+    """Compute fuel-effect on contrails for ERF calculation.
+
+    This custom model aggregates pathway-specific particle emission indices and
+    distance shares to compute a correction applied to contrail
+    forcing to reflect fuel/pathway effects.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('fuel_effect_correction_contrails' by default).
+
+    Attributes
+    ----------
+    pathways_manager
+        EnergyCarrierManager instance managing the energy carriers pathways considered in the scenario.
+    input_names
+        Dictionary defining the expected input names for the model.
+    output_names
+        Dictionary defining the output names for the model.
+    """
+
     def __init__(self, name="fuel_effect_correction_contrails", *args, **kwargs):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.pathways_manager = None
 
     def custom_setup(self):
+        """Setup input and output names for the model grammar, based on .yaml configuration of energy carriers."""
         self.input_names = {}
         self.output_names = {}
 
@@ -105,7 +163,24 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
-        """Fuel effect on contrails for ERF calculation."""
+        """Execute the computation of fuel-effect correction for contrails ERF computation.
+
+        Parameters
+        ----------
+        input_data
+            Mapping of input series and scalars required by the model. Expected
+            keys include pathway-specific massic shares of each aircraft consumption; particle emission
+            indices, total aircraft distances travelled by aircraft type and overall total
+            aircraft distance, and contrails_relative_effect_hydrogen_wrt_kerosene
+            when hydrogen pathways are present.
+
+        Returns
+        -------
+        output_data
+            Dictionary with key 'fuel_effect_correction_contrails' containing a
+            pd.Series multiplicative correction (dimensionless) for contrail
+            forcing over the scenario.
+        """
 
         fuel_effect_correction_contrails = get_default_series(
             self.historic_start_year, self.end_year
@@ -163,6 +238,14 @@ class FuelEffectCorrectionContrails(AeroMAPSModel):
 
 
 class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
+    """Model returning a unitary correction (no fuel effect) for contrails.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('without_fuel_effect_correction_contrails' by default).
+    """
+
     def __init__(self, name="without_fuel_effect_correction_contrails", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -170,7 +253,20 @@ class WithoutFuelEffectCorrectionContrails(AeroMAPSModel):
         self,
         total_aircraft_distance: pd.Series,
     ) -> pd.Series:
-        """Fuel effect on contrails for ERF calculation."""
+        """Return a multiplicative correction equal to 1 for all years.
+
+        Parameters
+        ----------
+        total_aircraft_distance
+            Total distance travelled by aircraft (based on RPK traffic) [km].
+            FIXME: this input is not used in the computation.
+
+        Returns
+        -------
+        fuel_effect_correction_contrails
+            Multiplicative multiplicative correction (dimensionless) for contrail
+            forcing over the scenario, equal to 1 for all years.
+        """
 
         for k in range(self.historic_start_year, self.end_year + 1):
             self.df.loc[k, "fuel_effect_correction_contrails"] = 1

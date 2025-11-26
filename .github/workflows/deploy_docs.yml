@@ -1,0 +1,147 @@
+
+name: deploy-docs
+
+on:
+  # Automatic deployment for main branch and version tags
+  # Other branches can trigger with [docs] in commit message
+  push:
+    branches:
+      - '**'  # All branches (filtered by check-deploy job)
+    tags:
+      - 'v*'
+
+  # Manual trigger with options
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version name for the docs (leave empty to use branch name)'
+        required: false
+        type: string
+      set_as_latest:
+        description: 'Set this version as "latest"'
+        required: false
+        type: boolean
+        default: false
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment per branch
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  # Check if we should deploy (for push events)
+  check-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Check deployment conditions
+        id: check
+        run: |
+          # Always deploy for workflow_dispatch
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Always deploy for tags
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Always deploy for main branch
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # For other branches, check commit message for [docs] keyword
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MSG" == *"[docs]"* ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+  deploy-docs:
+    needs: check-deploy
+    if: needs.check-deploy.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for mike to work with git history
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+          pip install -e .  # Install the package for autodoc
+
+      - name: Configure Git for Mike
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build docs (verification)
+        run: |
+          mkdocs build
+          echo "Build successful! Site generated in ./site/"
+          ls -la site/
+
+      - name: Determine version alias
+        id: version
+        run: |
+          # Check for manual input first
+          if [[ -n "${{ inputs.version_name }}" ]]; then
+            echo "version=${{ inputs.version_name }}" >> $GITHUB_OUTPUT
+            if [[ "${{ inputs.set_as_latest }}" == "true" ]]; then
+              echo "alias=latest" >> $GITHUB_OUTPUT
+              echo "update_aliases=true" >> $GITHUB_OUTPUT
+            else
+              echo "alias=" >> $GITHUB_OUTPUT
+              echo "update_aliases=false" >> $GITHUB_OUTPUT
+            fi
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "version=latest" >> $GITHUB_OUTPUT
+            echo "alias=latest" >> $GITHUB_OUTPUT
+            echo "update_aliases=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "alias=stable" >> $GITHUB_OUTPUT
+            echo "update_aliases=true" >> $GITHUB_OUTPUT
+          else
+            # For branches, use sanitized branch name
+            BRANCH_NAME="${{ github.ref_name }}"
+            SANITIZED_NAME=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
+            echo "version=${SANITIZED_NAME}" >> $GITHUB_OUTPUT
+            echo "alias=" >> $GITHUB_OUTPUT
+            echo "update_aliases=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy docs with Mike
+        run: |
+          if [[ "${{ steps.version.outputs.update_aliases }}" == "true" && -n "${{ steps.version.outputs.alias }}" ]]; then
+            mike deploy --push --update-aliases ${{ steps.version.outputs.version }} ${{ steps.version.outputs.alias }}
+          else
+            mike deploy --push ${{ steps.version.outputs.version }}
+          fi
+
+      - name: Set default version (only for main branch)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mike set-default --push latest
+

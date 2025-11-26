@@ -1,3 +1,10 @@
+"""
+environmental
+
+================
+Module to compute pathway environmental parameters using the top-down techno-economic model.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -7,6 +14,17 @@ from aeromaps.models.base import AeroMAPSModel
 class TopDownEnvironmental(AeroMAPSModel):
     """
     Generic model for aviation energy carriers, relying on user's description of the carriers in the configuration file.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_top_down_unit_environmental"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the config file.
+    resources_data : dict
+        Configuration data for the energy resources from the config file.
+    processes_data : dict
+        Configuration data for the energy processes from the config file.
     """
 
     def __init__(
@@ -144,6 +162,19 @@ class TopDownEnvironmental(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
+        """
+        Execute the top-down environmental computations for the energy pathway.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         output_data = {}
         optional_null_series = pd.Series(
             0.0, index=range(self.historic_start_year, self.end_year + 1)
