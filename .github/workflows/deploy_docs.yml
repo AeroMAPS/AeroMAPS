@@ -115,9 +115,10 @@ jobs:
               echo "update_aliases=false" >> $GITHUB_OUTPUT
             fi
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            # For main branch, just deploy as "latest" (no separate alias needed)
             echo "version=latest" >> $GITHUB_OUTPUT
-            echo "alias=latest" >> $GITHUB_OUTPUT
-            echo "update_aliases=true" >> $GITHUB_OUTPUT
+            echo "alias=" >> $GITHUB_OUTPUT
+            echo "update_aliases=false" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             VERSION="${{ github.ref_name }}"
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
@@ -144,4 +145,3 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           mike set-default --push latest
-
