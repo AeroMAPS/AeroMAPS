@@ -44,9 +44,6 @@ from aeromaps.plots.emissions import (
 from aeromaps.plots.climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
-    EquivalentEmissionsPlot,
-    CumulativeEquivalentEmissionsPlot,
-    EquivalentEmissionsRatioPlot,
     TemperatureIncreaseFromAirTransportPlot,
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
@@ -103,9 +100,6 @@ plot_3 = {
     "Direct soot emissions": DirectSootEmissionsPlot,
     "Carbon offset": CarbonOffsetPlot,
     "Cumulative carbon offset": CumulativeCarbonOffsetPlot,
-    "Equivalent emissions": EquivalentEmissionsPlot,
-    "Cumulative equivalent emissions": CumulativeEquivalentEmissionsPlot,
-    "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,

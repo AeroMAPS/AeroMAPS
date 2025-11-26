@@ -44,9 +44,6 @@ from .emissions import (
 from .climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
-    EquivalentEmissionsPlot,
-    CumulativeEquivalentEmissionsPlot,
-    EquivalentEmissionsRatioPlot,
     TemperatureIncreaseFromAirTransportPlot,
     DetailedTemperatureIncreaseFromAirTransportPlot,
 )
@@ -114,9 +111,6 @@ available_plots = {
     "direct_soot_emissions": DirectSootEmissionsPlot,
     "carbon_offset": CarbonOffsetPlot,
     "cumulative_carbon_offset": CumulativeCarbonOffsetPlot,
-    "equivalent_emissions": EquivalentEmissionsPlot,
-    "cumulative_equivalent_emissions": CumulativeEquivalentEmissionsPlot,
-    "equivalent_emissions_ratio": EquivalentEmissionsRatioPlot,
     "final_effective_radiative_forcing": FinalEffectiveRadiativeForcingPlot,
     "distribution_effective_radiative_forcing": DistributionEffectiveRadiativeForcingPlot,
     "energy_capex": ScenarioEnergyCapitalPlot,
