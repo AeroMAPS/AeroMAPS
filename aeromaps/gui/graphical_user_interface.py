@@ -1032,7 +1032,7 @@ class GraphicalUserInterface(widgets.VBox):
 
         if self.w_aircraft_efficiency.value == "Renewal":
             self.process.fleet._build_default_fleet()
-            
+
             self.process.fleet.categories["Short Range"].parameters.life = 25
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
@@ -2063,7 +2063,12 @@ class GraphicalUserInterface(widgets.VBox):
             for pathway in dropin_pathways:
                 if pathway.name == "electrofuel":
                     if pathway.mandate_type is not None:
-                        self.process.parameters.electrofuel_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
+                        self.process.parameters.electrofuel_mandate_share_years = [
+                            2020,
+                            2030,
+                            2035,
+                            2050,
+                        ]
                         self.process.parameters.electrofuel_mandate_share_values = electrofuel_share
 
             biofuel_pathways = self.process.pathways_manager.get(
@@ -2072,7 +2077,13 @@ class GraphicalUserInterface(widgets.VBox):
             if self.w_biofuel_production.value == "Current":
                 for pathway in biofuel_pathways:
                     if pathway.name == "hefa_fog":
-                        self.process.parameters.hefa_fog_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
+                        self.process.parameters.hefa_fog_mandate_share_years = [
+                            2020,
+                            2023,
+                            2030,
+                            2035,
+                            2050,
+                        ]
                         self.process.parameters.hefa_fog_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
@@ -2082,7 +2093,13 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_biofuel_production.value == "High-carbon":
                 for pathway in biofuel_pathways:
                     if pathway.name == "atj":
-                        self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
+                        self.process.parameters.atj_mandate_share_years = [
+                            2020,
+                            2023,
+                            2030,
+                            2035,
+                            2050,
+                        ]
                         self.process.parameters.atj_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
@@ -2092,7 +2109,13 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_biofuel_production.value == "Low-carbon":
                 for pathway in biofuel_pathways:
                     if pathway.name == "ft_others":
-                        self.process.parameters.ft_others_mandate_share_years = [2020, 2023, 2030, 2035, 2050]
+                        self.process.parameters.ft_others_mandate_share_years = [
+                            2020,
+                            2023,
+                            2030,
+                            2035,
+                            2050,
+                        ]
                         self.process.parameters.ft_others_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
@@ -2109,8 +2132,7 @@ class GraphicalUserInterface(widgets.VBox):
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
                     self.process.parameters.hydrogen_gas_mandate_share_values = [71.0]
                 elif pathway.name == "hydrogen_coal":
-                    self.process.parameters.hydrogen_coal_mandate_share_years = []
-                    self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27.0]
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2119,6 +2141,8 @@ class GraphicalUserInterface(widgets.VBox):
                 if pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
                     self.process.parameters.hydrogen_gas_mandate_share_values = [100.0]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2130,7 +2154,11 @@ class GraphicalUserInterface(widgets.VBox):
                         2030,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2.0, 0.0, 0.0]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [
+                        2.0,
+                        0.0,
+                        0.0,
+                    ]
                 elif pathway.name == "hydrogen_gas_ccs":
                     self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
                         2020,
@@ -2138,7 +2166,12 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0.0, 30.0, 70.0, 100.0]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [
+                        0.0,
+                        30.0,
+                        70.0,
+                        100.0,
+                    ]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2146,7 +2179,14 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0, 70.0, 30.0, 0.0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [
+                        71.0,
+                        70.0,
+                        30.0,
+                        0.0,
+                    ]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2172,7 +2212,12 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0.0, 20.0, 30.0, 0.0]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [
+                        0.0,
+                        20.0,
+                        30.0,
+                        0.0,
+                    ]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2180,7 +2225,14 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0, 50.0, 20.0, 0.0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [
+                        71.0,
+                        50.0,
+                        20.0,
+                        0.0,
+                    ]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
