@@ -1,5 +1,6 @@
 {
     "PARAMETERS_JSON_DATA_FILE": "./inputs/inputs_validation_historical.json",
     "OUTPUTS_JSON_DATA_FILE": "./outputs.json",
-    "FLEET_CONFIG_FILE": "../../../../resources/data/default_fleet/fleet_no_new_aircraft.yaml"
+    "FLEET_CONFIG_FILE": "../../../../resources/data/default_fleet/fleet_no_new_aircraft.yaml",
+    "USE_FLEET_MODEL": true
 }
