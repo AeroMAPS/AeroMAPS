@@ -5,8 +5,8 @@ subcategories:
     reference_aircraft:
       old_ref: sr_conventional_nb_old
       recent_ref: sr_conventional_nb_recent
-    # aircraft:
-    #   - sr_h2_2035
+    aircraft:
+      - sr_h2_2035
 
   - id: mr_conventional_nb
     name: "MR conventional narrow-body"
@@ -23,8 +23,8 @@ subcategories:
     reference_aircraft:
       old_ref: lr_conventional_wb_old
       recent_ref: lr_conventional_wb_recent
-    # aircraft:
-    #   - lr_wb_2035
+    aircraft:
+      - lr_wb_2035
 
 
 categories:
