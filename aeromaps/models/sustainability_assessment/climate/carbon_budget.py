@@ -1,13 +1,11 @@
 """
 carbon_budgets
-
 ================
-This module contains models compute gross carbon budget related metrics.
+This module contains models to compute gross carbon budget related metrics.
 """
 
 from typing import Tuple
 from scipy.optimize import fsolve
-
 from aeromaps.models.base import AeroMAPSModel
 
 
@@ -74,5 +72,8 @@ class GrossCarbonBudget(AeroMAPSModel):
 
     @staticmethod
     def _compute_average_co2_emissions_decline_rate(x, data):
+        """
+        Equation to solve to find the average CO2 emissions decline rate (to adjust gross carbon budget to a given year)
+        """
         gross_carbon_budget, world_co2_emissions_2019 = data
         return ((1 - x) - (1 - x) ** 82) / x - gross_carbon_budget / world_co2_emissions_2019
