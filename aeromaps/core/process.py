@@ -864,19 +864,17 @@ class AeroMAPSProcess(object):
             climate_model_file_path = os.path.join(
                 configuration_directory, self.config["PARAMETERS_CLIMATE_MODEL_FILE"]
             )
-        else:
-            climate_model_file_path = DEFAULT_CLIMATE_MODEL_PATH
 
-        climate_model_data = read_yaml_file(climate_model_file_path)
-        self.models.update(
-            {"climate_model": ClimateModel(
-                name="climate_model",
-                climate_model=climate_model_data.get("climate_model"),
-                species_settings=climate_model_data.get("species_settings", {}),
-                model_settings=climate_model_data.get("model_settings", {})
+            climate_model_data = read_yaml_file(climate_model_file_path)
+            self.models.update(
+                {"climate_model": ClimateModel(
+                    name="climate_model",
+                    climate_model=climate_model_data.get("climate_model"),
+                    species_settings=climate_model_data.get("species_settings", {}),
+                    model_settings=climate_model_data.get("model_settings", {})
+                )
+                }
             )
-            }
-        )
 
     def _convert_custom_data_types(self, data):
         """Convert custom YAML data types and register interpolators.
