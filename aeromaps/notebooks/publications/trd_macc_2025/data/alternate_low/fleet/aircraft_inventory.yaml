@@ -80,7 +80,7 @@ reference_aircraft:
 
 aircraft:
   - id: sr_low_dropin_2035
-    name: "New SR-H2"
+    name: "New SR-DI"
     energy_type: DROP_IN_FUEL
     parameters:
       entry_into_service_year: 2035
@@ -108,7 +108,7 @@ aircraft:
       rc_cost: 60000000.0
       nrc_cost: 10000000000.0
   - id: mr_low_dropin_2045
-    name: "New MR-H2"
+    name: "New MR-DI2"
     energy_type: DROP_IN_FUEL
     parameters:
       entry_into_service_year: 2045
