@@ -884,7 +884,10 @@ class Fleet(object):
                 mean_energy_init_ask_short_range - old_sr_energy
             ) / (recent_sr_energy - old_sr_energy)
 
-            sr_life = sr_cat.parameters.life
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            sr_life = 25
+            # sr_life = sr_cat.parameters.life
             lambda_short_range = np.log(100 / 2 - 1) / (sr_life / 2)
 
             if 1 > share_recent_short_range > 0:
@@ -935,7 +938,10 @@ class Fleet(object):
                 mean_energy_init_ask_medium_range - old_mr_energy
             ) / (recent_mr_energy - old_mr_energy)
 
-            mr_life = mr_cat.parameters.life
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            mr_life = 25
+            # mr_life = mr_cat.parameters.life
             lambda_medium_range = np.log(100 / 2 - 1) / (mr_life / 2)
 
             if 1 > share_recent_medium_range > 0:
@@ -985,7 +991,10 @@ class Fleet(object):
                 mean_energy_init_ask_long_range - old_lr_energy
             ) / (recent_lr_energy - old_lr_energy)
 
-            lr_life = lr_cat.parameters.life
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            lr_life = 25
+            # lr_life = lr_cat.parameters.life
             lambda_long_range = np.log(100 / 2 - 1) / (lr_life / 2)
 
             if 1 > share_recent_long_range > 0:
