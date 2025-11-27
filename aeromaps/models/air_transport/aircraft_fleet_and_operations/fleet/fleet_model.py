@@ -879,16 +879,19 @@ class Fleet(object):
                 self.parameters.energy_consumption_init[2019]
                 * self.parameters.short_range_energy_share_2019
             ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+            print("Mean energy_init_ask_short_range:", mean_energy_init_ask_short_range)
 
             share_recent_short_range = (
                 mean_energy_init_ask_short_range - old_sr_energy
             ) / (recent_sr_energy - old_sr_energy)
+            print("Share recent short range:", share_recent_short_range)
 
             # We fix the life of short-range aircraft to 25 years for calibration
             # This way the share between old and recent reference aircraft in 2019 remains the same
             sr_life = 25
             # sr_life = sr_cat.parameters.life
             lambda_short_range = np.log(100 / 2 - 1) / (sr_life / 2)
+            print("Lambda short range:", lambda_short_range)
 
             if 1 > share_recent_short_range > 0:
                 t0_sr = (
@@ -896,7 +899,7 @@ class Fleet(object):
                     / lambda_short_range
                     + (self.parameters.prospection_start_year - 1)
                 )
-                t_eis_short_range = t0_sr - sr_cat.parameters.life / 2
+                t_eis_short_range = t0_sr - sr_life / 2
             elif share_recent_short_range > 1:
                 warnings.warn(
                     "Warning Message - Fleet Model: Short Range Aircraft: "
@@ -950,7 +953,7 @@ class Fleet(object):
                     / lambda_medium_range
                     + (self.parameters.prospection_start_year - 1)
                 )
-                t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
+                t_eis_medium_range = t0_mr - mr_life / 2
             elif share_recent_medium_range > 1:
                 warnings.warn(
                     "Warning Message - Fleet Model: medium Range Aircraft: "
@@ -1003,7 +1006,7 @@ class Fleet(object):
                     / lambda_long_range
                     + (self.parameters.prospection_start_year - 1)
                 )
-                t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
+                t_eis_long_range = t0_lr - lr_life / 2
             elif share_recent_long_range > 1:
                 warnings.warn(
                     "Warning Message - Fleet Model: long Range Aircraft: "
