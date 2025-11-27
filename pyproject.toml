@@ -30,8 +30,7 @@ gemseo = "^6.0"
 deepdiff = "^8"
 
 # External models
-#aerocm = "0.1.0b0"
-aerocm = {git = "https://github.com/AeroMAPS/AeroCM.git", branch = "main"}
+aerocm = "0.1.1b0"
 
 # Data visualization
 matplotlib = "^3.7"
