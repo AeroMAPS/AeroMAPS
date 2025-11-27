@@ -50,7 +50,7 @@ jobs:
     if: needs.check-run.outputs.should_run == 'true'
     strategy:
       matrix:
-        python-version: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["3.10"]' || '["3.9", "3.10", "3.11", "3.12"]') }}
+        python-version: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["3.10"]' || '["3.10", "3.11"]') }}
         os: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["ubuntu-latest"]' || (github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]')) }}
     runs-on: ${{ matrix.os }}
 
