@@ -5634,7 +5634,7 @@
 
 
 <a href="#aeromaps.create_process" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">default_models_top_down</span><span class="p">,</span> <span class="n">use_fleet_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_process</span><span class="p">(</span><span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">default_models_top_down</span><span class="p">,</span> <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5698,7 +5698,7 @@
               </div>
             </td>
             <td>
-                  <code>False</code>
+                <em>required</em>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -5714,7 +5714,7 @@
               </div>
             </td>
             <td>
-                  <code>True</code>
+                <em>required</em>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -5793,15 +5793,9 @@
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_process</span><span class="p">(</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_process</span><span class="p">(</span>
     <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">models</span><span class="o">=</span><span class="n">default_models_top_down</span><span class="p">,</span>
-    <span class="n">use_fleet_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">optimisation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AeroMAPSProcess</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5829,8 +5823,6 @@
     <span class="k">return</span> <span class="n">AeroMAPSProcess</span><span class="p">(</span>
         <span class="n">configuration_file</span><span class="o">=</span><span class="n">configuration_file</span><span class="p">,</span>
         <span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">,</span>
-        <span class="n">use_fleet_model</span><span class="o">=</span><span class="n">use_fleet_model</span><span class="p">,</span>
-        <span class="n">add_examples_aircraft_and_subcategory</span><span class="o">=</span><span class="n">add_examples_aircraft_and_subcategory</span><span class="p">,</span>
         <span class="n">optimisation</span><span class="o">=</span><span class="n">optimisation</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
