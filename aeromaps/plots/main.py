@@ -350,7 +350,7 @@ class AirTransportClimateImpactsPlot:
             "Evolution of climate impacts (via effective radiative forcing) from air transport"
         )
         self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Effective radiative forcing [mW/m²]")
+        self.ax.set_ylabel("Effective radiative forcing [W/m²]")
         self.ax.legend(loc=2)
         self.ax.set_xlim(self.years[0], self.years[-1])
 
