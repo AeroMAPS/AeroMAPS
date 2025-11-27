@@ -1032,13 +1032,14 @@ class GraphicalUserInterface(widgets.VBox):
         # Fleet renewal: sliders settings
 
         if self.w_aircraft_efficiency.value == "Renewal":
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
+            
             self.process.fleet.categories["Short Range"].parameters.life = 25
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
         elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value is False:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
                 consumption_evolution=-20.0,
@@ -1159,7 +1160,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
         elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value is False:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
                 consumption_evolution=-20.0,
@@ -1280,7 +1281,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value is False:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
                 consumption_evolution=-15.0,
@@ -1401,7 +1402,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         elif self.w_aircraft_efficiency.value == "Trend" and self.w_turboprop.value:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
                 consumption_evolution=-35.0,
@@ -1522,7 +1523,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 25
 
         elif self.w_aircraft_efficiency.value == "Accelerated" and self.w_turboprop.value:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2035,
                 consumption_evolution=-35.0,
@@ -1643,7 +1644,7 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.fleet.categories["Long Range"].parameters.life = 20
 
         elif self.w_aircraft_efficiency.value == "Ambitious" and self.w_turboprop.value:
-            self.process.fleet._build_default_fleet(add_examples_aircraft_and_subcategory=False)
+            self.process.fleet._build_default_fleet()
             short_range_aircraft1_params = AircraftParameters(
                 entry_into_service_year=2030,
                 consumption_evolution=-30.0,

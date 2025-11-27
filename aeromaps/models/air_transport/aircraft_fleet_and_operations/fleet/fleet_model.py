@@ -1,15 +1,34 @@
-import numpy as np
-from dataclasses import dataclass
+"""
+fleet_model
+===========
+
+Module for modeling aircraft fleet composition and renewal over time.
+
+This module provides data structures and models for representing aircraft fleets,
+including individual aircraft, subcategories (e.g., narrow-body, wide-body), and
+categories (e.g., short-range, medium-range, long-range). It supports fleet
+evolution modeling using S-shaped logistic functions for aircraft market share
+transitions, and computes energy consumption, emissions (NOx, soot), and
+operating costs based on fleet composition.
+
+The module uses YAML configuration files to define aircraft inventories and
+fleet structures, allowing flexible customization of fleet scenarios.
+"""
+
+from __future__ import annotations
+
 import warnings
+from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, Optional
 
-import pandas as pd
-import ipydatagrid as dg
-from ipytree import Tree, Node
 import matplotlib.pyplot as plt
-
-import ipywidgets as ipw
+import numpy as np
+import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
+from aeromaps.utils.yaml import read_yaml_file
 
 AIRCRAFT_COLUMNS = [
     "Name",
@@ -28,51 +47,1012 @@ AIRCRAFT_COLUMNS = [
 ]
 SUBCATEGORY_COLUMNS = ["Name", "Share [%]"]
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_FLEET_DATA_DIR = PACKAGE_ROOT / "resources" / "data" / "default_fleet"
+DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "aircraft_inventory.yaml"
+DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
+
 
 @dataclass
 class AircraftParameters:
-    entry_into_service_year: float = None
-    consumption_evolution: float = None
-    nox_evolution: float = None
-    soot_evolution: float = None
-    doc_non_energy_evolution: float = None
-    cruise_altitude: float = None
+    """Parameters defining an aircraft's characteristics and performance.
+
+    Attributes
+    ----------
+    entry_into_service_year
+        Year when the aircraft enters service [yr].
+    consumption_evolution
+        Relative change in energy consumption compared to reference aircraft [%].
+    nox_evolution
+        Relative change in NOx emissions compared to reference aircraft [%].
+    soot_evolution
+        Relative change in soot emissions compared to reference aircraft [%].
+    doc_non_energy_evolution
+        Relative change in non-energy direct operating costs compared to reference aircraft [%].
+    cruise_altitude
+        Typical cruise altitude of the aircraft [m].
+    hybridization_factor
+        Degree of hybridization for hybrid-electric aircraft, from 0 (conventional) to 1 (fully electric) [-].
+    ask_year
+        Average number of Available Seat Kilometers produced per aircraft per year [ASK/yr].
+    nrc_cost
+        Non-recurring costs (development costs) [€].
+    rc_cost
+        Recurring costs (manufacturing cost per unit) [€].
+    oew
+        Operational Empty Weight of the aircraft [t].
+    full_name
+        Full qualified name including category and subcategory path.
+    """
+
+    entry_into_service_year: Optional[float] = None
+    consumption_evolution: Optional[float] = None
+    nox_evolution: Optional[float] = None
+    soot_evolution: Optional[float] = None
+    doc_non_energy_evolution: Optional[float] = None
+    cruise_altitude: Optional[float] = None
     hybridization_factor: float = 0.0
-    ask_year: float = None
-    nrc_cost: float = None
-    rc_cost: float = None
-    oew: float = None
-    full_name: str = None
+    ask_year: Optional[float] = None
+    nrc_cost: Optional[float] = None
+    rc_cost: Optional[float] = None
+    oew: Optional[float] = None
+    full_name: Optional[str] = None
 
 
 @dataclass
 class ReferenceAircraftParameters:
-    energy_per_ask: float = None
-    emission_index_nox: float = None
-    emission_index_soot: float = None
-    doc_non_energy_base: float = None
-    entry_into_service_year: float = None
-    cruise_altitude: float = None
+    """Parameters defining a reference aircraft used as baseline for comparisons.
+
+    Reference aircraft serve as the baseline against which new aircraft performance
+    improvements are measured. Each subcategory has an "old" and a "recent" reference.
+
+    Attributes
+    ----------
+    energy_per_ask
+        Energy consumption per Available Seat Kilometer [MJ/ASK].
+    emission_index_nox
+        NOx emission index per ASK [kg/ASK].
+    emission_index_soot
+        Soot emission index per ASK [kg/ASK].
+    doc_non_energy_base
+        Base non-energy direct operating cost per ASK [€/ASK].
+    entry_into_service_year
+        Year when the reference aircraft entered service [yr].
+    cruise_altitude
+        Typical cruise altitude of the aircraft [m].
+    hybridization_factor
+        Degree of hybridization, from 0 (conventional) to 1 (fully electric) [-].
+    ask_year
+        Average number of Available Seat Kilometers produced per aircraft per year [ASK/yr].
+    nrc_cost
+        Non-recurring costs (development costs) [€].
+    rc_cost
+        Recurring costs (manufacturing cost per unit) [€].
+    oew
+        Operational Empty Weight of the aircraft [t].
+    full_name
+        Full qualified name including category and subcategory path.
+    """
+
+    energy_per_ask: Optional[float] = None
+    emission_index_nox: Optional[float] = None
+    emission_index_soot: Optional[float] = None
+    doc_non_energy_base: Optional[float] = None
+    entry_into_service_year: Optional[float] = None
+    cruise_altitude: Optional[float] = None
     hybridization_factor: float = 0.0
-    ask_year: float = None
-    nrc_cost: float = None
-    rc_cost: float = None
-    oew: float = None
-    full_name: str = None
+    ask_year: Optional[float] = None
+    nrc_cost: Optional[float] = None
+    rc_cost: Optional[float] = None
+    oew: Optional[float] = None
+    full_name: Optional[str] = None
 
 
 @dataclass
 class SubcategoryParameters:
-    share: float = None
+    """Parameters for an aircraft subcategory.
+
+    Attributes
+    ----------
+    share
+        Market share of this subcategory within its parent category [%].
+    """
+
+    share: Optional[float] = None
 
 
 @dataclass
 class CategoryParameters:
+    """Parameters for an aircraft category.
+
+    Attributes
+    ----------
+    life
+        Average operational lifetime of aircraft in this category [yr].
+    limit
+        Lower threshold for market share below which aircraft share is set to zero [%] (needed for S-curve parametrization).
+    """
+
     life: float
     limit: float = 2
 
 
+class Aircraft(object):
+    """Represents an individual aircraft type in the fleet.
+
+    An aircraft belongs to a subcategory and has parameters that define its
+    performance relative to a reference aircraft.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the aircraft type.
+    parameters
+        Aircraft performance and cost parameters.
+    energy_type
+        Type of energy used: 'DROP_IN_FUEL', 'HYDROGEN', 'ELECTRIC', or 'HYBRID_ELECTRIC'.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the aircraft type.
+    parameters : AircraftParameters
+        Aircraft performance and cost parameters.
+    energy_type : str
+        Type of energy used by the aircraft.
+    """
+
+    def __init__(
+        self,
+        name: str = None,
+        parameters: AircraftParameters = None,
+        energy_type="DROP_IN_FUEL",
+    ):
+        self.name = name
+        if parameters is None:
+            parameters = AircraftParameters()
+        self.parameters = parameters
+        self.energy_type = energy_type
+
+    def from_dataframe_row(self, row):
+        """Populate aircraft attributes from a DataFrame row.
+
+        Parameters
+        ----------
+        row
+            DataFrame row containing aircraft data with columns matching AIRCRAFT_COLUMNS.
+
+        Returns
+        -------
+        Aircraft
+            Self, with attributes populated from the row data.
+        """
+        self.name = row[AIRCRAFT_COLUMNS[0]]
+        self.parameters.entry_into_service_year = row[AIRCRAFT_COLUMNS[1]]
+        self.parameters.consumption_evolution = row[AIRCRAFT_COLUMNS[2]]
+        self.parameters.nox_evolution = row[AIRCRAFT_COLUMNS[3]]
+        self.parameters.soot_evolution = row[AIRCRAFT_COLUMNS[4]]
+        self.parameters.doc_non_energy_evolution = row[AIRCRAFT_COLUMNS[5]]
+        self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
+        self.energy_type = row[AIRCRAFT_COLUMNS[7]]
+        self.parameters.hybridization_factor = row[AIRCRAFT_COLUMNS[8]]
+        self.parameters.ask_year = row[AIRCRAFT_COLUMNS[9]]
+        self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[10]]
+        self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[11]]
+        self.parameters.oew = row[AIRCRAFT_COLUMNS[12]]
+
+        return self
+
+
+class SubCategory(object):
+    """Represents a subcategory of aircraft within a category.
+
+    Subcategories group similar aircraft types (e.g., conventional narrow-body,
+    hydrogen narrow-body) within a category. Each subcategory has reference
+    aircraft (old and recent) that serve as baselines for performance comparisons.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the subcategory.
+    parameters
+        Subcategory parameters including market share.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the subcategory.
+    parameters : SubcategoryParameters
+        Subcategory parameters including market share.
+    aircraft : Dict[int, Aircraft]
+        Dictionary of aircraft belonging to this subcategory.
+    old_reference_aircraft : ReferenceAircraftParameters
+        Parameters for the older reference aircraft baseline.
+    recent_reference_aircraft : ReferenceAircraftParameters
+        Parameters for the more recent reference aircraft baseline.
+    """
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        parameters: Optional[SubcategoryParameters] = None,
+    ):
+        self.name = name
+        self.parameters = parameters or SubcategoryParameters()
+        self.aircraft: Dict[int, Aircraft] = {}
+        self.old_reference_aircraft = ReferenceAircraftParameters()
+        self.recent_reference_aircraft = ReferenceAircraftParameters()
+
+    def add_aircraft(self, aircraft: Aircraft) -> None:
+        """Add an aircraft to this subcategory.
+
+        Parameters
+        ----------
+        aircraft
+            Aircraft instance to add to the subcategory.
+        """
+        self.aircraft[len(self.aircraft)] = aircraft
+
+    def remove_aircraft(self, aircraft_name: str) -> None:
+        """Remove an aircraft from this subcategory by name.
+
+        Parameters
+        ----------
+        aircraft_name
+            Name of the aircraft to remove.
+        """
+        self.aircraft = {
+            i: aircraft
+            for i, aircraft in enumerate(
+                [a for a in self.aircraft.values() if a.name != aircraft_name]
+            )
+        }
+
+    def compute(self) -> None:
+        """Execute compute method on all aircraft in the subcategory."""
+        for aircraft in self.aircraft.values():
+            compute_method = getattr(aircraft, "compute", None)
+            if callable(compute_method):
+                compute_method()
+
+
+class Category(object):
+    """Represents a category of aircraft in the fleet (e.g., Short Range, Medium Range).
+
+    Categories group subcategories of aircraft that operate in similar market segments.
+    Each category has parameters defining aircraft lifetime and market share thresholds.
+
+    Parameters
+    ----------
+    name
+        Name identifier for the category (e.g., 'Short Range', 'Medium Range', 'Long Range').
+    parameters
+        Category parameters including aircraft lifetime.
+
+    Attributes
+    ----------
+    name : str
+        Name identifier for the category.
+    parameters : CategoryParameters
+        Category parameters including aircraft lifetime.
+    subcategories : Dict[int, SubCategory]
+        Dictionary of subcategories within this category.
+    total_shares : float
+        Sum of all subcategory market shares (should equal 100%).
+    """
+
+    def __init__(self, name: str, parameters: CategoryParameters):
+        self.name = name
+        self.parameters = parameters
+        self.subcategories: Dict[int, SubCategory] = {}
+        self.total_shares = 0.0
+
+    def _compute(self) -> None:
+        """Validate shares and compute all subcategories."""
+        self._check_shares()
+        for subcategory in self.subcategories.values():
+            subcategory.compute()
+
+    def add_subcategory(self, subcategory: SubCategory) -> None:
+        """Add a subcategory to this category.
+
+        Parameters
+        ----------
+        subcategory
+            SubCategory instance to add.
+        """
+        self.subcategories[len(self.subcategories)] = subcategory
+
+    def remove_subcategory(self, subcategory_name: str) -> None:
+        """Remove a subcategory from this category by name.
+
+        Parameters
+        ----------
+        subcategory_name
+            Name of the subcategory to remove.
+        """
+        self.subcategories = {
+            i: subcat
+            for i, subcat in enumerate(
+                [sub for sub in self.subcategories.values() if sub.name != subcategory_name]
+            )
+        }
+        self._check_shares()
+
+    def _check_shares(self) -> None:
+        """Validate that subcategory shares sum to 100%."""
+        if not self.subcategories:
+            self.total_shares = 0.0
+            return
+        self.total_shares = sum(
+            float(sub.parameters.share or 0.0) for sub in self.subcategories.values()
+        )
+        if not np.isclose(self.total_shares, 100.0, atol=0.1):
+            raise UserWarning(
+                "Total shares for category %s are %f instead of 100%",
+                (self.name, self.total_shares),
+            )
+
+
+class Fleet(object):
+    """Represents the complete aircraft fleet structure.
+
+    The Fleet class manages the hierarchical structure of aircraft categories,
+    subcategories, and individual aircraft types. It loads configuration from
+    YAML files and provides methods for fleet manipulation and display.
+
+    Parameters
+    ----------
+    parameters
+        External parameters used for reference aircraft calibration (e.g., energy shares).
+    aircraft_inventory_path
+        Path to the YAML file containing the aircraft inventory definitions.
+        Defaults to the package's default aircraft inventory.
+    fleet_config_path
+        Path to the YAML file containing the fleet structure configuration.
+        Defaults to the package's default fleet configuration.
+
+    Attributes
+    ----------
+    categories : Dict[str, Category]
+        Dictionary of aircraft categories indexed by category name.
+    parameters
+        External parameters for reference aircraft calibration.
+    aircraft_inventory_path : Path
+        Path to the aircraft inventory YAML file.
+    fleet_config_path : Path
+        Path to the fleet configuration YAML file.
+    all_aircraft_elements : dict
+        Flattened dictionary of all aircraft elements per category.
+    """
+
+    def __init__(
+        self,
+        parameters=None,
+        aircraft_inventory_path: Optional[Path] = None,
+        fleet_config_path: Optional[Path] = None,
+    ):
+        self._categories: Dict[str, Category] = {}
+        self.parameters = parameters
+        self.aircraft_inventory_path = (
+            Path(aircraft_inventory_path)
+            if aircraft_inventory_path is not None
+            else DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE
+        )
+        self.fleet_config_path = (
+            Path(fleet_config_path) if fleet_config_path is not None else DEFAULT_FLEET_CONFIG_FILE
+        )
+
+        self._build_default_fleet()
+        self.all_aircraft_elements = self.get_all_aircraft_elements()
+
+    def compute(self):
+        """Execute compute on all categories in the fleet."""
+        for cat in self.categories.values():
+            cat._compute()
+
+    @property
+    def categories(self):
+        """Dict[str, Category]: Dictionary of aircraft categories."""
+        return self._categories
+
+    @categories.setter
+    def categories(self, value):
+        self._categories = value
+        self.all_aircraft_elements = self.get_all_aircraft_elements()
+
+    def get_all_aircraft_elements(self):
+        """Retrieve all aircraft elements organized by category.
+
+        Creates a flattened view of all aircraft in the fleet, including reference
+        aircraft, with their full qualified names set.
+
+        Returns
+        -------
+        dict
+            Dictionary mapping category names to lists of aircraft elements
+            (reference aircraft parameters and Aircraft instances).
+        """
+        all_aircraft_elements = {}
+
+        for category in self.categories.values():
+            if not category.subcategories:
+                continue
+
+            aircraft_per_category = []
+            subcategory = category.subcategories[0]
+
+            ref_old_aircraft_name = f"{category.name}:{subcategory.name}:old_reference"
+            subcategory.old_reference_aircraft.full_name = ref_old_aircraft_name
+            aircraft_per_category.append(subcategory.old_reference_aircraft)
+
+            ref_recent_aircraft_name = f"{category.name}:{subcategory.name}:recent_reference"
+            subcategory.recent_reference_aircraft.full_name = ref_recent_aircraft_name
+            aircraft_per_category.append(subcategory.recent_reference_aircraft)
+
+            for subcategory in category.subcategories.values():
+                for aircraft in subcategory.aircraft.values():
+                    aircraft_name = f"{category.name}:{subcategory.name}:{aircraft.name}"
+                    aircraft.parameters.full_name = aircraft_name
+                    aircraft_per_category.append(aircraft)
+
+            all_aircraft_elements[category.name] = aircraft_per_category
+
+        return all_aircraft_elements
+
+    def pretty_print(
+        self,
+        include_aircraft=True,
+        indent=2,
+        display=True,
+        absolute=False,
+        reference="recent",
+    ):
+        """Return (and optionally print) a summary of the fleet.
+
+        Parameters
+        ----------
+        include_aircraft : bool
+            Whether to list individual aircraft under each subcategory.
+        indent : int
+            Number of spaces used for indentation when printing nested entries.
+        display : bool
+            If True, print the generated summary; otherwise only return the string.
+        absolute : bool
+            When True, convert aircraft deltas (consumption, DOC, NOx, soot) into
+            absolute values using the selected reference aircraft as the baseline.
+        reference : str
+            Which reference aircraft to use for absolute conversions; accepts
+            "recent" (default) or "old". If the requested reference is missing,
+            the method falls back to the other available reference.
+        """
+
+        reference_mode = reference.lower()
+        if reference_mode not in {"recent", "old"}:
+            raise ValueError("reference must be 'recent' or 'old'")
+
+        def _format_value(label, value, suffix=""):
+            if value is None:
+                return None
+            if isinstance(value, float) and value.is_integer():
+                value = int(value)
+            return f"{label}={value}{suffix}"
+
+        def _format_absolute(label, base_value, delta_percent, unit=""):
+            if base_value is None or delta_percent is None:
+                return None
+            absolute_value = base_value * (1 + delta_percent / 100.0)
+            return f"{label}={absolute_value:.4g}{unit}"
+
+        def _format_reference_line(label, reference_obj):
+            if reference_obj is None:
+                return None
+            bits = list(
+                filter(
+                    None,
+                    [
+                        _format_value("EIS", reference_obj.entry_into_service_year, " y"),
+                        _format_value("energy/ASK", reference_obj.energy_per_ask, " MJ/ASK"),
+                        _format_value("DOC", reference_obj.doc_non_energy_base, " €/ASK"),
+                        _format_value("NOx", reference_obj.emission_index_nox, " kg/ASK"),
+                        _format_value("soot", reference_obj.emission_index_soot, " kg/ASK"),
+                    ],
+                )
+            )
+            descriptor = ", ".join(bits) if bits else "no data"
+            return f"{level_two}- {label} reference ({descriptor})"
+
+        def _select_base_reference(subcategory):
+            preferred = (
+                subcategory.recent_reference_aircraft
+                if reference_mode == "recent"
+                else subcategory.old_reference_aircraft
+            )
+            fallback = (
+                subcategory.old_reference_aircraft
+                if reference_mode == "recent"
+                else subcategory.recent_reference_aircraft
+            )
+            return preferred or fallback
+
+        def _format_aircraft_line(aircraft, base_reference=None):
+            params = aircraft.parameters or AircraftParameters()
+            if absolute and base_reference is not None:
+                bits = list(
+                    filter(
+                        None,
+                        [
+                            aircraft.energy_type or "UNKNOWN",
+                            _format_value("EIS", params.entry_into_service_year, "y"),
+                            _format_absolute(
+                                "energy/ASK",
+                                base_reference.energy_per_ask,
+                                params.consumption_evolution,
+                                " MJ/ASK",
+                            ),
+                            _format_absolute(
+                                "DOC",
+                                base_reference.doc_non_energy_base,
+                                params.doc_non_energy_evolution,
+                                " €/ASK",
+                            ),
+                            _format_absolute(
+                                "NOx",
+                                base_reference.emission_index_nox,
+                                params.nox_evolution,
+                                " kg/ASK",
+                            ),
+                            _format_absolute(
+                                "soot",
+                                base_reference.emission_index_soot,
+                                params.soot_evolution,
+                                " kg/ASK",
+                            ),
+                        ],
+                    )
+                )
+            else:
+                bits = list(
+                    filter(
+                        None,
+                        [
+                            aircraft.energy_type or "UNKNOWN",
+                            _format_value("EIS", params.entry_into_service_year, "y"),
+                            _format_value("cons", params.consumption_evolution, "%"),
+                            _format_value("NOx", params.nox_evolution, "%"),
+                            _format_value("soot", params.soot_evolution, "%"),
+                            _format_value("DOC", params.doc_non_energy_evolution, "%"),
+                        ],
+                    )
+                )
+            descriptor = ", ".join(bits) if bits else "no data"
+            return f"{level_two}- {aircraft.name} ({descriptor})"
+
+        lines = []
+        indent = max(indent, 0)
+        level_one = " " * indent
+        level_two = " " * (indent * 2)
+
+        if not self.categories:
+            lines.append("Fleet has no categories configured.")
+        for category in self.categories.values():
+            subcategories = list(category.subcategories.values())
+            share_sum = sum(float(sub.parameters.share or 0.0) for sub in subcategories)
+            meta_bits = []
+            if category.parameters is not None:
+                if category.parameters.life is not None:
+                    meta_bits.append(f"life={category.parameters.life:g}y")
+                if category.parameters.limit is not None:
+                    meta_bits.append(f"limit={category.parameters.limit:g}")
+            meta_bits.append(f"subcategories={len(subcategories)}")
+            if subcategories:
+                meta_bits.append(f"share_sum={share_sum:.1f}%")
+            category_header = f"{category.name} ({', '.join(meta_bits)})"
+            lines.append(category_header)
+
+            for subcategory in subcategories:
+                share_value = subcategory.parameters.share if subcategory.parameters else None
+                share_str = f"{share_value:.1f}%" if share_value is not None else "n/a"
+                aircraft_count = len(subcategory.aircraft)
+                sub_line = (
+                    f"{level_one}- {subcategory.name} "
+                    f"(share={share_str}, aircraft={aircraft_count})"
+                )
+                lines.append(sub_line)
+
+                # Reference aircraft details
+                ref_old_line = _format_reference_line("old", subcategory.old_reference_aircraft)
+                if ref_old_line:
+                    lines.append(ref_old_line)
+                ref_recent_line = _format_reference_line(
+                    "recent", subcategory.recent_reference_aircraft
+                )
+                if ref_recent_line:
+                    lines.append(ref_recent_line)
+
+                if include_aircraft and aircraft_count:
+                    base_reference = _select_base_reference(subcategory) if absolute else None
+                    for aircraft in subcategory.aircraft.values():
+                        lines.append(_format_aircraft_line(aircraft, base_reference=base_reference))
+
+        output = "\n".join(lines)
+        if display:
+            print(output)
+        return output
+
+    def _build_default_fleet(self):
+        if self.aircraft_inventory_path.exists() and self.fleet_config_path.exists():
+            self._build_fleet_from_yaml()
+        else:
+            warnings.warn(
+                "Fleet configuration YAML files were not found.",
+                UserWarning,
+            )
+
+    def _load_aircraft_inventory(self):
+        data = read_yaml_file(str(self.aircraft_inventory_path))
+        aircraft_inventory: Dict[str, Aircraft] = {}
+        reference_inventory: Dict[str, ReferenceAircraftParameters] = {}
+
+        for reference_entry in data.get("reference_aircraft", []):
+            reference_id = reference_entry.get("id")
+            if reference_id is None:
+                continue
+            params = ReferenceAircraftParameters(**reference_entry.get("parameters", {}))
+            reference_inventory[reference_id] = params
+
+        for entry in data.get("aircraft", []):
+            aircraft_id = entry.get("id")
+            if aircraft_id is None:
+                continue
+            params = AircraftParameters(**entry.get("parameters", {}))
+            aircraft_inventory[aircraft_id] = Aircraft(
+                name=entry.get("name"),
+                parameters=params,
+                energy_type=entry.get("energy_type", "DROP_IN_FUEL"),
+            )
+
+        return aircraft_inventory, reference_inventory
+
+    @staticmethod
+    def _populate_reference_aircraft(reference, data):
+        if not data:
+            return
+        for attr, value in data.items():
+            setattr(reference, attr, value)
+
+    def _build_fleet_from_yaml(self):
+        inventory, reference_inventory = self._load_aircraft_inventory()
+        fleet_config = read_yaml_file(str(self.fleet_config_path))
+        categories: Dict[str, Category] = {}
+        subcategory_inventory = self._build_subcategory_inventory(
+            fleet_config.get("subcategories", [])
+        )
+
+        for category_cfg in fleet_config.get("categories", []):
+            cat_name = category_cfg.get("name")
+            if cat_name is None:
+                continue
+            cat_params = CategoryParameters(**category_cfg.get("parameters", {}))
+            category = Category(cat_name, parameters=cat_params)
+
+            for sub_cfg_entry in category_cfg.get("subcategories", []):
+                sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
+                resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_inventory)
+
+                share_value = resolved_sub_cfg.get("share", 0.0)
+
+                subcategory = SubCategory(
+                    resolved_sub_cfg.get("name"),
+                    parameters=SubcategoryParameters(share=share_value),
+                )
+
+                reference_cfg = resolved_sub_cfg.get("reference_aircraft", {})
+                subcategory.old_reference_aircraft = self._select_reference_aircraft(
+                    reference_cfg,
+                    "old",
+                    reference_inventory,
+                    subcategory.old_reference_aircraft,
+                )
+                subcategory.recent_reference_aircraft = self._select_reference_aircraft(
+                    reference_cfg,
+                    "recent",
+                    reference_inventory,
+                    subcategory.recent_reference_aircraft,
+                )
+
+                for aircraft_entry in resolved_sub_cfg.get("aircraft", []):
+                    aircraft_id = self._extract_aircraft_id(aircraft_entry)
+                    if aircraft_id not in inventory:
+                        raise KeyError(
+                            f"Aircraft '{aircraft_id}' is missing from inventory {self.aircraft_inventory_path}"
+                        )
+                    subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
+
+                category.add_subcategory(subcategory=subcategory)
+
+            categories[category.name] = category
+            category._check_shares()
+
+        self.categories = categories
+        self._calibrate_reference_aircraft()
+
+    @staticmethod
+    def _build_subcategory_inventory(entries):
+        inventory: Dict[str, Dict[str, Any]] = {}
+        for entry in entries:
+            sub_id = entry.get("id")
+            if sub_id is None:
+                continue
+            inventory[sub_id] = entry
+        return inventory
+
+    def _resolve_subcategory_config(self, sub_cfg, subcategory_inventory):
+        sub_id = sub_cfg.get("id")
+        base_cfg: Dict[str, Any] = {}
+        if sub_id is not None:
+            if sub_id not in subcategory_inventory:
+                raise KeyError(
+                    f"Subcategory '{sub_id}' referenced in {self.fleet_config_path} is undefined"
+                )
+            base_cfg = deepcopy(subcategory_inventory[sub_id])
+
+        resolved_cfg = deepcopy(base_cfg)
+        for key, value in sub_cfg.items():
+            if key == "id":
+                continue
+            if isinstance(value, dict):
+                existing = resolved_cfg.get(key)
+                merged = deepcopy(existing) if isinstance(existing, dict) else {}
+                merged.update(value)
+                resolved_cfg[key] = merged
+            else:
+                resolved_cfg[key] = deepcopy(value)
+
+        if not resolved_cfg.get("name"):
+            raise KeyError("Each subcategory definition must include a name")
+
+        return resolved_cfg
+
+    @staticmethod
+    def _normalize_subcategory_entry(entry: Any) -> Dict[str, Any]:
+        if isinstance(entry, str):
+            return {"id": entry}
+        if isinstance(entry, dict):
+            return entry
+        raise TypeError("Subcategory entries must be either string IDs or dictionaries")
+
+    @staticmethod
+    def _extract_aircraft_id(entry: Any) -> str:
+        if isinstance(entry, str):
+            return entry
+        if isinstance(entry, dict):
+            aircraft_id = entry.get("ref") or entry.get("id")
+            if aircraft_id:
+                return aircraft_id
+        raise KeyError("Aircraft entries must provide an ID either as a string or under 'ref'/'id'")
+
+    def _select_reference_aircraft(
+        self,
+        reference_cfg: Dict[str, Any],
+        key: str,
+        reference_inventory: Dict[str, ReferenceAircraftParameters],
+        default_reference: ReferenceAircraftParameters,
+    ) -> ReferenceAircraftParameters:
+        ref_id = reference_cfg.get(f"{key}_ref")
+        if ref_id is not None:
+            if ref_id not in reference_inventory:
+                raise KeyError(
+                    f"Reference aircraft '{ref_id}' is missing from inventory {self.aircraft_inventory_path}"
+                )
+            return deepcopy(reference_inventory[ref_id])
+
+        inline_data = reference_cfg.get(key, {})
+        self._populate_reference_aircraft(default_reference, inline_data)
+        return default_reference
+
+    def _get_subcategory(self, category_name: str, subcategory_name: str):
+        category = self.categories.get(category_name)
+        if category is None:
+            return None
+        for subcategory in category.subcategories.values():
+            if subcategory.name == subcategory_name:
+                return subcategory
+        return None
+
+    def _calibrate_reference_aircraft(self):
+        if self.parameters is None:
+            return
+
+        sr_cat = self.categories.get("Short Range")
+        sr_nb_cat = self._get_subcategory("Short Range", "SR conventional narrow-body")
+        if sr_cat is not None and sr_nb_cat is not None:
+            old_sr_energy = sr_nb_cat.old_reference_aircraft.energy_per_ask
+            recent_sr_energy = sr_nb_cat.recent_reference_aircraft.energy_per_ask
+            if old_sr_energy is None or recent_sr_energy is None:
+                raise ValueError("Short Range reference aircraft energy_per_ask must be defined")
+
+            mean_energy_init_ask_short_range = (
+                self.parameters.energy_consumption_init[2019]
+                * self.parameters.short_range_energy_share_2019
+            ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+
+            share_recent_short_range = (mean_energy_init_ask_short_range - old_sr_energy) / (
+                recent_sr_energy - old_sr_energy
+            )
+
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            sr_life = 25
+            # sr_life = sr_cat.parameters.life
+            lambda_short_range = np.log(100 / 2 - 1) / (sr_life / 2)
+
+            if 1 > share_recent_short_range > 0:
+                t0_sr = np.log(
+                    (1 - share_recent_short_range) / share_recent_short_range
+                ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
+                t_eis_short_range = t0_sr - sr_life / 2
+            elif share_recent_short_range > 1:
+                warnings.warn(
+                    "Warning Message - Fleet Model: Short Range Aircraft: "
+                    "Average initial short-range fleet energy per ASK is lower than default energy per ASK "
+                    "for the recent reference aircraft - AeroMAPS is using initial short-range fleet energy per ASK "
+                    "as old and recent reference aircraft energy performances!"
+                )
+                t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_life
+                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+                sr_nb_cat.recent_reference_aircraft.energy_per_ask = (
+                    mean_energy_init_ask_short_range
+                )
+            else:
+                warnings.warn(
+                    "Warning Message - Fleet Model: Short Range Aircraft: "
+                    "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                    "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. "
+                    "Recent reference aircraft is introduced on first prospective year"
+                )
+                t_eis_short_range = self.parameters.prospection_start_year
+                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+
+            sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
+
+        mr_cat = self.categories.get("Medium Range")
+        mr_subcat = self._get_subcategory("Medium Range", "MR conventional narrow-body")
+        if mr_cat is not None and mr_subcat is not None:
+            old_mr_energy = mr_subcat.old_reference_aircraft.energy_per_ask
+            recent_mr_energy = mr_subcat.recent_reference_aircraft.energy_per_ask
+            if old_mr_energy is None or recent_mr_energy is None:
+                raise ValueError("Medium Range reference aircraft energy_per_ask must be defined")
+
+            mean_energy_init_ask_medium_range = (
+                self.parameters.energy_consumption_init[2019]
+                * self.parameters.medium_range_energy_share_2019
+            ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
+
+            share_recent_medium_range = (mean_energy_init_ask_medium_range - old_mr_energy) / (
+                recent_mr_energy - old_mr_energy
+            )
+
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            mr_life = 25
+            # mr_life = mr_cat.parameters.life
+            lambda_medium_range = np.log(100 / 2 - 1) / (mr_life / 2)
+
+            if 1 > share_recent_medium_range > 0:
+                t0_mr = np.log(
+                    (1 - share_recent_medium_range) / share_recent_medium_range
+                ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
+                t_eis_medium_range = t0_mr - mr_life / 2
+            elif share_recent_medium_range > 1:
+                warnings.warn(
+                    "Warning Message - Fleet Model: medium Range Aircraft: "
+                    "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                    "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+                )
+                t_eis_medium_range = self.parameters.prospection_start_year - 1 - mr_life
+                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+                mr_subcat.recent_reference_aircraft.energy_per_ask = (
+                    mean_energy_init_ask_medium_range
+                )
+            else:
+                warnings.warn(
+                    "Warning Message - Fleet Model: medium Range Aircraft: "
+                    "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                    "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. "
+                    "Recent reference aircraft is introduced on first prospective year"
+                )
+                t_eis_medium_range = self.parameters.prospection_start_year
+                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
+
+            mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
+
+        lr_cat = self.categories.get("Long Range")
+        lr_subcat = self._get_subcategory("Long Range", "LR conventional wide-body")
+        if lr_cat is not None and lr_subcat is not None:
+            old_lr_energy = lr_subcat.old_reference_aircraft.energy_per_ask
+            recent_lr_energy = lr_subcat.recent_reference_aircraft.energy_per_ask
+            if old_lr_energy is None or recent_lr_energy is None:
+                raise ValueError("Long Range reference aircraft energy_per_ask must be defined")
+
+            mean_energy_init_ask_long_range = (
+                self.parameters.energy_consumption_init[2019]
+                * self.parameters.long_range_energy_share_2019
+            ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
+
+            share_recent_long_range = (mean_energy_init_ask_long_range - old_lr_energy) / (
+                recent_lr_energy - old_lr_energy
+            )
+
+            # We fix the life of short-range aircraft to 25 years for calibration
+            # This way the share between old and recent reference aircraft in 2019 remains the same
+            lr_life = 25
+            # lr_life = lr_cat.parameters.life
+            lambda_long_range = np.log(100 / 2 - 1) / (lr_life / 2)
+
+            if 1 > share_recent_long_range > 0:
+                t0_lr = np.log(
+                    (1 - share_recent_long_range) / share_recent_long_range
+                ) / lambda_long_range + (self.parameters.prospection_start_year - 1)
+                t_eis_long_range = t0_lr - lr_life / 2
+            elif share_recent_long_range > 1:
+                warnings.warn(
+                    "Warning Message - Fleet Model: long Range Aircraft: "
+                    "Average initial long-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
+                    "AeroMAPS is using initial long-range fleet energy per ASK as old and recent reference aircraft energy performances!"
+                )
+                t_eis_long_range = self.parameters.prospection_start_year - 1 - lr_life
+                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+                lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+            else:
+                warnings.warn(
+                    "Warning Message - Fleet Model: long Range Aircraft: "
+                    "Average initial long-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                    "AeroMAPS is using initial long-range fleet energy per ASK as old aircraft energy performances. "
+                    "Recent reference aircraft is introduced on first prospective year"
+                )
+                t_eis_long_range = self.parameters.prospection_start_year
+                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
+
+            lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
+
+
 class FleetModel(AeroMAPSModel):
+    """AeroMAPS model for computing fleet evolution and characteristics over time.
+
+    This model computes the temporal evolution of the aircraft fleet composition,
+    including market shares for each aircraft type, energy consumption, emissions
+    (NOx, soot), and non-energy direct operating costs. It uses S-shaped logistic
+    functions to model the gradual introduction and retirement of aircraft types.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('fleet_model' by default).
+    fleet
+        Fleet instance containing the fleet structure and aircraft definitions.
+    *args
+        Additional positional arguments passed to parent class.
+    **kwargs
+        Additional keyword arguments passed to parent class.
+
+    Attributes
+    ----------
+    fleet : Fleet
+        The Fleet instance used for computations.
+
+    Notes
+    -----
+    The model computes several categories of outputs stored in self.df:
+
+    - **Single aircraft shares**: Individual aircraft cumulative market penetration
+    - **Aircraft shares**: Actual market share for each aircraft type
+    - **Energy consumption**: Energy per ASK by subcategory and energy type
+    - **DOC non-energy**: Non-energy direct operating costs by subcategory
+    - **Non-CO2 emissions**: NOx and soot emission indices by subcategory
+    - **Category means**: Weighted averages across subcategories for each category
+    """
+
     def __init__(self, name="fleet_model", fleet=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
@@ -80,6 +1060,24 @@ class FleetModel(AeroMAPSModel):
     def compute(
         self,
     ):
+        """Compute fleet evolution and all derived metrics.
+
+        Executes the complete fleet model computation pipeline:
+
+        1. Single aircraft share computation (cumulative S-curve penetration)
+        2. Aircraft share computation (differential market shares)
+        3. Energy consumption and share by energy type
+        4. Non-energy direct operating costs (DOC)
+        5. Non-CO2 emission indices (NOx, soot)
+        6. Category-level mean energy consumption
+        7. Category-level mean DOC
+        8. Category-level mean emission indices
+
+        Returns
+        -------
+        np.ndarray
+            Dummy output array (actual results stored in self.df).
+        """
         # Start from empty dataframe (necessary for multiple runs of the model)
         self.df = pd.DataFrame(index=self.df.index)
 
@@ -108,6 +1106,29 @@ class FleetModel(AeroMAPSModel):
         self._compute_mean_non_co2_emission_index()
 
     def _compute_single_aircraft_share(self):
+        """Compute cumulative single aircraft market penetration shares.
+
+        Uses S-shaped logistic functions to model the gradual introduction of
+        aircraft into the fleet based on their entry-into-service year and
+        the category's fleet renewal lifetime.
+
+        Handles two configuration modes:
+
+        - Single subcategory: All aircraft compete for the full 100% market share,
+          with reference aircraft (old and recent) taking the remaining share.
+        - Multiple subcategories: Each subcategory has a target share parameter,
+          and aircraft within subcategories compete for that share. The last
+          subcategory fills the remainder.
+
+        The computation adjusts reference aircraft curves to match historical
+        fleet composition by scaling between a baseline 25-year lifetime and
+        the actual category lifetime.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:{aircraft}:single_aircraft_share``
+        ``{category}:{subcategory}:old_reference:single_aircraft_share``
+        ``{category}:{subcategory}:recent_reference:single_aircraft_share``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -280,6 +1301,24 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_aircraft_share(self):
+        """Compute individual aircraft share in the fleet.
+
+        Calculates each aircraft's share (not cumulative) by differencing
+        single_aircraft_share values. The share represents the actual portion
+        of the fleet using that specific aircraft type, computed by subtracting
+        the single_aircraft_share of the next aircraft in sequence.
+
+        For the last aircraft in a subcategory/category, the share equals its
+        single_aircraft_share. For others, the share is the difference between
+        consecutive single_aircraft_share values.
+
+        Also computes reference aircraft shares:
+        - recent_reference: first subcategory reference minus first new aircraft
+        - old_reference: 100% minus recent_reference single_aircraft_share
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:{aircraft}:aircraft_share``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -344,6 +1383,25 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_energy_consumption_and_share_wrt_energy_type(self):
+        """Compute energy consumption and fleet share by energy type.
+
+        For each category and subcategory, calculates:
+
+        - Total energy consumption weighted by aircraft share
+        - Energy consumption broken down by energy type (drop-in fuel, hydrogen,
+          electric, hybrid electric)
+        - Fleet share by energy type
+
+        Reference aircraft (old and recent) are assumed to use drop-in fuel.
+        New aircraft contribute based on their defined energy type. Hybrid
+        electric aircraft split their consumption and share between drop-in
+        fuel and electric based on their hybridization factor.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:energy_consumption:{energy_type}``
+        ``{category}:{subcategory}:share:{energy_type}``
+        ``{category}:share:{energy_type}``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -470,6 +1528,27 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_doc_non_energy(self):
+        """Compute direct operating costs excluding energy costs.
+
+        Calculates the non-energy portion of direct operating costs (DOC)
+        for each category and subcategory, weighted by aircraft share.
+        This includes costs like maintenance, crew, insurance, etc.
+
+        Reference aircraft use their base DOC values. New aircraft apply
+        their doc_non_energy_evolution percentage to the recent reference
+        aircraft's base value.
+
+        Results are broken down by energy type for allocation purposes:
+
+        - dropin_fuel: Drop-in fuel aircraft DOC
+        - hydrogen: Hydrogen aircraft DOC
+        - electric: Electric aircraft DOC
+        - hybrid_electric: Hybrid electric aircraft DOC
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:doc_non_energy:{energy_type}``
+        ``{category}:doc_non_energy:{energy_type}``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -559,6 +1638,29 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def _compute_non_co2_emission_index(self):
+        """Compute NOx and soot emission indices for the fleet.
+
+        Calculates emission indices for non-CO2 pollutants (NOx and soot)
+        for each category and subcategory. Reference aircraft use their
+        base emission index values. New aircraft apply evolution factors
+        (nox_evolution, soot_evolution) to the recent reference values.
+
+        Emission indices are computed per energy type:
+
+        - dropin_fuel: Conventional and SAF-powered aircraft emissions
+        - hydrogen: Hydrogen aircraft emissions (NOx only, no soot)
+        - electric: Electric aircraft emissions (none)
+        - hybrid_electric: Hybrid electric aircraft emissions
+
+        Category-level emission indices are computed as share-weighted
+        averages across all subcategories and energy types.
+
+        Results are stored directly in the DataFrame with keys like:
+        ``{category}:{subcategory}:emission_index_nox:{energy_type}``
+        ``{category}:{subcategory}:emission_index_soot:{energy_type}``
+        ``{category}:emission_index_nox``
+        ``{category}:emission_index_soot``
+        """
         # Non-CO2 (NOx and soot) emission index calculations for drop-in fuel and hydrogen
         for category in self.fleet.categories.values():
             # Reference aircraft information
@@ -782,6 +1884,21 @@ class FleetModel(AeroMAPSModel):
                     )
 
     def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
+        """Compute mean energy consumption per category by energy type.
+
+        Aggregates subcategory-level energy consumption values to the category
+        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
+        electric), calculates the share-weighted mean energy consumption.
+
+        The mean consumption for each energy type is computed by dividing
+        the total energy consumption by the corresponding share. The overall
+        category mean consumption is then computed as a weighted average
+        across all energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:energy_consumption:{energy_type}``
+        ``{category}:energy_consumption``
+        """
         for category in self.fleet.categories.values():
             # Mean energy consumption per category
             # Initialization
@@ -863,6 +1980,20 @@ class FleetModel(AeroMAPSModel):
                 )
 
     def _compute_mean_doc_non_energy(self):
+        """Compute mean non-energy DOC per category by energy type.
+
+        Aggregates subcategory-level DOC (non-energy) values to the category
+        level. For each energy type (drop-in fuel, hydrogen, electric, hybrid
+        electric), calculates the share-weighted mean DOC.
+
+        The mean DOC for each energy type is computed by dividing the total
+        DOC by the corresponding share. The overall category mean DOC is
+        then computed as a weighted average across all energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:doc_non_energy:{energy_type}``
+        ``{category}:doc_non_energy``
+        """
         for category in self.fleet.categories.values():
             # Mean non energy DOC per category
             # Initialization
@@ -932,6 +2063,23 @@ class FleetModel(AeroMAPSModel):
                 )
 
     def _compute_mean_non_co2_emission_index(self):
+        """Compute mean NOx and soot emission indices per category.
+
+        Aggregates subcategory-level emission indices to the category level.
+        For each energy type (drop-in fuel, hydrogen, electric, hybrid electric),
+        calculates the share-weighted mean emission index.
+
+        The mean emission index for each energy type is computed by dividing
+        the total emission index by the corresponding share. The overall
+        category mean is then computed as a weighted average across all
+        energy types.
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:emission_index_nox:{energy_type}``
+        ``{category}:emission_index_soot:{energy_type}``
+        ``{category}:emission_index_nox``
+        ``{category}:emission_index_soot``
+        """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
@@ -1049,6 +2197,17 @@ class FleetModel(AeroMAPSModel):
         self.df = pd.concat([self.df, final_df], axis=1)
 
     def plot(self):
+        """Generate fleet renewal visualization plots.
+
+        Creates a 2-row matplotlib figure with one column per category.
+        The top row shows stacked area plots of aircraft shares over time,
+        including old reference, recent reference, and new aircraft types.
+        The bottom row shows the evolution of mean fleet energy consumption.
+
+        The plot displays data from prospection_start_year to end_year.
+        Aircraft shares are shown as cumulative (stacked) areas, while
+        energy consumption is shown as a line plot.
+        """
         x = np.linspace(
             self.prospection_start_year,
             self.end_year,
@@ -1132,6 +2291,33 @@ class FleetModel(AeroMAPSModel):
         # plt.savefig("fleet_renewal.pdf")
 
     def _compute(self, life, entry_into_service_year, share, recent=False):
+        """Compute S-shaped aircraft market penetration curve.
+
+        Calculates the share of an aircraft type in the fleet over time
+        using a logistic (S-shaped) function. The curve models the typical
+        technology adoption pattern where market share grows slowly at first,
+        then accelerates, and finally levels off.
+
+        Parameters
+        ----------
+        life : float
+            Aircraft operational lifetime in years. Determines the slope
+            of the S-curve (shorter life = steeper curve).
+        entry_into_service_year : int
+            Year when the aircraft enters commercial service.
+        share : float
+            Target maximum market share for this aircraft type [%].
+        recent : bool, optional
+            If True, the midpoint is at entry_into_service_year (for recent
+            reference aircraft). If False, the midpoint is at entry + life/2
+            (for new aircraft). Default is False.
+
+        Returns
+        -------
+        numpy.ndarray
+            Array of share values [%] for each year from historic_start_year
+            to end_year. Values below a 2% threshold are set to zero.
+        """
         x = np.linspace(
             self.historic_start_year,
             self.end_year,
@@ -1152,960 +2338,3 @@ class FleetModel(AeroMAPSModel):
 
         y = np.where(y_share_max < limit, 0.0, y_share)
         return y
-
-
-class Aircraft(object):
-    def __init__(
-        self,
-        name: str = None,
-        parameters: AircraftParameters = None,
-        energy_type="DROP_IN_FUEL",
-    ):
-        self.name = name
-        if parameters is None:
-            parameters = AircraftParameters()
-        self.parameters = parameters
-        self.energy_type = energy_type
-
-    def from_dataframe_row(self, row):
-        self.name = row[AIRCRAFT_COLUMNS[0]]
-        self.parameters.entry_into_service_year = row[AIRCRAFT_COLUMNS[1]]
-        self.parameters.consumption_evolution = row[AIRCRAFT_COLUMNS[2]]
-        self.parameters.nox_evolution = row[AIRCRAFT_COLUMNS[3]]
-        self.parameters.soot_evolution = row[AIRCRAFT_COLUMNS[4]]
-        self.parameters.doc_non_energy_evolution = row[AIRCRAFT_COLUMNS[5]]
-        self.parameters.cruise_altitude = row[AIRCRAFT_COLUMNS[6]]
-        self.energy_type = row[AIRCRAFT_COLUMNS[7]]
-        self.parameters.hybridization_factor = row[AIRCRAFT_COLUMNS[8]]
-        self.parameters.ask_year = row[AIRCRAFT_COLUMNS[9]]
-        self.parameters.rc_cost = row[AIRCRAFT_COLUMNS[10]]
-        self.parameters.nrc_cost = row[AIRCRAFT_COLUMNS[11]]
-        self.parameters.oew = row[AIRCRAFT_COLUMNS[12]]
-
-        return self
-
-
-class SubCategory(object):
-    def __init__(self, name: str = None, parameters: SubcategoryParameters = None):
-        self.name = name
-        if parameters is None:
-            parameters = SubcategoryParameters()
-        self.parameters = parameters
-        self.aircraft = {}
-        self.old_reference_aircraft = ReferenceAircraftParameters()
-        self.recent_reference_aircraft = ReferenceAircraftParameters()
-
-        self._setup_datagrid()
-
-        self._setup_ui()
-
-    def add_aircraft(self, change=None, aircraft: Aircraft = None):
-        if aircraft is None:
-            aircraft_data = np.array(
-                [
-                    "New aircraft",
-                    2025,
-                    5.0,
-                    10.0,
-                    10.0,
-                    5.0,
-                    12000.0,
-                    "DROP_IN_FUEL",
-                    1.0,
-                    406000000.0,
-                    80000000.0,
-                    10000000000.0,
-                    40.0,
-                ]
-            ).reshape((1, len(AIRCRAFT_COLUMNS)))
-        else:
-            aircraft_data = np.array(
-                [
-                    aircraft.name,
-                    aircraft.parameters.entry_into_service_year,
-                    aircraft.parameters.consumption_evolution,
-                    aircraft.parameters.nox_evolution,
-                    aircraft.parameters.soot_evolution,
-                    aircraft.parameters.doc_non_energy_evolution,
-                    aircraft.parameters.cruise_altitude,
-                    aircraft.energy_type,
-                    aircraft.parameters.hybridization_factor,
-                    aircraft.parameters.ask_year,
-                    aircraft.parameters.rc_cost,
-                    aircraft.parameters.nrc_cost,
-                    aircraft.parameters.oew,
-                ]
-            ).reshape((1, len(AIRCRAFT_COLUMNS)))
-
-        # Add aircraft to grid
-        current_grid_df = self.datagrid.data
-        if len(current_grid_df) == 0:
-            new_index = 0
-        else:
-            new_index = current_grid_df.index[-1] + 1
-
-        current_grid_df = self.datagrid.data
-        additional_row = pd.DataFrame(
-            columns=current_grid_df.columns,
-            index=[new_index],
-            data=aircraft_data,
-        )
-
-        self.datagrid.data = pd.concat([self.datagrid.data, additional_row], ignore_index=True)
-
-        # TODO: see if we avoid this when aircraft is directly provided
-        self._update_parameters_from_grid()
-
-    def remove_aircraft(self, change=None, aircraft_name: str = None):
-        current_grid_df = self.datagrid.data
-
-        if aircraft_name is not None:
-            index_to_remove = current_grid_df.index[
-                current_grid_df[AIRCRAFT_COLUMNS[0]] == aircraft_name
-            ].tolist()
-        else:
-            selected_cells = self.datagrid.selected_cells
-
-            index_to_remove = []
-            for cell in selected_cells:
-                row_index = cell["r"]
-                if row_index not in index_to_remove:
-                    index_to_remove.append(row_index)
-
-        self.datagrid.data = current_grid_df.drop(index=index_to_remove)
-
-        self._update_parameters_from_grid()
-
-    def compute(self):
-        for aircraft in self.aircraft:
-            aircraft.compute()
-
-    def from_dataframe_row(self, row):
-        self.name = row[SUBCATEGORY_COLUMNS[0]]
-        self.parameters.share = row[SUBCATEGORY_COLUMNS[1]]
-
-        return self
-
-    def _setup_datagrid(self):
-        df = pd.DataFrame(columns=AIRCRAFT_COLUMNS)
-
-        self.datagrid = dg.DataGrid(df, selection_mode="cell", editable=True)
-        self.datagrid.auto_fit_columns = True
-
-    def _setup_ui(self):
-        button_add_row = ipw.Button(
-            description="Add Aircraft", style=ipw.ButtonStyle(button_color="darkgreen")
-        )
-        button_remove_row = ipw.Button(
-            description="Remove Aircraft", style=ipw.ButtonStyle(button_color="darkred")
-        )
-
-        button_add_row.on_click(self.add_aircraft)
-        button_remove_row.on_click(self.remove_aircraft)
-
-        self.datagrid.on_cell_change(self._update_parameters_from_grid)
-
-        self.ui = ipw.VBox([ipw.HBox([button_add_row, button_remove_row]), self.datagrid])
-        self.ui.layout.width = "1200px"
-        self.datagrid.auto_fit_columns = True
-
-    def _update_parameters_from_grid(self, change=None):
-        self.aircraft = {}
-        current_grid_df = self.datagrid.data
-
-        for index, row in current_grid_df.iterrows():
-            aircraft = Aircraft()
-            # self.aircraft[row["Name"]] = aircraft.from_dataframe_row(row)
-            self.aircraft[int(index)] = aircraft.from_dataframe_row(row)
-
-
-class Category(object):
-    def __init__(self, name, parameters: CategoryParameters):
-        self.name = name
-        self.parameters = parameters
-        self.subcategories = {}
-        self.total_shares = 100
-
-        self._setup_datagrid()
-
-        self._setup_ui()
-
-    def _compute(self):
-        self._check_shares()
-        if self.subcategories:
-            for subcategory in self.subcategories.values():
-                subcategory.compute()
-
-    def add_subcategory(self, change=None, subcategory: SubCategory = None):
-        if subcategory is None:
-            subcategory_data = np.array(
-                [
-                    "New subcategory",
-                    0.0,
-                ]
-            ).reshape((1, len(SUBCATEGORY_COLUMNS)))
-        else:
-            subcategory_data = np.array(
-                [
-                    subcategory.name,
-                    subcategory.parameters.share,
-                ]
-            ).reshape((1, len(SUBCATEGORY_COLUMNS)))
-
-        # Add subcategory to grid
-        current_grid_df = self.datagrid.data
-        if len(current_grid_df) == 0:
-            new_index = 0
-        else:
-            new_index = current_grid_df.index[-1] + 1
-
-        additional_row = pd.DataFrame(
-            columns=current_grid_df.columns,
-            index=[new_index],
-            data=subcategory_data,
-        )
-
-        if subcategory is not None:
-            self.subcategories[new_index] = subcategory
-        else:
-            # TODO: can we really have several rows?
-            for index, row in additional_row.iterrows():
-                subcategory = SubCategory()
-                self.subcategories[new_index] = subcategory.from_dataframe_row(row)
-
-        self.datagrid.data = pd.concat([self.datagrid.data, additional_row], ignore_index=True)
-        self.datagrid.auto_fit_columns = True
-
-    def remove_subcategory(self, change=None, subcategory_name: str = None):
-        current_grid_df = self.datagrid.get_visible_data()
-
-        if subcategory_name is not None:
-            index_to_remove = current_grid_df.index[
-                current_grid_df[SUBCATEGORY_COLUMNS[0]] == subcategory_name
-            ].tolist()
-        else:
-            selected_cells = self.datagrid.selected_cells
-
-            index_to_remove = []
-            for cell in selected_cells:
-                row_index = cell["r"]
-                if row_index not in index_to_remove:
-                    index_to_remove.append(row_index)
-
-        # Remove and reset index
-        for index in index_to_remove:
-            self.subcategories.pop(index)
-        self.subcategories = {
-            i: self.subcategories[k] for i, k in enumerate(sorted(self.subcategories.keys()))
-        }
-        self.datagrid.data = current_grid_df.drop(index=index_to_remove)
-        self.datagrid.auto_fit_columns = True
-
-    def _setup_datagrid(self):
-        df = pd.DataFrame(columns=SUBCATEGORY_COLUMNS)
-
-        self.datagrid = dg.DataGrid(df, selection_mode="cell", editable=True)
-        self.datagrid.auto_fit_columns = True
-        self.datagrid.on_cell_change(self._update)
-
-    def _setup_ui(self):
-        self.button_add_row = ipw.Button(
-            description="Add Subcategory", style=ipw.ButtonStyle(button_color="darkgreen")
-        )
-        self.button_remove_row = ipw.Button(
-            description="Remove Subcategory", style=ipw.ButtonStyle(button_color="darkred")
-        )
-
-        self.button_add_row.on_click(self.add_subcategory)
-        self.button_remove_row.on_click(self.remove_subcategory)
-        self.datagrid.on_cell_change(self._update)
-
-        self.ui = ipw.VBox([ipw.HBox([self.button_add_row, self.button_remove_row]), self.datagrid])
-        self.ui.layout.width = "600px"
-
-    def _update(self, change=None):
-        self._update_parameters_from_grid()
-        # self.total_shares = np.sum(
-        #     [share for share in self.subcategories.values().parameters.share]
-        # )
-        for subcategory in self.subcategories.values():
-            subcategory._update_parameters_from_grid()
-
-    def _check_shares(self):
-        self._update()
-        if not np.isclose(self.total_shares, 100.0, atol=0.1):
-            raise UserWarning(
-                "Total shares for category %s are %f instead of 100%",
-                (self.name, self.total_shares),
-            )
-
-    def _update_parameters_from_grid(self):
-        current_grid_df = self.datagrid.data
-
-        for index, row in current_grid_df.iterrows():
-            self.subcategories[index].from_dataframe_row(row)
-
-
-class Fleet(object):
-    def __init__(self, add_examples_aircraft_and_subcategory=True, parameters=None):
-        self._categories = {}
-
-        self.parameters = parameters
-        # Build default fleet
-        self._build_default_fleet(
-            add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
-        )
-
-        # Initialize
-        self.ui = None
-
-        # Setup tree
-        self.tree = Tree(stripes=True)
-        self.tree.observe(self._update)
-        self._setup_tree()
-
-        # Take first category as default
-        self.selected_item = list(self.categories.values())[0]
-
-        # Setup user interface
-        self._setup_ui()
-
-        self.all_aircraft_elements = self.get_all_aircraft_elements()
-
-    def compute(self):
-        for cat in self.categories.values():
-            cat._compute()
-
-    @property
-    def categories(self):
-        return self._categories
-
-    @categories.setter
-    def categories(self, value):
-        self._categories = value
-        self.all_aircraft_elements = self.get_all_aircraft_elements()
-
-    def get_all_aircraft_elements(self):
-        all_aircraft_elements = {}
-
-        for category in self.categories.values():
-            aircraft_per_category = []
-
-            subcategory = category.subcategories[0]
-
-            # Reference aircraft information
-            ref_old_aircraft_name = category.name + ":" + subcategory.name + ":" + "old_reference"
-
-            subcategory.old_reference_aircraft.full_name = ref_old_aircraft_name
-
-            aircraft_per_category.append(subcategory.old_reference_aircraft)
-
-            ref_recent_aircraft_name = (
-                category.name + ":" + subcategory.name + ":" + "recent_reference"
-            )
-
-            subcategory.recent_reference_aircraft.full_name = ref_recent_aircraft_name
-
-            aircraft_per_category.append(subcategory.recent_reference_aircraft)
-
-            for i, subcategory in category.subcategories.items():
-                for aircraft in subcategory.aircraft.values():
-                    aircraft_name = category.name + ":" + subcategory.name + ":" + aircraft.name
-                    aircraft.parameters.full_name = aircraft_name
-                    aircraft_per_category.append(aircraft)
-
-            all_aircraft_elements[category.name] = aircraft_per_category
-
-        return all_aircraft_elements
-
-    def _setup_tree(self):
-        for name, category in self.categories.items():
-            category.button_add_row.observe(self._update)
-            category.button_remove_row.observe(self._update)
-            node = Node(name)
-            subcategory_names = []
-            for name, subcategory in category.subcategories.items():
-                subcategory_names.append(subcategory.name)
-            for name in subcategory_names:
-                subnode = Node(name)
-                node.add_node(subnode)
-            self.tree.add_node(node)
-
-    def _update_tree(self):
-        for cat_node in list(self.tree.nodes):
-            subcat_nodes = list(cat_node.nodes)
-            subcategory_names = [
-                subcategory.name
-                for index, subcategory in self.categories[cat_node.name].subcategories.items()
-            ]
-            # Remove old nodes
-            for node in subcat_nodes:
-                if node.name not in subcategory_names:
-                    cat_node.remove_node(node)
-
-            subcategory_node_names = [node.name for node in list(cat_node.nodes)]
-
-            # Add new nodes
-            for name in subcategory_names:
-                if name not in subcategory_node_names:
-                    subnode = Node(name)
-                    cat_node.add_node(subnode)
-
-    def _update(self, change=None):
-        if self.tree.selected_nodes:
-            selected_node_name = list(self.tree.selected_nodes)[0].name
-        else:
-            selected_node_name = self.tree.nodes[0].name
-
-        self.selected_item = self._find_category_or_subcategory(selected_node_name)
-        self._update_tree()
-        self._update_ui()
-
-    def _find_category_or_subcategory(self, selected_node_name):
-        for name, category in self.categories.items():
-            if category.name == selected_node_name:
-                return category
-            else:
-                for index, subcategory in category.subcategories.items():
-                    if subcategory.name == selected_node_name:
-                        return subcategory
-
-    def _setup_ui(self):
-        self.ui = ipw.HBox([self.tree, self.selected_item.ui])
-        self.ui.layout
-
-    def _update_ui(self):
-        if self.ui is not None:
-            self.ui.children = (self.tree, self.selected_item.ui)
-            if isinstance(self.selected_item, Category):
-                self.selected_item.button_add_row.on_click(self._update)
-                self.selected_item.button_remove_row.on_click(self._update)
-                self.selected_item.datagrid.on_cell_change(self._update)
-
-    def _build_default_fleet(self, add_examples_aircraft_and_subcategory=True):
-        # Short range narrow-body
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=-15.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=80000000.0,
-            nrc_cost=10000000000.0,
-            oew=40.0,
-        )
-
-        sr_nb_aircraft_1 = Aircraft(
-            "New Short-range Narrow-body 1", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-30.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=60000000.0,
-            nrc_cost=10000000000.0,
-            oew=40.0,
-        )
-
-        sr_nb_aircraft_2 = Aircraft(
-            "New Short-range Narrow-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        # Short range regional turboprop
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2030,
-            consumption_evolution=-20.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=6000.0,
-            ask_year=280000000.0,
-            rc_cost=60000000.0,
-            nrc_cost=10000000000.0,
-            oew=15.0,
-        )
-
-        sr_tp_aircraft_1 = Aircraft(
-            "New Regional turboprop 1",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
-
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-35.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=6000.0,
-            ask_year=280000000.0,
-            rc_cost=30000000.0,
-            nrc_cost=5000000000.0,
-            oew=15.0,
-        )
-
-        sr_tp_aircraft_2 = Aircraft(
-            "New Regional turboprop 2",
-            parameters=aircraft_params,
-            energy_type="DROP_IN_FUEL",
-        )
-
-        # Short range regional turbofan
-        # aircraft_params = AircraftParameters(
-        #     entry_into_service_year=2035,
-        #     consumption_evolution=-15.0,
-        #     nox_evolution=0.0,
-        #     soot_evolution=0.0,
-        #     doc_non_energy_evolution=0.0,
-        #     cruise_altitude=12000.0,
-        #     ask_year=280000000.0,
-        #     rc_cost=30000000.0,
-        #     nrc_cost=5000000000.0,
-        #     oew=15.0,
-        # )
-
-        # sr_tf_aircraft_1 = Aircraft(
-        #     "New Regional turbofan 1",
-        #     parameters=aircraft_params,
-        #     energy_type="DROP_IN_FUEL",
-        # )
-
-        # aircraft_params = AircraftParameters(
-        #     entry_into_service_year=2045,
-        #     consumption_evolution=-30.0,
-        #     nox_evolution=0.0,
-        #     soot_evolution=0.0,
-        #     doc_non_energy_evolution=0.0,
-        #     cruise_altitude=12000.0,
-        #     ask_year=280000000.0,
-        #     rc_cost=40000000.0,
-        #     nrc_cost=5000000000.0,
-        #     oew=15.0,
-        # )
-
-        # sr_tf_aircraft_2 = Aircraft(
-        #     "New Regional turbofan 2",
-        #     parameters=aircraft_params,
-        #     energy_type="DROP_IN_FUEL",
-        # )
-
-        # Short range hydrogen aircraft
-
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=10.0,
-            nox_evolution=0.0,
-            soot_evolution=-100.0,
-            doc_non_energy_evolution=10.0,
-            cruise_altitude=12000.0,
-            ask_year=280000000.0,
-            rc_cost=40000000.0,
-            nrc_cost=5000000000.0,
-            oew=40.0,
-        )
-
-        sr_aircraft_hydrogen = Aircraft(
-            "New Short-range hydrogen", parameters=aircraft_params, energy_type="HYDROGEN"
-        )
-
-        # Medium range
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=-15.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=352000000.0,
-            rc_cost=50000000.0,
-            nrc_cost=10000000000.0,
-            oew=40.0,
-        )
-
-        mr_aircraft_1 = Aircraft(
-            "New Medium-range narrow-body 1", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-30.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=352000000.0,
-            rc_cost=60000000.0,
-            nrc_cost=10000000000.0,
-            oew=40.0,
-        )
-
-        mr_aircraft_2 = Aircraft(
-            "New Medium-range narrow-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        # Long range
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2035,
-            consumption_evolution=-15.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=912000000.0,
-            rc_cost=60000000.0,
-            nrc_cost=10000000000.0,
-            oew=130.0,
-        )
-
-        lr_aircraft_1 = Aircraft(
-            "New Long-range wide-body 1", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        aircraft_params = AircraftParameters(
-            entry_into_service_year=2045,
-            consumption_evolution=-30.0,
-            nox_evolution=0.0,
-            soot_evolution=0.0,
-            doc_non_energy_evolution=0.0,
-            cruise_altitude=12000.0,
-            ask_year=912000000.0,
-            rc_cost=150000000.0,
-            nrc_cost=25000000000.0,
-            oew=130.0,
-        )
-
-        lr_aircraft_2 = Aircraft(
-            "New Long-range wide-body 2", parameters=aircraft_params, energy_type="DROP_IN_FUEL"
-        )
-
-        # Short range
-        cat_params = CategoryParameters(life=25)
-        sr_cat = Category("Short Range", parameters=cat_params)
-
-        # Short range narrow-body
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=20.0)
-        else:
-            subcat_params = SubcategoryParameters(share=100.0)
-        sr_nb_cat = SubCategory("SR conventional narrow-body", parameters=subcat_params)
-        # Reference aircraft
-        # Old
-        sr_nb_cat.old_reference_aircraft.entry_into_service_year = (
-            1970  # Not used: old iarcraft starts at 100
-        )
-        sr_nb_cat.old_reference_aircraft.energy_per_ask = 110.8 / 73.2 * 0.824  # [MJ/ASK]
-        sr_nb_cat.old_reference_aircraft.emission_index_nox = 0.01514
-        sr_nb_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.old_reference_aircraft.doc_non_energy_base = 0.048375  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        sr_nb_cat.old_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.old_reference_aircraft.ask_year = 280000000.0
-        sr_nb_cat.old_reference_aircraft.rc_cost = 40000000.0
-        sr_nb_cat.old_reference_aircraft.nrc_cost = 10000000000.0
-        sr_nb_cat.old_reference_aircraft.oew = 37.0
-
-        # Recent
-        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = 2007.13
-        sr_nb_cat.recent_reference_aircraft.energy_per_ask = 84.2 / 73.2 * 0.824  # [MJ/ASK]
-        sr_nb_cat.recent_reference_aircraft.emission_index_nox = 0.01514
-        sr_nb_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        sr_nb_cat.recent_reference_aircraft.doc_non_energy_base = 0.048375  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        sr_nb_cat.recent_reference_aircraft.cruise_altitude = 12000.0
-        sr_nb_cat.recent_reference_aircraft.ask_year = 280000000
-        sr_nb_cat.recent_reference_aircraft.rc_cost = 40000000.0
-        sr_nb_cat.recent_reference_aircraft.nrc_cost = 10000000000.0
-        sr_nb_cat.recent_reference_aircraft.oew = 43.0
-
-        mean_energy_init_ask_short_range = (
-            self.parameters.energy_consumption_init[2019]
-            * self.parameters.short_range_energy_share_2019
-        ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
-
-        share_recent_short_range = (
-            mean_energy_init_ask_short_range - sr_nb_cat.old_reference_aircraft.energy_per_ask
-        ) / (
-            sr_nb_cat.recent_reference_aircraft.energy_per_ask
-            - sr_nb_cat.old_reference_aircraft.energy_per_ask
-        )
-
-        lambda_short_range = np.log(100 / 2 - 1) / (sr_cat.parameters.life / 2)
-
-        # nominal case where mean fleet energy is between old and recent aircraft performances
-        if 1 > share_recent_short_range > 0:
-            t0_mr = np.log(
-                (1 - share_recent_short_range) / share_recent_short_range
-            ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
-
-            t_eis_short_range = t0_mr - sr_cat.parameters.life / 2
-
-        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
-        elif share_recent_short_range > 1:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: Short Range Aircraft: "
-                + "Average initial short-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                + "AeroMAPS is using initial short-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-            )
-
-            t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
-            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-            sr_nb_cat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-
-        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
-        else:
-            t_eis_short_range = self.parameters.prospection_start_year
-            sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: Short Range Aircraft: "
-                + "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                + "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
-            )
-
-        sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
-
-        if add_examples_aircraft_and_subcategory:
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_1)
-            sr_nb_cat.add_aircraft(aircraft=sr_nb_aircraft_2)
-
-        # Short range hydrogen aircraft
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=50.0)
-            sr_subcat_hydrogen = SubCategory(
-                "SR hydrogen conventional narrow-body", parameters=subcat_params
-            )
-
-        if add_examples_aircraft_and_subcategory:
-            sr_subcat_hydrogen.add_aircraft(aircraft=sr_aircraft_hydrogen)
-
-        # Short range regional turboprop
-        if add_examples_aircraft_and_subcategory:
-            subcat_params = SubcategoryParameters(share=30.0)
-            sr_rp_cat = SubCategory("SR regional turboprop", parameters=subcat_params)
-        # Reference aircraft
-        # Old
-        # sr_rp_cat.old_reference_aircraft.entry_into_service_year = 1970
-        # sr_rp_cat.old_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
-        # sr_rp_cat.old_reference_aircraft.emission_index_nox = 0.01514
-        # sr_rp_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        # sr_rp_cat.old_reference_aircraft.cruise_altitude = 6000.0
-
-        # Recent
-        # sr_rp_cat.recent_reference_aircraft.entry_into_service_year = 2005
-        # sr_rp_cat.recent_reference_aircraft.energy_per_ask = 101.2 / 73.2 * 0.824  # [MJ/ASK]
-        # sr_rp_cat.recent_reference_aircraft.emission_index_nox = 0.01514
-        # sr_rp_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        # sr_rp_cat.recent_reference_aircraft.cruise_altitude = 6000.0
-
-        if add_examples_aircraft_and_subcategory:
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_1)
-            sr_rp_cat.add_aircraft(aircraft=sr_tp_aircraft_2)
-
-        # Short range regional turbofan
-        # subcat_params = SubcategoryParameters(share=0.0)
-        # sr_tf_cat = SubCategory("SR regional turbofan", parameters=subcat_params)
-        # Reference aircraft
-        # Old
-        # sr_tf_cat.old_reference_aircraft.entry_into_service_year = 1970
-        # sr_tf_cat.old_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
-        # sr_tf_cat.old_reference_aircraft.emission_index_nox = 0.01514
-        # sr_tf_cat.old_reference_aircraft.emission_index_soot = 3e-5
-        # sr_tf_cat.old_reference_aircraft.cruise_altitude = 12000.0
-
-        # Recent
-        # sr_tf_cat.recent_reference_aircraft.entry_into_service_year = 2000
-        # sr_tf_cat.recent_reference_aircraft.energy_per_ask = 192.9 / 73.2 * 0.824  # [MJ/ASK]
-        # sr_tf_cat.recent_reference_aircraft.emission_index_nox = 0.01514
-        # sr_tf_cat.recent_reference_aircraft.emission_index_soot = 3e-5
-        # sr_tf_cat.recent_reference_aircraft.cruise_altitude = 12000.0
-
-        # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_1)
-        # sr_tf_cat.add_aircraft(aircraft=sr_tf_aircraft_2)
-
-        sr_cat.add_subcategory(subcategory=sr_nb_cat)
-        if add_examples_aircraft_and_subcategory:
-            sr_cat.add_subcategory(subcategory=sr_rp_cat)
-            sr_cat.add_subcategory(subcategory=sr_subcat_hydrogen)
-        # sr_cat.add_subcategory(subcategory=sr_tf_cat)
-
-        # Medium range
-
-        cat_params = CategoryParameters(life=25)
-        mr_cat = Category(name="Medium Range", parameters=cat_params)
-
-        subcat_params = SubcategoryParameters(share=100.0)
-        mr_subcat = SubCategory("MR conventional narrow-body", parameters=subcat_params)
-        # Reference aircraft
-        # Old
-        mr_subcat.old_reference_aircraft.entry_into_service_year = 1970
-        mr_subcat.old_reference_aircraft.energy_per_ask = 81.4 / 73.2 * 0.824  # [MJ/ASK]
-        mr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
-        mr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.old_reference_aircraft.doc_non_energy_base = 0.0301  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        mr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.old_reference_aircraft.ask_year = 352000000.0
-        mr_subcat.old_reference_aircraft.rc_cost = 60000000.0
-        mr_subcat.old_reference_aircraft.nrc_cost = 10000000000.0
-        mr_subcat.old_reference_aircraft.oew = 37.0
-
-        # Recent
-        mr_subcat.recent_reference_aircraft.entry_into_service_year = 2010.35
-        mr_subcat.recent_reference_aircraft.energy_per_ask = 62.0 / 73.2 * 0.824  # [MJ/ASK]
-        mr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
-        mr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        mr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.0301  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        mr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
-        mr_subcat.recent_reference_aircraft.ask_year = 352000000.0
-        mr_subcat.recent_reference_aircraft.rc_cost = 60000000.0
-        mr_subcat.recent_reference_aircraft.nrc_cost = 10000000000.0
-        mr_subcat.recent_reference_aircraft.oew = 43.0
-
-        mean_energy_init_ask_medium_range = (
-            self.parameters.energy_consumption_init[2019]
-            * self.parameters.medium_range_energy_share_2019
-        ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
-
-        share_recent_medium_range = (
-            mean_energy_init_ask_medium_range - mr_subcat.old_reference_aircraft.energy_per_ask
-        ) / (
-            mr_subcat.recent_reference_aircraft.energy_per_ask
-            - mr_subcat.old_reference_aircraft.energy_per_ask
-        )
-
-        lambda_medium_range = np.log(100 / 2 - 1) / (mr_cat.parameters.life / 2)
-
-        if 1 > share_recent_medium_range > 0:
-            t0_mr = np.log(
-                (1 - share_recent_medium_range) / share_recent_medium_range
-            ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
-
-            t_eis_medium_range = t0_mr - mr_cat.parameters.life / 2
-
-        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
-        elif share_recent_medium_range > 1:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: medium Range Aircraft: "
-                + "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                + "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-            )
-
-            t_eis_medium_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
-            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-            mr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
-        else:
-            t_eis_medium_range = self.parameters.prospection_start_year
-            mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: medium Range Aircraft: "
-                + "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                + "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
-            )
-
-        mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
-
-        if add_examples_aircraft_and_subcategory:
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_1)
-            mr_subcat.add_aircraft(aircraft=mr_aircraft_2)
-
-        mr_cat.add_subcategory(subcategory=mr_subcat)
-
-        # Long range
-        cat_params = CategoryParameters(life=25)
-        lr_cat = Category("Long Range", parameters=cat_params)
-
-        subcat_params = SubcategoryParameters(share=100.0)
-        lr_subcat = SubCategory("LR conventional wide-body", parameters=subcat_params)
-        # Reference aircraft
-        # Old
-        lr_subcat.old_reference_aircraft.entry_into_service_year = 1970
-        lr_subcat.old_reference_aircraft.energy_per_ask = 96.65 / 73.2 * 0.824  # [MJ/ASK]
-        lr_subcat.old_reference_aircraft.emission_index_nox = 0.01514
-        lr_subcat.old_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.old_reference_aircraft.doc_non_energy_base = 0.024725  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        lr_subcat.old_reference_aircraft.cruise_altitude = 12000.0
-        lr_subcat.old_reference_aircraft.ask_year = 912000000.0
-        lr_subcat.old_reference_aircraft.rc_cost = 150000000.0
-        lr_subcat.old_reference_aircraft.nrc_cost = 25000000000.0
-        lr_subcat.old_reference_aircraft.oew = 135.0
-
-        # Recent
-        lr_subcat.recent_reference_aircraft.entry_into_service_year = 2009.36
-        lr_subcat.recent_reference_aircraft.energy_per_ask = 73.45 / 73.2 * 0.824  # [MJ/ASK]
-        lr_subcat.recent_reference_aircraft.emission_index_nox = 0.01514
-        lr_subcat.recent_reference_aircraft.emission_index_soot = 3e-5
-        lr_subcat.recent_reference_aircraft.doc_non_energy_base = 0.024725  # conversion of capital to 0.07 annuity factor (US based airlines very low) => factor of 1.075 (0.9+10% capital * 0.07/0.04)
-        lr_subcat.recent_reference_aircraft.cruise_altitude = 12000.0
-        lr_subcat.recent_reference_aircraft.ask_year = 912000000.0
-        lr_subcat.recent_reference_aircraft.rc_cost = 150000000.0
-        lr_subcat.recent_reference_aircraft.nrc_cost = 25000000000.0
-        lr_subcat.recent_reference_aircraft.oew = 129.0
-
-        mean_energy_init_ask_long_range = (
-            self.parameters.energy_consumption_init[2019]
-            * self.parameters.long_range_energy_share_2019
-        ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
-
-        share_recent_long_range = (
-            mean_energy_init_ask_long_range - lr_subcat.old_reference_aircraft.energy_per_ask
-        ) / (
-            lr_subcat.recent_reference_aircraft.energy_per_ask
-            - lr_subcat.old_reference_aircraft.energy_per_ask
-        )
-
-        lambda_long_range = np.log(100 / 2 - 1) / (lr_cat.parameters.life / 2)
-
-        if 1 > share_recent_long_range > 0:
-            t0_lr = np.log(
-                (1 - share_recent_long_range) / share_recent_long_range
-            ) / lambda_long_range + (self.parameters.prospection_start_year - 1)
-
-            t_eis_long_range = t0_lr - lr_cat.parameters.life / 2
-
-        # case where mean fleet energy is lower than best aircraft => consider that all the fleet is composed of aircraft with mean fleet energy
-        elif share_recent_long_range > 1:
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: long Range Aircraft: "
-                + "Average initial long-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                + "AeroMAPS is using initial long-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-            )
-
-            t_eis_long_range = self.parameters.prospection_start_year - 1 - sr_cat.parameters.life
-            lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-            lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-
-        # case where mean fleet energy is higher than worse aircraft => consider that old aircraft used mean energy and that the new aircraft is introduced at the beginning of the scenario
-        else:
-            t_eis_long_range = self.parameters.prospection_start_year
-            lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-
-            warnings.warn(
-                "Warning Message - "
-                + "Fleet Model: long Range Aircraft: "
-                + "Average initial long-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                + "AeroMAPS is using initial long-range fleet energy per ASK as old aircraft energy performances. Recent reference aircraft is introduced on first prospective year"
-            )
-
-        lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
-
-        if add_examples_aircraft_and_subcategory:
-            lr_subcat.add_aircraft(aircraft=lr_aircraft_1)
-            lr_subcat.add_aircraft(aircraft=lr_aircraft_2)
-
-        lr_cat.add_subcategory(subcategory=lr_subcat)
-
-        self.categories[sr_cat.name] = sr_cat
-        self.categories[mr_cat.name] = mr_cat
-        self.categories[lr_cat.name] = lr_cat

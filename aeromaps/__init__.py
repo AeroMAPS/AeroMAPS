@@ -9,8 +9,6 @@ from aeromaps.core.process import AeroMAPSProcess
 def create_process(
     configuration_file=None,
     models=default_models_top_down,
-    use_fleet_model=False,
-    add_examples_aircraft_and_subcategory=True,
     optimisation=False,
 ) -> AeroMAPSProcess:
     """
@@ -38,7 +36,5 @@ def create_process(
     return AeroMAPSProcess(
         configuration_file=configuration_file,
         models=models,
-        use_fleet_model=use_fleet_model,
-        add_examples_aircraft_and_subcategory=add_examples_aircraft_and_subcategory,
         optimisation=optimisation,
     )
