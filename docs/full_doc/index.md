@@ -3,7 +3,7 @@
 This section describes all the AeroMAPS models implemented in the framework.
 
 !!! note "Nota bene"
-    A simpler API reference, covering only user-facing functions and classes, can be found in the [API Reference](../api/) section of the documentation.
+    A simpler API reference, covering only user-facing functions and classes, can be found in the [API Reference](../api/index.md) section of the documentation.
 
 The navigation in this documentation is organized by package:
 

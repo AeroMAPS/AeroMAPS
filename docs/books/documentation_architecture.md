@@ -5,7 +5,7 @@
 
 The simplified current architecture of AeroMAPS is given in Fig.1.
 
-![](/figs/architecture.png)
+![](figs/architecture.png)
 *Fig.1 Simplified architecture of AeroMAPS.*
 
 First, the future air transport system is modeled. Three main elements are considered to represent it: an air traffic 
