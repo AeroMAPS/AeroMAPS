@@ -1,6 +1,5 @@
 import logging
 import os
-import os.path as pth
 from importlib.resources import files
 from pathlib import Path
 import shutil
@@ -48,9 +47,8 @@ class Main:
     @staticmethod
     def _notebooks(args=None):
         """
-            Creates an aeromaps_notebooks/ folder with pre-configured Jupyter notebooks tutorials.
-            IMPORTANT: Please note that all content of an existing FAST-OAD_notebooks/ will be overwritten.
-            """
+        Creates an aeromaps_notebooks/ folder with pre-configured Jupyter notebooks tutorials.
+        """
 
         src_dir = files("aeromaps") / "notebooks" / "tutorials"
         dest_dir = Path.cwd() / "aeromaps_notebooks"
@@ -59,10 +57,8 @@ class Main:
         for item in src_dir.iterdir():
             target = dest_dir / item.name
             if item.is_dir():
-                # copier le dossier et tout son contenu
                 shutil.copytree(item, target, dirs_exist_ok=True)
             else:
-                # copier le fichier
                 shutil.copy(item, target)
 
         print(f"Tutorial notebooks added in: {dest_dir}")
@@ -72,7 +68,7 @@ class Main:
         """Main function."""
         subparsers = self.parser.add_subparsers(title="sub-commands")
 
-        # sub-command for running AeroMAPS GUI -------------------------------------
+        # sub-command for running AeroMAPS GUI
         parser_gui = subparsers.add_parser(
             "gui",
             help="run AeroMAPS graphical user interface",
@@ -86,7 +82,7 @@ class Main:
         )
         parser_gui.set_defaults(func=self._gui)
 
-        # sub-command for download AeroMAPS tutorial notebooks -------------------------------------
+        # sub-command for download AeroMAPS tutorial notebooks
         parser_notebooks = subparsers.add_parser(
             "notebooks",
             help="download notebooks",
@@ -94,7 +90,7 @@ class Main:
         )
         parser_notebooks.set_defaults(func=self._notebooks)
 
-        # Parse ------------------------------------------------------------------------------------
+        # Parse
         args = self.parser.parse_args()
         try:
             args.func(args)
