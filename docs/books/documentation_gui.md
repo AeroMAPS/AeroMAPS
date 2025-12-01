@@ -214,6 +214,6 @@ The GUI can be used directly from the following website: https://aeromaps.isae-s
 to use the GUI locally. For this purpose, after installing AeroMAPS (see dedicated section), this command can be used:
 
 ```
-aeromaps run
+aeromaps gui
 ```
 ### Bibliography   

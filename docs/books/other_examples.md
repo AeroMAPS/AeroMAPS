@@ -1,11 +1,23 @@
-# Other examples and tutorials
+# Other examples
 
-This page references links to other AeroMAPS example notebooks.
+This page references links to other AeroMAPS example notebooks, either in the form of tutorials, or in the form of more 
+advanced applications in the context of research publications. 
 
-For maintenance simplicity, the notebooks are hosted in our github repository instead of being duplicated in the documentation.
-They can be opened directly in your browser or downloaded and run locally in a Jupyter environment, alternatively using our [Binder](https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD).
+For maintenance simplicity, the notebooks are simply hosted in our GitHub repository instead of being duplicated in 
+the documentation.
 
-## Tutorials (notebooks)
+In order to run these notebooks, the simplest method is to use the following command line, creating a folder with all 
+the tutorial notebooks.
+
+```
+aeromaps notebooks
+```
+
+You can also directly download them and run them locally in a Jupyter environment, alternatively using our [Binder](https://mybinder.org/v2/gh/AeroMAPS/AeroMAPS/HEAD),
+including the advanced notebooks.
+
+
+## Tutorials
 
 - [Create a custom process](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/create_a_custom_process/examples_custom_process.ipynb)
 
@@ -19,9 +31,10 @@ They can be opened directly in your browser or downloaded and run locally in a J
   
 - [Optimization of a scenario](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/optimize_a_scenario/example_optim.ipynb)
 
-- [Notebooks used in research publications](https://github.com/AeroMAPS/AeroMAPS/tree/main/aeromaps/notebooks/publications)
-  
 
-If the branch or file layout changes in the repository, update these
-links accordingly.
+## Advanced applications
+  
+[Notebooks used in research publications](https://github.com/AeroMAPS/AeroMAPS/tree/main/aeromaps/notebooks/publications)
+
+
 

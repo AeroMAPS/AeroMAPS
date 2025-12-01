@@ -5,6 +5,17 @@ repo_name: AeroMAPS
 
 nav:
   - Home: index.md
+  - Overview:
+      - books/index.md # Main documentation page
+      - GUI:
+          - books/documentation_gui.md
+      - Models documentation:
+          - Air transport: books/documentation_airtransport.md
+          - Impacts: books/documentation_impacts.md
+          - Architecture: books/documentation_architecture.md
+
+      - Software: books/documentation_software.md
+      - References: books/references.md
   - Installation: books/installation.md
   - API Reference:
       - Overview: api/index.md
@@ -23,6 +34,7 @@ nav:
           - GEMSEO integration: full_doc/aeromaps.core.gemseo.md
           - Models registry: full_doc/aeromaps.core.models.md
           - Process: full_doc/aeromaps.core.process.md
+          - Command-line interface: full_doc/aeromaps.core.cli.md
       - GUI:
           - gui package: full_doc/aeromaps.gui.md
           - Graphical user interface: full_doc/aeromaps.gui.graphical_user_interface.md
@@ -64,17 +76,14 @@ nav:
                     - operations: full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations.md
         - Impacts:
             - Package: full_doc/aeromaps.models.impacts.md
-            - Climate:
-                - Package: full_doc/aeromaps.models.impacts.climate.md
-                - climate: full_doc/aeromaps.models.impacts.climate.climate.md
-            - Effective radiative forcing:
-                - Package: full_doc/aeromaps.models.impacts.effective_radiative_forcing.md
-                - effective_radiative_forcing: full_doc/aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing.md
             - Emissions:
                 - Package: full_doc/aeromaps.models.impacts.emissions.md
                 - co2_emissions: full_doc/aeromaps.models.impacts.emissions.co2_emissions.md
                 - non_co2_emissions: full_doc/aeromaps.models.impacts.emissions.non_co2_emissions.md
                 - carbon_offset: full_doc/aeromaps.models.impacts.emissions.carbon_offset.md
+            - Climate:
+                - Package: full_doc/aeromaps.models.impacts.climate.md
+                - climate: full_doc/aeromaps.models.impacts.climate.climate.md
             - Energy resources:
                 - Package: full_doc/aeromaps.models.impacts.energy_resources.md
                 - energy_resources: full_doc/aeromaps.models.impacts.energy_resources.energy_resources.md
@@ -105,7 +114,6 @@ nav:
             - Others:
                 - Package: full_doc/aeromaps.models.impacts.others.md
                 - others: full_doc/aeromaps.models.impacts.others.others.md
-                - comparison: full_doc/aeromaps.models.impacts.others.comparison.md
         - Optimisation:
             - Package: full_doc/aeromaps.models.optimisation.md
             - Constraints:
@@ -116,26 +124,17 @@ nav:
             - Package: full_doc/aeromaps.models.sustainability_assessment.md
             - Climate:
                 - Package: full_doc/aeromaps.models.sustainability_assessment.climate.md
-                - carbon_budgets: full_doc/aeromaps.models.sustainability_assessment.climate.carbon_budgets.md
-                - equivalent_carbon_budgets: full_doc/aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets.md
+                - carbon_budgets: full_doc/aeromaps.models.sustainability_assessment.climate.carbon_budget.md
+                - comparison: full_doc/aeromaps.models.sustainability_assessment.climate.comparison.md
+                - temperature_target: full_doc/aeromaps.models.sustainability_assessment.climate.temperature_target.md
         - Constants: full_doc/aeromaps.models.constants.md
         - Parameters: full_doc/aeromaps.models.parameters.md
         - Templates: full_doc/aeromaps.models.templates.md
-
-  - Documentation:
-      - books/index.md # Main documentation page
-      - GUI:
-          - books/documentation_gui.md
-      - Models documentation:
-          - Air transport: books/documentation_airtransport.md
-          - Impacts: books/documentation_impacts.md
-          - Architecture: books/documentation_architecture.md
-      - Examples:
-          - Basic usage:
-              - notebooks/examples_basic.ipynb
-          - Other examples: books/other_examples.md
-      - Software: books/documentation_software.md
-      - References: books/references.md
+  - Examples:
+      - Basic example:
+          - notebooks/examples_basic.ipynb
+      - Other examples: books/other_examples.md
+  - Changelog: books/CHANGELOG.md
 
 theme:
   name: material
