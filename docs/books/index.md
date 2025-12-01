@@ -1,7 +1,7 @@
 # Documentation
 
-!!! warning "This documentation supports the V1 graphical user interface (GUI) for AeroMAPS"
-    [A new UI is now deployed](https://www.aeromaps.eu), in which most of the advice presented here still apply. The documentation will be updated soon.
+!!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
+    It will be updated soon!
 
 
 This section provides an overview of the AeroMAPS modelling, and additional resources for users. 

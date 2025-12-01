@@ -1,7 +1,7 @@
 # Air transport modeling
 
 !!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
-    It will be updated soon.!
+    It will be updated soon!
 
 The air transport system model presented in the AeroMAPS architecture rely on the modeling of levers of 
 action to reduce the environmental impacts of the sector. Before describing their implementation in AeroMAPS, these 

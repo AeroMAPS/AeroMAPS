@@ -65,13 +65,8 @@ Submitted to Journal of Open Aviation Science.
 
 ```
 Other publications from our research group that describe specific methods and models implemented in AeroMAPS can be found in the
-[References](documentation/references.md) section of the documentation.
+[References](books/references.md) section of the documentation.
 
-
-## Acknowledgments
-
-The authors would like to thank the following people who contributed to the development of AeroMAPS versions: Bastien Païs, Laurent 
-Joly, Valérie Pommier-Budinger, Florian Simatos, Alice Fabre, Martin Delavenne and Emmanuel Bénard.
 
 
 ## Contact

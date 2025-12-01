@@ -13,8 +13,6 @@ nav:
           - Air transport: books/documentation_airtransport.md
           - Impacts: books/documentation_impacts.md
           - Architecture: books/documentation_architecture.md
-
-      - Software: books/documentation_software.md
       - References: books/references.md
   - Installation: books/installation.md
   - API Reference:
