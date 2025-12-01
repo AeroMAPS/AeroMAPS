@@ -1,10 +1,14 @@
 import logging
 import os
 import os.path as pth
+from importlib.resources import files
+from pathlib import Path
+import shutil
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, RawDescriptionHelpFormatter
 
 
-MAIN_NOTEBOOK_NAME = pth.join(pth.dirname(__file__), "app.ipynb")
+MAIN_NOTEBOOK_NAME = (Path(__file__).parent.parent / "gui/gui.ipynb").resolve()
+TUTORIAL_NOTEBOOKS_DIR = (Path(__file__).parent.parent / "notebooks").resolve()
 
 
 class Main:
@@ -21,8 +25,8 @@ class Main:
         )
 
     @staticmethod
-    def _run(args):
-        """Run AeroMAPS locally or with server configuration."""
+    def _gui(args):
+        """Run AeroMAPS graphical user interface locally or with server configuration."""
         machine = "server" if args.server else "local"
         print(MAIN_NOTEBOOK_NAME)
         if machine == "server":
@@ -41,24 +45,54 @@ class Main:
 
         os.system(command + str(MAIN_NOTEBOOK_NAME))
 
+    @staticmethod
+    def _notebooks(args=None):
+        """
+            Creates an aeromaps_notebooks/ folder with pre-configured Jupyter notebooks tutorials.
+            IMPORTANT: Please note that all content of an existing FAST-OAD_notebooks/ will be overwritten.
+            """
+
+        src_dir = files("aeromaps") / "notebooks" / "tutorials"
+        dest_dir = Path.cwd() / "aeromaps_notebooks"
+        dest_dir.mkdir(exist_ok=True)
+
+        for item in src_dir.iterdir():
+            target = dest_dir / item.name
+            if item.is_dir():
+                # copier le dossier et tout son contenu
+                shutil.copytree(item, target, dirs_exist_ok=True)
+            else:
+                # copier le fichier
+                shutil.copy(item, target)
+
+        print(f"Tutorial notebooks added in: {dest_dir}")
+
     # ENTRY POINT ==================================================================================
     def run(self):
         """Main function."""
         subparsers = self.parser.add_subparsers(title="sub-commands")
 
-        # sub-command for running AeroMAPS -------------------------------------
-        parser_run = subparsers.add_parser(
-            "run",
-            help="run AeroMAPS",
-            description="run AeroMAPS",
+        # sub-command for running AeroMAPS GUI -------------------------------------
+        parser_gui = subparsers.add_parser(
+            "gui",
+            help="run AeroMAPS graphical user interface",
+            description="run AeroMAPS graphical user interface",
         )
 
-        parser_run.add_argument(
+        parser_gui.add_argument(
             "--server",
             action="store_true",
             help="to be used if ran on server",
         )
-        parser_run.set_defaults(func=self._run)
+        parser_gui.set_defaults(func=self._gui)
+
+        # sub-command for download AeroMAPS tutorial notebooks -------------------------------------
+        parser_notebooks = subparsers.add_parser(
+            "notebooks",
+            help="download notebooks",
+            description="download notebooks",
+        )
+        parser_notebooks.set_defaults(func=self._notebooks)
 
         # Parse ------------------------------------------------------------------------------------
         args = self.parser.parse_args()
@@ -66,6 +100,8 @@ class Main:
             args.func(args)
         except AttributeError:
             self.parser.print_help()
+
+
 
 
 def main():

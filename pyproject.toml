@@ -81,7 +81,7 @@ nbstripout = "^0.6.0"
 ruff = "0.5.4"
 
 [tool.poetry.scripts]
-    aeromaps = "aeromaps.app:main"
+    aeromaps = "aeromaps.core.cli:main"
 
 # Dynamic versioning settings ==================================================
 # poetry-dynamic-versioning has to be installed in the same environment as
