@@ -13,6 +13,18 @@ TUTORIAL_NOTEBOOKS_DIR = (Path(__file__).parent.parent / "notebooks").resolve()
 class Main:
     """
     Class for managing command line and doing associated actions
+
+    Examples
+    --------
+    In a terminal, run the following command to download the tutorial notebooks:
+    ```python
+    >>> aeromaps notebooks
+    ```
+
+    In a terminal, run the following command to launch a local graphical user interface:
+    ```python
+    >>> aeromaps gui
+    ```
     """
 
     def __init__(self):
@@ -63,9 +75,7 @@ class Main:
 
         print(f"Tutorial notebooks added in: {dest_dir}")
 
-    # ENTRY POINT ==================================================================================
     def run(self):
-        """Main function."""
         subparsers = self.parser.add_subparsers(title="sub-commands")
 
         # sub-command for running AeroMAPS GUI
@@ -96,8 +106,6 @@ class Main:
             args.func(args)
         except AttributeError:
             self.parser.print_help()
-
-
 
 
 def main():
