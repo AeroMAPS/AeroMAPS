@@ -722,7 +722,13 @@ class AeroMAPSProcess(object):
 
         This method calls the internal methods to read resource and
         process data, and to instantiate the generic energy carrier models.
+        Skipped if models.energy is set to false.
         """
+        # Check if energy models should be used
+        energy_config = self._get_config_value("models", "energy", default=False)
+        if energy_config is False:
+            return
+            
         self._read_generic_resources_data()
         self._read_generic_process_data()
         self._instantiate_generic_energy_models()
@@ -896,7 +902,14 @@ class AeroMAPSProcess(object):
         - species_settings: dict, settings for each species
         - model_settings: dict, settings for the climate model
         Refer to the documentation of AeroCM for more details: https://github.com/AeroMAPS/AeroCM
+        
+        Skipped if models.climate is set to false.
         """
+        # Check if climate model should be used
+        climate_config = self._get_config_value("models", "climate", default=False)
+        if climate_config is False:
+            return
+            
         climate_model_file_path = self._resolve_config_path(
             "models", "climate", "climate_model_data_file",
             default_filename="../climate_data/climate_model_gwpstar.yaml"
@@ -957,8 +970,12 @@ class AeroMAPSProcess(object):
         list.
 
         """
-        use_fleet_model = self._get_config_value("models", "fleet", "use_fleet_model", default=False)
-        if bool(use_fleet_model):
+        # Check if fleet model should be used
+        # If models.fleet is False or not a dict, fleet model is disabled
+        fleet_config = self._get_config_value("models", "fleet", default=False)
+        use_fleet_model = isinstance(fleet_config, dict) and fleet_config is not False
+        
+        if use_fleet_model:
 
             aircraft_inventory_path = self._resolve_config_path(
                 "models", "fleet", "aircraft_inventory_model_data_file",

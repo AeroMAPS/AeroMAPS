@@ -3,6 +3,10 @@ data:
     json_outputs_file: "./outputs.json"
 
 models:
+  climate: false
+
+  fleet: false
+
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: "./resources_data.yaml"

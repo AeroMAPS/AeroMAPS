@@ -4,7 +4,6 @@ data:
 
 models:
   fleet:
-    use_fleet_model: true
     fleet_model_data_file: "./fleet.yaml"
     aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
 
