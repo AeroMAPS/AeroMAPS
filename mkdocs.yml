@@ -29,12 +29,13 @@ nav:
       - Package:
           - full_doc/aeromaps.md
       - Core:
+          - Core: full_doc/aeromaps.core.md
           - GEMSEO integration: full_doc/aeromaps.core.gemseo.md
           - Models registry: full_doc/aeromaps.core.models.md
           - Process: full_doc/aeromaps.core.process.md
           - Command-line interface: full_doc/aeromaps.core.cli.md
       - GUI:
-          - gui package: full_doc/aeromaps.gui.md
+          - GUI package: full_doc/aeromaps.gui.md
           - Graphical user interface: full_doc/aeromaps.gui.graphical_user_interface.md
           - GUI plots: full_doc/aeromaps.gui.plots.md
       - Utils:

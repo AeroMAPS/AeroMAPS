@@ -11,7 +11,7 @@ The objective of this documentation is to provide the main elements concerning A
 In particular, see:  
 - [API Reference](full_doc/index.md) — understanding the intended use of user-facing functions and classes.  
 - [AeroMAPS Models](full_doc/index.md) — details on each model used by the framework.  
-- [User documentation](documentation/index.md) — general principles of AeroMAPS, including example applications.  
+- [User documentation](books/index.md) — general principles of AeroMAPS, including example applications.  
 
 
 ## About AeroMAPS

@@ -8,7 +8,7 @@ This section describes all the AeroMAPS models implemented in the framework.
 The navigation in this documentation is organized by package:
 
 - **Package**
-- **Core**: AeroMAPSProcess execution-related methods, GEMSEO integration, and
+- **Core**: AeroMAPSProcess execution-related methods, GEMSEO integration, command-line interface, and
   configuration file handling.
 - **GUI**: graphical user interface-related methods.
 - **Utils**: utility functions for data handling, other
