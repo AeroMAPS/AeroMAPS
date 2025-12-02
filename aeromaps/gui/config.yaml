@@ -1,0 +1,30 @@
+data:
+  inputs:
+    csv_data_information_file: "./resources/data/data_information.csv"
+    json_inputs_file: "./resources/data/parameters.json"
+  outputs:
+    json_outputs_file: "./resources/data/outputs.json"
+    excel_outputs_file: "./resources/data/data.xlsx"
+
+models:
+  climate:
+    climate_model_data_file: "./resources/climate_data/climate_model_fair.yaml"
+
+  fleet:
+    aircraft_inventory_model_data_file: "./resources/data/default_fleet/aircraft_inventory.yaml"
+    fleet_model_data_file: "./resources/data/default_fleet/fleet_no_new_aircraft.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "./resources/data/default_energy_carriers/energy_carriers_data.yaml"
+    resources_model_data_file: "./resources/data/default_energy_carriers/resources_data.yaml"
+    processes_model_data_file: "./resources/data/default_energy_carriers/processes_data.yaml"
+
+  standards:
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_bottom_up
