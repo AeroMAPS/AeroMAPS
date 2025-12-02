@@ -1,0 +1,42 @@
+data:
+  inputs:
+    csv_data_information_file: "./data_information.csv"
+    json_inputs_file: "./parameters.json"
+    vector_inputs_file: "./vector_inputs.csv"
+    climate_historical_data_file: "../climate_data/temperature_historical_dataset.csv"
+  outputs:
+    json_outputs_file: "./outputs.json"
+    excel_outputs_file: "./data.xlsx"
+
+models:
+  climate:
+    climate_model_data_file: "../climate_data/climate_model_gwpstar.yaml"
+
+  fleet:
+    use_fleet_model: false
+    aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
+    fleet_model_data_file: "./default_fleet/fleet.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "./default_energy_carriers/energy_carriers_data.yaml"
+    resources_model_data_file: "./default_energy_carriers/resources_data.yaml"
+    processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
+
+  life_cycle_assessment:
+    lca_model_data_file: "../../core/lca_model_config.yaml"
+    split_by: phase  # Will be moved to config file in future versions
+
+  standards:  # List of standard models to include from aeromaps.models.models.py
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_bottom_up
+    - models_production_cost
+    - models_abatements_cost
+
+  # customs:
+  #   foo_bar: "./custom_model_foo_bar.yaml"
