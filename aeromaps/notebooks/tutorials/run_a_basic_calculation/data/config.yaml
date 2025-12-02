@@ -1,0 +1,19 @@
+data:
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: "./climate_model_gwpstar.yaml"
+
+  # Models are currently defined in the notebook.
+  # In a future version, they will be loaded from this config.
+  # standards:
+  #   - models_traffic
+  #   - models_efficiency_top_down
+  #   - models_energy_without_fuel_effect
+  #   - models_offset
+  #   - models_emissions
+  #   - models_sustainability
+  #   - models_energy_cost
+  #   - models_operation_cost_top_down

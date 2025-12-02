@@ -379,18 +379,11 @@ class AeroMAPSProcess(object):
             Path to the output JSON file. If None, the path from the
             configuration is used.
         """
-        if (
-            file_name is None
-            and self.configuration_file is not None
-            and "OUTPUTS_JSON_DATA_FILE" in self.config
-        ):
-            configuration_directory = os.path.dirname(self.configuration_file)
-            new_output_file_path = os.path.join(
-                configuration_directory, self.config["OUTPUTS_JSON_DATA_FILE"]
+        if file_name is None:
+            file_name = self._resolve_config_path(
+                "data", "outputs", "json_outputs_file",
+                default_filename="outputs.json"
             )
-            file_name = new_output_file_path
-        elif file_name is None:
-            file_name = self.config["OUTPUTS_JSON_DATA_FILE"]
 
         # Ensure the directory exists
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
@@ -414,7 +407,10 @@ class AeroMAPSProcess(object):
             configuration is used.
         """
         if file_name is None:
-            file_name = self.config["EXCEL_DATA_FILE"]
+            file_name = self._resolve_config_path(
+                "data", "outputs", "excel_outputs_file",
+                default_filename="data.xlsx"
+            )
         with pd.ExcelWriter(file_name) as writer:
             self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
             self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
@@ -559,12 +555,15 @@ class AeroMAPSProcess(object):
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
 
+        # Store user config separately to check what was explicitly set
+        self._user_config = {}
+
         # Load the new configuration file and merge if provided
         if self.configuration_file is not None:
-            new_config = read_yaml_file(self.configuration_file)
+            self._user_config = read_yaml_file(self.configuration_file)
             self._config_base_dir = os.path.dirname(self.configuration_file)
             # Deep merge the new configuration into the default
-            self._deep_merge_config(self.config, new_config)
+            self._deep_merge_config(self.config, self._user_config)
 
     def _deep_merge_config(self, base: dict, override: dict) -> dict:
         """Recursively merge override config into base config.
@@ -604,6 +603,33 @@ class AeroMAPSProcess(object):
             The configuration value or the default.
         """
         value = self.config
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return default
+        return value
+
+    def _get_user_config_value(self, *keys, default=None):
+        """Get a value from the user configuration dictionary only.
+
+        This checks only the user-provided configuration, not the merged
+        config with defaults. Use this to determine if a user explicitly
+        set a value.
+
+        Parameters
+        ----------
+        *keys
+            Sequence of keys to navigate the nested config.
+        default
+            Default value if the key path doesn't exist.
+
+        Returns
+        -------
+        value
+            The user configuration value or the default.
+        """
+        value = self._user_config
         for key in keys:
             if isinstance(value, dict) and key in value:
                 value = value[key]
@@ -652,20 +678,24 @@ class AeroMAPSProcess(object):
         path
             Resolved absolute path.
         """
-        resolved_path = self._resolve_config_file_path(*keys, default_filename=default_filename)
-        if resolved_path is not None and resolved_path.exists():
-            return resolved_path
+        # First check if user explicitly set this in their config
+        user_value = self._get_user_config_value(*keys)
+        if user_value is not None and isinstance(user_value, str):
+            if os.path.isabs(user_value):
+                return Path(user_value)
+            return Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
         
-        # Fallback to default path in resources/data
+        # Check if value exists in merged config (from default config)
+        config_value = self._get_config_value(*keys)
+        if config_value is not None and isinstance(config_value, str):
+            if os.path.isabs(config_value):
+                return Path(config_value)
+            # Resolve relative to default resources/data directory
+            return Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value)))
+        
+        # Fallback to default filename if provided
         if default_filename is not None:
-            default_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-            if default_path.exists():
-                return default_path
-            print(
-                f"Config path for {'.'.join(keys)} not found. "
-                f"Using default: {default_path}"
-            )
-            return default_path
+            return Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
         return None
 
     def _initialize_data(self):
@@ -1027,16 +1057,17 @@ class AeroMAPSProcess(object):
         """
         self.parameters = Parameters()
 
-        # First use main parameters.json as default values
-        default_params_path = self._resolve_config_path(
-            "data", "inputs", "json_inputs_file",
-            default_filename="parameters.json"
+        # First use main parameters.json as default values (always from resources/data)
+        default_params_path = Path(
+            os.path.join(DEFAULT_RESOURCES_DATA_DIR, "parameters.json")
         )
         if use_defaults:
             self.parameters.read_json(file_name=str(default_params_path))
 
         # Load additional parameters from user configuration if provided
-        json_inputs_config = self._get_config_value("data", "inputs", "json_inputs_file")
+        # Use _get_user_config_value to check what the user explicitly set
+        # (not the merged config which includes defaults)
+        json_inputs_config = self._get_user_config_value("data", "inputs", "json_inputs_file")
         if self.configuration_file is not None and json_inputs_config is not None:
             # If the alternative file is a list of json files
             if isinstance(json_inputs_config, list):
@@ -1052,13 +1083,13 @@ class AeroMAPSProcess(object):
                                 )
                             merged_data[key] = value
                 self.parameters.read_json_direct(merged_data)
-            # If the alternative file is a single json file (and different from default)
-            elif self.configuration_file is not None:
-                new_input_file_path = self._resolve_config_file_path(
+            # If the alternative file is a single json file
+            else:
+                user_input_file_path = self._resolve_config_file_path(
                     "data", "inputs", "json_inputs_file"
                 )
-                if new_input_file_path and new_input_file_path != default_params_path:
-                    self.parameters.read_json(file_name=str(new_input_file_path))
+                if user_input_file_path:
+                    self.parameters.read_json(file_name=str(user_input_file_path))
 
         # Check if parameter is pd.Series and update index
         for key, value in self.parameters.__dict__.items():
@@ -1431,7 +1462,10 @@ class AeroMAPSProcess(object):
             outputs.
         """
         if file_name is None:
-            file_name = self.config["CSV_DATA_INFORMATION_FILE"]
+            file_name = self._resolve_config_path(
+                "data", "inputs", "csv_data_information_file",
+                default_filename="data_information.csv"
+            )
         df = pd.read_csv(file_name, encoding="utf-8", sep=";")
 
         var_infos_df = pd.DataFrame()
