@@ -3,9 +3,8 @@ data:
     json_outputs_file: "./outputs.json"
 
 models:
-
   climate: false
-  
+
   fleet:
     aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
     fleet_model_data_file: "./default_fleet/fleet.yaml"
@@ -13,3 +12,6 @@ models:
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: "./resources_data.yaml"
+
+  standards:
+    - models_optim_complex

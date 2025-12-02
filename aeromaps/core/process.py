@@ -31,7 +31,7 @@ from gemseo import generate_n2_plot
 # Local application imports
 from aeromaps.models.base import AeroMAPSModel, AeroMapsCustomDataType
 from aeromaps.core.gemseo import AeroMAPSAutoModelWrapper, AeroMAPSCustomModelWrapper
-from aeromaps.core.models import default_models_top_down
+from aeromaps.core import models as aeromaps_models
 
 from aeromaps.models.parameters import Parameters
 from aeromaps.models.yaml_interpolator import YAMLInterpolator
@@ -142,7 +142,7 @@ class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
-        models=default_models_top_down,
+        models=None,
         optimisation=False,
     ):
         """Initialize an AeroMAPSProcess instance.
@@ -155,10 +155,13 @@ class AeroMAPSProcess(object):
         Parameters
         ----------
         configuration_file
-            Path to a configuration JSON file overriding default
+            Path to a configuration YAML file overriding default
             settings.
         models
-            Dictionary of model instances to be used in the process.
+            Dictionary of additional model instances to be merged with
+            the standard models loaded from the configuration file's
+            `models.standards` list. If None, only the standard models
+            are used.
         optimisation
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
@@ -169,6 +172,15 @@ class AeroMAPSProcess(object):
             else None
         )
         self._initialize_configuration()
+
+        # Load standard models from config
+        standard_models = self._load_models_from_config()
+        
+        # Merge with user-provided models (user models override/extend standard models)
+        if models is not None:
+            standard_models.update(models)
+        
+        models = standard_models
 
         # Recopy models to avoid shared state between instances.
         # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
@@ -185,6 +197,41 @@ class AeroMAPSProcess(object):
             self.setup_mda()
         else:
             self.setup_optimisation()
+
+    def _load_models_from_config(self):
+        """Load models from the configuration file's standards list.
+
+        This method reads the `models.standards` list from the configuration
+        and retrieves corresponding model dictionaries from the aeromaps.core.models module.
+
+        Returns
+        -------
+        dict
+            A dictionary containing all the models specified in the configuration.
+
+        Raises
+        ------
+        ValueError
+            If a model name from the config is not found in aeromaps.core.models.
+        """
+        standards = self._get_config_value("models", "standards", default=[])
+        
+        if not standards:
+            # Fallback to default_models_top_down if no standards specified
+            return aeromaps_models.default_models_top_down
+        
+        models = {}
+        for model_name in standards:
+            if hasattr(aeromaps_models, model_name):
+                model_dict = getattr(aeromaps_models, model_name)
+                models[model_name] = model_dict
+            else:
+                raise ValueError(
+                    f"Model '{model_name}' specified in config.yaml is not found in "
+                    f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
+                )
+        
+        return models
 
     def common_setup(self):
         """Perform common setup steps independent of analysis type.

@@ -10,12 +10,10 @@ models:
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
 
-  # Models are currently defined in the notebook.
-  # In a future version, they will be loaded from this config.
-  # standards:
-  #   - models_traffic
-  #   - models_efficiency_top_down
-  #   - models_energy_without_fuel_effect
-  #   - models_energy_cost
-  #   - models_offset
-  #   - models_emissions
+  standards:
+    - models_traffic
+    - models_efficiency_top_down
+    - models_energy_without_fuel_effect
+    - models_energy_cost
+    - models_offset
+    - models_emissions
