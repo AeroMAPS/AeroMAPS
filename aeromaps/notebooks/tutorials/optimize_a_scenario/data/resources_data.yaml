@@ -9,7 +9,7 @@ generic_biomass:
         years: [2020, 2030, 2040, 2050]
         values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12] # --> MJ
         method: linear
-      aviation_allocated_share: 5.0 # [%]
+      aviation_allocated_share: 10.0 # [%]
 
 grid_electricity:
   # ID
@@ -27,4 +27,4 @@ grid_electricity:
         years: [2020, 2030, 2040, 2050]
         values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12] # --> MJ
         method: linear
-      aviation_allocated_share: 5.0 # [%]
+      aviation_allocated_share: 10.0 # [%]

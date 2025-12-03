@@ -54,7 +54,7 @@ electrofuel:
     mandate:
       mandate_type: "share"
       mandate_share: !AeroMapsCustomDataType
-        years: [2020,2030,2050]
+        years: [2025,2030,2050]
         values: [0.0, 0.0, 0.0]
         method: linear
     # Technical:
