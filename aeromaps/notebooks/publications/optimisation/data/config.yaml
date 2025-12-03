@@ -1,7 +1,0 @@
-models:
-  fleet:
-    aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
-    fleet_model_data_file: "./fleet_calibration2.yaml"
-    
-  standards:
-    - default_models_bottom_up
