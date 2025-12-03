@@ -1,22 +1,8 @@
-"""
-Warning
--------
-Module to be deprecated before V1
-"""
-
-from typing import Tuple
-
-import numpy as np
 import pandas as pd
-import os.path as pth
 
 from aeromaps.models.base import (
     AeroMAPSModel,
-    GWPStarEquivalentEmissionsFunction,
-    AbsoluteGlobalWarmingPotentialCO2Function,
-    RunFair,
 )
-from aeromaps.resources.climate_data import RCP
 from aerocm.climate_models.aviation_climate_simulation import AviationClimateSimulation
 
 

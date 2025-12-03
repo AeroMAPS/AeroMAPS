@@ -1,0 +1,86 @@
+# This file contains energy carrier data for scenario 3 used in the ICAS 2024 publication.
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44.0
+      # Note: the following emission factor (kgCO2/MJ) covers the full life cycle in a single number;
+      # It is not used in this LCA study, which relies on more detailed modeling.
+      # The value is provided for compatibility with models that require a single emission factor.
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050 ]
+        values: [ 89.0, 89.0, 89.0, 89.0, 89.0, 89.0, 89.0, 88.96932452, 88.94162348, 88.91643518, 88.8933766, 88.87212025, 88.75230492, 88.63632753, 88.52355517, 88.41327406, 88.30477638, 88.29581928, 88.28569195, 88.27404749, 88.26067237, 88.24711717, 88.22730319, 88.20408729, 88.17687335, 88.14464554, 88.11418616, 88.09889001, 88.08033818, 88.0584836, 88.0329368, 88.0034472 ]
+        method: linear
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+
+
+generic_biofuel:
+  # Metadata
+  name: "generic_biofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2025, 2030, 2035, 2040, 2045, 2050]
+        values: [0.0, 2.0, 4.8, 15.0, 24.0, 27.0, 35.0]
+        method: quadratic
+    # Technical:
+    technical:
+      lhv: 44.0
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2025, 2030, 2035, 2040, 2045, 2050]
+        values: [0.0, 0.0, 1.2, 5.0, 10.0, 15.0, 35.0]
+        method: quadratic
+    # Technical:
+    technical:
+      lhv: 44.0
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
