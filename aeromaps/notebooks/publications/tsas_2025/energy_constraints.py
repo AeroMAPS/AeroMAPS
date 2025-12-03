@@ -9,23 +9,25 @@ class BlendCompletenessConstraint(AeroMAPSModel):
 
     def compute(
         self,
-        fossil_kerosene_energy_consumption: pd.Series,
+        generic_biofuel_mandate_share: pd.Series,
+        electrofuel_mandate_share: pd.Series,
         blend_completeness_constraint_enforcement_years: list,
     ) -> list:
         """
-        Compute constraint ensuring kerosene consumption is not negative.
-        Normalised around zero: positive when consumption < 0.
+        Compute constraint ensuring saf share is not above 100%.
+        Normalised around zero: positive when above  100.
         """
 
         # Reference for normalisation: max absolute positive value
-        max_val = fossil_kerosene_energy_consumption.max()
-        denom = max_val if (max_val is not None and max_val > 0) else 1.0
+        total_share = generic_biofuel_mandate_share + electrofuel_mandate_share
 
-        # Compute constraint: positive when consumption < 0, ≈ 0 otherwise
+        violation_normalised = (total_share - 100) / 100
+
+        # Compute constraint: positive when consumption < 0
         blend_completeness_constraint = [
-            max(0, -fossil_kerosene_energy_consumption.loc[year] / denom)
+            violation_normalised.loc[year]
             for year in blend_completeness_constraint_enforcement_years
-            if year in fossil_kerosene_energy_consumption.index
+            if year in total_share.index
         ]
 
         return blend_completeness_constraint
