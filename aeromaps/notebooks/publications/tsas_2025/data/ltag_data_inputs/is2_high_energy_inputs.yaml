@@ -52,6 +52,10 @@ generic_biofuel:
  0.16162607, 0.16162607, 0.16162607, 0.16162607, 0.16162607, 0.16162607,
  0.16162607, 0.16162607, 0.16162607]
         method: linear
+      eis_variable_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0077 ]
+        method: linear
   outputs:
 
 electrofuel:
