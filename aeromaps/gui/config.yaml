@@ -8,7 +8,7 @@ data:
 
 models:
   climate:
-    climate_model_data_file: "./resources/climate_data/climate_model_fair.yaml"
+    climate_model_data_file: "./resources/data/default_climate_models/climate_model_fair.yaml"
 
   fleet:
     aircraft_inventory_model_data_file: "./resources/data/default_fleet/aircraft_inventory.yaml"
