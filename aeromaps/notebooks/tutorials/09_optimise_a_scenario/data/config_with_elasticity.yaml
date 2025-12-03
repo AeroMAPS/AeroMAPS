@@ -14,3 +14,8 @@ models:
 
   standards:
     - models_optim_complex
+
+  customs:
+    blend_completeness_constraint: "../custom_constraints.py::BlendCompletenessConstraint"
+    biomass_availability_constraint_trajectory: "../custom_constraints.py::BiomassAvailabilityConstraintTrajectory"
+    grid_electricity_availability_constraint_trajectory: "../custom_constraints.py::GridElectricityAvailabilityConstraintTrajectory"
