@@ -142,7 +142,7 @@ class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
-        models=None,
+        custom_models=None,
         optimisation=False,
     ):
         """Initialize an AeroMAPSProcess instance.
@@ -157,7 +157,7 @@ class AeroMAPSProcess(object):
         configuration_file
             Path to a configuration YAML file overriding default
             settings.
-        models
+        custom_models
             Dictionary of additional model instances to be merged with
             the standard models loaded from the configuration file's
             `models.standards` list. If None, only the standard models
@@ -177,8 +177,8 @@ class AeroMAPSProcess(object):
         standard_models = self._load_models_from_config()
         
         # Merge with user-provided models (user models override/extend standard models)
-        if models is not None:
-            standard_models.update(models)
+        if custom_models is not None:
+            standard_models.update(custom_models)
         
         models = standard_models
 
@@ -769,11 +769,11 @@ class AeroMAPSProcess(object):
 
         This method calls the internal methods to read resource and
         process data, and to instantiate the generic energy carrier models.
-        Skipped if models.energy is set to false.
+        Skipped if models.energy key is not present in the user configuration.
         """
-        # Check if energy models should be used
-        energy_config = self._get_config_value("models", "energy", default=False)
-        if energy_config is False:
+        # Check if energy models should be used (key must be present in user config)
+        energy_config = self._get_user_config_value("models", "energy", default=None)
+        if energy_config is None:
             return
             
         self._read_generic_resources_data()
@@ -950,11 +950,11 @@ class AeroMAPSProcess(object):
         - model_settings: dict, settings for the climate model
         Refer to the documentation of AeroCM for more details: https://github.com/AeroMAPS/AeroCM
         
-        Skipped if models.climate is set to false.
+        Skipped if models.climate key is not present in the user configuration.
         """
-        # Check if climate model should be used
-        climate_config = self._get_config_value("models", "climate", default=False)
-        if climate_config is False:
+        # Check if climate model should be used (key must be present in user config)
+        climate_config = self._get_user_config_value("models", "climate", default=None)
+        if climate_config is None:
             return
             
         climate_model_file_path = self._resolve_config_path(
@@ -1018,9 +1018,9 @@ class AeroMAPSProcess(object):
 
         """
         # Check if fleet model should be used
-        # If models.fleet is False or not a dict, fleet model is disabled
-        fleet_config = self._get_config_value("models", "fleet", default=False)
-        use_fleet_model = isinstance(fleet_config, dict) and fleet_config is not False
+        # Fleet model is enabled only if models.fleet key exists in user config and is a dict
+        fleet_config = self._get_user_config_value("models", "fleet", default=None)
+        use_fleet_model = isinstance(fleet_config, dict)
         
         if use_fleet_model:
 
