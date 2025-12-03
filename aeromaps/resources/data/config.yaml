@@ -2,8 +2,8 @@ data:
   inputs:
     csv_data_information_file: "./data_information.csv"
     json_inputs_file: "./parameters.json"
-    vector_inputs_file: "./vector_inputs.csv"
-    climate_historical_data_file: "../climate_data/temperature_historical_dataset.csv"
+    partitioning_other_data_file: "./vector_inputs.csv"
+    partitioning_climate_data_file: "../climate_data/temperature_historical_dataset.csv"
   outputs:
     json_outputs_file: "./outputs.json"
     excel_outputs_file: "./data.xlsx"
@@ -37,5 +37,3 @@ models:
     - models_production_cost
     - models_abatements_cost
 
-  # customs:
-  #   foo_bar: "./custom_model_foo_bar.yaml"

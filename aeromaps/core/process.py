@@ -1175,7 +1175,7 @@ class AeroMAPSProcess(object):
         attributes to the parameters object.
         """
         vector_inputs_data_file_path = self._resolve_config_path(
-            "data", "inputs", "vector_inputs_file",
+            "data", "inputs", "partitioning_other_data_file",
             default_filename="vector_inputs.csv"
         )
 
@@ -1201,7 +1201,7 @@ class AeroMAPSProcess(object):
         its numeric values as a NumPy array for climate-related models.
         """
         climate_historical_data_file_path = self._resolve_config_path(
-            "data", "inputs", "climate_historical_data_file",
+            "data", "inputs", "partitioning_climate_data_file",
             default_filename="../climate_data/temperature_historical_dataset.csv"
         )
 

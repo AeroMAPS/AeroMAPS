@@ -1,8 +1,8 @@
 data:
   inputs:
     json_inputs_file: "./partitioned_inputs.json"
-    vector_inputs_file: "./vector_inputs_partitioned.csv"
-    climate_historical_data_file: "./partitioned_temperature_historical_dataset.csv"
+    partitioning_other_data_file: "./vector_inputs_partitioned.csv"
+    partitioning_climate_data_file: "./partitioned_temperature_historical_dataset.csv"
   outputs:
     json_outputs_file: "./outputs.json"
 
