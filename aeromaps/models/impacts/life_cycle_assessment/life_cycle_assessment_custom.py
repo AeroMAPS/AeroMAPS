@@ -1,20 +1,31 @@
 """
-Model for Life Cycle Assessment (LCA) of air transportation systems
+Custom model for Life Cycle Assessment (LCA) of air transportation systems
 """
 
 # Standard library imports
 import warnings
-import re
 import pandas as pd
 import numpy as np
-import lca_algebraic as agb
 from typing import Dict
 import xarray as xr
-from lca_modeller.io.configuration import LCAProblemConfigurator
-import brightway2 as bw
+
+try:
+    import lca_algebraic as agb
+    from lca_modeller.io.configuration import LCAProblemConfigurator
+    import brightway2 as bw
+except ImportError as e:
+    raise ImportError(
+        "Required libraries for Custom Life Cycle Assessment module are not installed. "
+        "Please run 'pip install --upgrade aeromaps[lca]' to install them."
+    ) from e
 
 # AeroMAPS imports
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
+from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
+    tuple_to_varname,
+    is_not_nan,
+    compute_param_length
+)
 
 # Constants
 KEY_YEAR = "year"
@@ -289,7 +300,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         # elif not isinstance(models, dict):
         #    models = {models: None}
 
-        param_length = agb.params._compute_param_length(params)
+        param_length = compute_param_length(params)
         out = np.full((len(models.keys()), len(methods), param_length), np.nan, float)
         axis_keys = self.axis_keys
 
@@ -467,60 +478,3 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 output_data[tuple_to_varname(method)] = value
 
         return output_data
-
-
-def tuple_to_varname(items):
-    """
-    Convert a tuple or list of strings into a clean, Python-friendly variable name.
-
-    Parameters
-    ----------
-    items : tuple or list
-        The tuple or list of strings to convert.
-
-    Returns
-    -------
-    str
-        A cleaned variable name string.
-    """
-    if isinstance(items, (list, tuple)):
-        text = "__".join(items)  # join parts with double underscores
-    else:
-        text = str(items)
-
-    # Lowercase everything
-    text = text.lower()
-
-    # Replace anything that’s not alphanumeric or underscore with underscore
-    text = re.sub(r"[^0-9a-zA-Z_]+", "_", text)
-
-    # Remove leading/trailing underscores and collapse multiple underscores
-    text = re.sub(r"_+", "_", text).strip("_")
-
-    # Add lca to variable
-    text = "lca_" + text
-
-    return text
-
-
-def is_not_nan(x):
-    """
-    Return True if x is not NaN or None. Handles single values and arrays/lists.
-
-    Parameters
-    ----------
-    x : any
-        The input to check.
-
-    Returns
-    -------
-    bool
-        True if x is not NaN or None, False otherwise.
-    """
-    if x is None:
-        return False
-    if isinstance(x, (float, int, np.number)):
-        return not pd.isna(x)
-    if isinstance(x, (pd.Series, np.ndarray, list, tuple)):
-        return pd.notna(np.asarray(x)).any()
-    return True

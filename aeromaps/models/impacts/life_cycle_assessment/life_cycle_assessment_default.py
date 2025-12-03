@@ -2,16 +2,24 @@
 Default model for Life Cycle Assessment (LCA) of air transportation systems
 """
 
+# Standard library imports
 import warnings
-import re
 import pandas as pd
 import numpy as np
 import ast
 from typing import Dict
 import xarray as xr
+
+# AeroMAPS imports
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 from aeromaps.models.impacts.life_cycle_assessment.io.common import Model, TOTAL_AXIS_KEY
+from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
+    tuple_to_varname,
+    is_not_nan,
+    compute_param_length
+)
 
+# Constants
 KEY_YEAR = "year"
 KEY_METHOD = "method"
 KEY_MODEL = "model"
@@ -20,6 +28,31 @@ KEY_MODEL = "model"
 class LifeCycleAssessmentDefault(AeroMAPSModel):
     """
     Model to load LCA pre-compiled expressions from a JSON file.
+    Compared to the LifeCycleAssessmentCustom model, this model does not require the user to install LCA-specific
+    packages and is disconnected from the ecoinvent database. It is therefore easier to use and deploy, but less
+    flexible as the user cannot modify the LCA model structure.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the model instance.
+    json_file : str
+        Path to the JSON file containing the pre-compiled LCA model.
+    split_by : str, optional
+        Axis to split the results by (e.g., "phase"). If None, total results are provided.
+
+    Attributes
+    ----------
+    model : Model
+        The LCA model loaded from the JSON file.
+    methods : List[tuple]
+        List of impact assessment methods available in the model.
+    axis_keys : List[str] or None
+        List of keys for the specified axis, if applicable.
+    params_names : List[str]
+        List of parameter names required by the LCA model.
+    xarray_lca : xr.DataArray
+        Xarray DataArray storing the LCA results after computation.
     """
 
     def __init__(
@@ -84,6 +117,19 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 self.output_names.append(tuple_to_varname(method))
 
     def compute(self, input_data) -> dict:
+        """
+        Main compute method for the LCA model.
+
+        Parameters
+        ----------
+        input_data : dict
+            Dictionary containing input parameter values.
+
+        Returns
+        -------
+        output_data : dict
+            Dictionary containing LCA results as pd.Series for each impact category.
+        """
         # --- Assign values to parameters ---
         params_dict = self._get_param_values(input_data)
 
@@ -206,7 +252,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
 
         models = {KEY_MODEL: self.model}
         methods = self.methods
-        param_length = _compute_param_length(params)
+        param_length = compute_param_length(params)
         out = np.empty((len(models), len(methods), param_length))
         axis = self.axis
         axis_keys = self.axis_keys
@@ -259,6 +305,16 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
     def _convert_xarray_to_series(self, res: xr.DataArray) -> dict:
         """
         Convert xarray DataArray to dictionary of pd.Series
+
+        Parameters
+        ----------
+        res : xr.DataArray
+            The xarray DataArray containing LCA results.
+
+        Returns
+        -------
+        dict
+            Dictionary of pd.Series for each impact category.
         """
         output_data = {}
 
@@ -276,50 +332,3 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 output_data[tuple_to_varname(method)] = value
 
         return output_data
-
-
-def tuple_to_varname(items):
-    """
-    Convert a tuple or list of strings into a clean, Python-friendly variable name.
-    """
-    if isinstance(items, (list, tuple)):
-        text = "__".join(items)  # join parts with double underscores
-    else:
-        text = str(items)
-
-    # Lowercase everything
-    text = text.lower()
-
-    # Replace anything that’s not alphanumeric or underscore with underscore
-    text = re.sub(r"[^0-9a-zA-Z_]+", "_", text)
-
-    # Remove leading/trailing underscores and collapse multiple underscores
-    text = re.sub(r"_+", "_", text).strip("_")
-
-    # Add lca to variable
-    text = "lca_" + text
-
-    return text
-
-
-def is_not_nan(x):
-    """Return True if x is not NaN or None."""
-    if x is None:
-        return False
-    if isinstance(x, (float, int, np.number)):
-        return not pd.isna(x)
-    if isinstance(x, (pd.Series, np.ndarray, list, tuple)):
-        return pd.notna(np.asarray(x)).any()
-    return True
-
-
-def _compute_param_length(params):
-    # Check length of parameter values
-    param_length = 1
-    for key, val in params.items():
-        if isinstance(val, (list, np.ndarray)):
-            if param_length == 1:
-                param_length = len(val)
-            elif param_length != len(val):
-                raise Exception("Parameters should be a single value or a list of same number of values")
-    return param_length
