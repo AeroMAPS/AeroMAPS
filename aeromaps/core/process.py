@@ -738,25 +738,37 @@ class AeroMAPSProcess(object):
         path
             Resolved absolute path.
         """
+        resolved_path = None
+        
         # First check if user explicitly set this in their config
         user_value = self._get_user_config_value(*keys)
         if user_value is not None and isinstance(user_value, str):
             if os.path.isabs(user_value):
-                return Path(user_value)
-            return Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
+                resolved_path = Path(user_value)
+            else:
+                resolved_path = Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
         
         # Check if value exists in merged config (from default config)
-        config_value = self._get_config_value(*keys)
-        if config_value is not None and isinstance(config_value, str):
+        elif (config_value := self._get_config_value(*keys)) is not None and isinstance(config_value, str):
             if os.path.isabs(config_value):
-                return Path(config_value)
-            # Resolve relative to default resources/data directory
-            return Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value)))
+                resolved_path = Path(config_value)
+            else:
+                # Resolve relative to default resources/data directory
+                resolved_path = Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, config_value)))
         
         # Fallback to default filename if provided
-        if default_filename is not None:
-            return Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
-        return None
+        elif default_filename is not None:
+            resolved_path = Path(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_filename))
+        
+        # Warn if the resolved path doesn't exist
+        if resolved_path is not None and not resolved_path.exists():
+            config_key = ".".join(keys)
+            logging.warning(
+                f"Configuration file not found: '{resolved_path}' "
+                f"(config key: {config_key}). Please check the path in your configuration file."
+            )
+        
+        return resolved_path
 
     def _initialize_data(self):
         """Initialize core data containers and indices."""
