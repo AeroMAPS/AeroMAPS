@@ -157,7 +157,7 @@ class AeroMAPSProcess(object):
         configuration_file
             Path to a configuration YAML file overriding default
             settings.
-        models
+        custom_models
             Dictionary of additional model instances to be merged with
             the standard models loaded from the configuration file's
             `models.standards` list. If None, only the standard models
@@ -177,8 +177,8 @@ class AeroMAPSProcess(object):
         standard_models = self._load_models_from_config()
         
         # Merge with user-provided models (user models override/extend standard models)
-        if models is not None:
-            standard_models.update(models)
+        if custom_models is not None:
+            standard_models.update(custom_models)
         
         models = standard_models
 

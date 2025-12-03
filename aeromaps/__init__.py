@@ -32,6 +32,6 @@ def create_process(
 
     return AeroMAPSProcess(
         configuration_file=configuration_file,
-        custom_models=models,
+        custom_models=custom_models,
         optimisation=optimisation,
     )
