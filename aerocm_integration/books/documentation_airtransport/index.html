@@ -1,0 +1,6513 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://aeromaps.github.io/AeroMAPS/aerocm_integration/books/documentation_airtransport/">
+      
+      
+        <link rel="prev" href="../documentation_gui/">
+      
+      
+        <link rel="next" href="../documentation_impacts/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Air transport - AeroMAPS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#air-transport-modeling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AeroMAPS Documentation" class="md-header__button md-logo" aria-label="AeroMAPS Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo_white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AeroMAPS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Air transport
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/AeroMAPS/AeroMAPS" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AeroMAPS
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../full_doc/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  AeroMAPS Code and Models
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notebooks/examples_basic/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../developers/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Developers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CHANGELOG/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AeroMAPS Documentation" class="md-nav__button md-logo" aria-label="AeroMAPS Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo_white.png" alt="logo">
+
+    </a>
+    AeroMAPS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/AeroMAPS/AeroMAPS" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AeroMAPS
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    GUI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation_gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use of the graphical user interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Models documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Air transport
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Air transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identification-of-the-main-levers-of-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identification of the main levers of action
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-historical-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main historical data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#air-traffic-usage-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Air traffic: usage evolution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Air traffic: usage evolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#categorization-and-calibration-of-the-aviation-market" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categorization and calibration of the aviation market
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#air-traffic-evolution-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Air traffic evolution modeling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aircraft-fleet-and-operations-energy-efficiency-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aircraft fleet and operations: energy efficiency improvements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aircraft fleet and operations: energy efficiency improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improvements-of-aircraft-efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improvements of aircraft efficiency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Improvements of aircraft efficiency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-down-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-down approach
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bottom-up-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bottom-up approach
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improvements-in-aircraft-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improvements in aircraft operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improvements-in-aircraft-load-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improvements in aircraft load factor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improvements-for-reducing-non-co2-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improvements for reducing non-CO2 effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aircraft-energy-decarbonization-of-energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aircraft energy: decarbonization of energy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aircraft energy: decarbonization of energy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detailed-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed modeling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplified-modeling-awaiting-robust-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simplified modeling (awaiting robust implementation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bibliography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliography
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation_impacts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Impacts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package and process instantiation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Package and process instantiation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/aeromaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AeroMAPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AeroMAPSProcess handling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AeroMAPSProcess handling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/aeromaps.core.models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/aeromaps.core.process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper functions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Helper functions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/aeromaps.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../full_doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AeroMAPS Code and Models
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AeroMAPS Code and Models
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Package
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AeroMAPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.core.gemseo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GEMSEO integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.core.models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.core.process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.core.cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-line interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    GUI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.gui.graphical_user_interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical user interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.gui.plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utils
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.utils.defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.utils.yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML helpers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AeroMAPS Models
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AeroMAPS Models
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.yaml_interpolator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML interpolator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3" id="__nav_5_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Air transport
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Air transport
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.constants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Constants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_3" id="__nav_5_6_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Air traffic
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Air traffic
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.ask/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ask
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.price_elasticity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    price_elasticity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.rpk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rpk
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.rtk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rtk
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.short_range_distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    short_range_distribution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.air_traffic.total_aircraft_distance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    total_aircraft_distance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_4" id="__nav_5_6_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aircraft fleet and operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Aircraft fleet and operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_4_2" id="__nav_5_6_3_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fleet
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_3_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fleet
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aircraft_efficiency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fleet_model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    fleet_numeric
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_4_3" id="__nav_5_6_3_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load factor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_3_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Load factor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    load_factor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_4_4" id="__nav_5_6_3_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non-CO2
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_3_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Non-CO2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    non_co2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_3_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_3_4_5" id="__nav_5_6_3_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_3_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_3_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4" id="__nav_5_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Impacts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Impacts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_2" id="__nav_5_6_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emissions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Emissions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.emissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.emissions.co2_emissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    co2_emissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.emissions.non_co2_emissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    non_co2_emissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.emissions.carbon_offset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    carbon_offset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_3" id="__nav_5_6_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Climate
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Climate
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.climate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.climate.climate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    climate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_4" id="__nav_5_6_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Energy resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Energy resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.energy_resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.energy_resources.energy_resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.energy_resources.energy_consumption/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_consumption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_5" id="__nav_5_6_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generic energy model
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Generic energy model
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_5_2" id="__nav_5_6_4_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_4_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Common
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.common/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_carriers_factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_carriers_manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_carriers_means
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_use_choice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_use_choice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_5_3" id="__nav_5_6_4_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bottom-up
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_4_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bottom-up
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    abatement_cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_effective/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    abatement_effective
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.environmental/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    environmental
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.production_capacity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    production_capacity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_5_4" id="__nav_5_6_4_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Top-down
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_6_4_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Top-down
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.top_down/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.top_down.cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.generic_energy_model.top_down.environmental/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    environmental
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_6" id="__nav_5_6_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life cycle assessment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Life cycle assessment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.life_cycle_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    life_cycle_assessment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.life_cycle_assessment.plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_4_7" id="__nav_5_6_4_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Others
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Others
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.others/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.impacts.others.others/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    others
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_5" id="__nav_5_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Optimisation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.optimisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_5_2" id="__nav_5_6_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Constraints
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Constraints
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.optimisation.constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.optimisation.constraints.carbon_budget_constraint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    carbon_budget_constraint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.optimisation.constraints.energy_constraint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    energy_constraint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_6" id="__nav_5_6_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sustainability assessment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sustainability assessment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.sustainability_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_6_6_2" id="__nav_5_6_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Climate
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_6_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Climate
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.sustainability_assessment.climate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.sustainability_assessment.climate.carbon_budget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    carbon_budgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.sustainability_assessment.climate.comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.sustainability_assessment.climate.temperature_target/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    temperature_target
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.constants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Constants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../full_doc/aeromaps.models.templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basic example
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basic example
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/examples_basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basic example for using AeroMAPS with Jupyter Notebook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../other_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Other examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Models documentation
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="air-transport-modeling">Air transport modeling<a class="headerlink" href="#air-transport-modeling" title="Permanent link">&para;</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">This part of the documentation is deprecated. It describes AeroMAPS in late 2023</p>
+<p>It will be updated soon!</p>
+</div>
+<p>The air transport system model presented in the AeroMAPS architecture rely on the modeling of levers of 
+action to reduce the environmental impacts of the sector. Before describing their implementation in AeroMAPS, these 
+levers of action are identified.</p>
+<h2 id="identification-of-the-main-levers-of-action">Identification of the main levers of action<a class="headerlink" href="#identification-of-the-main-levers-of-action" title="Permanent link">&para;</a></h2>
+<p>The different levers of action to reduce environmental impacts from air transport are identified and linked using an 
+approach based on an adaptation of the Kaya identity for CO<sub>2</sub> emissions. It allows for obtaining the three 
+main elements of the air transport system described in the AeroMAPS architecture.</p>
+<p>The Kaya identity allows decomposing the global CO<sub>2</sub> emissions through demographic (population <span class="arithmatex">\(POP\)</span>), 
+economic (GDP per capita <span class="arithmatex">\(GDP/POP\)</span>), and technological factors (energy intensity <span class="arithmatex">\(E/GDP\)</span> which can be assimilated to 
+an output and the CO<sub>2</sub> content <span class="arithmatex">\(CO_2/E\)</span>) <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. The interest of this identity is that 
+it indicates different levers to act on CO<sub>2</sub> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>. Different 
+studies, often based on specific decomposition methods, justify the choice of relevant parameters for decomposing 
+emissions <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup><sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>. Nevertheless, some parameters are interdependent and interpretations 
+can be complex <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>.</p>
+<p><span class="arithmatex">\(CO_2 = POP \times \frac{GDP}{POP} \times \frac{E}{GDP} \times \frac{CO_2}{E}\)</span></p>
+<p>This identity can be adapted to air transport in many ways. In this work, a simplified decomposition is proposed via 
+the following equation. The different parameters are justified by other works related to transportation and aviation 
+<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup><sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup><sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup><sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup>. The first factor <span class="arithmatex">\(RPK\)</span> 
+corresponds to air traffic. The second factor <span class="arithmatex">\(E/RPK\)</span> represents the ratio between the energy <span class="arithmatex">\(E\)</span> consumed by the 
+sector and the air traffic. It corresponds to the average energy consumption of aircraft per passenger and 
+per kilometer. The last factor <span class="arithmatex">\(CO_2/E\)</span> is the ratio between the sector's CO<sub>2</sub> emissions and the energy 
+it consumes. It represents the CO<sub>2</sub> content of the energy used by the aircraft. These parameters thus 
+represent different levers of action to decarbonize the aviation sector. </p>
+<p><span class="arithmatex">\(CO_2 = RPK \times \frac{E}{RPK} \times \frac{CO_2}{E}\)</span></p>
+<p>This equation can be modified or expanded. For example, additional coefficients can be added to include indirect 
+CO<sub>2</sub> emissions or non-CO<sub>2</sub> climate effects. Similarly, the energy efficiency factor can be 
+decomposed to separate technological and operational levers (load factor, improved flight or ground operations). 
+Finally, as with the original Kaya identity, economic parameters can be incorporated.</p>
+<p>It is important to note that these different factors are not totally independent. For example, a change in energy 
+carrier may lead to an increase in energy consumption per passenger and per kilometer. Similarly, the level of air 
+traffic can affect the load factor. Only the main interactions are considered in the following.</p>
+<p>Before modeling the evolution of these different parameters, it is interesting to plot their historical evolution. 
+Fig.1 represents the factors of the Kaya decomposition for aviation by also integrating the load factor <span class="arithmatex">\(RPK/ASK\)</span>. 
+Despite significant improvements in fuel efficiency via technology and load factor, CO<sub>2</sub> emissions from the 
+sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
+to the almost exclusive use of fossil kerosene.</p>
+<p><img alt="" src="figs/kaya_aviation.svg" /></p>
+<p><em>Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.</em></p>
+<p>This work thus allows identifying and linking the different levers of action to reduce emissions from aviation. 
+In the following, deterministic models for estimating the following parameters are presented:
+- usage evolution through the evolution of air traffic ;
+- energy efficiency through improvements in energy intensity with various levers (fleet renewal for more efficient aircraft, operations, load factor) ;
+- energy decarbonization through the incorporation of alternative energy carriers to replace fossil fuel.
+These models are particularly focused on their links to the sector's CO<sub>2</sub> emissions, but some elements 
+concerning strategies against non-CO<sub>2</sub> effects are also provided.</p>
+<h2 id="main-historical-data">Main historical data<a class="headerlink" href="#main-historical-data" title="Permanent link">&para;</a></h2>
+<p>Before detailing the different models for representing the evolution of the different elements of air transport, 
+historical data used are briefly discussed. Various air traffic data used are derived from
+<a href="https://www.icao.int/annual-report-2019/Pages/the-world-of-air-transport-in-2019-statistical-results.aspx" target="_blank">International Civil Aviation Organization (ICAO)</a>, 
+such as annual passenger numbers, RPK, RTK (Revenue Tonne Kilometer), ASK (Available Seat Kilometer) or aircraft load 
+factor. Then, the historical evolution of the term <span class="arithmatex">\(\frac{E}{RPK}\)</span> is obtained using the previous traffic data and data 
+on world kerosene consumption by the aviation sector, extracted and adapted from 
+<a href="https://www.iea.org/sankey/#?c=World&s=Final%20consumption" target="_blank">International Energy Agency (IEA)</a>. 
+Indeed, not all kerosene is consumed by commercial aviation alone. According to <sup id="fnref:11"><a class="footnote-ref" href="#fn:11">11</a></sup>, 
+military aviation consumes 8% of kerosene and general and private aviation 4%. The consumption of alternative energy 
+carriers is considered as negligible in the last decades. Lastly, the term <span class="arithmatex">\(\frac{CO_2}{E}\)</span> is considered as constant 
+for the same reason. The values considered depend on the scope chosen, in particular the inclusion of emissions related 
+to fossil kerosene production. Here, mean values from a review paper <sup id="fnref:12"><a class="footnote-ref" href="#fn:12">12</a></sup> are used: a direct 
+emission factor of 74.0 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> and a global (including fuel production) emission factor 
+of 88.7 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. The global emission factor is considered by default to facilitate the 
+comparison with alternative energy carriers. As a consequence, using these data and including indirect CO<sub>2</sub> 
+emissions, commercial aviation was for instance responsible for 2.6% of world CO<sub>2</sub> emissions in 2019 
+(compared with data from <a href="https://www.globalcarbonproject.org/" target="_blank">Global Carbon Project</a> 
+including fossil fuel combustion and land use). See for instance <sup id="fnref:13"><a class="footnote-ref" href="#fn:13">13</a></sup> for more details. </p>
+<h2 id="air-traffic-usage-evolution">Air traffic: usage evolution<a class="headerlink" href="#air-traffic-usage-evolution" title="Permanent link">&para;</a></h2>
+<p>The parameter that represents the evolution of air traffic is the RPK. The air traffic modeling is based on 
+the study of worldwide historical data. The models presented in this section can be applied to the fleet as a whole or 
+to the different markets described below. Before detailing these models, the categorization and calibration of the 
+aviation market used in AeroMAPS is presented.</p>
+<h3 id="categorization-and-calibration-of-the-aviation-market">Categorization and calibration of the aviation market<a class="headerlink" href="#categorization-and-calibration-of-the-aviation-market" title="Permanent link">&para;</a></h3>
+<p>In order to be able to model scenarios in detail, the aviation market is divided into several representative 
+categories, corresponding to aircraft fleet. Indeed, some market shares are likely to evolve differently. Moreover, 
+some aircraft architectures (hydrogen aircraft, electric aircraft) could only be available for short distance missions 
+in the medium term. </p>
+<p>Aircraft categories can be defined according to the distance flown (short, medium and long-haul) or the type of 
+aircraft (regional, single-aisle, wide-body, or other). In this work, the following categories are considered:
+- short-haul: passenger aircraft that fly less than 1,500 km ;
+- medium-haul: passenger aircraft that fly between 1,500 km and 4,000 km ;
+- long-haul: passenger aircraft that fly more than 4,000 km ;
+- freight: cargo aircraft (dedicated freighter aircraft) or passenger aircraft including freight (belly cargo).</p>
+<p>These different categories are heterogeneous because they include different types of aircraft. For simplicity, 
+representative aircraft types are considered in the following. It is assumed that the short-haul category is composed 
+of regional aircraft (with turbojets or turboprops) and narrow-body aircraft. It is also assumed that the medium-haul 
+category is composed of narrow-body aircraft while the long-haul category is composed of wide-body aircraft. Finally, 
+for freight, no representative aircraft are considered. It is assumed that aircraft in this category are a 
+weighted average of the previous representative aircraft.</p>
+<p>The aircraft fleet is then modeled, which will be useful for modeling the evolution of the aircraft fleet. In order to 
+calibrate the average characteristics of the different fleet categories in 2019, a specific procedure is adopted to 
+obtain a representative fleet. It is important to note that this approach is a model and that the aircraft fleet is 
+actually more complex. In the following, the method is illustrated for the passenger aircraft categories.</p>
+<p>First, the energy consumption per ASK is estimated for each category. The value per ASK is used to isolate the 
+influence of air traffic levels. For this purpose, emission factors in gCO<sub>2</sub>/RPK are used. These are 
+derived from the analysis of <sup id="fnref:14"><a class="footnote-ref" href="#fn:14">14</a></sup>. They are then converted to energy consumption per ASK 
+using the average aircraft load factor in 2019 and the emission factors from the previous section. The results are 
+given in Tab.1.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Category</strong></th>
+<th><strong>Emission factor</strong></th>
+<th><strong>Energy consumption</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short-haul - Regional</td>
+<td>172.8 gCO<sub>2</sub>/RPK</td>
+<td>1.95 MJ/ASK</td>
+</tr>
+<tr>
+<td>Short-haul - Narrow-body</td>
+<td>98.8 gCO<sub>2</sub>/RPK</td>
+<td>1,11 MJ/ASK</td>
+</tr>
+<tr>
+<td>Medium-haul</td>
+<td>76.9 gCO<sub>2</sub>/RPK</td>
+<td>0.87 MJ/ASK</td>
+</tr>
+<tr>
+<td>Long-haul</td>
+<td>89.9 gCO<sub>2</sub>/RPK</td>
+<td>1.01 MJ/ASK</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tab.1 Average aircraft fleet characteristics in 2019.</em></p>
+<p>Then, for each category, two representative planes are considered: one for the old generation, another for the 
+most recent. The characteristics of these aircraft are constructed using a weighting of different aircraft on the 
+market. This is done using data on the number of aircraft in service, their performance and their missions 
+<sup id="fnref:15"><a class="footnote-ref" href="#fn:15">15</a></sup>. For example, for the medium-haul category, the older representative aircraft is a mix of Airbus and 
+Boeing aircraft (A319, A320, A321, B737-700, B737-800, B737-900), while the newer representative aircraft is the 
+Airbus A320neo. The results of energy consumption by ASK are then given in Tab.2.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Representative aircraft</strong></th>
+<th><strong>Energy consumption</strong></th>
+<th><strong>Representative distribution of the fleet</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mean aircraft</td>
+<td>0.87 MJ/ASK</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Old aircraft</td>
+<td>0.92 MJ/ASK</td>
+<td>77%</td>
+</tr>
+<tr>
+<td>Recent aircraft</td>
+<td>0.70 MJ/ASK</td>
+<td>23%</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tab.2 Characteristics of representative aircraft for the medium-haul category.</em></p>
+<p>Finally, for each category, the representative distribution of old and recent aircraft is determined using the 
+following equation. The results for the medium-haul category are, for example, given in the previous table. The values 
+obtained are compared with the actual fleet to check the consistency of the selected representative aircraft.</p>
+<p><span class="arithmatex">\(E_{mean} = x~E_{old} + (1-x)~E_{recent}\)</span></p>
+<p>where <span class="arithmatex">\(E_{mean}\)</span> is the average energy consumption per ASK for the fleet in the category, <span class="arithmatex">\(E_{old}\)</span> is the average 
+energy consumption per ASK for the older representative aircraft, <span class="arithmatex">\(E_{recent}\)</span> is the average energy consumption 
+per ASK for the newer representative aircraft, and <span class="arithmatex">\(x\)</span> is the representative share of older aircraft in the fleet.</p>
+<h3 id="air-traffic-evolution-modeling">Air traffic evolution modeling<a class="headerlink" href="#air-traffic-evolution-modeling" title="Permanent link">&para;</a></h3>
+<p>Historical data is used to derive the air traffic evolution model.
+Fig.2 represents historical values since 1991 as well as a trend model. 
+The latter was obtained using an exponential function with a fixed growth rate. The model is given in 
+equation with <span class="arithmatex">\(RPK_{1991}\)</span> the value of RPK in 1991, <span class="arithmatex">\(x\)</span> the year and <span class="arithmatex">\(\tau\)</span> a 
+smoothed growth rate. To determine <span class="arithmatex">\(\tau\)</span>, an optimization is performed using the SLSQP method to minimize the 
+Root Mean Square (RMS) error between the historical data and the model. This makes it possible to smooth out the 
+values due to various political crises (September 11 attacks in the United States in 2001, 2008 financial crisis). 
+The growth rate obtained is 5.5% over the period 1991--2019, with an RMS error of 0.032. By restricting the study 
+to the last ten years, the growth rate obtained is then 6.5%, which shows an acceleration of air traffic growth 
+in recent years.</p>
+<p><span class="arithmatex">\(RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}\)</span></p>
+<p><img alt="" src="figs/air_traffic.svg" /></p>
+<p><em>Fig.2 Modeling the historical evolution of air traffic.</em></p>
+<p>This model is therefore relevant for modeling the evolution of air traffic. Therefore, the following model, indexed 
+from 2019, is used to make projections on the evolution of air traffic. For more detailed scenarios, this model can 
+be applied by decade using 
+<a href="https://en.wikipedia.org/wiki/Compound_annual_growth_rate" target="_blank">Compound Annual Growth Rates (CAGR)</a>.</p>
+<p><span class="arithmatex">\(RPK(x) = RPK_{2019} ~(1+\tau)^{x-2019}\)</span></p>
+<p>Nevertheless, the difficulty lies in estimating the future growth rate <span class="arithmatex">\(\tau\)</span>. Indeed, the latter could be impacted for 
+different reasons. For example, due to the saturation of certain markets (e.g. Europe), the industry anticipates a 
+decline in this growth rate in the future. Similarly, this rate could become much lower or even negative (which 
+means a decrease in air traffic) due to crises and/or economic, political, environmental or health measures such 
+as the Covid-19 epidemic. Moreover, specific settings for the impact of the Covid-19 epidemic are proposed, defining a 
+year of air traffic recovery compared to a certain level of air traffic compared to 2019.</p>
+<p>Various industrial and institutional projections are available. Before the Covid-19 epidemic, Airbus and Boeing 
+respectively projected an annual growth of the total distance flown of 4.4% and 4.7% from 2017 
+<sup id="fnref:16"><a class="footnote-ref" href="#fn:16">16</a></sup>. The ICAO projected an air traffic growth of 4.1% per year between 2015 and 2045. However, 
+the Covid-19 epidemic has led to a downwards revision of these projections. ATAG now projects a 3.1% annual growth in 
+air passenger traffic between 2019 and 2050 in its median scenario <sup id="fnref:17"><a class="footnote-ref" href="#fn:17">17</a></sup>, while Airbus projects a 3.6% 
+annual growth for the period 2019-2041 <sup id="fnref:18"><a class="footnote-ref" href="#fn:18">18</a></sup>. Despite the Covid-19 health crisis, all the scenarios presented 
+thus forecast a growth in air traffic in the coming decades.</p>
+<h2 id="aircraft-fleet-and-operations-energy-efficiency-improvements">Aircraft fleet and operations: energy efficiency improvements<a class="headerlink" href="#aircraft-fleet-and-operations-energy-efficiency-improvements" title="Permanent link">&para;</a></h2>
+<p>The parameter that represents the energy efficiency is the energy intensity per passenger per kilometer <span class="arithmatex">\(E/RPK\)</span>. In 
+this work, this parameter is influenced by three distinct levers: fleet renewal with more efficient aircraft, 
+operations and load factor. In addition to these levers, specific measures for reducing non-CO<sub>2</sub> effects are
+also modeled.</p>
+<h3 id="improvements-of-aircraft-efficiency">Improvements of aircraft efficiency<a class="headerlink" href="#improvements-of-aircraft-efficiency" title="Permanent link">&para;</a></h3>
+<p>Here, efficiency improvements through the use of more efficient aircraft are studied. The parameter modeled is thus 
+the energy consumption per seat and per kilometer <span class="arithmatex">\(E/ASK\)</span>. Two approaches are presented in the following. On the one 
+hand, a so-called top-down approach is used to simply model the efficiency improvement via annual 
+technological gains. On the other hand, an approach called bottom-up is used to model more finely the 
+evolution of the fleet's energy efficiency by relying on gains per architecture and fleet renewal models. This more 
+complex approach makes it possible to directly link aircraft design and prospective technological scenarios.</p>
+<h4 id="top-down-approach">Top-down approach<a class="headerlink" href="#top-down-approach" title="Permanent link">&para;</a></h4>
+<p>In this approach, aircraft efficiency improvements are modelled via a gain in aircraft energy consumption per ASK. 
+A fixed rate of change is chosen as a parameter. A positive rate implies a reduction in aircraft consumption per RPK. 
+The negative case corresponding to a reduction in aircraft performance is not considered. This rate is expressed as 
+a percentage (%). Fleet renewal is considered as regular and is therefore included in this rate. </p>
+<p>Thus, noting <span class="arithmatex">\(E_{ASK}\)</span> the energy consumed per ASK, <span class="arithmatex">\(k\)</span> a given year and <span class="arithmatex">\(\tau\)</span> the rate of technological improvement, 
+the evolution of aircraft efficiency (per category) is given in the following equation.</p>
+<p><span class="arithmatex">\(E_{ASK_{k+1}} = E_{ASK_{k}} (1-\tau)\)</span></p>
+<p>Hydrogen aircraft are taken into account considering specific models. For this, hydrogen aircraft introductions via 
+logistic functions (detailed in the bottom-up approach) are used, correcting for the evolution of the energy efficiency 
+of these architectures compared to conventional aircraft.</p>
+<h4 id="bottom-up-approach">Bottom-up approach<a class="headerlink" href="#bottom-up-approach" title="Permanent link">&para;</a></h4>
+<p>In this second approach, the objective is to model the evolution of aircraft fleet energy efficiency using fleet 
+renewal models. This approach is particularly interesting because it facilitates the links with aircraft design.</p>
+<p>The fleet renewal models developed are based on logistic functions. A formulation of these functions is given 
+in the following equation, with <span class="arithmatex">\(A\)</span>, <span class="arithmatex">\(k\)</span> and <span class="arithmatex">\(x_0\)</span> parameters detailed in the following that allow to fit the model.</p>
+<p><span class="arithmatex">\(f(x) = \frac{A}{1+e^{-k~(x-x_0)}}\)</span></p>
+<p>These functions, also called sigmoids or S-shaped curves, are particularly relevant to model the introduction of a 
+product in a market. Consequently, they are used in multiple disciplinary fields 
+<sup id="fnref:19"><a class="footnote-ref" href="#fn:19">19</a></sup><sup id="fnref:20"><a class="footnote-ref" href="#fn:20">20</a></sup><sup id="fnref:21"><a class="footnote-ref" href="#fn:21">21</a></sup>: economics, sociology, demography,
+technology or even medicine. This type of functions has already been used in the scientific literature to study the 
+renewal of aircraft fleets <sup id="fnref:22"><a class="footnote-ref" href="#fn:22">22</a></sup><sup id="fnref:23"><a class="footnote-ref" href="#fn:23">23</a></sup><sup id="fnref:24"><a class="footnote-ref" href="#fn:24">24</a></sup><sup id="fnref:25"><a class="footnote-ref" href="#fn:25">25</a></sup>.</p>
+<p>In this work, the logistic functions correspond to the shares that different aircraft architectures represent in the 
+fleet. In order to use these functions, a calibration of the different coefficients is necessary. The initialization 
+of the data is performed using the approach with representative aircraft by category explained previously.</p>
+<p>The coefficient <span class="arithmatex">\(A\)</span> represents the final value of the function. In this work, its value is initially set to 1 to model 
+the fact that in the long run, a new aircraft architecture is totally imposed on the market. Then, the coefficient 
+<span class="arithmatex">\(k\)</span> allows setting the speed of renewal of the fleet. It can be related to the duration <span class="arithmatex">\(D\)</span> to replace <span class="arithmatex">\((100-l)\)</span>% of 
+the fleet using the following equation. Finally, the parameter <span class="arithmatex">\(x_0\)</span> is used to define the timing of the introduction
+of the aircraft in the fleet. It can be computed from the following equation with <span class="arithmatex">\(x_a\)</span> the year of introduction of 
+the aircraft, also called Entry-Into-Service (EIS).</p>
+<p><span class="arithmatex">\(k = \frac{ln\left(\frac{100}{l}-1\right)}{D/2}\)</span></p>
+<p><span class="arithmatex">\(x_0 = x_a + D/2\)</span></p>
+<p>A limitation of these basic models is that they can only be directly used for a single homogeneous category. Indeed, 
+it is not possible to model a category that is divided into two main architectures on the market. This aspect is 
+however important to integrate specific architectures such as hydrogen aircraft on the short and medium-haul markets 
+or narrow-body aircraft on the long-haul category (such as the Airbus A321XLR). Therefore, the models are adapted to 
+allow the creation of subcategories. To do so, the <span class="arithmatex">\(A\)</span> coefficient is adjusted to vary the different market shares 
+within the whole category.</p>
+<p>Two examples of use are presented in the following. The medium-haul category is considered using representative 
+aircraft detailed previously. A first simple example is given in Fig.3 which represents the distribution of 
+different aircraft within a fleet. It is assumed that a new aircraft appears every 15 years with a period of 20 years 
+for a replacement of 98% of the fleet, i.e. <span class="arithmatex">\(l=2\)</span>. A second example is given in Fig.4. In addition to the previous 
+assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually 
+represent 50% of the market.</p>
+<p><img alt="" src="figs/renewal_simple.svg" /></p>
+<p><em>Fig.3 Basic use of fleet renewal models.</em></p>
+<p><img alt="" src="figs/renewal_complex.svg" /></p>
+<p><em>Fig.4 Use of fleet renewal models including a subcategory.</em></p>
+<p>Knowing how the fleet is renewed from these models, it is possible to estimate the average energy consumption per 
+seat and per kilometer of the <span class="arithmatex">\(E_{mean}\)</span> aircraft fleet for year <span class="arithmatex">\(x\)</span>. The following equation is then used from the 
+performance of each aircraft <span class="arithmatex">\(E_i\)</span> and the number of seat-kilometers achieved by each aircraft <span class="arithmatex">\(ASK_i\)</span>. The latter
+is obtained from the total ASK and the annual distribution from the fleet renewal models.</p>
+<p><span class="arithmatex">\(E_{mean}(x) = \frac{\sum_{i} E_i ~ ASK_i(x)}{\sum_{i} ASK_i(x)}\)</span></p>
+<p>In addition to fuel consumption, the previous model can also be applied to other characteristics such as NO<sub>x</sub> 
+or soot emissions. The fleet renewal models also allow to estimate the annual production of aircraft according to the 
+traffic evolution.</p>
+<h3 id="improvements-in-aircraft-operations">Improvements in aircraft operations<a class="headerlink" href="#improvements-in-aircraft-operations" title="Permanent link">&para;</a></h3>
+<p>The improvement of operations concerns both the ground phases (taxiing, holding, etc.) and the flight phases (trajectory 
+optimization, air traffic management, formation flights, etc.). The potential gains in fuel consumption estimated 
+by the industry range from a few percent to about ten percent.</p>
+<p>Regarding their modeling, it is complex to use historical data since they are often included in data on energy 
+consumption per seat and per kilometer. Therefore, an approach based on estimates of future gains is considered using 
+logistic functions as for fleet renewal models. This time, the parameter <span class="arithmatex">\(A\)</span> represents 
+the achievable consumption gain. The parameter <span class="arithmatex">\(k\)</span> corresponds to the implementation speed of the operational measure, 
+while the parameter <span class="arithmatex">\(x_0\)</span> allows to set the timing of the implementation. To model the improvement of the operations 
+more finely, it is possible to superimpose different sigmoid functions, for example when the implementation times or 
+the commissioning dates differ.</p>
+<h3 id="improvements-in-aircraft-load-factor">Improvements in aircraft load factor<a class="headerlink" href="#improvements-in-aircraft-load-factor" title="Permanent link">&para;</a></h3>
+<p>To model the evolution of the load factor, a similar approach to the one used for the 
+energy consumption per ASK is used. The results are summarized in Fig.5. </p>
+<p><img alt="" src="figs/loadfactor_recap.svg" /></p>
+<p><em>Fig.5 Modeling the trend projection of aircraft load factors.</em></p>
+<p>Historical data are modeled from the function given in the following equation for year <span class="arithmatex">\(x\)</span>. The 
+coefficients, given to three significant figures, were determined to minimize the RMS error between the historical 
+data since 1991 and the model. A small value of 6.6.10<sup>-5</sup> is obtained. </p>
+<p><span class="arithmatex">\(LF(x) = 52.3 + \frac{36.7}{1+e^{-0.0776~(x-2000)}}\)</span></p>
+<p>The model is then used to obtain a trend projection of the load factor. It is interesting to note that the model 
+converges towards a load factor of 89%, an ambitious value already reached by some airlines.</p>
+<p>The projection finally is modeled using a second-order polynomial function because of its simplicity. The trend load 
+factor <span class="arithmatex">\(LF\)</span> for year <span class="arithmatex">\(x\)</span> is then modeled using the following equation with parameters <span class="arithmatex">\(a=-5.3.10^{-3}\)</span> and <span class="arithmatex">\(b=0.36\)</span> 
+(given with two significant figures). The RMS error obtained is then 5.3.10<sup>-7</sup>. </p>
+<p><span class="arithmatex">\(LF(x) = a~(x-2019)^2 + b~(x-2019) + 82.4\)</span></p>
+<p>Scenarios can thus be defined as for the energy consumption by ASK. For this, this model is used by modifying the 
+parameters <span class="arithmatex">\(a\)</span> and <span class="arithmatex">\(b\)</span> in order to obtain the desired load factor in 2050.</p>
+<h3 id="improvements-for-reducing-non-co2-effects">Improvements for reducing non-CO<sub>2</sub> effects<a class="headerlink" href="#improvements-for-reducing-non-co2-effects" title="Permanent link">&para;</a></h3>
+<p>Specific strategies for reducing non-CO<sub>2</sub> effects through aircraft and operation improvements 
+are also modeled. So far, only the main non-CO<sub>2</sub> effects (NO<sub>x</sub> and contrails) are studied.</p>
+<p>Regarding NO<sub>x</sub> emissions, their reduction could lead to a reduction of the aviation effective radiative 
+forcing, although there are still uncertainties about the future effect of NO<sub>x</sub> emissions on climate, 
+depending in particular on NO<sub>x</sub> and methane background concentrations 
+<sup id="fnref:26"><a class="footnote-ref" href="#fn:26">26</a></sup><sup id="fnref:27"><a class="footnote-ref" href="#fn:27">27</a></sup>. The reduction of emissions could nevertheless be achieved by reducing 
+fuel consumption and/or lowering the NO<sub>x</sub> emission factor. Models similar to those for energy efficiency via 
+fleet turnover are used to estimate the NO<sub>x</sub> emission factor. In particular, the equation for estimating the 
+energy consumption in the bottom-up approach can be adapted by replacing the energy consumptions <span class="arithmatex">\(E_i\)</span> with the 
+NO<sub>x</sub> emission factors per aircraft.</p>
+<p>As far as contrails are concerned, several mitigation measures are studied. For instance, operational strategies, based 
+on trajectory modification, are modeled since they represent promising strategies <sup id="fnref:28"><a class="footnote-ref" href="#fn:28">28</a></sup>. These 
+strategies could be applied on a reduced number of flights. Indeed, a study in the Japanese airspace shows that 2% of 
+the flights are responsible for 80% of the contrails <sup id="fnref:29"><a class="footnote-ref" href="#fn:29">29</a></sup>. Another possibility is to modify 
+the engines, in particular for reducing the amount of particles emitted <sup id="fnref:30"><a class="footnote-ref" href="#fn:30">30</a></sup>.
+Overall, the implementation of operational strategies, possibly coupled with improved 
+engines, could reduce the radiative forcing induced by condensation trails from 20% to more than 90%, for marginal 
+additional fuel consumption <sup id="fnref:31"><a class="footnote-ref" href="#fn:31">31</a></sup><sup id="fnref2:29"><a class="footnote-ref" href="#fn:29">29</a></sup>. In this work, simplified models, 
+based on logistic functions as in fleet renewal models, are used to model the reduction of contrail-induced radiative 
+forcing. This time, the parameter <span class="arithmatex">\(A\)</span> represents the final reduction allowed by the adopted measures. The parameter 
+<span class="arithmatex">\(k\)</span> corresponds to the speed of implementation of the strategies, while the parameter <span class="arithmatex">\(x_0\)</span> allows to set the timing 
+of the implementation.</p>
+<h2 id="aircraft-energy-decarbonization-of-energy">Aircraft energy: decarbonization of energy<a class="headerlink" href="#aircraft-energy-decarbonization-of-energy" title="Permanent link">&para;</a></h2>
+<p>The parameter that represents the decarbonization of energy is the CO<sub>2</sub> content of the energy <span class="arithmatex">\(CO_2/E\)</span>. 
+Its evolution is based on the introduction of alternative energy carriers in the fleet to replace fossil kerosene. The 
+objective is therefore to estimate the emission factor of alternative energy carriers (only in the form of fuel so far) 
+over their entire life cycle. The latter is expressed in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>, but the emissions will 
+be directly assimilated to CO<sub>2</sub> for simplification purposes. In the following, two approaches are proposed. 
+The first one is based on a detailed modeling of the fuels and their integration in the fleet. The second is a 
+simplified approach based on a representative alternative energy carrier. However, the direct impact of alternative 
+energy carriers on non-CO<sub>2</sub>, which is complex to evaluate <sup id="fnref:32"><a class="footnote-ref" href="#fn:32">32</a></sup><sup id="fnref2:30"><a class="footnote-ref" href="#fn:30">30</a></sup>, 
+is not directly considered so far because of the low maturity of the few models present in the literature 
+<sup id="fnref2:22"><a class="footnote-ref" href="#fn:22">22</a></sup><sup id="fnref:33"><a class="footnote-ref" href="#fn:33">33</a></sup>.</p>
+<h3 id="detailed-modeling">Detailed modeling<a class="headerlink" href="#detailed-modeling" title="Permanent link">&para;</a></h3>
+<p>First, the objective is to estimate the main characteristics of alternative energy carriers. These are obtained by 
+statistical analysis of data from the scientific literature. Many alternative energy carriers are considered to 
+decarbonize aviation fuel. In this work, three main alternatives are studied: biofuels, hydrogen and electrofuels. 
+Biofuels and electrofuels are drop-in fuels, while hydrogen requires specific aircraft architectures. The selectivity 
+of fuels during their production is not directly considered.</p>
+<p>Biofuels, also called BtL (Biomass-to-Liquid), are fuels derived from biomass. Estimating their emission factor is 
+complex. In this work, several representative biofuels (not exhaustive) have been defined according to the resource and 
+the production pathway. It is then possible to define a single representative biofuel by weighting. The resources 
+considered in this work are waste (household waste or used cooking oil), forest residues, agricultural residues, 
+dedicated energy crops (lignocellulose, sugar and starch-based materials or vegetable oils) and algae. Regarding the 
+production pathways, HEFA (Hydroprocessed Esters and Fatty Acids), FT (Fischer-Tropsch) and ATJ (Alcohol-to-Jet) 
+processes are considered. Not all routes and resources are directly compatible and the industrial production maturity 
+of the different biofuels differs. </p>
+<p>The characteristics of these representative biofuels are statistically estimated to obtain the first quartile Q1, 
+the median and the third quartile Q3. The data used are from 
+<sup id="fnref:34"><a class="footnote-ref" href="#fn:34">34</a></sup><sup id="fnref:35"><a class="footnote-ref" href="#fn:35">35</a></sup><sup id="fnref:36"><a class="footnote-ref" href="#fn:36">36</a></sup><sup id="fnref:37"><a class="footnote-ref" href="#fn:37">37</a></sup><sup id="fnref:38"><a class="footnote-ref" href="#fn:38">38</a></sup><sup id="fnref:39"><a class="footnote-ref" href="#fn:39">39</a></sup> 
+for emission factors, as well as from 
+<sup id="fnref:40"><a class="footnote-ref" href="#fn:40">40</a></sup><sup id="fnref:41"><a class="footnote-ref" href="#fn:41">41</a></sup><sup id="fnref:42"><a class="footnote-ref" href="#fn:42">42</a></sup><sup id="fnref:43"><a class="footnote-ref" href="#fn:43">43</a></sup><sup id="fnref:44"><a class="footnote-ref" href="#fn:44">44</a></sup><sup id="fnref:45"><a class="footnote-ref" href="#fn:45">45</a></sup> 
+for other data. Emission factors and energy efficiencies are given in Tab. 3 and Tab.4 respectively. In addition, 
+the HEFA process to convert oil to fuel requires the addition of hydrogen. A median value of 
+9 MJ<sub>H</sub>2<sub></sub>/MJ</sub>fuel</sub> is used. </p>
+<table>
+<thead>
+<tr>
+<th><strong>Pathway</strong></th>
+<th><strong>Resource</strong></th>
+<th><strong>Q1</strong></th>
+<th><strong>Median</strong></th>
+<th><strong>Q3</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FT</td>
+<td>Municipal waste</td>
+<td>-</td>
+<td>27.6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>FT</td>
+<td>Lignocelullose and residues</td>
+<td>0.3</td>
+<td>7.7</td>
+<td>12.6</td>
+</tr>
+<tr>
+<td>ATJ</td>
+<td>Sugar and starch-based materials</td>
+<td>33.7</td>
+<td>52.2</td>
+<td>68.4</td>
+</tr>
+<tr>
+<td>HEFA</td>
+<td>Vegetable oils and algae</td>
+<td>42.1</td>
+<td>61</td>
+<td>73.9</td>
+</tr>
+<tr>
+<td>HEFA</td>
+<td>Used cooking oil</td>
+<td>-</td>
+<td>20.7</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tab.3 Emission factors in gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> for representative biofuels.</em></p>
+<table>
+<thead>
+<tr>
+<th><strong>Pathway</strong></th>
+<th><strong>Q1</strong></th>
+<th><strong>Median</strong></th>
+<th><strong>Q3</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FT</td>
+<td>0.4</td>
+<td>0.46</td>
+<td>0.49</td>
+</tr>
+<tr>
+<td>ATJ</td>
+<td>0.31</td>
+<td>0.48</td>
+<td>0.58</td>
+</tr>
+<tr>
+<td>HEFA -- Biomass to oil</td>
+<td>0.42</td>
+<td>0.66</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>HEFA -- Oil to fuel</td>
+<td>0.71</td>
+<td>0.88</td>
+<td>0.92</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tab.4 Energy efficiencies in MJ<sub>fuel</sub>/MJ<sub>biomass</sub> for representative biofuels.</em></p>
+<p>Hydrogen can be produced in several ways. In this work, five main pathways are considered. The estimated characteristics 
+are derived from a statistical analysis of data from the references 
+<sup id="fnref:46"><a class="footnote-ref" href="#fn:46">46</a></sup><sup id="fnref:47"><a class="footnote-ref" href="#fn:47">47</a></sup><sup id="fnref:48"><a class="footnote-ref" href="#fn:48">48</a></sup><sup id="fnref:49"><a class="footnote-ref" href="#fn:49">49</a></sup><sup id="fnref:50"><a class="footnote-ref" href="#fn:50">50</a></sup>. On the one hand, its 
+production can be based on the use of fossil resources via the steam reformation of methane or the gasification of 
+coal. These are the two most commonly used production methods today. The median values of the emission factors of 
+these processes are respectively 100 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 
+192 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. The impact of these processes can be reduced by using carbon 
+capture and storage solutions. In this case, the emission factors are respectively 
+31 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub> and 41 gCO<sub>2</sub>-eq/MJ<sub>H<sub>2</sub></sub>. On the other 
+hand, hydrogen can be produced from electricity via the electrolysis of water. The emission factor of this hydrogen 
+then depends on the emission factor of the electric mix and on a production energy efficiency with a median value of 
+0.59. Finally, if the hydrogen is used in liquid state, additional losses must be taken into account for the 
+liquefaction stage. </p>
+<p>Finally, electrofuels or e-fuels, also called PtL (Power-to-Liquid), are produced from electricity. They require 
+hydrogen (obtained via electrolysis) and CO<sub>2</sub>, which could be captured directly from CO<sub>2</sub> emitting
+plants or directly into the atmosphere. In this work, the emission factor of this type of fuel is obtained from the
+emission factor of the electricity used and an energy efficiency of 0.4 <sup id="fnref:51"><a class="footnote-ref" href="#fn:51">51</a></sup>.</p>
+<p>In a second step, fleet introduction models are used for the drop-in fuels(biofuels and electrofuels). For this, 
+reference values for the incorporation rates of these fuels in the fleet are chosen (every 10 years, every 5 years...). 
+An interpolation with polynomial functions (linear, quadratic, cubic) is then performed to determine the annual values. 
+An application with a quadratic interpolation, based on old objectives of the ReFuelEU initiative, is proposed on 
+Fig.6. The knowledge of these incorporation rates and of the emission factors of the fuels thus makes it 
+possible to determine the decarbonization rate of the fleet and thus the CO<sub>2</sub> content of the average energy 
+used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
+models are used, but the principle remains the same.</p>
+<p><img alt="" src="figs/introduction_fuel.svg" /></p>
+<p><em>Fig.6 Example scenario for introducing drop-in fuels into the fleet.</em></p>
+<h3 id="simplified-modeling-awaiting-robust-implementation">Simplified modeling (awaiting robust implementation)<a class="headerlink" href="#simplified-modeling-awaiting-robust-implementation" title="Permanent link">&para;</a></h3>
+<p>A simplified approach is also possible. In the latter, an average alternative energy carrier is considered. The 
+disadvantage of this approach is that it does not allow to distinguish different types of fuel, and in particular 
+hydrogen which requires specific architectures. Moreover, it does not allow to easily model the evolution of the 
+emission factor of a fuel, especially for those based on electricity.</p>
+<p>First, the notion of decarbonization rate is introduced. The decarbonization rate of a fuel is defined as the reduction
+of its CO content compared to fossil kerosene. For example, taking the emission factor of fossil kerosene of 
+88.5 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub> (including direct and indirect emissions), a decarbonization rate of a 
+fuel of 75% means that its emission factor is 22.1 gCO<sub>2</sub>-eq/MJ<sub>fuel</sub>. More generally, the 
+decarbonization rate of the aircraft fleet is defined as the reduction in the CO<sub>2</sub> content of the average 
+energy used by the fleet compared to that of a similar fleet operating on fossil kerosene. </p>
+<p>In this approach, to model the rate of decarbonization of the fleet, logistic functions are used. This time, the 
+parameter <span class="arithmatex">\(A\)</span> represents the final decarbonization rate of the fleet. This parameter corresponds to the 
+decarbonization rate of the average alternative energy carrier considered. The parameter <span class="arithmatex">\(k\)</span> corresponds to the 
+introduction speed of the alternative energy carriers in the fleet, while the parameter <span class="arithmatex">\(x_0\)</span> allows to set the 
+integration timing.</p>
+<h3 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h3>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Yoichi Kaya, Keiichi Yokobori, and others. <em>Environment, energy, and economy: strategies for sustainability</em>. United Nations University Press Tokyo, 1997.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Birgit Friedl and Michael Getzner. Determinants of CO2 emissions in a small open economy. <em>Ecological economics</em>, 45(1):133–148, 2003. <a href="https://doi.org/10.1016/S0921-8009(03)00008-9">doi:10.1016/S0921-8009(03)00008-9</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>William F Lamb, Thomas Wiedmann, Julia Pongratz, Robbie Andrew, Monica Crippa, Jos GJ Olivier, Dominik Wiedenhofer, Giulio Mattioli, Alaa Al Khourdajie, Jo House, and others. A review of trends and drivers of greenhouse gas emissions by sector from 1990 to 2018. <em>Environmental research letters</em>, 16(7):073005, 2021. <a href="https://doi.org/10.1088/1748-9326/abee4e">doi:10.1088/1748-9326/abee4e</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>Beng Wah Ang and Fang Q Zhang. A survey of index decomposition analysis in energy and environmental studies. <em>Energy</em>, 25(12):1149–1176, 2000. <a href="https://doi.org/10.1016/S0360-5442(00)00039-6">doi:10.1016/S0360-5442(00)00039-6</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>Qunwei Wang, Yung-Ho Chiu, and Ching-Ren Chiu. Driving factors behind carbon dioxide emissions in China: A modified production-theoretical decomposition analysis. <em>Energy Economics</em>, 51:252–260, 2015. <a href="https://doi.org/10.1016/j.eneco.2015.07.009">doi:10.1016/j.eneco.2015.07.009</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>Heinz Schandl, Steve Hatfield-Dodds, Thomas Wiedmann, Arne Geschke, Yiyong Cai, James West, David Newth, Tim Baynes, Manfred Lenzen, and Anne Owen. Decoupling global environmental pressure and economic growth: scenarios for energy use, materials use and carbon emissions. <em>Journal of Cleaner Production</em>, 132:45–56, 2016. <a href="https://doi.org/10.1016/j.jclepro.2015.06.100">doi:10.1016/j.jclepro.2015.06.100</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:7">
+<p>Valeria Andreoni and S Galmarini. European CO2 emission trends: A decomposition analysis for water and aviation transport sectors. <em>Energy</em>, 45(1):595–602, 2012. <a href="https://doi.org/10.1016/j.energy.2012.07.039">doi:10.1016/j.energy.2012.07.039</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:8">
+<p>Aurélien Bigo. <em>Les transports face au défi de la transition énergétique. Explorations entre passé et avenir, technologie et sobriété, accélération et ralentissement.</em> PhD thesis, Institut Polytechnique de Paris, 2020. URL: <a href="https://www.theses.fr/2020IPPAX068">https://www.theses.fr/2020IPPAX068</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:9">
+<p>Xiao Liu, Dequn Zhou, Peng Zhou, and Qunwei Wang. What drives CO2 emissions from China’s civil aviation? An exploration using a new generalized PDA method. <em>Transportation Research Part A: Policy and Practice</em>, 99:30–45, 2017. <a href="https://doi.org/10.1016/j.tra.2017.03.002">doi:10.1016/j.tra.2017.03.002</a>.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>Maria Sharmina, Oreane Y Edelenbosch, Charlie Wilson, Rachel Freeman, DEHJ Gernaat, Paul Gilbert, Alice Larkin, EW Littleton, Michael Traut, Detlef P van Vuuren, and others. Decarbonising the critical sectors of aviation, shipping, road freight and industry to limit warming to 1.5-2°C. <em>Climate Policy</em>, 21(4):455–474, 2021. <a href="https://doi.org/10.1080/14693062.2020.1831430">doi:10.1080/14693062.2020.1831430</a>.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:11">
+<p>Stefan Gössling and Andreas Humpe. The global scale, distribution and growth of aviation: implications for climate change. <em>Global Environmental Change</em>, 65:102194, 2020. <a href="https://doi.org/10.1016/j.gloenvcha.2020.102194">doi:10.1016/j.gloenvcha.2020.102194</a>.&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+</li>
+<li id="fn:12">
+<p>Liang Jing, Hassan M. El-Houjeiri, Jean-Christophe Monfort, James Littlefield, Amjaad Al-Qahtani, Yash Dixit, Raymond L. Speth, Adam R. Brandt, Mohammad S. Masnadi, Heather L. MacLean, William Peltier, Deborah Gordon, and Joule A. Bergerson. Understanding variability in petroleum jet fuel life cycle greenhouse gas emissions to inform aviation decarbonization. <em>Nature Communications</em>, 13(1):7853, 2022. <a href="https://doi.org/10.1038/s41467-022-35392-1">doi:10.1038/s41467-022-35392-1</a>.&#160;<a class="footnote-backref" href="#fnref:12" title="Jump back to footnote 12 in the text">&#8617;</a></p>
+</li>
+<li id="fn:13">
+<p>Scott Delbecq, Jérôme Fontane, Nicolas Gourdain, Hugo Mugnier, Thomas Planès, and Florian Simatos. <em>Aviation and climate: a literature review</em>. ISAE-SUPAERO, 2022. <a href="https://doi.org/10.34849/a66a-vv58">doi:10.34849/a66a-vv58</a>.&#160;<a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">&#8617;</a></p>
+</li>
+<li id="fn:14">
+<p>Brandon Graver, Dan Rutherford, and Sola Zheng. CO2 emissions from commercial aviation: 2013, 2018, and 2019. Technical Report, International Council on Clean Transportation, 2020. URL: <a href="https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/">https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/</a>.&#160;<a class="footnote-backref" href="#fnref:14" title="Jump back to footnote 14 in the text">&#8617;</a></p>
+</li>
+<li id="fn:15">
+<p>International Civil Aviation Organization. ICAO Carbon Emissions Calculator Methodology. 2018.&#160;<a class="footnote-backref" href="#fnref:15" title="Jump back to footnote 15 in the text">&#8617;</a></p>
+</li>
+<li id="fn:16">
+<p>Frank Fichert, Peter Forsyth, and Hans-Martin Niemeier. <em>Aviation and Climate Change: Economic Perspectives on Greenhouse Gas Reduction Policies</em>. Routledge, 2020. <a href="https://doi.org/10.4324/9781315572406">doi:10.4324/9781315572406</a>.&#160;<a class="footnote-backref" href="#fnref:16" title="Jump back to footnote 16 in the text">&#8617;</a></p>
+</li>
+<li id="fn:17">
+<p>Air Transport Action Group. Waypoint 2050. Technical Report, ATAG, 2021. URL: <a href="https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/">https://aviationbenefits.org/environmental-efficiency/climate-action/waypoint-2050/</a>.&#160;<a class="footnote-backref" href="#fnref:17" title="Jump back to footnote 17 in the text">&#8617;</a></p>
+</li>
+<li id="fn:18">
+<p>Airbus. Global Market Forecast 2022. Technical Report, Airbus, 2022. URL: <a href="https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast">https://www.airbus.com/en/products-services/commercial-aircraft/market/global-market-forecast</a>.&#160;<a class="footnote-backref" href="#fnref:18" title="Jump back to footnote 18 in the text">&#8617;</a></p>
+</li>
+<li id="fn:19">
+<p>Gloria Jarne, Julio Sanchez-Choliz, and Francisco Fatas-Villafranca. “S-shaped” curves in economic growth. A theoretical contribution and an application. <em>Evolutionary and Institutional Economics Review</em>, 3(2):239–259, 2007. <a href="https://doi.org/10.14441/eier.3.239">doi:10.14441/eier.3.239</a>.&#160;<a class="footnote-backref" href="#fnref:19" title="Jump back to footnote 19 in the text">&#8617;</a></p>
+</li>
+<li id="fn:20">
+<p>Dmitry Kucharavy and Roland De Guio. Application of S-shaped curves. <em>Procedia Engineering</em>, 9:559–572, 2011. <a href="https://doi.org/10.1016/j.proeng.2011.03.142">doi:10.1016/j.proeng.2011.03.142</a>.&#160;<a class="footnote-backref" href="#fnref:20" title="Jump back to footnote 20 in the text">&#8617;</a></p>
+</li>
+<li id="fn:21">
+<p>Dmitry Kucharavy and Roland De Guio. Application of logistic growth curve. <em>Procedia engineering</em>, 131:280–290, 2015. <a href="https://doi.org/10.1016/j.proeng.2015.12.390">doi:10.1016/j.proeng.2015.12.390</a>.&#160;<a class="footnote-backref" href="#fnref:21" title="Jump back to footnote 21 in the text">&#8617;</a></p>
+</li>
+<li id="fn:22">
+<p>Volker Grewe, Arvind Gangoli Rao, Tomas Grönstedt, Carlos Xisto, Florian Linke, Joris Melkert, Jan Middel, Barbara Ohlenforst, Simon Blakey, Simon Christie, and others. Evaluating the climate impact of aviation emission scenarios towards the Paris agreement including COVID-19 effects. <em>Nature Communications</em>, 12(1):1–10, 2021. <a href="https://doi.org/10.1038/s41467-021-24091-y">doi:10.1038/s41467-021-24091-y</a>.&#160;<a class="footnote-backref" href="#fnref:22" title="Jump back to footnote 22 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:22" title="Jump back to footnote 22 in the text">&#8617;</a></p>
+</li>
+<li id="fn:23">
+<p>Mohammed Hassan. <em>Quantifying the impacts of vehicle technologies and operational improvements on air transportation system performance</em>. PhD thesis, Georgia Institute of Technology, 2017.&#160;<a class="footnote-backref" href="#fnref:23" title="Jump back to footnote 23 in the text">&#8617;</a></p>
+</li>
+<li id="fn:24">
+<p>Mohammed Hassan, Alexia Payan, Holger Pfaender, Dimitri N Mavris, Elena Garcia, and Jeff Schutte. Framework development for performance evaluation of the future national airspace system. In <em>15th AIAA Aviation Technology, Integration, and Operations Conference</em>, 3187. 2015. <a href="https://doi.org/10.2514/6.2015-3187">doi:10.2514/6.2015-3187</a>.&#160;<a class="footnote-backref" href="#fnref:24" title="Jump back to footnote 24 in the text">&#8617;</a></p>
+</li>
+<li id="fn:25">
+<p>Mohammed Hassan, Holger Pfaender, and Dimitri N Mavris. Impact of Aircraft Technologies on US Fleet CO2 Emissions. In <em>2018 Aviation Technology, Integration, and Operations Conference</em>, 2870. 2018. <a href="https://doi.org/10.2514/6.2018-2870">doi:10.2514/6.2018-2870</a>.&#160;<a class="footnote-backref" href="#fnref:25" title="Jump back to footnote 25 in the text">&#8617;</a></p>
+</li>
+<li id="fn:26">
+<p>Agnieszka Skowron, David S. Lee, Rubén Rodríguez De León, Ling L. Lim, and Bethan Owen. Greater fuel efficiency is potentially preferable to reducing no\textsubscript x emissions for aviation's climate impacts. <em>Nature Communications</em>, 12(1):564, 2021. <a href="https://doi.org/10.1038/s41467-020-20771-3">doi:10.1038/s41467-020-20771-3</a>.&#160;<a class="footnote-backref" href="#fnref:26" title="Jump back to footnote 26 in the text">&#8617;</a></p>
+</li>
+<li id="fn:27">
+<p>Etienne Terrenoire, Didier A Hauglustaine, Yann Cohen, Anne Cozic, Richard Valorso, Franck Lefèvre, and Sigrun Matthes. Impact of present and future aircraft NOx and aerosol emissions on atmospheric composition and associated direct radiative forcing of climate. <em>Atmospheric Chemistry and Physics</em>, 22(18):11987–12023, 2022. <a href="https://doi.org/10.5194/acp-22-11987-2022">doi:10.5194/acp-22-11987-2022</a>.&#160;<a class="footnote-backref" href="#fnref:27" title="Jump back to footnote 27 in the text">&#8617;</a></p>
+</li>
+<li id="fn:28">
+<p>Klaus Martin Gierens, Ling Lim, and Kostas Eleftheratos. A review of various strategies for contrail avoidance. <em>Open Atmospheric Science Journal</em>, 2:1–7, 2008. <a href="https://doi.org/10.2174/1874282300802010001">doi:10.2174/1874282300802010001</a>.&#160;<a class="footnote-backref" href="#fnref:28" title="Jump back to footnote 28 in the text">&#8617;</a></p>
+</li>
+<li id="fn:29">
+<p>Roger Teoh, Ulrich Schumann, Arnab Majumdar, and Marc EJ Stettler. Mitigating the climate forcing of aircraft contrails by small-scale diversions and technology adoption. <em>Environmental Science &amp; Technology</em>, 54(5):2941–2950, 2020. <a href="https://doi.org/10.1021/acs.est.9b05608">doi:10.1021/acs.est.9b05608</a>.&#160;<a class="footnote-backref" href="#fnref:29" title="Jump back to footnote 29 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:29" title="Jump back to footnote 29 in the text">&#8617;</a></p>
+</li>
+<li id="fn:30">
+<p>Frank Noppel and Riti Singh. Overview on contrail and cirrus cloud avoidance technology. <em>Journal of Aircraft</em>, 44(5):1721–1726, 2007. <a href="https://doi.org/10.2514/1.28655">doi:10.2514/1.28655</a>.&#160;<a class="footnote-backref" href="#fnref:30" title="Jump back to footnote 30 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:30" title="Jump back to footnote 30 in the text">&#8617;</a></p>
+</li>
+<li id="fn:31">
+<p>Sigrun Matthes, Benjamin Lührs, Katrin Dahlmann, Volker Grewe, Florian Linke, Feijia Yin, Emma Klingaman, and Keith P Shine. Climate-optimized trajectories and robust mitigation potential: Flying ATM4E. <em>Aerospace</em>, 7(11):156, 2020. <a href="https://doi.org/10.3390/aerospace7110156">doi:10.3390/aerospace7110156</a>.&#160;<a class="footnote-backref" href="#fnref:31" title="Jump back to footnote 31 in the text">&#8617;</a></p>
+</li>
+<li id="fn:32">
+<p>Susanne Marquart, Michael Ponater, Linda Ström, and Klaus Gierens. An upgraded estimate of the radiative forcing of cryoplane contrails. <em>Meteorologische Zeitschrift</em>, 14(4):573–582, 2005. <a href="https://doi.org/10.1127/0941-2948/2005/0057">doi:10.1127/0941-2948/2005/0057</a>.&#160;<a class="footnote-backref" href="#fnref:32" title="Jump back to footnote 32 in the text">&#8617;</a></p>
+</li>
+<li id="fn:33">
+<p>Milan Klöwer, MR Allen, DS Lee, SR Proud, Leo Gallagher, and Agnieszka Skowron. Quantifying aviation’s contribution to global warming. <em>Environmental Research Letters</em>, 16(10):104027, 2021. <a href="https://doi.org/10.1088/1748-9326/ac286e">doi:10.1088/1748-9326/ac286e</a>.&#160;<a class="footnote-backref" href="#fnref:33" title="Jump back to footnote 33 in the text">&#8617;</a></p>
+</li>
+<li id="fn:34">
+<p>A. Elgowainy, J. Han, M. Wang, N. Carter, R. Stratton, J. Hileman, A. Malwitz, and S. Balasubramanian. Life-Cycle Analysis of Alternative Aviation Fuels in GREET. Technical Report, United States, Department of Energy Office of Scientific and Technical Information, 2012. URL: <a href="https://doi.org/10.2172/1255237">https://doi.org/10.2172/1255237</a>.&#160;<a class="footnote-backref" href="#fnref:34" title="Jump back to footnote 34 in the text">&#8617;</a></p>
+</li>
+<li id="fn:35">
+<p>Matteo Prussi, Uisung Lee, Michael Wang, Robert Malina, Hugo Valin, Farzad Taheripour, César Velarde, Mark D Staples, Laura Lonza, and James I Hileman. CORSIA: The first internationally adopted approach to calculate life-cycle GHG emissions for aviation fuels. <em>Renewable and Sustainable Energy Reviews</em>, 150:111398, 2021. <a href="https://doi.org/10.1016/j.rser.2021.111398">doi:10.1016/j.rser.2021.111398</a>.&#160;<a class="footnote-backref" href="#fnref:35" title="Jump back to footnote 35 in the text">&#8617;</a></p>
+</li>
+<li id="fn:36">
+<p>Mark D Staples, Robert Malina, Hakan Olcay, Matthew N Pearlson, James I Hileman, Adam Boies, and Steven RH Barrett. Lifecycle greenhouse gas footprint and minimum selling price of renewable diesel and jet fuel from fermentation and advanced fermentation production technologies. <em>Energy &amp; Environmental Science</em>, 7(5):1545–1554, 2014. <a href="https://doi.org/10.1039/C3EE43655A">doi:10.1039/C3EE43655A</a>.&#160;<a class="footnote-backref" href="#fnref:36" title="Jump back to footnote 36 in the text">&#8617;</a></p>
+</li>
+<li id="fn:37">
+<p>Mark D Staples, Robert Malina, Pooja Suresh, James I Hileman, and Steven RH Barrett. Aviation CO2 emissions reductions from the use of alternative jet fuels. <em>Energy Policy</em>, 114:342–354, 2018. <a href="https://doi.org/10.1016/j.enpol.2017.12.007">doi:10.1016/j.enpol.2017.12.007</a>.&#160;<a class="footnote-backref" href="#fnref:37" title="Jump back to footnote 37 in the text">&#8617;</a></p>
+</li>
+<li id="fn:38">
+<p>Russell Stratton, Hsin Min Wong, James Hileman, and others. Life cycle greenhouse gas emissions from alternative jet fuels. Technical Report, Partnership for AiR Transportation Noise and Emissions Reduction, 2010. URL: <a href="https://rosap.ntl.bts.gov/view/dot/66442/dot_66442_DS1.pdf">https://rosap.ntl.bts.gov/view/dot/66442/dot_66442_DS1.pdf</a>.&#160;<a class="footnote-backref" href="#fnref:38" title="Jump back to footnote 38 in the text">&#8617;</a></p>
+</li>
+<li id="fn:39">
+<p>Xin Zhao, Farzad Taheripour, Robert Malina, Mark D Staples, and Wallace E Tyner. Estimating induced land use change emissions for sustainable aviation biofuel pathways. <em>Science of the Total Environment</em>, 779:146238, 2021. <a href="https://doi.org/10.1016/j.scitotenv.2021.146238">doi:10.1016/j.scitotenv.2021.146238</a>.&#160;<a class="footnote-backref" href="#fnref:39" title="Jump back to footnote 39 in the text">&#8617;</a></p>
+</li>
+<li id="fn:40">
+<p>Sierk De Jong, Ric Hoefnagels, André Faaij, Raphael Slade, Rebecca Mawhood, and Martin Junginger. The feasibility of short-term production strategies for renewable jet fuels – A comprehensive techno-economic comparison. <em>Biofuels, Bioproducts and Biorefining</em>, 9(6):778–800, 2015. <a href="https://doi.org/10.1002/bbb.1613">doi:10.1002/bbb.1613</a>.&#160;<a class="footnote-backref" href="#fnref:40" title="Jump back to footnote 40 in the text">&#8617;</a></p>
+</li>
+<li id="fn:41">
+<p>Jeongwoo Han, Amgad Elgowainy, Hao Cai, and Michael Q Wang. Life-cycle analysis of bio-based aviation fuels. <em>Bioresource technology</em>, 150:447–456, 2013. <a href="https://doi.org/10.1016/j.biortech.2013.07.153">doi:10.1016/j.biortech.2013.07.153</a>.&#160;<a class="footnote-backref" href="#fnref:41" title="Jump back to footnote 41 in the text">&#8617;</a></p>
+</li>
+<li id="fn:42">
+<p>Thomas G Kreutz, Eric D Larson, Guangjian Liu, and Robert H Williams. Fischer-Tropsch fuels from coal and biomass. In <em>25th annual international Pittsburgh coal conference</em>, volume 29. International Pittsburgh Coal Conference Pittsburgh, Pennsylvania, 2008.&#160;<a class="footnote-backref" href="#fnref:42" title="Jump back to footnote 42 in the text">&#8617;</a></p>
+</li>
+<li id="fn:43">
+<p>Jane O'Malley, Nikita Pavlenko, and Stephanie Searle. Estimating sustainable aviation fuel feedstock availability to meet growing European Union demand. Working paper 2021-13, ICCT, 2021.&#160;<a class="footnote-backref" href="#fnref:43" title="Jump back to footnote 43 in the text">&#8617;</a></p>
+</li>
+<li id="fn:44">
+<p>Matthew Pearlson, Christoph Wollersheim, and James Hileman. A techno-economic review of hydroprocessed renewable esters and fatty acids for jet fuel production. <em>Biofuels, Bioproducts and Biorefining</em>, 7(1):89–96, 2013. <a href="https://doi.org/10.1002/bbb.1378">doi:10.1002/bbb.1378</a>.&#160;<a class="footnote-backref" href="#fnref:44" title="Jump back to footnote 44 in the text">&#8617;</a></p>
+</li>
+<li id="fn:45">
+<p>Marshall Wise, Matteo Muratori, and Page Kyle. Biojet fuels and emissions mitigation in aviation: An integrated assessment modeling analysis. <em>Transportation Research Part D: Transport and Environment</em>, 52:244–253, 2017. <a href="https://doi.org/10.1016/j.trd.2017.03.006">doi:10.1016/j.trd.2017.03.006</a>.&#160;<a class="footnote-backref" href="#fnref:45" title="Jump back to footnote 45 in the text">&#8617;</a></p>
+</li>
+<li id="fn:46">
+<p>International Energy Agency. The Future of Hydrogen – Seizing today’s opportunities. Technical Report, IEA, 2019. URL: <a href="https://www.iea.org/reports/the-future-of-hydrogen">https://www.iea.org/reports/the-future-of-hydrogen</a>.&#160;<a class="footnote-backref" href="#fnref:46" title="Jump back to footnote 46 in the text">&#8617;</a></p>
+</li>
+<li id="fn:47">
+<p>Ibrahim Dincer and Canan Acar. Review and evaluation of hydrogen production methods for better sustainability. <em>International Scientific Journal for Alternative Energy and Ecology (ISJAEE)</em>, 2495:14–36, 2016. <a href="https://doi.org/10.1016/j.ijhydene.2014.12.035">doi:10.1016/j.ijhydene.2014.12.035</a>.&#160;<a class="footnote-backref" href="#fnref:47" title="Jump back to footnote 47 in the text">&#8617;</a></p>
+</li>
+<li id="fn:48">
+<p>Mengdi Ji and Jianlong Wang. Review and comparison of various hydrogen production methods based on costs and life cycle impact assessment indicators. <em>International Journal of Hydrogen Energy</em>, 46(78):38612–38635, 2021. <a href="https://doi.org/10.1016/j.ijhydene.2021.09.142">doi:10.1016/j.ijhydene.2021.09.142</a>.&#160;<a class="footnote-backref" href="#fnref:48" title="Jump back to footnote 48 in the text">&#8617;</a></p>
+</li>
+<li id="fn:49">
+<p>B Parkinson, P Balcombe, JF Speirs, AD Hawkes, and K Hellgardt. Levelized cost of CO2 mitigation from hydrogen production routes. <em>Energy &amp; environmental science</em>, 12(1):19–40, 2019. <a href="https://doi.org/10.1039/C8EE02079E">doi:10.1039/C8EE02079E</a>.&#160;<a class="footnote-backref" href="#fnref:49" title="Jump back to footnote 49 in the text">&#8617;</a></p>
+</li>
+<li id="fn:50">
+<p>Osamah Siddiqui and Ibrahim Dincer. A well to pump life cycle environmental impact assessment of some hydrogen production routes. <em>International Journal of Hydrogen Energy</em>, 44(12):5773–5786, 2019. <a href="https://doi.org/10.1016/j.ijhydene.2019.01.118">doi:10.1016/j.ijhydene.2019.01.118</a>.&#160;<a class="footnote-backref" href="#fnref:50" title="Jump back to footnote 50 in the text">&#8617;</a></p>
+</li>
+<li id="fn:51">
+<p>Falko Ueckerdt, Christian Bauer, Alois Dirnaichner, Jordan Everall, Romain Sacchi, and Gunnar Luderer. Potential and risks of hydrogen-based e-fuels in climate change mitigation. <em>Nature Climate Change</em>, 11(5):384–393, 2021. <a href="https://doi.org/10.1038/s41558-021-01032-7">doi:10.1038/s41558-021-01032-7</a>.&#160;<a class="footnote-backref" href="#fnref:51" title="Jump back to footnote 51 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.path", "search.highlight", "search.suggest", "toc.integrate", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -13,5 +13,10 @@
     "version": "docstring_completion",
     "title": "docstring_completion",
     "aliases": []
+  },
+  {
+    "version": "aerocm_integration",
+    "title": "aerocm_integration",
+    "aliases": []
   }
 ]
