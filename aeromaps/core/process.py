@@ -142,7 +142,7 @@ class AeroMAPSProcess(object):
     def __init__(
         self,
         configuration_file=None,
-        models=None,
+        custom_models=None,
         optimisation=False,
     ):
         """Initialize an AeroMAPSProcess instance.
