@@ -7,11 +7,18 @@ This version was slightly adapted for compatibility with versions 1.2.x of lca_a
 """
 
 from typing import Dict
-from lca_algebraic import AxisDict, ParamDef
-from lca_algebraic.lca import _preMultiLCAAlgebric
-from lca_algebraic.params import _param_registry
-from lca_algebraic.stats import _round_expr
-import brightway2 as bw
+
+try:
+    from lca_algebraic import AxisDict, ParamDef
+    from lca_algebraic.lca import _preMultiLCAAlgebric
+    from lca_algebraic.params import _param_registry
+    from lca_algebraic.stats import _round_expr
+    import brightway2 as bw
+except ImportError as e:
+    raise ImportError(
+        "Required libraries for Custom Life Cycle Assessment module are not installed. "
+        "Please run 'pip install --upgrade aeromaps[lca]' to install them."
+    ) from e
 from aeromaps.models.impacts.life_cycle_assessment.io.common import FunctionalUnit, Lambda, Impact, Model, Param, is_expr, ParamType
 from aeromaps.models.impacts.life_cycle_assessment.io.common import FUNCTIONAL_UNIT_KEY, TOTAL_AXIS_KEY
 
