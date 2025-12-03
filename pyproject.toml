@@ -28,6 +28,7 @@ xlrd = "1.2.0"
 openpyxl = "^3.1.2"
 gemseo = "<6.3.0"
 deepdiff = "^8"
+sympy = "^1.14.0"
 
 # External models
 aerocm = "0.1.1b0"
