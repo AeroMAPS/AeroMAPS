@@ -4,7 +4,7 @@ data:
 
 models:
   climate:
-    climate_model_data_file: "./climate_model_gwpstar.yaml"
+    climate_model_data_file: "../../../../resources/data/default_climate_models/climate_model_gwpstar.yaml"
 
   energy:
     energy_carriers_model_data_file: "../../../../resources/data/default_energy_carriers/energy_carriers_data.yaml"
