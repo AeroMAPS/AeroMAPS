@@ -2,7 +2,7 @@
 
 # Name of the climate model (IPCC, GWP*, LWE, FaIR)
 # See AeroCM documentation for available models
-climate_model: "GWP*"
+climate_model: "FaIR"
 
 # Default species settings from AeroCM
 # See AeroCM documentation for available species settings depending on the climate model
@@ -21,7 +21,7 @@ species_settings:
     efficacy_erf: 1.0
 
   NOx - CH4 decrease and induced:
-    sensitivity_rf: -6.1e-12
+    ch4_loss_per_nox: -3.9
     ratio_erf_rf: 1.18
     efficacy_erf: 1.0
 
@@ -31,16 +31,14 @@ species_settings:
     efficacy_erf: 1.0
 
   Soot:
-    sensitivity_rf: 1.0e-10
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
   Sulfur:
-    sensitivity_rf: -2.0e-11
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
 # Default model settings from AeroCM
 # See AeroCM documentation for available model settings depending on the climate model
 model_settings:
-  tcre: 0.00045
+  rcp: "RCP45"
