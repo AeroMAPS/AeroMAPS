@@ -133,6 +133,7 @@ nav:
       - Basic example:
           - notebooks/examples_basic.ipynb
       - Other examples: books/other_examples.md
+  - Developers: books/developers.md
   - Changelog: books/CHANGELOG.md
 
 theme:
