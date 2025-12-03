@@ -17,6 +17,7 @@ For instance, it allows simulating and analysing scenarios for reducing aviation
 action. 
 
 The objective is to provide:
+
 - a modular framework for research addressing aviation transitions and sustainability
 - a simplified graphical user interface for teaching
 - a tool to support decision-making by institutional, industrial or private stakeholders

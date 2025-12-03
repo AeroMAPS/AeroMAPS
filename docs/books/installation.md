@@ -28,4 +28,4 @@ pip install --upgrade aeromaps[lca]
 
 ## For developers
 
-If you want to contribute to the development of AeroMAPS, check out the [guide for developers](books/developers.md).
+If you want to contribute to the development of AeroMAPS, check out the [guide for developers](developers.md).
