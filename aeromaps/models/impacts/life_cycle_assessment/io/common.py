@@ -2,7 +2,7 @@
 Credits: lca_algebraic-web-app from Raphael Jolivet (Mines ParisTech).
 https://git.sophia.minesparis.psl.eu/oie/lca_algebraic-web-app/
 """
-
+import warnings
 from enum import Enum
 from typing import Dict
 from sympy import Expr, Float, parse_expr, lambdify, Basic
@@ -33,6 +33,8 @@ class FunctionalUnit :
 def _lambdify(expr, expanded_params):
     if isinstance(expr, Expr):
         return lambdify(expanded_params, expr, 'numpy')
+        # expr_simplified = expr.simplify()
+        # return lambdify(expanded_params, expr_simplified, 'numpy')
     else:
         # Not an expression : return statis func
         def static_func(*args, **kargs):
@@ -270,6 +272,9 @@ class Model:
 
         expr_items = js["expressions"].items()
         if axis is not None:  # Get only one axis if specified
+            if axis not in js["expressions"]:
+                warnings.warn(f"Axis '{axis}' not found in model expressions. Using first available axis instead.")
+                axis = list(js["expressions"].keys())[0]  # Fallback to first axis
             expr_items = [(axis, js["expressions"][axis])]
         expressions = {
             axis: {
@@ -299,6 +304,9 @@ class Model:
         expressions = {}
         expr_items = js["expressions"].items()
         if axis is not None:  # Get only one axis if specified
+            if axis not in js["expressions"]:
+                warnings.warn(f"Axis '{axis}' not found in model expressions. Using first available axis instead.")
+                axis = list(js["expressions"].keys())[0]  # Fallback to first axis
             expr_items = [(axis, js["expressions"][axis])]
         for ax, impacts in expr_items:
             expressions[ax] = {}
