@@ -22,8 +22,8 @@ models:
     processes_model_data_file: "./default_energy_carriers/processes_data.yaml"
 
   life_cycle_assessment:
-    lca_model_data_file: "../../core/lca_model_config.yaml"
-    split_by: phase  # Will be moved to config file in future versions
+    lca_model_data_file: "./default_lca/lca_model_default.json"
+    split_by: phase  # May be moved to config file in future versions
 
   standards:  # List of standard models to include from aeromaps.models.models.py
     - models_traffic

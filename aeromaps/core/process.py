@@ -60,6 +60,9 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 # Climate model imports
 from aeromaps.models.impacts.climate.climate import ClimateModel
 
+# LCA models imports
+from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment import LifeCycleAssessment
+
 # Settings
 pd.options.display.max_rows = 150
 pd.set_option("display.max_columns", 150)
@@ -266,6 +269,9 @@ class AeroMAPSProcess(object):
         self._initialize_generic_energy()
         # Initialize climate model
         self._initialize_climate_model()
+        # Initialize LCA model
+        self._initialize_lca_model()
+        # Initialize disciplines
         self._initialize_disciplines()
 
         self.mda_chain = MDAChain(
@@ -294,6 +300,7 @@ class AeroMAPSProcess(object):
         """
         self._initialize_generic_energy()
         self._initialize_climate_model()
+        self._initialize_lca_model()
         self._initialize_disciplines()
 
         self.scenario = create_scenario(
@@ -984,6 +991,51 @@ class AeroMAPSProcess(object):
                     model_settings=climate_model_data.get("model_settings", {})
                 )}
             )
+
+    def _initialize_lca_model(self):
+        """Read the LCA config file and instantiate LCA model accordingly.
+
+        The config file should contain:
+        - lca_model_data_file: str, path to the LCA model to use (either json for default LCA model, or yaml for custom LCA model)
+        - split_by: optional, settings for splitting LCA results by e.g. 'phase'
+
+        Skipped if models.life_cycle_assessment key is not present in the user configuration.
+        """
+
+        # Check if LCA model should be used (key must be present in user config)
+        lca_config = self._get_user_config_value("models", "life_cycle_assessment", default=None)
+        if lca_config is None:
+            return
+
+        lca_model_file_path = self._resolve_config_path(
+            "models", "life_cycle_assessment", "lca_model_data_file",
+            default_filename="../lca_data/lca_model_default.json"
+        )
+
+        if lca_model_file_path and lca_model_file_path.exists():
+            if lca_model_file_path.suffix.lower() not in [".json", ".yaml", ".yml"]:
+                raise ValueError(
+                    "LCA model file must be either a .json (default LCA model) or .yaml/.yml (custom LCA model) file.")
+            if lca_model_file_path.suffix.lower() == ".json":
+                # If default LCA model, use the default LCA model class
+                # TODO: add support for default LCA model when merged branch lca-precompiled
+                return
+                # self.models.update(
+                #     {"lca_model": DefaultLCAModel(
+                #         name="lca_model",
+                #         lca_model_file=str(lca_model_file_path),
+                #         split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                #     )}
+                # )
+            if lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
+                # If custom LCA model, use the custom LCA model class
+                self.models.update(
+                    {"life_cycle_assessment": LifeCycleAssessment(
+                        name="life_cycle_assessment",
+                        configuration_file=lca_model_file_path,
+                        split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                    )}
+                )
 
     def _convert_custom_data_types(self, data):
         """Convert custom YAML data types and register interpolators.
