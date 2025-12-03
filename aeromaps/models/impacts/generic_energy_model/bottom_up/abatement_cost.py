@@ -192,7 +192,7 @@ class ReferenceAbatementCost(AeroMAPSModel):
             self.bottom_up_cac = True
         else:
             print(
-                f"⚠️ Warning: reference pathway for CAC ({self.pathway_name} is not defined as bottom-up, "
+                f"⚠️ Warning: reference pathway for CAC ({self.pathway_name}) is not defined as bottom-up, "
                 f"using top-down values for CAC computation."
             )
             self.input_names.update(
