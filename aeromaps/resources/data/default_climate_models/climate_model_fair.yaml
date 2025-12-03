@@ -16,7 +16,7 @@ species_settings:
       efficacy_erf: 1.0
 
   NOx - ST O3 increase:
-    sensitivity_rf: 7.6e-12
+    sensitivity_rf: 7.64e-12
     ratio_erf_rf: 1.37
     efficacy_erf: 1.0
 
