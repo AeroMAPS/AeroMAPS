@@ -303,11 +303,11 @@ models_operation_cost_common = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aricraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
-        "passenger_aricraft_doc_energy_carbon_tax"
+    "passenger_aircraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
+        "passenger_aircraft_doc_energy_carbon_tax"
     ),
-    "passenger_aricraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
-        "passenger_aricraft_doc_energy_tax"
+    "passenger_aircraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
+        "passenger_aircraft_doc_energy_tax"
     ),
     "passenger_aircraft_doc_energy_subsidy": PassengerAircraftDocEnergySubsidy(
         "passenger_aircraft_doc_energy_subsidy"

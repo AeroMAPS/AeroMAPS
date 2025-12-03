@@ -1,0 +1,23 @@
+data:
+  inputs:
+    json_inputs_file: "./inputs_base_scenario.json"
+  outputs:
+    json_outputs_file: "./outputs_base_scenario.json"
+
+models:
+  climate:
+    climate_model_data_file: "../../../../../resources/data/default_climate_models/climate_model_gwpstar.yaml"
+    
+  fleet:
+    aircraft_inventory_model_data_file: "../base/fleet/aircraft_inventory.yaml"
+    fleet_model_data_file: "../base/fleet/fleet.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "./energy_carriers_data.yaml"
+    resources_model_data_file: "./resources_data.yaml"
+    processes_model_data_file: "./processes_data.yaml"
+
+  standards:
+    - default_models_bottom_up
+    - models_abatements_cost
+    - models_production_cost

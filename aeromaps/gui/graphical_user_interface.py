@@ -38,7 +38,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.process = process
 
         self._data_files = {}
-        self._load_data(self.process.config["EXCEL_DATA_FILE"])
+        self._load_data(self.process._get_config_value("data", "outputs", "excel_outputs_file"))
 
         # Initialization of data tabs outputs
         self.w_data_information_df = None
@@ -2595,7 +2595,7 @@ class GraphicalUserInterface(widgets.VBox):
 
     def _load_data(self, file_path=None):
         if file_path is None:
-            file_path = self.process.config["EXCEL_DATA_FILE"]
+            file_path = self.process._get_config_value("data", "outputs", "excel_outputs_file")
         vector_outputs_df = pd.read_excel(
             file_path, sheet_name="Vector Outputs", index_col=0, engine="openpyxl"
         )

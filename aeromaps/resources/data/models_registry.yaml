@@ -1,0 +1,691 @@
+# AeroMAPS Models Registry
+# This YAML file defines model configurations that can replace hardcoded dictionaries in models.py
+# Each model group can be composed to create different simulation configurations
+
+# =============================================================================
+# MODEL DEFINITIONS
+# =============================================================================
+# Each model is defined with its module path and class name
+# The key becomes the model identifier used in configurations
+
+models:
+  # -------------------------------------------------------------------------
+  # Air Traffic Models
+  # -------------------------------------------------------------------------
+  rpk_measures:
+    module: aeromaps.models.air_transport.air_traffic.rpk
+    class: RPKMeasures
+
+  rpk:
+    module: aeromaps.models.air_transport.air_traffic.rpk
+    class: RPK
+
+  rpk_reference:
+    module: aeromaps.models.air_transport.air_traffic.rpk
+    class: RPKReference
+
+  rpk_with_elasticity:
+    module: aeromaps.models.air_transport.air_traffic.price_elasticity
+    class: RPKWithElasticity
+
+  rtk:
+    module: aeromaps.models.air_transport.air_traffic.rtk
+    class: RTK
+
+  rtk_reference:
+    module: aeromaps.models.air_transport.air_traffic.rtk
+    class: RTKReference
+
+  ask:
+    module: aeromaps.models.air_transport.air_traffic.ask
+    class: ASK
+
+  total_aircraft_distance:
+    module: aeromaps.models.air_transport.air_traffic.total_aircraft_distance
+    class: TotalAircraftDistance
+
+  # -------------------------------------------------------------------------
+  # Fleet and Operations Models
+  # -------------------------------------------------------------------------
+  load_factor:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor
+    class: LoadFactor
+
+  operations_logistic:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations
+    class: OperationsLogistic
+
+  operations_interpolation:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations
+    class: OperationsInterpolation
+
+  operations_contrails_simple:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
+    class: OperationsContrailsSimple
+
+  fuel_effect_correction_contrails:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
+    class: FuelEffectCorrectionContrails
+
+  without_fuel_effect_correction_contrails:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2
+    class: WithoutFuelEffectCorrectionContrails
+
+  # -------------------------------------------------------------------------
+  # Aircraft Efficiency Models
+  # -------------------------------------------------------------------------
+  passenger_aircraft_efficiency_simple_shares:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency
+    class: PassengerAircraftEfficiencySimpleShares
+
+  passenger_aircraft_efficiency_simple_ask:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency
+    class: PassengerAircraftEfficiencySimpleASK
+
+  passenger_aircraft_efficiency_complex:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency
+    class: PassengerAircraftEfficiencyComplex
+
+  freight_aircraft_efficiency:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency
+    class: FreightAircraftEfficiency
+
+  energy_intensity:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations
+    class: EnergyIntensity
+
+  fleet_numeric:
+    module: aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric
+    class: FleetEvolution
+
+  # -------------------------------------------------------------------------
+  # Emission Index Models
+  # -------------------------------------------------------------------------
+  nox_emission_index:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: NOxEmissionIndex
+
+  nox_emission_index_complex:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: NOxEmissionIndexComplex
+
+  soot_emission_index:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: SootEmissionIndex
+
+  soot_emission_index_complex:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: SootEmissionIndexComplex
+
+  h2o_emission_index:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: H2OEmissionIndex
+
+  sulfur_emission_index:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: SulfurEmissionIndex
+
+  # -------------------------------------------------------------------------
+  # Energy Consumption Models
+  # -------------------------------------------------------------------------
+  drop_in_fuel_consumption:
+    module: aeromaps.models.impacts.energy_resources.energy_consumption
+    class: DropInFuelConsumption
+
+  drop_in_fuel_detailed_consumption:
+    module: aeromaps.models.impacts.energy_resources.energy_consumption
+    class: DropInFuelDetailledConsumption
+
+  hydrogen_consumption:
+    module: aeromaps.models.impacts.energy_resources.energy_consumption
+    class: HydrogenConsumption
+
+  electric_consumption:
+    module: aeromaps.models.impacts.energy_resources.energy_consumption
+    class: ElectricConsumption
+
+  energy_consumption:
+    module: aeromaps.models.impacts.energy_resources.energy_consumption
+    class: EnergyConsumption
+
+  energy_carriers_massic_shares:
+    module: aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means
+    class: EnergyCarriersMassicShares
+
+  # -------------------------------------------------------------------------
+  # Emissions Models
+  # -------------------------------------------------------------------------
+  kaya_factors:
+    module: aeromaps.models.impacts.emissions.co2_emissions
+    class: KayaFactors
+
+  co2_emissions:
+    module: aeromaps.models.impacts.emissions.co2_emissions
+    class: CO2Emissions
+
+  cumulative_co2_emissions:
+    module: aeromaps.models.impacts.emissions.co2_emissions
+    class: CumulativeCO2Emissions
+
+  detailed_co2_emissions:
+    module: aeromaps.models.impacts.emissions.co2_emissions
+    class: DetailedCo2Emissions
+
+  detailed_cumulative_co2_emissions:
+    module: aeromaps.models.impacts.emissions.co2_emissions
+    class: DetailedCumulativeCO2Emissions
+
+  non_co2_emissions:
+    module: aeromaps.models.impacts.emissions.non_co2_emissions
+    class: NonCO2Emissions
+
+  # -------------------------------------------------------------------------
+  # Carbon Offset Models
+  # -------------------------------------------------------------------------
+  level_carbon_offset:
+    module: aeromaps.models.impacts.emissions.carbon_offset
+    class: LevelCarbonOffset
+
+  residual_carbon_offset:
+    module: aeromaps.models.impacts.emissions.carbon_offset
+    class: ResidualCarbonOffset
+
+  carbon_offset:
+    module: aeromaps.models.impacts.emissions.carbon_offset
+    class: CarbonOffset
+
+  cumulative_carbon_offset:
+    module: aeromaps.models.impacts.emissions.carbon_offset
+    class: CumulativeCarbonOffset
+
+  # -------------------------------------------------------------------------
+  # Sustainability Assessment Models
+  # -------------------------------------------------------------------------
+  gross_carbon_budget:
+    module: aeromaps.models.sustainability_assessment.climate.carbon_budget
+    class: GrossCarbonBudget
+
+  temperature_target:
+    module: aeromaps.models.sustainability_assessment.climate.temperature_target
+    class: TemperatureTarget
+
+  carbon_budget_consumed_share:
+    module: aeromaps.models.sustainability_assessment.climate.comparison
+    class: CarbonBudgetConsumedShare
+
+  temperature_target_consumed_share:
+    module: aeromaps.models.sustainability_assessment.climate.comparison
+    class: TemperatureTargetConsumedShare
+
+  # -------------------------------------------------------------------------
+  # Other Impact Models
+  # -------------------------------------------------------------------------
+  emissions_per_rpk:
+    module: aeromaps.models.impacts.others.others
+    class: EmissionsPerRPK
+
+  emissions_per_rtk:
+    module: aeromaps.models.impacts.others.others
+    class: EmissionsPerRTK
+
+  dropin_fuel_consumption_liter_per_pax_100km:
+    module: aeromaps.models.impacts.others.others
+    class: DropinFuelConsumptionLiterPerPax100km
+
+  # -------------------------------------------------------------------------
+  # Cost Models
+  # -------------------------------------------------------------------------
+  carbon_tax:
+    module: aeromaps.models.impacts.costs.carbon_tax.carbon_tax
+    class: CarbonTax
+
+  discounted_scenario_cost:
+    module: aeromaps.models.impacts.costs.scenario.scenario_cost
+    class: DicountedScenarioCost
+
+  non_discounted_scenario_cost:
+    module: aeromaps.models.impacts.costs.scenario.scenario_cost
+    class: NonDiscountedScenarioCost
+
+  exogenous_carbon_price_trajectory:
+    module: aeromaps.models.impacts.costs.scenario.exogneous_carbon_price
+    class: ExogenousCarbonPriceTrajectory
+
+  total_surplus_loss:
+    module: aeromaps.models.impacts.costs.scenario.scenario_cost
+    class: TotalSurplusLoss
+
+  total_airline_cost:
+    module: aeromaps.models.impacts.costs.scenario.scenario_cost
+    class: TotalAirlineCost
+
+  total_airline_cost_no_elast:
+    module: aeromaps.models.impacts.costs.scenario.scenario_cost
+    class: TotalAirlineCostNoElast
+
+  # Airline Direct Operating Costs
+  passenger_aircraft_doc_energy:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocEnergy
+
+  passenger_aircraft_doc_non_energy_simple:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocNonEnergySimple
+
+  passenger_aircraft_doc_non_energy_complex:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocNonEnergyComplex
+
+  passenger_aircraft_total_doc:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftTotalDoc
+
+  passenger_aircraft_doc_energy_carbon_tax:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocEnergyCarbonTax
+
+  passenger_aircraft_doc_energy_tax:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocEnergyTax
+
+  passenger_aircraft_doc_energy_subsidy:
+    module: aeromaps.models.impacts.costs.airlines.direct_operating_costs
+    class: PassengerAircraftDocEnergySubsidy
+
+  # Airline Other Costs
+  passenger_aircraft_noc:
+    module: aeromaps.models.impacts.costs.airlines.non_operating_costs
+    class: PassengerAircraftNonOpCosts
+
+  passenger_aircraft_passenger_tax:
+    module: aeromaps.models.impacts.costs.airlines.non_operating_costs
+    class: PassengerAircraftPassengerTax
+
+  passenger_aircraft_ioc:
+    module: aeromaps.models.impacts.costs.airlines.indirect_operating_costs
+    class: PassengerAircraftIndirectOpCosts
+
+  passenger_aircraft_noc_carbon_offset:
+    module: aeromaps.models.impacts.costs.airlines.indirect_operating_costs
+    class: PassengerAircraftNocCarbonOffset
+
+  passenger_aircraft_operational_profit:
+    module: aeromaps.models.impacts.costs.airlines.operational_profit
+    class: PassengerAircraftOperationalProfit
+
+  passenger_aircraft_simple_airfare:
+    module: aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare
+    class: PassengerAircraftSimpleAirfare
+
+  passenger_aircraft_total_cost:
+    module: aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare
+    class: PassengerAircraftTotalCost
+
+  passenger_aircraft_marginal_cost:
+    module: aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare
+    class: PassengerAircraftMarginalCost
+
+  # Operations Cost
+  load_factor_efficiency_cost:
+    module: aeromaps.models.impacts.costs.operations.operations_cost
+    class: LoadFactorEfficiencyCost
+
+  operational_efficiency_cost:
+    module: aeromaps.models.impacts.costs.operations.operations_cost
+    class: OperationalEfficiencyCost
+
+  # Manufacturer Costs
+  recurring_costs:
+    module: aeromaps.models.impacts.costs.manufacturers.recurring_costs
+    class: RecurringCosts
+
+  non_recurring_costs:
+    module: aeromaps.models.impacts.costs.manufacturers.non_recurring_costs
+    class: NonRecurringCosts
+
+  # Abatement Costs
+  operations_abatement_cost:
+    module: aeromaps.models.impacts.costs.efficiency_abatement_cost.operations_abatement_cost
+    class: OperationsAbatementCost
+
+  fleet_abatement_cost:
+    module: aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost
+    class: FleetCarbonAbatementCosts
+
+  fleet_top_down_carbon_abatement_cost:
+    module: aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost
+    class: FleetTopDownCarbonAbatementCost
+
+  cargo_efficiency_carbon_abatement_cost:
+    module: aeromaps.models.impacts.costs.efficiency_abatement_cost.fleet_abatement_cost
+    class: CargoEfficiencyCarbonAbatementCosts
+
+  # -------------------------------------------------------------------------
+  # Optimisation Constraints
+  # -------------------------------------------------------------------------
+  carbon_budget_constraint:
+    module: aeromaps.models.optimisation.constraints.carbon_budget_constraint
+    class: CarbonBudgetConstraint
+
+
+# =============================================================================
+# MODEL GROUPS
+# =============================================================================
+# Groups of models that are commonly used together
+# These can be referenced in configurations using the $ref syntax
+
+groups:
+  # -------------------------------------------------------------------------
+  # Traffic Model Groups
+  # -------------------------------------------------------------------------
+  traffic:
+    description: Standard air traffic models
+    models:
+      - rpk_measures
+      - rpk
+      - rpk_reference
+      - total_aircraft_distance
+      - rtk
+      - rtk_reference
+      - ask
+
+  traffic_cost_feedback:
+    description: Traffic models with price elasticity feedback
+    models:
+      - rpk_with_elasticity
+      - rpk_measures
+      - rpk_reference
+      - total_aircraft_distance
+      - rtk
+      - rtk_reference
+      - ask
+
+  # -------------------------------------------------------------------------
+  # Efficiency Model Groups
+  # -------------------------------------------------------------------------
+  efficiency_top_down:
+    description: Top-down efficiency models with simple shares
+    models:
+      - load_factor
+      - operations_logistic
+      - operations_contrails_simple
+      - passenger_aircraft_efficiency_simple_shares
+      - passenger_aircraft_efficiency_simple_ask
+      - freight_aircraft_efficiency
+      - energy_intensity
+      - nox_emission_index
+      - soot_emission_index
+      - h2o_emission_index
+      - sulfur_emission_index
+
+  efficiency_top_down_interp:
+    description: Top-down efficiency models with interpolation
+    models:
+      - load_factor
+      - operations_interpolation
+      - operations_contrails_simple
+      - passenger_aircraft_efficiency_simple_shares
+      - passenger_aircraft_efficiency_simple_ask
+      - freight_aircraft_efficiency
+      - energy_intensity
+      - nox_emission_index
+      - soot_emission_index
+      - h2o_emission_index
+      - sulfur_emission_index
+
+  efficiency_bottom_up:
+    description: Bottom-up efficiency models with complex fleet modeling
+    models:
+      - load_factor
+      - operations_logistic
+      - operations_contrails_simple
+      - passenger_aircraft_efficiency_complex
+      - freight_aircraft_efficiency
+      - energy_intensity
+      - nox_emission_index_complex
+      - soot_emission_index_complex
+      - h2o_emission_index
+      - sulfur_emission_index
+
+  # -------------------------------------------------------------------------
+  # Energy Model Groups
+  # -------------------------------------------------------------------------
+  energy_without_fuel_effect:
+    description: Energy consumption models without fuel effect on contrails
+    models:
+      - drop_in_fuel_consumption
+      - drop_in_fuel_detailed_consumption
+      - hydrogen_consumption
+      - electric_consumption
+      - energy_consumption
+      - dropin_fuel_consumption_liter_per_pax_100km
+      - without_fuel_effect_correction_contrails
+      - energy_carriers_massic_shares
+
+  energy_with_fuel_effect:
+    description: Energy consumption models with fuel effect on contrails
+    models:
+      - drop_in_fuel_consumption
+      - drop_in_fuel_detailed_consumption
+      - hydrogen_consumption
+      - electric_consumption
+      - energy_consumption
+      - dropin_fuel_consumption_liter_per_pax_100km
+      - fuel_effect_correction_contrails
+      - energy_carriers_massic_shares
+
+  # -------------------------------------------------------------------------
+  # Emissions Model Groups
+  # -------------------------------------------------------------------------
+  offset:
+    description: Carbon offset models
+    models:
+      - level_carbon_offset
+      - residual_carbon_offset
+      - carbon_offset
+      - cumulative_carbon_offset
+
+  emissions:
+    description: Full emissions calculation models
+    models:
+      - kaya_factors
+      - co2_emissions
+      - cumulative_co2_emissions
+      - detailed_co2_emissions
+      - detailed_cumulative_co2_emissions
+      - non_co2_emissions
+      - emissions_per_rpk
+      - emissions_per_rtk
+
+  # -------------------------------------------------------------------------
+  # Sustainability Model Groups
+  # -------------------------------------------------------------------------
+  sustainability:
+    description: Sustainability assessment models
+    models:
+      - gross_carbon_budget
+      - temperature_target
+      - carbon_budget_consumed_share
+      - temperature_target_consumed_share
+
+  # -------------------------------------------------------------------------
+  # Cost Model Groups
+  # -------------------------------------------------------------------------
+  energy_cost:
+    description: Energy-related cost models
+    models:
+      - carbon_tax
+      - discounted_scenario_cost
+      - non_discounted_scenario_cost
+      - exogenous_carbon_price_trajectory
+
+  operation_cost_common:
+    description: Common airline operation cost models
+    models:
+      - load_factor_efficiency_cost
+      - operational_efficiency_cost
+      - passenger_aircraft_doc_energy
+      - passenger_aircraft_doc_energy_carbon_tax
+      - passenger_aircraft_doc_energy_tax
+      - passenger_aircraft_doc_energy_subsidy
+      - passenger_aircraft_total_doc
+      - passenger_aircraft_noc_carbon_offset
+      - passenger_aircraft_noc
+      - passenger_aircraft_ioc
+      - passenger_aircraft_operational_profit
+      - passenger_aircraft_passenger_tax
+      - passenger_aircraft_total_cost
+
+  operation_cost_top_down:
+    description: Top-down operation cost models
+    extends: operation_cost_common
+    models:
+      - passenger_aircraft_doc_non_energy_simple
+      - passenger_aircraft_simple_airfare
+      - total_airline_cost_no_elast
+
+  operation_cost_bottom_up:
+    description: Bottom-up operation cost models
+    extends: operation_cost_common
+    models:
+      - passenger_aircraft_doc_non_energy_complex
+      - passenger_aircraft_simple_airfare
+      - total_airline_cost_no_elast
+
+  operation_cost_top_down_feedback:
+    description: Top-down operation cost models with feedback
+    extends: operation_cost_common
+    models:
+      - passenger_aircraft_doc_non_energy_simple
+      - passenger_aircraft_marginal_cost
+      - total_airline_cost
+
+  operation_cost_bottom_up_feedback:
+    description: Bottom-up operation cost models with feedback
+    extends: operation_cost_common
+    models:
+      - passenger_aircraft_doc_non_energy_complex
+      - passenger_aircraft_marginal_cost
+      - total_airline_cost
+
+  production_cost:
+    description: Aircraft production cost models
+    models:
+      - fleet_numeric
+      - recurring_costs
+      - non_recurring_costs
+
+  abatement_cost:
+    description: Abatement cost models for bottom-up
+    models:
+      - operations_abatement_cost
+      - fleet_abatement_cost
+      - cargo_efficiency_carbon_abatement_cost
+
+  abatement_cost_simplified:
+    description: Simplified abatement cost models for top-down
+    models:
+      - operations_abatement_cost
+      - fleet_top_down_carbon_abatement_cost
+      - cargo_efficiency_carbon_abatement_cost
+
+
+# =============================================================================
+# CONFIGURATIONS
+# =============================================================================
+# Complete model configurations for different use cases
+# These compose groups and individual models
+
+configurations:
+  # -------------------------------------------------------------------------
+  # Default Configurations
+  # -------------------------------------------------------------------------
+  default_top_down:
+    description: Default top-down configuration for simple scenarios
+    groups:
+      - traffic
+      - efficiency_top_down
+      - energy_without_fuel_effect
+      - offset
+      - emissions
+      - sustainability
+      - energy_cost
+      - operation_cost_top_down
+
+  default_bottom_up:
+    description: Default bottom-up configuration with complex fleet modeling
+    groups:
+      - traffic
+      - efficiency_bottom_up
+      - energy_without_fuel_effect
+      - offset
+      - emissions
+      - sustainability
+      - energy_cost
+      - operation_cost_bottom_up
+
+  # -------------------------------------------------------------------------
+  # Optimisation Configurations
+  # -------------------------------------------------------------------------
+  optim_simple:
+    description: Simple optimisation configuration
+    groups:
+      - traffic
+      - efficiency_top_down
+      - energy_without_fuel_effect
+      - offset
+      - energy_cost
+      - operation_cost_top_down
+    models:
+      - kaya_factors
+      - co2_emissions
+      - cumulative_co2_emissions
+      - detailed_co2_emissions
+      - detailed_cumulative_co2_emissions
+      - gross_carbon_budget
+      - carbon_budget_consumed_share
+      - carbon_budget_constraint
+
+  optim_complex:
+    description: Complex optimisation with price feedback
+    groups:
+      - traffic_cost_feedback
+      - efficiency_top_down
+      - energy_without_fuel_effect
+      - offset
+      - energy_cost
+      - operation_cost_top_down_feedback
+    models:
+      - kaya_factors
+      - co2_emissions
+      - cumulative_co2_emissions
+      - detailed_co2_emissions
+      - detailed_cumulative_co2_emissions
+      - gross_carbon_budget
+      - carbon_budget_consumed_share
+      - carbon_budget_constraint
+      - total_surplus_loss
+
+  # -------------------------------------------------------------------------
+  # Specialized Configurations
+  # -------------------------------------------------------------------------
+  with_fuel_effect:
+    description: Configuration with fuel effect on contrails
+    groups:
+      - traffic
+      - efficiency_top_down
+      - energy_with_fuel_effect
+      - offset
+      - emissions
+      - sustainability
+      - energy_cost
+      - operation_cost_top_down
+
+  minimal:
+    description: Minimal configuration for quick testing
+    groups:
+      - traffic
+      - efficiency_top_down
+      - energy_without_fuel_effect
+    models:
+      - co2_emissions
