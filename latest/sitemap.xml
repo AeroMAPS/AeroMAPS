@@ -2,390 +2,382 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/api/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/api/aeromaps.core.models/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/api/aeromaps.core.process/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/api/aeromaps/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/api/aeromaps.utils.functions/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/books/_changelog/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/books/CHANGELOG/</loc>
+         <lastmod>2025-12-03</lastmod>
+    </url>
+    <url>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/books/developers/</loc>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/documentation_airtransport/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/documentation_architecture/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/documentation_gui/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/documentation_impacts/</loc>
-         <lastmod>2025-11-27</lastmod>
-    </url>
-    <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/books/documentation_software/</loc>
-         <lastmod>2025-11-27</lastmod>
-    </url>
-    <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/books/examples/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/installation/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/other_examples/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/books/references/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
+    </url>
+    <url>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.core.cli/</loc>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.core.gemseo/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.core/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.core.models/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.core.process/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.gui.graphical_user_interface/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.gui/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.gui.plots/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.ask/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.price_elasticity/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.rpk/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.rtk/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.short_range_distribution/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.air_traffic.total_aircraft_distance/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_efficiency/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_numeric/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.non_co2.non_co2/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport.constants/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.air_transport/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.base/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.constants/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.climate.climate/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.climate/</loc>
-         <lastmod>2025-11-27</lastmod>
-    </url>
-    <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing/</loc>
-         <lastmod>2025-11-27</lastmod>
-    </url>
-    <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.effective_radiative_forcing/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.emissions.carbon_offset/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.emissions.co2_emissions/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.emissions/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.emissions.non_co2_emissions/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.energy_resources.energy_consumption/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.energy_resources.energy_resources/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.energy_resources/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_cost/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.abatement_effective/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.cost/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.environmental/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.bottom_up.production_capacity/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.common.energy_use_choice/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.common/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.top_down.cost/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.top_down.environmental/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.generic_energy_model.top_down/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.life_cycle_assessment/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.life_cycle_assessment.plots/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts/</loc>
-         <lastmod>2025-11-27</lastmod>
-    </url>
-    <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.others.comparison/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.others/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.impacts.others.others/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.optimisation.constraints.carbon_budget_constraint/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.optimisation.constraints.energy_constraint/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.optimisation.constraints/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.optimisation/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.parameters/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate.carbon_budgets/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate.carbon_budget/</loc>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
-         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate.comparison/</loc>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
+    </url>
+    <url>
+         <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment.climate.temperature_target/</loc>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.sustainability_assessment/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.templates/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.models.yaml_interpolator/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.utils.defaults/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.utils.functions/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.utils/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/full_doc/aeromaps.utils.yaml/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
     <url>
          <loc>https://aeromaps.github.io/AeroMAPS/latest/notebooks/examples_basic/</loc>
-         <lastmod>2025-11-27</lastmod>
+         <lastmod>2025-12-03</lastmod>
     </url>
 </urlset>
