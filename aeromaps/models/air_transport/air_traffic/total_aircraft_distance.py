@@ -1,9 +1,24 @@
+"""
+total_aircraft_distance
+=========================
+Module for computing total aircraft distance flown.
+"""
+
 from typing import Tuple
 import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
 class TotalAircraftDistance(AeroMAPSModel):
+    """
+    Class to compute total aircraft distance flown for all commercial air transport.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('total_aircraft_distance' by default).
+    """
+
     def __init__(self, name="total_aircraft_distance", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
         self.climate_historical_data = None
@@ -17,7 +32,35 @@ class TotalAircraftDistance(AeroMAPSModel):
         ask_electric: pd.Series,
         total_aircraft_distance_init: pd.Series,
     ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-        """Total aircraft distance calculation."""
+        """
+        Total aircraft distance calculation.
+
+        Parameters
+        ----------
+        rtk
+            Number of Revenue Tonne Kilometer (RTK) for freight air transport [RTK].
+        ask
+            Number of (ASK) for all commercial air transport [ASK].
+        ask_dropin_fuel
+            Number of (ASK) for drop-in fuel aircraft [ASK].
+        ask_hydrogen
+            Number of (ASK) for hydrogen aircraft [ASK].
+        ask_electric
+            Number of (ASK) for electric aircraft [ASK].
+        total_aircraft_distance_init
+            Historical total distance travelled by aircraft over 2000-2019 [km].
+
+        Returns
+        -------
+        total_aircraft_distance
+            Total distance flown by all aircraft [km].
+        total_aircraft_distance_dropin_fuel
+            Total aircraft distance flown by drop-in fuel aircraft [km].
+        total_aircraft_distance_hydrogen
+            Total aircraft distance flown by hydrogen aircraft [km].
+        total_aircraft_distance_electric
+            Total aircraft distance flown by electric aircraft [km].
+        """
 
         historical_distance_for_temperature = self.climate_historical_data[:, 6]
 

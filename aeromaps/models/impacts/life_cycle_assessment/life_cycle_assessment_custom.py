@@ -2,6 +2,7 @@
 Model for Life Cycle Assessment (LCA) of air transportation systems
 """
 
+# Standard library imports
 import warnings
 import re
 import pandas as pd
@@ -11,13 +12,53 @@ from typing import Dict
 import xarray as xr
 from lca_modeller.io.configuration import LCAProblemConfigurator
 import brightway2 as bw
+
+# AeroMAPS imports
 from aeromaps.models.base import AeroMAPSModel, aeromaps_interpolation_function
 
+# Constants
 KEY_YEAR = "year"
 KEY_METHOD = "method"
 
 
 class LifeCycleAssessmentCustom(AeroMAPSModel):
+    """ Life Cycle Assessment (LCA) model to compute multiple environmental impacts beyond climate change.
+
+        This model requires a valid ecoinvent license stored in a private '.env' file (that you will not share /commit)
+        in the notebooks or project root folder, containing the following variables:
+            ECOINVENT_LOGIN=<your_login>
+            ECOINVENT_PASSWORD=<your_password>
+
+        This model uses the lca_modeller library to build a parametric LCA model from a user-provided configuration file,
+        and the lca_algebraic library (a layer on top of brightway) to compute LCA results efficiently for multiple years.
+        The life cycle inventory relies on the ecoinvent database, projected to future years using the premise library.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model instance.
+        configuration_file : str
+            Path to the LCA configuration file defining the model and LCIA methods.
+        split_by : str, optional
+            Axis to split impacts by (typically, "phase").
+            Should match an axis defined in the configuration file through the "attribute" field.
+
+        Attributes
+        ----------
+        model : agb.Activity
+            The parametric LCA model representative of air transport, generated from the configuration file.
+        methods : list
+            List of LCIA methods to compute.
+        axis : str
+            Optional axis to get contributors to impacts (typically, "phase").
+        params_names : list
+            List of LCA parameter names used in the model, generated automatically from the LCA model definition.
+        xarray_lca : xr.DataArray
+            The full LCA results stored as an xarray DataArray after computation.
+        lambdas : list
+            List of symbolic expressions for LCIA impacts, precomputed for efficiency.
+
+        """
     deepcopy_at_init = (
         False  # --> do not re-instantiate model at each process run since LCA model is heavy
     )
@@ -34,7 +75,6 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         super().__init__(
             name=name,
             model_type="custom",
-            # inputs/outputs are defined in __init__ rather than auto generated from compute() signature
             *args,
             **kwargs,
         )
@@ -85,6 +125,19 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 self.output_names.append(tuple_to_varname(method))
 
     def compute(self, input_data) -> dict:
+        """
+        Compute LCA impacts for the given input parameters.
+
+        Parameters
+        ----------
+        input_data : dict
+            Dictionary containing values for LCA parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary containing computed LCA impacts as pd.Series (one per impact category).
+        """
         # --- Assign values to parameters ---
         params_dict = self._get_param_values(input_data)
 
@@ -105,6 +158,17 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
     def _get_param_values(self, input_data) -> dict:
         """
         Extract LCA parameter values from input_data, handling different formats
+        and interpolation from reference years/values if needed.
+
+        Parameters
+        ----------
+        input_data : dict
+            Dictionary containing values for LCA parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary of parameter names (LCA-compliant) and their corresponding values for the simulation period.
         """
         params_dict = {}
 
@@ -185,31 +249,29 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 and is_not_nan(input_data[name + "_reference_years_values"])
             ):
                 warnings.warn(
-                    f'Both direct value and reference years/values provided for parameter "{name}". Direct value will be used.'
+                    f'Both direct value and reference years/values provided for parameter "{name}". '
+                    f'Direct value will be used.'
                 )
 
         return params_dict
 
     def _multi_lca_algebraic_raw(self, **params):
         """
-        Main parametric LCIA method : Computes LCA by expressing the foreground
-        model as symbolic expression of background activities and parameters.
-        Then, compute 'static' inventory of the referenced background activities.
-        This enables a very fast recomputation of LCA with different parameters,
-        useful for stochastic evaluation of parametrized model
+        Main parametric LCIA method, adapted from lca_algebraic.
+        Computes impacts from the compiled LCIA expressions (lambdas) and the provided parameters values.
+        Compared to the compute_impacts method from lca_algebraic, this version can handle simultaneously
+        lists of parameters and subdivision by axis.
 
         Parameters
         ----------
-        models : List of Activities, or Dict of Activities: Lambdas if impacts exprs already calculated
-        methods : List of methods, i.e. impacts to consider. Overriden by info from lambdas if provided with models.
         params : Dict[str,ListOrScalar]
-                 You should provide named values of all the parameters declared
-                 in the models. Values can be single value or list of samples, all of the same size
-        axis : keyword to split impacts by phase. Overriden by info from lambdas if provided with models.
+                 Dictionary of name: values of all the parameters declared in the model.
+                 Values can be single value or list of values (in this case, all of the same size)
 
-        Return
+        Returns
         ------
-        lca : 3 dimension xarray of lca results, with dims=("systems", "impacts", "params"]
+        xr.DataArray
+            3 dimension xarray of lca results, with dims=("systems", "impacts", "params"]
         """
 
         models = {self.model: self.lambdas}
@@ -295,8 +357,23 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         **params: Dict[str, agb.SingleOrMultipleFloat],
     ):
         """
-        Modified version of compute_impacts from lca_algebraic.
-        More like a wrapper of _postLCAAlgebraic, to avoid calling _preLCAAlgebraic which is unecessarily time consuming when lambdas have already been calculated and doesn't have to be updated.
+        Modified version of compute_impacts from lca_algebraic to compute impacts from precomputed lambdas.
+        More like a wrapper of _postLCAAlgebraic, to avoid calling _preLCAAlgebraic which is unecessarily
+        time consuming when lambdas have already been calculated and doesn't have to be updated.
+        This version does not handle simultaneously lists of parameters and subdivision by axis.
+        Will probably be deprecated in future versions.
+
+        Parameters
+        ----------
+        params : Dict[str,ListOrScalar]
+                 Dictionary of name: values of all the parameters declared in the model.
+                 Values can be single value or list of values (in this case, all of the same size)
+
+        Returns
+        ------
+        pd.DataFrame
+            DataFrame of lca results, indexed by axis or parameter values if applicable.
+
         """
         dfs = dict()
 
@@ -363,6 +440,16 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
     def _convert_xarray_to_series(self, res: xr.DataArray) -> dict:
         """
         Convert xarray DataArray to dictionary of pd.Series
+
+        Parameters
+        ----------
+        res : xr.DataArray
+            The xarray DataArray containing LCA results.
+
+        Returns
+        -------
+        dict
+            Dictionary of pd.Series for each impact category.
         """
         output_data = {}
 
@@ -385,6 +472,16 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
 def tuple_to_varname(items):
     """
     Convert a tuple or list of strings into a clean, Python-friendly variable name.
+
+    Parameters
+    ----------
+    items : tuple or list
+        The tuple or list of strings to convert.
+
+    Returns
+    -------
+    str
+        A cleaned variable name string.
     """
     if isinstance(items, (list, tuple)):
         text = "__".join(items)  # join parts with double underscores
@@ -407,7 +504,19 @@ def tuple_to_varname(items):
 
 
 def is_not_nan(x):
-    """Return True if x is not NaN or None."""
+    """
+    Return True if x is not NaN or None. Handles single values and arrays/lists.
+
+    Parameters
+    ----------
+    x : any
+        The input to check.
+
+    Returns
+    -------
+    bool
+        True if x is not NaN or None, False otherwise.
+    """
     if x is None:
         return False
     if isinstance(x, (float, int, np.number)):

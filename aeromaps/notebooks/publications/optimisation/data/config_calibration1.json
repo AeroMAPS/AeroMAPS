@@ -1,0 +1,5 @@
+{
+    "AIRCRAFT_INVENTORY_CONFIG_FILE": "./aircraft_inventory.yaml",
+    "FLEET_CONFIG_FILE": "./fleet_calibration1.yaml",
+    "USE_FLEET_MODEL": true
+}

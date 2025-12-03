@@ -1,3 +1,11 @@
+"""
+YAML Interpolator Model for AeroMAPS
+===============================
+This module defines a generic interpolation model that can be used in AeroMAPS
+to interpolate values based on user-defined reference years and values specified
+in a YAML configuration file.
+"""
+
 import warnings
 
 import pandas as pd
@@ -9,7 +17,21 @@ from aeromaps.models.base import AeroMAPSModel
 
 class YAMLInterpolator(AeroMAPSModel):
     """
-    Generic interpolation model called each time an AeroMapsCustomDataType is used in the YAML configuration file of generic energy models.
+    Generic interpolation model called each time an AeroMapsCustomDataType is used in the
+    YAML configuration file of generic energy models.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance.
+    custom_data_type : AeroMapsCustomDataType
+        Custom data type instance containing interpolation parameters.
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(
@@ -38,6 +60,20 @@ class YAMLInterpolator(AeroMAPSModel):
         self.output_names = {self.value_name: pd.Series([0.0])}
 
     def compute(self, input_data) -> dict:
+        """
+        Execute the interpolation based on input data.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml..
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         try:
             interpolated_value = self._yaml_interpolation_function(
                 reference_years=input_data[f"{self.value_name}_years"],

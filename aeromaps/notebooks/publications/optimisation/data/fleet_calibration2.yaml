@@ -1,0 +1,46 @@
+subcategories:
+  - id: sr_conventional_nb
+    name: "SR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+
+  - id: mr_conventional_nb
+    name: "MR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: mr_conventional_nb_old
+      recent_ref: mr_conventional_nb_recent
+
+  - id: lr_conventional_wb
+    name: "LR conventional wide-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: lr_conventional_wb_old
+      recent_ref: lr_conventional_wb_recent
+
+categories:
+  - id: short_range
+    name: "Short Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - sr_conventional_nb
+
+  - id: medium_range
+    name: "Medium Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - mr_conventional_nb
+
+  - id: long_range
+    name: "Long Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - lr_conventional_wb

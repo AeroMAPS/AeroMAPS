@@ -2,7 +2,7 @@ from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
 from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
 from aeromaps.plots.sustainability_assessment import (
     CarbonBudgetAssessmentPlot,
-    EquivalentCarbonBudgetAssessmentPlot,
+    TemperatureTargetAssessmentPlot,
     BiomassResourceBudgetAssessmentPlot,
     ElectricityResourceBudgetAssessmentPlot,
     MultidisciplinaryAssessmentPlot,
@@ -44,9 +44,6 @@ from aeromaps.plots.emissions import (
 from aeromaps.plots.climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
-    EquivalentEmissionsPlot,
-    CumulativeEquivalentEmissionsPlot,
-    EquivalentEmissionsRatioPlot,
     TemperatureIncreaseFromAirTransportPlot,
 )
 from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
@@ -69,7 +66,7 @@ plot_1 = {
 plot_2 = {
     "Multidisciplinary assessment": MultidisciplinaryAssessmentPlot,
     "Carbon budget assessment": CarbonBudgetAssessmentPlot,
-    "Equivalent carbon budget assessment": EquivalentCarbonBudgetAssessmentPlot,
+    "Temperature target assessment": TemperatureTargetAssessmentPlot,
     "Biomass resource budget assessment": BiomassResourceBudgetAssessmentPlot,
     "Electricity resource budget assessment": ElectricityResourceBudgetAssessmentPlot,
 }
@@ -103,9 +100,6 @@ plot_3 = {
     "Direct soot emissions": DirectSootEmissionsPlot,
     "Carbon offset": CarbonOffsetPlot,
     "Cumulative carbon offset": CumulativeCarbonOffsetPlot,
-    "Equivalent emissions": EquivalentEmissionsPlot,
-    "Cumulative equivalent emissions": CumulativeEquivalentEmissionsPlot,
-    "Equivalent emissions ratio": EquivalentEmissionsRatioPlot,
     "Effective radiative forcing in 2050": FinalEffectiveRadiativeForcingPlot,
     "Distribution of effective radiative forcing causes": DistributionEffectiveRadiativeForcingPlot,
     "Investments required per low-carbon fuel pathway": ScenarioEnergyCapitalPlot,

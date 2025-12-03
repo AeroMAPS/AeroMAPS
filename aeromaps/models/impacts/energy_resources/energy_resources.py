@@ -1,15 +1,42 @@
+"""
+energy_resources
+===================================
+Module to model energy resources consumption.
+"""
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_manager import (
     EnergyCarrierManager,
 )
-from aeromaps.utils.functions import custom_series_addition
+from aeromaps.utils.functions import _custom_series_addition
 
 
 class EnergyResourceConsumption(AeroMAPSModel):
     """
-    Aggregates all pathways consumption for a given resource. And compare to available share.
+    This class aggregates all pathways consumption for a given resource. Then, it compares it to availability and allocations.
+    A class is instantiated for each resource defined in the resources .yaml file.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('f"{generic_resource}_consumption"' by default).
+    configuration_data : dict
+        Configuration data dictionary for the resource from the resources .yaml file.
+    pathways_manager : EnergyCarrierManager
+        EnergyCarrierManager instance to manage generic energy pathways and their data.
+
+    Attributes
+    --------------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warnings
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files?
     """
 
     def __init__(
@@ -81,6 +108,20 @@ class EnergyResourceConsumption(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
+        """
+        Executes the computation of total resource consumption and comparison to availability and allocations.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         output_data = {}
 
         total_resource_consumption = pd.Series(
@@ -93,11 +134,11 @@ class EnergyResourceConsumption(AeroMAPSModel):
         for pathway in self.pathways_manager.get(
             resources_used=self.resource_name
         ) + self.pathways_manager.get(resources_used_processes=self.resource_name):
-            total_resource_consumption = custom_series_addition(
+            total_resource_consumption = _custom_series_addition(
                 total_resource_consumption,
                 input_data[f"{pathway.name}_{self.resource_name}_total_consumption"],
             )
-            total_resource_mobilised_with_selectivity = custom_series_addition(
+            total_resource_mobilised_with_selectivity = _custom_series_addition(
                 total_resource_mobilised_with_selectivity,
                 input_data[f"{pathway.name}_{self.resource_name}_total_mobilised_with_selectivity"],
             )
@@ -137,7 +178,26 @@ class EnergyResourceConsumption(AeroMAPSModel):
 
 class OverallResourcesConsumption(AeroMAPSModel):
     """
-    Aggregates total consumption and shares for all resources using outputs from EnergyResourceConsumption.
+    Aggregates total consumption and shares for all resources according to their origin and using outputs from EnergyResourceConsumption.
+    Only one instance of this class is created for all resources.
+
+    Parameters
+    --------------
+    name : str
+        Name of the model instance ('overall_resources_consumption' by default).
+    resources_data : dict
+        Dictionary containing configuration data for all resources from the resources .yaml file.
+
+    Attributes
+    --------------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
+
+    Warning
+    --------------
+    - Detailed i/o documentation is not yet provided for models defined wityh generic .yaml files
     """
 
     def __init__(
@@ -193,6 +253,20 @@ class OverallResourcesConsumption(AeroMAPSModel):
             self.output_names[f"{origin}_overall_aviation_allocated_share"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
+        """
+        Executes the computation of overall resource consumption for all origins and comparison to availability and allocations.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         output_data = {}
 
         index = range(self.prospection_start_year, self.end_year + 1)
@@ -229,10 +303,10 @@ class OverallResourcesConsumption(AeroMAPSModel):
                 input_data[f"{resource}_availability_aviation_allocated_share"] / 100 * availability
             )
 
-            origin_consumption[origin] = custom_series_addition(
+            origin_consumption[origin] = _custom_series_addition(
                 origin_consumption[origin], total_consumption
             )
-            origin_necessary[origin] = custom_series_addition(
+            origin_necessary[origin] = _custom_series_addition(
                 origin_necessary[origin], total_necessary
             )
             origin_availability[origin] += availability

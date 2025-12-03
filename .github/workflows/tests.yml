@@ -13,11 +13,45 @@ on:
       - '**'
 
 jobs:
+  check-run:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      is_light: ${{ steps.check.outputs.is_light }}
+    steps:
+      - name: Check if tests should run
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_call" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.head_commit.message }}" == *"[tests]"* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.head_commit.message }}" == *"[tests-light]"* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "is_light=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "is_light=false" >> $GITHUB_OUTPUT
+          fi
+
   tests:
+    needs: check-run
+    if: needs.check-run.outputs.should_run == 'true'
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
-        os: ${{ fromJson(github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+        python-version: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["3.10"]' || '["3.10", "3.11"]') }}
+        os: ${{ fromJson(needs.check-run.outputs.is_light == 'true' && '["ubuntu-latest"]' || (github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]')) }}
     runs-on: ${{ matrix.os }}
 
     steps:

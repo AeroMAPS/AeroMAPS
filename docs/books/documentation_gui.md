@@ -1,5 +1,8 @@
 # Use of the graphical user interface
 
+!!! warning "This documentation supports the V1 graphical user interface (GUI) for AeroMAPS"
+    [A new UI is now deployed](https://www.aeromaps.eu), in which most of the advice presented here still apply. The documentation will be updated soon.
+
 This page guides the user through the handling of the AeroMAPS Graphical User Interface (GUI). It is recommended to use 
 it on a computer. First, a tutorial is provided for understanding the use of the GUI. Then, the 
 default settings used on the GUI are provided (for details concerning the models, refer to the dedicated sections of 
@@ -20,7 +23,7 @@ The display language can be chosen : English or French (coming soon).
 To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two distinct blocks then appear on the 
 user's screen (see the following figure). 
 
-![](/figs/tutorial_page.png)
+![](figs/tutorial_page.png)
 
 On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
 selecting specific figures using drop-down menus. A first graph allows plotting 
@@ -43,7 +46,7 @@ To illustrate the handling of AeroMAPS, an animation is given below. In this ani
 AeroMAPS functionalities: moving on the tabs, using different simulator modes, displaying different figures, setting 
 scenario parameters.
 
-![](/figs/gif_tutorial.gif)
+![](figs/gif_tutorial.gif)
 
 
 
@@ -77,7 +80,7 @@ expected without modification of the efficiency levers of action.
 
 Overall, the user can directly define mean air traffic growth rates on the period 2020--2050 for the four considered 
 markets in the model: passenger short-range, passenger medium-range, passenger long-range and freight. By default, 
-these values are fixed to 3% per year, i.e. values close to aviation industry's projections {cite}`atagwaypoint`.
+these values are fixed to 3% per year, i.e. values close to aviation industry's projections [@atagwaypoint].
 
 Moreover, an option is proposed for modeling a reduction of short-range flights, which could be induced by modal shift
 (substitution with rail traffic for instance) or political air route ban. Therefore, an illustrative reduction of 50% of
@@ -85,7 +88,7 @@ short-range flights is integrated. The implementation is based on a logistic fun
 a duration of 5 years.
 
 Lastly, a last option is provided for studying societal aspects on the distribution of flights, based on 
-{cite}`gossling2020global`. The authors show that only 11% of the world's population flies, and only between 2 and 4% 
+[@gossling2020global]. The authors show that only 11% of the world's population flies, and only between 2 and 4% 
 go abroad. Moreover,'frequent flyers', about 1% of the world's population, who fly an average of 56,000 km per year 
 (about 3 long-range trips), are responsible for about 50% of aviation CO<sub>2</sub> emissions, taking into account 
 their number of flights but also the more frequent use of upper classes. Therefore, an option for halving the number of
@@ -201,7 +204,8 @@ representing currently 2.6% of CO<sub>2</sub> emissions, the grandfathering allo
 ### *Scenarios mode*
 
 A database is under construction for the *Scenarios mode*. A first example is nevertheless provided on the GUI, based
-on a scenario published in an academic paper {cite}`salgas2023cost`.
+on a scenario published in an academic paper [@salgas2023cost].
+
 
 
 ## Local use of the GUI
@@ -210,8 +214,6 @@ The GUI can be used directly from the following website: https://aeromaps.isae-s
 to use the GUI locally. For this purpose, after installing AeroMAPS (see dedicated section), this command can be used:
 
 ```
-aeromaps run
+aeromaps gui
 ```
-
-
-
+### Bibliography   

@@ -15,6 +15,21 @@ class CustomTemplate(AeroMAPSModel):
     The compute() method of custom models does not need to explicitly define inputs,
     and outputs can be of varying size.
     However, inputs and outputs must be defined in the __init__ method using input_names and output_names dictionaries.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('custom_template' by default).
+    configuration_file : str
+        Path to a configuration file (YAML) that contains user-defined input and output names and
+        default values.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(
@@ -50,6 +65,20 @@ class CustomTemplate(AeroMAPSModel):
                 self.output_names[key] = val
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the outputs based on the inputs.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+
+        """
         # Get input data
         input1 = input_data["input1"]
         input2 = input_data["input2"]
@@ -78,6 +107,11 @@ class AutoTemplate(AeroMAPSModel):
     Auto models do not require definition of inputs and outputs in __init__ method.
     Inputs and outputs are auto generated from compute() method signature.
     Therefore, the compute() method must explicitly define inputs and outputs.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('auto_template' by default).
     """
 
     def __init__(
@@ -94,6 +128,24 @@ class AutoTemplate(AeroMAPSModel):
         )
 
     def compute(self, input1, input2) -> Tuple[pd.Series, float]:
+        """
+        Compute the outputs based on the inputs.
+
+        Parameters
+        ----------
+        input1
+            First input variable.
+        input2
+            Second input variable.
+
+        Returns
+        -------
+        output1
+            First output variable.
+        output2
+            Second output variable.
+
+        """
         output_1 = input1 * input2
         output_2 = input2**2
 

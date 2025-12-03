@@ -1,6 +1,7 @@
 *.pdf
 *.png
 *.svg
+*.idea
 
 **/.ipynb_checkpoints
 /.ipynb_checkpoints
@@ -11,3 +12,5 @@ __pycache__/
 .python-version
 /aeromaps/notebooks/private/opt_2025/
 /aeromaps/notebooks/private/proto_wctr/
+/docs/_build/
+/site/

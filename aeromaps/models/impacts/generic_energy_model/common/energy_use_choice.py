@@ -1,3 +1,10 @@
+"""
+energy_use_choice
+
+=====================
+Central module with a model to handle pathways interaction.
+"""
+
 import warnings
 
 import numpy as np
@@ -9,6 +16,22 @@ from aeromaps.models.base import AeroMAPSModel
 class EnergyUseChoice(AeroMAPSModel):
     """
     Central model to define volume consumed of each energy carrier considered depending on the mandate specified and priorities.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('energy_use_choice' by default).
+    configuration_data : dict
+        Configuration data for the energy use choice model.
+    pathways_manager : EnergyCarrierManager
+        Manager containing all energy pathways metadata.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(
@@ -105,7 +128,18 @@ class EnergyUseChoice(AeroMAPSModel):
 
     def compute(self, input_data) -> dict:
         """
-        Compute the energy consumption of each energy carrier based on the defined pathways and mandates.
+        Compute the energy consumption of each energy carrier based on the defined pathways and mandates and priority rules.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from
+            yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
         """
         # Get inputs from the configuration file
         output_data = {}

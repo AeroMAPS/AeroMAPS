@@ -1,0 +1,4 @@
+# Default climate configuration file - GWP*
+climate_model: "GWP*"  # <-- name of the climate model (GWP*, FaIR, etc.). See AeroCM documentation for available models.
+species_settings: {}  # <-- default species settings from AeroCM. See AeroCM documentation for available species settings depending on the climate model.
+model_settings: {}  # <-- default model settings from AeroCM. See AeroCM documentation for available model settings depending on the climate model.

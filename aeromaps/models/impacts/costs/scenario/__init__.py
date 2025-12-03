@@ -2,3 +2,8 @@
 # @Author : a.salgas
 # @File : __init__.py.py
 # @Software: PyCharm
+"""
+scenario_costs
+===============================
+Package to compute overall scenario costs.
+"""

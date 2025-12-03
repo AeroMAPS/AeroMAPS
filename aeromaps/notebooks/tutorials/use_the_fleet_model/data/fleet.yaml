@@ -1,0 +1,77 @@
+subcategories:
+  - id: sr_conventional_nb
+    name: "SR conventional narrow-body"
+    share: 20.0
+    reference_aircraft:
+      old_ref: sr_conventional_nb_old
+      recent_ref: sr_conventional_nb_recent
+    aircraft:
+      - sr_nb_2035
+      - sr_nb_2045
+
+  - id: sr_regional_tp
+    name: "SR regional turboprop"
+    share: 30.0
+    reference_aircraft:
+      old_ref: sr_regional_tp_old
+      recent_ref: sr_regional_tp_recent
+    aircraft:
+      - sr_tp_2030
+      - sr_tp_2045
+
+  - id: sr_hydrogen_nb
+    name: "SR hydrogen conventional narrow-body"
+    share: 50.0
+    reference_aircraft:
+      old_ref: sr_hydrogen_nb_old
+      recent_ref: sr_hydrogen_nb_recent
+    aircraft:
+      - sr_h2_2035
+
+  - id: mr_conventional_nb
+    name: "MR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: mr_conventional_nb_old
+      recent_ref: mr_conventional_nb_recent
+    aircraft:
+      - mr_nb_2035
+      - mr_nb_2045
+
+  - id: lr_conventional_wb
+    name: "LR conventional wide-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: lr_conventional_wb_old
+      recent_ref: lr_conventional_wb_recent
+    aircraft:
+      - lr_wb_2035
+      - lr_wb_2045
+
+
+categories:
+  - id: short_range
+    name: "Short Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - sr_conventional_nb
+      - sr_regional_tp
+      - sr_hydrogen_nb
+
+  - id: medium_range
+    name: "Medium Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - mr_conventional_nb
+
+  - id: long_range
+    name: "Long Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - lr_conventional_wb

@@ -1,3 +1,10 @@
+"""
+cost
+
+=====
+Module to compute pathway MFSP and investments using the top-down techno-economic model.
+"""
+
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
@@ -7,6 +14,24 @@ class TopDownCost(AeroMAPSModel):
     """
     Top down unit cost model for energy carriers.
     It subtracts subsidies from user provided mfsp and adds taxes to it.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('f"{pathway_name}_top_down_unit_cost"' by default).
+    configuration_data : dict
+        Configuration data for the energy pathway from the config file.
+    resources_data : dict
+        Configuration data for the energy resources from the config file.
+    processes_data : dict
+        Configuration data for the energy processes from the config file.
+
+    Attributes
+    ----------
+    input_names : dict
+        Dictionary of input variable names populated at model initialisation before MDA chain creation.
+    output_names : dict
+        Dictionary of output variable names populated at model initialisation before MDA chain creation.
     """
 
     def __init__(
@@ -140,6 +165,19 @@ class TopDownCost(AeroMAPSModel):
         )
 
     def compute(self, input_data) -> dict:
+        """
+        Compute the top-down cost for the energy pathway.
+
+        Parameters
+        ----------
+        input_data
+            Dictionary containing all input data required for the computation, completed at model instantiation with information from yaml files and outputs of other models.
+
+        Returns
+        -------
+        output_data
+            Dictionary containing all output data resulting from the computation. Contains outputs defined during model instantiation.
+        """
         # Get inputs from the configuration file
         # Mandatory inputs
         output_data = {}
