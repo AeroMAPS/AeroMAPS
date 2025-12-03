@@ -61,7 +61,13 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 from aeromaps.models.impacts.climate.climate import ClimateModel
 
 # LCA models imports
-from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment import LifeCycleAssessment
+# Check if LCA packages for custom model are installed
+try:
+    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment import LifeCycleAssessment
+    LCA_PACKAGES_INSTALLED = True
+except ImportError:
+    LCA_PACKAGES_INSTALLED = False
+# TODO: add default LCA model
 
 # Settings
 pd.options.display.max_rows = 150
@@ -1009,7 +1015,7 @@ class AeroMAPSProcess(object):
 
         lca_model_file_path = self._resolve_config_path(
             "models", "life_cycle_assessment", "lca_model_data_file",
-            default_filename="../lca_data/lca_model_default.json"
+            default_filename="../lca_data/default_lca_model.json"
         )
 
         if lca_model_file_path and lca_model_file_path.exists():
@@ -1029,13 +1035,19 @@ class AeroMAPSProcess(object):
                 # )
             if lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
                 # If custom LCA model, use the custom LCA model class
-                self.models.update(
-                    {"life_cycle_assessment": LifeCycleAssessment(
-                        name="life_cycle_assessment",
-                        configuration_file=lca_model_file_path,
-                        split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                    )}
-                )
+                if LCA_PACKAGES_INSTALLED:
+                    self.models.update(
+                        {"life_cycle_assessment": LifeCycleAssessment(
+                            name="life_cycle_assessment",
+                            configuration_file=lca_model_file_path,
+                            split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                        )}
+                    )
+                else:
+                    logging.warning(
+                        "LCA packages are not installed. Please install 'aeromaps[lca]' extra to use custom LCA models."
+                        "or use the default LCA model with .json file."
+                    )
 
     def _convert_custom_data_types(self, data):
         """Convert custom YAML data types and register interpolators.
