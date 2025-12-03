@@ -23,7 +23,7 @@ The display language can be chosen : English or French (coming soon).
 To use the AeroMAPS simulator, the user must select the **Simulator** tab. Two distinct blocks then appear on the 
 user's screen (see the following figure). 
 
-![](/figs/tutorial_page.png)
+![](figs/tutorial_page.png)
 
 On the one hand, three different graphs are available in the upper part of the screen, with the possibility of 
 selecting specific figures using drop-down menus. A first graph allows plotting 
@@ -46,7 +46,7 @@ To illustrate the handling of AeroMAPS, an animation is given below. In this ani
 AeroMAPS functionalities: moving on the tabs, using different simulator modes, displaying different figures, setting 
 scenario parameters.
 
-![](/figs/gif_tutorial.gif)
+![](figs/gif_tutorial.gif)
 
 
 
@@ -214,6 +214,6 @@ The GUI can be used directly from the following website: https://aeromaps.isae-s
 to use the GUI locally. For this purpose, after installing AeroMAPS (see dedicated section), this command can be used:
 
 ```
-aeromaps run
+aeromaps gui
 ```
 ### Bibliography   

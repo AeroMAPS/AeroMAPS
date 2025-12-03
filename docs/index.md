@@ -1,41 +1,37 @@
-# Welcome to AeroMAPS Documentation !
-
-AeroMAPS is a framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport. For 
-instance, it allows simulating and analyzing scenarios for reducing aviation climate impacts through various levers of 
-action. It is intended to become a sectoral Integrated Assessment Model (IAM) taking into account technological, 
-environmental, sociological, economic and other considerations. It aims to assess the sustainability of simulated air 
-transport transition scenarios on multiple criteria.
+# Welcome to AeroMAPS Documentation!
 
 The objective of this documentation is to provide the main elements concerning AeroMAPS.
 
 In particular, see:  
+- [Overview](books/index.md) — general principles of AeroMAPS.  
+- [Installation](books/installation.md) — quick use and installation processes.  
 - [API Reference](full_doc/index.md) — understanding the intended use of user-facing functions and classes.  
 - [AeroMAPS Models](full_doc/index.md) — details on each model used by the framework.  
-- [User documentation](documentation/index.md) — general principles of AeroMAPS, including example applications.  
+- [Examples](notebooks/examples_basic.ipynb) — several example applications.
+
 
 
 ## About AeroMAPS
 
-AeroMAPS, formerly CAST published in 2021, is an open-source framework developed in Python by ISAE-SUPAERO, Université de Toulouse, 
-France. It is also fed by multiple multidisciplinary works from the Institute for Sustainable Aviation (ISA).
-Providing a free framework that researchers, organizations, authorities and companies can interact with for
-defining sustainable aviation prospective scenarios was the initial main motivation.
+AeroMAPS is an open-source Python framework for performing Multidisciplinary Assessment of Prospective Scenarios for air transport.
+It is a simplified sectoral Integrated Assessment Model (IAM) focusing on air transport transition, aiming at assessing 
+the sustainability of air transport transition scenarios on multiple criteria.
+For instance, it allows simulating and analysing scenarios for reducing aviation climate impacts through various levers of 
+action. 
 
+The objective is to provide:
 
-## License
+- a modular framework for research addressing aviation transitions and sustainability
+- a simplified graphical user interface for teaching
+- a tool to support decision-making by institutional, industrial or private stakeholders
 
-This file is part of AeroMAPS.
+AeroMAPS is developed by ISAE-SUPAERO (Université de Toulouse, France) since 2020 (formerly CAST). 
+It is fed by research collaborations with several organisations (TU Delft, Airbus, DTU) and multidisciplinary 
+research activities from the [Institute for Sustainable Aviation](https://isa-toulouse.com/) (TBS, CERFACS).
+It relies on several open-source scientific packages, including in particular [GEMSEO](https://github.com/gemseo/gemseo), 
+[AeroCM](https://github.com/AeroMAPS/AeroCM) and [lca-modeller](https://github.com/AeroMAPS/lca-modeller).
 
-AeroMAPS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
-License as published by the Free Software Foundation, either version 3 of the License, or (at your option) 
-any later version.
-
-AeroMAPS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
-more details.
-
-You should have received a copy of the GNU General Public License along with AeroMAPS. 
-If not, see <https://www.gnu.org/licenses/>.
+AeroMAPS is licensed under the [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
 
 
 ## Authors
@@ -65,13 +61,8 @@ Submitted to Journal of Open Aviation Science.
 
 ```
 Other publications from our research group that describe specific methods and models implemented in AeroMAPS can be found in the
-[References](documentation/references.md) section of the documentation.
+[References](books/references.md) section of the documentation.
 
-
-## Acknowledgments
-
-The authors would like to thank the following people who contributed to the development of AeroMAPS versions: Bastien Païs, Laurent 
-Joly, Valérie Pommier-Budinger, Florian Simatos, Alice Fabre, Martin Delavenne and Emmanuel Bénard.
 
 
 ## Contact

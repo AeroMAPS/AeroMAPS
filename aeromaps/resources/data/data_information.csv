@@ -13,7 +13,7 @@ available_electricity;Float;EJ;Available electricity in 2050
 aviation_biomass_allocated_share;Float;%;Share of the biomass resource allocated to aviation in 2050;Grandfathering approach (aviation 2019 share of energy consumption)
 aviation_carbon_budget_allocated_share;Float;%;Share of the carbon budget allocated to aviation over 2020-2050;Grandfathering approach (aviation 2019 share of CO2 emissions)
 aviation_electricity_allocated_share;Float;%;Share of the electricity resource allocated to aviation in 2050;Grandfathering approach (aviation 2019 share of energy consumption)
-aviation_equivalentcarbonbudget_allocated_share;Float;%;Share of the equivalent carbon budget allocated to aviation over 2020-2050;Grandfathering approach (aviation 2000-2018 share of ERF)
+aviation_temperature_target_allocated_share;Float;%;Share of the world temperature target allocated to aviation until 2050;Grandfathering approach (aviation 1940-2018 share of temperature change)
 biofuel_atj_efficiency_reference_years;List;yr;Reference years for the conversion efficiency of the AtJ pathway for producing biofuel;
 biofuel_atj_efficiency_reference_years_values;List;-;Conversion efficiency of the AtJ pathway for producing biofuel for the reference years;Statistical analysis of a literature review (see resources/energy_data)
 biofuel_atj_emission_factor_reference_years;List;yr;Reference years for the emission factor of biofuel from AtJ pathway;
@@ -94,15 +94,6 @@ energy_per_ask_medium_range_dropin_fuel_gain_reference_years;List;%;Reference ye
 energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values;List;%;Mean annual efficiency gains in terms of energy consumption per ASK for medium-range drop-in fuel aircraft for the reference years
 energy_per_ask_short_range_dropin_fuel_gain_reference_years;List;%;Reference years for the mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft
 energy_per_ask_short_range_dropin_fuel_gain_reference_years_values;List;%;Mean annual efficiency gains in terms of energy consumption per ASK for short-range drop-in fuel aircraft for the reference years
-erf_coefficient_contrails;Float;mW/m²/km;Coefficient for estimating the effective radiative forcing of contrails from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_h2o;Float;mW/m²/TgH2O;Coefficient for estimating the effective radiative forcing of H2O emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_nox;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_nox_short_term_o3_increase;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to short-term O3 increase;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_nox_long_term_o3_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to long-term O3 decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_nox_ch4_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to methane decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_nox_stratospheric_water_vapor_decrease;Float;mW/m²/TgN;Coefficient for estimating the effective radiative forcing of NOx emissions from aviation due to stratospheric water vapor decrease;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_soot;Float;mW/m²/TgBC;Coefficient for estimating the effective radiative forcing of soot emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
-erf_coefficient_sulfur;Float;mW/m²/TgSO2;Coefficient for estimating the effective radiative forcing of sulfur emissions from aviation;Lee et al. - https://doi.org/10.1016/j.atmosenv.2020.117834
 fleet_renewal_duration;Float;yr;Duration for renewing 98% of the aircraft fleet;Assuming the default value for calibrating the fleet renewal models
 fog_waste_biomass;Float;EJ;Available biomass in the form of fats, oils and grease in 2050;Statistical analysis of a literature review (see resources/energy_data)
 forest_residues_biomass;Float;EJ;Available biomass in the form of forest residues in 2050;Statistical analysis of a literature review (see resources/energy_data)
@@ -201,13 +192,12 @@ short_range_regionalturboprop_share_2040;Float;%;Share of regional turboprop arc
 short_range_regionalturboprop_share_2050;Float;%;Share of regional turboprop architectures in passenger short-range market in 2050
 short_range_rpk_share_2019;Float;%;Share of RPK from short-range market in 2019;Calculation based on ICCT - https://theicct.org/publication/co2-emissions-from-commercial-aviation-2013-2018-and-2019/
 sugarystarchy_crops_biomass_share;Float;%;Share of energy crops biomass from sugar and starch-based materials;Statistical analysis of a literature review (see resources/energy_data)
-T_nonCO2;Float;°C;Characteristic temperature for integrating non-CO2 effects into gross carbon budget calculation;Adapted (use 0.1°C for +1.5°C, 0.2°C for +2°C) from Rogelj et al. - https://doi.org/10.1038/s41586-019-1368-z
 tcre_coefficient;Float;°C/GtCO2;Transient Climate Response to cumulative Emissions of carbon dioxide coefficient;Median value from Rogelj et al. - https://doi.org/10.1038/s41586-019-1368-z
+historical_temperature_increase;Float;°C;World temperature increase from 1750 to 2020
+temperature_target;Float;°C;World temperature target
 waste_biomass;Float;EJ;Available biomass in the form of waste in 2050;Statistical analysis of a literature review (see resources/energy_data)
 world_co2_emissions_2019;Float;GtCO2;World CO2 emissions in 2019;Global Carbon Project - https://www.globalcarbonproject.org/
-world_ghg_emissions_2019;Float;GtCO2-eq;World greenhouse gas emissions in 2019;ONU Emissions Gap Report 2020 - https://www.unenvironment.org/emissions-gap-report-2020
 aerosol_erf;Vector;mW/m²;Effective radiative forcing due to aerosol (soot and sulfur)
-annual_co2_erf;Vector;mW/m²;Effective radiative forcing due to CO2 emissions over a year without considering past emissions
 ask;Vector;ASK;Number of Available Seat Kilometer (ASK) for all commercial air transport
 ask_long_range;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market
 ask_long_range_dropin_fuel;Vector;ASK;Number of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft
@@ -266,14 +256,12 @@ co2_emissions_per_rpk;Vector;MtCO2;Mean CO2 emissions per RPK (for passenger)
 co2_emissions_per_rtk;Vector;MtCO2;Mean CO2 emissions per RTK (for freight)
 co2_emissions_short_range;Vector;MtCO2;CO2 emissions from passenger air transport for short-range market
 co2_emissions_smooth;Vector;MtCO2;CO2 emissions from all commercial air transport smoothed over 5 years
-co2_erf;Vector;mW/m²;Effective radiative forcing due to CO2 emissions
-co2_erf_smooth;Vector;mW/m²;Effective radiative forcing due to CO2 emissions considering emissions smoothed over 5 years
-co2_h2o_erf;Vector;mW/m²;Effective radiative forcing due to CO2 and water vapor emissions
-co2_h2o_nox_contrails_erf;Vector;mW/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions and contrails
-co2_h2o_nox_erf;Vector;mW/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions
+co2_erf;Vector;W/m²;Effective radiative forcing due to CO2 emissions
+co2_h2o_erf;Vector;W/m²;Effective radiative forcing due to CO2 and water vapor emissions
+co2_h2o_nox_contrails_erf;Vector;W/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions and contrails
+co2_h2o_nox_erf;Vector;W/m²;Effective radiative forcing due to CO2, water vapor and NOx emissions
 co2_per_energy_mean;Vector;gCO2/MJ;Mean emission factor of aircraft energy
-co2_total_erf_ratio;Vector;%;Percentage ratio between effective radiative forcing due to CO2 emissions and total effective radiative forcing from aviation
-contrails_erf;Vector;mW/m²;Effective radiative forcing due to contrails
+contrails_erf;Vector;W/m²;Effective radiative forcing due to contrails
 cumulative_co2_emissions;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport
 cumulative_co2_emissions_2019technology;Vector;GtCO2;Cumulative CO2 emissions from all commercial air transport based on 2019 technological level
 cumulative_co2_emissions_2019technology_baseline3;Vector;GtCO2;CumulativeCO2 emissions from all commercial air transport based on 2019 technological level with a baseline air traffic growth
@@ -408,7 +396,7 @@ energy_per_rtk_mean_without_operations;Vector;MJ/RTK;Mean energy consumption per
 energy_per_rtk_without_operations_freight_dropin_fuel;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements
 energy_per_rtk_without_operations_freight_hydrogen;Vector;MJ/RTK;Energy consumption per RTK for freight market aircraft using hydrogen without considering operation improvements
 h2o_emissions;Vector;MtH2O;Water vapor emissions from all commercial air transport
-h2o_erf;Vector;mW/m²;Effective radiative forcing due to water vapor emissions
+h2o_erf;Vector;W/m²;Effective radiative forcing due to water vapor emissions
 hydrogen_coal_ccs_share;Vector;%;Share of hydrogen production from coal pathway with carbon capture and storage
 hydrogen_coal_share;Vector;%;Share of hydrogen production from coal pathway without carbon capture and storage
 liquid_hydrogen_electrolysis_emission_factor;Vector;gCO2/MJ;Emission factor of liquid hydrogen from electrolysis pathway
@@ -424,11 +412,8 @@ kerosene_emission_factor;Vector;gCO2/MJ;Emission factor of kerosene
 kerosene_share;Vector;%;Share of kerosene in drop-in fuel
 liquefaction_efficiency;Vector;-;Liquefaction efficiency for hydrogen
 load_factor;Vector;%;Mean aircraft load factor
-non_co2_equivalent_emissions;Vector;MtCO2-we;Non-CO2 equivalent emissions from all commercial air transport
-non_co2_erf_smooth;Vector;mW/m²;Effective radiative forcing due to non-CO2 effects considering emissions smoothed over 5 years
-non_co2_erf_smooth_variation;Vector;mW/m²/yr;Variation over 20 years of effective radiative forcing due to non-CO2 effects considering emissions smoothed over 5 years
 nox_emissions;Vector;MtNOx;NOx emissions from all commercial air transport
-nox_erf;Vector;mW/m²;Effective radiative forcing due to NOx emissions
+nox_erf;Vector;W/m²;Effective radiative forcing due to NOx emissions
 operations_contrails_gain;Vector;%;Impact of contrail operational improvements in terms of percentage reduction in contrails climate impacts
 operations_contrails_overconsumption;Vector;%;Impact of contrail operational improvements in terms of percentage increase in fuel consumption
 operations_gain;Vector;%;Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK
@@ -452,17 +437,16 @@ rtk_hydrogen;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air 
 rtk_hydrogen_share;Vector;RTK;Share of Revenue Tonne Kilometer (RTK) for freight air transport from hydrogen aircraft
 rtk_reference;Vector;RTK;Number of Revenue Tonne Kilometer (RTK) for freight air transport with a baseline air traffic growth
 soot_emissions;Vector;MtBC;Soot emissions from all commercial air transport
-soot_erf;Vector;mW/m²;Effective radiative forcing due to soot emissions
+soot_erf;Vector;W/m²;Effective radiative forcing due to soot emissions
 sulfur_emissions;Vector;MtSOx;Sulfur emissions from all commercial air transport
-sulfur_erf;Vector;mW/m²;Effective radiative forcing due to sulfur emissions
+sulfur_erf;Vector;W/m²;Effective radiative forcing due to sulfur emissions
 temperature_increase_from_aviation;Vector;°C;Temperature increase from air transport
 temperature_increase_from_co2_from_aviation;Vector;°C;Temperature increase due to CO2 emissions from air transport
 temperature_increase_from_non_co2_from_aviation;Vector;°C;Temperature increase due to non-CO2 effects from air transport
 total_aircraft_distance;Vector;km;Total distance travelled by aircraft (based on RPK traffic)
 total_co2_equivalent_emissions_ratio;Vector;-;Percentage ratio between total equivalent emissions and CO2 emissions from aviation
 total_equivalent_emissions;Vector;MtCO2-we;Total equivalent emissions from all commercial air transport
-total_erf;Vector;mW/m²;Effective radiative forcing due to all aviation climate effects
-total_erf_smooth;Vector;mW/m²;Effective radiative forcing due to all aviation climate effects considering emissions smoothed over 5 years
+total_erf;Vector;W/m²;Effective radiative forcing due to all aviation climate effects
 available_biomass_atj;Float;EJ;Available biomass for AtJ pathways in 2050
 available_biomass_ft_msw;Float;EJ;Available biomass for FT pathways (from municipal solid waste) in 2050
 available_biomass_ft_others;Float;EJ;Available biomass for FT pathways (from others) in 2050

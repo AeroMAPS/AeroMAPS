@@ -278,7 +278,7 @@ class CarbonBudgetAssessmentPlot:
         self.fig.canvas.draw()
 
 
-class EquivalentCarbonBudgetAssessmentPlot:
+class TemperatureTargetAssessmentPlot:
     def __init__(self, process):
         data = process.data
         self.parameters = data["float_inputs"]
@@ -296,50 +296,49 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
     def create_plot(self):
         # Data to plot
-        aviation_equivalent_carbon_budget = float(
-            self.float_outputs["aviation_equivalent_carbon_budget"]
+        aviation_temperature_target = float(
+            self.float_outputs["aviation_temperature_target"]
         )
-        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
-        global_cumulative_equivalent_emissions_2050 = float(
-            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
+        aviation_temperature_change = float(
+            self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
+        ) - float(
+            self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
-        world_equivalent_carbon_budget = float(
-            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        world_temperature_target = float(
+            self.float_outputs["world_temperature_target"]
         )
-        aviation_equivalent_carbon_budget_allocated_share = float(
-            self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
+        aviation_temperature_target_allocated_share = float(
+            self.parameters["aviation_temperature_target_allocated_share"]
         )
 
         # Plot
         size = 0.3
-        if global_cumulative_equivalent_emissions_2050 > 0:
+        if aviation_temperature_change > 0:
             outer_vals = [
-                global_cumulative_equivalent_emissions_2050,
-                world_equivalent_carbon_budget - global_cumulative_equivalent_emissions_2050,
+                aviation_temperature_change,
+                world_temperature_target - aviation_temperature_change,
             ]
         else:
             outer_vals = [
-                world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
-                -global_cumulative_equivalent_emissions_2050,
+                world_temperature_target + aviation_temperature_change,
+                -aviation_temperature_change,
             ]
         inner_vals = [
-            aviation_equivalent_carbon_budget,
-            cumulative_carbon_offset,
-            world_equivalent_carbon_budget
-            - aviation_equivalent_carbon_budget
-            - cumulative_carbon_offset,
+            aviation_temperature_target,
+            world_temperature_target
+            - aviation_temperature_target
         ]
 
         color = "skyblue"
 
-        if global_cumulative_equivalent_emissions_2050 <= aviation_equivalent_carbon_budget:
+        if aviation_temperature_change <= aviation_temperature_target:
             color = "green"
-        if global_cumulative_equivalent_emissions_2050 > 0:
+        if aviation_temperature_change > 0:
             outer_colors = [color, "white"]
         else:
             outer_colors = ["white", color]
-        inner_colors = ["grey", "silver", "white"]
-        inner_hatches = [None, "/", None]
+        inner_colors = ["grey", "white"]
+        inner_hatches = [None, None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -363,26 +362,26 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
         self.ax.set(
             aspect="equal",
-            title="Estimated climate impact of aviation until 2050\nPresented as a % of the equivalent world carbon\nbudget (EWCB) 2050",
+            title="Estimated climate impact of aviation until 2050\nPresented as a % of the remaining world\ntemperature target (RTT)",
         )
 
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
-            str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO₂-we\ncorresponding to\n "
+            str(round(1000*aviation_temperature_change, 0))
+            + " m°C\ncorresponding to\n "
             + str(
                 round(
-                    global_cumulative_equivalent_emissions_2050
-                    / world_equivalent_carbon_budget
+                    aviation_temperature_change
+                    / world_temperature_target
                     * 100,
                     1,
                 )
             )
-            + "% of EWCB",
-            str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
-            + "% of EWCB\ni.e.\n"
-            + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO₂-we",
+            + "% of RTT",
+            str(round(aviation_temperature_target_allocated_share, 1))
+            + "% of RTT\ni.e.\n"
+            + str(round(1000*aviation_temperature_target, 0))
+            + " m°C",
         ]
 
         p = wedges[0]
@@ -422,16 +421,11 @@ class EquivalentCarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 color=color,
-                label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
+                label="Temperature change induced by aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
-                label="Equivalent carbon budget 2050 allocated\nto aviation",
-            ),
-            Patch(
-                facecolor="silver",
-                hatch="/",
-                label="Cumulative aviation carbon offset",
+                label="Remaining temperature target allocated\nto aviation",
             ),
         ]
 
@@ -457,50 +451,49 @@ class EquivalentCarbonBudgetAssessmentPlot:
         self.ax.clear()
 
         # Data to plot
-        aviation_equivalent_carbon_budget = float(
-            self.float_outputs["aviation_equivalent_carbon_budget"]
+        aviation_temperature_target = float(
+            self.float_outputs["aviation_temperature_target"]
         )
-        cumulative_carbon_offset = float(self.df.loc[2050, "cumulative_carbon_offset"])
-        global_cumulative_equivalent_emissions_2050 = float(
-            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
+        aviation_temperature_change = float(
+            self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
+        ) - float(
+            self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
-        world_equivalent_carbon_budget = float(
-            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        world_temperature_target = float(
+            self.float_outputs["world_temperature_target"]
         )
-        aviation_equivalent_carbon_budget_allocated_share = float(
-            self.parameters["aviation_equivalentcarbonbudget_allocated_share"]
+        aviation_temperature_target_allocated_share = float(
+            self.parameters["aviation_temperature_target_allocated_share"]
         )
 
         # Plot
         size = 0.3
-        if global_cumulative_equivalent_emissions_2050 > 0:
+        if aviation_temperature_change > 0:
             outer_vals = [
-                global_cumulative_equivalent_emissions_2050,
-                world_equivalent_carbon_budget - global_cumulative_equivalent_emissions_2050,
+                aviation_temperature_change,
+                world_temperature_target - aviation_temperature_change,
             ]
         else:
             outer_vals = [
-                world_equivalent_carbon_budget + global_cumulative_equivalent_emissions_2050,
-                -global_cumulative_equivalent_emissions_2050,
+                world_temperature_target + aviation_temperature_change,
+                -aviation_temperature_change,
             ]
         inner_vals = [
-            aviation_equivalent_carbon_budget,
-            cumulative_carbon_offset,
-            world_equivalent_carbon_budget
-            - aviation_equivalent_carbon_budget
-            - cumulative_carbon_offset,
+            aviation_temperature_target,
+            world_temperature_target
+            - aviation_temperature_target
         ]
 
         color = "skyblue"
 
-        if global_cumulative_equivalent_emissions_2050 <= aviation_equivalent_carbon_budget:
+        if aviation_temperature_change <= aviation_temperature_target:
             color = "green"
-        if global_cumulative_equivalent_emissions_2050 > 0:
+        if aviation_temperature_change > 0:
             outer_colors = [color, "white"]
         else:
             outer_colors = ["white", color]
-        inner_colors = ["grey", "silver", "white"]
-        inner_hatches = [None, "/", None]
+        inner_colors = ["grey", "white"]
+        inner_hatches = [None, None]
 
         self.wedges_out, _ = self.ax.pie(
             outer_vals,
@@ -524,26 +517,26 @@ class EquivalentCarbonBudgetAssessmentPlot:
 
         self.ax.set(
             aspect="equal",
-            title="Estimated climate impact of aviation until 2050\nPresented as a % of the equivalent world carbon\nbudget (EWCB) 2050",
+            title="Estimated climate impact of aviation until 2050\nPresented as a % of the remaining world\ntemperature target (RTT)",
         )
 
         wedges = [self.wedges_out[0], self.wedges_in[0]]
         texts = [
-            str(round(global_cumulative_equivalent_emissions_2050, 1))
-            + " GtCO₂-we\ncorresponding to\n "
+            str(round(1000*aviation_temperature_change, 0))
+            + " m°C\ncorresponding to\n "
             + str(
                 round(
-                    global_cumulative_equivalent_emissions_2050
-                    / world_equivalent_carbon_budget
+                    aviation_temperature_change
+                    / world_temperature_target
                     * 100,
                     1,
                 )
             )
-            + "% of EWCB",
-            str(round(aviation_equivalent_carbon_budget_allocated_share, 1))
-            + "% of EWCB\ni.e.\n"
-            + str(round(aviation_equivalent_carbon_budget, 1))
-            + " GtCO₂-we",
+            + "% of RTT",
+            str(round(aviation_temperature_target_allocated_share, 1))
+            + "% of RTT\ni.e.\n"
+            + str(round(1000*aviation_temperature_target, 0))
+            + " m°C",
         ]
 
         p = wedges[0]
@@ -583,123 +576,15 @@ class EquivalentCarbonBudgetAssessmentPlot:
         legend_elements = [
             Patch(
                 color=color,
-                label="Cumulative equivalent emissions of aviation\nbetween 2020 and 2050",
+                label="Temperature change induced by aviation\nbetween 2020 and 2050",
             ),
             Patch(
                 color="grey",
-                label="Equivalent carbon budget 2050 allocated\nto aviation",
-            ),
-            Patch(
-                facecolor="silver",
-                hatch="/",
-                label="Cumulative aviation carbon offset",
+                label="Remaining temperature target allocated\nto aviation",
             ),
         ]
 
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
-
-        self.fig.canvas.draw()
-
-
-class EquivalentCarbonBudgetAssessmentPlotOld:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y),
-        )
-        self.create_plot()
-
-    def create_plot(self):
-        barWidth = 0.6
-
-        y1 = [
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"],
-            self.float_outputs["aviation_equivalent_carbon_budget"],
-        ]
-        r = range(len(y1))
-        self.line_carbon_budget = self.ax.bar(r, y1, width=barWidth, color=["grey" for i in y1])
-
-        i = 0
-        for rect, h in zip(self.line_carbon_budget, y1):
-            rect.set_height(h)
-            if i == 0:
-                if y1[i] < y1[i + 1]:
-                    rect.set_color("green")
-                else:
-                    rect.set_color("skyblue")
-            i += 1
-
-        self.ax.set_xticks(r)
-        self.ax.set_xticklabels(
-            [
-                "Equivalent cumulative\nemissions",
-                "Aviation equivalent\naviation carbon\nbudget 2050",
-            ],
-        )
-        self.ax.set_title(
-            "Estimated climate impact of aviation until 2050\nPresented in relation to equivalent\ncarbon budget for aviation"
-        )
-        self.ax.set_ylabel("Equivalent cumulative emissions\nbetween 2020 and 2050 [GtCO2-we]")
-
-        self.ax2 = self.ax.twinx()
-
-        ymin, ymax = self.ax.get_ylim()
-        self.ax2.set_ylim([ymin, ymax])
-        new_labels = [
-            round(float(self.float_outputs["equivalent_carbon_budget_consumed_share"]), 1),
-            round(self.parameters["aviation_equivalentcarbonbudget_allocated_share"], 1),
-        ]
-
-        self.ax2.set_yticks([y1[0], float(y1[1])])
-        self.ax2.set_yticklabels(new_labels)
-        self.ax2.set_ylabel("Share of the world equivalent\ncarbon budget [%]")
-
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        y1 = [
-            self.df.loc[2050, "cumulative_total_equivalent_emissions"],
-            self.float_outputs["aviation_equivalent_carbon_budget"],
-        ]
-        i = 0
-        for rect, h in zip(self.line_carbon_budget, y1):
-            rect.set_height(h)
-            if i == 0:
-                if y1[i] < y1[i + 1]:
-                    rect.set_color("green")
-                else:
-                    rect.set_color("skyblue")
-            i += 1
-
-        self.ax.relim()
-        self.ax.autoscale_view()
-
-        ymin, ymax = self.ax.get_ylim()
-        self.ax2.set_ylim([ymin, ymax])
-        new_labels = [
-            round(float(self.float_outputs["equivalent_carbon_budget_consumed_share"]), 1),
-            round(self.parameters["aviation_equivalentcarbonbudget_allocated_share"], 1),
-        ]
-        self.ax2.set_yticks([y1[0], float(y1[1])])
-        self.ax2.set_yticklabels(new_labels)
 
         self.fig.canvas.draw()
 
@@ -1269,26 +1154,28 @@ class MultidisciplinaryAssessmentPlot:
             self.df["electricity_total_consumption"][self.prospective_years[-1]] / 1e12
         )
 
-        # Effective radiative forcing
-        equivalent_gross_carbon_budget = float(
-            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        # Temperature
+        world_temperature_target = float(
+            self.float_outputs["world_temperature_target"]
         )
-        aviation_equivalent_carbon_budget = float(
-            self.float_outputs["aviation_equivalent_carbon_budget"]
+        aviation_temperature_target = float(
+            self.float_outputs["aviation_temperature_target"]
         )
-        cumulative_total_equivalent_emissions = float(
-            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
+        aviation_temperature_change = float(
+            self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
+        ) - float(
+            self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
 
         categories = [
-            "Climate\n(Total)",
-            "Climate\n(CO₂)",
+            "Climate",
+            "CO₂",
             "Biomass",
             "Electricity",
         ]
 
         budgets = [
-            aviation_equivalent_carbon_budget / equivalent_gross_carbon_budget * 100,
+            aviation_temperature_target / world_temperature_target * 100,
             aviation_carbon_budget / gross_carbon_budget * 100,
             aviation_available_biomass / available_biomass_total * 100,
             aviation_available_electricity / available_electricity_total * 100,
@@ -1296,7 +1183,7 @@ class MultidisciplinaryAssessmentPlot:
 
         consumptions = [
             np.max(
-                [cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]
+                [aviation_temperature_change / world_temperature_target * 100, 0]
             ),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,
@@ -1434,26 +1321,28 @@ class MultidisciplinaryAssessmentPlot:
             self.df["electricity_total_consumption"][self.prospective_years[-1]] / 1e12
         )
 
-        # Effective radiative forcing
-        equivalent_gross_carbon_budget = float(
-            self.float_outputs["equivalent_gross_carbon_budget_2050"]
+        # Temperature
+        world_temperature_target = float(
+            self.float_outputs["world_temperature_target"]
         )
-        aviation_equivalent_carbon_budget = float(
-            self.float_outputs["aviation_equivalent_carbon_budget"]
+        aviation_temperature_target = float(
+            self.float_outputs["aviation_temperature_target"]
         )
-        cumulative_total_equivalent_emissions = float(
-            self.df_climate.loc[2050, "cumulative_total_equivalent_emissions"]
+        aviation_temperature_change = float(
+            self.df_climate.loc[self.prospective_years[-1], "temperature_increase_from_aviation"]
+        ) - float(
+            self.df_climate.loc[self.prospective_years[0], "temperature_increase_from_aviation"]
         )
 
         categories = [
-            "Climate\n(Total)",
-            "Climate\n(CO₂)",
+            "Climate",
+            "CO₂",
             "Biomass",
             "Electricity",
         ]
 
         budgets = [
-            aviation_equivalent_carbon_budget / equivalent_gross_carbon_budget * 100,
+            aviation_temperature_target / world_temperature_target * 100,
             aviation_carbon_budget / gross_carbon_budget * 100,
             aviation_available_biomass / available_biomass_total * 100,
             aviation_available_electricity / available_electricity_total * 100,
@@ -1461,7 +1350,7 @@ class MultidisciplinaryAssessmentPlot:
 
         consumptions = [
             np.max(
-                [cumulative_total_equivalent_emissions / equivalent_gross_carbon_budget * 100, 0]
+                [aviation_temperature_change / world_temperature_target * 100, 0]
             ),
             cumulative_co2_emissions / gross_carbon_budget * 100,
             biomass_consumption_end_year / available_biomass_total * 100,

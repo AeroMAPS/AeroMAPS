@@ -38,7 +38,7 @@ class GraphicalUserInterface(widgets.VBox):
         self.process = process
 
         self._data_files = {}
-        self._load_data(self.process.config["EXCEL_DATA_FILE"])
+        self._load_data(self.process._get_config_value("data", "outputs", "excel_outputs_file"))
 
         # Initialization of data tabs outputs
         self.w_data_information_df = None
@@ -377,15 +377,14 @@ class GraphicalUserInterface(widgets.VBox):
         # Carbon intensity
 
         self.w_energy_mix = widgets.SelectionSlider(
-            options=["Kerosene", "Biofuel", "Electrofuel", "ReFuelEU"],
+            options=["Kerosene", "STEPS", "APS", "NZE"],
             value="Kerosene",
             description="Energy mix",
             description_tooltip="Drop-in fuels used into the fleet until 2050\n"
             "- Kerosene: exclusive use of fossil kerosene\n"
-            "- Biofuel: exclusive use of biofuel with deployment starting in 2025\n"
-            "- Electrofuel: exclusive use of electrofuel with deployment starting in 2030\n"
-            "- ReFuelEU: balanced energy mix relying mainly on electrofuels and biofuels,\n"
-            "   based on ReFuelEU targets",
+            "- STEPS: blending mandates from IEA STEPS scenario\n"
+            "- APS: blending mandates from IEA APS scenario\n"
+            "- NZE: blending mandates from IEA NZE scenario",
         )
         self.w_energy_mix.observe(self.update, "value")
 
@@ -535,11 +534,11 @@ class GraphicalUserInterface(widgets.VBox):
         )
         self.w_carbon_budget_allocation.observe(self.update, "value")
 
-        self.w_equivalent_carbon_budget_allocation = widgets.SelectionSlider(
+        self.w_temperature_target_allocation = widgets.SelectionSlider(
             options=["0%", "3.8%", "5.1%", "15%"],
-            value="5.1%",
-            description="Equivalent carbon budget",
-            description_tooltip="Share of the world equivalent carbon budget allocated to aviation\nThe term "
+            value="3.8%",
+            description="Temperature target",
+            description_tooltip="Share of the remaining world temperature target allocated to aviation\nThe term "
             "allocation here refers to the result of complex mechanisms of negotiation, \n"
             "competition, arbitration and regulation for access to resources\n- 0%: share "
             "equivalent to a stabilization of the climate impact of aviation at 2019 levels\n"
@@ -548,7 +547,7 @@ class GraphicalUserInterface(widgets.VBox):
             "- 15%: share consumed in terms of remaining temperature increase in the BAU scenario "
             "\n   for +1.8°C from Klower et al. (2021)",
         )
-        self.w_equivalent_carbon_budget_allocation.observe(self.update, "value")
+        self.w_temperature_target_allocation.observe(self.update, "value")
 
         self.w_biomass_allocation = widgets.SelectionSlider(
             options=["0%", "2.3%", "7.5%", "14.7%"],
@@ -685,7 +684,7 @@ class GraphicalUserInterface(widgets.VBox):
                 widgets.VBox(
                     [
                         self.w_carbon_budget_allocation,
-                        self.w_equivalent_carbon_budget_allocation,
+                        self.w_temperature_target_allocation,
                         self.w_biomass_allocation,
                         self.w_electricity_allocation,
                     ]
@@ -1033,7 +1032,7 @@ class GraphicalUserInterface(widgets.VBox):
 
         if self.w_aircraft_efficiency.value == "Renewal":
             self.process.fleet._build_default_fleet()
-            
+
             self.process.fleet.categories["Short Range"].parameters.life = 25
             self.process.fleet.categories["Medium Range"].parameters.life = 25
             self.process.fleet.categories["Long Range"].parameters.life = 25
@@ -2049,22 +2048,17 @@ class GraphicalUserInterface(widgets.VBox):
 
                 # as kerosene is default no need to set share for fossil kerosene
         else:
-            if self.w_energy_mix.value == "Electrofuel":
-                biofuel_share = [0.0, 0.0, 0.0, 0.0]
-                electrofuel_share = [0.0, 0.0, 25.0, 100.0]
+            if self.w_energy_mix.value == "STEPS":
+                biofuel_share = [0.0, 0.02, 1.6, 3.3, 7.4]
+                electrofuel_share = [0.0, 0.2, 0.6, 3.7]
 
-            elif self.w_energy_mix.value == "Biofuel":
-                biofuel_share = [0.0, 4.0, 30.0, 100.0]
-                electrofuel_share = [0.0, 0.0, 0.0, 0.0]
+            elif self.w_energy_mix.value == "APS":
+                biofuel_share = [0.0, 0.02, 5.1, 11.8, 23.2]
+                electrofuel_share = [0.0, 0.2, 1.3, 14.1]
 
-            elif self.w_energy_mix.value == "ReFuelEU":
-                biofuel_share = [0.0, 4.8, 24.0, 35.0]
-                electrofuel_share = [
-                    0.0,
-                    1.2,
-                    10.0,
-                    35.0,
-                ]
+            elif self.w_energy_mix.value == "NZE":
+                biofuel_share = [0.0, 0.02, 9.4, 19.3, 33.6]
+                electrofuel_share = [0.0, 1.6, 6.5, 44.8]
 
             for pathway in dropin_pathways:
                 if pathway.name == "electrofuel":
@@ -2072,7 +2066,7 @@ class GraphicalUserInterface(widgets.VBox):
                         self.process.parameters.electrofuel_mandate_share_years = [
                             2020,
                             2030,
-                            2040,
+                            2035,
                             2050,
                         ]
                         self.process.parameters.electrofuel_mandate_share_values = electrofuel_share
@@ -2085,8 +2079,9 @@ class GraphicalUserInterface(widgets.VBox):
                     if pathway.name == "hefa_fog":
                         self.process.parameters.hefa_fog_mandate_share_years = [
                             2020,
+                            2023,
                             2030,
-                            2040,
+                            2035,
                             2050,
                         ]
                         self.process.parameters.hefa_fog_mandate_share_values = [
@@ -2098,7 +2093,13 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_biofuel_production.value == "High-carbon":
                 for pathway in biofuel_pathways:
                     if pathway.name == "atj":
-                        self.process.parameters.atj_mandate_share_years = [2020, 2030, 2040, 2050]
+                        self.process.parameters.atj_mandate_share_years = [
+                            2020,
+                            2023,
+                            2030,
+                            2035,
+                            2050,
+                        ]
                         self.process.parameters.atj_mandate_share_values = [
                             x * 100 / 100 for x in biofuel_share
                         ]
@@ -2110,8 +2111,9 @@ class GraphicalUserInterface(widgets.VBox):
                     if pathway.name == "ft_others":
                         self.process.parameters.ft_others_mandate_share_years = [
                             2020,
+                            2023,
                             2030,
-                            2040,
+                            2035,
                             2050,
                         ]
                         self.process.parameters.ft_others_mandate_share_values = [
@@ -2125,13 +2127,12 @@ class GraphicalUserInterface(widgets.VBox):
             for pathway in hydrogen_pathways:
                 if pathway.name == "hydrogen_electrolysis":
                     self.process.parameters.hydrogen_electrolysis_mandate_share_years = []
-                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2.0]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [71.0]
                 elif pathway.name == "hydrogen_coal":
-                    self.process.parameters.hydrogen_coal_mandate_share_years = []
-                    self.process.parameters.hydrogen_coal_ccs_mandate_share_values = [27]
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2139,7 +2140,9 @@ class GraphicalUserInterface(widgets.VBox):
             for pathway in hydrogen_pathways:
                 if pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = []
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [100]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [100.0]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2151,7 +2154,11 @@ class GraphicalUserInterface(widgets.VBox):
                         2030,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [2, 0, 0]
+                    self.process.parameters.hydrogen_electrolysis_mandate_share_values = [
+                        2.0,
+                        0.0,
+                        0.0,
+                    ]
                 elif pathway.name == "hydrogen_gas_ccs":
                     self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
                         2020,
@@ -2159,7 +2166,12 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 30, 70, 100]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [
+                        0.0,
+                        30.0,
+                        70.0,
+                        100.0,
+                    ]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2167,7 +2179,14 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 70, 30, 0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [
+                        71.0,
+                        70.0,
+                        30.0,
+                        0.0,
+                    ]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2181,10 +2200,10 @@ class GraphicalUserInterface(widgets.VBox):
                         2050,
                     ]
                     self.process.parameters.hydrogen_electrolysis_mandate_share_values = [
-                        2,
-                        30,
-                        50,
-                        100,
+                        2.0,
+                        30.0,
+                        50.0,
+                        100.0,
                     ]
                 elif pathway.name == "hydrogen_gas_ccs":
                     self.process.parameters.hydrogen_gas_ccs_mandate_share_years = [
@@ -2193,7 +2212,12 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [0, 20, 30, 0]
+                    self.process.parameters.hydrogen_gas_ccs_mandate_share_values = [
+                        0.0,
+                        20.0,
+                        30.0,
+                        0.0,
+                    ]
                 elif pathway.name == "hydrogen_gas":
                     self.process.parameters.hydrogen_gas_mandate_share_years = [
                         2020,
@@ -2201,7 +2225,14 @@ class GraphicalUserInterface(widgets.VBox):
                         2040,
                         2050,
                     ]
-                    self.process.parameters.hydrogen_gas_mandate_share_values = [71, 50, 20, 0]
+                    self.process.parameters.hydrogen_gas_mandate_share_values = [
+                        71.0,
+                        50.0,
+                        20.0,
+                        0.0,
+                    ]
+                elif pathway.name == "hydrogen_coal":
+                    pass  # coal is the default hydrogen pathway
                 else:
                     self.reset_pathway_mandate(pathway)
 
@@ -2225,10 +2256,10 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.grid_electricity_co2_emission_factor_values = [
                 x / 3.6
                 for x in [
-                    429,
-                    300,
-                    240,
-                    240,
+                    429.0,
+                    300.0,
+                    240.0,
+                    240.0,
                 ]
             ]
         elif self.w_electricity_production.value == "Low-carbon":
@@ -2244,10 +2275,10 @@ class GraphicalUserInterface(widgets.VBox):
             self.process.parameters.grid_electricity_co2_emission_factor_values = [
                 x / 3.6
                 for x in [
-                    429,
-                    200,
-                    120,
-                    70,
+                    429.0,
+                    200.0,
+                    120.0,
+                    70.0,
                 ]
             ]
         elif self.w_electricity_production.value == "Dedicated low-carbon":
@@ -2350,6 +2381,7 @@ class GraphicalUserInterface(widgets.VBox):
         # DISCOVERY AND SCENARIOS
         # Environment
         if self.w_temperature.value == "+1.5°C":
+            self.process.parameters.temperature_target = 1.5
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 900.0
             elif self.w_success_percentage.value == "33%":
@@ -2361,6 +2393,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 300.0
         elif self.w_temperature.value == "+1.6°C":
+            self.process.parameters.temperature_target = 1.6
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1200.0
             elif self.w_success_percentage.value == "33%":
@@ -2372,6 +2405,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 400.0
         elif self.w_temperature.value == "+1.7°C":
+            self.process.parameters.temperature_target = 1.7
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1450.0
             elif self.w_success_percentage.value == "33%":
@@ -2383,6 +2417,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 550.0
         elif self.w_temperature.value == "+1.8°C":
+            self.process.parameters.temperature_target = 1.8
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 1750.0
             elif self.w_success_percentage.value == "33%":
@@ -2394,6 +2429,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 650.0
         elif self.w_temperature.value == "+1.9°C":
+            self.process.parameters.temperature_target = 1.9
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 2000.0
             elif self.w_success_percentage.value == "33%":
@@ -2405,6 +2441,7 @@ class GraphicalUserInterface(widgets.VBox):
             elif self.w_success_percentage.value == "83%":
                 self.process.parameters.net_carbon_budget = 800.0
         elif self.w_temperature.value == "+2.0°C":
+            self.process.parameters.temperature_target = 2.0
             if self.w_success_percentage.value == "17%":
                 self.process.parameters.net_carbon_budget = 2300.0
             elif self.w_success_percentage.value == "33%":
@@ -2485,14 +2522,14 @@ class GraphicalUserInterface(widgets.VBox):
         elif self.w_carbon_budget_allocation.value == "6.8%":
             self.process.parameters.aviation_carbon_budget_allocated_share = 6.8
 
-        if self.w_equivalent_carbon_budget_allocation.value == "0%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 0.0
-        elif self.w_equivalent_carbon_budget_allocation.value == "3.8%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 3.8
-        elif self.w_equivalent_carbon_budget_allocation.value == "5.1%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 5.1
-        elif self.w_equivalent_carbon_budget_allocation.value == "15%":
-            self.process.parameters.aviation_equivalentcarbonbudget_allocated_share = 15
+        if self.w_temperature_target_allocation.value == "0%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 0.0
+        elif self.w_temperature_target_allocation.value == "3.8%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 3.8
+        elif self.w_temperature_target_allocation.value == "5.1%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 5.1
+        elif self.w_temperature_target_allocation.value == "15%":
+            self.process.parameters.aviation_temperature_target_allocated_share = 15.0
 
         allocated_biomass = 0.0
         if self.w_biomass_allocation.value == "0%":
@@ -2558,7 +2595,7 @@ class GraphicalUserInterface(widgets.VBox):
 
     def _load_data(self, file_path=None):
         if file_path is None:
-            file_path = self.process.config["EXCEL_DATA_FILE"]
+            file_path = self.process._get_config_value("data", "outputs", "excel_outputs_file")
         vector_outputs_df = pd.read_excel(
             file_path, sheet_name="Vector Outputs", index_col=0, engine="openpyxl"
         )

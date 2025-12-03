@@ -2,26 +2,16 @@
 
 ## Quick start
 
-For a quick start in order to discover the different features of AeroMAPS,
+For a quick start in order to discover the simplest features of AeroMAPS,
 a graphical user interface has been developed for facilitating the first uses.
-It is available at the following address: https://aeromaps.isae-supaero.fr
+It is available at the following address: [https://aeromaps.eu/](https://aeromaps.eu/)
 
 
-## Installation from the Python Package Index (PyPI)
+## Quick installation
 
-The Python Package Index ([PyPI](https://pypi.org/)) can be used for installing AeroMAPS.
+The use of the Python Package Index ([PyPI](https://pypi.org/)) is the simplest method for installing AeroCM.
 
-**Prerequisite**: AeroMAPS needs at least **Python 3.9.0**.
-
-It is recommended (but not required) to install AeroMAPS in a virtual
-environment ([conda](https://docs.conda.io/en/latest/),
-[venv](https://docs.python.org/3.7/library/venv.html), ...)
-
-Once Python is installed, AeroMAPS can be installed using pip.
-
-> **Note**: If your network uses a proxy, you may have to do [some
-> settings](https://pip.pypa.io/en/stable/user_guide/#using-a-proxy-server)
-> for pip to work correctly
+**Prerequisite**: AeroMAPS needs at least **Python 3.10.0**.
 
 You can install the latest version with this command:
 
@@ -29,9 +19,13 @@ You can install the latest version with this command:
 pip install --upgrade aeromaps
 ```
 
+If you also want to use the custom life cycle assessment model (which requires a valid ecoinvent license), use the following command:
 
-## Installation from GitHub
+```
+pip install --upgrade aeromaps[lca]
+```
 
-Another solution is to install AeroMAPS from GitHub.
 
-> **Note**: This solution has to be used if you want to perform developing of AeroMAPS.
+## For developers
+
+If you want to contribute to the development of AeroMAPS, check out the [guide for developers](developers.md).

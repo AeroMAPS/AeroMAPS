@@ -1,7 +1,7 @@
 # Air transport modeling
 
 !!! warning "This part of the documentation is deprecated. It describes AeroMAPS in late 2023"
-    It will be updated soon.!
+    It will be updated soon!
 
 The air transport system model presented in the AeroMAPS architecture rely on the modeling of levers of 
 action to reduce the environmental impacts of the sector. Before describing their implementation in AeroMAPS, these 
@@ -50,7 +50,7 @@ Despite significant improvements in fuel efficiency via technology and load fact
 sector have doubled due to the large increase in traffic. The CO<sub>2</sub> content of the energy has not changed due 
 to the almost exclusive use of fossil kerosene.
 
-![](/figs/kaya_aviation.svg)
+![](figs/kaya_aviation.svg)
 
 *Fig.1 Historical evolution of the different parameters of Kaya identity for aviation.*
 
@@ -175,7 +175,7 @@ in recent years.
 
 $RPK(x) = RPK_{1991} ~ (1+\tau)^{x-1991}$
 
-![](/figs/air_traffic.svg)
+![](figs/air_traffic.svg)
 
 *Fig.2 Modeling the historical evolution of air traffic.*
 
@@ -280,11 +280,11 @@ for a replacement of 98% of the fleet, i.e. $l=2$. A second example is given in 
 assumptions, it is assumed that a new aircraft, representing a new sub-category, appears in 2035 and will eventually 
 represent 50% of the market.
 
-![](/figs/renewal_simple.svg)
+![](figs/renewal_simple.svg)
 
 *Fig.3 Basic use of fleet renewal models.*
 
-![](/figs/renewal_complex.svg)
+![](figs/renewal_complex.svg)
 
 *Fig.4 Use of fleet renewal models including a subcategory.*
 
@@ -320,7 +320,7 @@ the commissioning dates differ.
 To model the evolution of the load factor, a similar approach to the one used for the 
 energy consumption per ASK is used. The results are summarized in Fig.5. 
 
-![](/figs/loadfactor_recap.svg)
+![](figs/loadfactor_recap.svg)
 
 *Fig.5 Modeling the trend projection of aircraft load factors.*
 
@@ -460,7 +460,7 @@ possible to determine the decarbonization rate of the fleet and thus the CO<sub>
 used by the fleet annually. On the other hand, as far as hydrogen is concerned, specific models via the fleet renewal 
 models are used, but the principle remains the same.
 
-![](/figs/introduction_fuel.svg)
+![](figs/introduction_fuel.svg)
 
 *Fig.6 Example scenario for introducing drop-in fuels into the fleet.*
 

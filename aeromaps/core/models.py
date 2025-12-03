@@ -77,19 +77,11 @@ from aeromaps.models.optimisation.constraints.carbon_budget_constraint import Ca
 #     ElectrofuelUseGrowthConstraint,
 #     BiofuelUseGrowthConstraint,
 # )
-from aeromaps.models.sustainability_assessment.climate.carbon_budgets import GrossCarbonBudget
-from aeromaps.models.sustainability_assessment.climate.equivalent_carbon_budgets import (
-    EquivalentGrossCarbonBudget,
+from aeromaps.models.sustainability_assessment.climate.carbon_budget import GrossCarbonBudget
+from aeromaps.models.sustainability_assessment.climate.temperature_target import (
+    TemperatureTarget,
 )
 
-from aeromaps.models.impacts.effective_radiative_forcing.effective_radiative_forcing import (
-    SimplifiedERFCo2,
-    SimplifiedERFNox,
-    ERFNox,
-    ERFOthers,
-    ERFTotal,
-    ERFDetailed,
-)
 from aeromaps.models.impacts.emissions.co2_emissions import (
     CO2Emissions,
     KayaFactors,
@@ -114,19 +106,14 @@ from aeromaps.models.impacts.energy_resources.energy_consumption import (
     DropInFuelDetailledConsumption,
 )
 
-from aeromaps.models.impacts.climate.climate import (
-    TemperatureGWPStar,
-    TemperatureSimpleGWPStar,
-    TemperatureFair,
-)
 from aeromaps.models.impacts.others.others import (
     EmissionsPerRPK,
     EmissionsPerRTK,
     DropinFuelConsumptionLiterPerPax100km,
 )
-from aeromaps.models.impacts.others.comparison import (
+from aeromaps.models.sustainability_assessment.climate.comparison import (
     CarbonBudgetConsumedShare,
-    EquivalentCarbonBudgetConsumedShare,
+    TemperatureTargetConsumedShare,
 )
 from aeromaps.models.impacts.emissions.carbon_offset import (
     LevelCarbonOffset,
@@ -283,16 +270,7 @@ models_offset = {
     "cumulative_carbon_offset": CumulativeCarbonOffset("cumulative_carbon_offset"),
 }
 
-models_climate_simple_gwpstar = {
-    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
-        "simplified_effective_radiative_forcing_co2"
-    ),
-    "simplified_effective_radiative_forcing_nox": SimplifiedERFNox(
-        "simplified_effective_radiative_forcing_nox"
-    ),
-    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
-    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
-    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
+models_emissions = {
     "kaya_factors": KayaFactors("kaya_factors"),
     "co2_emissions": CO2Emissions("co2_emissions"),
     "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
@@ -301,65 +279,16 @@ models_climate_simple_gwpstar = {
         "detailed_cumulative_co2_emissions"
     ),
     "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
-    "temperature_simple_gwpstar": TemperatureSimpleGWPStar("temperature_simple_gwpstar"),
-    "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
-    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
-}
-
-models_climate_gwpstar = {
-    "simplified_effective_radiative_forcing_co2": SimplifiedERFCo2(
-        "simplified_effective_radiative_forcing_co2"
-    ),
-    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
-    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
-    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
-    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
-    "kaya_factors": KayaFactors("kaya_factors"),
-    "co2_emissions": CO2Emissions("co2_emissions"),
-    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
-    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
-    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
-        "detailed_cumulative_co2_emissions"
-    ),
-    "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
-    "temperature_gwpstar": TemperatureGWPStar("temperature_gwpstar"),
-    "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
-    "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
-}
-
-models_climate_fair = {
-    "effective_radiative_forcing_nox": ERFNox("effective_radiative_forcing_nox"),
-    "effective_radiative_forcing_others": ERFOthers("effective_radiative_forcing_others"),
-    "effective_radiative_forcing_detailed": ERFDetailed("effective_radiative_forcing_detailed"),
-    "effective_radiative_forcing_total": ERFTotal("effective_radiative_forcing_total"),
-    "kaya_factors": KayaFactors("kaya_factors"),
-    "co2_emissions": CO2Emissions("co2_emissions"),
-    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
-    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
-    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
-        "detailed_cumulative_co2_emissions"
-    ),
-    "non_co2_emissions": NonCO2Emissions("non_co2_emissions"),
-    "temperature_fair": TemperatureFair("temperature_fair"),
     "emissions_per_rpk": EmissionsPerRPK("emissions_per_rpk"),
     "emissions_per_rtk": EmissionsPerRTK("emissions_per_rtk"),
 }
 
 models_sustainability = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
-    "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
+    "temperature_target": TemperatureTarget("temperature_target"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-    "equivalent_carbon_budget_consumed_share": EquivalentCarbonBudgetConsumedShare(
-        "equivalent_carbon_budget_consumed_share"
-    ),
+    "temperature_target_consumed_share": TemperatureTargetConsumedShare("temperature_target_consumed_share"),
 }
-
-models_sustainability_without_equivalent_emissions = {
-    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
-    "equivalent_gross_carbon_budget": EquivalentGrossCarbonBudget("equivalent_gross_carbon_budget"),
-    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-}
-
 
 models_energy_cost = {
     "carbon_tax": CarbonTax("carbon_tax"),
@@ -370,16 +299,15 @@ models_energy_cost = {
     ),
 }
 
-
 models_operation_cost_common = {
     "load_factor_efficiency_cost": LoadFactorEfficiencyCost("load_factor_efficiency_cost"),
     "operational_efficiency_cost": OperationalEfficiencyCost("operational_efficiency_cost"),
     "passenger_aircraft_doc_energy": PassengerAircraftDocEnergy("passenger_aircraft_doc_energy"),
-    "passenger_aricraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
-        "passenger_aricraft_doc_energy_carbon_tax"
+    "passenger_aircraft_doc_energy_carbon_tax": PassengerAircraftDocEnergyCarbonTax(
+        "passenger_aircraft_doc_energy_carbon_tax"
     ),
-    "passenger_aricraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
-        "passenger_aricraft_doc_energy_tax"
+    "passenger_aircraft_doc_energy_tax": PassengerAircraftDocEnergyTax(
+        "passenger_aircraft_doc_energy_tax"
     ),
     "passenger_aircraft_doc_energy_subsidy": PassengerAircraftDocEnergySubsidy(
         "passenger_aircraft_doc_energy_subsidy"
@@ -421,7 +349,6 @@ models_operation_cost_bottom_up = {
     "total_airline_cost_no_elast": TotalAirlineCostNoElast("total_airline_cost_no_elast"),
 }
 
-
 models_operation_cost_top_down_feedback = {
     "models_operation_cost_common": models_operation_cost_common,
     "passenger_aircraft_doc_non_energy_simple": PassengerAircraftDocNonEnergySimple(
@@ -444,7 +371,6 @@ models_operation_cost_bottom_up_feedback = {
     "total_airline_cost": TotalAirlineCost("total_airline_cost"),
 }
 
-
 models_production_cost = {
     "fleet_numeric": FleetEvolution("fleet_numeric"),
     "recurring_costs": RecurringCosts("recurring_costs"),
@@ -461,7 +387,6 @@ models_abatements_cost = {
     ),
 }
 
-
 models_abatements_cost_simplified = {
     # "energy_abatement_effective": EnergyAbatementEffective("energy_abatement_effective"),
     "operations_abatement_cost": OperationsAbatementCost("operations_abatement_cost"),
@@ -473,13 +398,12 @@ models_abatements_cost_simplified = {
     ),
 }
 
-
 default_models_top_down = {
     "models_traffic": models_traffic,
     "models_efficiency_top_down": models_efficiency_top_down,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
-    "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
+    "models_emissions": models_emissions,
     "models_sustainability": models_sustainability,
     "models_energy_cost": models_energy_cost,
     "models_operation_cost_top_down": models_operation_cost_top_down,
@@ -490,12 +414,11 @@ default_models_bottom_up = {
     "models_efficiency_bottom_up": models_efficiency_bottom_up,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
-    "models_climate_simple_gwpstar": models_climate_simple_gwpstar,
+    "models_emissions": models_emissions,
     "models_sustainability": models_sustainability,
     "models_energy_cost": models_energy_cost,
     "models_operation_cost_bottom_up": models_operation_cost_bottom_up,
 }
-
 
 models_optim_simple = {
     "models_traffic": models_traffic,
@@ -535,9 +458,7 @@ models_optim_complex = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
-#
-#
-#
+
 # models_optim_complex_v2 = {
 #     "models_traffic_cost_feedback": models_traffic_cost_feedback,
 #     "models_efficiency_top_down": models_efficiency_top_down,
@@ -575,6 +496,3 @@ models_optim_complex = {
 #     "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
 #     "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 # }
-#
-#
-#

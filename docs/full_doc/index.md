@@ -3,12 +3,12 @@
 This section describes all the AeroMAPS models implemented in the framework.
 
 !!! note "Nota bene"
-    A simpler API reference, covering only user-facing functions and classes, can be found in the [API Reference](../api/) section of the documentation.
+    A simpler API reference, covering only user-facing functions and classes, can be found in the [API Reference](../api/index.md) section of the documentation.
 
 The navigation in this documentation is organized by package:
 
 - **Package**
-- **Core**: AeroMAPSProcess execution-related methods, GEMSEO integration, and
+- **Core**: AeroMAPSProcess execution-related methods, GEMSEO integration, command-line interface, and
   configuration file handling.
 - **GUI**: graphical user interface-related methods.
 - **Utils**: utility functions for data handling, other
