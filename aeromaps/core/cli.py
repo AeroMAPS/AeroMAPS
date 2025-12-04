@@ -59,7 +59,7 @@ class Main:
     @staticmethod
     def _notebooks(args=None):
         """
-        Creates notebooks/ and resources/ folders with pre-configured Jupyter notebooks tutorials and associated resources.
+        Creates notebooks/ and resources/ folders with pre-configured Jupyter notebooks tutorials and default resources.
         """
 
         src_dir = files("aeromaps") / "notebooks" / "tutorials"
