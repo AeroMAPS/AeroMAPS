@@ -1,0 +1,54 @@
+
+
+generic_electricity:
+  # ID
+  name: "generic_electricity"
+  origin: "electricity"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [7.5139, 7.5444, 7.5750, 7.6056, 7.6333, 7.6640, 7.6944, 7.7250, 7.7556,
+ 7.7861, 7.8167, 7.7083, 7.6028, 7.4972, 7.3889, 7.2833, 7.1750, 7.0694,
+ 6.9639, 6.8556, 6.7500, 6.6361, 6.5247, 6.4111, 6.2972, 6.1861, 6.0722,
+ 5.9611, 5.8472, 5.7361, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222,
+ 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222,
+ 5.6222, 5.6222, 5.6222, 5.6222, 5.6222, 5.6222]
+        method: linear
+    load_factor: !AeroMapsCustomDataType
+      years: []
+      values: [0.5]
+      method: linear
+    availability:
+      global: !AeroMapsCustomDataType
+          years: [2020, 2030, 2040, 2050]
+          values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12]
+          method: linear # [MJ]
+      aviation_allocated_share: 5.304 # 8 * 0.663 # [%] Share of the global availability * ratio of international aviation
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: []
+      values: [0.225] #€/kg CO2
+      method: linear
+
+generic_biomass:
+  # ID
+  name: "generic_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: !AeroMapsCustomDataType
+          years: [2020, 2030, 2040, 2050]
+          values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12]
+          method: linear # [MJ]
+      aviation_allocated_share: 9.945 # 15 * 0.663 # [%] Share of the global availability * ratio of international aviation
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.007 ]
+      method: linear
