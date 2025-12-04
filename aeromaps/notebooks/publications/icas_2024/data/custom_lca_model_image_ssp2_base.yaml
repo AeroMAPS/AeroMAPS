@@ -12,16 +12,16 @@ ecoinvent:
 premise:
     scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
         - model: image
-          pathway: SSP2-Base
+          pathway: SSP2-M
           year: 2020
         - model: image
-          pathway: SSP2-Base
+          pathway: SSP2-M
           year: 2030
         - model: image
-          pathway: SSP2-Base
+          pathway: SSP2-M
           year: 2040
         - model: image
-          pathway: SSP2-Base
+          pathway: SSP2-M
           year: 2050
     update: all
 
