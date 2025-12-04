@@ -17,3 +17,6 @@ models:
     - models_energy_cost
     - models_offset
     - models_emissions
+
+  customs:
+    mean_distance_per_inhabitant_and_flyer: "../models/mean_distance_per_inhabitant_and_flyer.py::MeanDistancePerInhabitantFlyer"
