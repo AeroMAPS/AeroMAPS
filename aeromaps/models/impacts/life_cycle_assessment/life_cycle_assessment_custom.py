@@ -31,6 +31,9 @@ from aeromaps.models.impacts.life_cycle_assessment.utils.functions import (
 KEY_YEAR = "year"
 KEY_METHOD = "method"
 
+# suppress warnings from woosh (to be resolved in future versions of lca-modeller?)
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+
 
 class LifeCycleAssessmentCustom(AeroMAPSModel):
     """ Life Cycle Assessment (LCA) model to compute multiple environmental impacts beyond climate change.

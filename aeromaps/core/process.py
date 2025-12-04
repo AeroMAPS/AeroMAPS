@@ -11,6 +11,7 @@ import os
 from json import load, dump
 from pathlib import Path
 from typing import Union
+import dill
 
 # Third-party imports
 import numpy as np
@@ -63,11 +64,11 @@ from aeromaps.models.impacts.climate.climate import ClimateModel
 # LCA models imports
 # Check if LCA packages for custom model are installed
 try:
-    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment import LifeCycleAssessment
+    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom import LifeCycleAssessmentCustom
     LCA_PACKAGES_INSTALLED = True
 except ImportError:
     LCA_PACKAGES_INSTALLED = False
-# TODO: add default LCA model
+from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default import LifeCycleAssessmentDefault
 
 # Settings
 pd.options.display.max_rows = 150
@@ -1102,41 +1103,59 @@ class AeroMAPSProcess(object):
         if lca_config is None:
             return
 
+        # Set up temporary file path for LCA model caching (for better performance within the same session)
+        config_dir = Path(self.configuration_file).resolve().parent
+        tmp_dir = config_dir / "tmp"
+        tmp_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
+        lca_tmp_file_path = tmp_dir / "lca_tmp.pkl"
+
+        # The user can specify to load the LCA model from a temporary file, e.g. if already compiled in the same session
+        if lca_config.get("lca_model_data_file") == '#tmp':
+            with open(lca_tmp_file_path, "rb") as f:
+                lca_instance = dill.load(f)
+            print("Loaded LCA model from temporary file (precompiled from previous run in current session).")
+            self.models.update(
+                {"life_cycle_assessment": lca_instance}
+            )
+            return
+
+        # Otherwise, read the LCA model file path from config
         lca_model_file_path = self._resolve_config_path(
             "models", "life_cycle_assessment", "lca_model_data_file",
             default_filename="../lca_data/default_lca_model.json"
         )
-
         if lca_model_file_path and lca_model_file_path.exists():
-            if lca_model_file_path.suffix.lower() not in [".json", ".yaml", ".yml"]:
+            # If json file, use the default LCA model class
+            if lca_model_file_path.suffix.lower() == ".json":
+                lca_instance = LifeCycleAssessmentDefault(
+                        name="life_cycle_assessment",
+                        json_file=str(lca_model_file_path),
+                        split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                    )
+            # If yaml file, use the custom LCA model class
+            elif lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
+                if LCA_PACKAGES_INSTALLED is False:
+                    raise ImportError(
+                        "To use a custom LCA model, please install the optional dependencies: "
+                        "pip install --upgrade aeromaps[lca]"
+                    )
+                lca_instance = LifeCycleAssessmentCustom(
+                    name="life_cycle_assessment",
+                    configuration_file=lca_model_file_path,
+                    split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                )
+            else:
                 raise ValueError(
                     "LCA model file must be either a .json (default LCA model) or .yaml/.yml (custom LCA model) file.")
-            if lca_model_file_path.suffix.lower() == ".json":
-                # If default LCA model, use the default LCA model class
-                # TODO: add support for default LCA model when merged branch lca-precompiled
-                return
-                # self.models.update(
-                #     {"lca_model": DefaultLCAModel(
-                #         name="lca_model",
-                #         lca_model_file=str(lca_model_file_path),
-                #         split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                #     )}
-                # )
-            if lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
-                # If custom LCA model, use the custom LCA model class
-                if LCA_PACKAGES_INSTALLED:
-                    self.models.update(
-                        {"life_cycle_assessment": LifeCycleAssessment(
-                            name="life_cycle_assessment",
-                            configuration_file=lca_model_file_path,
-                            split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                        )}
-                    )
-                else:
-                    logging.warning(
-                        "LCA packages are not installed. Please install 'aeromaps[lca]' extra to use custom LCA models."
-                        "or use the default LCA model with .json file."
-                    )
+
+            # Update the models dictionary
+            self.models.update(
+                {"life_cycle_assessment": lca_instance}
+            )
+
+            # Store the LCA model instance in a temporary file for faster loading in the same session
+            with open(lca_tmp_file_path, "wb") as f:
+                dill.dump(lca_instance, f)
 
     def _convert_custom_data_types(self, data):
         """Convert custom YAML data types and register interpolators.
