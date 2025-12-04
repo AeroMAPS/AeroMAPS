@@ -16,5 +16,5 @@ poetry install -E lca
 
 ## Release process
 
-The release process adopted is similar to [the one used on FAST-OAD](https://github.com/fast-aircraft-design/FAST-OAD/wiki/Release-process).
+The release process adopted is similar to [that used for FAST-OAD](https://github.com/fast-aircraft-design/FAST-OAD/wiki/Release-process).
 Note that you also need to change the version name in the pyproject.toml file in the release branch.

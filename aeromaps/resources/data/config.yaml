@@ -37,3 +37,6 @@ models:
     - models_production_cost
     - models_abatements_cost
 
+  # customs:  # Custom models loaded from external Python files
+  #   my_custom_model: "./path/to/my_model.py::MyCustomModelClass"
+  #   another_model: "./models/another.py"  # Class name inferred from model name (AnotherModel)

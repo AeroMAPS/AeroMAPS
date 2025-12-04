@@ -209,10 +209,12 @@ class AeroMAPSProcess(object):
             self.setup_optimisation()
 
     def _load_models_from_config(self):
-        """Load models from the configuration file's standards list.
+        """Load models from the configuration file's standards and customs lists.
 
         This method reads the `models.standards` list from the configuration
         and retrieves corresponding model dictionaries from the aeromaps.core.models module.
+        It also reads the `models.customs` dictionary to dynamically load custom model
+        classes from user-specified Python files.
 
         Returns
         -------
@@ -241,7 +243,94 @@ class AeroMAPSProcess(object):
                     f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
                 )
         
+        # Load custom models from config if specified
+        customs = self._get_user_config_value("models", "customs", default=None)
+        if customs is not None:
+            custom_models = self._load_custom_models_from_config(customs)
+            models.update(custom_models)
+        
         return models
+
+    def _load_custom_models_from_config(self, customs: dict) -> dict:
+        """Load custom model classes from user-specified paths.
+
+        This method dynamically imports and instantiates custom model classes
+        specified in the configuration file.
+
+        Parameters
+        ----------
+        customs
+            Dictionary mapping model names to their paths in the format:
+            "path/to/module.py::ClassName" or just "path/to/module.py"
+            (in which case the class name is inferred from the model name).
+
+        Returns
+        -------
+        dict
+            Dictionary of instantiated custom models.
+
+        Raises
+        ------
+        ValueError
+            If the path format is invalid or the class cannot be found.
+        ImportError
+            If the module cannot be imported.
+        """
+        import importlib.util
+        
+        custom_models = {}
+        
+        for model_name, path_spec in customs.items():
+            # Parse the path specification
+            if "::" in path_spec:
+                module_path, class_name = path_spec.rsplit("::", 1)
+            else:
+                module_path = path_spec
+                # Convert model_name to CamelCase for class name
+                class_name = "".join(word.capitalize() for word in model_name.split("_"))
+            
+            # Resolve the module path relative to the config file directory
+            if not os.path.isabs(module_path):
+                module_path = os.path.normpath(
+                    os.path.join(self._config_base_dir, module_path)
+                )
+            
+            if not os.path.exists(module_path):
+                raise ValueError(
+                    f"Custom model file not found: '{module_path}' "
+                    f"(model: {model_name})"
+                )
+            
+            # Dynamically import the module
+            spec = importlib.util.spec_from_file_location(model_name, module_path)
+            if spec is None or spec.loader is None:
+                raise ImportError(
+                    f"Cannot load module from '{module_path}' "
+                    f"(model: {model_name})"
+                )
+            
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            # Get the class from the module
+            if not hasattr(module, class_name):
+                available_classes = [
+                    name for name in dir(module) 
+                    if not name.startswith("_") and isinstance(getattr(module, name), type)
+                ]
+                raise ValueError(
+                    f"Class '{class_name}' not found in '{module_path}'. "
+                    f"Available classes: {available_classes}"
+                )
+            
+            model_class = getattr(module, class_name)
+            
+            # Instantiate the model
+            custom_models[model_name] = model_class(name=model_name)
+            
+            logging.info(f"Loaded custom model '{model_name}' from '{module_path}'")
+        
+        return custom_models
 
     def common_setup(self):
         """Perform common setup steps independent of analysis type.
