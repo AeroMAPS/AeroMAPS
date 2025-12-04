@@ -59,11 +59,11 @@ class Main:
     @staticmethod
     def _notebooks(args=None):
         """
-        Creates an aeromaps_notebooks/ folder with pre-configured Jupyter notebooks tutorials.
+        Creates notebooks/ and resources/ folders with pre-configured Jupyter notebooks tutorials and associated resources.
         """
 
         src_dir = files("aeromaps") / "notebooks" / "tutorials"
-        dest_dir = Path.cwd() / "aeromaps_notebooks"
+        dest_dir = Path.cwd() / "notebooks"
         dest_dir.mkdir(exist_ok=True)
 
         for item in src_dir.iterdir():
@@ -74,6 +74,23 @@ class Main:
                 shutil.copy(item, target)
 
         print(f"Tutorial notebooks added in: {dest_dir}")
+
+        src_dir = files("aeromaps") / "resources"
+        dest_dir = Path.cwd() / "resources"
+        dest_dir.mkdir(exist_ok=True)
+
+        IGNORED = {"climate_data", "cost_data", "energy_data"}
+
+        for item in src_dir.iterdir():
+            if item.name in IGNORED:
+                continue
+            target = dest_dir / item.name
+            if item.is_dir():
+                shutil.copytree(item, target, dirs_exist_ok=True)
+            else:
+                shutil.copy(item, target)
+
+        print(f"Resources added in: {dest_dir}")
 
     def run(self):
         subparsers = self.parser.add_subparsers(title="sub-commands")
