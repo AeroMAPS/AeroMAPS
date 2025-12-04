@@ -7,6 +7,14 @@ from aeromaps.models.base import (
 
 
 class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
+    """Simple model for calculating distance per flyer.
+
+    Parameters
+    ----------
+    name
+        Name of the model instance ('mean_distance_per_inhabitant_flyer' by default).
+    """
+    
     def __init__(self, name="mean_distance_per_inhabitant_flyer", *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -18,7 +26,29 @@ class MeanDistancePerInhabitantFlyer(AeroMAPSModel):
         inhabitant_flyer_share_reference_years: list,
         inhabitant_flyer_share_reference_years_values: list,
     ) -> Tuple[pd.Series, pd.Series]:
-        """Mean distance per inhabitant reference calculation."""
+        """Mean distance per inhabitant reference calculation.
+        
+        Parameters
+        ----------
+        rpk
+            Revenue Passenger Kilometers [-].
+        world_inhabitant_number_reference_years
+            Reference years for the inhabitants [yr].
+        world_inhabitant_number_reference_years_values
+            Inhabitants for the reference years [-].
+        inhabitant_flyer_share_reference_years
+            Reference years for the share of flyers among the inhabitants [yr].
+        inhabitant_flyer_share_reference_years_values
+            Share of flyers among the inhabitants for the reference years [%].
+
+        Returns
+        -------
+        mean_distance_per_inhabitant
+            Mean distance per inhabitant [km].
+        mean_distance_per_flyer
+            Mean distance per flyer [km].
+        """
+        
         # Calculation of the mean distance per inhabitant
 
         world_inhabitant_number = aeromaps_interpolation_function(

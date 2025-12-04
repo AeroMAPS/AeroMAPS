@@ -122,13 +122,16 @@ class YAMLInterpolator(AeroMAPSModel):
             )
 
             # If first reference year is lower than prospection start year, we start interpolating before
-            # TODO @Planes ok for you?
+            # TODO: improve the condition for the warning?
             if reference_years[0] != prospection_start_year:
-                warnings.warn(
-                    f"\n[Interpolation Model: {model_name} Warning]\n"
-                    f"The first reference year ({reference_years[0]}) differs from the prospection start year ({prospection_start_year}).\n"
-                    f"Interpolation will begin at the first reference year."
-                )
+                if (model_name != 'fossil_kerosene_mean_co2_emission_factor_without_resource'
+                        and model_name != 'fossil_kerosene_mean_mfsp_without_resource'
+                ):
+                    warnings.warn(
+                        f"\n[Interpolation Model: {model_name} Warning]\n"
+                        f"The first reference year ({reference_years[0]}) differs from the prospection start year ({prospection_start_year}).\n"
+                        f"Interpolation will begin at the first reference year."
+                    )
                 prospection_start_year = reference_years[0]
 
                 # If the last reference year matches the end year, interpolate for all years
