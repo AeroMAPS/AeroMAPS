@@ -6,7 +6,7 @@ models:
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: "./resources_data.yaml"
-    processes_model_data_file: "../../../../resources/data/default_energy_carriers/processes_data.yaml"
+    processes_model_data_file: default
 
   standards:
     - models_optim_simple

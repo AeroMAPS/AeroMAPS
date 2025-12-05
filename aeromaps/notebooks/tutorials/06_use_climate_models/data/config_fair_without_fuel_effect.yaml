@@ -1,11 +1,11 @@
 models:
   climate:
-    climate_model_data_file: "../../../../resources/data/default_climate_models/climate_model_fair.yaml"
+    climate_model_data_file: default
 
   energy:
-    energy_carriers_model_data_file: "../../../../resources/data/default_energy_carriers/energy_carriers_data.yaml"
-    resources_model_data_file: "../../../../resources/data/default_energy_carriers/resources_data.yaml"
-    processes_model_data_file: "../../../../resources/data/default_energy_carriers/processes_data.yaml"
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
 
   standards:
     - models_traffic
