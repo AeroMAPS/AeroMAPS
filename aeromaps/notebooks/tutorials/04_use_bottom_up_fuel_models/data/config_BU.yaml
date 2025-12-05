@@ -1,0 +1,20 @@
+data:
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+models:
+  fleet:
+    fleet_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "./energy_carriers_data-full_BU.yaml"
+    resources_model_data_file: "./resources_data-full_BU.yaml"
+    processes_model_data_file: "./processes_data-full_BU.yaml"
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_energy_cost

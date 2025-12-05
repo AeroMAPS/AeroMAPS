@@ -233,54 +233,10 @@ def create_partitioning(file, path=""):
             / 100
         )
 
-    # TODO move historic and prospection start year out of custom input file
-
     historic_start_year_partitioned = world_data_dict["historic_start_year"]
     prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
 
-    # Generation of the JSON file
-    partitioned_inputs_dict = {
-        "rpk_init": rpk_init_partitioned,
-        "ask_init": ask_init_partitioned,
-        "rtk_init": rtk_init_partitioned,
-        "pax_init": pax_init_partitioned,
-        "freight_init": freight_init_partitioned,
-        "energy_consumption_init": energy_consumption_init_partitioned,
-        "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
-        "short_range_energy_share_2019": short_range_energy_share_2019_partitioned,
-        "medium_range_energy_share_2019": medium_range_energy_share_2019_partitioned,
-        "long_range_energy_share_2019": long_range_energy_share_2019_partitioned,
-        "freight_energy_share_2019": freight_energy_share_2019_partitioned,
-        "short_range_rpk_share_2019": short_range_rpk_share_2019_partitioned,
-        "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
-        "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
-        "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned,
-        "historic_start_year": historic_start_year_partitioned,
-        "prospection_start_year": prospection_start_year_partitioned,
-    }
-    partitioned_inputs_path = pth.join(path, "partitioned_inputs.json")
-    with open(partitioned_inputs_path, "w") as outfile:
-        json.dump(partitioned_inputs_dict, outfile)
-
-    # Create a CSV file for initialisation of vector inputs.
-    # TODO: not necessary without optim, check relevance of the process?
-    vector_inputs_df = pd.DataFrame(
-        {
-            "rpk_init": rpk_init_partitioned,
-            "ask_init": ask_init_partitioned,
-            "rtk_init": rtk_init_partitioned,
-            "pax_init": pax_init_partitioned,
-            "freight_init": freight_init_partitioned,
-            "energy_consumption_init": energy_consumption_init_partitioned,
-            "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
-        },
-        index=range(historic_start_year_partitioned, prospection_start_year_partitioned),
-    )
-
-    vector_inputs_path = pth.join(path, "vector_inputs_partitioned.csv")
-    vector_inputs_df.to_csv(vector_inputs_path, sep=";")
-
-    # Generation of a CSV file for using climate models
+    # Climate data computation
     climate_world_data_path = pth.join(
         climate_data.__path__[0], "temperature_historical_dataset.csv"
     )
@@ -293,39 +249,70 @@ def create_partitioning(file, path=""):
     climate_world_data_soot_emissions = climate_world_data[:, 4]
     climate_world_data_sulfur_emissions = climate_world_data[:, 5]
     climate_world_data_distance = climate_world_data[:, 6]
-    climate_partitioned_data_years = climate_world_data_years
+    
+    climate_partitioned_data_years = climate_world_data_years.tolist()
     climate_partitioned_data_co2_emissions = (
         climate_world_data_co2_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    )
+    ).tolist()
     climate_partitioned_data_nox_emissions = (
         climate_world_data_nox_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    )
+    ).tolist()
     climate_partitioned_data_h2o_emissions = (
         climate_world_data_h2o_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    )
+    ).tolist()
     climate_partitioned_data_soot_emissions = (
         climate_world_data_soot_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    )
+    ).tolist()
     climate_partitioned_data_sulfur_emissions = (
         climate_world_data_sulfur_emissions
         * share_energy_consumption_partitioned_vs_world_2019
         / 100
-    )
+    ).tolist()
     climate_partitioned_data_distance = (
         climate_world_data_distance * share_ask_partitioned_vs_world_2019 / 100
-    )
-    climate_partitioned_data_years_number = len(climate_partitioned_data_years)
-    partitioned_historical_climate_dataset = np.zeros((climate_partitioned_data_years_number, 7))
-    for k in range(0, climate_partitioned_data_years_number):
-        partitioned_historical_climate_dataset[k, 0] = climate_partitioned_data_years[k]
-        partitioned_historical_climate_dataset[k, 1] = climate_partitioned_data_co2_emissions[k]
-        partitioned_historical_climate_dataset[k, 2] = climate_partitioned_data_nox_emissions[k]
-        partitioned_historical_climate_dataset[k, 3] = climate_partitioned_data_h2o_emissions[k]
-        partitioned_historical_climate_dataset[k, 4] = climate_partitioned_data_soot_emissions[k]
-        partitioned_historical_climate_dataset[k, 5] = climate_partitioned_data_sulfur_emissions[k]
-        partitioned_historical_climate_dataset[k, 6] = climate_partitioned_data_distance[k]
-    climate_partitioned_data_path = pth.join(path, "partitioned_temperature_historical_dataset.csv")
-    np.savetxt(climate_partitioned_data_path, partitioned_historical_climate_dataset, delimiter=";")
+    ).tolist()
+
+    # Build years list for other_data (historic_start_year to prospection_start_year - 1)
+    other_data_years = list(range(historic_start_year_partitioned, prospection_start_year_partitioned))
+
+    # Generation of a single JSON file with all partitioned inputs
+    partitioning_updated_inputs_dict = {
+        # Float inputs
+        "other_float_data": {
+            "short_range_energy_share_2019": short_range_energy_share_2019_partitioned,
+            "medium_range_energy_share_2019": medium_range_energy_share_2019_partitioned,
+            "long_range_energy_share_2019": long_range_energy_share_2019_partitioned,
+            "freight_energy_share_2019": freight_energy_share_2019_partitioned,
+            "short_range_rpk_share_2019": short_range_rpk_share_2019_partitioned,
+            "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
+            "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
+            "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned
+        },
+        # Other data (lists indexed by historic_start_year to prospection_start_year - 1)
+        "other_vector_data": {
+            "years": other_data_years,
+            "rpk_init": rpk_init_partitioned,
+            "ask_init": ask_init_partitioned,
+            "rtk_init": rtk_init_partitioned,
+            "pax_init": pax_init_partitioned,
+            "freight_init": freight_init_partitioned,
+            "energy_consumption_init": energy_consumption_init_partitioned,
+            "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
+        },
+        # Climate data (lists indexed by climate_historic_start_year to prospection_start_year - 1)
+        "climate_data": {
+            "years": climate_partitioned_data_years,
+            "co2_emissions": climate_partitioned_data_co2_emissions,
+            "nox_emissions": climate_partitioned_data_nox_emissions,
+            "h2o_emissions": climate_partitioned_data_h2o_emissions,
+            "soot_emissions": climate_partitioned_data_soot_emissions,
+            "sulfur_emissions": climate_partitioned_data_sulfur_emissions,
+            "distance": climate_partitioned_data_distance,
+        },
+    }
+    partitioning_updated_inputs_path = pth.join(path, "partitioning_updated_inputs.json")
+    with open(partitioning_updated_inputs_path, "w") as outfile:
+        json.dump(partitioning_updated_inputs_dict, outfile, indent=4)
 
     return
 

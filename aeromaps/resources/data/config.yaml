@@ -2,15 +2,14 @@ data:
   inputs:
     csv_data_information_file: "./data_information.csv"
     json_inputs_file: "./parameters.json"
-    partitioning_other_data_file: "./vector_inputs.csv"
-    partitioning_climate_data_file: "../climate_data/temperature_historical_dataset.csv"
+    partitioning_data_file: "./partitioning_inputs.json"
   outputs:
     json_outputs_file: "./outputs.json"
     excel_outputs_file: "./data.xlsx"
 
 models:
   climate:
-    climate_model_data_file: "./default_climate_models/climate_model_gwpstar.yaml"
+    climate_model_data_file: "./default_climate_models/climate_model_fair.yaml"
 
   fleet:
     aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
@@ -37,3 +36,6 @@ models:
     - models_production_cost
     - models_abatements_cost
 
+  # customs:  # Custom models loaded from external Python files
+  #   my_custom_model: "./path/to/my_model.py::MyCustomModelClass"
+  #   another_model: "./models/another.py"  # Class name inferred from model name (AnotherModel)

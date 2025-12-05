@@ -1,0 +1,32 @@
+data:
+  inputs:
+    json_inputs_file: "../ltag_data_inputs/is1medium_inputs.json"
+    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
+  outputs:
+    json_outputs_file: "../ltag_data_outputs/is1medium_outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../ltag_data_inputs/is1_medium_energy_inputs.yaml"
+    resources_model_data_file: "../ltag_data_inputs/is1_resources_data.yaml"
+    processes_model_data_file: default
+    
+  life_cycle_assessment:
+    lca_model_data_file: "#tmp"  
+    # This special features (#tmp) enables to re-load the LCA model previously compiled within the same session (here, the one from is0medium) to save time.
+    # In fact, the LCA model is unchanged between the IS scenarios, only the inputs to the model are varying so there is no need to recompile it every time.
+    # Note that this is only valid within the same session, i.e. restarting the kernel will break this behaviour.
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down
+    - models_abatements_cost_simplified

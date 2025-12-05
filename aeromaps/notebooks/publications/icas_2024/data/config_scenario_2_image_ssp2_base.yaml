@@ -1,0 +1,32 @@
+data:
+  inputs:
+   json_inputs_file: "./inputs_scenario_2_image_ssp2_base.json"
+
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  fleet:
+    aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
+    fleet_model_data_file: "./fleet.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "./energy_carriers_data_scenario_2.yaml"
+    
+  life_cycle_assessment:
+    lca_model_data_file: "./custom_lca_model_image_ssp2_base.yaml"
+    split_by: 'phase'
+    
+  standards:
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_bottom_up
+    - models_production_cost

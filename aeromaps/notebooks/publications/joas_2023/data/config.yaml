@@ -4,7 +4,7 @@ data:
 
 models:
   climate:
-    climate_model_data_file: "../../../../resources/data/default_climate_models/climate_model_gwpstar.yaml"
+    climate_model_data_file: default
 
   fleet:
     aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"

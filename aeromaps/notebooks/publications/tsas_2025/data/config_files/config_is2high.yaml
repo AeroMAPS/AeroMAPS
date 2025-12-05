@@ -1,19 +1,18 @@
 data:
   inputs:
     json_inputs_file: "../ltag_data_inputs/is2high_inputs.json"
-    partitioning_other_data_file: "../partitioned_data/vector_inputs_partitioned.csv"
-    partitioning_climate_data_file: "../partitioned_data/partitioned_temperature_historical_dataset.csv"
+    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "../ltag_data_outputs/is2high_outputs.json"
 
 models:
   climate:
-    climate_model_data_file: "../../../../../resources/data/default_climate_models/climate_model_fair.yaml"
+    climate_model_data_file: default
 
   energy:
     energy_carriers_model_data_file: "../ltag_data_inputs/is2_high_energy_inputs.yaml"
     resources_model_data_file: "../ltag_data_inputs/is2_resources_data.yaml"
-    processes_model_data_file: "../../../../../resources/data/default_energy_carriers/processes_data.yaml"
+    processes_model_data_file: default
 
   standards:
     - models_traffic

@@ -34,11 +34,11 @@ jobs:
         shell: bash
         run: |
           echo "NOTEBOOKS<<EOF" >> $GITHUB_ENV
-          echo "aeromaps/notebooks/tutorials/run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
-          echo "aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/01_run_a_basic_calculation/examples_basic.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/05_use_fleet_models/examples_fleet.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/06_use_climate_models/examples_climate.ipynb" >> $GITHUB_ENV
+          echo "aeromaps/notebooks/tutorials/08_use_variable_demand/examples_elasticity.ipynb" >> $GITHUB_ENV
           echo "aeromaps/notebooks/publications/joas_2023/examples_joas_application.ipynb" >> $GITHUB_ENV
-          echo "aeromaps/notebooks/publications/macc/examples_macc_application.ipynb" >> $GITHUB_ENV
-          echo "aeromaps/notebooks/publications/tsas_2025/examples_tsas_application.ipynb" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Save current branch name

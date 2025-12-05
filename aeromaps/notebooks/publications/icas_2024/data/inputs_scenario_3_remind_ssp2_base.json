@@ -1,0 +1,17 @@
+{
+    "end_year": 2050,
+    "model": "remind",
+    "pathway": "SSP2_NPi",
+    "elec_solar_share": 1.0,
+    "load_factor_photovoltaic": 0.14,
+    "generic_biofuel_mass_consumption": 0.0,
+    "generic_biofuel_lhv": 44.0,
+    "generic_biofuel_emission_index_nox": 0.01514,
+    "generic_biofuel_emission_index_sulfur": 0.0,
+    "generic_biofuel_emission_index_soot": 6.0e-06,
+    "electrofuel_mass_consumption": 0.0,
+    "electrofuel_lhv": 44.0,
+    "electrofuel_emission_index_nox": 0.01514,
+    "electrofuel_emission_index_sulfur": 0.0,
+    "electrofuel_emission_index_soot": 6.0e-06
+}

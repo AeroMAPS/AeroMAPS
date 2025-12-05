@@ -1,0 +1,80 @@
+generic_biofuel:
+  # Metadata
+  name: "generic_biofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  compute_all_years: True
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.5, 0.5, 0.5, 0.5, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.0, 3.4, 3.9, 4.5, 5.2, 5.9, 6.8, 7.8, 8.9, 10.2, 11.6, 13.1, 14.8, 16.6, 18.5, 20.4, 22.4, 24.4, 26.3, 28.2, 30.0, 31.7, 33.2, 34.5, 35.7, 36.4, 36.9, 37.2, 37.4, 37.5, 37.4, 37.2, 36.9, 36.6, 36.2]
+        method: linear
+    # Technical:
+    technical:
+      lhv: 44
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070]
+        values: [0.0, 0.5, 0.5, 0.5, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.0, 3.4, 3.9, 4.5, 5.2, 5.9, 6.8, 7.8, 8.9, 9.7, 9.4, 9.1, 8.9, 8.7, 8.4, 8.2, 8.0, 7.7, 7.5, 7.3, 7.2, 7.0, 6.8, 6.6, 6.5, 6.3, 6.1, 5.9, 5.7, 5.5, 5.4, 5.2, 5.1, 4.9, 4.8]
+        method: linear
+    # Technical:
+    technical:
+      lhv: 44
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+    # Environmental:
+    environmental:
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+
+
+
