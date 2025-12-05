@@ -1,7 +1,7 @@
 {
     "end_year": 2050,
     "model": "image",
-    "pathway": "SSP2_Base",
+    "pathway": "SSP2_M",
     "elec_solar_share": 0.0,
     "load_factor_photovoltaic": 1.0,
     "generic_biofuel_mass_consumption": 0.0,

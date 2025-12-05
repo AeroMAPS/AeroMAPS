@@ -1,7 +1,7 @@
 {
     "end_year": 2050,
     "model": "remind",
-    "pathway": "SSP2_PkBudg1150",
+    "pathway": "SSP2_PkBudg1000",
     "elec_solar_share": 0.0,
     "load_factor_photovoltaic": 1.0,
     "generic_biofuel_mass_consumption": 0.0,
