@@ -363,14 +363,14 @@ model:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
                               loc: 'RER'
                               update:
-                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
+                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#WEU'
                                     new_value:
                                         hydrogen updated:
                                             custom_attributes:
                                               - attribute: 'phase'
                                                 value: 'production electrofuel electrolysis'
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
-                                            loc: 'EUR'
+                                            loc: 'WEU'
                                             add:
                                                 - amount: sum(market group for electricity*) * elec_solar_share
                                                   name: 'electricity production, photovoltaic, commercial'
@@ -402,7 +402,7 @@ model:
                                             name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
                                             loc: 'RER'
                                             update:
-                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
+                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#WEU'
                                                   new_value:
                                                       name: '#hydrogen updated'  # reference a previously defined activity
                                                 - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
