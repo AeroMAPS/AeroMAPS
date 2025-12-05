@@ -4,13 +4,13 @@ data:
 
 models:
   fleet:
-    aircraft_inventory_model_data_file: "../../../../resources/data/default_fleet/aircraft_inventory.yaml"
-    fleet_model_data_file: "../../../../resources/data/default_fleet/fleet.yaml"
+    aircraft_inventory_model_data_file: default
+    fleet_model_data_file: default
 
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: "./resources_data.yaml"
-    processes_model_data_file: "../../../../resources/data/default_energy_carriers/processes_data.yaml"
+    processes_model_data_file: default
 
   standards:
     - models_optim_complex
