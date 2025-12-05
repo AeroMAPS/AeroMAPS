@@ -38,6 +38,7 @@ aerocm = "0.1.1b0"
 matplotlib = "^3.7"
 ipympl = "^0.9.3"
 plotly = "^5.0.0"
+seaborn = "^0.13.2"
 
 # Graphical User Interface
 markdown = "^3.4.3"
@@ -56,6 +57,7 @@ voila = "^0.5.0"
 # Optional dependencies
 lca-modeller = {version = "*", python = ">=3.10, <3.12", optional = true}
 premise = {version = "2.3.3", python = ">=3.10, <3.12", optional = true}  # freeze premise version to ensure correct LCI names
+
 
 [tool.poetry.extras]
 lca = ["lca-modeller", "premise"]
