@@ -12,8 +12,6 @@ models:
 
   energy:
     energy_carriers_model_data_file: "../ltag_data_inputs/is3_medium_energy_inputs.yaml"
-    resources_model_data_file: "../ltag_data_inputs/resources_data.yaml"
-    processes_model_data_file: "../ltag_data_inputs/processes_data.yaml"
     
   life_cycle_assessment:
     lca_model_data_file: "../lca_data/default_model/default_lca_model.json"

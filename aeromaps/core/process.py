@@ -943,6 +943,14 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal resource metadata.
         """
+        self.energy_resources_data = {}
+
+        # Check if resources model data file is specified in config
+        resources_config = self._get_user_config_value(
+            "models", "energy", "resources_model_data_file", default=None)
+        if resources_config is None:
+            return
+
         resources_data_file_path = self._resolve_config_path(
             "models", "energy", "resources_model_data_file",
             default_filename="default_energy_carriers/resources_data.yaml"
@@ -974,6 +982,14 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal process metadata.
         """
+        self.energy_processes_data = {}
+
+        # Check if processes model data file is specified in config
+        processes_config = self._get_user_config_value(
+            "models", "energy", "processes_model_data_file", default=None)
+        if processes_config is None:
+            return
+
         processes_data_path = self._resolve_config_path(
             "models", "energy", "processes_model_data_file",
             default_filename="default_energy_carriers/processes_data.yaml"
@@ -1154,7 +1170,7 @@ class AeroMAPSProcess(object):
         if lca_config.get("lca_model_data_file") == '#tmp':
             with open(lca_tmp_file_path, "rb") as f:
                 lca_instance = dill.load(f)
-            print("Loaded LCA model from temporary file (precompiled from previous run in current session).")
+            logging.info("Loaded LCA model from temporary file (precompiled from latest run in current session).")
             self.models.update(
                 {"life_cycle_assessment": lca_instance}
             )
