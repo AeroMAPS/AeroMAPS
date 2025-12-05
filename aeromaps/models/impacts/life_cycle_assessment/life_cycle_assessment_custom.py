@@ -96,6 +96,8 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         # Get LCA model and LCIA methods
         if configuration_file is None:
             raise ValueError("Configuration file is missing.")
+
+        print("===== LCA Custom Model Initialization =====")
         _, model, methods = LCAProblemConfigurator(configuration_file).generate()
         self.model = model
         self.methods = methods
@@ -125,6 +127,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         print("Parametrizing LCIA impacts...", end=" ")
         self.lambdas = agb.lca._preMultiLCAAlgebric(self.model, self.methods, axis=self.axis)
         print("Done.")
+        print("===========================================")
 
         # --- Add LCA impact categories the outputs to the AeroMAPSModel ---
         self.axis_keys = getattr(self.lambdas[0], "axis_keys", None)
