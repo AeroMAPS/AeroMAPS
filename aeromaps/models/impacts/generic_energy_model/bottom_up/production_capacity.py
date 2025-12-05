@@ -7,7 +7,7 @@ Computes annual capacity additions required to follow an energy consumption traj
 
 import numpy as np
 import pandas as pd
-
+import warnings
 from aeromaps.models.base import AeroMAPSModel
 from aeromaps.utils.functions import _get_value_for_year
 
@@ -186,8 +186,8 @@ class BottomUpCapacity(AeroMAPSModel):
         # Warning for years where there is an excess of energy production
         if (energy_unused < 0).any():
             years_excess = energy_unused.index[energy_unused < 0].tolist()
-            print(
-                f"⚠️ Warning: excess {self.pathway_name} production in years: {years_excess}. Scaling down."
+            warnings.warn(
+                f"\n⚠️ Excess {self.pathway_name} production in years: {years_excess}. Scaling down."
             )
 
         # computing additions for processes
