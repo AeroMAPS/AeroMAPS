@@ -69,6 +69,6 @@
   "hydrogen_electrolysis_mass_consumption": 0.0,
   "hydrogen_electrolysis_emission_index_nox": 0.007,
   "model": "remind",
-  "pathway": "SSP2_Base",
+  "pathway": "SSP2_NPi",
   "elec_solar_share": 1.0
 }
