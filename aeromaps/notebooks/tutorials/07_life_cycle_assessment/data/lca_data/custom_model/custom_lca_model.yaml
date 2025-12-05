@@ -1,5 +1,5 @@
 # --- Project name ---
-project: aeromaps_tsas
+project: aeromaps_tsas  # <-- change this to your desired project name. You may reuse an existing project (here the one used in TSAS publication)
 reset_project: False  # <-- Set to true only if you want to clean the entire brightway/premise project 
 
 # --- Ecoinvent settings ---
@@ -16,22 +16,22 @@ ecoinvent:
 premise:
     scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2020
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2030
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2040
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2050
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2060
         - model: 'remind'
-          pathway: 'SSP2-Base'
+          pathway: 'SSP2-NPi'
           year: 2070
           
     update: 'all'  # update all sectors in ecoinvent (recommanded)
@@ -390,97 +390,97 @@ model:
                       value: 'e-fuel production'
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
-                loc: 'World'
+                loc: 'RER'
                 add:  # add exchanges to the selected ecoinvent/premise activity
                     - amount: sum(market group for electricity*) * elec_solar_share  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
                       #specific electricity mix:  # this activity can be modified (since background act is copied)
                       #    name: 'electricity production, photovoltaic, commercial'
-                      #    loc: 'FR' 
+                      #    loc: 'FR'
                       # Same as above but cannot be modified (update/add/delete)
                       name: 'electricity production, photovoltaic, commercial'
-                      loc: 'FR' 
+                      loc: 'FR'
                 update:  # update exchanges of the selected activity
                     - input_activity: 'market group for electricity*'  # you can use '*' wildcard in exchange name to get all acts containing this str
-                      new_value: 
+                      new_value:
                           # if only amount is provided, the amount of all input acts will be replaced.
                           amount: old_amount * (1 - elec_solar_share) # special symbol 'old_amount' references the previous amount of this exchange
-                          
-                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#World' # use '#' for specifying loc
+
+                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#RER' # use '#' for specifying loc
                       new_value:
                           # if only activity is provided, the previous amounts will be kept. This is the same as using amount: old_amount
                           # amount: old_amount  <-- unecessary here.
                           syngas updated:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
-                              loc: 'World'
+                              loc: 'RER'
                               update:
-                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
                                         hydrogen updated:
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
-                                            loc: 'World'
+                                            loc: 'EUR'
                                             add:
                                                 - amount: sum(market group for electricity*) * elec_solar_share
                                                   name: 'electricity production, photovoltaic, commercial'
-                                                  loc: 'FR' 
+                                                  loc: 'FR'
                                             update:
                                                 - input_activity: 'market group for electricity*'
                                                   new_value:
                                                       amount: old_amount * (1 - elec_solar_share)
-                                                                    
-                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#World'
+
+                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#RER'
                                     new_value:
                                         carbon monoxide updated:
                                             name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
-                                            loc: 'World'
+                                            loc: 'RER'
                                             update:
-                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                                   new_value:
                                                       name: '#hydrogen updated'  # reference a previously defined activity
-                                                - input_activity: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity#World'
+                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
                                                   new_value:
                                                       direct air capture updated:
-                                                          name: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity'
-                                                          loc: 'World'
+                                                          name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
+                                                          loc: 'RER'
                                                           add:
                                                               - amount: sum(market group for electricity*) * elec_solar_share
                                                                 name: 'electricity production, photovoltaic, commercial'
-                                                                loc: 'FR' 
+                                                                loc: 'FR'
                                                           update:
                                                               - input_activity: 'market group for electricity*'
                                                                 new_value:
-                                                                    amount: old_amount * (1 - elec_solar_share)  
-                                                        
-                
+                                                                    amount: old_amount * (1 - elec_solar_share)
+
+
         ### Hydrogen
         hydrogen:
             amount: hydrogen_electrolysis_mass_consumption
             unit: kilogram
-            
+
             #### Combustion processes
             combustion:
                 custom_attributes:
                         - attribute: 'phase'
                           value: 'non-CO2 hydrogen'
-                
+
                 NOx:
                     amount: hydrogen_electrolysis_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
-            
+
             #### Hydrogen production
             production:
                 custom_attributes:
                     - attribute: 'phase'
                       value: 'hydrogen production'
-                      
+
                 electrolysis:
                     name: '#hydrogen updated'  # conservative assumption: gaseous, no liquefaction for transportation
-            
-                        
 
-# --- Declare metadata for LCA parameters --- 
+
+
+# --- Declare metadata for LCA parameters ---
 # This is optional, e.g. to set default values if not provided by AeroMAPS or in json input file
 parameters_metadata:
     - parameter: 'generic_biofuel_mass_consumption'
@@ -489,7 +489,7 @@ parameters_metadata:
       default: 0.
     - parameter: 'hydrogen_electrolysis_mass_consumption'
       default: 0.
-                      
+
 
 # --- Select LCIA methods for assessment ---
 methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods() in a Python cell
@@ -524,25 +524,25 @@ custom_methods:
       source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
       # if provided, the source method is duplicated and updated with the cfs provided in the filepath (cf modification or addition).
       # otherwise, the lcia method is built from scratch.
-      
+
     # Endpoints including non-CO2 effects for climate change
     - name: "('Custom methods', 'total: ecosystem quality (with non-CO2)', 'ecosystem quality')"
       filepath: './data/lca_data/custom_model/lcia_nonCO2_ecosystem_quality.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
-      
+
     - name: "('Custom methods', 'total: human health (with non-CO2)', 'human health')"
       filepath: './data/lca_data/custom_model/lcia_nonCO2_human_health.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
-      
+
     # Midpoint contributions at endpoint level, including non-CO2 effects for climate change
     - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: freshwater ecosystems')"
       filepath: './data/lca_data/custom_model/lcia_nonCO2_freshwater_ecosystem_quality_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
-      
+
     - name: "('Custom methods', 'ecosystem quality (with non-CO2)', 'climate change: terrestrial ecosystems')"
       filepath: './data/lca_data/custom_model/lcia_nonCO2_terrestrial_ecosystem_quality_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
-      
+
     - name: "('Custom methods', 'human health (with non-CO2)', 'climate change: human health')"
       filepath: './data/lca_data/custom_model/lcia_nonCO2_human_health_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
