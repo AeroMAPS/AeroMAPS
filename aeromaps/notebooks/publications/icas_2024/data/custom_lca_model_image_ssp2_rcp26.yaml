@@ -340,7 +340,7 @@ model:
                 #      value: 'production electrofuel'
                       
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
-                loc: 'World'
+                loc: 'RER'
                 add:  # add exchanges
                     - amount: sum(market group for electricity*) * elec_solar_share  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
                       #specific electricity mix:  # this activity can be modified (since background act is copied)
@@ -355,22 +355,22 @@ model:
                           # if only amount is provided, the amount of all input acts will be replaced.
                           amount: old_amount * (1 - elec_solar_share) # special symbol 'old_amount' references the previous amount of this exchange
                           
-                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#World' # use '#' for specifying loc
+                    - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#RER' # use '#' for specifying loc
                       new_value:
                           # if only activity is provided, the previous amounts will be kept. This is the same as using amount: old_amount
                           # amount: old_amount  <-- unecessary here.
                           syngas updated:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
-                              loc: 'World'
+                              loc: 'RER'
                               update:
-                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
                                         hydrogen updated:
                                             custom_attributes:
                                               - attribute: 'phase'
                                                 value: 'production electrofuel electrolysis'
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
-                                            loc: 'World'
+                                            loc: 'EUR'
                                             add:
                                                 - amount: sum(market group for electricity*) * elec_solar_share
                                                   name: 'electricity production, photovoltaic, commercial'
@@ -388,31 +388,31 @@ model:
                                                   new_value:
                                                       amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                       
-                                                - input_activity:  'treatment of fuel cell balance of plant, 1MWe, PEM#RER'
+                                                - input_activity:  'treatment of electrolyzer balance of plant, 1MWe, PEM#RER'
                                                   new_value:
                                                       amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                       
-                                                - input_activity:  'treatment of fuel cell stack, 1MWe, PEM#RER'
+                                                - input_activity:  'treatment of electrolyzer stack, 1MWe, PEM#RER'
                                                   new_value:
                                                       amount: old_amount / (1 - elec_solar_share * (1 - load_factor_photovoltaic))
                                                                     
-                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#World'
+                                  - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#RER'
                                     new_value:
                                         carbon monoxide updated:
                                             name: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis'
-                                            loc: 'World'
+                                            loc: 'RER'
                                             update:
-                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                                - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                                   new_value:
                                                       name: '#hydrogen updated'  # reference a previously defined activity
-                                                - input_activity: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity#World'
+                                                - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
                                                   new_value:
                                                       direct air capture updated:
                                                           custom_attributes:
                                                               - attribute: 'phase'
                                                                 value: 'production electrofuel DAC'
-                                                          name: 'carbon dioxide, captured from atmosphere, with a solvent-based direct air capture system, 1MtCO2, with heat pump heat, and grid electricity'
-                                                          loc: 'World'
+                                                          name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
+                                                          loc: 'RER'
                                                           add:
                                                               - amount: sum(market group for electricity*) * elec_solar_share
                                                                 name: 'electricity production, photovoltaic, commercial'

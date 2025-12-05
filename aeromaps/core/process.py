@@ -1123,7 +1123,7 @@ class AeroMAPSProcess(object):
             self.models.update(
                 {"climate_model": ClimateModel(
                     name="climate_model",
-                    climate_model=climate_model_data.get("climate_model", "gwpstar"),
+                    climate_model=climate_model_data.get("climate_model", "GWP*"),
                     species_settings=climate_model_data.get("species_settings", {}),
                     model_settings=climate_model_data.get("model_settings", {})
                 )}

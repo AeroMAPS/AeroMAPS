@@ -55,9 +55,10 @@ voila = "^0.5.0"
 
 # Optional dependencies
 lca-modeller = {version = "*", python = ">=3.10, <3.12", optional = true}
+premise = {version = "2.3.3", python = ">=3.10, <3.12", optional = true}  # freeze premise version to ensure correct LCI names
 
 [tool.poetry.extras]
-lca = ["lca-modeller"]
+lca = ["lca-modeller", "premise"]
 
 
 [tool.poetry.group.test.dependencies]
