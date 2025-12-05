@@ -77,6 +77,8 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
 
         # Get methods names, axis keys, and parameters names
         self.axis = split_by if split_by else TOTAL_AXIS_KEY
+
+        print("===== LCA Default Model Import =====")
         self.model = Model.from_file(json_file, axis=self.axis, progress_bar=True)
         self.methods = [ast.literal_eval(s) for s in self.model.impacts.keys()]
         self.axis_keys = None
@@ -84,6 +86,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         if isinstance(expr, dict):
             self.axis_keys = list(expr.keys())
         self.params_names = list(self.model.params.keys())
+        print("====================================")
 
         # Initialize empty xarray to store results after compute
         self.xarray_lca = xr.DataArray()

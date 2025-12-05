@@ -12,8 +12,6 @@ models:
 
   energy:
     energy_carriers_model_data_file: "../ltag_data_inputs/is0_energy_inputs.yaml"
-    resources_model_data_file: default
-    processes_model_data_file: default
     
   life_cycle_assessment:
     lca_model_data_file: "../lca_data/custom_model/custom_lca_model.yaml"
@@ -28,4 +26,3 @@ models:
     - models_sustainability
     - models_energy_cost
     - models_operation_cost_top_down
-    - models_abatements_cost_simplified
