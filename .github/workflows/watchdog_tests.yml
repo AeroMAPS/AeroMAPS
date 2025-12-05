@@ -45,11 +45,10 @@ jobs:
         run: |
           # Find all notebooks to test, excluding specified paths
           notebooks=$(find aeromaps -name "*.ipynb" \
-            ! -path "aeromaps/notebooks/publications/icas_2024/examples_life_cycle_assessment-icas.ipynb" \
-            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_life_cycle_assessment-tsas.ipynb" \
-            ! -path "aeromaps/notebooks/publications/tsas_2025/examples_tsas_optim.ipynb" \
-            ! -path "aeromaps/notebooks/publications/optimisation/*" \
-            ! -path "aeromaps/notebooks/private/*")
+            ! -path "aeromaps/notebooks/publications/*" \
+            ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/life_cycle_assessment_custom.ipynb" \
+            ! -path "aeromaps/notebooks/tutorials/07_life_cycle_assessment/utils/export_lca_model.ipynb" \
+            ! -path "aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim_with_elasticity.ipynb")
 
           # Run pytest with nbmake on all notebooks in parallel
           poetry run pytest --no-cov --nbmake --nbmake-timeout=5000 -p no:python -n=auto $notebooks -s
