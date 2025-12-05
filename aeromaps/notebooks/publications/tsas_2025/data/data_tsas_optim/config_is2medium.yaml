@@ -1,8 +1,7 @@
 data:
   inputs:
     json_inputs_file: "./is2medium_inputs.json"
-    partitioning_other_data_file: "./vector_inputs_partitioned.csv"
-    partitioning_climate_data_file: "./partitioned_temperature_historical_dataset.csv"
+    partitioning_data_file: "./partitioning_inputs.json"
   outputs:
     json_outputs_file: "./is2medium_outputs.json"
 

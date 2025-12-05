@@ -1393,38 +1393,92 @@ class AeroMAPSProcess(object):
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
-        """Load and register vector input time series.
+        """Load and register vector input time series from a JSON file.
 
-        This method reads the vector inputs CSV file, converts each
-        column into a pandas Series indexed by year, and attaches them as
+        This method reads the vector inputs JSON file, converts each
+        key into a pandas Series indexed by years, and attaches them as 
         attributes to the parameters object.
+        
+        The JSON file should contain a dictionary with:
+        - "other_float_data": scalar values (stored as-is)
+        - "other_vector_data": vector inputs indexed by years
+        - "climate_data": handled separately by _initialize_climate_historical_data
+        
+        Example JSON format:
+        {
+            "other_float_data": {
+                "short_range_energy_share_2019": 10.5,
+                ...
+            },
+            "other_vector_data": {
+                "years": [2000, 2001, ..., 2019],
+                "rpk_init": [value_2000, value_2001, ..., value_2019],
+                ...
+            },
+            "climate_data": {
+                "years": [...],
+                "co2_emissions": [...],
+                ...
+            }
+        }
         """
         vector_inputs_data_file_path = self._resolve_config_path(
-            "data", "inputs", "partitioning_other_data_file",
-            default_filename="vector_inputs.csv"
+            "data", "inputs", "partitioning_data_file",
+            default_filename="partitioning_data.json"
         )
+        
+        if vector_inputs_data_file_path is None:
+            return
 
-        # Read .csv with first line column names
-        vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
-        # Generate pd.Series for each column with index the year stored in first column
-        index = vector_inputs_df.iloc[:, 0].values
-        for column in vector_inputs_df.columns[1:]:
-            values = vector_inputs_df[column].values
-
-            # TODO remove this: experiment to see if it works
-            # TODO remove this TODO !
-            # if column == "airfare_per_rpk":
-            #     setattr(self.parameters, column, np.array(values))
-            #
-            # else:
-            setattr(self.parameters, column, pd.Series(values, index=index))
+        # Read JSON file (utf-8-sig handles BOM if present)
+        with open(vector_inputs_data_file_path, "r", encoding="utf-8-sig") as f:
+            vector_inputs_data = load(f)
+        
+        # Store climate_data section for later use by _initialize_climate_historical_data
+        if "climate_data" in vector_inputs_data:
+            self._partitioned_climate_data = vector_inputs_data.pop("climate_data")
+        
+        # Process other_float_data section (scalar inputs)
+        if "other_float_data" in vector_inputs_data:
+            other_float_data = vector_inputs_data.pop("other_float_data")
+            for param_name, value in other_float_data.items():
+                setattr(self.parameters, param_name, value)
+        
+        # Process other_vector_data section (vector inputs with years index)
+        if "other_vector_data" in vector_inputs_data:
+            other_vector_data = vector_inputs_data.pop("other_vector_data")
+            years_index = other_vector_data.pop("years", None)
+            
+            for param_name, value in other_vector_data.items():
+                if isinstance(value, list) and years_index is not None:
+                    setattr(self.parameters, param_name, pd.Series(value, index=years_index))
+                else:
+                    setattr(self.parameters, param_name, value)
 
     def _initialize_climate_historical_data(self):
         """Load the historical climate dataset.
 
-        This method reads the configured climate data CSV file and stores
-        its numeric values as a NumPy array for climate-related models.
+        This method reads the configured climate data from either:
+        - A "climate_data" section in the partitioning JSON file (if available)
+        - A CSV file specified by partitioning_climate_data_file config key
+        
+        The data is stored as a NumPy array for climate-related models.
         """
+        # Check if climate data was loaded from the partitioning JSON file
+        if hasattr(self, "_partitioned_climate_data") and self._partitioned_climate_data is not None:
+            climate_data = self._partitioned_climate_data
+            self.climate_historical_data = np.column_stack([
+                climate_data["years"],
+                climate_data["co2_emissions"],
+                climate_data["nox_emissions"],
+                climate_data["h2o_emissions"],
+                climate_data["soot_emissions"],
+                climate_data["sulfur_emissions"],
+                climate_data["distance"],
+            ])
+            return
+        
+        # Fallback to CSV file
         climate_historical_data_file_path = self._resolve_config_path(
             "data", "inputs", "partitioning_climate_data_file",
             default_filename="../climate_data/temperature_historical_dataset.csv"

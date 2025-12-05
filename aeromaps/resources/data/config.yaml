@@ -2,8 +2,7 @@ data:
   inputs:
     csv_data_information_file: "./data_information.csv"
     json_inputs_file: "./parameters.json"
-    partitioning_other_data_file: "./vector_inputs.csv"
-    partitioning_climate_data_file: "../climate_data/temperature_historical_dataset.csv"
+    partitioning_data_file: "./partitioning_inputs.json"
   outputs:
     json_outputs_file: "./outputs.json"
     excel_outputs_file: "./data.xlsx"
