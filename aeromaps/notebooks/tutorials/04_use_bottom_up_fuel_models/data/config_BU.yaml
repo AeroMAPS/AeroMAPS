@@ -4,7 +4,7 @@ data:
 
 models:
   fleet:
-    fleet_model_data_file: "../../../../resources/data/default_fleet/fleet_no_new_aircraft.yaml"
+    fleet_model_data_file: default
 
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data-full_BU.yaml"

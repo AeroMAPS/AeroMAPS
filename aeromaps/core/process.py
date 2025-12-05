@@ -700,7 +700,8 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self.config = read_yaml_file(DEFAULT_CONFIG_PATH)
+        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
+        self.config = deepcopy(self._default_config)
         
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
@@ -787,6 +788,32 @@ class AeroMAPSProcess(object):
                 return default
         return value
 
+    def _get_default_config_value(self, *keys, default=None):
+        """Get a value from the default (package) configuration dictionary.
+
+        This checks only the default configuration from the package,
+        not the merged config with user overrides.
+
+        Parameters
+        ----------
+        *keys
+            Sequence of keys to navigate the nested config.
+        default
+            Default value if the key path doesn't exist.
+
+        Returns
+        -------
+        value
+            The default configuration value or the default.
+        """
+        value = self._default_config
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return default
+        return value
+
     def _resolve_config_file_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
         """Resolve a file path from nested config keys.
 
@@ -827,13 +854,27 @@ class AeroMAPSProcess(object):
         -------
         path
             Resolved absolute path.
+            
+        Notes
+        -----
+        If the user specifies `"default"` as the value, the path will be resolved
+        from the default configuration file (relative to the package's resources/data directory).
+        This is useful when the package is installed via pip and relative paths would not work.
         """
         resolved_path = None
         
         # First check if user explicitly set this in their config
         user_value = self._get_user_config_value(*keys)
         if user_value is not None and isinstance(user_value, str):
-            if os.path.isabs(user_value):
+            if user_value.lower() == "default":
+                # User wants to use the default value from the package's config
+                default_value = self._get_default_config_value(*keys)
+                if default_value is not None and isinstance(default_value, str):
+                    if os.path.isabs(default_value):
+                        resolved_path = Path(default_value)
+                    else:
+                        resolved_path = Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)))
+            elif os.path.isabs(user_value):
                 resolved_path = Path(user_value)
             else:
                 resolved_path = Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
