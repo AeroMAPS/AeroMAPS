@@ -1115,7 +1115,7 @@ class AeroMAPSProcess(object):
             
         climate_model_file_path = self._resolve_config_path(
             "models", "climate", "climate_model_data_file",
-            default_filename="../climate_data/climate_model_gwpstar.yaml"
+            default_filename="../climate_data/climate_model_fair.yaml"
         )
 
         if climate_model_file_path and climate_model_file_path.exists():
@@ -1123,7 +1123,7 @@ class AeroMAPSProcess(object):
             self.models.update(
                 {"climate_model": ClimateModel(
                     name="climate_model",
-                    climate_model=climate_model_data.get("climate_model", "GWP*"),
+                    climate_model=climate_model_data.get("climate_model", "FaIR"),
                     species_settings=climate_model_data.get("species_settings", {}),
                     model_settings=climate_model_data.get("model_settings", {})
                 )}

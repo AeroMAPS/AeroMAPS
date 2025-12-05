@@ -1,6 +1,6 @@
 models:
   climate:
-    climate_model_data_file: default
+    climate_model_data_file: "./climate_model_ipcc.yaml"
 
   energy:
     energy_carriers_model_data_file: default

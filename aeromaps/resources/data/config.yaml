@@ -10,7 +10,7 @@ data:
 
 models:
   climate:
-    climate_model_data_file: "./default_climate_models/climate_model_gwpstar.yaml"
+    climate_model_data_file: "./default_climate_models/climate_model_fair.yaml"
 
   fleet:
     aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
