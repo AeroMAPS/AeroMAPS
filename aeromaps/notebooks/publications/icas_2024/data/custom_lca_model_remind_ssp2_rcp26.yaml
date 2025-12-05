@@ -363,14 +363,14 @@ model:
                               name: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis'
                               loc: 'RER'
                               update:
-                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#World'
+                                  - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
                                         hydrogen updated:
                                             custom_attributes:
                                               - attribute: 'phase'
                                                 value: 'production electrofuel electrolysis'
                                             name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
-                                            loc: 'World'
+                                            loc: 'EUR'
                                             add:
                                                 - amount: sum(market group for electricity*) * elec_solar_share
                                                   name: 'electricity production, photovoltaic, commercial'
