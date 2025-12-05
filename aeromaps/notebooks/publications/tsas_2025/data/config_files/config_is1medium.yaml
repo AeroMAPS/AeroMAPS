@@ -1,8 +1,7 @@
 data:
   inputs:
     json_inputs_file: "../ltag_data_inputs/is1medium_inputs.json"
-    partitioning_other_data_file: "../partitioned_data/vector_inputs_partitioned.csv"
-    partitioning_climate_data_file: "../partitioned_data/partitioned_temperature_historical_dataset.csv"
+    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "../ltag_data_outputs/is1medium_outputs.json"
 
