@@ -272,8 +272,8 @@ class BottomUpCost(AeroMAPSModel):
                 and self.compute_abatement_cost
                 and not self.compute_all_years
             ):
-                print(
-                    f"⚠️ Warning:  for {self.pathway_name}, no plants commissioned in {year}. Unable to compute "
+                warnings.warn(
+                    f"\n⚠️ For {self.pathway_name}, no plants commissioned in {year}. Unable to compute "
                     f"CAC: compute_all_years = False. Set it true to avoid NaN values in the MACC for this year."
                 )
             if needed_capacity > 0 or self.compute_all_years:

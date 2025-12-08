@@ -1,0 +1,20 @@
+data:
+  inputs:
+    json_inputs_file: "./parameters_elasticity.json"
+  outputs:
+    json_outputs_file: "./outputs_elasticity.json"
+
+models:
+  energy:
+    energy_carriers_model_data_file: default
+    resources_model_data_file: default
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic_cost_feedback
+    - models_efficiency_top_down
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_energy_cost
+    - models_operation_cost_top_down_feedback

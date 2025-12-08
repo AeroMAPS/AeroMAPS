@@ -11,6 +11,7 @@ import os
 from json import load, dump
 from pathlib import Path
 from typing import Union
+import dill
 
 # Third-party imports
 import numpy as np
@@ -63,11 +64,11 @@ from aeromaps.models.impacts.climate.climate import ClimateModel
 # LCA models imports
 # Check if LCA packages for custom model are installed
 try:
-    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment import LifeCycleAssessment
+    from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom import LifeCycleAssessmentCustom
     LCA_PACKAGES_INSTALLED = True
 except ImportError:
     LCA_PACKAGES_INSTALLED = False
-# TODO: add default LCA model
+from aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default import LifeCycleAssessmentDefault
 
 # Settings
 pd.options.display.max_rows = 150
@@ -208,10 +209,12 @@ class AeroMAPSProcess(object):
             self.setup_optimisation()
 
     def _load_models_from_config(self):
-        """Load models from the configuration file's standards list.
+        """Load models from the configuration file's standards and customs lists.
 
         This method reads the `models.standards` list from the configuration
         and retrieves corresponding model dictionaries from the aeromaps.core.models module.
+        It also reads the `models.customs` dictionary to dynamically load custom model
+        classes from user-specified Python files.
 
         Returns
         -------
@@ -240,7 +243,94 @@ class AeroMAPSProcess(object):
                     f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
                 )
         
+        # Load custom models from config if specified
+        customs = self._get_user_config_value("models", "customs", default=None)
+        if customs is not None:
+            custom_models = self._load_custom_models_from_config(customs)
+            models.update(custom_models)
+        
         return models
+
+    def _load_custom_models_from_config(self, customs: dict) -> dict:
+        """Load custom model classes from user-specified paths.
+
+        This method dynamically imports and instantiates custom model classes
+        specified in the configuration file.
+
+        Parameters
+        ----------
+        customs
+            Dictionary mapping model names to their paths in the format:
+            "path/to/module.py::ClassName" or just "path/to/module.py"
+            (in which case the class name is inferred from the model name).
+
+        Returns
+        -------
+        dict
+            Dictionary of instantiated custom models.
+
+        Raises
+        ------
+        ValueError
+            If the path format is invalid or the class cannot be found.
+        ImportError
+            If the module cannot be imported.
+        """
+        import importlib.util
+        
+        custom_models = {}
+        
+        for model_name, path_spec in customs.items():
+            # Parse the path specification
+            if "::" in path_spec:
+                module_path, class_name = path_spec.rsplit("::", 1)
+            else:
+                module_path = path_spec
+                # Convert model_name to CamelCase for class name
+                class_name = "".join(word.capitalize() for word in model_name.split("_"))
+            
+            # Resolve the module path relative to the config file directory
+            if not os.path.isabs(module_path):
+                module_path = os.path.normpath(
+                    os.path.join(self._config_base_dir, module_path)
+                )
+            
+            if not os.path.exists(module_path):
+                raise ValueError(
+                    f"Custom model file not found: '{module_path}' "
+                    f"(model: {model_name})"
+                )
+            
+            # Dynamically import the module
+            spec = importlib.util.spec_from_file_location(model_name, module_path)
+            if spec is None or spec.loader is None:
+                raise ImportError(
+                    f"Cannot load module from '{module_path}' "
+                    f"(model: {model_name})"
+                )
+            
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            # Get the class from the module
+            if not hasattr(module, class_name):
+                available_classes = [
+                    name for name in dir(module) 
+                    if not name.startswith("_") and isinstance(getattr(module, name), type)
+                ]
+                raise ValueError(
+                    f"Class '{class_name}' not found in '{module_path}'. "
+                    f"Available classes: {available_classes}"
+                )
+            
+            model_class = getattr(module, class_name)
+            
+            # Instantiate the model
+            custom_models[model_name] = model_class(name=model_name)
+            
+            logging.info(f"Loaded custom model '{model_name}' from '{module_path}'")
+        
+        return custom_models
 
     def common_setup(self):
         """Perform common setup steps independent of analysis type.
@@ -610,7 +700,8 @@ class AeroMAPSProcess(object):
         the user-specified configuration file if provided.
         """
         # Load the default configuration file
-        self.config = read_yaml_file(DEFAULT_CONFIG_PATH)
+        self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
+        self.config = deepcopy(self._default_config)
         
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
@@ -697,6 +788,32 @@ class AeroMAPSProcess(object):
                 return default
         return value
 
+    def _get_default_config_value(self, *keys, default=None):
+        """Get a value from the default (package) configuration dictionary.
+
+        This checks only the default configuration from the package,
+        not the merged config with user overrides.
+
+        Parameters
+        ----------
+        *keys
+            Sequence of keys to navigate the nested config.
+        default
+            Default value if the key path doesn't exist.
+
+        Returns
+        -------
+        value
+            The default configuration value or the default.
+        """
+        value = self._default_config
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return default
+        return value
+
     def _resolve_config_file_path(self, *keys, default_filename: str = None) -> Union[Path, None]:
         """Resolve a file path from nested config keys.
 
@@ -737,13 +854,27 @@ class AeroMAPSProcess(object):
         -------
         path
             Resolved absolute path.
+            
+        Notes
+        -----
+        If the user specifies `"default"` as the value, the path will be resolved
+        from the default configuration file (relative to the package's resources/data directory).
+        This is useful when the package is installed via pip and relative paths would not work.
         """
         resolved_path = None
         
         # First check if user explicitly set this in their config
         user_value = self._get_user_config_value(*keys)
         if user_value is not None and isinstance(user_value, str):
-            if os.path.isabs(user_value):
+            if user_value.lower() == "default":
+                # User wants to use the default value from the package's config
+                default_value = self._get_default_config_value(*keys)
+                if default_value is not None and isinstance(default_value, str):
+                    if os.path.isabs(default_value):
+                        resolved_path = Path(default_value)
+                    else:
+                        resolved_path = Path(os.path.normpath(os.path.join(DEFAULT_RESOURCES_DATA_DIR, default_value)))
+            elif os.path.isabs(user_value):
                 resolved_path = Path(user_value)
             else:
                 resolved_path = Path(os.path.normpath(os.path.join(self._config_base_dir, user_value)))
@@ -812,6 +943,14 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal resource metadata.
         """
+        self.energy_resources_data = {}
+
+        # Check if resources model data file is specified in config
+        resources_config = self._get_user_config_value(
+            "models", "energy", "resources_model_data_file", default=None)
+        if resources_config is None:
+            return
+
         resources_data_file_path = self._resolve_config_path(
             "models", "energy", "resources_model_data_file",
             default_filename="default_energy_carriers/resources_data.yaml"
@@ -843,6 +982,14 @@ class AeroMAPSProcess(object):
         flattens nested inputs, converts custom data types, and updates
         parameters and internal process metadata.
         """
+        self.energy_processes_data = {}
+
+        # Check if processes model data file is specified in config
+        processes_config = self._get_user_config_value(
+            "models", "energy", "processes_model_data_file", default=None)
+        if processes_config is None:
+            return
+
         processes_data_path = self._resolve_config_path(
             "models", "energy", "processes_model_data_file",
             default_filename="default_energy_carriers/processes_data.yaml"
@@ -984,7 +1131,7 @@ class AeroMAPSProcess(object):
             
         climate_model_file_path = self._resolve_config_path(
             "models", "climate", "climate_model_data_file",
-            default_filename="../climate_data/climate_model_gwpstar.yaml"
+            default_filename="../climate_data/climate_model_fair.yaml"
         )
 
         if climate_model_file_path and climate_model_file_path.exists():
@@ -992,7 +1139,7 @@ class AeroMAPSProcess(object):
             self.models.update(
                 {"climate_model": ClimateModel(
                     name="climate_model",
-                    climate_model=climate_model_data.get("climate_model", "gwpstar"),
+                    climate_model=climate_model_data.get("climate_model", "FaIR"),
                     species_settings=climate_model_data.get("species_settings", {}),
                     model_settings=climate_model_data.get("model_settings", {})
                 )}
@@ -1013,41 +1160,59 @@ class AeroMAPSProcess(object):
         if lca_config is None:
             return
 
+        # Set up temporary file path for LCA model caching (for better performance within the same session)
+        config_dir = Path(self.configuration_file).resolve().parent
+        tmp_dir = config_dir / "tmp"
+        tmp_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
+        lca_tmp_file_path = tmp_dir / "lca_tmp.pkl"
+
+        # The user can specify to load the LCA model from a temporary file, e.g. if already compiled in the same session
+        if lca_config.get("lca_model_data_file") == '#tmp':
+            with open(lca_tmp_file_path, "rb") as f:
+                lca_instance = dill.load(f)
+            logging.info("Loaded LCA model from temporary file (precompiled from latest run in current session).")
+            self.models.update(
+                {"life_cycle_assessment": lca_instance}
+            )
+            return
+
+        # Otherwise, read the LCA model file path from config
         lca_model_file_path = self._resolve_config_path(
             "models", "life_cycle_assessment", "lca_model_data_file",
             default_filename="../lca_data/default_lca_model.json"
         )
-
         if lca_model_file_path and lca_model_file_path.exists():
-            if lca_model_file_path.suffix.lower() not in [".json", ".yaml", ".yml"]:
+            # If json file, use the default LCA model class
+            if lca_model_file_path.suffix.lower() == ".json":
+                lca_instance = LifeCycleAssessmentDefault(
+                        name="life_cycle_assessment",
+                        json_file=str(lca_model_file_path),
+                        split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                    )
+            # If yaml file, use the custom LCA model class
+            elif lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
+                if LCA_PACKAGES_INSTALLED is False:
+                    raise ImportError(
+                        "To use a custom LCA model, please install the optional dependencies: "
+                        "pip install --upgrade aeromaps[lca]"
+                    )
+                lca_instance = LifeCycleAssessmentCustom(
+                    name="life_cycle_assessment",
+                    configuration_file=lca_model_file_path,
+                    split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
+                )
+            else:
                 raise ValueError(
                     "LCA model file must be either a .json (default LCA model) or .yaml/.yml (custom LCA model) file.")
-            if lca_model_file_path.suffix.lower() == ".json":
-                # If default LCA model, use the default LCA model class
-                # TODO: add support for default LCA model when merged branch lca-precompiled
-                return
-                # self.models.update(
-                #     {"lca_model": DefaultLCAModel(
-                #         name="lca_model",
-                #         lca_model_file=str(lca_model_file_path),
-                #         split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                #     )}
-                # )
-            if lca_model_file_path.suffix.lower() in [".yaml", ".yml"]:
-                # If custom LCA model, use the custom LCA model class
-                if LCA_PACKAGES_INSTALLED:
-                    self.models.update(
-                        {"life_cycle_assessment": LifeCycleAssessment(
-                            name="life_cycle_assessment",
-                            configuration_file=lca_model_file_path,
-                            split_by=self._get_config_value("models", "life_cycle_assessment", "split_by", default=None)
-                        )}
-                    )
-                else:
-                    logging.warning(
-                        "LCA packages are not installed. Please install 'aeromaps[lca]' extra to use custom LCA models."
-                        "or use the default LCA model with .json file."
-                    )
+
+            # Update the models dictionary
+            self.models.update(
+                {"life_cycle_assessment": lca_instance}
+            )
+
+            # Store the LCA model instance in a temporary file for faster loading in the same session
+            with open(lca_tmp_file_path, "wb") as f:
+                dill.dump(lca_instance, f)
 
     def _convert_custom_data_types(self, data):
         """Convert custom YAML data types and register interpolators.
@@ -1244,38 +1409,92 @@ class AeroMAPSProcess(object):
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
-        """Load and register vector input time series.
+        """Load and register vector input time series from a JSON file.
 
-        This method reads the vector inputs CSV file, converts each
-        column into a pandas Series indexed by year, and attaches them as
+        This method reads the vector inputs JSON file, converts each
+        key into a pandas Series indexed by years, and attaches them as 
         attributes to the parameters object.
+        
+        The JSON file should contain a dictionary with:
+        - "other_float_data": scalar values (stored as-is)
+        - "other_vector_data": vector inputs indexed by years
+        - "climate_data": handled separately by _initialize_climate_historical_data
+        
+        Example JSON format:
+        {
+            "other_float_data": {
+                "short_range_energy_share_2019": 10.5,
+                ...
+            },
+            "other_vector_data": {
+                "years": [2000, 2001, ..., 2019],
+                "rpk_init": [value_2000, value_2001, ..., value_2019],
+                ...
+            },
+            "climate_data": {
+                "years": [...],
+                "co2_emissions": [...],
+                ...
+            }
+        }
         """
         vector_inputs_data_file_path = self._resolve_config_path(
-            "data", "inputs", "partitioning_other_data_file",
-            default_filename="vector_inputs.csv"
+            "data", "inputs", "partitioning_data_file",
+            default_filename="partitioning_data.json"
         )
+        
+        if vector_inputs_data_file_path is None:
+            return
 
-        # Read .csv with first line column names
-        vector_inputs_df = pd.read_csv(vector_inputs_data_file_path, delimiter=";", header=0)
-        # Generate pd.Series for each column with index the year stored in first column
-        index = vector_inputs_df.iloc[:, 0].values
-        for column in vector_inputs_df.columns[1:]:
-            values = vector_inputs_df[column].values
-
-            # TODO remove this: experiment to see if it works
-            # TODO remove this TODO !
-            # if column == "airfare_per_rpk":
-            #     setattr(self.parameters, column, np.array(values))
-            #
-            # else:
-            setattr(self.parameters, column, pd.Series(values, index=index))
+        # Read JSON file (utf-8-sig handles BOM if present)
+        with open(vector_inputs_data_file_path, "r", encoding="utf-8-sig") as f:
+            vector_inputs_data = load(f)
+        
+        # Store climate_data section for later use by _initialize_climate_historical_data
+        if "climate_data" in vector_inputs_data:
+            self._partitioned_climate_data = vector_inputs_data.pop("climate_data")
+        
+        # Process other_float_data section (scalar inputs)
+        if "other_float_data" in vector_inputs_data:
+            other_float_data = vector_inputs_data.pop("other_float_data")
+            for param_name, value in other_float_data.items():
+                setattr(self.parameters, param_name, value)
+        
+        # Process other_vector_data section (vector inputs with years index)
+        if "other_vector_data" in vector_inputs_data:
+            other_vector_data = vector_inputs_data.pop("other_vector_data")
+            years_index = other_vector_data.pop("years", None)
+            
+            for param_name, value in other_vector_data.items():
+                if isinstance(value, list) and years_index is not None:
+                    setattr(self.parameters, param_name, pd.Series(value, index=years_index))
+                else:
+                    setattr(self.parameters, param_name, value)
 
     def _initialize_climate_historical_data(self):
         """Load the historical climate dataset.
 
-        This method reads the configured climate data CSV file and stores
-        its numeric values as a NumPy array for climate-related models.
+        This method reads the configured climate data from either:
+        - A "climate_data" section in the partitioning JSON file (if available)
+        - A CSV file specified by partitioning_climate_data_file config key
+        
+        The data is stored as a NumPy array for climate-related models.
         """
+        # Check if climate data was loaded from the partitioning JSON file
+        if hasattr(self, "_partitioned_climate_data") and self._partitioned_climate_data is not None:
+            climate_data = self._partitioned_climate_data
+            self.climate_historical_data = np.column_stack([
+                climate_data["years"],
+                climate_data["co2_emissions"],
+                climate_data["nox_emissions"],
+                climate_data["h2o_emissions"],
+                climate_data["soot_emissions"],
+                climate_data["sulfur_emissions"],
+                climate_data["distance"],
+            ])
+            return
+        
+        # Fallback to CSV file
         climate_historical_data_file_path = self._resolve_config_path(
             "data", "inputs", "partitioning_climate_data_file",
             default_filename="../climate_data/temperature_historical_dataset.csv"
@@ -1432,10 +1651,7 @@ class AeroMAPSProcess(object):
                 else:
                     self.data["climate_outputs"].update(disc.model.df_climate)
             if hasattr(disc.model, "xarray_lca") and disc.model.xarray_lca.size > 1:
-                if first_computation:
-                    self.data["lca_outputs"] = disc.model.xarray_lca
-                else:
-                    self.data["lca_outputs"].update(disc.model.xarray_lca)
+                self.data["lca_outputs"] = disc.model.xarray_lca
 
             self.data["float_outputs"].update(disc.model.float_outputs)
 

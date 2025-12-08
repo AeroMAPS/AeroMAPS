@@ -1,0 +1,34 @@
+data:
+  inputs:
+   json_inputs_file: "./inputs_scenario_3_remind_ssp2_base.json"
+
+  outputs:
+    json_outputs_file: "./outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  fleet:
+    aircraft_inventory_model_data_file: "./aircraft_inventory.yaml"
+    fleet_model_data_file: "./fleet.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "./energy_carriers_data_scenario_3.yaml"
+    
+  life_cycle_assessment:
+    lca_model_data_file: '#tmp'
+    # This special features (#tmp) enables to re-load the LCA model previously compiled within the same session (here, the one from scenario 1) to save time.
+    # In fact, the LCA model is unchanged between the IS scenarios, only the inputs to the model are varying so there is no need to recompile it every time.
+    # Note that this is only valid within the same session, i.e. restarting the kernel will break this behaviour.
+
+  standards:
+    - models_traffic
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_bottom_up
+    - models_production_cost

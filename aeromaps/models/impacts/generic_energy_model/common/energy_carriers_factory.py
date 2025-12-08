@@ -35,6 +35,8 @@ from aeromaps.models.impacts.energy_resources.energy_resources import (
     OverallResourcesConsumption,
 )
 
+import warnings
+
 
 class AviationEnergyCarriersFactory:
     """
@@ -131,8 +133,8 @@ class AviationEnergyCarriersFactory:
                     "Abatement cost model can only be used with bottom-up cost models."
                 )
             if environmental_model_type != "bottom-up":
-                print(
-                    "⚠️ Warning: Using Top-Down environmental model for abatement cost. Not recommended."
+                warnings.warn(
+                    "\n⚠️ Using Top-Down environmental model for abatement cost. Not recommended."
                 )
             # add abatement cost and effective models
             models.update(

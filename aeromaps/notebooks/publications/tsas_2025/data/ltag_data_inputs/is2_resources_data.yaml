@@ -48,3 +48,7 @@ generic_biomass:
           values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12]
           method: linear # [MJ]
       aviation_allocated_share: 9.945 # 15 * 0.663 # [%] Share of the global availability * ratio of international aviation
+    cost: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.007 ]
+      method: linear

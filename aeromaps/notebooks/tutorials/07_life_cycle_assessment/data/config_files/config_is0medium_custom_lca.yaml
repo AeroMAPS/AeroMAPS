@@ -1,0 +1,28 @@
+data:
+  inputs:
+    json_inputs_file: "../ltag_data_inputs/is0medium_inputs.json"
+    partitioning_other_data_file: "../partitioned_data/vector_inputs_partitioned.csv"
+    partitioning_climate_data_file: "../partitioned_data/partitioned_temperature_historical_dataset.csv"
+  outputs:
+    json_outputs_file: "../ltag_data_outputs/is0medium_outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../ltag_data_inputs/is0_energy_inputs.yaml"
+    
+  life_cycle_assessment:
+    lca_model_data_file: "../lca_data/custom_model/custom_lca_model.yaml"
+    split_by: 'phase'
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down

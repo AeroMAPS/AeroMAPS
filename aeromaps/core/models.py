@@ -459,6 +459,10 @@ models_optim_complex = {
     "total_surplus_loss": TotalSurplusLoss("total_surplus_loss"),
 }
 
+carbon_budget_constraint = {
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+}
+
 # models_optim_complex_v2 = {
 #     "models_traffic_cost_feedback": models_traffic_cost_feedback,
 #     "models_efficiency_top_down": models_efficiency_top_down,

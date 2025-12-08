@@ -825,22 +825,6 @@ level_carbon_offset;Vector;MtCO2;Annual carbon offset due to offsetting for a gi
 residual_carbon_offset;Vector;MtCO2;Annual carbon offset due to offsetting of a given share of the remaining emissions
 carbon_offset;Vector;MtCO2;Total annual carbon offset
 cumulative_carbon_offset;Vector;GtCO2;Cumulative carbon offset from air transport
-contrails_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for contrails
-contrails_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for contrails
-nox_short_term_o3_increase_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for NOx short-term O3 increase
-nox_short_term_o3_increase_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for NOx short-term O3 increase
-nox_long_term_o3_decrease_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for NOx long-term O3 decrease
-nox_long_term_o3_decrease_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for NOx long-term O3 decrease
-nox_ch4_decrease_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for NOx CH4 decrease
-nox_ch4_decrease_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for NOx CH4 decrease
-nox_stratospheric_water_vapor_decrease_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for NOx stratospheric water vapor decrease
-nox_stratospheric_water_vapor_decrease_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for NOx strastospheric water vapor decrease
-soot_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for soot
-soot_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for soot
-h2o_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for H2O
-h2o_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for H2O
-sulfur_gwpstar_variation_duration;Float;yr;Variation duration chosen for GWP* model for sulfur
-sulfur_gwpstar_s_coefficient;Float;-;s coefficient chosen for GWP* model for sulfur
 noc_reference_years;List;yr;Reference years for airline non-operating costs (NOC)
 noc_reference_years_values;List;€/ASK;Reference years values for airline non-operating costs (NOC); cost_data/IATA_cost_data.xlsx
 non_operating_cost_per_ask;Vector;€/ASK;Values for airlines non-operating costs (NOC)

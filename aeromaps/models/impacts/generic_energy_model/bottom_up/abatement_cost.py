@@ -6,7 +6,7 @@ Module to compute energy abatement costs for different pathways.
 """
 
 from typing import Tuple
-
+import warnings
 import numpy as np
 import pandas as pd
 
@@ -191,8 +191,8 @@ class ReferenceAbatementCost(AeroMAPSModel):
             )
             self.bottom_up_cac = True
         else:
-            print(
-                f"⚠️ Warning: reference pathway for CAC ({self.pathway_name}) is not defined as bottom-up, "
+            warnings.warn(
+                f"\n⚠️ Reference pathway for CAC ({self.pathway_name}) is not defined as bottom-up, "
                 f"using top-down values for CAC computation."
             )
             self.input_names.update(

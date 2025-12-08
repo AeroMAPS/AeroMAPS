@@ -1,5 +1,5 @@
 import yaml
-
+import warnings
 from aeromaps.models.base import AeroMapsCustomDataType
 
 
@@ -40,5 +40,5 @@ def read_yaml_file(file_name="parameters.yaml"):
             data = yaml.load(file, Loader=yaml.Loader)
             return data if isinstance(data, dict) else {}
     except Exception as e:
-        print(f"Error reading YAML file: {e}")
+        warnings.warn(f"Error reading YAML file: {e}")
         return {}

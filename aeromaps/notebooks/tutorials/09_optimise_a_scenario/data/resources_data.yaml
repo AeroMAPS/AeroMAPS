@@ -1,0 +1,30 @@
+generic_biomass:
+  # ID
+  name: "generic_biomass"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+      global: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12] # --> MJ
+        method: linear
+      aviation_allocated_share: 10.0 # [%]
+
+grid_electricity:
+  # ID
+  name: "grid_electricity"
+  origin: "electricity"
+  specifications:
+    # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [2020, 2030, 2040, 2050]
+      values: [119.16, 55.5, 27.8, 8.3] # --> converted gCO2/kWh to gCO2/MJ (divide by 3.6)
+      method: linear
+    load_factor: 1.0
+    availability:
+      global: !AeroMapsCustomDataType
+        years: [2020, 2030, 2040, 2050]
+        values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12] # --> MJ
+        method: linear
+      aviation_allocated_share: 10.0 # [%]
