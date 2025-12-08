@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aeromaps"
-version = "0.9.0-beta"
+version = "1.0.0"
 description = "AeroMAPS: Multidisciplinary Assessment of Prospective Scenarios for air transport"
 readme = "README.md"
 authors = [
