@@ -18,5 +18,12 @@
     "version": "aerocm_integration",
     "title": "aerocm_integration",
     "aliases": []
+  },
+  {
+    "version": "v1.0.0",
+    "title": "v1.0.0",
+    "aliases": [
+      "stable"
+    ]
   }
 ]
