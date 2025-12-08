@@ -4449,6 +4449,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4527,14 +4531,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    life_cycle_assessment
+    life_cycle_assessment_default
   
 
     
@@ -4555,7 +4559,63 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.plots/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    life_cycle_assessment_custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.plots/" class="md-nav__link">
         
   
   
@@ -6577,8 +6637,8 @@ and its emissions are distributed over its lifespan, weighted by its share in an
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_abatement_cost</span>
             <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all_years</span>
         <span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;⚠️ Warning:  for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">, no plants commissioned in </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">. Unable to compute &quot;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ For </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2">, no plants commissioned in </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">. Unable to compute &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;CAC: compute_all_years = False. Set it true to avoid NaN values in the MACC for this year.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">needed_capacity</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all_years</span><span class="p">:</span>

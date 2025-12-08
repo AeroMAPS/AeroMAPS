@@ -4437,6 +4437,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4515,14 +4519,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    life_cycle_assessment
+    life_cycle_assessment_default
   
 
     
@@ -4543,7 +4547,63 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.plots/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    life_cycle_assessment_custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.plots/" class="md-nav__link">
         
   
   
@@ -5871,7 +5931,7 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading YAML file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading YAML file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
             </details>

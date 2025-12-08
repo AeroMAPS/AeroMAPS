@@ -4449,6 +4449,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4527,14 +4531,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    life_cycle_assessment
+    life_cycle_assessment_default
   
 
     
@@ -4555,7 +4559,63 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.plots/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    life_cycle_assessment_custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.plots/" class="md-nav__link">
         
   
   
@@ -6304,8 +6364,8 @@ Computes annual capacity additions required to follow an energy consumption traj
     <span class="c1"># Warning for years where there is an excess of energy production</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">energy_unused</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">years_excess</span> <span class="o">=</span> <span class="n">energy_unused</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">energy_unused</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;⚠️ Warning: excess </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> production in years: </span><span class="si">{</span><span class="n">years_excess</span><span class="si">}</span><span class="s2">. Scaling down.&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ Excess </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> production in years: </span><span class="si">{</span><span class="n">years_excess</span><span class="si">}</span><span class="s2">. Scaling down.&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># computing additions for processes</span>

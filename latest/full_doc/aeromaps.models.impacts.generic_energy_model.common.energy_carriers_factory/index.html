@@ -4471,6 +4471,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4549,14 +4553,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_default/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    life_cycle_assessment
+    life_cycle_assessment_default
   
 
     
@@ -4577,7 +4581,63 @@
   
   
     <li class="md-nav__item">
-      <a href="../aeromaps.models.impacts.life_cycle_assessment.plots/" class="md-nav__link">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.life_cycle_assessment_custom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    life_cycle_assessment_custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aeromaps.models.impacts.life_cycle_assessment.utils.plots/" class="md-nav__link">
         
   
   
@@ -5915,9 +5975,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/common/energy_carriers_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 46</span>
 <span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
@@ -6032,7 +6090,9 @@
 <span class="normal">158</span>
 <span class="normal">159</span>
 <span class="normal">160</span>
-<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_carrier</span><span class="p">(</span><span class="n">pathway_name</span><span class="p">,</span> <span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">resources_data</span><span class="p">,</span> <span class="n">process_data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create energy carrier models based on the configuration data.</span>
@@ -6122,8 +6182,8 @@
                 <span class="s2">&quot;Abatement cost model can only be used with bottom-up cost models.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">environmental_model_type</span> <span class="o">!=</span> <span class="s2">&quot;bottom-up&quot;</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;⚠️ Warning: Using Top-Down environmental model for abatement cost. Not recommended.&quot;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️ Using Top-Down environmental model for abatement cost. Not recommended.&quot;</span>
             <span class="p">)</span>
         <span class="c1"># add abatement cost and effective models</span>
         <span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
@@ -6248,9 +6308,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/common/energy_carriers_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
@@ -6273,7 +6331,9 @@
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
-<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_energy_carriers_models</span><span class="p">(</span><span class="n">energy_carriers_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Instantiates energy carriers related models. Energy use choice, means, mean LHV, ...</span>
@@ -6397,9 +6457,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/generic_energy_model/common/energy_carriers_factory.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -6431,7 +6489,9 @@
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">instantiate_resource_consumption_models</span><span class="p">(</span><span class="n">resources_data</span><span class="p">,</span> <span class="n">pathways_manager</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Instantiates energy resource consumption models.</span>
