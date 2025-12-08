@@ -2,7 +2,6 @@ subcategories:
   - id: sr_conventional_nb
     name: "SR conventional narrow-body"
     share: 20.0
-    share_no_examples: 100.0
     reference_aircraft:
       old_ref: sr_conventional_nb_old
       recent_ref: sr_conventional_nb_recent
