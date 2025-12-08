@@ -154,11 +154,9 @@ jobs:
           name: timing-matrix-summary
           path: $GITHUB_WORKSPACE/timing_matrix_table.md
 
-      - name: Stash notebook changes (main)
-        run: git stash push -u -m "Stash main branch notebook changes"
-
       - name: Restore branch
         if: always()
         run: |
-          git checkout $BRANCH_NAME
+          git stash push -u -m "Stash changes before restoring branch" || true
+          git checkout $BRANCH_NAME || true
           git stash pop || true
