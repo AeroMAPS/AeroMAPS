@@ -19,17 +19,21 @@ including the advanced notebooks.
 
 ## Tutorials
 
-- [Create a custom process](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/create_a_custom_process/examples_custom_process.ipynb)
+- [Create a custom process](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/02_create_a_custom_process/examples_custom_process.ipynb)
 
-- [Use the detailed fleet model](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/use_the_fleet_model/examples_fleet.ipynb)
+- [Partition to a region](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/03_partition_to_a_region/examples_partitioning.ipynb)
 
-- [Climate application](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/use_bottom_up_fuel_models/examples_climate_application.ipynb)
+- [Use the bottom-up fuel models](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/04_use_bottom_up_fuel_models/top_down_cost_calibration.ipynb)
 
-- [Partitioning analysis to a region](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/partition_to_a_region/examples_partitioning.ipynb)
+- [Use the detailed fleet models](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/05_use_fleet_models/examples_fleet.ipynb)
 
-- [Use variable demand](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/use_variable_demand/examples_elasticity.ipynb)
+- [Use climate models](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/06_use_climate_models/examples_climate.ipynb)
+
+- [Use life cycle assessment models](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/07_life_cycle_assessment/life_cycle_assessment_default.ipynb)
+
+- [Use variable demand](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/08_use_variable_demand/examples_elasticity.ipynb)
   
-- [Optimization of a scenario](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/optimize_a_scenario/example_optim.ipynb)
+- [Optimise a scenario](https://github.com/AeroMAPS/AeroMAPS/blob/main/aeromaps/notebooks/tutorials/09_optimise_a_scenario/example_optim.ipynb)
 
 
 ## Advanced applications
