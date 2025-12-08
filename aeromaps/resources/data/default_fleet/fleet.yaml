@@ -12,7 +12,6 @@ subcategories:
   - id: sr_regional_tp
     name: "SR regional turboprop"
     share: 30.0
-    requires_examples: true
     reference_aircraft:
       old_ref: sr_regional_tp_old
       recent_ref: sr_regional_tp_recent
@@ -23,7 +22,6 @@ subcategories:
   - id: sr_hydrogen_nb
     name: "SR hydrogen conventional narrow-body"
     share: 50.0
-    requires_examples: true
     reference_aircraft:
       old_ref: sr_hydrogen_nb_old
       recent_ref: sr_hydrogen_nb_recent

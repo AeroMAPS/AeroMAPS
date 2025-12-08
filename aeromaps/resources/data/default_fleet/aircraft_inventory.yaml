@@ -25,58 +25,6 @@ reference_aircraft:
       rc_cost: 40000000.0
       nrc_cost: 10000000000.0
       oew: 43.0
-  - id: sr_regional_tp_old
-    name: "SR regional turboprop old"
-    parameters:
-      entry_into_service_year: 1970.0
-      energy_per_ask: 0.4390837438423645
-      emission_index_nox: 0.01514
-      emission_index_soot: 0.00003
-      doc_non_energy_base: 0.026125
-      cruise_altitude: 6000.0
-      ask_year: 280000000.0
-      rc_cost: 60000000.0
-      nrc_cost: 10000000000.0
-      oew: 15.0
-  - id: sr_regional_tp_recent
-    name: "SR regional turboprop recent"
-    parameters:
-      entry_into_service_year: 2010.35
-      energy_per_ask: 0.3945777219416748
-      emission_index_nox: 0.01514
-      emission_index_soot: 0.00003
-      doc_non_energy_base: 0.026125
-      cruise_altitude: 6000.0
-      ask_year: 280000000.0
-      rc_cost: 60000000.0
-      nrc_cost: 10000000000.0
-      oew: 15.0
-  - id: sr_hydrogen_nb_old
-    name: "SR hydrogen narrow-body old"
-    parameters:
-      entry_into_service_year: 2035.0
-      energy_per_ask: 0.5068446269678318
-      emission_index_nox: 0.01514
-      emission_index_soot: 0.0
-      doc_non_energy_base: 0.026125
-      cruise_altitude: 12000.0
-      ask_year: 280000000.0
-      rc_cost: 40000000.0
-      nrc_cost: 5000000000.0
-      oew: 40.0
-  - id: sr_hydrogen_nb_recent
-    name: "SR hydrogen narrow-body recent"
-    parameters:
-      entry_into_service_year: 2050.0
-      energy_per_ask: 0.45030674846625763
-      emission_index_nox: 0.0
-      emission_index_soot: 0.0
-      doc_non_energy_base: 0.026125
-      cruise_altitude: 12000.0
-      ask_year: 280000000.0
-      rc_cost: 40000000.0
-      nrc_cost: 5000000000.0
-      oew: 40.0
   - id: mr_conventional_nb_old
     name: "MR conventional narrow-body old"
     parameters:
