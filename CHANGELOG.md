@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 1.0.0
+
+Changed:
+- New documentation. (#111)
+- Updated fleet models through the use of yaml files. (#112)
+- Updated climate models using AeroCM. (#113)
+- Use of new configuration files for a standardised use. (#113)
+- Updated and alternative life cycle assessment models. (#114)
+
+Fixed:
+- Refactoring and import corrections. (#111)
+- Notebooks corrections. (#113, #114)
+- Correct configuration files. (#114)
+- Management of tests. (#114)
+- Minor documentation correction.
+
+
 ## Version 0.9.0-beta
 
 Changed:
