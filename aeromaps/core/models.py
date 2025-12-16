@@ -287,7 +287,9 @@ models_sustainability = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "temperature_target": TemperatureTarget("temperature_target"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
-    "temperature_target_consumed_share": TemperatureTargetConsumedShare("temperature_target_consumed_share"),
+    "temperature_target_consumed_share": TemperatureTargetConsumedShare(
+        "temperature_target_consumed_share"
+    ),
 }
 
 models_energy_cost = {
@@ -500,3 +502,30 @@ carbon_budget_constraint = {
 #     "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
 #     "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 # }
+
+
+models_optim_bastien = {
+    "models_traffic": models_traffic,
+    "carbon_tax": CarbonTax("carbon_tax"),
+    "models_efficiency_top_down": models_efficiency_top_down,
+    "drop_in_fuel_consumption": DropInFuelConsumption("drop_in_fuel_consumption"),
+    "hydrogen_consumption": HydrogenConsumption("hydrogen_consumption"),
+    "energy_consumption": EnergyConsumption("energy_consumption"),
+    "electric_consumption": ElectricConsumption("electric_consumption"),
+    # "without_fuel_effect_correction_contrails": WithoutFuelEffectCorrectionContrails(
+    #    "without_fuel_effect_correction_contrails"
+    # ),
+    "energy_carriers_massic_shares": EnergyCarriersMassicShares(
+        "energy_carriers_massic_shares"
+    ),  # keep ?
+    "kaya_factors": KayaFactors("kaya_factors"),
+    "co2_emissions": CO2Emissions("co2_emissions"),
+    "cumulative_co2_emissions": CumulativeCO2Emissions("cumulative_co2_emissions"),
+    "detailed_co2_emissions": DetailedCo2Emissions("detailed_co2_emissions"),
+    "detailed_cumulative_co2_emissions": DetailedCumulativeCO2Emissions(
+        "detailed_cumulative_co2_emissions"
+    ),
+    "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
+    "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
+    "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+}
