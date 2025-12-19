@@ -1,0 +1,118 @@
+waste_residue_lipids_biomass:
+  #ID
+  name: "waste_residue_lipids_biomass"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 62.5e+12 # [MJ]
+      # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
+      # 2.5 EJ per year (equal shares waste, msw, wood, ar) for 25 years
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+oil_crops_trees_biomass:
+  #ID
+  name: "oil_crops_trees_biomass"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 75.0e+12 # [MJ]
+      # 3 EJ per year for 25 years (Fueling Net Zero p. 41)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+municipal_solid_waste_biomass:
+  #ID
+  name: "municipal_solid_waste_biomass"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 62.5e+12 # [MJ]
+      # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
+      # 2.5 EJ per year (equal shares waste, msw, wood, ar) for 25 years
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+woody_biomass:
+  #ID
+  name: "woody_biomass"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 62.5e+12 # [MJ]
+      # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
+      # 2.5 EJ per year (equal shares waste, msw, wood, ar) for 25 years
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+cellulosic_cover_crops_ethanol:
+  #ID
+  name: "cellulosic_cover_crops_ethanol"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 175.0e+12 # [MJ]
+      # 7 EJ per year for 25 years (Fueling Net Zero p. 41)
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+agricultural_residues_ethanol:
+  #ID
+  name: "agricultural_residues_ethanol"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 62.5e+12 # [MJ]
+      # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
+      # 2.5 EJ per year (equal shares waste, msw, wood, ar) for 25 years
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+waste_gas:
+  #ID
+  name: "waste_gas"
+  origin: "biomass"
+  specifications:
+    availability:
+      global: 117.5e+12 # [MJ]
+      # From figure in Fueling Net Zero p. 33 -> 4.1 EJ / yr 2020 + 1.2 EJ 2025
+      # 4.7 (linear ramp-up) EJ per year for 25 years
+      aviation_allocated_share: 5 # [%] Share of the global availability
+
+
+
+renewables:
+  # ID
+  name: "renewables"
+  origin: "electricity"
+  specifications:
+  # Technical:
+    co2_emission_factor: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 15.7 ]
+        method: linear
+    availability:
+#      global: 250.0e+12 # [EJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ 2020, 2050 ]
+      values: [ 57.5/3600, 25/3600 ] # $ / MWh : 3600 MJ / MWh
+      method: linear
+
+co2_dac:
+  #ID
+  name: "co2_dac"
+  specifications:
+    #Economical
+    cost: !AeroMapsCustomDataType
+      years: [2020, 2050]
+      values: [400e-3, 100e-3] # $ / ton CO2 : 1000 kg / ton
+      method: linear
+
+green_hydrogen:
+  # ID
+  name: "green_hydrogen"
+  origin: "biomass"
+  specifications:
+    # Availability
+    availability:
+#      global: 164.0e+12 # [MJ]
+      aviation_allocated_share: 5 # [%] Share of the global availability
+    cost: !AeroMapsCustomDataType
+      years: [ 2020, 2050 ]
+      values: [ 5.9/120, 1.55/120 ] # $ / kg : 120 MJ / kg
+      method: linear

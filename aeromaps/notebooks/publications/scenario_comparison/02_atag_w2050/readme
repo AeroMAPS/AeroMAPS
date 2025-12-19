@@ -1,0 +1,29 @@
+Reproduction of ATAG Waypoint scenarios in AeroMAPS
+
+Four scenarios are presented:
+-S0: baseline / continuation of current trends
+-S1: pushing technology and operations
+-S2: aggressive sustainable fuel deployment
+-S3: aspirational and aggressive technology perspective
+
+Each scenario is generated using different assumptions regarding 5 dimensions: traffic, technology, operations, offsets,
+and SAF. However assumptions are not always quantified in the ATAG report, meaning we have to complete them with
+AeroMAPS inputs.
+
+-Traffic        : Fixed growth rates per period, values taken from report
+-Technology     : Assumptions of EIS taken from report, with energy intensity and deployment from AeroMAPS
+-Operations     : Annual operational improvements and load factor taken from report
+-Offsets        : Modeled in AeroMAPS to cap 2019 emissions until 2035 than decline linearly to zero
+-SAF            : SAF quantities taken from report (extra assumptions on how quantities are split among pathways),
+                emissions, efficiencies, economics completed with values from Yang 2025
+                (https://doi.org/10.1016/j.resconrec.2025.108124) and CORSIA LCA supporting document
+                (https://www.icao.int/sites/default/files/environmental-protection/CORSIA/Documents/SCS-Evaluation/
+                CORSIA_Supporting_Document_CORSIA-Eligible-Fuels_LCA_Methodology_V6.pdf)
+    -HEFA                   : production split 2/2 into HEFA waste/residues and HEFA oil crops
+    -Advanced feedstocks    : production split 4/4 into ATJ cellulosic crops, ATJ agricultural residues, FT woody
+                            biomass, FT MSW
+    -Waste gas              : ATJ industrial waste gas
+    -Power to liquid        : PtL
+
+
+
