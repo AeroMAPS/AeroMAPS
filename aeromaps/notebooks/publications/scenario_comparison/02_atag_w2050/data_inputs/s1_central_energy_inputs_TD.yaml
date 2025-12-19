@@ -1,0 +1,650 @@
+hefa_waste_residue_lipids:
+  # Metadata
+  name: "hefa_waste_residue_lipids"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          3.12010697934728 / 44e-9,
+          4.68017534693549 / 44e-9,
+          5.46022440864419 / 44e-9,
+          9.75039010263987 / 44e-9,
+          12.8704970819871 / 44e-9,
+          12.8704970819871 / 44e-9,
+        ] # M ton = 1e6 ton * (1e3 kg/ton) / (44 MJ / kg)
+        # half of HEFA production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "waste_residue_lipids_biomass" ]
+      eis_resource_specific_consumption:
+        hefa_fog_biomass: 1.14
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [20.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1312.9497077457102 / 44.0e3,
+          1300.9590258525777 / 44.0e3,
+          1288.9688013571904 / 44.0e3,
+          1282.9736891094965 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+hefa_oil_crops_trees:
+  # Metadata
+  name: "hefa_oil_crops_trees"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          3.12010697934728 / 44e-9,
+          4.68017534693549 / 44e-9,
+          5.46022440864419 / 44e-9,
+          9.75039010263987 / 44e-9,
+          12.8704970819871 / 44e-9,
+          12.8704970819871 / 44e-9,
+        ]
+        # half of HEFA production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "oil_crops_trees_biomass" ]
+      eis_resource_specific_consumption:
+        hefa_others_biomass: 1.72
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [61.0]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1414.867988149739 / 44.0e3,
+          1426.8586700428718 / 44.0e3,
+          1792.56600592513 / 44.0e3,
+          2050.3594917579217 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+ft_municipal_solid_waste:
+  # Metadata
+  name: "ft_municipal_solid_waste"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          0.7800341837941058 / 44e-9,
+          5.655229235114042 / 44e-9,
+          17.550694745794523 / 44e-9,
+          32.1762873387117 / 44e-9,
+          37.83152401278304 / 44e-9,
+          38.026513961338345 / 44e-9,
+        ]
+        # 1/4 of Advanced Feedstock production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "municipal_solid_waste_biomass" ]
+      eis_resource_specific_consumption:
+        ft_msw_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [27.6]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1324.9399322410975 / 44.0e3,
+          1091.1268953990818 / 44.0e3,
+          1049.1606522674804 / 44.0e3,
+          977.2183904996659 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+ft_woody_biomass:
+  # Metadata
+  name: "ft_woody_biomass"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          0.7800341837941058 / 44e-9,
+          5.655229235114042 / 44e-9,
+          17.550694745794523 / 44e-9,
+          32.1762873387117 / 44e-9,
+          37.83152401278304 / 44e-9,
+          38.026513961338345 / 44e-9,
+        ]
+        # 1/4 of Advanced Feedstock production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "woody_biomass" ]
+      eis_resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [7.7]
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1654.676137239449 / 44.0e3,
+          1312.9497077457102 / 44.0e3,
+          1049.1606522674804 / 44.0e3,
+          983.2135027473595 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+atj_cellulosic_cover_crops:
+  # Metadata
+  name: "atj_cellulosic_cover_crops"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          0.7800341837941058 / 44e-9,
+          5.655229235114042 / 44e-9,
+          17.550694745794523 / 44e-9,
+          32.1762873387117 / 44e-9,
+          37.83152401278304 / 44e-9,
+          38.026513961338345 / 44e-9,
+        ]
+        # 1/4 of Advanced Feedstock production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "cellulosic_cover_crops_ethanol" ]
+      eis_resource_specific_consumption:
+        cellulosic_cover_crops_ethanol: 1.41
+      kerosene_selectivity: 1.0
+      # unitary selectivity because data from Yang 2025 is already given per MJ SAF
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [42.875]
+        # mean between ATJ miscanthus and switchgrass from Yang 2025 S2
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1366.9066327704447 / 44.0e3,
+          1229.0167640847633 / 44.0e3,
+          1276.978576861803 / 44.0e3,
+          1252.997670473283 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+atj_agricultural_residues:
+  # Metadata
+  name: "atj_agricultural_residues"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          0.7800341837941058 / 44e-9,
+          5.655229235114042 / 44e-9,
+          17.550694745794523 / 44e-9,
+          32.1762873387117 / 44e-9,
+          37.83152401278304 / 44e-9,
+          38.026513961338345 / 44e-9,
+        ]
+        # 1/4 of Advanced Feedstock production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "agricultural_residues_ethanol" ]
+      eis_resource_specific_consumption:
+        agricultural_residues_ethanol: 1.455
+        # mean between ATJ from agricultural and forest residues from Yang 2025
+      kerosene_selectivity: 1.0
+      # unitary selectivity because data from Yang 2025 is already given per MJ SAF
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [38.395]
+        # mean between ATJ from agricultural and forest residues from Yang 2025 S2
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1264.9878949686704 / 44.0e3,
+          1109.1126895399082 / 44.0e3,
+          983.2135027473595 / 44.0e3,
+          935.2516899703196 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+atj_waste_gas:
+  # Metadata
+  name: "atj_waste_gas"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          3.9001560410559275 / 44e-9,
+          10.140429511408886 / 44e-9,
+          14.820545346685961 / 44e-9,
+          18.7207311435711 / 44e-9,
+          13.260506734926963 / 44e-9,
+          10.920478573117492 / 44e-9,
+        ]
+        # All of Waste gas SAF production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "waste_gas" ]
+      eis_resource_specific_consumption:
+        waste_gas: 1.86
+        # from CORSIA LCA supporting doc Tab. 66
+      kerosene_selectivity: 0.75
+      # from CORSIA LCA supporting doc Tab. 67
+      lhv: 44
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [42.4]
+        # from CORSIA LCA supporting doc (standalone, without heat integration)
+        method: linear
+      emission_index:
+        h2o: 1.231
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+      # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          1031.1748581266538 / 44.0e3,
+          863.3094282025047 / 44.0e3,
+          743.4053536576495 / 44.0e3,
+          683.4533163852219 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+electrofuel:
+  # Metadata
+  name: "electrofuel"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "electricity"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "quantity"
+      mandate_quantity: !AeroMapsCustomDataType
+        years: [ 2020, 2025, 2030, 2035, 2040, 2045, 2050 ]
+        values: [
+          0.0 / 44e-9,
+          0.7800193058796143 / 44e-9,
+          5.460194652815041 / 44e-9,
+          15.60062416422393 / 44e-9,
+          44.461784819203785 / 44e-9,
+          122.464905640323 / 44e-9,
+          187.2075048486008 / 44e-9,
+        ]
+        # All of power to liquid SAF production capacity from Figure Sources of sustainable aviation fuel (p.79)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: ["renewables", "co2_dac"]
+      eis_resource_specific_consumption:
+        renewables: 2.26
+        co2_dac: 0.1015 # KgCO2/MJ
+      lhv: 44
+      technology_introduction_year: 2020
+      technology_introduction_volume: 4.0e+11
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2025, 2030, 2040, 2050 ]
+        values: [
+          4124.699889904362 / 44.0e3,
+          2793.764845415571 / 44.0e3,
+          2122.302210923481 / 44.0e3,
+          1594.724099967021 / 44.0e3,
+        ]
+        # US$ / ton / (1000 kg / ton * 44 MJ / kg) -> US$ / MJ
+        method: linear
+  outputs:
+
+
+fossil_kerosene:
+  # Metadata
+  name: "fossil_kerosene"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "fossil"
+  default: True
+  abatement_cost_reference: True ## CAUTION: impossible to compute CACs for the reference patwhay.
+  inputs:
+    # Technical:
+    technical:
+      lhv: 44
+      plant_load_factor: 0.95
+      plant_lifespan: 25
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2050 ]
+        values: [ 88.7, 88.7 ]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0012
+        soot: 3.0e-05
+        particles_number: 2.0e+14
+        # Economics:
+    economics:
+      mean_mfsp_without_resource: !AeroMapsCustomDataType
+        years: [ 2000, 2001, 2002, 2003, 2004, 2005,
+                 2006, 2007, 2008, 2009, 2010, 2011,
+                 2012, 2013, 2014, 2015, 2016, 2017,
+                 2018, 2019, 2020, 2021, 2022, 2023,
+                 2024, 2050 ]
+        values: [ 0.008364654, 0.006916631, 0.006340188, 0.007424531, 0.010158403,
+                  0.014797798, 0.016189765, 0.017474982, 0.023710593, 0.01277897,
+                  0.016366254, 0.022487714, 0.022192747, 0.020655099, 0.018819777,
+                  0.010615193, 0.008737464, 0.01085308, 0.013921201, 0.012684225,
+                  0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012 ]
+        method: linear
+  outputs:
+
+
+
+liquid_hydrogen:
+  # Metadata
+  name: "liquid_hydrogen"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "hydrogen"
+  energy_origin: "electricity"
+  default: False
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years: [ ]
+        values: [0]
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "green_hydrogen", "renewables", "transport" ]
+        eis_resource_specific_consumption:
+          green_hydrogen: 1.0
+          renewables: 0.25
+          transport: 1.0
+      processes_names: [ "liquefaction" ]
+      lhv: 120
+      eis_plant_load_factor: 0.95
+      eis_plant_lifespan: 25
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index:
+        h2o: 9.0
+        nox: 0.007
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+      eis_capex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0332 ] # [1.378511,1.378511,1.378511,1.378511]/120,
+        method: linear
+      eis_fixed_opex: !AeroMapsCustomDataType
+        years: [ ]
+        values: [ 0.0013 ] # [0.01944,0.01944,0.01944,0.01944]/120,
+        method: linear
+  outputs:
+
+battery_electric:
+  # Metadata
+  name: "battery_electric"
+  environmental_model: "bottom-up"
+  cost_model: "bottom-up"
+  aircraft_type: "electric"
+  energy_origin: "electricity"
+  default: True
+  abatement_cost: True
+  compute_all_years: True
+  inputs:
+    # Technical:
+    technical:
+      resource_names: [ "renewables" ]
+      resource_specific_consumption:
+      # Add a list of resources and their consumption per unit of fuel.
+        renewables: 1
+      lhv: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!!
+      eis_plant_load_factor: 1 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!!
+      eis_plant_lifespan: 25 # CAUTION: HERE FOR GENERICITY, UNDIFINED FOR ELECTRIC!!
+    # Environmental:
+    environmental:
+      eis_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [0.0]
+        method: linear
+      emission_index: # CAUTION: INDEX PER KG, UNDIFINED FOR ELECTRIC!!
+        h2o: 0.0
+        nox: 0.0
+        sulfur: 0.0
+        soot: 0.0
+        particles_number: 0.0
+    # Economics:
+    economics:
+  outputs:

@@ -1,14 +1,14 @@
 data:
   inputs:
-    json_inputs_file: "./inputs.json"
+    json_inputs_file: "../data_inputs/s1_central_inputs.json"
   outputs:
     json_outputs_file: "./outputs.json"
 
 models:
   energy:
-    energy_carriers_model_data_file: default
-    resources_model_data_file: default
-    processes_model_data_file: default
+    energy_carriers_model_data_file: "../data_inputs/s1_central_energy_inputs_TD.yaml"
+    resources_model_data_file: "../data_inputs/s1_central_resources_data_TD.yaml"
+    processes_model_data_file: "../data_inputs/processes_data.yaml"
 
   standards:
     - models_traffic

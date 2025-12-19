@@ -22,9 +22,9 @@ class ATAGOffset(AeroMAPSModel):
     """
     Class to compute carbon offsets in ATAG scenarios.
 
-    It is assumed that residual emissions are capped at 2019 levels until 2035, then decline
-    linearly to net-zero by 2050. In practice offsets are calculated from the gap between
-    actual emissions and the target residual trajectory.
+    It is assumed that residual emissions are capped at 2019 levels until 2035, then
+    decline linearly to net-zero by 2050. In practice offsets are calculated from the
+    gap between actual emissions and the target residual trajectory.
 
     Parameters
     --------------
@@ -38,8 +38,8 @@ class ATAGOffset(AeroMAPSModel):
         co2_2019_value = co2_emissions.loc[2019]
         residual_co2_trajectory = aeromaps_interpolation_function(
             self,
-            [co2_2019_value, co2_2019_value, 0.0],
             [2019, 2035, 2050],
+            [co2_2019_value, co2_2019_value, 0.0],
             model_name=self.name,
         )
 
