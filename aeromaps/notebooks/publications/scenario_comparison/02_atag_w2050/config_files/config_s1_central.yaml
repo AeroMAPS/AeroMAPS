@@ -5,6 +5,9 @@ data:
     json_outputs_file: "./outputs.json"
 
 models:
+  climate:
+    climate_model_data_file: default
+
   energy:
     energy_carriers_model_data_file: "../data_inputs/s1_central_energy_inputs_TD.yaml"
     resources_model_data_file: "../data_inputs/s1_central_resources_data_TD.yaml"
@@ -12,10 +15,12 @@ models:
 
   standards:
     - models_traffic
-    - models_efficiency_top_down
-    - models_energy_without_fuel_effect
-    - models_energy_cost
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
     - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down
 
   customs:
     atag_offset: "../models/atag_offset.py::ATAGOffset"

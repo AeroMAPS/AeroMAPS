@@ -3,6 +3,10 @@ waste_residue_lipids_biomass:
   name: "waste_residue_lipids_biomass"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 62.5e+12 # [MJ]
       # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
@@ -14,6 +18,10 @@ oil_crops_trees_biomass:
   name: "oil_crops_trees_biomass"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 75.0e+12 # [MJ]
       # 3 EJ per year for 25 years (Fueling Net Zero p. 41)
@@ -24,6 +32,10 @@ municipal_solid_waste_biomass:
   name: "municipal_solid_waste_biomass"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 62.5e+12 # [MJ]
       # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
@@ -35,6 +47,10 @@ woody_biomass:
   name: "woody_biomass"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 62.5e+12 # [MJ]
       # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
@@ -46,6 +62,10 @@ cellulosic_cover_crops_ethanol:
   name: "cellulosic_cover_crops_ethanol"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 175.0e+12 # [MJ]
       # 7 EJ per year for 25 years (Fueling Net Zero p. 41)
@@ -56,6 +76,10 @@ agricultural_residues_ethanol:
   name: "agricultural_residues_ethanol"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 62.5e+12 # [MJ]
       # Crossing figures in Fueling Net Zero p. 33 and 41) -> 10 EJ / yr excluding oil and cellulosic crops
@@ -67,6 +91,10 @@ waste_gas:
   name: "waste_gas"
   origin: "biomass"
   specifications:
+    co2_emission_factor: !AeroMapsCustomDataType
+      years: [ ]
+      values: [ 0.0 ]
+      method: linear
     availability:
       global: 117.5e+12 # [MJ]
       # From figure in Fueling Net Zero p. 33 -> 4.1 EJ / yr 2020 + 1.2 EJ 2025
@@ -75,22 +103,23 @@ waste_gas:
 
 
 
-renewables:
+green_electricity:
   # ID
-  name: "renewables"
+  name: "green_electricity"
   origin: "electricity"
   specifications:
   # Technical:
     co2_emission_factor: !AeroMapsCustomDataType
-        years: [ ]
-        values: [ 15.7 ]
-        method: linear
+      years: [ ]
+      values: [ 15.7 ]
+      method: linear
     availability:
-#      global: 250.0e+12 # [EJ]
+      global: 224.1e+12 # [EJ]
+      # based on IEA NZE scenario (p. 87)
       aviation_allocated_share: 5 # [%] Share of the global availability
     cost: !AeroMapsCustomDataType
       years: [ 2020, 2050 ]
-      values: [ 57.5/3600, 25/3600 ] # $ / MWh : 3600 MJ / MWh
+      values: [ 0.01597222222222222, 0.006944444444444444 ] # $ / MWh : 3600 MJ / MWh
       method: linear
 
 co2_dac:
@@ -100,19 +129,15 @@ co2_dac:
     #Economical
     cost: !AeroMapsCustomDataType
       years: [2020, 2050]
-      values: [400e-3, 100e-3] # $ / ton CO2 : 1000 kg / ton
+      values: [0.4, 0.1] # $ / ton CO2 : 1000 kg / ton
       method: linear
 
-green_hydrogen:
-  # ID
-  name: "green_hydrogen"
-  origin: "biomass"
+
+transport:
+  # Metadata
+  name: "transport"
   specifications:
-    # Availability
-    availability:
-#      global: 164.0e+12 # [MJ]
-      aviation_allocated_share: 5 # [%] Share of the global availability
     cost: !AeroMapsCustomDataType
-      years: [ 2020, 2050 ]
-      values: [ 5.9/120, 1.55/120 ] # $ / kg : 120 MJ / kg
+      years: []
+      values: [0.003]
       method: linear
