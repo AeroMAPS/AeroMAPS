@@ -13,11 +13,13 @@ generic_electricity:
 co2_dac:
   #ID
   name: "co2_dac"
+  specifications:
 
 
 co2_indus:
   #ID
   name: "co2_indus"
+  specifications:
 
 
 

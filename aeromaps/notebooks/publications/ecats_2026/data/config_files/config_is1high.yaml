@@ -12,7 +12,6 @@ models:
   energy:
     energy_carriers_model_data_file: "../ltag_data_inputs/is1_high_energy_inputs.yaml"
     resources_model_data_file: "../ltag_data_inputs/is1_resources_data.yaml"
-    processes_model_data_file: default
 
   standards:
     - models_traffic
@@ -21,6 +20,4 @@ models:
     - models_offset
     - models_emissions
     - models_sustainability
-    - models_energy_cost
-    - models_operation_cost_top_down
-    - models_abatements_cost_simplified
+    - carbon_tax

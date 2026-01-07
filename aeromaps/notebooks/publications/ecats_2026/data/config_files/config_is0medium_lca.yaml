@@ -11,8 +11,6 @@ models:
 
   energy:
     energy_carriers_model_data_file: "../ltag_data_inputs/is0_energy_inputs.yaml"
-    resources_model_data_file: default
-    processes_model_data_file: default
     
   life_cycle_assessment:
     lca_model_data_file: "../lca_data/custom_lca_model_tsas.yaml"
@@ -25,6 +23,4 @@ models:
     - models_offset
     - models_emissions
     - models_sustainability
-    - models_energy_cost
-    - models_operation_cost_top_down
-    - models_abatements_cost_simplified
+    - carbon_tax

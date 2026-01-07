@@ -465,6 +465,10 @@ carbon_budget_constraint = {
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
 }
 
+carbon_tax = {
+    "carbon_tax": CarbonTax("carbon_tax"),
+}
+
 # models_optim_complex_v2 = {
 #     "models_traffic_cost_feedback": models_traffic_cost_feedback,
 #     "models_efficiency_top_down": models_efficiency_top_down,
