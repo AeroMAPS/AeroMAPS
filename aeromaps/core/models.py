@@ -215,7 +215,11 @@ from aeromaps.models.impacts.costs.scenario.scenario_cost import (
     NonDiscountedEnergyCost,
     TotalSurplusLoss,
     TotalAirlineCost,
-    TotalAirlineCostNoElast, ConsumerSurplusLoss, AirlineSurplusLoss, TaxRevenueLoss, TotalWelfareLoss,
+    TotalAirlineCostNoElast,
+    ConsumerSurplusLoss,
+    AirlineSurplusLoss,
+    TaxRevenueLoss,
+    TotalWelfareLoss,
 )
 
 from aeromaps.models.impacts.costs.airlines.non_operating_costs_cost import (
@@ -723,7 +727,6 @@ models_optim_complex = {
 }
 
 
-
 models_optim_complex_v2 = {
     "models_traffic_cost_feedback": models_traffic_cost_feedback,
     "models_efficiency_top_down": models_efficiency_top_down,
@@ -761,7 +764,6 @@ models_optim_complex_v2 = {
     "tax_revenue_loss": TaxRevenueLoss("tax_revenue_loss"),
     "total_welfare_loss": TotalWelfareLoss("total_welfare_loss"),
 }
-
 
 
 models_optim_tsas_custom = {

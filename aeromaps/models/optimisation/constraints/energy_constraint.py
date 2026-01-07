@@ -47,7 +47,7 @@ class BiomassAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         biofuel_max_availability_viz = avg_eff * aviation_available_biomass
 
-        eps = 1e6  # Small value to avoid division by zero
+        eps = 1e-6  # Small value to avoid division by zero
         annual_constraint = (biomass_consumption - aviation_available_biomass) / (
             aviation_available_biomass + eps
         )
@@ -109,7 +109,7 @@ class ElectricityAvailabilityConstraintTrajectory(AeroMAPSModel):
 
         electrofuel_max_availability_viz = avg_eff * aviation_available_electricity
 
-        eps = 1e6  # Small value to avoid division by zero
+        eps = 1e-6  # Small value to avoid division by zero
         annual_constraint = (electricity_consumption - aviation_available_electricity) / (
             aviation_available_electricity + eps
         )
