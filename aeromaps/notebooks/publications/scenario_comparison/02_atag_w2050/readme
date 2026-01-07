@@ -29,8 +29,18 @@ AeroMAPS inputs.
 
 
 Besides the standard scenarios and assumptions from ATAG scenarios, variant scenarios are also explored:
--Traffic        : high and low growth variants
--Technology     : T1-T5 variants varying only technology levers (no SAF, operations, or offsets)
--Scope          : AeroMAPS emissions considers a Well-to-Wake (WTW) scope, while ATAG considers a Tank-to-Well (TTW)
+-Traffic        : standard scenarios are explored with central air traffic growth, but extra variants are explored with
+                low and high growth scenarios
+
+-Scope          : AeroMAPS emissions considers a Well-to-Wake (WTW) scope, while ATAG considers a Tank-to-Wake (TTW)
                 scope, a TTW variant is therefore included considering only kerosene combustion emissions (no lifecycle
-                approach) and SAF emissions are based on carbon reductions (p. 57 fueling net zero report)
+                approach) and SAF emissions are based on a percentual emissions reductions from the TTW kerosene (p. 57
+                fueling net zero report). However, 73.8 gCO2/MJ is considered for kerosene combustion (value from
+                https://doi.org/10.1038/s41467-022-35392-1) instead of the 71.82 gCO2/MJ as in the ATAG report (p. 100)
+
+-Technology     : T1-T5 variants varying only technology levers (no SAF, operations, offsets).
+    -T1 baseline        : 0.2% annual improvement
+    -T2 conservative    : 0.2% 2019-2035, 0.4% 2035-2050
+    -T3 new configs     : 0.2% 2019-2035, 0.5% 2035-2050
+    -T4 electrification : T3 + electric aircraft below 100 seats by 2040 (2% energy demand by 2050)
+    -T5 aspirational    : T4 + hydrogen 100-200 seats by 2035 (20% energy demand by 2050)
