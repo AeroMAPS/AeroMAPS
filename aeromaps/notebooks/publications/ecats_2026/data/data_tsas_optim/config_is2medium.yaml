@@ -1,0 +1,34 @@
+data:
+  inputs:
+    json_inputs_file: "./is2medium_inputs.json"
+    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
+  outputs:
+    json_outputs_file: "./is2medium_outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../ltag_data_inputs/is2_medium_energy_inputs-OPTIM.yaml"
+    resources_model_data_file: "../ltag_data_inputs/is2_resources_data.yaml"
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down
+    - models_abatements_cost_simplified
+    - carbon_budget_constraint
+    
+  customs:
+    blend_completeness_constraint: "../../energy_constraints.py::BlendCompletenessConstraint"
+    biomass_availability_constraint_trajectory: "../../energy_constraints.py::BiomassAvailabilityConstraintTrajectory"
+    electricity_availability_constraint_trajectory: "../../energy_constraints.py::ElectricityAvailabilityConstraintTrajectory"
+    biofuel_use_growth_constraint: "../../energy_constraints.py::BiofuelUseGrowthConstraint"
+    electrofuel_use_growth_constraint: "../../energy_constraints.py::ElectrofuelUseGrowthConstraint"

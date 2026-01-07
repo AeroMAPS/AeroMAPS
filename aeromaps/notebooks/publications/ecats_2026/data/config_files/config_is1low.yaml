@@ -1,0 +1,26 @@
+data:
+  inputs:
+    json_inputs_file: "../ltag_data_inputs/is1low_inputs.json"
+    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
+  outputs:
+    json_outputs_file: "../ltag_data_outputs/is1low_outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: default
+
+  energy:
+    energy_carriers_model_data_file: "../ltag_data_inputs/is1_low_energy_inputs.yaml"
+    resources_model_data_file: "../ltag_data_inputs/is1_resources_data.yaml"
+    processes_model_data_file: default
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - models_energy_cost
+    - models_operation_cost_top_down
+    - models_abatements_cost_simplified
