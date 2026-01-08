@@ -11,16 +11,22 @@ and SAF. However assumptions are not always quantified in the ATAG report, meani
 AeroMAPS inputs.
 
 -Traffic        : Fixed growth rates per period, values taken from report (p. 31)
--Technology     : Baseline annual improvements taken from report (p. 40), incremental technologies estimated from figure
-                (p. 41)
+
+-Technology     : Baseline (T1) annual improvements taken from report (p. 40), incremental technologies (T2, T3)
+                estimated from figure (p. 41), revolutionary technologies (T4, T5) assumed to have same consumption as
+                the present-day kerosene counterpart and are deployed so that energy demand matches figures (p. 47, 50)
+
 -Operations     : Annual operational improvements (p. 60) and load factor (p . 61) estimated from figures
+
 -Offsets        : Modeled in AeroMAPS to cap 2019 emissions until 2035 than decline linearly to zero
+
 -SAF            : SAF quantities estimated from figures (p. 79) with extra assumptions on how quantities are split among
                 pathways. Top-down pathways costs are assumed as exogenous inputs based on figure (p. 84). Lifecycle
                 emissions, efficiencies, economics completed with values from Yang 2025
                 (https://doi.org/10.1016/j.resconrec.2025.108124) and CORSIA LCA supporting document
                 (https://www.icao.int/sites/default/files/environmental-protection/CORSIA/Documents/SCS-Evaluation/
                 CORSIA_Supporting_Document_CORSIA-Eligible-Fuels_LCA_Methodology_V6.pdf)
+
     -HEFA                   : production split 2/2 into HEFA waste/residues and HEFA oil crops
     -Advanced feedstocks    : production split 4/4 into ATJ cellulosic crops, ATJ agricultural residues, FT woody
                             biomass, FT MSW
