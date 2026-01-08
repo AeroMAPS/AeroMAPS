@@ -14,7 +14,7 @@ AeroMAPS inputs.
 
 -Technology     : Baseline (T1) annual improvements taken from report (p. 40), incremental technologies (T2, T3)
                 estimated from figure (p. 41), revolutionary technologies (T4, T5) assumed to have same consumption as
-                the present-day kerosene counterpart and are deployed so that energy demand matches figures (p. 47, 50)
+                the present-day kerosene counterparts
 
 -Operations     : Annual operational improvements (p. 60) and load factor (p . 61) estimated from figures
 
@@ -48,5 +48,7 @@ Besides the standard scenarios and assumptions from ATAG scenarios, variant scen
     -T1 baseline        : 0.2% annual improvement
     -T2 conservative    : 0.2% 2019-2035, 0.4% 2035-2050
     -T3 new configs     : 0.2% 2019-2035, 0.5% 2035-2050
-    -T4 electrification : T3 + electric aircraft below 100 seats by 2040 (2% energy demand by 2050)
+    -T4 electrification : T3 + electric aircraft below 100 seats by 2038 (2% energy demand by 2050)
+                        5550 new aircraft (p. 48) -> ~26% of short-range 2050 ASK (280000000 seat-km/yr-aircraft)
     -T5 aspirational    : T4 + hydrogen 100-200 seats by 2035 (20% energy demand by 2050)
+                        24000 new aircraft (p. 52) -> >100% of medium-range 2050 ASK (352000000 seat-km/yr-aircraft)
