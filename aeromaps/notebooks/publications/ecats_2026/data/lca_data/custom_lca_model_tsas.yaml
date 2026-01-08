@@ -84,7 +84,26 @@ model:
             - attribute: 'phase'
               value: 'non-CO2 contrails'
               
-    
+    radiative_forcing_co2:
+        custom_attributes:
+            - attribute: 'phase'
+              value: 'CO2 radiative forcing'
+        amount: co2_erf/1000
+        name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+            
+    radiative_forcing_non_co2:
+        custom_attributes:
+            - attribute: 'phase'
+              value: 'non-CO2 radiative forcing'
+        amount: (total_erf - co2_erf)/1000
+        name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+            
     ## Fuel production and combustion    
     fuel:
         
@@ -546,3 +565,27 @@ custom_methods:
     - name: "('Custom methods', 'human health (with non-CO2)', 'climate change: human health')"
       filepath: './data/lca_data/lcia_nonCO2_human_health_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
+      
+    - name: "('PBLCIA', 'climate change', 'climate change radiative forcing')"
+      filepath: './data/lca_data/lcia_pblcia_climate_change_radiative_forcing.csv'
+      unit: 'W/m2'
+      
+    - name: "('PBLCIA', 'biosphere integrity', 'biosphere integrity')"
+      filepath: './data/lca_data/lcia_pblcia_biosphere_integrity.csv'
+      unit: 'BII loss (%)'
+    
+    - name: "('PBLCIA', 'biogeochemical', 'nitrogen cycle')"
+      filepath: './data/lca_data/lcia_pblcia_nitrogen_cycle.csv'
+      unit: 'TgN/yr'
+      
+    - name: "('PBLCIA', 'biogeochemical', 'phosphorus cycle')"
+      filepath: './data/lca_data/lcia_pblcia_phosphorus_cycle.csv'
+      unit: 'TgP/yr'
+      
+    - name: "('PBLCIA', 'freshwater change', 'freshwater use')"
+      filepath: './data/lca_data/lcia_pblcia_freshwater_use.csv'
+      unit: 'km3'
+      
+    - name: "('PBLCIA', 'stratospheric ozone depletion', 'ozone depletion')"
+      filepath: './data/lca_data/lcia_pblcia_stratospheric_ozone_depletion.csv'
+      unit: 'DU'
