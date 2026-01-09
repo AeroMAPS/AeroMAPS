@@ -145,8 +145,8 @@ fossil_kerosene:
     # Environmental:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
-        years: []
-        values: [89.0]
+        years: [2000,2070]
+        values: [89.0, 89.0]
         method: linear
       emission_index:
         h2o: 1.231
