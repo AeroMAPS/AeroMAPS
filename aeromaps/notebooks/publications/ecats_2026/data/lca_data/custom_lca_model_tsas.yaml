@@ -285,7 +285,7 @@ model:
         
         ### Biofuels
         biofuel:
-            amount: generic_biofuel_mass_consumption
+            amount: saf_ftg_mass_consumption
             unit: kilogram
             
             #### Combustion processes
@@ -293,7 +293,7 @@ model:
                 custom_attributes:
                     - attribute: 'phase'
                       value: 'CO2 biofuel'
-                amount: 0.074 * generic_biofuel_lhv
+                amount: 0.074 * saf_ftg_lhv
                 name: 'carbon dioxide, non-fossil'
                 categories:
                     - 'air'
@@ -304,20 +304,20 @@ model:
                       value: 'non-CO2 biofuel'
 
                 NOx:
-                    amount: generic_biofuel_emission_index_nox
+                    amount: saf_ftg_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: generic_biofuel_emission_index_sulfur
+                    amount: saf_ftg_emission_index_sulfur
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 PM:
-                    amount: generic_biofuel_emission_index_soot
+                    amount: saf_ftg_emission_index_soot
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -361,7 +361,7 @@ model:
         
         ### Electrofuels
         efuel:
-            amount: electrofuel_mass_consumption
+            amount: saf_co2_mass_consumption
             unit: kilogram
 
             #### Combustion processes 
@@ -369,7 +369,7 @@ model:
                 custom_attributes:
                         - attribute: 'phase'
                           value: 'CO2 electrofuel'
-                amount: 0.074 * electrofuel_lhv
+                amount: 0.074 * saf_co2_lhv
                 name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
                 categories:
                     - 'air'
@@ -380,20 +380,20 @@ model:
                       value: 'non-CO2 electrofuel'
 
                 NOx:
-                    amount: electrofuel_emission_index_nox
+                    amount: saf_co2_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: electrofuel_emission_index_sulfur
+                    amount: saf_co2_emission_index_sulfur
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 PM:
-                    amount: electrofuel_emission_index_soot
+                    amount: saf_co2_emission_index_soot
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -472,7 +472,7 @@ model:
                 
         ### Hydrogen
         hydrogen:
-            amount: hydrogen_electrolysis_mass_consumption
+            amount: lh2_mass_consumption
             unit: kilogram
             
             #### Combustion processes
@@ -482,7 +482,7 @@ model:
                           value: 'non-CO2 hydrogen'
                 
                 NOx:
-                    amount: hydrogen_electrolysis_emission_index_nox
+                    amount: lh2_emission_index_nox
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
@@ -502,18 +502,17 @@ model:
 # --- Declare metadata for LCA parameters --- 
 # This is optional, e.g. to set default values if not provided by AeroMAPS or in json input file
 parameters_metadata:
-    - parameter: 'generic_biofuel_mass_consumption'
+    - parameter: 'saf_ftg_mass_consumption'
       default: 0.
-    - parameter: 'electrofuel_mass_consumption'
+    - parameter: 'saf_co2_mass_consumption'
       default: 0.
-    - parameter: 'hydrogen_electrolysis_mass_consumption'
+    - parameter: 'lh2_mass_consumption'
       default: 0.
                       
 
 # --- Select LCIA methods for assessment ---
-methods:  # tip: you can search for methods with lca_algebraic function agb.findMethods() in a Python cell
+methods:
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'acidification: terrestrial', 'terrestrial acidification potential (TAP)')"
-    #- "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: freshwater', 'freshwater ecotoxicity potential (FETP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: marine', 'marine ecotoxicity potential (METP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: terrestrial', 'terrestrial ecotoxicity potential (TETP)')"
@@ -530,8 +529,6 @@ methods:  # tip: you can search for methods with lca_algebraic function agb.find
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
     - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
-    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
-    #- "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
     - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: natural resources', 'natural resources')"
 
 # --- Additional/custom LCIA methods provided by the user ---
@@ -566,6 +563,7 @@ custom_methods:
       filepath: './data/lca_data/lcia_nonCO2_human_health_climate_change.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
       
+    ## PBLCIA
     - name: "('PBLCIA', 'climate change', 'climate change radiative forcing')"
       filepath: './data/lca_data/lcia_pblcia_climate_change_radiative_forcing.csv'
       unit: 'W/m2'
