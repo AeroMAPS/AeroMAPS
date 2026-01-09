@@ -88,7 +88,7 @@ model:
         custom_attributes:
             - attribute: 'phase'
               value: 'CO2 radiative forcing'
-        amount: co2_erf/1000
+        amount: co2_erf
         name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
         categories:
             - 'air'
@@ -98,7 +98,7 @@ model:
         custom_attributes:
             - attribute: 'phase'
               value: 'non-CO2 radiative forcing'
-        amount: (total_erf - co2_erf)/1000
+        amount: (total_erf - co2_erf)
         name: 'radiative forcing'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
         categories:
             - 'air'
