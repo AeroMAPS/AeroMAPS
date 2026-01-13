@@ -330,7 +330,7 @@ model:
                     name: 'market for kerosene'
                     loc: 'Europe without Switzerland'
                 carbon_savings:
-                    amount: 0.48  # estimated carbon savings (in kgCO2-eq/kgFuel) based on ICAO's Lower Carbon Aviation Fuels Technology Update, p.18
+                    amount: -0.48  # estimated carbon savings (in kgCO2-eq/kgFuel) based on ICAO's Lower Carbon Aviation Fuels Technology Update, p.18
                     name: 'carbon dioxide, fossil' 
                     categories:
                         - 'air'   
