@@ -1,0 +1,5 @@
+name,categories,amount,unit
+contrail,air::lower stratosphere + upper troposphere,1.0298E-05,kilometer
+nitrogen oxides,air::lower stratosphere + upper troposphere,7.9612E-05,kilogram
+sulfur dioxide,air::lower stratosphere + upper troposphere,-3.6416E-05,kilogram
+water vapour,air::lower stratosphere + upper troposphere,5.7175E-08,kilogram

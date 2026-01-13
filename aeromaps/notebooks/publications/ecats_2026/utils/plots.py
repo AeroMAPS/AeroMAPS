@@ -22,9 +22,10 @@ def plot_stacked_evolution_subplots(xarray_data):
 
     # Remove phases containing 'sum'
     df_filtered = df[~df.index.get_level_values("axis").str.contains("sum")]
-    df_filtered = df_filtered[
-        ~df_filtered.index.get_level_values("axis").str.contains("_other_")
-    ]  # make sure it is equal to zero before deleting
+    
+    #df_filtered = df_filtered[
+    #    ~df_filtered.index.get_level_values("axis").str.contains("_other_")
+    #]  # make sure it is equal to zero before deleting
 
     methods = df_filtered.index.get_level_values("impacts").unique()  # [:9]
     years = df_filtered.columns
@@ -41,6 +42,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         "aircraft_production": (palette[3], ""),
         "airport": (palette[1], ""),
         "kerosene_production": (palette[2], ""),
+        "lcaf_production": (palette[4], ""),
         "biofuel_production": (palette[5], ""),
         "e_fuel_production": (palette[8], ""),
         "hydrogen_production": (palette[6], ""),
@@ -79,7 +81,7 @@ def plot_stacked_evolution_subplots(xarray_data):
 
         # Plot stacked area chart with custom colors
         # stacks = axes[i].stackplot(years, df_method, labels=df_method.index, alpha=0.8, colors=palette)
-        colors = [palette_dict[key][0] for key in df_method.index]
+        colors = [palette_dict.get(key, ['gray'])[0] for key in df_method.index]
         stacks = axes[i].stackplot(
             years, df_method, labels=df_method.index, alpha=0.8, colors=colors, linewidth=0.2
         )
@@ -87,7 +89,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         # Customize the subplot
         name = method[2]
         # name = name.replace('- ', '\n').replace('(', '\n(')
-        name = name.replace("(with non-CO2)", "")
+        # name = name.replace("(with non-CO2)", "")
         name = name.replace("total", "")
         name = name.split("- ")[0]
         name = name.replace(":", "\n")
@@ -108,7 +110,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         axes[i].set_facecolor("white")
 
         # Set hatches pattern
-        hatches = [palette_dict[key][1] for key in df_method.index]
+        hatches = [palette_dict.get(key, ['',''])[1] for key in df_method.index]
         for stack, hatch, values in zip(stacks, hatches, df_method.values):
             if np.any(values != 0):  # Check if the layer has non-zero values
                 stack.set_edgecolor("0.1")
@@ -123,14 +125,14 @@ def plot_stacked_evolution_subplots(xarray_data):
         handles, labels = ax.get_legend_handles_labels()
         all_handles.extend(handles)
         all_labels.extend(labels)
-
+        
     entries = collections.OrderedDict()
     for ax in axes.flatten():
         for handle, label in zip(all_handles, all_labels):
             # if 'biofuel' in label or 'electrofuel' in label:
             #    continue
-            if label == "Others":
-                continue
+            #if label == "Others":
+            #    continue
             if "CO2" in label:
                 label_name = label.replace("CO2", r"CO$_2$")
             elif "e_fuel" in label:

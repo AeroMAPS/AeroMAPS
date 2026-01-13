@@ -13,7 +13,7 @@ models:
     energy_carriers_model_data_file: "../ltag_data_inputs/is0_energy_inputs.yaml"
     
   life_cycle_assessment:
-    lca_model_data_file: "../lca_data/custom_lca_model_tsas.yaml"
+    lca_model_data_file: "../lca_data/custom_lca_model_ecats.yaml"
     split_by: 'phase'
 
   standards:
