@@ -10,11 +10,11 @@
     "operations_gain_reference_years": [ 2020, 2050],
     "operations_gain_reference_years_values": [0, 3],
     "load_factor_end_year": 88.389,
-    "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [],
-    "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [0.2],
-    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years": [],
-    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values": [0.2],
-    "energy_per_ask_long_range_dropin_fuel_gain_reference_years": [],
-    "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [0.2],
+    "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [2019, 2035, 2036, 2050],
+    "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [0.0, 0.0, 0.5, 0.5],
+    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years": [2019, 2035, 2036, 2050],
+    "energy_per_ask_medium_range_dropin_fuel_gain_reference_years_values": [0.0, 0.0, 0.5, 0.5],
+    "energy_per_ask_long_range_dropin_fuel_gain_reference_years": [2019, 2035, 2036, 2050],
+    "energy_per_ask_long_range_dropin_fuel_gain_reference_years_values": [0.0, 0.0, 0.5, 0.5],
     "dropin_fuel_mean_lhv": 44
 }
