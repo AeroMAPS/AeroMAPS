@@ -21,9 +21,7 @@ models:
     - models_offset
     - models_emissions
     - models_sustainability
-    - models_energy_cost
-    - models_operation_cost_top_down
-    - models_abatements_cost_simplified
+    - carbon_tax
     - carbon_budget_constraint
     
   customs:
