@@ -1,38 +1,38 @@
-from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
-from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
-from aeromaps.plots.sustainability_assessment import (
+from aeromaps.plots.single_scenario.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
+from aeromaps.plots.single_scenario.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
+from aeromaps.plots.single_scenario import (
     CarbonBudgetAssessmentPlot,
     TemperatureTargetAssessmentPlot,
     BiomassResourceBudgetAssessmentPlot,
     ElectricityResourceBudgetAssessmentPlot,
     MultidisciplinaryAssessmentPlot,
 )
-from aeromaps.plots.indicators import (
+from aeromaps.plots.single_scenario import (
     MeanCO2PerRPKPlot,
     MeanCO2PerRTKPlot,
     PassengerKayaFactorsPlot,
     FreightKayaFactorsPlot,
     LeversOfActionDistributionPlot,
 )
-from aeromaps.plots.air_traffic import (
+from aeromaps.plots.single_scenario import (
     RevenuePassengerKilometerPlot,
     RevenueTonneKilometerPlot,
     AvailableSeatKilometerPlot,
     TotalAircraftDistancePlot,
 )
-from aeromaps.plots.aircraft_fleet_and_operations import (
+from aeromaps.plots.single_scenario import (
     DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
 )
-from aeromaps.plots.aircraft_energy import (
+from aeromaps.plots.single_scenario.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
     ShareFuelPlot,
 )
-from aeromaps.plots.emissions import (
+from aeromaps.plots.single_scenario.emissions import (
     CumulativeCO2EmissionsPlot,
     DirectH2OEmissionsPlot,
     DirectNOxEmissionsPlot,
@@ -41,14 +41,14 @@ from aeromaps.plots.emissions import (
     CarbonOffsetPlot,
     CumulativeCarbonOffsetPlot,
 )
-from aeromaps.plots.climate import (
+from aeromaps.plots.single_scenario.climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
     TemperatureIncreaseFromAirTransportPlot,
 )
-from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+from aeromaps.plots.single_scenario.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
-from aeromaps.plots.costs import (
+from aeromaps.plots.single_scenario.costs import (
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
