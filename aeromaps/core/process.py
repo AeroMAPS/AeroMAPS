@@ -41,7 +41,7 @@ from aeromaps.utils.functions import (
     _flatten_dict,
 )
 from aeromaps.utils.yaml import read_yaml_file
-from aeromaps.plots import available_plots, available_plots_fleet
+from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
 
 # Fleet model imports
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (

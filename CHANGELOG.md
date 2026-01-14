@@ -1,5 +1,11 @@
 # Changelog
 
+## Branch scenario_comparison
+
+Changed:
+- Added new publication notebook on comparing industry scenarios
+- Refactor of plots into plots.single_scenario and added plots.comparison
+
 ## Version 1.0.0
 
 Changed:
