@@ -1,21 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class FinalEffectiveRadiativeForcingPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         barWidth = 0.6
@@ -54,19 +48,7 @@ class FinalEffectiveRadiativeForcingPlot:
         self.ax.grid()
         self.ax.set_xlabel("Effective radiative forcing [$mW/m^2$]")
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         chosen_year = self.years[-1]
         y1 = [
             self.df_climate.loc[chosen_year, "total_erf"],
@@ -83,24 +65,14 @@ class FinalEffectiveRadiativeForcingPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DistributionEffectiveRadiativeForcingPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_co2_erf_share,) = self.ax.plot(
@@ -167,19 +139,7 @@ class DistributionEffectiveRadiativeForcingPlot:
         self.ax.legend(loc=0)
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_co2_erf_share.set_ydata(
             self.df_climate.loc[self.years, "co2_erf"]
             / self.df_climate.loc[self.years, "total_erf"]
@@ -213,24 +173,14 @@ class DistributionEffectiveRadiativeForcingPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class TemperatureIncreaseFromAirTransportPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -285,19 +235,7 @@ class TemperatureIncreaseFromAirTransportPlot:
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_temperature.set_ydata(
             self.df_climate.loc[self.prospective_years, "temperature_increase_from_aviation"] * 1000
         )
@@ -321,24 +259,14 @@ class TemperatureIncreaseFromAirTransportPlot:
             label="Non-CO2",
         )
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DetailedTemperatureIncreaseFromAirTransportPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -481,19 +409,7 @@ class DetailedTemperatureIncreaseFromAirTransportPlot:
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_temperature.set_ydata(
             self.df_climate.loc[self.prospective_years, "temperature_increase_from_aviation"] * 1000
         )
@@ -604,7 +520,3 @@ class DetailedTemperatureIncreaseFromAirTransportPlot:
             color="tomato",
             label="Aerosols",
         )
-
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()

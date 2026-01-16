@@ -4,26 +4,20 @@
 # @Software: PyCharm
 import matplotlib.pyplot as plt
 import numpy as np
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 import pandas as pd
 from matplotlib.patches import Patch
 
 
-from .constants import plot_3_x, plot_3_y
 
 
-class ScenarioEnergyExpensesComparison:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_energy_expenses,) = self.ax.plot(
@@ -85,11 +79,6 @@ class ScenarioEnergyExpensesComparison:
 
         self.ax.set_xlim(2020, self.years[-1])
         # #
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
     def update(self, df_data):
         self.df = df_data["vector_outputs"]
@@ -130,13 +119,16 @@ class ScenarioEnergyExpensesComparison:
 
         for collection in self.ax.collections:
             collection.remove()
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class DiscountEffect:
-    def __init__(self, process):
+class DiscountEffect(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -176,11 +168,6 @@ class DiscountEffect:
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
         # #
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
     def update(self, df_data):
         self.df = df_data["vector_outputs"]
@@ -195,9 +182,6 @@ class DiscountEffect:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -391,11 +375,6 @@ class DropInMACC:
         self.ax.set_title("Marginal abatement cost curve for drop-in fuels")
 
         # #
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
     def update(self, df_data):
         self.df = df_data["vector_outputs"]
@@ -561,8 +540,13 @@ class DropInMACC:
         self.fig.canvas.draw()
 
 
-class DOCEvolutionBreakdown:
-    def __init__(self, process):
+class DOCEvolutionBreakdown(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -722,13 +706,7 @@ class DOCEvolutionBreakdown:
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
         # self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -816,14 +794,16 @@ class DOCEvolutionBreakdown:
             edgecolor="dimgray",
             label="Carbon tax",
         )
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class DOCEvolutionCategory:
-    def __init__(self, process):
+class DOCEvolutionCategory(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -926,11 +906,6 @@ class DOCEvolutionCategory:
         self.ax.legend(title="Direct Operating Cost")
         self.ax.set_xlim(2020, self.years[-1])
         # #
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
     def update(self, df_data):
         for collection in self.ax.collections:
@@ -975,14 +950,16 @@ class DOCEvolutionCategory:
         )
 
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class AirfareEvolutionBreakdown:
-    def __init__(self, process):
+class AirfareEvolutionBreakdown(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -1212,13 +1189,7 @@ class AirfareEvolutionBreakdown:
         self.ax.legend(fontsize="8", loc="upper left")
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -1417,7 +1388,4 @@ class AirfareEvolutionBreakdown:
             alpha=0.8,
             label="Operating Profit",
         )
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()

@@ -9,6 +9,8 @@ from ipywidgets import interact, widgets
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
+
 
 class AnnualMACC:
     def __init__(self, process, fleet_model):
@@ -1875,27 +1877,20 @@ class ShadowCarbonPrice:
         self.fig.canvas.draw()
 
 
-class AnnualMACCSimple:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class AnnualMACCSimple(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         try:
-            self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
-            )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
             self.plot_interact()
-
         except Exception as e:
             raise RuntimeError("Error in creating plot") from e
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -2379,20 +2374,12 @@ class AnnualMACCSimple:
         self.fig.canvas.draw()
 
 
-class ShadowCarbonPriceSimple:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ShadowCarbonPriceSimple(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         try:
-            self.fig, self.ax = plt.subplots(figsize=(10, 7))
-
             self.create_plot_data()
             self.plot_interact()
         except Exception as e:
@@ -2400,6 +2387,9 @@ class ShadowCarbonPriceSimple:
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
