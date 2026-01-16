@@ -1,7 +1,6 @@
 data:
   inputs:
     json_inputs_file: "./is2medium_inputs.json"
-    partitioning_data_file: "../partitioning_data/partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "./is2medium_outputs.json"
 
@@ -30,3 +29,5 @@ models:
     electricity_availability_constraint_trajectory: "../../energy_constraints.py::ElectricityAvailabilityConstraintTrajectory"
     biofuel_use_growth_constraint: "../../energy_constraints.py::BiofuelUseGrowthConstraint"
     electrofuel_use_growth_constraint: "../../energy_constraints.py::ElectrofuelUseGrowthConstraint"
+    reduced_mandate: "../../energy_constraints.py::ReducedMandate"
+    optimization_objectives: "../../energy_constraints.py::OptimizationObjectives"

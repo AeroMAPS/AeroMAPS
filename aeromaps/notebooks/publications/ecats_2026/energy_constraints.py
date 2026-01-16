@@ -3,6 +3,115 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
+class ReducedMandate(AeroMAPSModel):
+    """
+    Model that expands short optimization vectors to full mandate share vectors.
+
+    The optimization controls only the last 5 values of the mandate share vectors.
+    This model prepends the 2 fixed leading values to create the full 7-element vectors
+    expected by downstream AeroMAPS models.
+    """
+
+    def __init__(self, name="reduced_mandate", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        saf_ftg_mandate_share_values_optim: list,
+        saf_co2_mandate_share_values_optim: list,
+        saf_ftg_mandate_share_values_fixed: list,
+        saf_co2_mandate_share_values_fixed: list,
+    ) -> Tuple[list, list]:
+        """
+        Expand short optimization vectors with fixed leading values.
+
+        Parameters
+        ----------
+        saf_ftg_mandate_share_values_optim : list
+            Last 5 biofuel mandate share values (optimization variables).
+        saf_co2_mandate_share_values_optim : list
+            Last 5 electrofuel mandate share values (optimization variables).
+        saf_ftg_mandate_share_values_fixed : list
+            First 2 fixed biofuel mandate share values (not optimized).
+        saf_co2_mandate_share_values_fixed : list
+            First 2 fixed electrofuel mandate share values (not optimized).
+
+        Returns
+        -------
+        saf_ftg_mandate_share_values : list
+            Full 7-element biofuel mandate share vector.
+        saf_co2_mandate_share_values : list
+            Full 7-element electrofuel mandate share vector.
+        """
+
+        # Combine fixed and optimized values
+        saf_ftg_mandate_share_values = (
+            saf_ftg_mandate_share_values_fixed + saf_ftg_mandate_share_values_optim
+        )
+        saf_co2_mandate_share_values = (
+            saf_co2_mandate_share_values_fixed + saf_co2_mandate_share_values_optim
+        )
+
+        return saf_ftg_mandate_share_values, saf_co2_mandate_share_values
+
+
+class OptimizationObjectives(AeroMAPSModel):
+    """
+    This class computes optimization objectives: cumulative CO2 at end year
+    and temperature impacts.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('optimization_objectives' by default).
+    """
+
+    def __init__(self, name="optimization_objectives", *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
+
+    def compute(
+        self,
+        cumulative_co2_emissions: pd.Series,
+        temperature_increase_from_aviation: pd.Series,
+    ) -> Tuple[float, float, float]:
+        """
+        Extract cumulative CO2 at end year and temperature impacts.
+
+        Parameters
+        ----------
+        cumulative_co2_emissions : pd.Series
+            Cumulative CO2 emissions from aviation over time [GtCO2].
+        temperature_increase_from_aviation : pd.Series
+            Temperature increase from aviation over time [°C].
+
+        Returns
+        -------
+        cumulative_co2_end_year : float
+            Cumulative CO2 emissions at end year [GtCO2].
+        temperature_increase_end_year : float
+            Temperature increase from aviation at end year [°C].
+        mean_temperature_increase_from_aviation_2025_end_year : float
+            Mean temperature increase from aviation over 2025_end_year [°C].
+        """
+
+        # Cumulative CO2 at end year
+        cumulative_co2_end_year = cumulative_co2_emissions.loc[self.end_year]
+
+        # Temperature increase at end year
+        temperature_increase_end_year = temperature_increase_from_aviation.loc[self.end_year]
+
+        # Mean temperature increase over 2025-2050
+        mean_temperature_increase_from_aviation_2025_end = temperature_increase_from_aviation.loc[
+            2025 : self.end_year
+        ].mean()
+
+        return (
+            cumulative_co2_end_year,
+            temperature_increase_end_year,
+            mean_temperature_increase_from_aviation_2025_end,
+        )
+
+
 class BlendCompletenessConstraint(AeroMAPSModel):
     def __init__(self, name="blend_completeness_constraint", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
