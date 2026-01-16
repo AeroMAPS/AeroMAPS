@@ -95,6 +95,6 @@
   "kerosene_price_reference_years": [],
   "kerosene_price_reference_years_values": [0.54],
   "model": "remind",
-  "pathway": "SSP2_NPi",
+  "pathway": "SSP2_PkBudg1000",
   "elec_solar_share": 1.0
 }

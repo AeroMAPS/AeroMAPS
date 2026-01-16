@@ -115,6 +115,8 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 for phase in self.axis_keys:
                     method_with_axis = method + (phase,)
                     self.output_names.append(tuple_to_varname(method_with_axis))
+                # Also add total over all axes
+                self.output_names.append(tuple_to_varname(method))
         else:
             for method in self.methods:
                 self.output_names.append(tuple_to_varname(method))
@@ -328,6 +330,13 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                     value = res.sel(systems=KEY_MODEL, impacts=method, axis=phase).to_series()
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
+                # Also add total over all axes
+                value = res.sel(
+                    systems=KEY_MODEL,
+                    impacts=method
+                ).sum(dim="axis").to_series()
+                value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                output_data[tuple_to_varname(method)] = value
         else:
             for method in res.coords["impacts"].values:
                 value = res.sel(systems=KEY_MODEL, impacts=method).to_series()
