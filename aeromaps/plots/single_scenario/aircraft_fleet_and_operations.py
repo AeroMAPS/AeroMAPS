@@ -1,9 +1,16 @@
 import matplotlib.pyplot as plt
-from .constants import plot_3_x, plot_3_y
+import numpy as np
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class DropinFuelConsumptionLiterPerPAX100kmPlot:
-    def __init__(self, process):
+class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -45,13 +52,7 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -64,14 +65,16 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class MeanLoadFactorPlot:
-    def __init__(self, process):
+class MeanLoadFactorPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -111,13 +114,7 @@ class MeanLoadFactorPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -128,14 +125,16 @@ class MeanLoadFactorPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class MeanEnergyPerASKPlot:
-    def __init__(self, process):
+class MeanEnergyPerASKPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -177,13 +176,7 @@ class MeanEnergyPerASKPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -196,14 +189,16 @@ class MeanEnergyPerASKPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class MeanEnergyPerRTKPlot:
-    def __init__(self, process):
+class MeanEnergyPerRTKPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
         data = process.data
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
@@ -245,13 +240,7 @@ class MeanEnergyPerRTKPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -264,7 +253,4 @@ class MeanEnergyPerRTKPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()

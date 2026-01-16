@@ -1,20 +1,13 @@
-import matplotlib.pyplot as plt
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class RevenuePassengerKilometerPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class RevenuePassengerKilometerPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -43,42 +36,17 @@ class RevenuePassengerKilometerPlot:
         self.ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_rpk.set_ydata(self.df.loc[self.prospective_years, "rpk"])
 
-        for collection in self.ax.collections:
-            collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
+class RevenueTonneKilometerPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-
-class RevenueTonneKilometerPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -107,42 +75,17 @@ class RevenueTonneKilometerPlot:
         self.ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_rtk.set_ydata(self.df.loc[self.prospective_years, "rtk"])
 
-        for collection in self.ax.collections:
-            collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
+class AvailableSeatKilometerPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-
-class AvailableSeatKilometerPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -171,42 +114,17 @@ class AvailableSeatKilometerPlot:
         self.ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_ask.set_ydata(self.df.loc[self.prospective_years, "ask"])
 
-        for collection in self.ax.collections:
-            collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
+class TotalAircraftDistancePlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-
-class TotalAircraftDistancePlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -235,26 +153,7 @@ class TotalAircraftDistancePlot:
         self.ax = plt.gca()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_total_aircraft_distance.set_ydata(
             self.df_climate.loc[self.prospective_years, "total_aircraft_distance"] / 10**9
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()

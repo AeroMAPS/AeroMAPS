@@ -1,21 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class BiomassConsumptionPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class BiomassConsumptionPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_biomass_consumption,) = self.ax.plot(
@@ -35,13 +29,7 @@ class BiomassConsumptionPlot:
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -54,25 +42,16 @@ class BiomassConsumptionPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class ElectricityConsumptionPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ElectricityConsumptionPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_electricity_consumption,) = self.ax.plot(
@@ -108,13 +87,7 @@ class ElectricityConsumptionPlot:
         # self.ax_twin.set_ylim((function_ej_to_twh(ymin), function_ej_to_twh(ymax)))
         # self.ax_twin.plot([], [])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.float_outputs = data["float_outputs"]
         self.years = data["years"]["full_years"]
@@ -131,9 +104,6 @@ class ElectricityConsumptionPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         # self.ax_twin.relim()
         # self.ax_twin.autoscale_view()
         self.fig.canvas.draw()

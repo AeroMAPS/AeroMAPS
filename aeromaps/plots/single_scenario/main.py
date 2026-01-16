@@ -1,22 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .constants import plot_1_x, plot_1_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class AirTransportCO2EmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_1_x, plot_1_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_1_x, plot_1_y)
 
     def create_plot(self):
         (self.line_co2_emissions_including_sobriety,) = self.ax.plot(
@@ -144,20 +137,7 @@ class AirTransportCO2EmissionsPlot:
         self.ax.legend(loc=2)
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_co2_emissions_including_sobriety.set_ydata(
             self.df["co2_emissions_2019technology"]
         )
@@ -229,25 +209,16 @@ class AirTransportCO2EmissionsPlot:
             hatch="//",
             label="Carbon offset",
         )
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
-class AirTransportClimateImpactsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class AirTransportClimateImpactsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_1_x, plot_1_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_1_x, plot_1_y)
 
     def create_plot(self):
         (self.line_co2_erf,) = self.ax.plot(
@@ -354,19 +325,7 @@ class AirTransportClimateImpactsPlot:
         self.ax.legend(loc=2)
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_co2_erf.set_ydata(self.df_climate.loc[self.years, "co2_erf"])
 
         self.line_co2_h2o_erf.set_ydata(self.df_climate.loc[self.years, "co2_h2o_erf"])
@@ -424,7 +383,4 @@ class AirTransportClimateImpactsPlot:
             color="darkblue",
             label="Aerosols",
         )
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()

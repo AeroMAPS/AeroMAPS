@@ -4,22 +4,16 @@ import numpy as np
 from ipywidgets import widgets, interact
 from matplotlib.lines import Line2D
 
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class MeanFuelEmissionFactorPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -50,44 +44,19 @@ class MeanFuelEmissionFactorPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_fuel_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "co2_per_energy_mean"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
+class EmissionFactorPerFuelCategory(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-
-class EmissionFactorPerFuelCategory:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_biofuel_mean_emission_factor,) = self.ax.plot(
@@ -142,57 +111,33 @@ class EmissionFactorPerFuelCategory:
         self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.prospective_years[0] + 1, self.prospective_years[-1])
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_biofuel_mean_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "dropin_fuel_biomass_mean_co2_emission_factor"]
         )
-
         self.line_hydrogen_mean_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "hydrogen_mean_co2_emission_factor"]
         )
-
         self.line_electrofuel_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "dropin_fuel_electricity_mean_co2_emission_factor"]
         )
-
         self.line_kerosene_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "fossil_kerosene_mean_co2_emission_factor"]
         )
-
         self.line_electricity_emission_factor.set_ydata(
             self.df.loc[self.prospective_years, "electric_mean_co2_emission_factor"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
-
-
-class EmissionFactorPerFuel:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.years = data["years"]["full_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class EmissionFactorPerFuel(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.pathways_manager = process.pathways_manager
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (10, 6)
 
     def create_plot(self):
         pathways = self.pathways_manager.get_all()
@@ -308,36 +253,21 @@ class EmissionFactorPerFuel:
         self.ax.set_ylabel("CO2 emission factor [gCO2-eq/MJ]")
         self.ax.legend(new_handles, new_labels)
         self.ax.grid(True)
-        self.fig.tight_layout()
-        self.fig.canvas.draw()
 
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.years = data["years"]["full_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = data["pathways_manager"]
-
+    def _update_plot_elements(self):
         self.ax.cla()
         self.create_plot()
-        self.fig.canvas.draw()
 
 
-class ShareFuelPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ShareFuelPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.plot_interact()
-        self.create_plot()
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         ac_type_widget = widgets.Dropdown(
@@ -349,12 +279,15 @@ class ShareFuelPlot:
             options=["All types"] + self.pathways_manager.get_all_types("energy_origin"),
             description="Energy origin:",
         )
-        interact(self.update, aircraft_type=ac_type_widget, energy_origin=energy_origin_widget)
+        interact(self._on_interact_change, aircraft_type=ac_type_widget, energy_origin=energy_origin_widget)
 
     def create_plot(self):
         pass
 
-    def update(self, aircraft_type, energy_origin):
+    def _update_plot_elements(self):
+        pass
+
+    def _on_interact_change(self, aircraft_type, energy_origin):
         self.ax.cla()
 
         color_mapping = {
@@ -520,26 +453,14 @@ class ShareFuelPlot:
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
         self.ax.set_ylim(-10, 110)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
 
+class EnergyConsumptionPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class EnergyConsumptionPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -568,26 +489,7 @@ class EnergyConsumptionPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_energy_consumption.set_ydata(
             self.df.loc[self.prospective_years, "energy_consumption"] / 10**12
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()

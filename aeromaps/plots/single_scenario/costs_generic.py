@@ -1,27 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 import pandas as pd
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from ipywidgets import interact, widgets
 
 
-class ScenarioEnergyCapitalPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(12, 7),
-        )
-
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.plot_interact()
-        self.create_plot()
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
@@ -217,19 +211,9 @@ class ScenarioEnergyCapitalPlot:
         self.fig.canvas.draw()
 
 
-class ScenarioEnergyExpensesPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(12, 7),
-        )
         self.hatch_map = {
             "mfsp": "",
             "tax": "//",
@@ -254,8 +238,12 @@ class ScenarioEnergyExpensesPlot:
             "carbon_tax": ":",
             "subsidy": ":",
         }
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.plot_interact()
-        self.create_plot()
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
@@ -678,18 +666,10 @@ class ScenarioEnergyExpensesPlot:
         self.fig.canvas.draw()
 
 
-class DetailledMFSPBreakdown:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_data = process.energy_carriers_data
+class DetailledMFSPBreakdown(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
+        self.pathways_data = process.energy_carriers_data
         self.resource_color_map = self._create_color_map()
         self.hatch_map = {
             "cost": "",
@@ -697,12 +677,12 @@ class DetailledMFSPBreakdown:
             "carbon_tax": "..",
             "subsidy": "xx",
         }
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(10, 7),
-        )
-        self.create_plot()
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.plot_interact()
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def _create_color_map(self):
         # Color mapping for each (process, resource) pair
@@ -2848,16 +2828,15 @@ class DetailledMFSPBreakdown:
         self.fig.canvas.draw()
 
 
-class SimpleMFSP:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.years = data["years"]["full_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class SimpleMFSP(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
         self.pathways_manager = process.pathways_manager
-
-        self.fig, self.ax = plt.subplots(figsize=(12, 7))
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
         self.plot_interact()
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def plot_interact(self):
         mfsp_toggle = widgets.ToggleButtons(
@@ -2988,7 +2967,7 @@ class SimpleMFSP:
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
-    def update(self, data):
+    def _update_plot_elements(self):
         self.df = data["vector_outputs"]
         self.years = data["years"]["full_years"]
         self.prospective_years = data["years"]["prospective_years"]

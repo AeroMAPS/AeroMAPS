@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class MeanCO2PerRPKPlot:
+class MeanCO2PerRPKPlot(SingleScenarioPlot):
     def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
@@ -65,9 +65,6 @@ class MeanCO2PerRPKPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -133,9 +130,6 @@ class MeanCO2PerRTKPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -241,9 +235,6 @@ class PassengerKayaFactorsPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -337,9 +328,6 @@ class FreightKayaFactorsPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -645,8 +633,6 @@ class LeversOfActionDistributionPlot:
 
             for collection in self.ax.collections:
                 collection.remove()
-            self.ax.relim()
-            self.ax.autoscale_view()
             self.fig.canvas.draw()
 
         else:
@@ -674,6 +660,4 @@ class LeversOfActionDistributionPlot:
 
             for collection in self.ax.collections:
                 collection.remove()
-            self.ax.relim()
-            self.ax.autoscale_view()
             self.fig.canvas.draw()

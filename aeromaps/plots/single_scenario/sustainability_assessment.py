@@ -3,23 +3,17 @@ from matplotlib.patches import Patch
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
-from .constants import plot_2_x, plot_2_y
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class CarbonBudgetAssessmentPlot:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         # Data to plot
@@ -278,21 +272,13 @@ class CarbonBudgetAssessmentPlot:
         self.fig.canvas.draw()
 
 
-class TemperatureTargetAssessmentPlot:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         # Data to plot
@@ -589,20 +575,13 @@ class TemperatureTargetAssessmentPlot:
         self.fig.canvas.draw()
 
 
-class BiomassResourceBudgetAssessmentPlot:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         # Data to plot
@@ -851,20 +830,13 @@ class BiomassResourceBudgetAssessmentPlot:
         self.fig.canvas.draw()
 
 
-class ElectricityResourceBudgetAssessmentPlot:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         # Data to plot (updated to new input format)
@@ -1116,21 +1088,13 @@ class ElectricityResourceBudgetAssessmentPlot:
         self.fig.canvas.draw()
 
 
-class MultidisciplinaryAssessmentPlot:
-    def __init__(self, process):
-        data = process.data
-        self.parameters = data["float_inputs"]
-        self.df = data["vector_outputs"]
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_2_x, plot_2_y), subplot_kw={"projection": "polar"}
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         # Carbon budget

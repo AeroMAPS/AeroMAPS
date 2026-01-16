@@ -1,21 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .constants import plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
 
 
-class CumulativeCO2EmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_cumulative_co2_emissions,) = self.ax.plot(
@@ -46,19 +40,7 @@ class CumulativeCO2EmissionsPlot:
         self.ax = plt.gca()
         self.ax.set_xlim(2019, self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_cumulative_co2_emissions.set_ydata(
             self.df.loc[self.prospective_years, "cumulative_co2_emissions"]
         )
@@ -70,24 +52,14 @@ class CumulativeCO2EmissionsPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DirectH2OEmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DirectH2OEmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -116,19 +88,7 @@ class DirectH2OEmissionsPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_h2o_emissions.set_ydata(
             self.df_climate.loc[self.prospective_years, "h2o_emissions"]
         )
@@ -136,24 +96,14 @@ class DirectH2OEmissionsPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DirectNOxEmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DirectNOxEmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -182,19 +132,7 @@ class DirectNOxEmissionsPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_nox_emissions.set_ydata(
             self.df_climate.loc[self.prospective_years, "nox_emissions"]
         )
@@ -202,24 +140,14 @@ class DirectNOxEmissionsPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DirectSulfurEmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DirectSulfurEmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -248,19 +176,7 @@ class DirectSulfurEmissionsPlot:
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_sulfur_emissions.set_ydata(
             self.df_climate.loc[self.prospective_years, "sulfur_emissions"]
         )
@@ -268,24 +184,14 @@ class DirectSulfurEmissionsPlot:
         for collection in self.ax.collections:
             collection.remove()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
 
+class DirectSootEmissionsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class DirectSootEmissionsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df_climate = data["climate_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -333,9 +239,6 @@ class DirectSootEmissionsPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -397,9 +300,6 @@ class CarbonOffsetPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
 
 
@@ -454,7 +354,4 @@ class CumulativeCarbonOffsetPlot:
 
         for collection in self.ax.collections:
             collection.remove()
-
-        self.ax.relim()
-        self.ax.autoscale_view()
         self.fig.canvas.draw()
