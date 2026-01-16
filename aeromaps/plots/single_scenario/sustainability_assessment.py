@@ -3,7 +3,9 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
@@ -268,10 +270,6 @@ class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
 
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
 
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 
@@ -577,10 +575,6 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 
         self.fig.canvas.draw()
 
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
-
 
 class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
@@ -834,10 +828,6 @@ class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
 
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
 
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 
@@ -1096,10 +1086,6 @@ class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
 
         self.ax.legend(handles=legend_elements, loc="center", bbox_to_anchor=[0.5, -0.12])
 
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 
@@ -1427,8 +1413,4 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
 
         self.ax.legend(loc="lower center", bbox_to_anchor=[0.5, -0.15], ncol=2)
 
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()

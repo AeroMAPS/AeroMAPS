@@ -1,4 +1,6 @@
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class RevenuePassengerKilometerPlot(SingleScenarioPlot):
@@ -33,6 +35,7 @@ class RevenuePassengerKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Revenue Passenger Kilometer [RPK]")
         self.ax.legend()
+        
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -71,6 +74,7 @@ class RevenueTonneKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Revenue Tonne Kilometer [RTK]")
         self.ax.legend()
+        
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -109,6 +113,7 @@ class AvailableSeatKilometerPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Available Seat Kilometer [ASK]")
         self.ax.legend()
+        
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -147,6 +152,9 @@ class TotalAircraftDistancePlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Total distance travelled by aircraft [in billions of km]")
         self.ax.legend()
+        
+        self.ax.set_xlim(self.years[0], self.years[-1])
+
     def _update_plot_elements(self):
         self.line_total_aircraft_distance.set_ydata(
             self.df_climate.loc[self.prospective_years, "total_aircraft_distance"] / 10**9

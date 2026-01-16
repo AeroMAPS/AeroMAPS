@@ -1,10 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 import pandas as pd
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, widgets
+from ipywidgets import interact
+from ipywidgets import widgets
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
@@ -52,11 +56,8 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
         detail_level_selected,
     ):
         self.ax.cla()
-        pathways = self.pathways_manager.get_all()
 
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
+        pathways = self.pathways_manager.get_all()
 
         def first_usage_year(p):
             energy_col = f"{p.name}_energy_consumption"
@@ -666,10 +667,6 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
         self.ax.set_xlim(2020, self.years[-1])
         self.ax.set_ylim()
         self.ax.autoscale_view()
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 
@@ -2834,10 +2831,6 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
-
 
 class SimpleMFSP(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
@@ -2979,6 +2972,16 @@ class SimpleMFSP(SingleScenarioPlot):
         self.fig.canvas.draw()
 
     def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
+        self.df = data["vector_outputs"]
+        self.years = data["years"]["full_years"]
+        self.prospective_years = data["years"]["prospective_years"]
+        self.pathways_manager = data["pathways_manager"]
 
+        # Clear the current axes
+        self.ax.cla()
+
+        # Recreate the plot with updated data
+        self.create_plot()
+
+        # Redraw the canvas
+        self.fig.canvas.draw()

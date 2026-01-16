@@ -5,11 +5,13 @@ import pandas as pd
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
-from ipywidgets import interact, widgets
-
+from ipywidgets import interact
+from ipywidgets import widgets
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class AnnualMACC:
@@ -1876,9 +1878,6 @@ class ShadowCarbonPrice:
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
 
 class AnnualMACCSimple(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
@@ -2374,10 +2373,6 @@ class AnnualMACCSimple(SingleScenarioPlot):
         )
 
         self.fig.tight_layout()
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 

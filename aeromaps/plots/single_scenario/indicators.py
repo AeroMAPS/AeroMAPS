@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class MeanCO2PerRPKPlot(SingleScenarioPlot):
@@ -65,10 +68,6 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
 
         for collection in self.ax.collections:
             collection.remove()
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
         self.fig.canvas.draw()
 
 

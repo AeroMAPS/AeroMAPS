@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
@@ -47,6 +49,7 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel consumption per passenger [L/100km]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -108,6 +111,7 @@ class MeanLoadFactorPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of the aircraft load factor")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Aircraft load factor [%]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -169,6 +173,7 @@ class MeanEnergyPerASKPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy per Available Seat Kilometer [MJ/ASK]")
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -232,6 +237,8 @@ class MeanEnergyPerRTKPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy per Revenue Tonne Kilometer [MJ/RTK]")
+        
+        self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):

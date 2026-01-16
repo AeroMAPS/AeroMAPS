@@ -4,11 +4,12 @@
 # @Software: PyCharm
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 import pandas as pd
 from matplotlib.patches import Patch
 
-
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
@@ -75,6 +76,7 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         self.ax.legend(loc="upper left")
         self.ax.set_title("Annual energy expenses per pathway")
         self.ax.set_ylabel("Energy expenses [M€]")
+        
 
         self.ax.set_xlim(2020, self.years[-1])
         # #
@@ -163,6 +165,7 @@ class DiscountEffect(SingleScenarioPlot):
         self.ax.grid(axis="y")
         self.ax.set_title("Total (energy) expenses (M€)")
         self.ax.set_ylabel("M€ / year")
+        
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
         # #
@@ -662,6 +665,7 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_title("Direct Operating Costs breakdown")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct Operating Costs [€/ASK]")
+        
 
         components_handles = [
             Patch(facecolor="cornflowerblue", edgecolor="black", label="Energy"),
@@ -899,6 +903,7 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.ax.grid(axis="y")
         self.ax.set_title("Average direct operating cost by aircraft category")
         self.ax.set_ylabel("€ / ASK")
+        
         self.ax.legend(title="Direct Operating Cost")
         self.ax.set_xlim(2020, self.years[-1])
         # #
@@ -1181,6 +1186,7 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_title("Airfare breakdown")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Airfare [€/ASK]")
+        
         self.ax.legend(fontsize="8", loc="upper left")
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
