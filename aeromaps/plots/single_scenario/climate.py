@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
@@ -230,7 +233,7 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
-        self.ax = plt.gca()
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
@@ -404,7 +407,7 @@ class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of temperature increase\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Temperature increase [mK]")
-        self.ax = plt.gca()
+        
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
         # self.ax.set_ylim(0,)
