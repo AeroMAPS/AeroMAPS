@@ -1,10 +1,10 @@
 # --- Project name ---
-project: aeromaps_tsas
+project: ecats2026
 reset_project: False  # <-- Set to true only if you want to clean the entire brightway/premise project 
 
 # --- Ecoinvent settings ---
 ecoinvent:
-    version: '3.10'
+    version: '3.12'
     model: 'cutoff'
     # Note: import of ecoinvent requires to provide credentials.
     # For privacy reasons, we ask you to create a file named .env, that you will not share /commit,
@@ -16,22 +16,22 @@ ecoinvent:
 premise:
     scenarios:  # https://premise.readthedocs.io/en/latest/introduction.html#default-iam-scenarios
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2020
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2030
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2040
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2050
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2060
         - model: 'remind'
-          pathway: 'SSP2-NPi'
+          pathway: 'SSP2-PkBudg1000'
           year: 2070
           
     update: 'all'  # update all sectors in ecoinvent (recommanded)
@@ -413,48 +413,48 @@ model:
                 name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
                 #name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
                 loc: 'RER'
+                
         
         
         ### Electrofuels
         efuel:
-            amount: saf_co2_mass_consumption
+            amount: saf_dac_mass_consumption + saf_co2_mass_consumption
             unit: kilogram
 
-            #### Combustion processes 
             CO2:
                 tags:
-                    - phase: 'CO2 electrofuel'
-                amount: 0.074 * saf_co2_lhv
-                name: 'carbon dioxide, non-fossil'  # this is a biosphere process   
+                    - phase: 'CO2 e-fuel'
+                amount: 0.074 * (saf_dac_lhv * w_saf_dac + saf_co2_lhv * w_saf_co2)  # see definition of parameters w_saf in parameters_metadata section
+                name: 'carbon dioxide, non-fossil'
                 categories:
                     - 'air'
             
             nonCO2:
                 tags:
-                    - phase: 'non-CO2 electrofuel'
+                    - phase: 'non-CO2 e-fuel'
 
                 NOx:
-                    amount: saf_co2_emission_index_nox
+                    amount: saf_dac_emission_index_nox * w_saf_dac + saf_co2_emission_index_nox * w_saf_co2
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: saf_co2_emission_index_sulfur
+                    amount: saf_dac_emission_index_sulfur * w_saf_dac + saf_co2_emission_index_sulfur * w_saf_co2
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                         
                 H2O:
-                    amount: saf_co2_emission_index_h2o
+                    amount: saf_dac_emission_index_h2o * w_saf_dac + saf_co2_emission_index_h2o * w_saf_co2
                     name: 'water vapour'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 PM:
-                    amount: saf_co2_emission_index_soot
+                    amount: saf_dac_emission_index_soot * w_saf_dac + saf_co2_emission_index_soot * w_saf_co2
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -463,7 +463,6 @@ model:
                 others_combustion:
                     name: '#others_combustion_saf'  # reference previously defined activity
             
-            #### Efuels production
             production:
                 tags:
                     - phase: 'e-fuel production'
@@ -471,18 +470,13 @@ model:
                 name: 'kerosene production, synthetic, Fischer Tropsch process, hydrogen from electrolysis, energy allocation' 
                 loc: 'RER'
                 add:  # add exchanges to the selected ecoinvent/premise activity
-                    - amount: sum(market group for electricity*) * elec_solar_share  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
-                      #specific electricity mix:  # this activity can be modified (since background act is copied)
-                      #    name: 'electricity production, photovoltaic, commercial'
-                      #    loc: 'FR' 
-                      # Same as above but cannot be modified (update/add/delete)
-                      name: 'electricity production, photovoltaic, commercial'
-                      loc: 'FR' 
+                    - amount: sum(market group for electricity*)  # sum(name*) gets the sum of all exchs starting by 'name' in the parent act
+                      name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
+                      loc: 'ES' 
                 update:  # update exchanges of the selected activity
                     - input_activity: 'market group for electricity*'  # you can use '*' wildcard in exchange name to get all acts containing this str
                       new_value: 
-                          # if only amount is provided, the amount of all input acts will be replaced.
-                          amount: old_amount * (1 - elec_solar_share) # special symbol 'old_amount' references the previous amount of this exchange
+                          amount: 0.0
                           
                     - input_activity: 'syngas, RWGS, Production, for Fischer Tropsch process, hydrogen from electrolysis#RER' # use '#' for specifying loc
                       new_value:
@@ -494,17 +488,8 @@ model:
                               update:
                                   - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                     new_value:
-                                        hydrogen updated:
-                                            name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity'
-                                            loc: 'EUR'
-                                            add:
-                                                - amount: sum(market group for electricity*) * elec_solar_share
-                                                  name: 'electricity production, photovoltaic, commercial'
-                                                  loc: 'FR' 
-                                            update:
-                                                - input_activity: 'market group for electricity*'
-                                                  new_value:
-                                                      amount: old_amount * (1 - elec_solar_share)
+                                        name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
+                                        loc: 'RER'
                                                                     
                                   - input_activity: 'carbon monoxide, from RWGS, for Fischer Tropsch process, hydrogen from electrolysis#RER'
                                     new_value:
@@ -514,21 +499,28 @@ model:
                                             update:
                                                 - input_activity: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from grid electricity#EUR'
                                                   new_value:
-                                                      name: '#hydrogen updated'  # reference a previously defined activity
+                                                      name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
+                                                      loc: 'RER'
                                                 - input_activity: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2#RER'
                                                   new_value:
-                                                      direct air capture updated:
-                                                          name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
-                                                          loc: 'RER'
-                                                          add:
-                                                              - amount: sum(market group for electricity*) * elec_solar_share
-                                                                name: 'electricity production, photovoltaic, commercial'
-                                                                loc: 'FR' 
-                                                          update:
-                                                              - input_activity: 'market group for electricity*'
-                                                                new_value:
-                                                                    amount: old_amount * (1 - elec_solar_share)  
-                                                        
+                                                      co2_capture:
+                                                          dac:
+                                                              amount: w_saf_dac
+                                                              name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
+                                                              loc: 'RER'
+                                                              add:
+                                                                  - amount: sum(market group for electricity*)
+                                                                    name: 'electricity production, photovoltaic, 570kWp open ground installation, multi-Si'
+                                                                    loc: 'ES' 
+                                                              update:
+                                                                  - input_activity: 'market group for electricity*'
+                                                                    new_value:
+                                                                        amount: 0.0
+                                                          waste:
+                                                              amount: w_saf_co2
+                                                              name: 'carbon dioxide, captured, at cement production plant, for subsequent reuse'
+                                                              loc: 'RER'
+                                                                                                                          
                 
         ### Hydrogen
         hydrogen:
@@ -558,9 +550,19 @@ model:
             production:
                 tags:
                     - phase: 'hydrogen production'
-                      
-                electrolysis:
-                    name: '#hydrogen updated'  # conservative assumption: gaseous, no liquefaction for transportation
+                name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
+                loc: 'RER'
+                
+                
+
+# --- Declare metadata for LCA parameters --- 
+parameters_metadata:
+    - parameter: w_saf_dac
+      formula: saf_dac_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
+      
+    - parameter: w_saf_co2
+      formula: saf_co2_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
+      
                       
 
 # --- Select LCIA methods for assessment ---
