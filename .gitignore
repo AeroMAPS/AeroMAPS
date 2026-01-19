@@ -14,4 +14,5 @@ __pycache__/
 /docs/_build/
 /site/
 /aeromaps/notebooks/private/
+/aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/lca/tmp/
 /aeromaps/notebooks/tutorials/07_life_cycle_assessment/data/config_files/tmp/
