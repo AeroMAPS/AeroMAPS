@@ -11,7 +11,7 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -276,7 +276,7 @@ class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
 class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -579,7 +579,7 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -834,7 +834,7 @@ class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
 class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -1092,7 +1092,7 @@ class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
 class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
