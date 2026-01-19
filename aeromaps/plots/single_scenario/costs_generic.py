@@ -4,7 +4,12 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 import pandas as pd
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-from ipywidgets import interact, widgets
+from ipywidgets import interact
+from ipywidgets import widgets
+
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):

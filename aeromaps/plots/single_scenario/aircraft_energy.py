@@ -1,7 +1,9 @@
 import random
+
 import matplotlib.pyplot as plt
 import numpy as np
-from ipywidgets import widgets, interact
+from ipywidgets import widgets
+from ipywidgets import interact
 from matplotlib.lines import Line2D
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
@@ -338,7 +340,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_ylabel(
                 f"Share of production pathways in {aircraft_type}-aircraft fuel blend [%]"
             )
-            # self.ax = plt.gca()
+            # 
             self.ax.legend(title="Pathway shares")
 
         # Focus on an energy origin
@@ -379,7 +381,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_title(f"Evolution of the {energy_origin}-based fuel blend")
             self.ax.set_xlabel("Year")
             self.ax.set_ylabel(f"Share of pathways in {energy_origin}-based fuel blend [%]")
-            # self.ax = plt.gca()
+            # 
             self.ax.legend(title="Pathway shares")
 
         # Detailed view of a specific aircraft type and energy origin
@@ -411,7 +413,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_ylabel(
                 f"Share of pathways in {aircraft_type}-aircraft type, {energy_origin}-based energy use [%]"
             )
-            # self.ax = plt.gca()
+            # 
             self.ax.legend(title="Pathway shares")
 
         # Overall view of all aircraft types and energy origins
@@ -445,7 +447,7 @@ class ShareFuelPlot(SingleScenarioPlot):
             self.ax.set_title("Evolution of the overall fuel blend")
             self.ax.set_xlabel("Year")
             self.ax.set_ylabel("Share of aircraft/energy categories in total energy use [%]")
-            # self.ax = plt.gca()
+            # 
             self.ax.legend(title="Aircraft/energy categories shares")
 
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])

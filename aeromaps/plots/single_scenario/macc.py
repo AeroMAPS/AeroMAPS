@@ -5,8 +5,8 @@ import pandas as pd
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
-from ipywidgets import interact, widgets
-
+from ipywidgets import interact
+from ipywidgets import widgets
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y

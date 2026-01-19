@@ -8,7 +8,9 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 import pandas as pd
 from matplotlib.patches import Patch
 
-
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_3_x
+from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
