@@ -1,4 +1,3 @@
-import brightway2 as bw
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
@@ -7,12 +6,19 @@ import collections
 import numpy as np
 
 
-def plot_stacked_evolution_subplots(xarray_data):
+def plot_stacked_evolution_subplots(xarray_data, start_year: int = 2020, end_year: int = None):
     """
     Plots a stacked evolution of the LCA results provided as an xarray
     """
 
+    # Convert to dataframe
     df = xarray_data.to_dataframe().reset_index()
+    
+    # Keep only years >= start_year
+    if start_year:
+        df = df[df["year"] >= start_year]
+    if end_year:
+        df = df[df["year"] <= end_year]
 
     # Set the desired columns as a MultiIndex
     df = df.set_index(["impacts", "axis", "year"])
@@ -37,7 +43,6 @@ def plot_stacked_evolution_subplots(xarray_data):
 
     # Use seaborn color palette for better aesthetics
     palette = sns.color_palette("Set2", len(df_filtered.index.levels[1]))
-    # palette = sns.color_palette("Paired", len(df_filtered.index.levels[1]))
     palette_dict = {
         "aircraft_production": (palette[3], ""),
         "airport": (palette[1], ""),
@@ -48,8 +53,6 @@ def plot_stacked_evolution_subplots(xarray_data):
         "hydrogen_production": (palette[6], ""),
         "CO2 from combustion": (palette[7], ""),
         "Non-CO2 from combustion": ("0.8", "//"),
-        #'Production Electrofuel\n(Electrolysis)': ('0.8', '\\'),
-        #'production_kerosene': (palette[8], ''),
     }
 
     # Create subplots
@@ -95,7 +98,7 @@ def plot_stacked_evolution_subplots(xarray_data):
         name = name.replace(":", "\n")
         name = "".join([a if a.isupper() else b for a, b in zip(name, name.title())])
 
-        unit = bw.Method(method).metadata.get("unit")
+        unit = xarray_data.coords["impacts"].attrs["units"][method]  #bw.Method(method).metadata.get("unit")
         unit = unit.replace("]", "")
         unit = unit.replace("m2*a crop-Eq", r"m$^2\times$yr annual crop land")
         unit = unit.replace("-Eq", "-eq")
