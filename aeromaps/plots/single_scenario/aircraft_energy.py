@@ -4,7 +4,7 @@ import numpy as np
 from ipywidgets import widgets, interact
 from matplotlib.lines import Line2D
 
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 
 
 class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
@@ -40,7 +40,6 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
         )
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
-        self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -108,7 +107,6 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
         self.ax.set_title("Evolution of the CO2 emission factor\nof aviation fuels")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Fuel emission factor [gCO2-eq/MJ]")
-        self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.prospective_years[0] + 1, self.prospective_years[-1])
 
@@ -485,7 +483,6 @@ class EnergyConsumptionPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of the air transport\nenergy consumption")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Energy consumption [EJ]")
-        self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 

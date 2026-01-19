@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_1_x, plot_1_y, plot_2_x, plot_2_y, plot_3_x, plot_3_y
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, plot_3_y
 
 
 class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
@@ -37,7 +37,6 @@ class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Cumulative CO₂ emissions [GtCO₂]")
         self.ax.legend()
-        self.ax = plt.gca()
         self.ax.set_xlim(2019, self.years[-1])
 
     def _update_plot_elements(self):
@@ -84,7 +83,6 @@ class DirectH2OEmissionsPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of direct H₂O emissions\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct H₂O emissions [MtH₂O]")
-        self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -128,7 +126,6 @@ class DirectNOxEmissionsPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of direct NOx emissions\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct NOx emissions [MtNOx]")
-        self.ax = plt.gca()
         self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
@@ -172,8 +169,6 @@ class DirectSulfurEmissionsPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of direct sulfur emissions\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct sulfur emissions [MtSO2]")
-        self.ax = plt.gca()
-        self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
@@ -216,8 +211,6 @@ class DirectSootEmissionsPlot(SingleScenarioPlot):
         self.ax.set_title("Evolution of direct soot emissions\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Direct soot emissions [MtBC]")
-        self.ax = plt.gca()
-        self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
@@ -279,8 +272,6 @@ class CarbonOffsetPlot:
         self.ax.set_title("Evolution of carbon offset\nfrom air transport")
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Carbon offset [MtCO₂]")
-        self.ax = plt.gca()
-        self.ax.legend()
         self.ax.set_xlim(self.years[0], self.years[-1])
 
         self.fig.canvas.header_visible = False
@@ -332,10 +323,7 @@ class CumulativeCarbonOffsetPlot:
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Cumulative carbon offset [GtCO₂]")
         self.ax.legend()
-        self.ax = plt.gca()
-        self.ax.set_xlim(2019, self.years[-1])
-
-        self.fig.canvas.header_visible = False
+        self.ax_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         # self.fig.canvas.layout.width = "auto"
         # self.fig.canvas.layout.height = "auto"
