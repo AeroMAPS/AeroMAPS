@@ -18,7 +18,7 @@ class SingleScenarioPlot(ABC):
     that visualize data from a single process/scenario.
     """
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         """
         Initialize the plot with data from a process.
 
@@ -34,7 +34,9 @@ class SingleScenarioPlot(ABC):
 
         # Create figure and axes
         figsize = figsize or self._get_default_figsize()
-        self.fig, self.ax = plt.subplots(figsize=figsize)
+        self.fig, self.ax = plt.subplots(
+            figsize=figsize, layout='constrained', **kwargs
+        )
 
         # Configure canvas
         self._configure_canvas()
@@ -51,6 +53,7 @@ class SingleScenarioPlot(ABC):
         data : dict
             Data dictionary from the process
         """
+        self.parameters = data["float_inputs"]
         self.df = data.get("vector_outputs")
         self.df_climate = data.get("climate_outputs")
         self.float_outputs = data.get("float_outputs")
