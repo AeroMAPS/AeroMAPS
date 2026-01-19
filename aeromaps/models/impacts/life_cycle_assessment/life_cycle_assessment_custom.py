@@ -198,6 +198,16 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 params_dict[name] = self.years
                 continue
 
+            # --- Parameters calculated as functions of others through 'formula' option in agb ---
+            # Skip these, they will be computed automatically from other parameters
+            if agb.all_params()[name].formula is not None:
+                if is_not_nan(input_data[name]):
+                    warnings.warn(
+                        f'Parameter "{name}" is defined through a formula and should not be provided directly. '
+                        f'The provided value will be ignored and computed automatically.'
+                    )
+                continue
+
             # --- Parameter provided directly (either single value or list of values) ---
             if is_not_nan(input_data[name]):  # np.nan is the default value set in __init__
                 input_value = input_data[name]

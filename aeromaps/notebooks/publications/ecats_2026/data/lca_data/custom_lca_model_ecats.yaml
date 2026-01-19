@@ -410,10 +410,14 @@ model:
             production:
                 tags:
                     - phase: 'biofuel production'
-                name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
-                #name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
-                loc: 'RER'
-                
+                forest_residues:
+                    amount: saf_ftg_share_residues
+                    name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
+                    loc: 'RER'
+                forest_products:
+                    amount: 1.0 - saf_ftg_share_residues
+                    name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
+                    loc: 'RER'
         
         
         ### Electrofuels
@@ -424,7 +428,7 @@ model:
             CO2:
                 tags:
                     - phase: 'CO2 e-fuel'
-                amount: 0.074 * (saf_dac_lhv * w_saf_dac + saf_co2_lhv * w_saf_co2)  # see definition of parameters w_saf in parameters_metadata section
+                amount: 0.074 * (saf_dac_lhv * saf_dac_mass_consumption + saf_co2_lhv * saf_co2_mass_consumption) / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                 name: 'carbon dioxide, non-fossil'
                 categories:
                     - 'air'
@@ -434,27 +438,27 @@ model:
                     - phase: 'non-CO2 e-fuel'
 
                 NOx:
-                    amount: saf_dac_emission_index_nox * w_saf_dac + saf_co2_emission_index_nox * w_saf_co2
+                    amount: (saf_dac_emission_index_nox * saf_dac_mass_consumption + saf_co2_emission_index_nox * saf_co2_mass_consumption) / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                     name: 'nitrogen oxides'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                 SOx:
-                    amount: saf_dac_emission_index_sulfur * w_saf_dac + saf_co2_emission_index_sulfur * w_saf_co2
+                    amount: (saf_dac_emission_index_sulfur * saf_dac_mass_consumption + saf_co2_emission_index_sulfur * saf_co2_mass_consumption) / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                     name: 'sulfur dioxide'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
                         
                 H2O:
-                    amount: saf_dac_emission_index_h2o * w_saf_dac + saf_co2_emission_index_h2o * w_saf_co2
+                    amount: (saf_dac_emission_index_h2o * saf_dac_mass_consumption + saf_co2_emission_index_h2o * saf_co2_mass_consumption) / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                     name: 'water vapour'
                     categories:
                         - 'air'
                         - 'lower stratosphere + upper troposphere'
 
                 PM:
-                    amount: saf_dac_emission_index_soot * w_saf_dac + saf_co2_emission_index_soot * w_saf_co2
+                    amount: (saf_dac_emission_index_soot * saf_dac_mass_consumption + saf_co2_emission_index_soot * saf_co2_mass_consumption) / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                     name: 'Particulate Matter, < 2.5 um'
                     categories:
                         - 'air'
@@ -505,7 +509,7 @@ model:
                                                   new_value:
                                                       co2_capture:
                                                           dac:
-                                                              amount: w_saf_dac
+                                                              amount: saf_dac_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                                                               name: 'carbon dioxide, captured, with a solvent-based direct air capture system, 1MtCO2'
                                                               loc: 'RER'
                                                               add:
@@ -517,7 +521,7 @@ model:
                                                                     new_value:
                                                                         amount: 0.0
                                                           waste:
-                                                              amount: w_saf_co2
+                                                              amount: saf_co2_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
                                                               name: 'carbon dioxide, captured, at cement production plant, for subsequent reuse'
                                                               loc: 'RER'
                                                                                                                           
@@ -552,17 +556,6 @@ model:
                     - phase: 'hydrogen production'
                 name: 'hydrogen production, gaseous, 30 bar, from PEM electrolysis, from open ground solar photovoltaic electricity'
                 loc: 'RER'
-                
-                
-
-# --- Declare metadata for LCA parameters --- 
-parameters_metadata:
-    - parameter: w_saf_dac
-      formula: saf_dac_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
-      
-    - parameter: w_saf_co2
-      formula: saf_co2_mass_consumption / (saf_dac_mass_consumption + saf_co2_mass_consumption + 1e-9)
-      
                       
 
 # --- Select LCIA methods for assessment ---
