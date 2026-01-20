@@ -7,8 +7,11 @@ class ReducedMandate(AeroMAPSModel):
     """
     Model that expands short optimization vectors to full mandate share vectors.
 
-    The optimization controls the tail of each mandate vector; fixed leading values
-    are prepended to reconstruct the full vectors consumed by downstream models.
+    Conventional approach: the optimization directly controls the absolute share
+    (0-100) of each pathway (SAF FTG, SAF CO2, LCAF) for the targeted years.
+    Fixed leading values are prepended to reconstruct the full vectors consumed
+    by downstream models. The kerosene share remains implicit as 100 minus the
+    sum of the pathway shares; completeness is enforced via a dedicated constraint.
     """
 
     def __init__(self, name="reduced_mandate", *args, **kwargs):
@@ -17,32 +20,29 @@ class ReducedMandate(AeroMAPSModel):
     def compute(
         self,
         saf_ftg_mandate_share_values_optim: list,
-        saf_co2_fraction_optim: list,
-        lcaf_fraction_optim: list,
+        saf_co2_mandate_share_values_optim: list,
+        lcaf_mandate_share_values_optim: list,
         saf_ftg_mandate_share_values_fixed: list,
         saf_co2_mandate_share_values_fixed: list,
         lcaf_mandate_share_values_fixed: list,
     ) -> Tuple[list, list, list]:
         """
-        Expand short optimization vectors with fixed leading values using cascading fractions.
-
-        This implements a cascade parameterization where the second and third fuels are defined
-        as fractions of the remaining blend capacity, ensuring the total always equals 100%.
+        Expand short optimization vectors with fixed leading values using direct shares.
 
         Parameters
         ----------
         saf_ftg_mandate_share_values_optim : list
-            Biofuel mandate share values (absolute, 0-100) for optimization years.
-        saf_co2_fraction_optim : list
-            Electrofuel fraction of remaining blend (0-1) for optimization years.
-        lcaf_fraction_optim : list
-            LCAF fraction of remaining blend after electrofuel (0-1) for optimization years.
+            Biofuel (FTG) mandate share values (absolute, 0-100) for optimization years.
+        saf_co2_mandate_share_values_optim : list
+            Electrofuel (CO2-based) mandate share values (absolute, 0-100) for optimization years.
+        lcaf_mandate_share_values_optim : list
+            LCAF mandate share values (absolute, 0-100) for optimization years.
         saf_ftg_mandate_share_values_fixed : list
-            First fixed biofuel mandate share values (not optimized).
+            Fixed leading biofuel mandate share values (not optimized).
         saf_co2_mandate_share_values_fixed : list
-            First fixed electrofuel mandate share values (not optimized).
+            Fixed leading electrofuel mandate share values (not optimized).
         lcaf_mandate_share_values_fixed : list
-            First fixed LCAF mandate share values (not optimized).
+            Fixed leading LCAF mandate share values (not optimized).
 
         Returns
         -------
@@ -59,32 +59,10 @@ class ReducedMandate(AeroMAPSModel):
         saf_co2_mandate_share_values = list(saf_co2_mandate_share_values_fixed)
         lcaf_mandate_share_values = list(lcaf_mandate_share_values_fixed)
 
-        # Apply cascade parameterization for optimization years
-        # saf_ftg_share = X1 (absolute)
-        # saf_co2_share = Y1 * (100 - X1) (fraction of remaining)
-        # lcaf_share = Y2 * (100 - X1 - saf_co2_share) (fraction of remaining after CO2)
-        # kerosene_share = 100 - X1 - saf_co2_share - lcaf_share (implicit)
-
-        for i, x1 in enumerate(saf_ftg_mandate_share_values_optim):
-            y1 = saf_co2_fraction_optim[i]
-            y2 = lcaf_fraction_optim[i]
-
-            saf_ftg_mandate_share_values.append(x1)
-
-            remaining_after_ftg = 100 - x1
-            saf_co2_share = y1 * remaining_after_ftg
-            saf_co2_mandate_share_values.append(saf_co2_share)
-
-            remaining_after_co2 = remaining_after_ftg - saf_co2_share
-            lcaf_share = y2 * remaining_after_co2
-            lcaf_mandate_share_values.append(lcaf_share)
-
-        # logging.info(
-        #    "SAF FTG: %s, SAF CO2 fractions: %s, LCAF fractions: %s",
-        #    saf_ftg_mandate_share_values,
-        #    saf_co2_mandate_share_values,
-        #    lcaf_mandate_share_values,
-        # )
+        # Append the directly optimized absolute shares
+        saf_ftg_mandate_share_values.extend(saf_ftg_mandate_share_values_optim)
+        saf_co2_mandate_share_values.extend(saf_co2_mandate_share_values_optim)
+        lcaf_mandate_share_values.extend(lcaf_mandate_share_values_optim)
 
         return saf_ftg_mandate_share_values, saf_co2_mandate_share_values, lcaf_mandate_share_values
 
@@ -182,16 +160,19 @@ class BlendCompletenessConstraint(AeroMAPSModel):
         blend_completeness_constraint_enforcement_years: list,
     ) -> list:
         """
-        Compute constraint ensuring saf share is not above 100%.
-        Normalised around zero: positive when above  100.
+        Enforce blend completeness: the sum of FTG, CO2 and LCAF shares
+        must not exceed 100% at enforcement years.
+
+        Constraint value is normalized around zero: (sum - 100) / 100.
+        It is satisfied when <= 0 and violated when > 0.
         """
 
-        # Reference for normalisation: max absolute positive value
+        # Compute total drop-in fuel share
         total_share = saf_ftg_mandate_share + saf_co2_mandate_share + lcaf_mandate_share
 
         violation_normalised = (total_share - 100) / 100
 
-        # Compute constraint: positive when consumption < 0
+        # Constraint values at enforcement years (skip if year not available)
         blend_completeness_constraint = [
             violation_normalised.loc[year]
             for year in blend_completeness_constraint_enforcement_years

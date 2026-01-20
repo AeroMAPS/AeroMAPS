@@ -37,3 +37,4 @@ models:
     lcaf_use_growth_constraint: "../../energy_constraints.py::LCAFUseGrowthConstraint"
     reduced_mandate: "../../energy_constraints.py::ReducedMandate"
     optimization_objectives: "../../energy_constraints.py::OptimizationObjectives"
+    blend_completeness_constraint: "../../energy_constraints.py::BlendCompletenessConstraint"

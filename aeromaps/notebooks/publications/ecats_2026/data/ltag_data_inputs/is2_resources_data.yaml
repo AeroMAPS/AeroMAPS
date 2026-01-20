@@ -9,7 +9,7 @@ generic_electricity:
     availability:
       global: !AeroMapsCustomDataType
           years: [2020, 2030, 2040, 2050, 2070]
-          values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12, 276.6168e+12]
+          values: [102.0456e+12, 137.5452e+12, 212.7996e+12, 276.6168e+12, 386.4e+12]
           method: linear # [MJ]
       aviation_allocated_share: 5.0 # 8 * 0.663 # [%] Share of the global availability * ratio of international aviation
 
@@ -33,6 +33,6 @@ generic_biomass:
     availability:
       global: !AeroMapsCustomDataType
           years: [2020, 2030, 2040, 2050, 2070]
-          values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12, 101.8e+12]
+          values: [62.8e+12, 72.1e+12, 97.8e+12, 101.8e+12, 142.5e+12]
           method: linear # [MJ]
       aviation_allocated_share: 10.0 # 15 * 0.663 # [%] Share of the global availability * ratio of international aviation
