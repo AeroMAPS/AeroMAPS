@@ -266,7 +266,7 @@ class Model:
         return vals, unit
 
     @classmethod
-    def from_json(cls, js, axis=None):
+    def from_json(cls, js, axis=None, methods=None):
 
         all_params = {key: Param.from_json(val) for key, val in js["params"].items()}
 
@@ -276,6 +276,10 @@ class Model:
                 warnings.warn(f"Axis '{axis}' not found in model expressions. Using first available axis instead.")
                 axis = list(js["expressions"].keys())[0]  # Fallback to first axis
             expr_items = [(axis, js["expressions"][axis])]
+        if methods is not None:  # Get only specified impact methods (helps save time if necessary)
+            expr_items = [
+                (ax, {method: lambd for method, lambd in impacts_dict.items() if method in methods})
+                for ax, impacts_dict in expr_items]
         expressions = {
             axis: {
                 method: Lambda.from_json(lambd, all_params)
@@ -289,12 +293,18 @@ class Model:
 
             for key, fu in js["functional_units"].items()}
 
-        impacts = {key: Impact(impact["name"], impact["unit"]) for key, impact in js["impacts"].items()}
+        # Impacts
+        filtered_impacts = js["impacts"]
+        if methods is not None:
+            filtered_impacts = {key: impact_metadata for key, impact_metadata in js["impacts"].items() if key in methods}
+        impacts = {}
+        for key, impact in filtered_impacts.items():
+            impacts[key] = Impact(impact["name"], impact["unit"])
 
         return cls(all_params, expressions, functional_units, impacts)
 
     @classmethod
-    def from_json_with_progress_bar(cls, js, axis=None):
+    def from_json_with_progress_bar(cls, js, axis=None, methods: list=None):
         # Params
         all_params = {}
         for key, val in tqdm(js["params"].items(), desc="Import LCA Parameters"):
@@ -308,6 +318,16 @@ class Model:
                 warnings.warn(f"Axis '{axis}' not found in model expressions. Using first available axis instead.")
                 axis = list(js["expressions"].keys())[0]  # Fallback to first axis
             expr_items = [(axis, js["expressions"][axis])]
+        if methods is not None:  # Get only specified impact methods (helps save time if necessary)
+            # warn if some methods are not found
+            for ax, impacts_dict in expr_items:
+                for method in methods:
+                    if method not in impacts_dict:
+                        warnings.warn(f"Method '{method}' not found in axis '{ax}' expressions. Skipping.")
+            # select only specified methods
+            expr_items = [
+                (ax, {method: lambd for method, lambd in impacts_dict.items() if method in methods})
+                for ax, impacts_dict in expr_items]
         for ax, impacts in expr_items:
             expressions[ax] = {}
             for method, lambd in tqdm(impacts.items(), desc=f"Import LCIA functions (axis '{ax}')", leave=True):
@@ -322,8 +342,11 @@ class Model:
             )
 
         # Impacts
+        filtered_impacts = js["impacts"]
+        if methods is not None:
+            filtered_impacts = {key: impact_metadata for key, impact_metadata in js["impacts"].items() if key in methods}
         impacts = {}
-        for key, impact in tqdm(js["impacts"].items(), desc="Import impacts metadata"):
+        for key, impact in tqdm(filtered_impacts.items(), desc="Import impacts metadata"):
             impacts[key] = Impact(impact["name"], impact["unit"])
 
         return cls(all_params, expressions, functional_units, impacts)
@@ -334,12 +357,12 @@ class Model:
             json.dump(js, f, indent=4)
 
     @classmethod
-    def from_file(cls, filename, progress_bar=False, axis=None):
+    def from_file(cls, filename, progress_bar=False, axis=None, methods: list=None):
         with open(filename, "r") as f:
             js = json.load(f)
             if progress_bar:
-                return Model.from_json_with_progress_bar(js, axis)
-            return Model.from_json(js, axis)
+                return Model.from_json_with_progress_bar(js, axis, methods)
+            return Model.from_json(js, axis, methods)
 
 
 def serialize_model(obj):

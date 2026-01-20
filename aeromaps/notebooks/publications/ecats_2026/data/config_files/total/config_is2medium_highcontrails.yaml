@@ -1,0 +1,22 @@
+data:
+  inputs:
+    json_inputs_file: "../../ltag_data_inputs/is2medium_inputs.json"
+  outputs:
+    json_outputs_file: "../../ltag_data_outputs/is2medium_outputs.json"
+
+models:
+  climate:
+    climate_model_data_file: "../../climate_data/climate_model_fair_highcontrails.yaml"
+
+  energy:
+    energy_carriers_model_data_file: "../../ltag_data_inputs/is2_medium_energy_inputs.yaml"
+    resources_model_data_file: "../../ltag_data_inputs/is2_resources_data.yaml"
+
+  standards:
+    - models_traffic
+    - models_efficiency_top_down_interp
+    - models_energy_with_fuel_effect
+    - models_offset
+    - models_emissions
+    - models_sustainability
+    - carbon_tax

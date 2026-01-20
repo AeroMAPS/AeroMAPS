@@ -60,6 +60,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         name: str = "life_cycle_assessment_default",
         json_file: str = None,
         split_by: str = None,
+        methods: list = None,
         *args,
         **kwargs,
     ):
@@ -79,7 +80,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         self.axis = split_by if split_by else TOTAL_AXIS_KEY
 
         print("===== LCA Default Model Import =====")
-        self.model = Model.from_file(json_file, axis=self.axis, progress_bar=True)
+        self.model = Model.from_file(json_file, axis=self.axis, methods=methods, progress_bar=True)
         self.methods = [ast.literal_eval(s) for s in self.model.impacts.keys()]
         self.axis_keys = None
         expr = self.model.expressions[self.axis][str(self.methods[0])].expr
