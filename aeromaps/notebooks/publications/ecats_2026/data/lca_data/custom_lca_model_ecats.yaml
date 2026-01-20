@@ -410,14 +410,18 @@ model:
             production:
                 tags:
                     - phase: 'biofuel production'
-                forest_residues:
-                    amount: saf_ftg_share_residues
+                methanol_wood:
+                    amount: 1.0 - saf_ftg_share_residues
+                    name: 'kerosene production, from methanol, from wood, with CCS, economic allocation'
+                    loc: 'RER'
+                ft_residues:
+                    amount: saf_ftg_share_residues  # 0.0 by default
                     name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
                     loc: 'RER'
-                forest_products:
-                    amount: 1.0 - saf_ftg_share_residues
-                    name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
-                    loc: 'RER'
+                #forest_products:
+                #    amount: 1.0 - saf_ftg_share_residues
+                #    name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
+                #    loc: 'RER'
         
         
         ### Electrofuels
