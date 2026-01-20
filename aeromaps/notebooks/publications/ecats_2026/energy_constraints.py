@@ -7,9 +7,8 @@ class ReducedMandate(AeroMAPSModel):
     """
     Model that expands short optimization vectors to full mandate share vectors.
 
-    The optimization controls only the last 5 values of the mandate share vectors.
-    This model prepends the 2 fixed leading values to create the full 7-element vectors
-    expected by downstream AeroMAPS models.
+    The optimization controls the tail of each mandate vector; fixed leading values
+    are prepended to reconstruct the full vectors consumed by downstream models.
     """
 
     def __init__(self, name="reduced_mandate", *args, **kwargs):
@@ -18,41 +17,76 @@ class ReducedMandate(AeroMAPSModel):
     def compute(
         self,
         saf_ftg_mandate_share_values_optim: list,
-        saf_co2_mandate_share_values_optim: list,
+        saf_co2_fraction_optim: list,
+        lcaf_fraction_optim: list,
         saf_ftg_mandate_share_values_fixed: list,
         saf_co2_mandate_share_values_fixed: list,
-    ) -> Tuple[list, list]:
+        lcaf_mandate_share_values_fixed: list,
+    ) -> Tuple[list, list, list]:
         """
-        Expand short optimization vectors with fixed leading values.
+        Expand short optimization vectors with fixed leading values using cascading fractions.
+
+        This implements a cascade parameterization where the second and third fuels are defined
+        as fractions of the remaining blend capacity, ensuring the total always equals 100%.
 
         Parameters
         ----------
         saf_ftg_mandate_share_values_optim : list
-            Last 5 biofuel mandate share values (optimization variables).
-        saf_co2_mandate_share_values_optim : list
-            Last 5 electrofuel mandate share values (optimization variables).
+            Biofuel mandate share values (absolute, 0-100) for optimization years.
+        saf_co2_fraction_optim : list
+            Electrofuel fraction of remaining blend (0-1) for optimization years.
+        lcaf_fraction_optim : list
+            LCAF fraction of remaining blend after electrofuel (0-1) for optimization years.
         saf_ftg_mandate_share_values_fixed : list
-            First 2 fixed biofuel mandate share values (not optimized).
+            First fixed biofuel mandate share values (not optimized).
         saf_co2_mandate_share_values_fixed : list
-            First 2 fixed electrofuel mandate share values (not optimized).
+            First fixed electrofuel mandate share values (not optimized).
+        lcaf_mandate_share_values_fixed : list
+            First fixed LCAF mandate share values (not optimized).
 
         Returns
         -------
         saf_ftg_mandate_share_values : list
-            Full 7-element biofuel mandate share vector.
+            Full biofuel mandate share vector.
         saf_co2_mandate_share_values : list
-            Full 7-element electrofuel mandate share vector.
+            Full electrofuel mandate share vector.
+        lcaf_mandate_share_values : list
+            Full LCAF mandate share vector.
         """
 
-        # Combine fixed and optimized values
-        saf_ftg_mandate_share_values = (
-            saf_ftg_mandate_share_values_fixed + saf_ftg_mandate_share_values_optim
-        )
-        saf_co2_mandate_share_values = (
-            saf_co2_mandate_share_values_fixed + saf_co2_mandate_share_values_optim
-        )
+        # Initialize with fixed values
+        saf_ftg_mandate_share_values = list(saf_ftg_mandate_share_values_fixed)
+        saf_co2_mandate_share_values = list(saf_co2_mandate_share_values_fixed)
+        lcaf_mandate_share_values = list(lcaf_mandate_share_values_fixed)
 
-        return saf_ftg_mandate_share_values, saf_co2_mandate_share_values
+        # Apply cascade parameterization for optimization years
+        # saf_ftg_share = X1 (absolute)
+        # saf_co2_share = Y1 * (100 - X1) (fraction of remaining)
+        # lcaf_share = Y2 * (100 - X1 - saf_co2_share) (fraction of remaining after CO2)
+        # kerosene_share = 100 - X1 - saf_co2_share - lcaf_share (implicit)
+
+        for i, x1 in enumerate(saf_ftg_mandate_share_values_optim):
+            y1 = saf_co2_fraction_optim[i]
+            y2 = lcaf_fraction_optim[i]
+
+            saf_ftg_mandate_share_values.append(x1)
+
+            remaining_after_ftg = 100 - x1
+            saf_co2_share = y1 * remaining_after_ftg
+            saf_co2_mandate_share_values.append(saf_co2_share)
+
+            remaining_after_co2 = remaining_after_ftg - saf_co2_share
+            lcaf_share = y2 * remaining_after_co2
+            lcaf_mandate_share_values.append(lcaf_share)
+
+        # logging.info(
+        #    "SAF FTG: %s, SAF CO2 fractions: %s, LCAF fractions: %s",
+        #    saf_ftg_mandate_share_values,
+        #    saf_co2_mandate_share_values,
+        #    lcaf_mandate_share_values,
+        # )
+
+        return saf_ftg_mandate_share_values, saf_co2_mandate_share_values, lcaf_mandate_share_values
 
 
 class OptimizationObjectives(AeroMAPSModel):
@@ -94,13 +128,8 @@ class OptimizationObjectives(AeroMAPSModel):
             Mean temperature increase from aviation over 2025_end_year [°C].
         """
 
-        # Cumulative CO2 at end year
         cumulative_co2_end_year = cumulative_co2_emissions.loc[self.end_year]
-
-        # Temperature increase at end year
         temperature_increase_end_year = temperature_increase_from_aviation.loc[self.end_year]
-
-        # Mean temperature increase over 2025-2050
         mean_temperature_increase_from_aviation_2025_end = temperature_increase_from_aviation.loc[
             2025 : self.end_year
         ].mean()
@@ -112,6 +141,35 @@ class OptimizationObjectives(AeroMAPSModel):
         )
 
 
+class LCAFUseGrowthConstraint(AeroMAPSModel):
+    def __init__(self, name="lcaf_use_growth_constraint", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        rate_ramp_up_constraint_lcaf: float,
+        lcaf_energy_consumption: pd.Series,
+        lcaf_use_growth_constraint_enforcement_years: list,
+    ) -> list:
+        eps = 1e-6  # Small value to avoid division by zero
+        lcaf_use_growth_constraint = []
+
+        check_years = [2030] + lcaf_use_growth_constraint_enforcement_years
+
+        for i in lcaf_use_growth_constraint_enforcement_years:
+            # Prefer a 5-year lookback when available; otherwise fall back to 10-year (e.g., 2060, 2070)
+            lookback_year = i - 5 if (i - 5) in check_years else i - 10
+            delta_years = i - lookback_year
+            reference = lcaf_energy_consumption.loc[lookback_year]
+            current = lcaf_energy_consumption.loc[i]
+            growth_violation = (
+                current - reference * (1 + rate_ramp_up_constraint_lcaf) ** delta_years
+            ) / (current + eps)
+            lcaf_use_growth_constraint.append(growth_violation)
+
+        return lcaf_use_growth_constraint
+
+
 class BlendCompletenessConstraint(AeroMAPSModel):
     def __init__(self, name="blend_completeness_constraint", *args, **kwargs):
         super().__init__(name, *args, **kwargs)
@@ -120,6 +178,7 @@ class BlendCompletenessConstraint(AeroMAPSModel):
         self,
         saf_ftg_mandate_share: pd.Series,
         saf_co2_mandate_share: pd.Series,
+        lcaf_mandate_share: pd.Series,
         blend_completeness_constraint_enforcement_years: list,
     ) -> list:
         """
@@ -128,7 +187,7 @@ class BlendCompletenessConstraint(AeroMAPSModel):
         """
 
         # Reference for normalisation: max absolute positive value
-        total_share = saf_ftg_mandate_share + saf_co2_mandate_share
+        total_share = saf_ftg_mandate_share + saf_co2_mandate_share + lcaf_mandate_share
 
         violation_normalised = (total_share - 100) / 100
 
@@ -238,22 +297,23 @@ class BiofuelUseGrowthConstraint(AeroMAPSModel):
         self,
         rate_ramp_up_constraint_saf_ftg: float,
         saf_ftg_energy_consumption: pd.Series,
-        volume_ramp_up_constraint_saf_ftg: float,
         saf_ftg_use_growth_constraint_enforcement_years: list,
     ) -> list:
-        eps = 1e6  # Small value to avoid division by zero
-        saf_ftg_use_growth_constraint = [
-            (
-                saf_ftg_energy_consumption.loc[i]
-                - max(
-                    volume_ramp_up_constraint_saf_ftg * 5 * 1e12,
-                    saf_ftg_energy_consumption.loc[i - 5]
-                    * (1 + rate_ramp_up_constraint_saf_ftg) ** 5,
-                )
-            )
-            / (saf_ftg_energy_consumption.loc[i] + eps)
-            for i in saf_ftg_use_growth_constraint_enforcement_years
-        ]
+        eps = 1e-6  # Small value to avoid division by zero
+        saf_ftg_use_growth_constraint = []
+
+        check_years = [2030] + saf_ftg_use_growth_constraint_enforcement_years
+
+        for i in saf_ftg_use_growth_constraint_enforcement_years:
+            # Prefer a 5-year lookback when available; otherwise fall back to 10-year (e.g., 2060, 2070)
+            lookback_year = i - 5 if (i - 5) in check_years else i - 10
+            delta_years = i - lookback_year
+            reference = saf_ftg_energy_consumption.loc[lookback_year]
+            current = saf_ftg_energy_consumption.loc[i]
+            growth_violation = (
+                current - reference * (1 + rate_ramp_up_constraint_saf_ftg) ** delta_years
+            ) / (current + eps)
+            saf_ftg_use_growth_constraint.append(growth_violation)
 
         return saf_ftg_use_growth_constraint
 
@@ -266,21 +326,22 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
         self,
         rate_ramp_up_constraint_saf_co2: float,
         saf_co2_energy_consumption: pd.Series,
-        volume_ramp_up_constraint_saf_co2: float,
         saf_co2_use_growth_constraint_enforcement_years: list,
     ) -> list:
-        eps = 1e6  # Small value to avoid division by zero
-        saf_co2_use_growth_constraint = [
-            (
-                saf_co2_energy_consumption.loc[i]
-                - max(
-                    volume_ramp_up_constraint_saf_co2 * 5 * 1e12,
-                    saf_co2_energy_consumption.loc[i - 5]
-                    * (1 + rate_ramp_up_constraint_saf_co2) ** 5,
-                )
-            )
-            / (saf_co2_energy_consumption.loc[i] + eps)
-            for i in saf_co2_use_growth_constraint_enforcement_years
-        ]
+        eps = 1e-6  # Small value to avoid division by zero
+        saf_co2_use_growth_constraint = []
+
+        check_years = [2030] + saf_co2_use_growth_constraint_enforcement_years
+
+        for i in saf_co2_use_growth_constraint_enforcement_years:
+            # Prefer a 5-year lookback when available; otherwise fall back to 10-year (e.g., 2060, 2070)
+            lookback_year = i - 5 if (i - 5) in check_years else i - 10
+            delta_years = i - lookback_year
+            reference = saf_co2_energy_consumption.loc[lookback_year]
+            current = saf_co2_energy_consumption.loc[i]
+            growth_violation = (
+                current - reference * (1 + rate_ramp_up_constraint_saf_co2) ** delta_years
+            ) / (current + eps)
+            saf_co2_use_growth_constraint.append(growth_violation)
 
         return saf_co2_use_growth_constraint
