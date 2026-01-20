@@ -381,21 +381,18 @@ def plot_planetary_radar(xarray_data, scaling_factors=None, chosen_year=2050):
     # ==========================
     # Colormap Planetary Boundaries
     # ==========================
+    safe_green = "#1a9850"
+    
     colors = [
-        "#2ca25f",  # SAFE (< 100) — vert unique
-        "#a6d96a",  # zone tampon
-        "#fdae61",  # risque élevé
-        "#d73027",  # risque critique
+        "#fee391", 
+        "#fdb863", 
+        "#f46d43", 
+        "#d73027",  
+        "#cc0000", 
     ]
 
-    bounds = [
-        80,
-        100,
-        500,
-        10000
-    ]
     pb_cmap = LinearSegmentedColormap.from_list("pb", colors)
-    norm = LogNorm(vmin=80, vmax=1000)
+    norm = LogNorm(vmin=100, vmax=1000)
 
     # ==========================
     # Dégradé radial PAR IMPACT
@@ -403,7 +400,7 @@ def plot_planetary_radar(xarray_data, scaling_factors=None, chosen_year=2050):
     r_steps = np.logspace(
         0,
         np.log10(max(values) * 1.1),
-        160
+        500
     )
 
     for ang, val in zip(theta_color, values):
@@ -425,6 +422,24 @@ def plot_planetary_radar(xarray_data, scaling_factors=None, chosen_year=2050):
                 log=True,
                 zorder=2
             )
+            
+    for ang, val in zip(theta_color, values):
+        if val <= 1:
+            continue
+
+        safe_top = min(val, 100)
+
+        ax.bar(
+            ang,
+            safe_top - 1,
+            bottom=1,
+            width=width,
+            color=safe_green,
+            edgecolor=None,
+            align="edge",
+            log=True,
+            zorder=3  # au-dessus du dégradé
+        )
 
     # ==========================
     # Contours noirs
@@ -441,7 +456,7 @@ def plot_planetary_radar(xarray_data, scaling_factors=None, chosen_year=2050):
             edgecolor="black",
             linewidth=1,
             log=True,
-            zorder=3
+            zorder=4
         )
 
     # ==========================
@@ -456,6 +471,14 @@ def plot_planetary_radar(xarray_data, scaling_factors=None, chosen_year=2050):
             linewidth=0.7,
             linestyle="--",
             zorder=6
+        )
+    ax.plot(
+            np.linspace(0, 2*np.pi, 400),
+            [100]*400,
+            color="white",
+            linewidth=3,
+            linestyle="-",
+            zorder=5
         )
 
     # ==========================
@@ -705,13 +728,26 @@ def plot_planetary_table_all(xarray_data, scaling_factors=None, chosen_year=2050
 
     # Exemple de données
     values_clip = np.array(values)  # ton array exact
-    annot_sci = np.array([[f"{v:.1e}" for v in row] for row in values_clip])
+    def format_sci(v):
+        if v < 10:
+            return f"{v:.1f}"
+        elif v < 100:
+            return f"{v:.0f}"
+        else:
+            return f"{v:.1e}"
+    annot_sci = np.vectorize(format_sci)(values_clip)
 
     # ---------------- Colormap
-    colors = ["#a6d96a", "#fdae61","#d73027"]  # jaune → orange → rouge
+    colors = [
+        "#fee391", 
+        "#fdb863", 
+        "#f46d43", 
+        "#d73027",  
+        "#cc0000", 
+    ]
     cmap = LinearSegmentedColormap.from_list("pb_log", colors)
-    cmap.set_under("#2ca25f")   # vert fixe pour <100
-    cmap.set_over("#d73027")    # rouge fixe pour >10000
+    cmap.set_under("#1a9850")   # vert fixe pour <100
+    cmap.set_over("#cc0000")    # rouge fixe pour >1000
 
     # ---------------- Norme log
     norm = LogNorm(vmin=100, vmax=10000)
@@ -727,12 +763,19 @@ def plot_planetary_table_all(xarray_data, scaling_factors=None, chosen_year=2050
         xticklabels=pb_labels,
         yticklabels=scenario_labels,
         cbar=True,
+        linewidths=0.5, 
+        linecolor="black",
         cbar_kws={
             "label": "Share of aviation planetary boundary [%]",
             "ticks": [100, 1000, 10000],
             "format": "%d"
         }
     )
+    
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_linewidth(1.0)
+        spine.set_color("black")
 
     cbar = ax.collections[0].colorbar
 
@@ -743,8 +786,8 @@ def plot_planetary_table_all(xarray_data, scaling_factors=None, chosen_year=2050
         xytext=(0.5, 0.0),    # base de la flèche (en haut du vert)
         xycoords='axes fraction',
         arrowprops=dict(
-            facecolor="#2ca25f",
-            edgecolor="#2ca25f",
+            facecolor="#1a9850",
+            edgecolor="#1a9850",
             width=15,
             headwidth=25,
             headlength=15,
@@ -758,8 +801,8 @@ def plot_planetary_table_all(xarray_data, scaling_factors=None, chosen_year=2050
         xytext=(0.5, 1.0),   # base de la flèche (en bas du rouge)
         xycoords='axes fraction',
         arrowprops=dict(
-            facecolor="#d73027",
-            edgecolor="#d73027",
+            facecolor="#cc0000",
+            edgecolor="#cc0000",
             width=15,
             headwidth=25,
             headlength=15,
@@ -767,5 +810,8 @@ def plot_planetary_table_all(xarray_data, scaling_factors=None, chosen_year=2050
         ),
         ha='center', va='center'
     )
+
+    ax.grid(False)
     plt.tight_layout()
     plt.show()
+    plt.savefig("test")
