@@ -85,7 +85,7 @@ class OptimizationObjectives(AeroMAPSModel):
         self,
         cumulative_co2_emissions: pd.Series,
         temperature_increase_from_aviation: pd.Series,
-    ) -> Tuple[float, float, float, float, float, float]:
+    ) -> Tuple[float, float, float, float, float, float, float, float]:
         """
         Extract cumulative CO2 at end year and temperature impacts.
 
