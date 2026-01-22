@@ -85,7 +85,7 @@ class OptimizationObjectives(AeroMAPSModel):
         self,
         cumulative_co2_emissions: pd.Series,
         temperature_increase_from_aviation: pd.Series,
-    ) -> Tuple[float, float, float]:
+    ) -> Tuple[float, float, float, float, float, float]:
         """
         Extract cumulative CO2 at end year and temperature impacts.
 
@@ -111,9 +111,15 @@ class OptimizationObjectives(AeroMAPSModel):
         mean_temperature_increase_from_aviation_2025_end = temperature_increase_from_aviation.loc[
             2025 : self.end_year
         ].mean()
+        cumulative_co2_2050 = cumulative_co2_emissions.loc[2050]
+        cumulative_co2_2055 = cumulative_co2_emissions.loc[2055]
+        cumulative_co2_2060 = cumulative_co2_emissions.loc[2060]
 
         return (
             cumulative_co2_end_year,
+            cumulative_co2_2050,
+            cumulative_co2_2055,
+            cumulative_co2_2060,
             temperature_increase_end_year,
             mean_temperature_increase_from_aviation_2025_end,
         )
@@ -326,3 +332,84 @@ class ElectrofuelUseGrowthConstraint(AeroMAPSModel):
             saf_co2_use_growth_constraint.append(growth_violation)
 
         return saf_co2_use_growth_constraint
+
+
+def _no_degrowth_violation(energy: pd.Series, enforcement_years: list) -> list:
+    """Compute normalized violations when energy decreases between control points."""
+
+    eps = 1e-9
+
+    years = [2030] + enforcement_years
+    violations = []
+
+    for prev, curr in zip(years[:-1], years[1:]):
+        prev_val = energy.loc[prev]
+        curr_val = energy.loc[curr]
+        # Positive when current < previous (for inequality constraint >= 0)
+        violation = (prev_val - curr_val) / (prev_val + eps)
+        violations.append(violation)
+
+    return violations
+
+
+class SAFFTGNoDegrowthConstraint(AeroMAPSModel):
+    """
+    Prevent SAF FTG energy consumption from decreasing between enforcement years.
+
+    Constraint is satisfied when <= 0; positive values indicate a decrease.
+    """
+
+    def __init__(self, name="saf_ftg_no_degrowth_constraint", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        saf_ftg_energy_consumption: pd.Series,
+        saf_ftg_no_degrowth_constraint_enforcement_years: list,
+    ) -> list:
+        saf_ftg_no_degrowth_constraint = _no_degrowth_violation(
+            saf_ftg_energy_consumption, saf_ftg_no_degrowth_constraint_enforcement_years
+        )
+        return saf_ftg_no_degrowth_constraint
+
+
+class SAFCO2NoDegrowthConstraint(AeroMAPSModel):
+    """
+    Prevent SAF CO2 energy consumption from decreasing between enforcement years.
+
+    Constraint is satisfied when <= 0; positive values indicate a decrease.
+    """
+
+    def __init__(self, name="saf_co2_no_degrowth_constraint", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        saf_co2_energy_consumption: pd.Series,
+        saf_co2_no_degrowth_constraint_enforcement_years: list,
+    ) -> list:
+        saf_co2_no_degrowth_constraint = _no_degrowth_violation(
+            saf_co2_energy_consumption, saf_co2_no_degrowth_constraint_enforcement_years
+        )
+        return saf_co2_no_degrowth_constraint
+
+
+class LCAFNoDegrowthConstraint(AeroMAPSModel):
+    """
+    Prevent LCAF energy consumption from decreasing between enforcement years.
+
+    Constraint is satisfied when <= 0; positive values indicate a decrease.
+    """
+
+    def __init__(self, name="lcaf_no_degrowth_constraint", *args, **kwargs):
+        super().__init__(name, *args, **kwargs)
+
+    def compute(
+        self,
+        lcaf_energy_consumption: pd.Series,
+        lcaf_no_degrowth_constraint_enforcement_years: list,
+    ) -> list:
+        lcaf_no_degrowth_constraint = _no_degrowth_violation(
+            lcaf_energy_consumption, lcaf_no_degrowth_constraint_enforcement_years
+        )
+        return lcaf_no_degrowth_constraint
