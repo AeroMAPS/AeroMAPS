@@ -410,14 +410,63 @@ model:
             production:
                 tags:
                     - phase: 'biofuel production'
-                forest_residues:
-                    amount: saf_ftg_share_residues
+                methanol_wood:
+                    amount: 1.0 - saf_ftg_share_residues
+                    name: 'kerosene production, from methanol, from wood, with CCS, economic allocation'
+                    loc: 'RER'
+                    # --- temporary fix to modify some input amounts for this process ---
+                    # (this should be done offline in the future for much better computational efficiency)
+                    # comment the following lines to keep original dataset from premise and divide by approx. 3 computation times.
+                    update: 
+                        - input_activity: 'methanol distillation, from wood, with CCS#RER' # use '#' for specifying loc
+                          new_value:
+                              distillation:
+                                  name: 'methanol distillation, from wood, with CCS'
+                                  loc: 'RER'
+                                  add:  # correction to premise dataset using original publication from Hank et al. 2019
+                                      - amount: 0.00052784
+                                        name: 'treatment of wastewater, average, wastewater treatment'
+                                        loc: 'Europe without Switzerland' 
+                                        unit: 'cubic meter'
+                                  update:
+                                      - input_activity: 'methanol synthesis, from wood, with CCS#RER'
+                                        new_value:
+                                            synthesis:
+                                                name: 'methanol synthesis, from wood, with CCS'
+                                                loc: 'RER'
+                                                delete:
+                                                    - input_activity: 'treatment of wastewater, average, wastewater treatment*'
+                                                update:
+                                                    - input_activity: 'hydrogen production, gaseous, 25 bar, from gasification of woody biomass in entrained flow gasifier, with CCS, at gasification plant#EUR'
+                                                      new_value:
+                                                          hydrogen_woody:
+                                                              name: 'hydrogen production, gaseous, 25 bar, from gasification of woody biomass in entrained flow gasifier, with CCS, at gasification plant'
+                                                              loc: 'EUR'
+                                                              update:
+                                                                  - input_activity: 'market for lignocellulosic biomass, used as fuel#EUR'
+                                                                  # keep both forest residue and woodchip but use constant value
+                                                                  # (otherwise premise/remind varies it quite erratically)
+                                                                    new_value:
+                                                                        ligno_biomass:
+                                                                            name: 'market for lignocellulosic biomass, used as fuel'
+                                                                            loc: 'EUR'
+                                                                            update:
+                                                                                - input_activity: 'market for wood chips, dry, measured as dry mass#EUR'
+                                                                                  new_value:
+                                                                                      amount: 0.15
+                                                                                - input_activity: 'supply of forest residue#EUR'
+                                                                                  new_value:
+                                                                                      amount: 0.85
+                    # ---- end of update ---
+                                                                
+                ft_residues:
+                    amount: saf_ftg_share_residues  # 0.0 by default
                     name: 'kerosene production, via Fischer-Tropsch, from forest residues, energy allocation'
                     loc: 'RER'
-                forest_products:
-                    amount: 1.0 - saf_ftg_share_residues
-                    name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
-                    loc: 'RER'
+                #forest_products:
+                #    amount: 1.0 - saf_ftg_share_residues
+                #    name: 'kerosene production, via Fischer-Tropsch, from forest product (non-residual), energy allocation'
+                #    loc: 'RER'
         
         
         ### Electrofuels
