@@ -33,19 +33,9 @@ class BiomassConsumptionPlot(SingleScenarioPlot):
         self.ax.set_xlim(2020, self.years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_biomass_consumption.set_ydata(
             self.df.loc[self.prospective_years, "biomass_total_consumption"] / 1e12
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
 
 class ElectricityConsumptionPlot(SingleScenarioPlot):
@@ -91,12 +81,6 @@ class ElectricityConsumptionPlot(SingleScenarioPlot):
         # self.ax_twin.plot([], [])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_electricity_consumption.set_ydata(
             self.df.loc[self.prospective_years, "electricity_total_consumption"] / 1e12
         )
@@ -104,9 +88,3 @@ class ElectricityConsumptionPlot(SingleScenarioPlot):
         self.line_france_production_2019.set_ydata(
             np.ones(len(self.prospective_years)) * 537.7 * 3.6 / 1000
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        # self.ax_twin.relim()
-        # self.ax_twin.autoscale_view()
-        self.fig.canvas.draw()
