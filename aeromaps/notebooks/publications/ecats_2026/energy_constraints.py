@@ -107,7 +107,7 @@ class OptimizationObjectives(AeroMAPSModel):
         """
 
         cumulative_co2_end_year = cumulative_co2_emissions.loc[self.end_year]
-        temperature_increase_end_year = temperature_increase_from_aviation.loc[self.end_year]
+        temperature_increase_end_year = temperature_increase_from_aviation.loc[2070]
         temperature_increase_2050 = temperature_increase_from_aviation.loc[2050]
         temperature_increase_2060 = temperature_increase_from_aviation.loc[2060]
 
