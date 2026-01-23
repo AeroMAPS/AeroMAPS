@@ -130,18 +130,6 @@ class DiscountEffect(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         (self.line_non_discounted,) = self.ax.plot(
@@ -158,7 +146,7 @@ class DiscountEffect(SingleScenarioPlot):
             self.df.loc[self.prospective_years, "discounted_energy_expenses"],
             color="red",
             linestyle="-",
-            label="Discounted expenses at r={}%".format(self.float_inputs["social_discount_rate"]),
+            label="Discounted expenses at r={}%".format(self.parameters["social_discount_rate"]),
             linewidth=2,
         )
 
@@ -167,11 +155,8 @@ class DiscountEffect(SingleScenarioPlot):
         self.ax.set_ylabel("M€ / year")
         self.ax.legend()
         self.ax.set_xlim(2020, self.years[-1])
-        # #
 
-    def update(self, df_data):
-        self.df = df_data["vector_outputs"]
-
+    def _update_plot_elements(self):
         self.line_non_discounted.set_ydata(
             self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
         )
@@ -179,10 +164,6 @@ class DiscountEffect(SingleScenarioPlot):
         self.line_discounted.set_ydata(
             self.df.loc[self.prospective_years, "discounted_energy_expenses"]
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
 
 class DropInMACC:
@@ -803,18 +784,6 @@ class DOCEvolutionCategory(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         (self.line_srdi,) = self.ax.plot(
@@ -903,14 +872,8 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.ax.set_ylabel("€ / ASK")
         self.ax.legend(title="Direct Operating Cost")
         self.ax.set_xlim(2020, self.years[-1])
-        # #
 
-    def update(self, df_data):
-        for collection in self.ax.collections:
-            collection.remove()
-
-        self.df = df_data["vector_outputs"]
-
+    def _update_plot_elements(self):
         self.line_lrh.set_ydata(
             self.df.loc[self.prospective_years, "doc_total_per_ask_long_range_hydrogen"]
         )
@@ -948,7 +911,6 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         )
 
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
-        self.fig.canvas.draw()
 
 
 class AirfareEvolutionBreakdown(SingleScenarioPlot):
@@ -958,17 +920,6 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            # figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         (self.line_total_airfare,) = self.ax.plot(
