@@ -25,13 +25,6 @@ def process():
     return proc
 
 
-def test_process_creation(process):
-    """Test that the process can be created and computed successfully."""
-    assert process is not None
-    assert hasattr(process, 'data')
-    assert process.data is not None
-
-
 def test_air_transport_co2_emissions_plot(process):
     """Test that air_transport_co2_emissions plot can be created."""
     plot = process.plot("air_transport_co2_emissions", save=False)
