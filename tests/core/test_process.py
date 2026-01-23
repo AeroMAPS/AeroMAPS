@@ -130,3 +130,20 @@ def test_process_with_custom_config():
     assert proc is not None
     proc.compute()
     assert proc.data is not None
+
+
+def test_process_models_are_independent():
+    """Test that model instances are independent between processes."""
+    # Create two processes
+    proc1 = create_process()
+    proc2 = create_process()
+    
+    # Models should be different instances
+    # Test with a common model that should exist in both
+    common_models = set(proc1.models.keys()) & set(proc2.models.keys())
+    assert len(common_models) > 0, "Processes should have some common models"
+    
+    # Check that at least one model is a different instance
+    for model_name in list(common_models)[:3]:  # Test first 3 common models
+        assert proc1.models[model_name] is not proc2.models[model_name], \
+            f"Model {model_name} should be independent between processes"
