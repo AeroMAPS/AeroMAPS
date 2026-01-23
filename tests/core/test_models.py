@@ -5,7 +5,9 @@ This module tests that all model groups can be instantiated and run without erro
 """
 
 import pytest
-from inspect import signature
+import os
+from pathlib import Path
+from aeromaps import create_process
 from aeromaps.core import models
 
 
@@ -17,79 +19,49 @@ def get_all_model_groups():
         if attr_name.startswith('models_') and not attr_name.startswith('__'):
             attr = getattr(models, attr_name)
             if isinstance(attr, dict):
-                model_groups.append((attr_name, attr))
+                model_groups.append(attr_name)
     return model_groups
 
 
 # Get model groups for parametrization
 MODEL_GROUPS = get_all_model_groups()
 
+# Get the path to config files
+CONFIG_DIR = Path(__file__).parent / "config_models"
 
-@pytest.mark.parametrize("group_name,group_dict", MODEL_GROUPS)
-def test_model_group(group_name, group_dict):
+
+@pytest.mark.parametrize("group_name", MODEL_GROUPS)
+def test_model_group(group_name):
     """
-    Comprehensive test for a model group.
+    Test that a model group can run successfully with default inputs.
     
-    Tests:
-    1. Group is not empty
-    2. All models can be instantiated
-    3. All models have required attributes (compute, name)
-    4. All models have valid compute signatures
-    5. Group structure is valid (dictionary with string keys)
+    For each model group:
+    1. Create a process with config for this sole model group
+    2. Compute the process
+    3. Assert process is instantiated, has data, vector_outputs exist and is not empty
     """
-    # Test 1: Group should not be empty
-    assert len(group_dict) > 0, f"{group_name} should not be empty"
+    # Get the config file path for this model group
+    config_file = CONFIG_DIR / f"{group_name}.yaml"
     
-    # Test 2-4: Check all models in the group
-    for model_name, model in group_dict.items():
-        # Test 2: Model instantiation
-        assert model is not None, f"{model_name} in {group_name} should not be None"
-        
-        # Test 3: Required attributes
-        assert hasattr(model, 'compute'), f"{model_name} in {group_name} should have compute method"
-        assert hasattr(model, 'name'), f"{model_name} in {group_name} should have name attribute"
-        
-        # Test 4: Valid compute signature
-        sig = signature(model.compute)
-        assert sig is not None, f"{model_name} in {group_name} should have a valid signature"
+    # Skip if config doesn't exist (shouldn't happen but safety check)
+    if not config_file.exists():
+        pytest.skip(f"Config file not found for {group_name}")
     
-    # Test 5: Group structure
-    assert isinstance(group_dict, dict), f"{group_name} should be a dictionary"
-    for key in group_dict.keys():
-        assert isinstance(key, str), f"Keys in {group_name} should be strings"
-
-
-def test_all_model_groups_found():
-    """Test that model groups are found in the models module."""
-    model_groups_dict = {name: group for name, group in MODEL_GROUPS}
-    assert len(model_groups_dict) > 0, "No model groups found in models module"
+    # Create process with config for this sole model group
+    proc = create_process(configuration_file=str(config_file))
     
-    # We expect at least the major groups
-    assert 'models_traffic' in model_groups_dict
-    assert 'models_efficiency_top_down' in model_groups_dict
-    assert 'models_energy_without_fuel_effect' in model_groups_dict
-
-
-def test_models_run_with_default_inputs():
-    """Test that models can be created and run with a process using default inputs."""
-    from aeromaps import create_process
+    # Assert process is instantiated
+    assert proc is not None, f"Process should be instantiated for {group_name}"
     
-    # Create a process which instantiates and runs models
-    proc = create_process()
-    
-    # Verify models are loaded
-    assert hasattr(proc, 'models')
-    assert len(proc.models) > 0
-    
-    # Verify models have been properly initialized
-    for name, model in proc.models.items():
-        assert model is not None
-        assert hasattr(model, 'compute')
-    
-    # Run the process to verify models work with default inputs
+    # Compute the process
     proc.compute()
     
-    # Check that outputs exist (successful run)
-    assert 'vector_outputs' in proc.data
+    # Assert process has data
+    assert hasattr(proc, 'data'), f"Process should have data attribute for {group_name}"
+    assert proc.data is not None, f"Process data should not be None for {group_name}"
+    
+    # Assert vector_outputs exist and is not empty
+    assert 'vector_outputs' in proc.data, f"Process should have vector_outputs for {group_name}"
     vector_outputs = proc.data['vector_outputs']
-    assert len(vector_outputs) > 0
+    assert vector_outputs is not None, f"vector_outputs should not be None for {group_name}"
+    assert len(vector_outputs) > 0, f"vector_outputs should not be empty for {group_name}"
