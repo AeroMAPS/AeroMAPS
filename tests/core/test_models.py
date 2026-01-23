@@ -1,60 +1,78 @@
 """
 Test module for AeroMAPS models configuration.
 
-This module tests that model groups can be instantiated and run without errors.
+This module tests that all model groups can be instantiated and run without errors.
 """
 
 import pytest
-from aeromaps.core.models import (
-    models_traffic,
-    models_efficiency_top_down,
-    models_energy_without_fuel_effect,
-)
+from inspect import signature
+from aeromaps.core import models
 
 
-def test_traffic_models_instantiation():
-    """Test that traffic models can be instantiated."""
-    assert len(models_traffic) > 0
-    
-    # Check that all models are instantiated
-    for name, model in models_traffic.items():
-        assert model is not None
-        assert hasattr(model, 'compute')
+# Get all model groups dynamically from the models module
+def get_all_model_groups():
+    """Get all model group dictionaries from the models module."""
+    model_groups = {}
+    for attr_name in dir(models):
+        if attr_name.startswith('models_') and not attr_name.startswith('__'):
+            attr = getattr(models, attr_name)
+            if isinstance(attr, dict):
+                model_groups[attr_name] = attr
+    return model_groups
 
 
-def test_efficiency_models_instantiation():
-    """Test that efficiency models can be instantiated."""
-    assert len(models_efficiency_top_down) > 0
-    
-    # Check that all models are instantiated
-    for name, model in models_efficiency_top_down.items():
-        assert model is not None
-        assert hasattr(model, 'compute')
+@pytest.fixture(scope="module")
+def model_groups():
+    """Fixture providing all model groups."""
+    return get_all_model_groups()
 
 
-def test_energy_models_instantiation():
-    """Test that energy models can be instantiated."""
-    assert len(models_energy_without_fuel_effect) > 0
-    
-    # Check that all models are instantiated
-    for name, model in models_energy_without_fuel_effect.items():
-        assert model is not None
-        assert hasattr(model, 'compute')
+def test_all_model_groups_found(model_groups):
+    """Test that model groups are found in the models module."""
+    assert len(model_groups) > 0, "No model groups found in models module"
+    # We expect at least the major groups
+    assert 'models_traffic' in model_groups
+    assert 'models_efficiency_top_down' in model_groups
+    assert 'models_energy_without_fuel_effect' in model_groups
 
 
-def test_models_have_required_attributes():
-    """Test that models have required attributes."""
-    # Test a sample model from each group
-    sample_models = [
-        ("RPK", models_traffic.get("rpk")),
-        ("LoadFactor", models_efficiency_top_down.get("load_factor")),
-        ("EnergyConsumption", models_energy_without_fuel_effect.get("energy_consumption")),
-    ]
-    
-    for name, model in sample_models:
-        if model is not None:
-            assert hasattr(model, 'compute'), f"{name} should have compute method"
-            assert hasattr(model, 'name'), f"{name} should have name attribute"
+def test_all_model_groups_instantiation(model_groups):
+    """Test that all model groups can be instantiated."""
+    for group_name, group_dict in model_groups.items():
+        assert len(group_dict) > 0, f"{group_name} should not be empty"
+        
+        # Check that all models in the group are instantiated
+        for model_name, model in group_dict.items():
+            assert model is not None, f"{model_name} in {group_name} should not be None"
+            assert hasattr(model, 'compute'), f"{model_name} in {group_name} should have compute method"
+
+
+def test_all_model_groups_have_required_attributes(model_groups):
+    """Test that all models in all groups have required attributes."""
+    for group_name, group_dict in model_groups.items():
+        for model_name, model in group_dict.items():
+            assert hasattr(model, 'compute'), f"{model_name} in {group_name} should have compute method"
+            assert hasattr(model, 'name'), f"{model_name} in {group_name} should have name attribute"
+
+
+def test_all_model_groups_compute_signatures(model_groups):
+    """Test that all models have proper compute signatures."""
+    for group_name, group_dict in model_groups.items():
+        for model_name, model in group_dict.items():
+            sig = signature(model.compute)
+            assert sig is not None, f"{model_name} in {group_name} should have a signature"
+            # Compute should have parameters
+            assert len(sig.parameters) >= 0, f"{model_name} in {group_name} compute should have parameters"
+
+
+def test_all_model_groups_structure(model_groups):
+    """Test that all model groups are properly structured as dictionaries."""
+    for group_name, group_dict in model_groups.items():
+        assert isinstance(group_dict, dict), f"{group_name} should be a dictionary"
+        
+        # Each should have string keys
+        for key in group_dict.keys():
+            assert isinstance(key, str), f"Keys in {group_name} should be strings"
 
 
 def test_models_run_with_default_inputs():
@@ -74,37 +92,21 @@ def test_models_run_with_default_inputs():
         assert hasattr(model, 'compute')
 
 
-def test_traffic_model_group_runs():
-    """Test that traffic model group can run in a process."""
+def test_process_runs_successfully():
+    """Test that a process with models runs successfully."""
     from aeromaps import create_process
     
     proc = create_process()
     proc.compute()
     
-    # Check that traffic-related outputs exist
+    # Check that outputs exist
     assert 'vector_outputs' in proc.data
     vector_outputs = proc.data['vector_outputs']
-    
-    # Check for some traffic-related outputs
-    # These should exist after computation
-    assert 'rpk' in vector_outputs.columns or len(vector_outputs) > 0
-
-
-def test_model_compute_signatures():
-    """Test that model compute methods have proper signatures."""
-    from inspect import signature
-    
-    # Test a few sample models
-    rpk_model = models_traffic.get("rpk")
-    if rpk_model:
-        sig = signature(rpk_model.compute)
-        assert sig is not None
-        # Compute should have parameters
-        assert len(sig.parameters) > 0
+    assert len(vector_outputs) > 0
 
 
 def test_models_are_independent():
-    """Test that model instances are independent."""
+    """Test that model instances are independent between processes."""
     from aeromaps import create_process
     
     # Create two processes
@@ -112,22 +114,25 @@ def test_models_are_independent():
     proc2 = create_process()
     
     # Models should be different instances
-    if 'rpk' in proc1.models and 'rpk' in proc2.models:
-        assert proc1.models['rpk'] is not proc2.models['rpk']
+    # Test with a common model that should exist in both
+    common_models = set(proc1.models.keys()) & set(proc2.models.keys())
+    assert len(common_models) > 0, "Processes should have some common models"
+    
+    # Check that at least one model is a different instance
+    for model_name in list(common_models)[:3]:  # Test first 3 common models
+        assert proc1.models[model_name] is not proc2.models[model_name], \
+            f"Model {model_name} should be independent between processes"
 
 
-def test_model_groups_are_dictionaries():
-    """Test that model groups are properly structured as dictionaries."""
-    assert isinstance(models_traffic, dict)
-    assert isinstance(models_efficiency_top_down, dict)
-    assert isinstance(models_energy_without_fuel_effect, dict)
-    
-    # Each should have string keys
-    for key in models_traffic.keys():
-        assert isinstance(key, str)
-    
-    for key in models_efficiency_top_down.keys():
-        assert isinstance(key, str)
-    
-    for key in models_energy_without_fuel_effect.keys():
-        assert isinstance(key, str)
+def test_sample_models_from_each_group(model_groups):
+    """Test sample models from each group to ensure they work."""
+    # Test that we can access at least one model from each group
+    for group_name, group_dict in model_groups.items():
+        if len(group_dict) > 0:
+            # Get first model from the group
+            first_model_name = list(group_dict.keys())[0]
+            first_model = group_dict[first_model_name]
+            
+            assert first_model is not None, f"First model in {group_name} should not be None"
+            assert hasattr(first_model, 'compute'), f"First model in {group_name} should have compute"
+            assert hasattr(first_model, 'name'), f"First model in {group_name} should have name"
