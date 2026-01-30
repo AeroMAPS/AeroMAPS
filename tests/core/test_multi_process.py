@@ -23,6 +23,16 @@ def processes():
     return {"scenario_1": proc1, "scenario_2": proc2}
 
 
+@pytest.fixture(scope="module")
+def uncomputed_processes():
+    """Create two test processes without computing."""
+    # Create processes without computing
+    proc1 = create_process()
+    proc2 = create_process()
+    
+    return {"scenario_1": proc1, "scenario_2": proc2}
+
+
 def test_multi_process_creation_dict(processes):
     """Test MultiProcess can be created with a dictionary."""
     multi = create_multi_process(processes)
@@ -40,6 +50,24 @@ def test_multi_process_creation_list(processes):
     assert len(multi) == 2
 
 
+def test_compute_all(uncomputed_processes):
+    """Test that compute_all() computes all processes."""
+    multi = create_multi_process(uncomputed_processes)
+    
+    # Verify processes are not computed initially
+    for proc in uncomputed_processes.values():
+        assert not hasattr(proc, 'data') or proc.data is None or len(proc.data) == 0
+    
+    # Compute all processes
+    multi.compute_all()
+    
+    # Verify all processes are now computed
+    for proc in uncomputed_processes.values():
+        assert hasattr(proc, 'data')
+        assert proc.data is not None
+        assert "vector_outputs" in proc.data
+
+
 def test_list_available_plots(processes):
     """Test that list_available_plots returns plot names."""
     multi = create_multi_process(processes)
@@ -52,6 +80,40 @@ def test_list_available_plots(processes):
     # Check some expected plots are available
     assert "co2_emissions_comparison" in plots
     assert "energy_consumption_comparison" in plots
+    assert "co2_per_rpk_comparison" in plots
+    assert "fuel_supply_breakdown" in plots
+    assert "carbon_budget_comparison" in plots
+
+
+def test_new_intensity_plots_available(processes):
+    """Test that new intensity plots are available."""
+    multi = create_multi_process(processes)
+    plots = multi.list_available_plots()
+    
+    assert "co2_per_rpk_comparison" in plots
+    assert "co2_per_rtk_comparison" in plots
+    assert "energy_per_ask_comparison" in plots
+    assert "energy_per_rtk_comparison" in plots
+
+
+def test_new_fuel_supply_plots_available(processes):
+    """Test that new fuel supply plots are available."""
+    multi = create_multi_process(processes)
+    plots = multi.list_available_plots()
+    
+    assert "fuel_supply_breakdown" in plots
+    assert "hydrogen_supply_comparison" in plots
+    assert "electric_supply_comparison" in plots
+    assert "biofuel_production_comparison" in plots
+    assert "electrofuel_production_comparison" in plots
+
+
+def test_carbon_budget_plot_available(processes):
+    """Test that carbon budget plot is available."""
+    multi = create_multi_process(processes)
+    plots = multi.list_available_plots()
+    
+    assert "carbon_budget_comparison" in plots
 
 
 def test_plot_co2_emissions_comparison(processes):

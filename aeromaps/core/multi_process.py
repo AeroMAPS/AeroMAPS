@@ -52,6 +52,24 @@ class MultiProcess:
         from aeromaps.plots.multi_scenario import available_multi_plots
         self._available_plots = available_multi_plots
     
+    def compute_all(self):
+        """
+        Compute all processes in the multi-process manager.
+        
+        This method iterates through all managed processes and calls their
+        compute() method. This is a convenience method to avoid having to
+        compute each process individually before creating multi-scenario plots.
+        
+        Examples
+        --------
+        >>> multi = create_multi_process({"s1": proc1, "s2": proc2})
+        >>> multi.compute_all()  # Computes both proc1 and proc2
+        >>> multi.plot("co2_emissions_comparison")
+        """
+        for scenario_name, process in self.processes.items():
+            logger.info(f"Computing scenario: {scenario_name}")
+            process.compute()
+    
     def list_available_plots(self) -> List[str]:
         """
         List the names of available multi-scenario plots.
