@@ -1,6 +1,25 @@
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 import warnings
+import itertools
+
+
+# Default color palette for scenario groups
+DEFAULT_COLORS = [
+    '#1f77b4',  # blue
+    '#ff7f0e',  # orange
+    '#2ca02c',  # green
+    '#d62728',  # red
+    '#9467bd',  # purple
+    '#8c564b',  # brown
+    '#e377c2',  # pink
+    '#7f7f7f',  # gray
+    '#bcbd22',  # olive
+    '#17becf',  # cyan
+]
+
+# Default line styles for scenarios within a group
+DEFAULT_LINESTYLES = ['-', '--', '-.', ':']
 
 
 class MultiScenarioPlot(ABC):
@@ -20,7 +39,8 @@ class MultiScenarioPlot(ABC):
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, processes, figsize=None, check_outputs=True):
+    def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None, 
+                 scenario_groups=None):
         """
         Initialize the plot with data from multiple processes.
 
@@ -33,7 +53,26 @@ class MultiScenarioPlot(ABC):
         check_outputs : bool, optional
             Whether to validate that required outputs are present in all scenarios.
             Default is True. Scenarios with missing outputs will be excluded with warnings.
+        required_outputs : list of str, optional
+            List of output field names required for this plot. If provided,
+            overrides the class-level required_outputs. If None, uses class default.
+        scenario_groups : dict, optional
+            Dictionary mapping group names to lists of scenario names. Scenarios
+            within a group will share the same color but use different line styles.
+            Example: {"Baseline": ["s1", "s2"], "Optimistic": ["s3", "s4"]}
+            If None, each scenario gets its own color.
         """
+        # Set instance-level required_outputs (override class default if provided)
+        if required_outputs is not None:
+            self.required_outputs = required_outputs
+        else:
+            # Use class attribute - create instance copy to avoid mutation
+            self.required_outputs = self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
+        
+        # Store scenario grouping configuration
+        self.scenario_groups = scenario_groups
+        self._setup_scenario_styles(processes, scenario_groups)
+        
         # Store processes
         self.processes = processes
         
@@ -53,6 +92,91 @@ class MultiScenarioPlot(ABC):
 
         # Create the actual plot (implemented by subclass)
         self.create_plot()
+    
+    def _setup_scenario_styles(self, processes, scenario_groups):
+        """
+        Setup color and line style mapping for scenarios.
+        
+        Parameters
+        ----------
+        processes : list or dict
+            Process objects
+        scenario_groups : dict or None
+            Scenario grouping configuration
+        """
+        self.scenario_styles = {}
+        
+        # Get scenario names
+        if isinstance(processes, dict):
+            scenario_names = list(processes.keys())
+        else:
+            scenario_names = [f"scenario_{i}" for i in range(len(processes))]
+        
+        if scenario_groups is None:
+            # No grouping - each scenario gets its own color, solid line style
+            color_cycle = itertools.cycle(DEFAULT_COLORS)
+            for scenario_name in scenario_names:
+                self.scenario_styles[scenario_name] = {
+                    'color': next(color_cycle),
+                    'linestyle': '-',
+                    'group': None
+                }
+        else:
+            # With grouping - assign colors to groups, line styles within groups
+            color_cycle = itertools.cycle(DEFAULT_COLORS)
+            group_colors = {}
+            
+            # Assign color to each group
+            for group_name in scenario_groups.keys():
+                group_colors[group_name] = next(color_cycle)
+            
+            # Assign styles to scenarios within groups
+            for group_name, group_scenarios in scenario_groups.items():
+                color = group_colors[group_name]
+                linestyle_cycle = itertools.cycle(DEFAULT_LINESTYLES)
+                
+                for scenario_name in group_scenarios:
+                    if scenario_name in scenario_names:
+                        self.scenario_styles[scenario_name] = {
+                            'color': color,
+                            'linestyle': next(linestyle_cycle),
+                            'group': group_name
+                        }
+            
+            # Handle ungrouped scenarios (if any)
+            grouped_scenarios = set()
+            for group_scenarios in scenario_groups.values():
+                grouped_scenarios.update(group_scenarios)
+            
+            ungrouped = set(scenario_names) - grouped_scenarios
+            if ungrouped:
+                ungrouped_color_cycle = itertools.cycle(DEFAULT_COLORS[len(scenario_groups):])
+                for scenario_name in ungrouped:
+                    self.scenario_styles[scenario_name] = {
+                        'color': next(ungrouped_color_cycle),
+                        'linestyle': '-',
+                        'group': None
+                    }
+    
+    def get_scenario_style(self, scenario_name):
+        """
+        Get the color and line style for a scenario.
+        
+        Parameters
+        ----------
+        scenario_name : str
+            Name of the scenario
+            
+        Returns
+        -------
+        dict
+            Dictionary with 'color', 'linestyle', and 'group' keys
+        """
+        if scenario_name in self.scenario_styles:
+            return self.scenario_styles[scenario_name]
+        else:
+            # Default style if not found
+            return {'color': DEFAULT_COLORS[0], 'linestyle': '-', 'group': None}
 
     def _filter_processes_by_outputs(self, required_outputs):
         """
@@ -147,14 +271,31 @@ class MultiScenarioPlot(ABC):
     @classmethod
     def get_required_outputs(cls):
         """
-        Get the list of required outputs for this plot.
+        Get the list of required outputs for this plot class.
+        
+        This returns the class-level default. Individual instances may override
+        this via the required_outputs parameter in __init__().
         
         Returns
         -------
         list of str
-            List of output field names required for this plot
+            List of output field names required by this plot class
         """
         return cls.required_outputs
+    
+    def get_instance_required_outputs(self):
+        """
+        Get the list of required outputs for this plot instance.
+        
+        This returns the instance-level required outputs, which may differ
+        from the class default if overridden at initialization.
+        
+        Returns
+        -------
+        list of str
+            List of output field names required by this plot instance
+        """
+        return self.required_outputs
     
     def _extract_all_data(self):
         """

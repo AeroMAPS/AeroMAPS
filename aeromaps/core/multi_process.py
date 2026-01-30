@@ -154,7 +154,8 @@ class MultiProcess:
         return filtered_processes
     
     def plot(self, name: str, save: bool = False, size_inches=None, 
-             remove_title: bool = False, check_outputs: bool = True):
+             remove_title: bool = False, check_outputs: bool = True,
+             scenario_groups: dict = None):
         """
         Generate a multi-scenario comparison plot.
         
@@ -172,6 +173,11 @@ class MultiProcess:
         check_outputs : bool, optional
             Whether to check for required outputs and filter scenarios.
             Default is True. If False, plot may fail if outputs are missing.
+        scenario_groups : dict, optional
+            Dictionary mapping group names to lists of scenario names. Scenarios
+            within a group will share the same color but use different line styles.
+            Example: {"Baseline": ["s1", "s2"], "Optimistic": ["s3", "s4"]}
+            If None, each scenario gets its own color.
             
         Returns
         -------
@@ -199,7 +205,8 @@ class MultiProcess:
         plot_instance = plot_class(
             self.processes, 
             figsize=size_inches,
-            check_outputs=check_outputs
+            check_outputs=check_outputs,
+            scenario_groups=scenario_groups
         )
         
         # Save if requested
