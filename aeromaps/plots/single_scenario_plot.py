@@ -28,7 +28,7 @@ class SingleScenarioPlot(ABC):
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, process, figsize=None, check_outputs=True, **kwargs):
+    def __init__(self, process, figsize=None, check_outputs=True, required_outputs=None, **kwargs):
         """
         Initialize the plot with data from a process.
 
@@ -41,7 +41,17 @@ class SingleScenarioPlot(ABC):
         check_outputs : bool, optional
             Whether to validate that required outputs are present in the data.
             Default is True. If False, validation is skipped.
+        required_outputs : list of str, optional
+            List of output field names required for this plot. If provided,
+            overrides the class-level required_outputs. If None, uses class default.
         """
+        # Set instance-level required_outputs (override class default if provided)
+        if required_outputs is not None:
+            self.required_outputs = required_outputs
+        else:
+            # Use class attribute - create instance copy to avoid mutation
+            self.required_outputs = self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
+        
         # Validate required outputs if requested
         if check_outputs and self.required_outputs:
             self._validate_required_outputs(process.data)
@@ -96,14 +106,31 @@ class SingleScenarioPlot(ABC):
     @classmethod
     def get_required_outputs(cls):
         """
-        Get the list of required outputs for this plot.
+        Get the list of required outputs for this plot class.
+        
+        This returns the class-level default. Individual instances may override
+        this via the required_outputs parameter in __init__().
         
         Returns
         -------
         list of str
-            List of output field names required for this plot
+            List of output field names required by this plot class
         """
         return cls.required_outputs
+    
+    def get_instance_required_outputs(self):
+        """
+        Get the list of required outputs for this plot instance.
+        
+        This returns the instance-level required outputs, which may differ
+        from the class default if overridden at initialization.
+        
+        Returns
+        -------
+        list of str
+            List of output field names required by this plot instance
+        """
+        return self.required_outputs
     
     def _extract_data(self, data):
         """

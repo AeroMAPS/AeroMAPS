@@ -293,3 +293,179 @@ def test_multi_scenario_plot_filters_invalid_scenarios():
         # Should have data for both scenarios
         assert len(plot.scenario_data) == 2
 
+
+def test_required_outputs_as_instance_parameter_single():
+    """Test that required_outputs can be passed as instance parameter for SingleScenarioPlot."""
+    from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+    
+    # Create a simple test plot class
+    class TestPlot(SingleScenarioPlot):
+        required_outputs = ["co2_emissions"]
+        
+        def _get_default_figsize(self):
+            return (10, 6)
+        
+        def create_plot(self):
+            pass
+        
+        def _update_plot_elements(self):
+            pass
+    
+    # Test class-level default
+    assert TestPlot.get_required_outputs() == ["co2_emissions"]
+    
+    # Create process
+    proc = create_process()
+    proc.compute()
+    
+    # Test with instance override
+    plot = TestPlot(proc, required_outputs=["co2_emissions", "energy_consumption"])
+    assert plot.get_instance_required_outputs() == ["co2_emissions", "energy_consumption"]
+    
+    # Test using class default
+    plot2 = TestPlot(proc)
+    assert plot2.get_instance_required_outputs() == ["co2_emissions"]
+
+
+def test_required_outputs_as_instance_parameter_multi():
+    """Test that required_outputs can be passed as instance parameter for MultiScenarioPlot."""
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Test class-level default
+    assert CO2EmissionsComparisonPlot.get_required_outputs() == ["co2_emissions"]
+    
+    # Create processes
+    proc1 = create_process()
+    proc1.compute()
+    proc2 = create_process()
+    proc2.compute()
+    
+    processes = {"scenario_1": proc1, "scenario_2": proc2}
+    
+    # Test with instance override
+    plot = CO2EmissionsComparisonPlot(
+        processes, 
+        required_outputs=["co2_emissions", "energy_consumption"],
+        check_outputs=False  # Skip validation for this test
+    )
+    assert plot.get_instance_required_outputs() == ["co2_emissions", "energy_consumption"]
+    
+    # Test using class default
+    plot2 = CO2EmissionsComparisonPlot(processes)
+    assert plot2.get_instance_required_outputs() == ["co2_emissions"]
+
+
+def test_scenario_grouping_basic():
+    """Test basic scenario grouping with colors and line styles."""
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Create processes
+    proc1 = create_process()
+    proc1.compute()
+    proc2 = create_process()
+    proc2.compute()
+    proc3 = create_process()
+    proc3.compute()
+    proc4 = create_process()
+    proc4.compute()
+    
+    processes = {
+        "baseline_2030": proc1,
+        "baseline_2040": proc2,
+        "optimistic_2030": proc3,
+        "optimistic_2040": proc4
+    }
+    
+    # Define groups
+    groups = {
+        "Baseline": ["baseline_2030", "baseline_2040"],
+        "Optimistic": ["optimistic_2030", "optimistic_2040"]
+    }
+    
+    # Create plot with groups
+    plot = CO2EmissionsComparisonPlot(processes, scenario_groups=groups)
+    
+    # Check that scenarios have styles
+    assert hasattr(plot, 'scenario_styles')
+    assert "baseline_2030" in plot.scenario_styles
+    assert "baseline_2040" in plot.scenario_styles
+    assert "optimistic_2030" in plot.scenario_styles
+    assert "optimistic_2040" in plot.scenario_styles
+    
+    # Check that scenarios in same group have same color
+    style_b1 = plot.get_scenario_style("baseline_2030")
+    style_b2 = plot.get_scenario_style("baseline_2040")
+    assert style_b1['color'] == style_b2['color']
+    assert style_b1['group'] == "Baseline"
+    assert style_b2['group'] == "Baseline"
+    
+    # Check that scenarios in same group have different line styles
+    assert style_b1['linestyle'] != style_b2['linestyle']
+    
+    # Check that scenarios in different groups have different colors
+    style_o1 = plot.get_scenario_style("optimistic_2030")
+    assert style_b1['color'] != style_o1['color']
+    assert style_o1['group'] == "Optimistic"
+
+
+def test_scenario_grouping_no_groups():
+    """Test that plots work without grouping (backward compatibility)."""
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Create processes
+    proc1 = create_process()
+    proc1.compute()
+    proc2 = create_process()
+    proc2.compute()
+    
+    processes = {"scenario_1": proc1, "scenario_2": proc2}
+    
+    # Create plot without groups
+    plot = CO2EmissionsComparisonPlot(processes, scenario_groups=None)
+    
+    # Check that scenarios have styles with default behavior
+    style1 = plot.get_scenario_style("scenario_1")
+    style2 = plot.get_scenario_style("scenario_2")
+    
+    # Without groups, each scenario gets its own color
+    assert style1['color'] != style2['color']
+    assert style1['group'] is None
+    assert style2['group'] is None
+    assert style1['linestyle'] == '-'  # Default solid line
+    assert style2['linestyle'] == '-'
+
+
+def test_multi_process_plot_with_scenario_groups(processes):
+    """Test that scenario_groups can be passed through MultiProcess.plot()."""
+    multi = create_multi_process(processes)
+    
+    # Define groups
+    groups = {
+        "Group1": ["scenario_1"],
+        "Group2": ["scenario_2"]
+    }
+    
+    # Should not raise an error
+    plot = multi.plot("co2_emissions_comparison", scenario_groups=groups)
+    assert plot is not None
+    assert hasattr(plot, 'scenario_styles')
+
+
+def test_scenario_style_for_unknown_scenario():
+    """Test that get_scenario_style returns default for unknown scenarios."""
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Create processes
+    proc1 = create_process()
+    proc1.compute()
+    
+    processes = {"scenario_1": proc1}
+    plot = CO2EmissionsComparisonPlot(processes)
+    
+    # Get style for unknown scenario - should return default
+    style = plot.get_scenario_style("unknown_scenario")
+    assert style is not None
+    assert 'color' in style
+    assert 'linestyle' in style
+    assert 'group' in style
+
