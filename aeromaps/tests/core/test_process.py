@@ -11,20 +11,20 @@ from aeromaps import create_process
 @pytest.fixture(scope="module")
 def process():
     """Create and compute an AeroMAPS process for testing."""
-    proc = create_process()
+    proc = create_process(configuration_file="data/config.yaml")
     proc.compute()
     return proc
 
 
 def test_process_creation():
     """Test that the process can be created successfully."""
-    proc = create_process()
+    proc = create_process(configuration_file="data/config.yaml")
     assert proc is not None
 
 
 def test_process_compute():
     """Test that the process can be computed successfully."""
-    proc = create_process()
+    proc = create_process(configuration_file="data/config.yaml")
     proc.compute()
     assert proc.data is not None
     assert hasattr(proc, 'data')
@@ -32,13 +32,13 @@ def test_process_compute():
 
 def test_process_has_parameters():
     """Test that the process has parameters after creation."""
-    proc = create_process()
+    proc = create_process(configuration_file="data/config.yaml")
     assert hasattr(proc, 'parameters')
 
 
 def test_process_has_models():
     """Test that the process has models after creation."""
-    proc = create_process()
+    proc = create_process(configuration_file="data/config.yaml")
     assert hasattr(proc, 'models')
     assert len(proc.models) > 0
 
@@ -135,8 +135,8 @@ def test_process_with_custom_config():
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
     # Create two processes
-    proc1 = create_process()
-    proc2 = create_process()
+    proc1 = create_process(configuration_file="data/config.yaml")
+    proc2 = create_process(configuration_file="data/config.yaml")
     
     # Models should be different instances
     # Test with a common model that should exist in both
