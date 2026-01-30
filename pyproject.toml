@@ -20,7 +20,7 @@ homepage = "https://github.com/AeroMAPS/AeroMAPS"
 
 [tool.poetry.dependencies]
 # Core and standard libraries
-python = ">=3.10, <3.12"
+python = ">=3.10, <3.13"
 numpy = "^1.20.3"
 scipy = "^1.4.1"
 pandas = ">=1.3.0,<=2.2.2"
@@ -31,8 +31,8 @@ deepdiff = "^8"
 sympy = "^1.14.0"
 dill = "^0.4.0"
 
-# External models
-aerocm = "0.1.1b0"
+# External models (optional - requires Python 3.10-3.11)
+aerocm = {version = "0.1.1b0", python = ">=3.10, <3.12", optional = true}
 
 # Data visualization
 matplotlib = "^3.7"
@@ -61,6 +61,7 @@ premise = {version = "2.3.3", python = ">=3.10, <3.12", optional = true}  # free
 
 [tool.poetry.extras]
 lca = ["lca-modeller", "premise"]
+climate = ["aerocm"]
 
 
 [tool.poetry.group.test.dependencies]

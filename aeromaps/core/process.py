@@ -1290,12 +1290,12 @@ class AeroMAPSProcess(object):
             for key, value in d.items():
                 if isinstance(value, dict):
                     check_instance_in_dict(value)
-                elif isinstance(value, AeroMAPSModel):
+                if isinstance(value, AeroMAPSModel):
                     model = value
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
-                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup") and hasattr(self, "pathways_manager"):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
