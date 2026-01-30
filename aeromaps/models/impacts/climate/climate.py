@@ -3,13 +3,7 @@ import pandas as pd
 from aeromaps.models.base import (
     AeroMAPSModel,
 )
-
-try:
-    from aerocm.climate_models.aviation_climate_simulation import AviationClimateSimulation
-    AEROCM_AVAILABLE = True
-except ImportError:
-    AEROCM_AVAILABLE = False
-    AviationClimateSimulation = None
+from aerocm.climate_models.aviation_climate_simulation import AviationClimateSimulation
 
 
 class ClimateModel(AeroMAPSModel):
@@ -59,13 +53,6 @@ class ClimateModel(AeroMAPSModel):
             **kwargs
     ):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
-        
-        if not AEROCM_AVAILABLE:
-            raise ImportError(
-                "aerocm package is not available. "
-                "Install it with: pip install aeromaps[climate] "
-                "(Note: aerocm requires Python 3.10-3.11)"
-            )
 
         # --- Configuration ---
         self.climate_model = climate_model
