@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
+import warnings
 
 
 class MultiScenarioPlot(ABC):
@@ -8,9 +9,18 @@ class MultiScenarioPlot(ABC):
 
     This class handles common initialization and update patterns for plots
     that compare or visualize data from multiple processes/scenarios.
+    
+    Attributes
+    ----------
+    required_outputs : list of str
+        List of output field names required for this plot. Subclasses should
+        override this to specify their data requirements.
     """
+    
+    # Default: no required outputs (subclasses should override)
+    required_outputs = []
 
-    def __init__(self, processes, figsize=None):
+    def __init__(self, processes, figsize=None, check_outputs=True):
         """
         Initialize the plot with data from multiple processes.
 
@@ -20,9 +30,16 @@ class MultiScenarioPlot(ABC):
             List or dictionary of process objects containing the data to plot
         figsize : tuple, optional
             Figure size as (width, height). If None, uses default from subclass
+        check_outputs : bool, optional
+            Whether to validate that required outputs are present in all scenarios.
+            Default is True. Scenarios with missing outputs will be excluded with warnings.
         """
         # Store processes
         self.processes = processes
+        
+        # Validate and filter processes if requested
+        if check_outputs and self.required_outputs:
+            self.processes = self._filter_processes_by_outputs(self.required_outputs)
 
         # Extract data from all processes
         self._extract_all_data()
@@ -37,6 +54,108 @@ class MultiScenarioPlot(ABC):
         # Create the actual plot (implemented by subclass)
         self.create_plot()
 
+    def _filter_processes_by_outputs(self, required_outputs):
+        """
+        Filter processes to only include those with all required outputs.
+        
+        Issues warnings for scenarios with missing outputs and excludes them.
+
+        Parameters
+        ----------
+        required_outputs : list of str
+            List of output field names required for the plot
+
+        Returns
+        -------
+        dict or list
+            Filtered processes (same type as input)
+            
+        Raises
+        ------
+        ValueError
+            If no scenarios have all required outputs
+        """
+        if isinstance(self.processes, dict):
+            filtered = {}
+            for scenario_name, process in self.processes.items():
+                missing = self._check_missing_outputs(process.data, required_outputs)
+                if not missing:
+                    filtered[scenario_name] = process
+                else:
+                    warnings.warn(
+                        f"Scenario '{scenario_name}' is missing required outputs: {missing}. "
+                        f"It will be excluded from the plot.",
+                        UserWarning
+                    )
+            
+            if len(filtered) == 0:
+                raise ValueError(
+                    f"No scenarios have all required outputs: {required_outputs}"
+                )
+            
+            return filtered
+        else:
+            # List of processes
+            filtered = []
+            for idx, process in enumerate(self.processes):
+                missing = self._check_missing_outputs(process.data, required_outputs)
+                if not missing:
+                    filtered.append(process)
+                else:
+                    warnings.warn(
+                        f"Scenario at index {idx} is missing required outputs: {missing}. "
+                        f"It will be excluded from the plot.",
+                        UserWarning
+                    )
+            
+            if len(filtered) == 0:
+                raise ValueError(
+                    f"No scenarios have all required outputs: {required_outputs}"
+                )
+            
+            return filtered
+    
+    def _check_missing_outputs(self, data, required_outputs):
+        """
+        Check which required outputs are missing from a scenario's data.
+        
+        Parameters
+        ----------
+        data : dict
+            Data dictionary from a process
+        required_outputs : list of str
+            List of output field names to check for
+            
+        Returns
+        -------
+        list of str
+            List of missing output names (empty if all present)
+        """
+        missing = []
+        
+        if "vector_outputs" in data and data["vector_outputs"] is not None:
+            df = data["vector_outputs"]
+            for output in required_outputs:
+                if output not in df.columns:
+                    missing.append(output)
+        else:
+            # No vector_outputs at all
+            missing = required_outputs.copy()
+        
+        return missing
+    
+    @classmethod
+    def get_required_outputs(cls):
+        """
+        Get the list of required outputs for this plot.
+        
+        Returns
+        -------
+        list of str
+            List of output field names required for this plot
+        """
+        return cls.required_outputs
+    
     def _extract_all_data(self):
         """
         Extract and store data from all processes.

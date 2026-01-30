@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
+import warnings
 
 # Figure sizes
 plot_1_x = 8.5
@@ -16,9 +17,18 @@ class SingleScenarioPlot(ABC):
 
     This class handles common initialization and update patterns for plots
     that visualize data from a single process/scenario.
+    
+    Attributes
+    ----------
+    required_outputs : list of str
+        List of output field names required for this plot. Subclasses should
+        override this to specify their data requirements.
     """
+    
+    # Default: no required outputs (subclasses should override)
+    required_outputs = []
 
-    def __init__(self, process, figsize=None, **kwargs):
+    def __init__(self, process, figsize=None, check_outputs=True, **kwargs):
         """
         Initialize the plot with data from a process.
 
@@ -28,7 +38,14 @@ class SingleScenarioPlot(ABC):
             The process object containing the data to plot
         figsize : tuple, optional
             Figure size as (width, height). If None, uses default from subclass
+        check_outputs : bool, optional
+            Whether to validate that required outputs are present in the data.
+            Default is True. If False, validation is skipped.
         """
+        # Validate required outputs if requested
+        if check_outputs and self.required_outputs:
+            self._validate_required_outputs(process.data)
+        
         # Extract data from process
         self._extract_data(process.data)
 
@@ -44,6 +61,50 @@ class SingleScenarioPlot(ABC):
         # Create the actual plot (implemented by subclass)
         self.create_plot()
 
+    def _validate_required_outputs(self, data):
+        """
+        Validate that all required outputs are present in the data.
+        
+        Issues warnings for missing outputs but does not raise exceptions,
+        allowing plots to attempt rendering even with incomplete data.
+
+        Parameters
+        ----------
+        data : dict
+            Data dictionary from the process
+        """
+        missing_outputs = []
+        
+        # Check in vector_outputs
+        if "vector_outputs" in data and data["vector_outputs"] is not None:
+            df = data["vector_outputs"]
+            for output in self.required_outputs:
+                if output not in df.columns:
+                    missing_outputs.append(output)
+        else:
+            # No vector_outputs at all
+            missing_outputs = self.required_outputs.copy()
+        
+        if missing_outputs:
+            warnings.warn(
+                f"{self.__class__.__name__} requires outputs {self.required_outputs} "
+                f"but the following are missing: {missing_outputs}. "
+                f"The plot may not render correctly.",
+                UserWarning
+            )
+    
+    @classmethod
+    def get_required_outputs(cls):
+        """
+        Get the list of required outputs for this plot.
+        
+        Returns
+        -------
+        list of str
+            List of output field names required for this plot
+        """
+        return cls.required_outputs
+    
     def _extract_data(self, data):
         """
         Extract and store data attributes from the process data dictionary.
