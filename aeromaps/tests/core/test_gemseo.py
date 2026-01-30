@@ -29,7 +29,9 @@ class DummyModel(AeroMAPSModel):
 
 def test_custom_data_converter_float():
     """Test CustomDataConverter handles float values correctly."""
-    converter = CustomDataConverter(SimpleGrammar("dummy"))
+    grammar = SimpleGrammar("dummy")
+    grammar.update_from_types({"test_float": float})
+    converter = CustomDataConverter(grammar)
     
     # Test float conversion to array
     value = 5.0
@@ -37,14 +39,17 @@ def test_custom_data_converter_float():
     assert isinstance(array, np.ndarray)
     assert array == 5.0
     
-    # Test array back to value
+    # Test array back to value (floats go through default conversion)
     result = converter.convert_array_to_value("test_float", array)
+    # For floats, the result should be a scalar
     assert result == 5.0
 
 
 def test_custom_data_converter_list():
     """Test CustomDataConverter handles list values correctly."""
-    converter = CustomDataConverter(SimpleGrammar("dummy"))
+    grammar = SimpleGrammar("dummy")
+    grammar.update_from_types({"test_list": list})
+    converter = CustomDataConverter(grammar)
     
     # Test list conversion to array
     value = [1.0, 2.0, 3.0]
@@ -53,7 +58,8 @@ def test_custom_data_converter_list():
     assert np.array_equal(array, np.array([1.0, 2.0, 3.0]))
     assert "test_list" in converter._list_names
     
-    # Test array back to list
+    # Test array back to list - must be in a single conversion cycle
+    # The converter tracks the name during convert_value_to_array
     result = converter.convert_array_to_value("test_list", array)
     assert isinstance(result, list)
     assert result == [1.0, 2.0, 3.0]
@@ -136,22 +142,29 @@ def test_auto_model_wrapper_execution():
     model = DummyModel()
     wrapper = AeroMAPSAutoModelWrapper(model)
     
-    # Execute with first set of inputs
-    wrapper.execute({"x": np.array([2.0]), "y": np.array([3.0])})
+    # Execute with first set of inputs (as floats, not arrays)
+    wrapper.execute({"x": 2.0, "y": 3.0})
     z1 = wrapper.get_output_data()["z"]
     product1 = wrapper.get_output_data()["product"]
     
-    assert z1 == 5.0  # 2 + 3
-    assert product1 == 6.0  # 2 * 3
+    # Results may be arrays, so convert to float for comparison
+    z1_val = float(z1) if hasattr(z1, '__iter__') and not isinstance(z1, str) else float(z1)
+    product1_val = float(product1) if hasattr(product1, '__iter__') and not isinstance(product1, str) else float(product1)
+    
+    assert z1_val == 5.0  # 2 + 3
+    assert product1_val == 6.0  # 2 * 3
     
     # Execute with different inputs
-    wrapper.execute({"x": np.array([4.0]), "y": np.array([5.0])})
+    wrapper.execute({"x": 4.0, "y": 5.0})
     z2 = wrapper.get_output_data()["z"]
     product2 = wrapper.get_output_data()["product"]
     
-    assert z2 == 9.0  # 4 + 5
-    assert product2 == 20.0  # 4 * 5
+    z2_val = float(z2) if hasattr(z2, '__iter__') and not isinstance(z2, str) else float(z2)
+    product2_val = float(product2) if hasattr(product2, '__iter__') and not isinstance(product2, str) else float(product2)
+    
+    assert z2_val == 9.0  # 4 + 5
+    assert product2_val == 20.0  # 4 * 5
     
     # Verify outputs changed
-    assert z1 != z2
-    assert product1 != product2
+    assert z1_val != z2_val
+    assert product1_val != product2_val
