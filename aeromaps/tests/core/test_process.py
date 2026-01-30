@@ -5,26 +5,51 @@ This module tests the AeroMAPSProcess class functionality.
 """
 
 import pytest
+import os
 from aeromaps import create_process
 
 
 @pytest.fixture(scope="module")
 def process():
     """Create and compute an AeroMAPS process for testing."""
-    proc = create_process(configuration_file="data/config.yaml")
+    # Use default config (no file specified)
+    proc = create_process()
     proc.compute()
     return proc
 
 
-def test_process_creation():
-    """Test that the process can be created successfully."""
-    proc = create_process(configuration_file="data/config.yaml")
+def test_process_creation_default():
+    """Test that the process can be created with default configuration."""
+    proc = create_process()
     assert proc is not None
+    # When no config file is provided, configuration_file should be None
+    assert proc.configuration_file is None
+
+
+def test_process_creation_with_config():
+    """Test that the process can be created with a configuration file."""
+    # Use the default config file path
+    config_path = "aeromaps/resources/data/config.yaml"
+    proc = create_process(configuration_file=config_path)
+    assert proc is not None
+    assert proc.configuration_file is not None
+    assert os.path.exists(proc.configuration_file)
+
+
+def test_process_creation_with_absolute_path():
+    """Test that the process can be created with an absolute path config."""
+    # Get absolute path to default config
+    config_path = os.path.abspath("aeromaps/resources/data/config.yaml")
+    proc = create_process(configuration_file=config_path)
+    assert proc is not None
+    assert proc.configuration_file is not None
+    assert os.path.exists(proc.configuration_file)
+    assert os.path.isabs(proc.configuration_file)
 
 
 def test_process_compute():
     """Test that the process can be computed successfully."""
-    proc = create_process(configuration_file="data/config.yaml")
+    proc = create_process()
     proc.compute()
     assert proc.data is not None
     assert hasattr(proc, 'data')
@@ -32,13 +57,13 @@ def test_process_compute():
 
 def test_process_has_parameters():
     """Test that the process has parameters after creation."""
-    proc = create_process(configuration_file="data/config.yaml")
+    proc = create_process()
     assert hasattr(proc, 'parameters')
 
 
 def test_process_has_models():
     """Test that the process has models after creation."""
-    proc = create_process(configuration_file="data/config.yaml")
+    proc = create_process()
     assert hasattr(proc, 'models')
     assert len(proc.models) > 0
 
@@ -122,10 +147,8 @@ def test_process_models_execution(process):
     assert len(vector_outputs) > 0
 
 
-def test_process_with_custom_config():
-    """Test that process can be created with custom configuration."""
-    # This tests the process can handle configuration files
-    # Using None should use default config
+def test_process_with_none_config():
+    """Test that process can be created with None configuration (uses default)."""
     proc = create_process(configuration_file=None)
     assert proc is not None
     proc.compute()
@@ -134,9 +157,9 @@ def test_process_with_custom_config():
 
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
-    # Create two processes
-    proc1 = create_process(configuration_file="data/config.yaml")
-    proc2 = create_process(configuration_file="data/config.yaml")
+    # Create two processes with default config
+    proc1 = create_process()
+    proc2 = create_process()
     
     # Models should be different instances
     # Test with a common model that should exist in both
