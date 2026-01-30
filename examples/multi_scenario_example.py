@@ -15,20 +15,17 @@ def main():
     print("AeroMAPS Multi-Scenario Comparison Example")
     print("=" * 60)
     
-    # Create and compute multiple scenarios
-    print("\n1. Creating and computing scenarios...")
+    # Create multiple scenarios (without pre-computing)
+    print("\n1. Creating scenarios...")
     
-    # For demonstration, we'll use the same config but could be different
     scenarios = {}
     
     print("   - Creating scenario 1...")
     proc1 = create_process()
-    proc1.compute()
     scenarios["Baseline"] = proc1
     
     print("   - Creating scenario 2...")
     proc2 = create_process()
-    proc2.compute()
     scenarios["Alternative"] = proc2
     
     print(f"   ✓ Created {len(scenarios)} scenarios")
@@ -38,14 +35,21 @@ def main():
     multi = create_multi_process(scenarios)
     print(f"   ✓ Managing {len(multi)} scenarios: {multi.get_scenario_names()}")
     
+    # Compute all scenarios at once using compute_all()
+    print("\n3. Computing all scenarios...")
+    multi.compute_all()
+    print("   ✓ All scenarios computed")
+    
     # List available plots
-    print("\n3. Available comparison plots:")
+    print("\n4. Available comparison plots:")
     plots = multi.list_available_plots()
     for plot_name in plots:
         print(f"   - {plot_name}")
     
+    print(f"\n   Total: {len(plots)} comparison plots available")
+    
     # Create comparison plots
-    print("\n4. Creating comparison plots...")
+    print("\n5. Creating comparison plots...")
     
     # CO2 emissions comparison
     print("   - Creating CO2 emissions comparison...")
@@ -55,19 +59,35 @@ def main():
     except Exception as e:
         print(f"     ✗ Could not create plot: {e}")
     
-    # Energy consumption comparison
-    print("   - Creating energy consumption comparison...")
-    try:
-        fig2 = multi.plot("energy_consumption_comparison", save=False)
-        print("     ✓ Energy consumption comparison created")
-    except Exception as e:
-        print(f"     ✗ Could not create plot: {e}")
-    
     # Energy mix comparison
     print("   - Creating energy mix comparison...")
     try:
-        fig3 = multi.plot("energy_mix_comparison", save=False)
+        fig2 = multi.plot("energy_mix_comparison", save=False)
         print("     ✓ Energy mix comparison created")
+    except Exception as e:
+        print(f"     ✗ Could not create plot: {e}")
+    
+    # NEW: Intensity plots
+    print("   - Creating carbon intensity comparison...")
+    try:
+        fig3 = multi.plot("co2_per_rpk_comparison", save=False)
+        print("     ✓ Carbon intensity comparison created")
+    except Exception as e:
+        print(f"     ✗ Could not create plot: {e}")
+    
+    # NEW: Fuel supply breakdown
+    print("   - Creating fuel supply breakdown...")
+    try:
+        fig4 = multi.plot("fuel_supply_breakdown", save=False)
+        print("     ✓ Fuel supply breakdown created")
+    except Exception as e:
+        print(f"     ✗ Could not create plot: {e}")
+    
+    # NEW: Carbon budget comparison
+    print("   - Creating carbon budget comparison...")
+    try:
+        fig5 = multi.plot("carbon_budget_comparison", save=False)
+        print("     ✓ Carbon budget comparison created")
     except Exception as e:
         print(f"     ✗ Could not create plot: {e}")
     
@@ -81,6 +101,13 @@ def main():
     print("  1. Check which scenarios have required outputs")
     print("  2. Show warnings for scenarios with missing data")
     print("  3. Create plots with only valid scenarios")
+    
+    print("\nNew features:")
+    print("  - Use compute_all() to compute all scenarios at once")
+    print("  - No need to compute before creating MultiProcess")
+    print("  - New intensity plots (CO2/energy per RPK/RTK/ASK)")
+    print("  - New fuel supply plots (biofuel, efuel, hydrogen, electric)")
+    print("  - Carbon budget comparison plot")
 
 
 if __name__ == "__main__":

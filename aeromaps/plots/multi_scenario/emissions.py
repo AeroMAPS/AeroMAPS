@@ -134,3 +134,94 @@ class CumulativeCO2ComparisonPlot(MultiScenarioPlot):
         """Update plot elements with new data."""
         self.ax.clear()
         self.create_plot()
+
+
+class CarbonBudgetComparisonPlot(MultiScenarioPlot):
+    """
+    Compare cumulative CO2 emissions against carbon budget across scenarios.
+    
+    Shows both the cumulative emissions and the allocated carbon budget
+    for each scenario, allowing assessment of budget compliance.
+    """
+    
+    required_outputs = ["cumulative_co2_emissions"]
+    
+    def _get_default_figsize(self):
+        """Return default figure size."""
+        return (12, 6)
+    
+    def create_plot(self):
+        """Create the carbon budget comparison plot."""
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
+                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        
+        # Plot cumulative emissions for each scenario
+        if isinstance(self.scenario_data, dict):
+            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
+                color = colors[idx % len(colors)]
+                
+                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+                    years = data["years"]
+                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    
+                    # Plot emissions line
+                    self.ax.plot(
+                        years, 
+                        cumulative_emissions, 
+                        label=f"{scenario_name} - Emissions",
+                        color=color,
+                        linewidth=2,
+                        linestyle='-'
+                    )
+                    
+                    # Plot carbon budget if available
+                    if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
+                        budget = data["float_outputs"]["aviation_carbon_budget"]
+                        self.ax.axhline(
+                            y=budget,
+                            color=color,
+                            linestyle='--',
+                            linewidth=1.5,
+                            alpha=0.7,
+                            label=f"{scenario_name} - Budget"
+                        )
+        else:
+            for idx, data in enumerate(self.scenario_data):
+                color = colors[idx % len(colors)]
+                
+                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+                    years = data["years"]
+                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    
+                    # Plot emissions line
+                    self.ax.plot(
+                        years, 
+                        cumulative_emissions, 
+                        label=f"Scenario {idx+1} - Emissions",
+                        color=color,
+                        linewidth=2,
+                        linestyle='-'
+                    )
+                    
+                    # Plot carbon budget if available
+                    if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
+                        budget = data["float_outputs"]["aviation_carbon_budget"]
+                        self.ax.axhline(
+                            y=budget,
+                            color=color,
+                            linestyle='--',
+                            linewidth=1.5,
+                            alpha=0.7,
+                            label=f"Scenario {idx+1} - Budget"
+                        )
+        
+        self.ax.set_xlabel("Year", fontsize=12)
+        self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
+        self.ax.set_title("Cumulative CO2 vs Carbon Budget Comparison", fontsize=14)
+        self.ax.legend(loc='best', fontsize=9)
+        self.ax.grid(True, alpha=0.3)
+    
+    def _update_plot_elements(self):
+        """Update plot elements with new data."""
+        self.ax.clear()
+        self.create_plot()
