@@ -7,6 +7,8 @@ This module tests the GEMSEO wrapper classes and data conversion functionality.
 import pytest
 import numpy as np
 import pandas as pd
+from gemseo.core.grammars.simple_grammar import SimpleGrammar
+
 from aeromaps.core.gemseo import CustomDataConverter, AeroMAPSAutoModelWrapper
 from aeromaps.models.base import AeroMAPSModel
 
@@ -15,17 +17,19 @@ class DummyModel(AeroMAPSModel):
     """A dummy model for testing wrapper functionality."""
     
     def __init__(self):
-        super().__init__()
-        self.name = "DummyModel"
-    
-    def compute(self, x: float, y: float) -> dict:
+        super().__init__(name="DummyModel")
+
+    def compute(self, x: float=4.0, y: float=3.0) -> tuple[float, float]:
         """Simple computation for testing."""
-        return {"z": x + y, "product": x * y}
+        z = x + y
+        product = x * y
+
+        return z, product
 
 
 def test_custom_data_converter_float():
     """Test CustomDataConverter handles float values correctly."""
-    converter = CustomDataConverter()
+    converter = CustomDataConverter(SimpleGrammar("dummy"))
     
     # Test float conversion to array
     value = 5.0
@@ -40,7 +44,7 @@ def test_custom_data_converter_float():
 
 def test_custom_data_converter_list():
     """Test CustomDataConverter handles list values correctly."""
-    converter = CustomDataConverter()
+    converter = CustomDataConverter(SimpleGrammar("dummy"))
     
     # Test list conversion to array
     value = [1.0, 2.0, 3.0]
@@ -57,7 +61,7 @@ def test_custom_data_converter_list():
 
 def test_custom_data_converter_pandas_series():
     """Test CustomDataConverter handles pandas Series correctly."""
-    converter = CustomDataConverter()
+    converter = CustomDataConverter(SimpleGrammar("dummy"))
     
     # Test pandas Series conversion to array
     index = pd.Index([2020, 2030, 2040])
@@ -79,7 +83,7 @@ def test_custom_data_converter_pandas_series():
 
 def test_custom_data_converter_nan_handling():
     """Test CustomDataConverter handles NaN values correctly."""
-    converter = CustomDataConverter()
+    converter = CustomDataConverter(SimpleGrammar("dummy"))
     
     # Test pandas Series with NaN
     value = pd.Series([10.0, np.nan, 30.0], index=[2020, 2030, 2040])
@@ -95,7 +99,7 @@ def test_custom_data_converter_nan_handling():
 
 def test_custom_data_converter_value_size():
     """Test get_value_size method for different data types."""
-    converter = CustomDataConverter()
+    converter = CustomDataConverter(SimpleGrammar("dummy"))
     
     # Test scalar
     assert converter.get_value_size("scalar", 5.0) == 1
