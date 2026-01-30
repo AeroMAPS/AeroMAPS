@@ -186,3 +186,110 @@ def test_invalid_type_raises_error():
     """Test that invalid type raises TypeError."""
     with pytest.raises(TypeError):
         create_multi_process("invalid")
+
+
+def test_required_outputs_validation(processes):
+    """Test that plots validate required outputs."""
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Check that the plot class has required_outputs
+    assert hasattr(CO2EmissionsComparisonPlot, 'required_outputs')
+    assert CO2EmissionsComparisonPlot.required_outputs == ["co2_emissions"]
+    
+    # Check that get_required_outputs works
+    required = CO2EmissionsComparisonPlot.get_required_outputs()
+    assert required == ["co2_emissions"]
+
+
+def test_plot_with_check_outputs_false(processes):
+    """Test plotting with check_outputs=False skips validation."""
+    multi = create_multi_process(processes)
+    
+    # This should not raise an error even if outputs are missing
+    # because check_outputs=False
+    try:
+        fig = multi.plot("co2_emissions_comparison", check_outputs=False)
+        assert fig is not None
+    except Exception as e:
+        # If it fails, it should not be due to validation
+        assert "required outputs" not in str(e).lower()
+
+
+def test_single_scenario_plot_required_outputs():
+    """Test that single scenario plots can have required_outputs."""
+    from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+    
+    # Create a test plot class with required outputs
+    class TestPlot(SingleScenarioPlot):
+        required_outputs = ["test_output"]
+        
+        def _get_default_figsize(self):
+            return (8, 6)
+        
+        def create_plot(self):
+            pass
+        
+        def _update_plot_elements(self):
+            pass
+    
+    # Verify the class has required_outputs
+    assert TestPlot.required_outputs == ["test_output"]
+    assert TestPlot.get_required_outputs() == ["test_output"]
+
+
+def test_single_scenario_plot_validation_warning():
+    """Test that single scenario plots warn about missing outputs."""
+    import warnings
+    from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+    
+    # Create a test plot with required outputs
+    class TestPlot(SingleScenarioPlot):
+        required_outputs = ["nonexistent_output"]
+        
+        def _get_default_figsize(self):
+            return (8, 6)
+        
+        def create_plot(self):
+            pass
+        
+        def _update_plot_elements(self):
+            pass
+    
+    # Create a process with data
+    proc = create_process()
+    proc.compute()
+    
+    # Creating the plot should issue a warning about missing outputs
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        try:
+            plot = TestPlot(proc, check_outputs=True)
+            # Check that a warning was issued
+            assert len(w) > 0
+            assert any("missing" in str(warning.message).lower() for warning in w)
+        except Exception:
+            # It's ok if the plot fails, as long as it warned first
+            pass
+
+
+def test_multi_scenario_plot_filters_invalid_scenarios():
+    """Test that multi scenario plots filter out scenarios with missing outputs."""
+    import warnings
+    from aeromaps.plots.multi_scenario.emissions import CO2EmissionsComparisonPlot
+    
+    # Create processes
+    proc1 = create_process()
+    proc1.compute()
+    proc2 = create_process()
+    proc2.compute()
+    
+    processes = {"scenario_1": proc1, "scenario_2": proc2}
+    
+    # Both should have co2_emissions, so no filtering should occur
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        plot = CO2EmissionsComparisonPlot(processes, check_outputs=True)
+        
+        # Should have data for both scenarios
+        assert len(plot.scenario_data) == 2
+

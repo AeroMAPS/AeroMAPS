@@ -183,7 +183,7 @@ class MultiProcess:
         NameError
             If the plot name is not available
         ValueError
-            If no scenarios have the required outputs
+            If no scenarios have the required outputs (when check_outputs=True)
         """
         if name not in self._available_plots:
             available = list(self._available_plots.keys())
@@ -194,31 +194,23 @@ class MultiProcess:
         
         plot_class = self._available_plots[name]
         
-        # Get required outputs from the plot class if available
-        processes_to_use = self.processes
-        if check_outputs and hasattr(plot_class, 'required_outputs'):
-            required_outputs = plot_class.required_outputs
-            processes_to_use = self._filter_processes(required_outputs)
-            
-            if len(processes_to_use) < len(self.processes):
-                included = list(processes_to_use.keys())
-                logger.info(
-                    f"Plot '{name}' will use {len(processes_to_use)}/{len(self.processes)} "
-                    f"scenarios: {included}"
-                )
-        
-        # Create the plot
-        fig = plot_class(processes_to_use)
+        # Create the plot - validation is handled by the plot class itself
+        # based on its required_outputs and the check_outputs parameter
+        plot_instance = plot_class(
+            self.processes, 
+            figsize=size_inches,
+            check_outputs=check_outputs
+        )
         
         # Save if requested
         if save:
             if size_inches is not None:
-                fig.fig.set_size_inches(size_inches)
+                plot_instance.fig.set_size_inches(size_inches)
             if remove_title:
-                fig.fig.gca().set_title("")
-            fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                plot_instance.fig.gca().set_title("")
+            plot_instance.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         
-        return fig
+        return plot_instance
     
     def get_scenario_names(self) -> List[str]:
         """
