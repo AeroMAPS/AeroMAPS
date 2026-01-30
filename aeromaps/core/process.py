@@ -925,10 +925,10 @@ class AeroMAPSProcess(object):
 
         This method calls the internal methods to read resource and
         process data, and to instantiate the generic energy carrier models.
-        Skipped if models.energy key is not present in the user configuration.
+        Skipped if models.energy key is not present in the configuration.
         """
-        # Check if energy models should be used (key must be present in user config)
-        energy_config = self._get_user_config_value("models", "energy", default=None)
+        # Check if energy models should be used (key must be present in config)
+        energy_config = self._get_config_value("models", "energy", default=None)
         if energy_config is None:
             return
             
@@ -946,7 +946,7 @@ class AeroMAPSProcess(object):
         self.energy_resources_data = {}
 
         # Check if resources model data file is specified in config
-        resources_config = self._get_user_config_value(
+        resources_config = self._get_config_value(
             "models", "energy", "resources_model_data_file", default=None)
         if resources_config is None:
             return
@@ -985,7 +985,7 @@ class AeroMAPSProcess(object):
         self.energy_processes_data = {}
 
         # Check if processes model data file is specified in config
-        processes_config = self._get_user_config_value(
+        processes_config = self._get_config_value(
             "models", "energy", "processes_model_data_file", default=None)
         if processes_config is None:
             return
