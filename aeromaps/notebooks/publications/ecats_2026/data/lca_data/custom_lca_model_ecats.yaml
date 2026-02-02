@@ -609,100 +609,46 @@ model:
 
 # --- Select LCIA methods for assessment ---
 methods:
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'acidification: terrestrial', 'terrestrial acidification potential (TAP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: freshwater', 'freshwater ecotoxicity potential (FETP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: marine', 'marine ecotoxicity potential (METP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ecotoxicity: terrestrial', 'terrestrial ecotoxicity potential (TETP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'energy resources: non-renewable, fossil', 'fossil fuel potential (FFP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: freshwater', 'freshwater eutrophication potential (FEP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'eutrophication: marine', 'marine eutrophication potential (MEP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: carcinogenic', 'human toxicity potential (HTPc)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'human toxicity: non-carcinogenic', 'human toxicity potential (HTPnc)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ionising radiation', 'ionising radiation potential (IRP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'land use', 'agricultural land occupation (LOP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'material resources: metals/minerals', 'surplus ore potential (SOP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'ozone depletion', 'ozone depletion potential (ODPinfinite)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'particulate matter formation', 'particulate matter formation potential (PMFP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: human health', 'photochemical oxidant formation potential: humans (HOFP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'photochemical oxidant formation: terrestrial ecosystems', 'photochemical oxidant formation potential: ecosystems (EOFP)')"
-    - "('ReCiPe 2016 v1.03, midpoint (H)', 'water use', 'water consumption potential (WCP)')"
     - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: natural resources', 'natural resources')"
 
 # --- Additional/custom LCIA methods provided by the user ---
 custom_methods:
 
-    ## Climate change impact and damages including non-CO2 effects (GWP100 values)
-    - name: "('ReCiPe Aviation', 'climate change', 'global warming potential (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"
-      
-    - name: "('ReCiPe Aviation', 'total: ecosystem quality', 'ecosystem quality (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_ecosystem_quality_total.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
-      
-    - name: "('ReCiPe Aviation', 'total: human health', 'human health (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_human_health_total.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
-      
-    - name: "('ReCiPe Aviation', 'ecosystem quality', 'climate change: freshwater ecosystems (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_freshwater_ecosystem_quality_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
-      
-    - name: "('ReCiPe Aviation', 'ecosystem quality', 'climate change: terrestrial ecosystems (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_terrestrial_ecosystem_quality_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
-      
-    - name: "('ReCiPe Aviation', 'human health', 'climate change: human health (GWP100)')"
-      filepath: './data/lca_data/GWP100/CFs_human_health_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
-      
     ## Climate change impact and damages including non-CO2 effects (rATR100 values)
     - name: "('ReCiPe Aviation', 'climate change', 'average temperature response (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_global_warming.csv'
+      filepath: '../data/lca_data/rATR100/CFs_global_warming.csv'
       source_method: "('ReCiPe 2016 v1.03, midpoint (H)', 'climate change',  'global warming potential (GWP100)')"  
       # GWP100 is used for other flows not declared in the custom CFs csv - their contribution to total aviation impact is neglible so this assumption is deemed valid here.
       
     - name: "('ReCiPe Aviation', 'total: ecosystem quality', 'ecosystem quality (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_ecosystem_quality_total.csv'
+      filepath: '../data/lca_data/rATR100/CFs_ecosystem_quality_total.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: ecosystem quality', 'ecosystem quality')"
       
     - name: "('ReCiPe Aviation', 'total: human health', 'human health (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_human_health_total.csv'
+      filepath: '../data/lca_data/rATR100/CFs_human_health_total.csv'
       source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
-      
-    - name: "('ReCiPe Aviation', 'ecosystem quality', 'climate change: freshwater ecosystems (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_freshwater_ecosystem_quality_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: freshwater ecosystems')"
-      
-    - name: "('ReCiPe Aviation', 'ecosystem quality', 'climate change: terrestrial ecosystems (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_terrestrial_ecosystem_quality_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'ecosystem quality', 'climate change: terrestrial ecosystems')"
-      
-    - name: "('ReCiPe Aviation', 'human health', 'climate change: human health (rATR100)')"
-      filepath: './data/lca_data/rATR100/CFs_human_health_global_warming.csv'
-      source_method: "('ReCiPe 2016 v1.03, endpoint (H)', 'human health', 'climate change: human health')"
       
     ## PB-LCIA
     - name: "('PBLCIA', 'climate change', 'climate change radiative forcing')"
-      filepath: './data/lca_data/PB-LCIA/CFs_climate_change_radiative_forcing.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_climate_change_radiative_forcing.csv'
       unit: 'W/m2'
       
     - name: "('PBLCIA', 'biosphere integrity', 'biosphere integrity')"
-      filepath: './data/lca_data/PB-LCIA/CFs_biosphere_integrity.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_biosphere_integrity.csv'
       unit: 'BII loss (%)'
     
     - name: "('PBLCIA', 'biogeochemical', 'nitrogen cycle')"
-      filepath: './data/lca_data/PB-LCIA/CFs_nitrogen_cycle.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_nitrogen_cycle.csv'
       unit: 'TgN/yr'
       
     - name: "('PBLCIA', 'biogeochemical', 'phosphorus cycle')"
-      filepath: './data/lca_data/PB-LCIA/CFs_phosphorus_cycle.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_phosphorus_cycle.csv'
       unit: 'TgP/yr'
       
     - name: "('PBLCIA', 'freshwater change', 'freshwater use')"
-      filepath: './data/lca_data/PB-LCIA/CFs_freshwater_use.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_freshwater_use.csv'
       unit: 'km3'
       
     - name: "('PBLCIA', 'stratospheric ozone depletion', 'ozone depletion')"
-      filepath: './data/lca_data/PB-LCIA/CFs_stratospheric_ozone_depletion.csv'
+      filepath: '../data/lca_data/PB-LCIA/CFs_stratospheric_ozone_depletion.csv'
       unit: 'DU'
