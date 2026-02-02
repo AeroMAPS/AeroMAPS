@@ -100,14 +100,24 @@ class OptimizationObjectives(AeroMAPSModel):
         -------
         cumulative_co2_end_year : float
             Cumulative CO2 emissions at end year [GtCO2].
+        cumulative_co2_2050 : float
+            Cumulative CO2 emissions in 2050 [GtCO2].
+        cumulative_co2_2055 : float
+            Cumulative CO2 emissions in 2055 [GtCO2].
+        cumulative_co2_2060 : float
+            Cumulative CO2 emissions in 2060 [GtCO2].
         temperature_increase_end_year : float
             Temperature increase from aviation at end year [°C].
-        mean_temperature_increase_from_aviation_2025_end_year : float
-            Mean temperature increase from aviation over 2025_end_year [°C].
+        temperature_increase_2050 : float
+            Temperature increase from aviation in 2050 [°C].
+        temperature_increase_2060 : float
+            Temperature increase from aviation in 2060 [°C].
+        mean_temperature_increase_from_aviation_2025_end : float
+            Mean temperature increase from aviation between 2025 and end year [°C].
         """
 
         cumulative_co2_end_year = cumulative_co2_emissions.loc[self.end_year]
-        temperature_increase_end_year = temperature_increase_from_aviation.loc[self.end_year]
+        temperature_increase_end_year = temperature_increase_from_aviation.loc[2070]
         temperature_increase_2050 = temperature_increase_from_aviation.loc[2050]
         temperature_increase_2060 = temperature_increase_from_aviation.loc[2060]
 
