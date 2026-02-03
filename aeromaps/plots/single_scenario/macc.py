@@ -1883,7 +1883,6 @@ class AnnualMACCSimple(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         try:
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
@@ -1893,6 +1892,10 @@ class AnnualMACCSimple(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
+
+    def create_plot(self):
+        # Initial plot setup - actual plotting done in update() via interact
+        pass
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -2380,7 +2383,6 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         try:
             self.create_plot_data()
             self.plot_interact()
@@ -2392,6 +2394,14 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
+
+    def create_plot(self):
+        # Initial plot setup - actual plotting done in update() via interact
+        pass
+
+    def _update_plot_elements(self):
+        # Update handled by update() method via interactive widgets
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(

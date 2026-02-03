@@ -81,6 +81,37 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         self.ax.set_xlim(2020, self.years[-1])
         # #
 
+    def _update_plot_elements(self):
+        self.line_energy_expenses.set_ydata(
+            self.df.loc[self.prospective_years, "non_discounted_energy_expenses"]
+        )
+
+        self.line_energy_expenses_carb_tax.set_ydata(
+            (self.df.loc[self.prospective_years, "non_discounted_net_energy_expenses"])
+        )
+
+        self.line_bau_energy_expenses.set_ydata(
+            self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"]
+        )
+
+        self.line_bau_energy_expenses_carbon_tax.set_ydata(
+            (
+                self.df.loc[self.prospective_years, "non_discounted_bau_energy_expenses"]
+                + self.df.loc[self.prospective_years, "carbon_tax_bau"]
+            )
+        )
+
+        self.line_full_kero_energy_expenses.set_ydata(
+            self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
+        )
+
+        self.line_full_kero_energy_expenses_carbon_tax.set_ydata(
+            (
+                self.df.loc[self.prospective_years, "non_discounted_full_kero_energy_expenses"]
+                + self.df.loc[self.prospective_years, "carbon_tax_full_kero"]
+            )
+        )
+
     def update(self, df_data):
         self.df = df_data["vector_outputs"]
 
