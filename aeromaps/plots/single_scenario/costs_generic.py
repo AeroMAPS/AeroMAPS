@@ -16,7 +16,6 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -25,7 +24,7 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
             options=[("All pathways", "all")]
-            + [(pathway.name, pathway) for pathway in self.pathways_manager.get_all()],
+            + [(pathway.name, pathway) for pathway in self.process.pathways_manager.get_all()],
             description="Energy carrier:",
             value=["all"],
         )
@@ -57,7 +56,7 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
         detail_level_selected,
     ):
         self.ax.cla()
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
 
     def _update_plot_elements(self):
         self.create_plot()
@@ -247,7 +246,6 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
         }
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -256,7 +254,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
             options=[("All pathways", "all")]
-            + [(pathway.name, pathway) for pathway in self.pathways_manager.get_all()],
+            + [(pathway.name, pathway) for pathway in self.process.pathways_manager.get_all()],
             description="Energy carrier:",
             value=["all"],
         )
@@ -311,7 +309,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
     ):
         self.ax.cla()
 
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
 
         # Sort first pathways by the first year with a non-zero value
         # TODO move somewhere else?
@@ -688,7 +686,6 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
         }
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         self.pathways_data = self.process.energy_carriers_data
         self.resource_color_map = self._create_color_map()
         self.plot_interact()
@@ -698,7 +695,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 
     def _create_color_map(self):
         # Color mapping for each (process, resource) pair
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
         process_resource_pairs = set()
         for p in pathways:
             for resource in p.resources_used:
@@ -740,7 +737,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             value=2035,
         )
         pathway_widget = widgets.Dropdown(
-            options=[(p.name, p) for p in self.pathways_manager.get_all()],
+            options=[(p.name, p) for p in self.process.pathways_manager.get_all()],
             description="Pathway:",
         )
         show_used_widget = widgets.ToggleButtons(
@@ -784,7 +781,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 
     def update_per_year(self, year):
         self.ax.cla()
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
         pathway_handles = []
 
         # Split pathways into used and unused
@@ -2848,7 +2845,6 @@ class SimpleMFSP(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -2867,7 +2863,7 @@ class SimpleMFSP(SingleScenarioPlot):
 
     def create_plot(self, mfsp_type="net_mfsp"):
         self.ax.cla()
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
         colors = plt.cm.get_cmap("tab20", len(pathways))
         aircraft_linestyles = {
             "dropin_fuel": "-",

@@ -134,13 +134,12 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = self.process.pathways_manager
 
     def _get_default_figsize(self):
         return (10, 6)
 
     def create_plot(self):
-        pathways = self.pathways_manager.get_all()
+        pathways = self.process.pathways_manager.get_all()
         colors = plt.cm.get_cmap("tab20", len(pathways))
         aircraft_linestyles = {
             "dropin_fuel": "-",
