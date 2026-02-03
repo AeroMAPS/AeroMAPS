@@ -1,0 +1,420 @@
+C:\Users\i.costa-alves\Documents\Kodigus\Python_v3_11\python.exe "C:/Users/i.costa-alves/AppData/Local/Programs/PyCharm 2025.3.1.1/plugins/python-ce/helpers/pycharm/_jb_pytest_runner.py" --path C:\Users\i.costa-alves\Documents\Kodigus\aeromaps\AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py
+Testing started at 16:35 ...
+Launching pytest with arguments C:\Users\i.costa-alves\Documents\Kodigus\aeromaps\AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py --no-header --no-summary -q in C:\Users\i.costa-alves\Documents\Kodigus\aeromaps
+
+============================= test session starts =============================
+collecting ...
+[conftest.py] Modifying collected test items...
+[conftest.py] No items deselected.
+collected 47 items
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_air_transport_co2_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_air_transport_climate_impacts_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_carbon_budget_assessment_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_temperature_target_assessment_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_biomass_resource_budget_assessment_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_electricity_resource_budget_assessment_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_multidisciplinary_assessment_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_temperature_increase_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_biomass_consumption_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_electricity_consumption_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_co2_per_rpk_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_co2_per_rtk_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_passenger_kaya_factors_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_freight_kaya_factors_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_levers_of_action_distribution_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_revenue_passenger_kilometer_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_revenue_tonne_kilometer_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_available_seat_kilometer_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_total_aircraft_distance_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_load_factor_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_per_ask_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_per_rtk_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_consumption_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_fuel_consumption_liter_per_pax_100km_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_mean_fuel_emission_factor_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_emission_factor_per_fuel_category_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_emission_factor_per_fuel_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_cumulative_co2_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_direct_h2o_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_direct_nox_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_direct_sulfur_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_direct_soot_emissions_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_carbon_offset_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_cumulative_carbon_offset_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_final_effective_radiative_forcing_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_distribution_effective_radiative_forcing_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_capex_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_expenses_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_mfsp_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_expenses_discounted_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_energy_expenses_comparison_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_doc_fleet_breakdown_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_doc_fleet_category_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_airfare_breakdown_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_mfsp_detailled_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_annual_macc_simple_fleet_plot
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py::test_shadow_carbon_pricing_simple_fleet_plot
+
+============ 8 failed, 39 passed, 66 warnings in 127.72s (0:02:07) ============
+===== LCA Default Model Import =====
+Import LCA Parameters:   0%|          | 0/26 [00:00<?, ?it/s]
+Import LCIA functions (axis 'phase'):   0%|          | 0/24 [00:00<?, ?it/s]
+Import functional units:   0%|          | 0/1 [00:00<?, ?it/s]
+Import impacts metadata:   0%|          | 0/24 [00:00<?, ?it/s]
+====================================
+Running MDA
+PASSED [  2%]PASSED [  4%]PASSED [  6%]PASSED [  8%]PASSED [ 10%]PASSED [ 12%]PASSED [ 14%]PASSED [ 17%]PASSED [ 19%]PASSED [ 21%]PASSED [ 23%]PASSED [ 25%]PASSED [ 27%]PASSED [ 29%]PASSED [ 31%]PASSED [ 34%]PASSED [ 36%]PASSED [ 38%]PASSED [ 40%]PASSED [ 42%]PASSED [ 44%]PASSED [ 46%]PASSED [ 48%]PASSED [ 51%]PASSED [ 53%]PASSED [ 55%]FAILED [ 57%]
+aeromaps\tests\plots\test_single_scenario_plots.py:189 (test_emission_factor_per_fuel_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_emission_factor_per_fuel_plot(process):
+        """Test that emission_factor_per_fuel plot can be created."""
+>       plot = process.plot("emission_factor_per_fuel", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:192:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+AeroMAPS\aeromaps\core\process.py:651: in plot
+    fig = available_plots[name](self)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AeroMAPS\aeromaps\plots\single_scenario\aircraft_energy.py:136: in __init__
+    super().__init__(process, figsize)
+AeroMAPS\aeromaps\plots\single_scenario_plot.py:72: in __init__
+    self.create_plot()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.plots.single_scenario.aircraft_energy.EmissionFactorPerFuel object at 0x00000200360703D0>
+
+    def create_plot(self):
+>       pathways = self.pathways_manager.get_all()
+                   ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'EmissionFactorPerFuel' object has no attribute 'pathways_manager'
+
+AeroMAPS\aeromaps\plots\single_scenario\aircraft_energy.py:143: AttributeError
+PASSED [ 59%]PASSED [ 61%]PASSED [ 63%]PASSED [ 65%]PASSED [ 68%]PASSED [ 70%]PASSED [ 72%]PASSED [ 74%]PASSED [ 76%]FAILED [ 78%]
+aeromaps\tests\plots\test_single_scenario_plots.py:249 (test_energy_capex_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_energy_capex_plot(process):
+        """Test that energy_capex plot can be created."""
+>       plot = process.plot("energy_capex", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:252:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+AeroMAPS\aeromaps\core\process.py:651: in plot
+    fig = available_plots[name](self)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.plots.single_scenario.costs_generic.ScenarioEnergyCapitalPlot object at 0x0000020043805FD0>
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+figsize = (4, 4)
+
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+>       self.pathways_manager = self.process.pathways_manager
+                                ^^^^^^^^^^^^
+E       AttributeError: 'ScenarioEnergyCapitalPlot' object has no attribute 'process'
+
+AeroMAPS\aeromaps\plots\single_scenario\costs_generic.py:19: AttributeError
+FAILED [ 80%]
+aeromaps\tests\plots\test_single_scenario_plots.py:255 (test_energy_expenses_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_energy_expenses_plot(process):
+        """Test that energy_expenses plot can be created."""
+>       plot = process.plot("energy_expenses", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:258:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+AeroMAPS\aeromaps\core\process.py:651: in plot
+    fig = available_plots[name](self)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.plots.single_scenario.costs_generic.ScenarioEnergyExpensesPlot object at 0x000002002D80A150>
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+figsize = (4, 4)
+
+    def __init__(self, process, figsize=None):
+        self.hatch_map = {
+            "mfsp": "",
+            "tax": "//",
+            "carbon_tax": "..",
+            "subsidy": "xx",
+        }
+        self.label_map = {
+            "mfsp": "Gross expenses",
+            "tax": "Other taxes",
+            "carbon_tax": "Carbon tax",
+            "subsidy": "Subventions",
+        }
+        self.marker_map = {
+            "mfsp": "o",
+            "tax": "s",
+            "carbon_tax": "D",
+            "subsidy": "v",
+        }
+        self.linestyle_map = {
+            "mfsp": "--",
+            "tax": ":",
+            "carbon_tax": ":",
+            "subsidy": ":",
+        }
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+>       self.pathways_manager = self.process.pathways_manager
+                                ^^^^^^^^^^^^
+E       AttributeError: 'ScenarioEnergyExpensesPlot' object has no attribute 'process'
+
+AeroMAPS\aeromaps\plots\single_scenario\costs_generic.py:250: AttributeError
+FAILED [ 82%]
+aeromaps\tests\plots\test_single_scenario_plots.py:261 (test_energy_mfsp_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_energy_mfsp_plot(process):
+        """Test that energy_mfsp plot can be created."""
+>       plot = process.plot("energy_mfsp", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:264:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+AeroMAPS\aeromaps\core\process.py:651: in plot
+    fig = available_plots[name](self)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AeroMAPS\aeromaps\plots\single_scenario\costs_generic.py:2850: in __init__
+    super().__init__(process, figsize)
+AeroMAPS\aeromaps\plots\single_scenario_plot.py:72: in __init__
+    self.create_plot()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.plots.single_scenario.costs_generic.SimpleMFSP object at 0x00000200438D0650>
+mfsp_type = 'net_mfsp'
+
+    def create_plot(self, mfsp_type="net_mfsp"):
+        self.ax.cla()
+>       pathways = self.pathways_manager.get_all()
+                   ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SimpleMFSP' object has no attribute 'pathways_manager'
+
+AeroMAPS\aeromaps\plots\single_scenario\costs_generic.py:2870: AttributeError
+PASSED [ 85%]FAILED [ 87%]
+aeromaps\tests\plots\test_single_scenario_plots.py:273 (test_energy_expenses_comparison_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_energy_expenses_comparison_plot(process):
+        """Test that energy_expenses_comparison plot can be created."""
+>       plot = process.plot("energy_expenses_comparison", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:276:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+name = 'energy_expenses_comparison', save = False, size_inches = None
+remove_title = False
+
+    def plot(self, name, save=False, size_inches=None, remove_title=False):
+        """Generate a predefined AeroMAPS plot.
+
+        Depending on the plot name, this method uses either generic or
+        fleet-specific plotting functions and optionally saves the figure
+        to a PDF file.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate, possible to obtain from list_available_plots().
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple or list.
+        remove_title
+            Whether to remove the plot title before saving.
+
+        Returns
+        -------
+        fig
+            Object holding the created plot, as returned by the plot
+            function.
+        """
+        if name in available_plots_fleet:
+            try:
+                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
+                fig = available_plots_fleet[name](self, self.fleet_model)
+                if save:
+                    if size_inches is not None:
+                        fig.fig.set_size_inches(size_inches)
+                    if remove_title:
+                        fig.fig.gca().set_title("")
+                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+            except AttributeError as e:
+                raise NameError(
+                    f"Plot {name} requires using bottom up fleet model. Original error: {e}"
+                )
+        elif name in available_plots:
+>           fig = available_plots[name](self)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: Can't instantiate abstract class ScenarioEnergyExpensesComparison with abstract method _update_plot_elements
+
+AeroMAPS\aeromaps\core\process.py:651: TypeError
+PASSED [ 89%]PASSED [ 91%]PASSED [ 93%]FAILED [ 95%]
+aeromaps\tests\plots\test_single_scenario_plots.py:297 (test_mfsp_detailled_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_mfsp_detailled_plot(process):
+        """Test that mfsp_detailled plot can be created."""
+>       plot = process.plot("mfsp_detailled", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:300:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+AeroMAPS\aeromaps\core\process.py:651: in plot
+    fig = available_plots[name](self)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.plots.single_scenario.costs_generic.DetailledMFSPBreakdown object at 0x0000020044B9CAD0>
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+figsize = (4, 4)
+
+    def __init__(self, process, figsize=None):
+        self.hatch_map = {
+            "cost": "",
+            "tax": "//",
+            "carbon_tax": "..",
+            "subsidy": "xx",
+        }
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+>       self.pathways_manager = self.process.pathways_manager
+                                ^^^^^^^^^^^^
+E       AttributeError: 'DetailledMFSPBreakdown' object has no attribute 'process'
+
+AeroMAPS\aeromaps\plots\single_scenario\costs_generic.py:691: AttributeError
+FAILED [ 97%]
+aeromaps\tests\plots\test_single_scenario_plots.py:303 (test_annual_macc_simple_fleet_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_annual_macc_simple_fleet_plot(process):
+        """Test that annual_MACC_simple_fleet plot can be created."""
+>       plot = process.plot("annual_MACC_simple_fleet", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:306:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+name = 'annual_MACC_simple_fleet', save = False, size_inches = None
+remove_title = False
+
+    def plot(self, name, save=False, size_inches=None, remove_title=False):
+        """Generate a predefined AeroMAPS plot.
+
+        Depending on the plot name, this method uses either generic or
+        fleet-specific plotting functions and optionally saves the figure
+        to a PDF file.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate, possible to obtain from list_available_plots().
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple or list.
+        remove_title
+            Whether to remove the plot title before saving.
+
+        Returns
+        -------
+        fig
+            Object holding the created plot, as returned by the plot
+            function.
+        """
+        if name in available_plots_fleet:
+            try:
+                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
+                fig = available_plots_fleet[name](self, self.fleet_model)
+                if save:
+                    if size_inches is not None:
+                        fig.fig.set_size_inches(size_inches)
+                    if remove_title:
+                        fig.fig.gca().set_title("")
+                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+            except AttributeError as e:
+                raise NameError(
+                    f"Plot {name} requires using bottom up fleet model. Original error: {e}"
+                )
+        elif name in available_plots:
+>           fig = available_plots[name](self)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: Can't instantiate abstract class AnnualMACCSimple with abstract method create_plot
+
+AeroMAPS\aeromaps\core\process.py:651: TypeError
+FAILED [100%]
+aeromaps\tests\plots\test_single_scenario_plots.py:309 (test_shadow_carbon_pricing_simple_fleet_plot)
+process = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+
+    def test_shadow_carbon_pricing_simple_fleet_plot(process):
+        """Test that shadow_carbon_pricing_simple_fleet plot can be created."""
+>       plot = process.plot("shadow_carbon_pricing_simple_fleet", save=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AeroMAPS\aeromaps\tests\plots\test_single_scenario_plots.py:312:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <aeromaps.core.process.AeroMAPSProcess object at 0x0000020028927650>
+name = 'shadow_carbon_pricing_simple_fleet', save = False, size_inches = None
+remove_title = False
+
+    def plot(self, name, save=False, size_inches=None, remove_title=False):
+        """Generate a predefined AeroMAPS plot.
+
+        Depending on the plot name, this method uses either generic or
+        fleet-specific plotting functions and optionally saves the figure
+        to a PDF file.
+
+        Parameters
+        ----------
+        name
+            Identifier of the plot to generate, possible to obtain from list_available_plots().
+        save
+            Whether to save the generated plot as a PDF file.
+        size_inches
+            Optional figure size in inches as a tuple or list.
+        remove_title
+            Whether to remove the plot title before saving.
+
+        Returns
+        -------
+        fig
+            Object holding the created plot, as returned by the plot
+            function.
+        """
+        if name in available_plots_fleet:
+            try:
+                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
+                fig = available_plots_fleet[name](self, self.fleet_model)
+                if save:
+                    if size_inches is not None:
+                        fig.fig.set_size_inches(size_inches)
+                    if remove_title:
+                        fig.fig.gca().set_title("")
+                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+            except AttributeError as e:
+                raise NameError(
+                    f"Plot {name} requires using bottom up fleet model. Original error: {e}"
+                )
+        elif name in available_plots:
+>           fig = available_plots[name](self)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: Can't instantiate abstract class ShadowCarbonPriceSimple with abstract methods _update_plot_elements, create_plot
+
+AeroMAPS\aeromaps\core\process.py:651: TypeError
+
+Process finished with exit code 1
