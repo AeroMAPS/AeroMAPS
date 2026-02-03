@@ -15,7 +15,7 @@ def processes():
     # Create first process
     config_path = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_full.yaml"
+        "../core/tested_configs/config_basic.yaml"
     )
     proc1 = create_process(configuration_file=config_path)
     proc1.compute()
