@@ -12,12 +12,18 @@ from aeromaps import create_process
 @pytest.fixture(scope="module")
 def process():
     """
-    Create and run an AeroMAPS process with default configuration.
+    Create and run an AeroMAPS process with test configuration.
     
     This fixture is module-scoped to avoid running the computation multiple times.
+    Uses the full test configuration which includes all necessary models.
     """
-    # Create process with default configuration
-    proc = create_process()
+    # Create process with full test configuration
+    import os
+    config_path = os.path.join(
+        os.path.dirname(__file__),
+        "../core/tested_configs/config_full.yaml"
+    )
+    proc = create_process(configuration_file=config_path)
     
     # Run the scenario
     proc.compute()

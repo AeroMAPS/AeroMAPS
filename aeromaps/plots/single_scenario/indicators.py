@@ -4,18 +4,12 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class MeanCO2PerRPKPlot(SingleScenarioPlot):
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -36,40 +30,19 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
             linewidth=2,
         )
 
-        self.ax.grid()
-        self.ax.set_title("Evolution of CO2 emissions\nper passenger and per kilometer")
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("CO2 emissions per RPK [gCO2/RPK]")
-        self.ax.legend(loc=0, fontsize=10)
-        self.ax.set_xlim(self.years[0], self.years[-1])
-        self.ax.set_ylim(
-            0,
+        self._setup_grid_and_labels(
+            "Evolution of CO2 emissions\nper passenger and per kilometer",
+            "Year",
+            "CO2 emissions per RPK [gCO2/RPK]"
         )
+        self.ax.legend(loc=0, fontsize=10)
+        self._set_x_limits()
+        self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_emissions_per_rpk.set_ydata(
             self.df.loc[self.prospective_years, "co2_emissions_per_rpk"]
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
-
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
 
 
 class MeanCO2PerRTKPlot(SingleScenarioPlot):
