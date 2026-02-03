@@ -6012,7 +6012,8 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">142</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;life_cycle_assessment&quot;</span><span class="p">,</span>
     <span class="n">configuration_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6071,6 +6072,7 @@ Should match an axis defined in the configuration file through the "attribute" f
             <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis_keys</span><span class="p">:</span>
                 <span class="n">method_with_axis</span> <span class="o">=</span> <span class="n">method</span> <span class="o">+</span> <span class="p">(</span><span class="n">phase</span><span class="p">,)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuple_to_varname</span><span class="p">(</span><span class="n">method_with_axis</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuple_to_varname</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tuple_to_varname</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
@@ -6162,8 +6164,7 @@ Should match an axis defined in the configuration file through the "attribute" f
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/impacts/life_cycle_assessment/life_cycle_assessment_custom.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
@@ -6191,7 +6192,8 @@ Should match an axis defined in the configuration file through the "attribute" f
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute LCA impacts for the given input parameters.</span>
 
