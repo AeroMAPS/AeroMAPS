@@ -13,9 +13,9 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
+        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -217,7 +217,6 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
 
 class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         self.hatch_map = {
             "mfsp": "",
             "tax": "//",
@@ -244,6 +243,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
         }
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
+        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -672,9 +672,6 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
 
 class DetailledMFSPBreakdown(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
-        self.pathways_data = process.energy_carriers_data
-        self.resource_color_map = self._create_color_map()
         self.hatch_map = {
             "cost": "",
             "tax": "//",
@@ -683,6 +680,9 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
         }
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
+        self.pathways_manager = self.process.pathways_manager
+        self.pathways_data = self.process.energy_carriers_data
+        self.resource_color_map = self._create_color_map()
         self.plot_interact()
 
     def _get_default_figsize(self):
@@ -2834,9 +2834,9 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 
 class SimpleMFSP(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
+        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):

@@ -138,7 +138,7 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
-        self.pathways_manager = process.pathways_manager
+        self.pathways_manager = self.process.pathways_manager
 
     def _get_default_figsize(self):
         return (10, 6)
@@ -265,9 +265,9 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
 
 class ShareFuelPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
+        self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
     def _get_default_figsize(self):
