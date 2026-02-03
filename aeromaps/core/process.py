@@ -176,6 +176,9 @@ class AeroMAPSProcess(object):
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
         """
+        # Initialize pathways_manager to None - will be populated if energy models are used
+        self.pathways_manager = None
+        
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None

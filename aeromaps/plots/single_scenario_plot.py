@@ -45,6 +45,9 @@ class SingleScenarioPlot(ABC):
             List of output field names required for this plot. If provided,
             overrides the class-level required_outputs. If None, uses class default.
         """
+        # Store the process object for access by subclasses
+        self.process = process
+        
         # Set instance-level required_outputs (override class default if provided)
         if required_outputs is not None:
             self.required_outputs = required_outputs
