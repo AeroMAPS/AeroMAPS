@@ -17,12 +17,10 @@ models:
 
   standards:  # List of standard models to include from aeromaps.models.models.py
     - models_traffic
-    - models_efficiency_bottom_up
+    - models_efficiency_top_down
     - models_energy_without_fuel_effect
     - models_offset
     - models_emissions
     - models_sustainability
     - models_energy_cost
-    - models_operation_cost_bottom_up
-    - models_production_cost
-    - models_abatements_cost
+    - models_operation_cost_top_down
