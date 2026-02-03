@@ -60,6 +60,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         name: str = "life_cycle_assessment_default",
         json_file: str = None,
         split_by: str = None,
+        methods: list = None,
         *args,
         **kwargs,
     ):
@@ -79,7 +80,7 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
         self.axis = split_by if split_by else TOTAL_AXIS_KEY
 
         print("===== LCA Default Model Import =====")
-        self.model = Model.from_file(json_file, axis=self.axis, progress_bar=True)
+        self.model = Model.from_file(json_file, axis=self.axis, methods=methods, progress_bar=True)
         self.methods = [ast.literal_eval(s) for s in self.model.impacts.keys()]
         self.axis_keys = None
         expr = self.model.expressions[self.axis][str(self.methods[0])].expr
@@ -115,6 +116,8 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                 for phase in self.axis_keys:
                     method_with_axis = method + (phase,)
                     self.output_names.append(tuple_to_varname(method_with_axis))
+                # Also add total over all axes
+                self.output_names.append(tuple_to_varname(method))
         else:
             for method in self.methods:
                 self.output_names.append(tuple_to_varname(method))
@@ -328,6 +331,13 @@ class LifeCycleAssessmentDefault(AeroMAPSModel):
                     value = res.sel(systems=KEY_MODEL, impacts=method, axis=phase).to_series()
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
+                # Also add total over all axes
+                value = res.sel(
+                    systems=KEY_MODEL,
+                    impacts=method
+                ).sum(dim="axis").to_series()
+                value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                output_data[tuple_to_varname(method)] = value
         else:
             for method in res.coords["impacts"].values:
                 value = res.sel(systems=KEY_MODEL, impacts=method).to_series()

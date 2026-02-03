@@ -137,6 +137,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 for phase in self.axis_keys:
                     method_with_axis = method + (phase,)
                     self.output_names.append(tuple_to_varname(method_with_axis))
+                self.output_names.append(tuple_to_varname(method))
         else:
             for method in self.methods:
                 self.output_names.append(tuple_to_varname(method))
@@ -195,6 +196,16 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                 # params_dict[name] = list(range(self.prospection_start_year, self.end_year + 1))
                 # replace by self.data["years"]["prospective_years"] ?
                 params_dict[name] = self.years
+                continue
+
+            # --- Parameters calculated as functions of others through 'formula' option in agb ---
+            # Skip these, they will be computed automatically from other parameters
+            if agb.all_params()[name].formula is not None:
+                if is_not_nan(input_data[name]):
+                    warnings.warn(
+                        f'Parameter "{name}" is defined through a formula and should not be provided directly. '
+                        f'The provided value will be ignored and computed automatically.'
+                    )
                 continue
 
             # --- Parameter provided directly (either single value or list of values) ---
@@ -477,6 +488,13 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
                     value = res.sel(systems=self.model.key, impacts=method, axis=phase).to_series()
                     value = value.reindex(range(self.historic_start_year, self.end_year + 1))
                     output_data[tuple_to_varname(method_with_axis)] = value
+                # Also add total over all axes
+                value = res.sel(
+                            systems=self.model.key,
+                            impacts=method
+                        ).sum(dim="axis").to_series()
+                value = value.reindex(range(self.historic_start_year, self.end_year + 1))
+                output_data[tuple_to_varname(method)] = value
         else:
             for method in res.coords["impacts"].values:
                 value = res.sel(systems=self.model.key, impacts=method).to_series()
