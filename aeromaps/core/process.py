@@ -1298,7 +1298,7 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
-                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup") and hasattr(self, "pathways_manager"):
+                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup") and self.pathways_manager is not None:
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()

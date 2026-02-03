@@ -11,12 +11,25 @@ from aeromaps import create_process, create_multi_process
 @pytest.fixture(scope="module")
 def processes():
     """Create two test processes for comparison."""
+    import os
     # Create first process
-    proc1 = create_process()
+    config_path = os.path.join(
+        os.path.dirname(__file__),
+        "../core/tested_configs/config_full.yaml"
+    )
+    proc1 = create_process(configuration_file=config_path)
     proc1.compute()
     
     # Create second process
-    proc2 = create_process()
+    proc2 = create_process(configuration_file=config_path)
+    proc2.parameters.cagr_passenger_short_range_reference_periods = []
+    proc2.parameters.cagr_passenger_short_range_reference_periods_values = [1.0]
+    proc2.parameters.cagr_passenger_medium_range_reference_periods = []
+    proc2.parameters.cagr_passenger_medium_range_reference_periods_values = [1.0]
+    proc2.parameters.cagr_passenger_long_range_reference_periods = []
+    proc2.parameters.cagr_passenger_long_range_reference_periods_values = [1.0]
+    proc2.parameters.cagr_freight_reference_periods = []
+    proc2.parameters.cagr_freight_reference_periods_values = [1.0]
     proc2.compute()
     
     return {"scenario_1": proc1, "scenario_2": proc2}
