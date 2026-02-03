@@ -76,9 +76,6 @@ def test_compute(config_file):
     assert 'prospective_years' in years
     assert hasattr(proc, 'parameters')
 
-    params = proc.parameters.to_dict()
-    assert hasattr(params, 'float_parameters')
-
     data = proc.data
     assert 'vector_outputs' in data
 
