@@ -29,7 +29,7 @@ def test_process_creation_default():
 def test_process_creation_with_config():
     """Test that the process can be created with a configuration file."""
     # Use the default config file path
-    config_path = "aeromaps/resources/data/config.yaml"
+    config_path = "AeroMAPS/aeromaps/resources/data/config.yaml"
     proc = create_process(configuration_file=config_path)
     assert proc is not None
     assert proc.configuration_file is not None
@@ -39,7 +39,7 @@ def test_process_creation_with_config():
 def test_process_creation_with_absolute_path():
     """Test that the process can be created with an absolute path config."""
     # Get absolute path to default config
-    config_path = os.path.abspath("aeromaps/resources/data/config.yaml")
+    config_path = os.path.abspath("AeroMAPS/aeromaps/resources/data/config.yaml")
     proc = create_process(configuration_file=config_path)
     assert proc is not None
     assert proc.configuration_file is not None

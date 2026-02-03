@@ -1290,7 +1290,7 @@ class AeroMAPSProcess(object):
             for key, value in d.items():
                 if isinstance(value, dict):
                     check_instance_in_dict(value)
-                if isinstance(value, AeroMAPSModel):
+                elif isinstance(value, AeroMAPSModel):
                     model = value
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
