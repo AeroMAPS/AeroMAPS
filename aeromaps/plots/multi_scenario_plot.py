@@ -243,6 +243,9 @@ class MultiScenarioPlot(ABC):
         """
         Check which required outputs are missing from a scenario's data.
         
+        Checks in both vector_outputs and climate_outputs, as different
+        outputs may be stored in different places.
+        
         Parameters
         ----------
         data : dict
@@ -257,14 +260,24 @@ class MultiScenarioPlot(ABC):
         """
         missing = []
         
-        if "vector_outputs" in data and data["vector_outputs"] is not None:
-            df = data["vector_outputs"]
-            for output in required_outputs:
-                if output not in df.columns:
-                    missing.append(output)
-        else:
-            # No vector_outputs at all
-            missing = required_outputs.copy()
+        # Get the data frames
+        vector_df = data.get("vector_outputs")
+        climate_df = data.get("climate_outputs")
+        
+        # Check each required output
+        for output in required_outputs:
+            found = False
+            
+            # Check in vector_outputs
+            if vector_df is not None and output in vector_df.columns:
+                found = True
+            
+            # Check in climate_outputs
+            if climate_df is not None and output in climate_df.columns:
+                found = True
+            
+            if not found:
+                missing.append(output)
         
         return missing
     

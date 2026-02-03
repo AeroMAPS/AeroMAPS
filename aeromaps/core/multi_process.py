@@ -186,14 +186,14 @@ class MultiProcess:
             
         Raises
         ------
-        NameError
+        KeyError
             If the plot name is not available
         ValueError
             If no scenarios have the required outputs (when check_outputs=True)
         """
         if name not in self._available_plots:
             available = list(self._available_plots.keys())
-            raise NameError(
+            raise KeyError(
                 f"Plot '{name}' is not available. "
                 f"Available multi-scenario plots: {available}"
             )
