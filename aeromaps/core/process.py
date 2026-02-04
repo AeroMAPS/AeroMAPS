@@ -22,6 +22,7 @@ from gemseo import create_scenario
 
 from gemseo.disciplines.scenario_adapters.mdo_scenario_adapter import MDOScenarioAdapter
 from gemseo.mda.mda_chain import MDAChain
+from gemseo.core.chains.parallel_chain import MDOParallelChain
 
 
 import xarray as xr
@@ -591,38 +592,64 @@ class AeroMAPSProcess(object):
         )
 
     def _build_multi_regional_mda(self):
-        """Build the combined MDAChain for multi-regional execution.
+        """Build the combined execution chain for multi-regional scenarios.
 
-        This method combines all namespaced regional disciplines and the
-        aggregation discipline into a single MDAChain configured for
-        parallel execution using MDAJacobi as the inner solver.
+        Architecture:
+        -------------
+        Since regional processes are completely independent (no coupling between
+        regions), we use MDOParallelChain for true parallel execution:
+
+        1. Each region has its own MDAChain (solving internal couplings)
+        2. All regional MDAChains run in parallel via MDOParallelChain
+        3. The aggregator discipline runs after all regions complete
+        4. A final MDAChain sequences: parallel_regions → aggregator
+
+        This is much more efficient than MDAChain with mdachain_parallelize_tasks,
+        which parallelizes tasks within an iterative solver (not suited for
+        independent parallel processes).
         """
-        # Combine all regional disciplines
-        all_disciplines = []
+        # Build an MDAChain for each region (to solve internal couplings)
+        # These MDAChains are themselves disciplines that can be parallelized
+        self._regional_mda_chains = {}
         for region_id in self._region_ids:
-            all_disciplines.extend(self._regional_disciplines[region_id])
+            regional_mda = MDAChain(
+                disciplines=self._regional_disciplines[region_id],
+                tolerance=1e-5,
+                initialize_defaults=True,
+                inner_mda_name="MDAGaussSeidel",
+                log_convergence=False,  # Reduce log noise
+            )
+            self._regional_mda_chains[region_id] = regional_mda
 
-        # Add the aggregation discipline
-        all_disciplines.append(self._aggregator_discipline)
+        # Create MDOParallelChain for true parallel execution of all regions
+        # - use_threading=False → uses multiprocessing (better for CPU-bound work)
+        # - n_processes=None → uses number of disciplines (one process per region)
+        # - use_deep_copy=True → each process gets its own copy of data
+        regional_mda_list = list(self._regional_mda_chains.values())
+        n_regions = len(regional_mda_list)
+        self._parallel_regions_chain = MDOParallelChain(
+            disciplines=regional_mda_list,
+            name="ParallelRegions",
+            use_threading=False,  # Multiprocessing for CPU-bound computation
+            n_processes=n_regions,  # One process per region
+            use_deep_copy=True,  # Required for multiprocessing
+        )
 
-        self.disciplines = all_disciplines
+        # Build final MDAChain: parallel regions → aggregator
+        # This ensures proper sequencing: all regions complete before aggregation
+        self.disciplines = regional_mda_list + [self._aggregator_discipline]
 
-        # Build MDAChain with parallel execution enabled
-        # Using MDAJacobi for inner MDA allows parallel discipline execution
         self.mda_chain = MDAChain(
-            disciplines=all_disciplines,
+            disciplines=[self._parallel_regions_chain, self._aggregator_discipline],
             tolerance=1e-5,
             initialize_defaults=True,
-            mdachain_parallelize_tasks=True,
-            use_threading=False,
-            n_processes=8,
-            inner_mda_name="MDAJacobi",  # Enables parallel execution
             log_convergence=True,
         )
 
         logging.info(
-            f"Multi-regional MDAChain created with {len(all_disciplines)} disciplines "
-            f"({sum(len(d) for d in self._regional_disciplines.values())} regional + 1 aggregator)"
+            f"Multi-regional parallel chain created: "
+            f"{len(self._region_ids)} regions executing in parallel, "
+            f"then aggregator"
         )
 
     def _build_multi_regional_inputs(self) -> dict:
@@ -724,11 +751,14 @@ class AeroMAPSProcess(object):
         After execution, it updates the internal data structures with
         model outputs.
         """
+        
         if self._multi_regional:
             # Multi-regional mode: build combined inputs from all regions
             input_data = self._build_multi_regional_inputs()
             print(f"Running multi-regional MDA ({len(self._region_ids)} regions)...")
+            
             self.mda_chain.execute(input_data=input_data)
+            
             self._update_data_from_multi_regional()
         else:
             # Standard single-region mode
