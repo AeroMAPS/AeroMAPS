@@ -72,52 +72,7 @@ regionalisation:
       # Optional: Additional region-specific metadata
       # name: "France"
       # description: "French domestic and international aviation"
-    IE:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-  
-    IT:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IG:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IH:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IK:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IL:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IM:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    IN:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
-    CN:
-      config_file: "data/region_france/config.yaml"
-      # Optional: Additional region-specific metadata
-      # name: "France"
-      # description: "French domestic and international aviation"
+
 
     DE:
       config_file: "data/region_germany/config.yaml"
