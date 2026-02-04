@@ -206,3 +206,112 @@ class AeroMAPSCustomModelWrapper(Discipline):
         for input in self.input_grammar.names:
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
+
+
+# =============================================================================
+# Multi-Regional Namespace Utilities
+# =============================================================================
+
+
+def apply_namespace_to_discipline(discipline: Discipline, namespace: str) -> Discipline:
+    """Apply a namespace prefix to all inputs and outputs of a GEMSEO discipline.
+
+    This function creates a deep copy of the discipline and applies the namespace
+    to isolate regional I/O variables. This is essential for multi-regional scenarios
+    where multiple instances of the same discipline must coexist without variable conflicts.
+
+    Parameters
+    ----------
+    discipline
+        The GEMSEO discipline to namespace. Will be deep-copied to avoid
+        modifying the original.
+    namespace
+        The namespace prefix to apply (e.g., "FR", "DE"). Variables will be
+        renamed from "var_name" to "{namespace}:var_name".
+
+    Returns
+    -------
+    Discipline
+        A new discipline instance with namespaced inputs and outputs.
+
+    Notes
+    -----
+    The deep copy is necessary because `add_namespace_to_input/output()` modifies
+    the discipline in place. Without it, we would modify the original disciplines
+    stored in the process objects.
+
+    Examples
+    --------
+    >>> from aeromaps.core.gemseo import apply_namespace_to_discipline
+    >>> namespaced_disc = apply_namespace_to_discipline(discipline, "FR")
+    >>> # Now inputs/outputs are prefixed: "co2_emissions" -> "FR:co2_emissions"
+    """
+    from copy import deepcopy
+
+    ns_disc = deepcopy(discipline)
+
+    # Collect all variable names first for consistency
+    input_names = list(ns_disc.input_grammar.names)
+    output_names = list(ns_disc.output_grammar.names)
+
+    # Apply namespace to all inputs and outputs
+    for name in input_names:
+        ns_disc.add_namespace_to_input(name, namespace)
+    for name in output_names:
+        ns_disc.add_namespace_to_output(name, namespace)
+
+    # Update discipline name to include region identifier
+    ns_disc.name = f"{namespace}_{ns_disc.name}"
+
+    return ns_disc
+
+
+def apply_namespace_to_disciplines(
+    disciplines: list[Discipline], namespace: str
+) -> list[Discipline]:
+    """Apply a namespace to a list of disciplines.
+
+    Convenience function to namespace multiple disciplines at once.
+
+    Parameters
+    ----------
+    disciplines
+        List of GEMSEO disciplines to namespace.
+    namespace
+        The namespace prefix to apply.
+
+    Returns
+    -------
+    list[Discipline]
+        List of new discipline instances with namespaced I/O.
+    """
+    return [apply_namespace_to_discipline(d, namespace) for d in disciplines]
+
+
+def build_namespaced_inputs(parameters, namespace: str) -> dict:
+    """Build a namespaced input dictionary from an AeroMAPS parameters object.
+
+    This function converts all parameters into a dictionary with namespaced keys,
+    suitable for execution of a multi-regional MDAChain.
+
+    Parameters
+    ----------
+    parameters
+        AeroMAPS Parameters object containing model inputs.
+    namespace
+        The namespace prefix to apply to all parameter names.
+
+    Returns
+    -------
+    dict
+        Dictionary with namespaced keys mapping to parameter values.
+        E.g., {"FR:rpk_init": <value>, "FR:energy_consumption_init": <value>, ...}
+    """
+    input_data = {}
+    params_dict = parameters.to_dict()
+
+    for key, value in params_dict.items():
+        namespaced_key = f"{namespace}:{key}"
+        input_data[namespaced_key] = value
+
+    return input_data
