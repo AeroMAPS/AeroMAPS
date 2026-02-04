@@ -14,13 +14,14 @@ def get_tested_config_files():
     return [
         # None,
         # "./tested_configs/config_basic.yaml",
-        # TODO: expand tests for None and relative path cases
-        # The case for None is particular because the default config in resources is
-        # broken (missing inputs), so skipping for now.
-        # Also, sustainability models always require a climate simulation, so they were
-        # removed from default_models_top_down
         "AeroMAPS/aeromaps/tests/core/tested_configs/config_basic.yaml",
     ]
+
+# TODO: expand tests for None and relative path cases
+# The case for None is particular because the default config in resources is
+# broken (missing inputs), so skipping for now.
+# Also, sustainability models always require a climate simulation, so they were
+# removed from the basic analysis to run faster.
 
 CONFIGS_TO_TEST = get_tested_config_files()
 

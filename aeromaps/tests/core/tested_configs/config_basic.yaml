@@ -15,5 +15,6 @@ models:
     - models_offset
     - models_emissions
 #    - models_sustainability
+#   Requires climate simulation !!!
     - models_energy_cost
     - models_operation_cost_top_down
