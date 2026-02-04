@@ -2,67 +2,106 @@
 # Multi-Regional AeroMAPS Configuration
 # ============================================================================
 #
-# This file defines the multi-regional setup for AeroMAPS, specifying:
-# - Which regions to include and their configuration files
-# - How to aggregate regional outputs into global metrics
+# This is the main configuration file for running multi-regional AeroMAPS
+# scenarios. It specifies:
+# - Standard AeroMAPS models to use (shared across all regions)
+# - Region definitions with their specific config files
+# - Aggregation rules for computing global metrics from regional outputs
 #
-# The global namespace prefix will be applied to all aggregated outputs.
+# The presence of the 'regionalisation' section triggers multi-regional mode.
 # ============================================================================
 
-global_namespace: "overall"
-
 # ----------------------------------------------------------------------------
-# Region Definitions
+# Standard Models Configuration
 # ----------------------------------------------------------------------------
-# Each region must specify a config_file pointing to a standard AeroMAPS
-# configuration file for that region.
-#
-# The region ID (e.g., "FR", "DE") will be used as the namespace prefix
-# for all I/O variables from that region.
+# Models specified here will be used for all regions (unless overridden in
+# regional config files).
 # ----------------------------------------------------------------------------
 
-regions:
-  FR:
-    config_file: "data/region_france/config.yaml"
-    # Optional: Additional region-specific metadata
-    # name: "France"
-    # description: "French domestic and international aviation"
-
-  DE:
-    config_file: "data/region_germany/config.yaml"
-    # name: "Germany"
-    # description: "German domestic and international aviation"
+models:
+  standards:
+    - default_models_top_down
 
 # ----------------------------------------------------------------------------
-# Aggregation Rules
+# Regionalisation Configuration
 # ----------------------------------------------------------------------------
-# Specify how regional outputs should be aggregated into global metrics.
-#
-# Supported aggregation methods:
-# - sum: Linear sum of regional values (for extensive quantities)
-# - weighted_average: Weighted average (for intensive quantities)
-#
-# For weighted_average, specify:
-# - variable: The variable to aggregate
-# - weight_by: The variable to use as weights
+# This section triggers multi-regional mode when present.
 # ----------------------------------------------------------------------------
 
-aggregation:
-  # Extensive quantities: aggregate by sum
-  sum:
-    - co2_emissions
-    - energy_consumption
-    - rpk
-    - rtk
-    - ask
-    - total_aircraft_distance
+regionalisation:
+  global_namespace: "overall"
 
-  # Intensive quantities: aggregate by weighted average
-  # (weighted by RPK for passenger-related metrics)
-  weighted_average:
-    - variable: load_factor
-      weight_by: rpk
-    - variable: energy_per_rpk
-      weight_by: rpk
-    # - variable: emission_factor_per_rpk
-    #   weight_by: rpk
+  # --------------------------------------------------------------------------
+  # Region Definitions
+  # --------------------------------------------------------------------------
+  # Each region must specify a config_file pointing to a standard AeroMAPS
+  # configuration file for that region.
+  #
+  # The region ID (e.g., "FR", "DE") will be used as the namespace prefix
+  # for all I/O variables from that region.
+  # --------------------------------------------------------------------------
+
+  regions:
+    FR:
+      config_file: "data/region_france/config.yaml"
+      # Optional: Additional region-specific metadata
+      # name: "France"
+      # description: "French domestic and international aviation"
+    ES:
+      config_file: "data/region_france/config.yaml"
+      # Optional: Additional region-specific metadata
+      # name: "France"
+      # description: "French domestic and international aviation"
+    UK:
+      config_file: "data/region_france/config.yaml"
+      # Optional: Additional region-specific metadata
+      # name: "France"
+      # description: "French domestic and international aviation"
+    IT:
+      config_file: "data/region_france/config.yaml"
+      # Optional: Additional region-specific metadata
+      # name: "France"
+      # description: "French domestic and international aviation"
+    CN:
+      config_file: "data/region_france/config.yaml"
+      # Optional: Additional region-specific metadata
+      # name: "France"
+      # description: "French domestic and international aviation"
+
+    DE:
+      config_file: "data/region_germany/config.yaml"
+      # name: "Germany"
+      # description: "German domestic and international aviation"
+
+    CZ:
+      config_file: "data/region_germany/config.yaml"
+      # name: "Germany"
+      # description: "German domestic and international aviation"
+
+  # --------------------------------------------------------------------------
+  # Aggregation Rules
+  # --------------------------------------------------------------------------
+  # Specify how regional outputs should be aggregated into global metrics.
+  #
+  # Supported aggregation methods:
+  # - sum: Linear sum of regional values (for extensive quantities)
+  # - weighted_average: Weighted average (for intensive quantities)
+  #
+  # For weighted_average, specify:
+  # - variable: The variable to aggregate
+  # - weight_by: The variable to use as weights
+  # --------------------------------------------------------------------------
+
+  aggregation:
+    # Extensive quantities: aggregate by sum
+    sum:
+      - co2_emissions_including_energy
+      - rpk
+
+    # Intensive quantities: aggregate by weighted average
+    # (weighted by RPK for passenger-related metrics)
+    weighted_average:
+      - variable: load_factor
+        weight_by: rpk
+      # - variable: emission_factor_per_rpk
+      #   weight_by: rpk

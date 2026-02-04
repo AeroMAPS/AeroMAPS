@@ -198,45 +198,45 @@ class AeroMAPSProcess(object):
         self._initialize_configuration()
 
         # Store mode flags
-        self._multi_regional = multi_regional
         self._optimisation = optimisation
 
-        # Check for multi-regional mode from config (takes precedence)
-        if self._get_user_config_value("regionalisation", default=None) is not None:
-            self._multi_regional = True
+        # Check for multi-regional mode from config (takes precedence over parameter)
+        self._multi_regional = (
+            multi_regional or
+            self._get_user_config_value("regionalisation", default=None) is not None
+        )
 
+        # --- Standard initialization (same for all modes) ---
+        # Load standard models from config
+        standard_models = self._load_models_from_config()
+
+        # Merge with user-provided models (user models override/extend standard models)
+        if custom_models is not None:
+            standard_models.update(custom_models)
+
+        models = standard_models
+
+        # Recopy models to avoid shared state between instances.
+        # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
+        # E.g., models that load large datasets that are read-only (c.f. LCA model).
+        self.models = {
+            k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
+        }
+
+        # Initialize inputs
+        self._initialize_inputs()
+
+        # Common setup (disciplines list, data containers, etc.)
+        self.common_setup()
+
+        # --- Mode-specific setup ---
         if self._multi_regional:
-            # Multi-regional mode: defer model loading to setup_multi_regional
-            self.models = {}
-            self._initialize_inputs()
-            self.common_setup()
-            self.setup_multi_regional()
+            # Multi-regional mode: extends standard setup with namespaced regional disciplines
+            self.setup_multi_regional(optimisation=optimisation)
+        elif optimisation:
+            self.setup_optimisation()
         else:
-            # Standard single-region mode
-            # Load standard models from config
-            standard_models = self._load_models_from_config()
-            
-            # Merge with user-provided models (user models override/extend standard models)
-            if custom_models is not None:
-                standard_models.update(custom_models)
-            
-            models = standard_models
-
-            # Recopy models to avoid shared state between instances.
-            # For specific models that would be too heavy to deepcopy, set attribute `deepcopy_at_init` to False.
-            # E.g., models that load large datasets that are read-only (c.f. LCA model).
-            self.models = {
-                k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
-            }
-
-            # Initialize inputs
-            self._initialize_inputs()
-
-            self.common_setup()
-            if not optimisation:
-                self.setup_mda()
-            else:
-                self.setup_optimisation()
+            self.setup_mda()
 
     def _load_models_from_config(self):
         """Load models from the configuration file's standards and customs lists.
@@ -416,25 +416,31 @@ class AeroMAPSProcess(object):
         """
         self._initialize_gemseo_settings()
 
-    def setup_multi_regional(self):
+    def setup_multi_regional(self, optimisation=False):
         """Configure the process for multi-regional scenarios.
 
-        This method reads the regionalisation configuration file, creates
+        This method reads the regionalisation configuration, creates
         individual regional processes, applies namespaces to their disciplines,
         creates the aggregation discipline, and builds a combined MDAChain
         that executes all regions in parallel.
 
-        The regionalisation configuration file should contain:
+        The regionalisation configuration should be in the main config file
+        under the "regionalisation" key, containing:
         - regions: dict mapping region IDs to their config files
         - aggregation: dict specifying which metrics to aggregate and how
         - global_namespace: prefix for aggregated outputs (default: "overall")
+
+        Parameters
+        ----------
+        optimisation
+            Whether to configure for optimization (future support).
 
         Warning
         -------
         This method requires a valid regionalisation configuration in the
         main config file under the "regionalisation" key.
         """
-        # Read regionalisation configuration
+        # Read regionalisation configuration from main config
         self._read_regionalisation_config()
 
         # Create regional processes and extract namespaced disciplines
@@ -446,27 +452,31 @@ class AeroMAPSProcess(object):
         # Build combined MDAChain with parallel execution
         self._build_multi_regional_mda()
 
+        # TODO: Add optimization support for multi-regional mode
+        if optimisation:
+            logging.warning(
+                "Optimization mode for multi-regional scenarios is not yet fully implemented. "
+                "Using MDA mode instead."
+            )
+
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration.
 
-        This method reads the regionalisation YAML file specified in the
-        main configuration and stores the parsed data for later use.
+        This method reads the regionalisation section from the main config
+        file and stores the parsed data for later use.
         """
-        regionalisation_file_path = self._resolve_config_path(
-            "regionalisation", "regionalisation_file",
-            default_filename=None
-        )
+        # Get regionalisation config directly from main config
+        regionalisation_config = self._get_user_config_value("regionalisation", default=None)
 
-        if regionalisation_file_path is None or not regionalisation_file_path.exists():
+        if regionalisation_config is None:
             raise ValueError(
-                "Multi-regional mode requires a regionalisation configuration file. "
-                "Please specify 'regionalisation.regionalisation_file' in your config."
+                "Multi-regional mode requires a 'regionalisation' section in the config file."
             )
 
-        self._regionalisation_config = read_yaml_file(str(regionalisation_file_path))
+        self._regionalisation_config = regionalisation_config
 
         # Extract region definitions
-        regions_config = self._regionalisation_config.get("regions", {})
+        regions_config = regionalisation_config.get("regions", {})
         if not regions_config:
             raise ValueError(
                 "Regionalisation config must specify at least one region under 'regions' key."
@@ -481,7 +491,7 @@ class AeroMAPSProcess(object):
             if config_file is None:
                 raise ValueError(f"Region '{region_id}' must specify a 'config_file'.")
 
-            # Resolve path relative to regionalisation file
+            # Resolve path relative to main config file
             if not os.path.isabs(config_file):
                 config_file = os.path.normpath(
                     os.path.join(self._config_base_dir, config_file)
@@ -490,8 +500,8 @@ class AeroMAPSProcess(object):
             self._region_configs[region_id] = config_file
 
         # Store aggregation config and global namespace
-        self._aggregation_config = self._regionalisation_config.get("aggregation", {})
-        self._global_namespace = self._regionalisation_config.get("global_namespace", "overall")
+        self._aggregation_config = regionalisation_config.get("aggregation", {})
+        self._global_namespace = regionalisation_config.get("global_namespace", "overall")
 
         logging.info(
             f"Multi-regional configuration loaded: {len(self._region_ids)} regions "
@@ -504,6 +514,22 @@ class AeroMAPSProcess(object):
         This method creates a standard AeroMAPSProcess for each region,
         then extracts and namespaces their disciplines for use in the
         combined multi-regional MDAChain.
+
+        Why use AeroMAPSProcess as a factory?
+        -------------------------------------
+        Each region requires its own data inputs (fleet, traffic, energy mix),
+        model configuration, and all the complex initialization logic (loading
+        CSV files, setting up climate models, LCA, etc.).
+
+        Instead of duplicating this initialization logic, we:
+        1. Create a temporary AeroMAPSProcess for each region using its config
+        2. Extract the disciplines (already configured with regional data)
+        3. Apply namespaces to isolate variables (e.g., co2_emissions → FR:co2_emissions)
+        4. Combine all disciplines into a single MDAChain
+
+        At runtime, only the final MDAChain is executed. The regional processes
+        are kept for convenience (accessing regional data, parameters, etc.)
+        but are not executed themselves.
         """
         self._regional_processes = {}
         self._regional_disciplines = {}
@@ -511,16 +537,22 @@ class AeroMAPSProcess(object):
         for region_id, config_file in self._region_configs.items():
             logging.info(f"Creating regional process for '{region_id}'...")
 
-            # Create a standard (non-multi-regional) process for this region
+            # Create a standard (non-multi-regional) process for this region.
+            # This process handles all the complex initialization (loading models,
+            # reading data files, configuring climate/LCA, etc.) so we don't have
+            # to duplicate that logic here.
             regional_process = AeroMAPSProcess(
                 configuration_file=config_file,
                 optimisation=False,
                 multi_regional=False,  # Prevent recursion
             )
 
+            # Keep reference to the regional process for later data access
             self._regional_processes[region_id] = regional_process
 
-            # Apply namespace to all disciplines from this region
+            # Extract disciplines and apply namespace prefix to all their I/O variables.
+            # This isolates each region's variables (e.g., "co2_emissions" becomes
+            # "FR:co2_emissions") so they don't conflict in the combined chain.
             namespaced_disciplines = apply_namespace_to_disciplines(
                 regional_process.disciplines, region_id
             )
@@ -581,6 +613,9 @@ class AeroMAPSProcess(object):
             disciplines=all_disciplines,
             tolerance=1e-5,
             initialize_defaults=True,
+            mdachain_parallelize_tasks=True,
+            use_threading=False,
+            n_processes=8,
             inner_mda_name="MDAJacobi",  # Enables parallel execution
             log_convergence=True,
         )
@@ -719,33 +754,48 @@ class AeroMAPSProcess(object):
 
         This method extracts outputs from the multi-regional MDAChain,
         organizing them by region namespace and storing global aggregates.
+
+        Data is structured as:
+        - self.data["regional_outputs"][region_id][var_name] = value
+        - self.data["global_outputs"][var_name] = value
+        - self.data["vector_outputs"] includes all namespaced Series
         """
         local_data = self.mda_chain.local_data
 
         # Initialize data structures for multi-regional outputs
-        self.data["regional_outputs"] = {}
+        self.data["regional_outputs"] = {region_id: {} for region_id in self._region_ids}
         self.data["global_outputs"] = {}
+
+        # Collect all new vector outputs to add at once (avoids DataFrame fragmentation)
+        new_vector_outputs = {}
 
         # Process outputs by namespace
         for key, value in local_data.items():
-            if ":" in key:
-                namespace, var_name = key.split(":", 1)
+            if ":" not in key:
+                continue
 
-                if namespace == self._global_namespace:
-                    # Global aggregated output
-                    if isinstance(value, pd.Series):
-                        if var_name not in self.data["vector_outputs"].columns:
-                            self.data["vector_outputs"][f"{self._global_namespace}:{var_name}"] = value
-                        self.data["global_outputs"][var_name] = value
-                elif namespace in self._region_ids:
-                    # Regional output
-                    if namespace not in self.data["regional_outputs"]:
-                        self.data["regional_outputs"][namespace] = {}
-                    self.data["regional_outputs"][namespace][var_name] = value
+            namespace, var_name = key.split(":", 1)
 
-                    # Also store namespaced version in vector outputs
-                    if isinstance(value, pd.Series):
-                        self.data["vector_outputs"][key] = value
+            if namespace == self._global_namespace:
+                # Global aggregated output
+                self.data["global_outputs"][var_name] = value
+                if isinstance(value, pd.Series):
+                    namespaced_key = f"{self._global_namespace}:{var_name}"
+                    if namespaced_key not in self.data["vector_outputs"].columns:
+                        new_vector_outputs[namespaced_key] = value
+
+            elif namespace in self._region_ids:
+                # Regional output
+                self.data["regional_outputs"][namespace][var_name] = value
+                if isinstance(value, pd.Series):
+                    new_vector_outputs[key] = value
+
+        # Add all new columns at once using pd.concat to avoid fragmentation warning
+        if new_vector_outputs:
+            new_df = pd.DataFrame(new_vector_outputs)
+            self.data["vector_outputs"] = pd.concat(
+                [self.data["vector_outputs"], new_df], axis=1
+            )
 
     def get_dataframes(self):
         """Return all main DataFrames as a dictionary, generated on demand.

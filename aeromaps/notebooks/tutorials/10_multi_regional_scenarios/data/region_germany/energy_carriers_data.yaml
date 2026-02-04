@@ -1,6 +1,6 @@
-fossil_kerosene:
+fossil_kerosbab:
   # Metadata
-  name: "fossil_kerosene"
+  name: "fossil_kerosbab"
   environmental_model: "top-down"
   cost_model: "top-down"
   aircraft_type: "dropin_fuel"
