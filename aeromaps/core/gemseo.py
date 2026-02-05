@@ -28,6 +28,7 @@ from typing import Final
 from typing import Union
 from typing import Any
 from typing import cast
+import os
 
 import numpy as np
 import pandas as pd
@@ -50,6 +51,45 @@ if TYPE_CHECKING:
 
 DataType = Union[float, ndarray]
 LOGGER = logging.getLogger(__name__)
+
+# Global flag to track if we've patched GEMSEO's ExecutionStatistics
+_EXECUTION_STATISTICS_PATCHED = False
+
+
+def disable_gemseo_execution_statistics():
+    """Disable GEMSEO's execution statistics shared memory.
+    
+    GEMSEO's ExecutionStatistics creates semaphores for each discipline via
+    multiprocessing.Value(). With many disciplines (20+ regions × 50+ models),
+    this exhausts macOS semaphore limits (kern.sysv.shmmni=32).
+    
+    This function patches ExecutionStatistics to use regular Python attributes
+    instead of shared memory, avoiding semaphore creation.
+    
+    Safe to call multiple times (only patches once).
+    """
+    global _EXECUTION_STATISTICS_PATCHED
+    
+    if _EXECUTION_STATISTICS_PATCHED:
+        return
+    
+    try:
+        from gemseo.core.execution_statistics import ExecutionStatistics
+        
+        def _patched_init(self):
+            """Skip shared memory initialization to avoid semaphore exhaustion."""
+            # Initialize as regular attributes instead of shared memory
+            self._ExecutionStatistics__duration = 0.0
+            self._ExecutionStatistics__n_executions = 0
+            self._ExecutionStatistics__n_linearizations = 0
+            self._ExecutionStatistics__n_calls_to_jacobian = 0
+            self._ExecutionStatistics__execution_time = {}
+        
+        ExecutionStatistics._init_shared_memory_attrs_before = _patched_init
+        _EXECUTION_STATISTICS_PATCHED = True
+        LOGGER.debug("Patched GEMSEO ExecutionStatistics to use non-shared state")
+    except Exception as patch_err:
+        LOGGER.warning(f"Could not patch GEMSEO ExecutionStatistics: {patch_err}")
 
 
 class ExtendedJSONGrammar(JSONGrammar):

@@ -61,14 +61,6 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 # Climate model imports
 from aeromaps.models.impacts.climate.climate import ClimateModel
 
-# Multi-regional model imports
-from aeromaps.models.multi_regional.regional_aggregator import RegionalAggregator
-from aeromaps.core.gemseo import (
-    apply_namespace_to_discipline,
-    apply_namespace_to_disciplines,
-    build_namespaced_inputs,
-)
-
 # LCA models imports
 # Check if LCA packages for custom model are installed
 try:
@@ -162,15 +154,14 @@ class AeroMAPSProcess(object):
         configuration_file=None,
         custom_models=None,
         optimisation=False,
-        multi_regional=False,
+        disable_execution_statistics=None,
     ):
         """Initialize an AeroMAPSProcess instance.
 
         This method loads configuration settings, initializes parameters,
         deep-copies the provided models dictionary when needed, and
-        performs the common setup. It then configures either an MDA chain,
-        an optimization scenario, or a multi-regional setup depending on
-        the specified mode.
+        performs the common setup. It then configures either an MDA chain
+        or an optimization scenario depending on the specified mode.
 
         Parameters
         ----------
@@ -185,28 +176,29 @@ class AeroMAPSProcess(object):
         optimisation
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
-        multi_regional
-            Whether to configure for multi-regional scenarios. When True,
-            the process reads a regionalisation configuration file to set
-            up multiple regional processes with namespaced disciplines.
+        disable_execution_statistics
+            Whether to disable GEMSEO's execution statistics shared memory.
+            If None, statistics are enabled. Set to True to disable
+            (useful when running many disciplines to avoid semaphore exhaustion).
         """
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
             else None
         )
+        
+        # Handle execution statistics
+        if disable_execution_statistics:
+            from aeromaps.core.gemseo import disable_gemseo_execution_statistics
+            disable_gemseo_execution_statistics()
+            logging.info("Disabled GEMSEO execution statistics")
+        
         self._initialize_configuration()
 
         # Store mode flags
         self._optimisation = optimisation
 
-        # Check for multi-regional mode from config (takes precedence over parameter)
-        self._multi_regional = (
-            multi_regional or
-            self._get_user_config_value("regionalisation", default=None) is not None
-        )
-
-        # --- Standard initialization (same for all modes) ---
+        # --- Standard initialization ---
         # Load standard models from config
         standard_models = self._load_models_from_config()
 
@@ -230,11 +222,7 @@ class AeroMAPSProcess(object):
         self.common_setup()
 
         # --- Mode-specific setup ---
-        if self._multi_regional:
-            # Multi-regional mode: extends standard setup with namespaced regional disciplines
-            # Nota bene: the mda of each region is created recursively when creating a regional process, its goes is the "else".
-            self.setup_multi_regional(optimisation=optimisation)
-        elif optimisation:
+        if optimisation:
             self.setup_optimisation()
         else:
             self.setup_mda()
@@ -417,236 +405,6 @@ class AeroMAPSProcess(object):
         """
         self._initialize_gemseo_settings()
 
-    def setup_multi_regional(self, optimisation=False):
-        """Configure the process for multi-regional scenarios.
-
-        This method reads the regionalisation configuration, creates
-        individual regional processes, applies namespaces to their disciplines,
-        creates the aggregation discipline, and builds a combined MDAChain
-        that executes all regions in parallel.
-
-        The regionalisation configuration should be in the main config file
-        under the "regionalisation" key, containing:
-        - regions: dict mapping region IDs to their config files
-        - aggregation: dict specifying which metrics to aggregate and how
-        - global_namespace: prefix for aggregated outputs (default: "overall")
-
-        Parameters
-        ----------
-        optimisation
-            Whether to configure for optimization (future support).
-
-        Warning
-        -------
-        This method requires a valid regionalisation configuration in the
-        main config file under the "regionalisation" key.
-        """
-        # Read regionalisation configuration from main config
-        self._read_regionalisation_config()
-
-        # Create regional processes and extract namespaced disciplines
-        self._create_regional_processes()
-
-        # Create aggregation discipline
-        self._create_aggregation_discipline()
-
-        # Build combined MDAChain with parallel execution
-        self._build_multi_regional_mda()
-
-        # TODO: Add optimization support for multi-regional mode
-        if optimisation:
-            logging.warning(
-                "Optimization mode for multi-regional scenarios is not yet fully implemented. "
-                "Using MDA mode instead."
-            )
-
-    def _read_regionalisation_config(self):
-        """Read and validate the regionalisation configuration.
-
-        This method reads the regionalisation section from the main config
-        file and stores the parsed data for later use.
-        """
-        # Get regionalisation config directly from main config
-        regionalisation_config = self._get_user_config_value("regionalisation", default=None)
-
-        if regionalisation_config is None:
-            raise ValueError(
-                "Multi-regional mode requires a 'regionalisation' section in the config file."
-            )
-
-        self._regionalisation_config = regionalisation_config
-
-        # Extract region definitions
-        regions_config = regionalisation_config.get("regions", {})
-        if not regions_config:
-            raise ValueError(
-                "Regionalisation config must specify at least one region under 'regions' key."
-            )
-
-        self._region_ids = list(regions_config.keys())
-        self._region_configs = {}
-
-        # Resolve region config file paths
-        for region_id, region_data in regions_config.items():
-            config_file = region_data.get("config_file")
-            if config_file is None:
-                raise ValueError(f"Region '{region_id}' must specify a 'config_file'.")
-
-            # Resolve path relative to main config file
-            if not os.path.isabs(config_file):
-                config_file = os.path.normpath(
-                    os.path.join(self._config_base_dir, config_file)
-                )
-
-            self._region_configs[region_id] = config_file
-
-        # Store aggregation config and global namespace
-        self._aggregation_config = regionalisation_config.get("aggregation", {})
-        self._global_namespace = regionalisation_config.get("global_namespace", "overall")
-
-        logging.info(
-            f"Multi-regional configuration loaded: {len(self._region_ids)} regions "
-            f"({', '.join(self._region_ids)})"
-        )
-
-    def _create_regional_processes(self):
-        """Create individual AeroMAPS processes for each region.
-
-        This method creates a standard AeroMAPSProcess for each region,
-        then extracts and namespaces their disciplines for use in the
-        combined multi-regional MDAChain.
-
-        Why use AeroMAPSProcess as a factory?
-        -------------------------------------
-        Each region requires its own data inputs (fleet, traffic, energy mix),
-        model configuration, and all the complex initialization logic (loading
-        CSV files, setting up climate models, LCA, etc.).
-
-        Instead of duplicating this initialization logic, we:
-        1. Create a temporary AeroMAPSProcess for each region using its config
-        2. Extract the disciplines (already configured with regional data)
-        3. Apply namespaces to isolate variables (e.g., co2_emissions → FR:co2_emissions)
-        4. Combine all disciplines into a single MDAChain
-
-        At runtime, only the final MDAChain is executed. The regional processes
-        are kept for convenience (accessing regional data, parameters, etc.)
-        but are not executed themselves.
-        """
-        self._regional_processes = {}
-        self._regional_disciplines = {}
-
-        for region_id, config_file in self._region_configs.items():
-            logging.info(f"Creating regional process for '{region_id}'...")
-
-            # Create a standard (non-multi-regional) process for this region.
-            # This process handles all the complex initialization (loading models,
-            # reading data files, configuring climate/LCA, etc.) so we don't have
-            # to duplicate that logic here.
-            regional_process = AeroMAPSProcess(
-                configuration_file=config_file,
-                optimisation=False,
-                multi_regional=False,  # Prevent recursion
-            )
-
-            # Keep reference to the regional process for later data access
-            self._regional_processes[region_id] = regional_process
-
-            # Extract disciplines and apply namespace prefix to all their I/O variables.
-            # This isolates each region's variables (e.g., "co2_emissions" becomes
-            # "FR:co2_emissions") so they don't conflict in the combined chain.
-            namespaced_disciplines = apply_namespace_to_disciplines(
-                regional_process.disciplines, region_id
-            )
-
-            self._regional_disciplines[region_id] = namespaced_disciplines
-
-            logging.info(
-                f"  Region '{region_id}': {len(namespaced_disciplines)} disciplines namespaced"
-            )
-
-    def _create_aggregation_discipline(self):
-        """Create the aggregation discipline for global metrics.
-
-        This method instantiates the RegionalAggregator model based on
-        the aggregation configuration and wraps it as a GEMSEO discipline.
-        """
-        # Use parameters from the first regional process for year indexing
-        first_region = self._region_ids[0]
-        reference_parameters = self._regional_processes[first_region].parameters
-
-        # Create the aggregator model
-        self._aggregator_model = RegionalAggregator(
-            name="RegionalAggregator",
-            regions=self._region_ids,
-            aggregation_config=self._aggregation_config,
-            global_namespace=self._global_namespace,
-            parameters=reference_parameters,
-        )
-
-        # Wrap as GEMSEO discipline
-        self._aggregator_discipline = AeroMAPSCustomModelWrapper(model=self._aggregator_model)
-
-        logging.info(
-            f"Aggregator discipline created with {len(self._aggregator_model.input_names)} inputs "
-            f"and {len(self._aggregator_model.output_names)} outputs"
-        )
-
-    def _build_multi_regional_mda(self):
-        """Build the combined MDAChain for multi-regional execution.
-
-        This method combines all namespaced regional disciplines and the
-        aggregation discipline into a single MDAChain configured for
-        parallel execution using MDAJacobi as the inner solver.
-        """
-        # Combine all regional disciplines
-        all_disciplines = []
-        for region_id in self._region_ids:
-            all_disciplines.extend(self._regional_disciplines[region_id])
-
-        # Add the aggregation discipline
-        all_disciplines.append(self._aggregator_discipline)
-
-        self.disciplines = all_disciplines
-
-        # Build MDAChain with parallel execution enabled
-        # Using MDAJacobi for inner MDA allows parallel discipline execution
-        self.mda_chain = MDAChain(
-            disciplines=all_disciplines,
-            tolerance=1e-5,
-            initialize_defaults=True,
-            mdachain_parallelize_tasks=True,
-            use_threading=False,
-            n_processes=len(self._region_ids),
-            inner_mda_name="MDAGaussSeidel",  # Enables parallel execution
-            log_convergence=True,
-        )
-
-        logging.info(
-            f"Multi-regional MDAChain created with {len(all_disciplines)} disciplines "
-            f"({sum(len(d) for d in self._regional_disciplines.values())} regional + 1 aggregator)"
-        )
-
-    def _build_multi_regional_inputs(self) -> dict:
-        """Build the combined input data dictionary for multi-regional execution.
-
-        This method combines namespaced inputs from all regional processes
-        into a single dictionary suitable for MDAChain execution.
-
-        Returns
-        -------
-        dict
-            Combined input data with namespaced keys from all regions.
-        """
-        input_data = {}
-
-        for region_id, regional_process in self._regional_processes.items():
-            regional_inputs = build_namespaced_inputs(
-                regional_process.parameters, region_id
-            )
-            input_data.update(regional_inputs)
-
-        return input_data
-
     def create_gemseo_scenario(self):
         """Build a single-level GEMSEO MDO scenario.
 
@@ -716,90 +474,38 @@ class AeroMAPSProcess(object):
             scenario_type="MDO",
         )
 
-    def compute(self):
+    def compute(self, verbose=False):
         """Run the configured analysis or optimization.
 
         This method prepares input data, then executes either a bilevel
-        optimization, a single-level GEMSEO scenario, an MDA chain, or
-        a multi-regional MDA depending on the current configuration.
-        After execution, it updates the internal data structures with
-        model outputs.
+        optimization, a single-level GEMSEO scenario, or an MDA chain
+        depending on the current configuration. After execution, it
+        updates the internal data structures with model outputs.
+
+        Parameters
+        ----------
+        verbose
+            Whether to print execution status messages. Default is True.
         """
-        
-        if self._multi_regional:
-            # Multi-regional mode: build combined inputs from all regions
-            input_data = self._build_multi_regional_inputs()
-            print(f"Running multi-regional MDA ({len(self._region_ids)} regions)...")
-            
-            self.mda_chain.execute(input_data=input_data)
-            
-            self._update_data_from_multi_regional()
-        else:
-            # Standard single-region mode
-            input_data = self._pre_compute()
-            if hasattr(self, "scenario") and self.scenario:
-                if hasattr(self, "scenario_adapted") and self.scenario_adapted:
+        input_data = self._pre_compute()
+        if hasattr(self, "scenario") and self.scenario:
+            if hasattr(self, "scenario_adapted") and self.scenario_adapted:
+                if verbose:
                     print("Running bi-level MDO")
-                    self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
-                else:
-                    print("Running MDO")
-                    self.scenario.execute(self.gemseo_settings["algorithm"])
+                self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
             else:
-                if not hasattr(self, "mda_chain") or self.mda_chain is None:
-                    raise ValueError("MDA chain not created. Please call setup_mda() first.")
-                else:
+                if verbose:
+                    print("Running MDO")
+                self.scenario.execute(self.gemseo_settings["algorithm"])
+        else:
+            if not hasattr(self, "mda_chain") or self.mda_chain is None:
+                raise ValueError("MDA chain not created. Please call setup_mda() first.")
+            else:
+                if verbose:
                     print("Running MDA")
-                    self.mda_chain.execute(input_data=input_data)
+                self.mda_chain.execute(input_data=input_data)
 
-            self._update_data_from_model()
-
-    def _update_data_from_multi_regional(self):
-        """Update internal data structures from multi-regional MDA results.
-
-        This method extracts outputs from the multi-regional MDAChain,
-        organizing them by region namespace and storing global aggregates.
-
-        Data is structured as:
-        - self.data["regional_outputs"][region_id][var_name] = value
-        - self.data["global_outputs"][var_name] = value
-        - self.data["vector_outputs"] includes all namespaced Series
-        """
-        local_data = self.mda_chain.local_data
-
-        # Initialize data structures for multi-regional outputs
-        self.data["regional_outputs"] = {region_id: {} for region_id in self._region_ids}
-        self.data["global_outputs"] = {}
-
-        # Collect all new vector outputs to add at once (avoids DataFrame fragmentation)
-        new_vector_outputs = {}
-
-        # Process outputs by namespace
-        for key, value in local_data.items():
-            if ":" not in key:
-                continue
-
-            namespace, var_name = key.split(":", 1)
-
-            if namespace == self._global_namespace:
-                # Global aggregated output
-                self.data["global_outputs"][var_name] = value
-                if isinstance(value, pd.Series):
-                    namespaced_key = f"{self._global_namespace}:{var_name}"
-                    if namespaced_key not in self.data["vector_outputs"].columns:
-                        new_vector_outputs[namespaced_key] = value
-
-            elif namespace in self._region_ids:
-                # Regional output
-                self.data["regional_outputs"][namespace][var_name] = value
-                if isinstance(value, pd.Series):
-                    new_vector_outputs[key] = value
-
-        # Add all new columns at once using pd.concat to avoid fragmentation warning
-        if new_vector_outputs:
-            new_df = pd.DataFrame(new_vector_outputs)
-            self.data["vector_outputs"] = pd.concat(
-                [self.data["vector_outputs"], new_df], axis=1
-            )
+        self._update_data_from_model()
 
     def get_dataframes(self):
         """Return all main DataFrames as a dictionary, generated on demand.
@@ -898,85 +604,6 @@ class AeroMAPSProcess(object):
         coupling structure between the configured disciplines.
         """
         generate_n2_plot(self.disciplines)
-
-    def get_regional_outputs(self, region_id: str = None) -> dict:
-        """Get outputs for a specific region or all regions.
-
-        This method is only available in multi-regional mode.
-
-        Parameters
-        ----------
-        region_id
-            The region identifier (e.g., "FR", "DE"). If None, returns
-            outputs for all regions as a nested dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary of outputs for the specified region, or nested
-            dictionary of all regional outputs.
-
-        Raises
-        ------
-        ValueError
-            If not in multi-regional mode or if region_id is invalid.
-        """
-        if not self._multi_regional:
-            raise ValueError("get_regional_outputs() is only available in multi-regional mode.")
-
-        if "regional_outputs" not in self.data:
-            raise ValueError("No regional outputs available. Run compute() first.")
-
-        if region_id is None:
-            return self.data["regional_outputs"]
-
-        if region_id not in self._region_ids:
-            raise ValueError(
-                f"Unknown region '{region_id}'. Available regions: {self._region_ids}"
-            )
-
-        return self.data["regional_outputs"].get(region_id, {})
-
-    def get_global_outputs(self) -> dict:
-        """Get aggregated global outputs from multi-regional execution.
-
-        This method is only available in multi-regional mode.
-
-        Returns
-        -------
-        dict
-            Dictionary of aggregated global outputs.
-
-        Raises
-        ------
-        ValueError
-            If not in multi-regional mode.
-        """
-        if not self._multi_regional:
-            raise ValueError("get_global_outputs() is only available in multi-regional mode.")
-
-        if "global_outputs" not in self.data:
-            raise ValueError("No global outputs available. Run compute() first.")
-
-        return self.data["global_outputs"]
-
-    def list_regions(self) -> list:
-        """List all region identifiers in a multi-regional process.
-
-        Returns
-        -------
-        list
-            List of region identifiers.
-
-        Raises
-        ------
-        ValueError
-            If not in multi-regional mode.
-        """
-        if not self._multi_regional:
-            raise ValueError("list_regions() is only available in multi-regional mode.")
-
-        return self._region_ids.copy()
 
     def list_available_plots(self):
         """List the names of supported plots.
