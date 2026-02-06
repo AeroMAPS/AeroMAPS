@@ -111,6 +111,11 @@ class MultiRegionalProcess(AeroMAPSProcess):
         disable_execution_statistics
             Whether to disable GEMSEO's execution statistics.
         """
+        # Suppress GEMSEO source_parsing warnings about docstring style
+        # (GEMSEO expects Google-style "Args:" but AeroMAPS uses NumPy-style "Parameters")
+        # TODO: discuss if that is not satisfactory.
+        logging.getLogger("gemseo.utils.source_parsing").setLevel(logging.ERROR)
+
         # Store configuration file path early (before parent init)
         self.configuration_file = os.path.abspath(os.fspath(configuration_file))
 
@@ -484,7 +489,11 @@ class MultiRegionalProcess(AeroMAPSProcess):
         All output types are passed to the aggregator for potential aggregation.
         """
         # Build aggregator input from ALL regional outputs
+        # Collect all series to avoid DataFrame fragmentation from repeated inserts
         aggregator_input = {}
+        vector_series = {}
+        climate_series = {}
+        climate_years = self.data["years"].get("climate_full_years", [])
 
         for region_id, regional_process in self._regional_processes.items():
             # Get vector_outputs from regional process data (already populated by compute())
@@ -493,7 +502,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 for col in regional_vectors.columns:
                     namespaced_key = f"{region_id}:{col}"
                     aggregator_input[namespaced_key] = regional_vectors[col]
-                    self.data["vector_outputs"][namespaced_key] = regional_vectors[col]
+                    vector_series[namespaced_key] = regional_vectors[col]
 
             # Get float_outputs from regional process data
             regional_floats = regional_process.data.get("float_outputs", {})
@@ -508,7 +517,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 for col in regional_climate.columns:
                     namespaced_key = f"{region_id}:{col}"
                     aggregator_input[namespaced_key] = regional_climate[col]
-                    self.data["climate_outputs"][namespaced_key] = regional_climate[col]
+                    climate_series[namespaced_key] = regional_climate[col]
 
         # Run aggregator on ALL inputs (it will aggregate what's in its config)
         global_outputs = self.models["aggregator"].compute(aggregator_input)
@@ -517,13 +526,24 @@ class MultiRegionalProcess(AeroMAPSProcess):
         for key, value in global_outputs.items():
             if isinstance(value, pd.Series):
                 # Check if it belongs in climate_outputs (by checking index length)
-                climate_years = self.data["years"].get("climate_full_years", [])
                 if len(value) == len(climate_years) and climate_years:
-                    self.data["climate_outputs"][key] = value
+                    climate_series[key] = value
                 else:
-                    self.data["vector_outputs"][key] = value
+                    vector_series[key] = value
             elif isinstance(value, (int, float)):
                 self.data["float_outputs"][key] = value
+
+        # Build DataFrames efficiently using concat to avoid fragmentation
+        if vector_series:
+            self.data["vector_outputs"] = pd.concat(
+                [self.data["vector_outputs"]] + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
+                axis=1
+            )
+        if climate_series:
+            self.data["climate_outputs"] = pd.concat(
+                [self.data["climate_outputs"]] + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
+                axis=1
+            )
 
     def _update_data_from_unified_mda(self):
         """Update all data structures from unified MDA results.
@@ -531,6 +551,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
         In unified_mda mode, the MDAChain runs all namespaced disciplines together.
         We gather outputs the same way as separate_processes: from regional process data.
         """
+        # Collect all series to avoid DataFrame fragmentation from repeated inserts
+        vector_series = {}
+        climate_series = {}
         climate_years = self.data["years"].get("climate_full_years", [])
 
         for region_id, regional_process in self._regional_processes.items():
@@ -539,7 +562,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if regional_vectors is not None and not regional_vectors.empty:
                 for col in regional_vectors.columns:
                     namespaced_key = f"{region_id}:{col}"
-                    self.data["vector_outputs"][namespaced_key] = regional_vectors[col]
+                    vector_series[namespaced_key] = regional_vectors[col]
 
             # Get float_outputs from regional process data
             regional_floats = regional_process.data.get("float_outputs", {})
@@ -552,7 +575,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if regional_climate is not None and not regional_climate.empty:
                 for col in regional_climate.columns:
                     namespaced_key = f"{region_id}:{col}"
-                    self.data["climate_outputs"][namespaced_key] = regional_climate[col]
+                    climate_series[namespaced_key] = regional_climate[col]
 
         # Get global (aggregated) outputs from MDA local_data
         local_data = self.mda_chain.local_data
@@ -562,11 +585,23 @@ class MultiRegionalProcess(AeroMAPSProcess):
             if key.startswith(global_prefix):
                 if isinstance(value, pd.Series):
                     if len(value) == len(climate_years) and climate_years:
-                        self.data["climate_outputs"][key] = value
+                        climate_series[key] = value
                     else:
-                        self.data["vector_outputs"][key] = value
+                        vector_series[key] = value
                 elif isinstance(value, (int, float)):
                     self.data["float_outputs"][key] = value
+
+        # Build DataFrames efficiently using concat to avoid fragmentation
+        if vector_series:
+            self.data["vector_outputs"] = pd.concat(
+                [self.data["vector_outputs"]] + [pd.DataFrame({k: v}) for k, v in vector_series.items()],
+                axis=1
+            )
+        if climate_series:
+            self.data["climate_outputs"] = pd.concat(
+                [self.data["climate_outputs"]] + [pd.DataFrame({k: v}) for k, v in climate_series.items()],
+                axis=1
+            )
 
     # =========================================================================
     # Data Access Methods
