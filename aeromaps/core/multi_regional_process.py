@@ -3,6 +3,11 @@
 This module defines the MultiRegionalProcess class that orchestrates multiple
 regional AeroMAPS processes and aggregates their results.
 
+Architecture follows AeroMAPSProcess patterns:
+- All outputs stored in `data["vector_outputs"]` with namespace prefixes
+  (e.g., "FR:co2_emissions", "overall:co2_emissions")
+- Aggregator stored in `self.models["aggregator"]` like any AeroMAPSModel
+
 Two execution modes are supported:
 - unified_mda: All regional disciplines combined into a single MDAChain
 - separate_processes: Each regional process executed independently, then aggregated
@@ -81,8 +86,9 @@ class MultiRegionalProcess(AeroMAPSProcess):
     >>> fr_process = process.regional_processes["FR"]
     >>> fr_process.plot("co2_emissions")
     >>> 
-    >>> # Access aggregated global results
-    >>> global_outputs = process.get_global_outputs()
+    >>> # Access outputs via namespaced vector_outputs (AeroMAPSProcess pattern)
+    >>> fr_emissions = process.data["vector_outputs"]["FR:co2_emissions"]
+    >>> global_emissions = process.data["vector_outputs"]["overall:co2_emissions"]
     """
 
     def __init__(
@@ -136,8 +142,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         self._regional_processes: Dict[str, AeroMAPSProcess] = {}
         self._create_regional_processes()
 
-        # Initialize aggregator
-        self._aggregator: Optional[RegionalAggregator] = None
+        # Initialize models dict (following AeroMAPSProcess pattern)
+        self.models = {}
         self._create_aggregator()
 
         # Mode-specific setup
@@ -175,24 +181,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             self._config_base_dir = os.path.dirname(self.configuration_file)
             self._deep_merge_config(self.config, self._user_config)
 
-    def _deep_merge_config(self, base: dict, override: dict) -> dict:
-        """Recursively merge override config into base config."""
-        for key, value in override.items():
-            if key in base and isinstance(base[key], dict) and isinstance(value, dict):
-                self._deep_merge_config(base[key], value)
-            else:
-                base[key] = value
-        return base
-
-    def _get_user_config_value(self, *keys, default=None):
-        """Get a value from the user configuration dictionary only."""
-        value = self._user_config
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return default
-        return value
+    # Note: _deep_merge_config and _get_user_config_value are inherited from AeroMAPSProcess
 
     def _read_regionalisation_config(self):
         """Read and validate the regionalisation configuration."""
@@ -257,12 +246,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
             self._regional_processes[region_id] = regional_process
 
     def _create_aggregator(self):
-        """Create the RegionalAggregator model for aggregating regional outputs."""
+        """Create the RegionalAggregator model and store in self.models."""
         # Use parameters from the first regional process for year indexing
         first_region = self._region_ids[0]
         reference_parameters = self._regional_processes[first_region].parameters
 
-        self._aggregator = RegionalAggregator(
+        aggregator = RegionalAggregator(
             name="RegionalAggregator",
             regions=self._region_ids,
             aggregation_config=self._aggregation_config,
@@ -270,9 +259,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
             parameters=reference_parameters,
         )
 
+        # Store in models dict following AeroMAPSProcess pattern
+        self.models["aggregator"] = aggregator
+
         logging.info(
-            f"Aggregator created: {len(self._aggregator.input_names)} inputs, "
-            f"{len(self._aggregator.output_names)} outputs"
+            f"Aggregator created: {len(aggregator.input_names)} inputs, "
+            f"{len(aggregator.output_names)} outputs"
         )
 
     def _setup_unified_mda(self):
@@ -292,7 +284,7 @@ class MultiRegionalProcess(AeroMAPSProcess):
             all_disciplines.extend(self._regional_disciplines[region_id])
 
         # Add aggregator as a discipline
-        aggregator_discipline = AeroMAPSCustomModelWrapper(model=self._aggregator)
+        aggregator_discipline = AeroMAPSCustomModelWrapper(model=self.models["aggregator"])
         all_disciplines.append(aggregator_discipline)
 
         self.disciplines = all_disciplines
@@ -311,24 +303,31 @@ class MultiRegionalProcess(AeroMAPSProcess):
         )
 
     def _initialize_data_containers(self):
-        """Initialize data containers for regional and global outputs."""
+        """Initialize data containers following AeroMAPSProcess structure.
+        
+        All outputs will use namespaced keys in vector_outputs:
+        - Regional: "FR:co2_emissions", "DE:rpk", etc.
+        - Global: "overall:co2_emissions", "overall:rpk", etc.
+        
+        Same pattern applies to float_outputs and climate_outputs.
+        """
         # Get year index from first regional process
         first_process = self._regional_processes[self._region_ids[0]]
 
+        # Follow AeroMAPSProcess data structure exactly
         self.data = {
             "years": first_process.data.get("years", {}),
-            "regional_outputs": {region_id: {} for region_id in self._region_ids},
-            "global_outputs": {},
             "float_inputs": {},
             "str_inputs": {},
             "vector_inputs": {},
-            "float_outputs": {},
+            "float_outputs": {},  # Keys will be namespaced: "FR:metric", "overall:metric"
             "vector_outputs": pd.DataFrame(
                 index=first_process.data.get("years", {}).get("full_years", [])
             ),
             "climate_outputs": pd.DataFrame(
                 index=first_process.data.get("years", {}).get("climate_full_years", [])
             ),
+            "lca_outputs": None,  # xarray - handled separately per region
         }
 
         # Reference to parameters from first region (for year indexing, etc.)
@@ -475,56 +474,99 @@ class MultiRegionalProcess(AeroMAPSProcess):
                     raise
 
     def _aggregate_regional_outputs(self):
-        """Aggregate outputs from all regional processes using the RegionalAggregator."""
-        # Build aggregator input from regional process outputs
+        """Aggregate outputs from all regional processes.
+        
+        Populates all data structures with namespaced keys:
+        - vector_outputs: "FR:co2_emissions", "overall:co2_emissions"
+        - float_outputs: "FR:metric", "overall:metric"
+        - climate_outputs: "FR:temperature", "overall:temperature"
+        
+        All output types are passed to the aggregator for potential aggregation.
+        """
+        # Build aggregator input from ALL regional outputs
         aggregator_input = {}
 
         for region_id, regional_process in self._regional_processes.items():
-            # Get outputs from the regional process
-            regional_outputs = regional_process.mda_chain.local_data
+            # Get vector_outputs from regional process data (already populated by compute())
+            regional_vectors = regional_process.data.get("vector_outputs")
+            if regional_vectors is not None and not regional_vectors.empty:
+                for col in regional_vectors.columns:
+                    namespaced_key = f"{region_id}:{col}"
+                    aggregator_input[namespaced_key] = regional_vectors[col]
+                    self.data["vector_outputs"][namespaced_key] = regional_vectors[col]
 
-            # Add to aggregator input with namespace prefix
-            for var_name, value in regional_outputs.items():
-                namespaced_key = f"{region_id}:{var_name}"
+            # Get float_outputs from regional process data
+            regional_floats = regional_process.data.get("float_outputs", {})
+            for key, value in regional_floats.items():
+                namespaced_key = f"{region_id}:{key}"
                 aggregator_input[namespaced_key] = value
+                self.data["float_outputs"][namespaced_key] = value
 
-            # Also store in regional_outputs for easy access
-            self.data["regional_outputs"][region_id] = dict(regional_outputs)
+            # Get climate_outputs from regional process data
+            regional_climate = regional_process.data.get("climate_outputs")
+            if regional_climate is not None and not regional_climate.empty:
+                for col in regional_climate.columns:
+                    namespaced_key = f"{region_id}:{col}"
+                    aggregator_input[namespaced_key] = regional_climate[col]
+                    self.data["climate_outputs"][namespaced_key] = regional_climate[col]
 
-        # Run aggregator
-        global_outputs = self._aggregator.compute(aggregator_input)
+        # Run aggregator on ALL inputs (it will aggregate what's in its config)
+        global_outputs = self.models["aggregator"].compute(aggregator_input)
 
-        # Store global outputs (remove namespace prefix for cleaner access)
+        # Store global outputs based on their type
         for key, value in global_outputs.items():
-            # Remove global_namespace prefix if present
-            if key.startswith(f"{self._global_namespace}:"):
-                clean_key = key[len(self._global_namespace) + 1:]
-            else:
-                clean_key = key
-
-            self.data["global_outputs"][clean_key] = value
-
-            # Also add to vector_outputs if it's a Series
             if isinstance(value, pd.Series):
-                self.data["vector_outputs"][f"{self._global_namespace}:{clean_key}"] = value
+                # Check if it belongs in climate_outputs (by checking index length)
+                climate_years = self.data["years"].get("climate_full_years", [])
+                if len(value) == len(climate_years) and climate_years:
+                    self.data["climate_outputs"][key] = value
+                else:
+                    self.data["vector_outputs"][key] = value
+            elif isinstance(value, (int, float)):
+                self.data["float_outputs"][key] = value
 
     def _update_data_from_unified_mda(self):
-        """Update internal data structures from unified MDA results."""
+        """Update all data structures from unified MDA results.
+        
+        In unified_mda mode, the MDAChain runs all namespaced disciplines together.
+        We gather outputs the same way as separate_processes: from regional process data.
+        """
+        climate_years = self.data["years"].get("climate_full_years", [])
+
+        for region_id, regional_process in self._regional_processes.items():
+            # Get vector_outputs from regional process data
+            regional_vectors = regional_process.data.get("vector_outputs")
+            if regional_vectors is not None and not regional_vectors.empty:
+                for col in regional_vectors.columns:
+                    namespaced_key = f"{region_id}:{col}"
+                    self.data["vector_outputs"][namespaced_key] = regional_vectors[col]
+
+            # Get float_outputs from regional process data
+            regional_floats = regional_process.data.get("float_outputs", {})
+            for key, value in regional_floats.items():
+                namespaced_key = f"{region_id}:{key}"
+                self.data["float_outputs"][namespaced_key] = value
+
+            # Get climate_outputs from regional process data
+            regional_climate = regional_process.data.get("climate_outputs")
+            if regional_climate is not None and not regional_climate.empty:
+                for col in regional_climate.columns:
+                    namespaced_key = f"{region_id}:{col}"
+                    self.data["climate_outputs"][namespaced_key] = regional_climate[col]
+
+        # Get global (aggregated) outputs from MDA local_data
         local_data = self.mda_chain.local_data
-
-        # Process outputs by namespace
+        global_prefix = f"{self._global_namespace}:"
+        
         for key, value in local_data.items():
-            if ":" in key:
-                namespace, var_name = key.split(":", 1)
-
-                if namespace == self._global_namespace:
-                    # Global aggregated output
-                    self.data["global_outputs"][var_name] = value
-                    if isinstance(value, pd.Series):
+            if key.startswith(global_prefix):
+                if isinstance(value, pd.Series):
+                    if len(value) == len(climate_years) and climate_years:
+                        self.data["climate_outputs"][key] = value
+                    else:
                         self.data["vector_outputs"][key] = value
-                elif namespace in self._region_ids:
-                    # Regional output
-                    self.data["regional_outputs"][namespace][var_name] = value
+                elif isinstance(value, (int, float)):
+                    self.data["float_outputs"][key] = value
 
     # =========================================================================
     # Data Access Methods
@@ -554,39 +596,46 @@ class MultiRegionalProcess(AeroMAPSProcess):
             )
         return self._regional_processes[region_id]
 
-    def get_regional_outputs(self, region_id: str = None) -> dict:
-        """Get outputs for a specific region or all regions.
+    def get_regional_outputs(self, region_id: str) -> pd.DataFrame:
+        """Get outputs for a specific region from vector_outputs.
 
         Parameters
         ----------
         region_id
-            The region identifier. If None, returns all regional outputs.
+            The region identifier (e.g., "FR", "DE").
 
         Returns
         -------
-        dict
-            Dictionary of outputs for the specified region, or nested dict
-            of all regional outputs.
+        pd.DataFrame
+            DataFrame with outputs for the specified region (namespace removed from columns).
         """
-        if region_id is None:
-            return self.data["regional_outputs"]
-
         if region_id not in self._region_ids:
             raise KeyError(
                 f"Region '{region_id}' not found. Available: {self._region_ids}"
             )
 
-        return self.data["regional_outputs"].get(region_id, {})
+        # Filter columns for this region and remove namespace prefix
+        prefix = f"{region_id}:"
+        region_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
+        
+        result = self.data["vector_outputs"][region_cols].copy()
+        result.columns = [c[len(prefix):] for c in region_cols]
+        return result
 
-    def get_global_outputs(self) -> dict:
-        """Get aggregated global outputs.
+    def get_global_outputs(self) -> pd.DataFrame:
+        """Get aggregated global outputs from vector_outputs.
 
         Returns
         -------
-        dict
-            Dictionary of aggregated global outputs.
+        pd.DataFrame
+            DataFrame with global outputs (namespace removed from columns).
         """
-        return self.data["global_outputs"]
+        prefix = f"{self._global_namespace}:"
+        global_cols = [c for c in self.data["vector_outputs"].columns if c.startswith(prefix)]
+        
+        result = self.data["vector_outputs"][global_cols].copy()
+        result.columns = [c[len(prefix):] for c in global_cols]
+        return result
 
     def list_regions(self) -> List[str]:
         """List all region identifiers.
@@ -683,13 +732,19 @@ class MultiRegionalProcess(AeroMAPSProcess):
         -------
         dict
             Dictionary mapping DataFrame names to pandas DataFrame instances.
+            Includes vector_outputs, climate_outputs, float_outputs, and global_outputs.
         """
+        # Build float_outputs DataFrame
+        float_outputs_df = pd.DataFrame({
+            "Name": list(self.data["float_outputs"].keys()),
+            "Value": list(self.data["float_outputs"].values()),
+        })
+
         return {
             "vector_outputs": self.data["vector_outputs"].copy(),
-            "global_outputs": pd.DataFrame(
-                {k: v for k, v in self.data["global_outputs"].items()
-                 if isinstance(v, pd.Series)}
-            ),
+            "climate_outputs": self.data["climate_outputs"].copy(),
+            "float_outputs": float_outputs_df,
+            "global_outputs": self.get_global_outputs(),
         }
 
     def write_json(self, file_name: str):
@@ -712,12 +767,34 @@ class MultiRegionalProcess(AeroMAPSProcess):
                 return {k: serialize(v) for k, v in obj.items()}
             return obj
 
-        json_data = {
-            "global_outputs": serialize(self.data["global_outputs"]),
-            "regional_outputs": serialize(self.data["regional_outputs"]),
-        }
+        # Organize by namespace from vector_outputs
+        json_data = {"vector_outputs": {}, "float_outputs": {}, "climate_outputs": {}}
+        
+        for col in self.data["vector_outputs"].columns:
+            if ":" in col:
+                namespace, var_name = col.split(":", 1)
+            else:
+                namespace, var_name = "default", col
+            
+            if namespace not in json_data["vector_outputs"]:
+                json_data["vector_outputs"][namespace] = {}
+            json_data["vector_outputs"][namespace][var_name] = serialize(self.data["vector_outputs"][col])
 
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        # Add float_outputs (already namespaced keys)
+        json_data["float_outputs"] = serialize(self.data["float_outputs"])
+
+        # Add climate_outputs
+        for col in self.data["climate_outputs"].columns:
+            if ":" in col:
+                namespace, var_name = col.split(":", 1)
+            else:
+                namespace, var_name = "default", col
+            
+            if namespace not in json_data["climate_outputs"]:
+                json_data["climate_outputs"][namespace] = {}
+            json_data["climate_outputs"][namespace][var_name] = serialize(self.data["climate_outputs"][col])
+
+        os.makedirs(os.path.dirname(file_name) or ".", exist_ok=True)
         with open(file_name, "w", encoding="utf-8") as f:
             json.dump(json_data, f, indent=2)
 
@@ -730,21 +807,26 @@ class MultiRegionalProcess(AeroMAPSProcess):
             Path to the output Excel file.
         """
         with pd.ExcelWriter(file_name) as writer:
-            # Global outputs
-            global_df = pd.DataFrame(
-                {k: v for k, v in self.data["global_outputs"].items()
-                 if isinstance(v, pd.Series)}
-            )
+            # Global outputs sheet
+            global_df = self.get_global_outputs()
             if not global_df.empty:
                 global_df.to_excel(writer, sheet_name="Global Outputs")
 
+            # Climate outputs sheet (all namespaced)
+            if not self.data["climate_outputs"].empty:
+                self.data["climate_outputs"].to_excel(writer, sheet_name="Climate Outputs")
+
+            # Float outputs sheet
+            if self.data["float_outputs"]:
+                float_df = pd.DataFrame({
+                    "Name": list(self.data["float_outputs"].keys()),
+                    "Value": list(self.data["float_outputs"].values()),
+                })
+                float_df.to_excel(writer, sheet_name="Float Outputs", index=False)
+
             # Regional outputs (one sheet per region, limited to avoid Excel limits)
             for region_id in self._region_ids[:20]:  # Excel has sheet limits
-                regional_data = self.data["regional_outputs"].get(region_id, {})
-                regional_df = pd.DataFrame(
-                    {k: v for k, v in regional_data.items()
-                     if isinstance(v, pd.Series)}
-                )
+                regional_df = self.get_regional_outputs(region_id)
                 if not regional_df.empty:
                     regional_df.to_excel(writer, sheet_name=f"Region_{region_id}")
 
