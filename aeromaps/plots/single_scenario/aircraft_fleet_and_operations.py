@@ -10,17 +10,6 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
@@ -51,19 +40,9 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_fuel_consumption_l100km.set_ydata(
             self.df.loc[self.prospective_years, "dropin_fuel_consumption_liter_per_pax_100km"]
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
 
 class MeanLoadFactorPlot(SingleScenarioPlot):
@@ -73,17 +52,6 @@ class MeanLoadFactorPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
@@ -112,17 +80,7 @@ class MeanLoadFactorPlot(SingleScenarioPlot):
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_load_factor.set_ydata(self.df.loc[self.prospective_years, "load_factor"])
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
 
 class MeanEnergyPerASKPlot(SingleScenarioPlot):
@@ -132,17 +90,6 @@ class MeanEnergyPerASKPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
@@ -173,19 +120,9 @@ class MeanEnergyPerASKPlot(SingleScenarioPlot):
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_energy_per_ask.set_ydata(
             self.df.loc[self.prospective_years, "energy_per_ask_mean"]
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
 
 class MeanEnergyPerRTKPlot(SingleScenarioPlot):
@@ -195,17 +132,6 @@ class MeanEnergyPerRTKPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
@@ -235,16 +161,6 @@ class MeanEnergyPerRTKPlot(SingleScenarioPlot):
         self.ax.set_xlim(self.years[0], self.years[-1])
 
     def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
         self.line_energy_per_rtk.set_ydata(
             self.df.loc[self.prospective_years, "energy_per_rtk_mean"]
         )
-
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()

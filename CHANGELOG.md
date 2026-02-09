@@ -4,7 +4,9 @@
 
 Changed:
 - Added new publication notebook on comparing industry scenarios
-- Refactor of plots into plots.single_scenario and added plots.comparison
+- Refactor of plots into plots.single_scenario
+- Added multi_process to core and a plots.multi_scenario
+- Added minor tests for core and plots
 
 ## Version 1.0.0
 

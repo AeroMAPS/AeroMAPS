@@ -4,18 +4,12 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class MeanCO2PerRPKPlot(SingleScenarioPlot):
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -36,55 +30,28 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
             linewidth=2,
         )
 
-        self.ax.grid()
-        self.ax.set_title("Evolution of CO2 emissions\nper passenger and per kilometer")
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("CO2 emissions per RPK [gCO2/RPK]")
-        self.ax.legend(loc=0, fontsize=10)
-        self.ax.set_xlim(self.years[0], self.years[-1])
-        self.ax.set_ylim(
-            0,
+        self._setup_grid_and_labels(
+            "Evolution of CO2 emissions\nper passenger and per kilometer",
+            "Year",
+            "CO2 emissions per RPK [gCO2/RPK]"
         )
+        self.ax.legend(loc=0, fontsize=10)
+        self._set_x_limits()
+        self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_emissions_per_rpk.set_ydata(
             self.df.loc[self.prospective_years, "co2_emissions_per_rpk"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
-    def _update_plot_elements(self):
-        self.create_plot()
-        self.fig.canvas.draw()
+class MeanCO2PerRTKPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-
-class MeanCO2PerRTKPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         self.ax.plot(
@@ -105,51 +72,28 @@ class MeanCO2PerRTKPlot:
             linewidth=2,
         )
 
-        self.ax.grid()
-        self.ax.set_title("Evolution of CO2 emissions\nper tonne and per kilometer")
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("CO2 emissions per RTK [gCO2/RTK]")
-        self.ax.legend(loc=0, fontsize=10)
-        self.ax.set_xlim(self.years[0], self.years[-1])
-        self.ax.set_ylim(
-            0,
+        self._setup_grid_and_labels(
+            "Evolution of CO2 emissions\nper tonne and per kilometer",
+            "Year",
+            "CO2 emissions per RTK [gCO2/RTK]"
         )
+        self.ax.legend(loc=0, fontsize=10)
+        self._set_x_limits()
+        self.ax.set_ylim(0,)
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_emissions_per_rtk.set_ydata(
             self.df.loc[self.prospective_years, "co2_emissions_per_rtk"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
+class PassengerKayaFactorsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class PassengerKayaFactorsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
@@ -194,29 +138,16 @@ class PassengerKayaFactorsPlot:
             linewidth=2,
         )
 
-        self.ax.grid()
-        self.ax.set_title(
-            "Evolution of the factors in the Kaya equation\nfor passenger air transport (historical until 2019)"
+        self._setup_grid_and_labels(
+            "Evolution of the factors in the Kaya equation\nfor passenger air transport (historical until 2019)",
+            "Year",
+            "Reference to 2000 with logarithmic scale"
         )
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        self.ax.set_xlim(self.years[0], self.years[-1])
+        self._set_x_limits()
         self.ax.set_yscale("log")
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_co2.set_ydata(
             self.df["co2_emissions_passenger"]
             / self.df.loc[self.years[0], "co2_emissions_passenger"]
@@ -237,24 +168,14 @@ class PassengerKayaFactorsPlot:
             self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
+class FreightKayaFactorsPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class FreightKayaFactorsPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         (self.line_co2,) = self.ax.plot(
@@ -293,29 +214,16 @@ class FreightKayaFactorsPlot:
             linewidth=2,
         )
 
-        self.ax.grid()
-        self.ax.set_title(
-            "Evolution of the factors in the Kaya equation\nfor freight air transport (historical until 2019)"
+        self._setup_grid_and_labels(
+            "Evolution of the factors in the Kaya equation\nfor freight air transport (historical until 2019)",
+            "Year",
+            "Reference to 2000 with logarithmic scale"
         )
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Reference to 2000 with logarithmic scale")
         self.ax.legend()
-        self.ax.set_xlim(self.years[0], self.years[-1])
+        self._set_x_limits()
         self.ax.set_yscale("log")
 
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
-        # self.fig.canvas.layout.width = "auto"
-        # self.fig.canvas.layout.height = "auto"
-        self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
+    def _update_plot_elements(self):
         self.line_co2.set_ydata(
             self.df["co2_emissions_freight"] / self.df.loc[self.years[0], "co2_emissions_freight"]
         )
@@ -330,24 +238,14 @@ class FreightKayaFactorsPlot:
             self.df["co2_per_energy_mean"] / self.df.loc[self.years[0], "co2_per_energy_mean"]
         )
 
-        for collection in self.ax.collections:
-            collection.remove()
-        self.fig.canvas.draw()
 
+class LeversOfActionDistributionPlot(SingleScenarioPlot):
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
 
-class LeversOfActionDistributionPlot:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
 
     def create_plot(self):
         if (
@@ -472,12 +370,6 @@ class LeversOfActionDistributionPlot:
 
             self.ax.legend(labels, loc="best")
 
-            self.fig.canvas.header_visible = False
-            self.fig.canvas.toolbar_position = "bottom"
-            # self.fig.canvas.layout.width = "auto"
-            # self.fig.canvas.layout.height = "auto"
-            self.fig.tight_layout()
-
         else:
             sizes = [1, 0, 0]
 
@@ -499,169 +391,7 @@ class LeversOfActionDistributionPlot:
 
             self.ax.legend(labels, loc="center")
 
-            self.fig.canvas.header_visible = False
-            self.fig.canvas.toolbar_position = "bottom"
-            # self.fig.canvas.layout.width = "auto"
-            # self.fig.canvas.layout.height = "auto"
-            self.fig.tight_layout()
-
-    def update(self, data):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        if (
-            self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
-            - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-            > 0
-        ):
-            if (
-                self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"]
-                - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                >= 0
-            ):
-                sizes = [
-                    (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                    )
-                    / (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                    (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_including_load_factor"
-                        ]
-                    )
-                    / (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                    (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_including_load_factor"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
-                    )
-                    / (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                    (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    / (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_2019technology_baseline3"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                ]
-                sizes = np.round(sizes, 3)
-            else:
-                sizes = [
-                    (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_including_load_factor"
-                        ]
-                    )
-                    / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                    (
-                        self.df.loc[
-                            self.years[-1], "cumulative_co2_emissions_including_load_factor"
-                        ]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
-                    )
-                    / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                    (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_including_energy"]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    / (
-                        self.df.loc[self.years[-1], "cumulative_co2_emissions_2019technology"]
-                        - self.df.loc[self.years[-1], "cumulative_co2_emissions"]
-                    )
-                    * 100,
-                ]
-                sizes = np.round(sizes, 3)
-
-            self.ax.clear()
-
-            labels = (
-                "Sufficiency " + str(round(sizes[0], 1)) + "%",
-                "Efficiency " + str(round(sizes[1], 1)) + "%",
-                "Energy " + str(round(sizes[2], 1)) + "%",
-            )
-            colors = "red", "gold", "yellowgreen"
-
-            self.line_part_reduction_CO2 = self.ax.pie(
-                sizes,
-                colors=colors,
-                shadow=False,
-                startangle=90,
-                counterclock=False,
-            )
-
-            self.ax.set_title(
-                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
-                " baseline scenario\nShare display depends on lever order convention"
-            )
-
-            self.ax.legend(labels, loc="best")
-
-            for collection in self.ax.collections:
-                collection.remove()
-            self.fig.canvas.draw()
-
-        else:
-            sizes = [1, 0, 0]
-
-            self.ax.clear()
-
-            labels = ("", "Non-displayable graph           ", "    with these settings        ", "")
-            colors = "white", "white", "white"
-
-            self.line_part_reduction_CO2 = self.ax.pie(
-                sizes,
-                colors=colors,
-                shadow=False,
-                startangle=90,
-                counterclock=False,
-            )
-
-            self.ax.set_title(
-                "Impact of the levers of action on the reduction\nof cumulative CO2 emissions compared\nto the"
-                " baseline scenario\nShare display depends on lever order convention"
-            )
-
-            self.ax.legend(labels, loc="center")
-
-            for collection in self.ax.collections:
-                collection.remove()
-            self.fig.canvas.draw()
+    def _update_plot_elements(self):
+        # For pie charts, we need to clear and recreate
+        self.ax.clear()
+        self.create_plot()

@@ -3,6 +3,7 @@ Initialization module for the AeroMAPS package, which provides the function to c
 """
 
 from aeromaps.core.process import AeroMAPSProcess
+from aeromaps.core.multi_process import MultiProcess
 
 
 def create_process(
@@ -35,3 +36,32 @@ def create_process(
         custom_models=custom_models,
         optimisation=optimisation,
     )
+
+
+def create_multi_process(processes) -> MultiProcess:
+    """
+    Create a MultiProcess manager for scenario comparison.
+    
+    Parameters
+    ----------
+    processes : dict or list
+        Dictionary mapping scenario names to AeroMAPSProcess objects,
+        or a list of AeroMAPSProcess objects.
+    
+    Returns
+    -------
+    MultiProcess
+        An instance of the MultiProcess class for managing multiple scenarios.
+    
+    Examples
+    --------
+    >>> process1 = create_process(configuration_file="config1.yaml")
+    >>> process2 = create_process(configuration_file="config2.yaml")
+    >>> process1.compute()
+    >>> process2.compute()
+    >>> multi = create_multi_process({"scenario_1": process1, "scenario_2": process2})
+    >>> multi.list_available_plots()
+    >>> multi.plot("co2_emissions_comparison")
+    """
+    return MultiProcess(processes)
+

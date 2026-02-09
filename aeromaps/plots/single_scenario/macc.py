@@ -179,12 +179,12 @@ class AnnualMACC:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
+                        self.df.loc[year, "operations_abatement_effective"],
+                        self.df.loc[year, "operations_abatement_effective_freight"],
+                        self.df.loc[year, "load_factor_abatement_effective"],
                     ]
                 ]
             )
@@ -194,12 +194,12 @@ class AnnualMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_abatement_cost"],
+                        self.df.loc[year, "operations_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_abatement_cost"],
                     ]
                 ]
             )
@@ -208,12 +208,12 @@ class AnnualMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_specific_abatement_cost"],
+                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -222,18 +222,12 @@ class AnnualMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -565,10 +559,10 @@ class AnnualMACC:
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.co2_emissions_2019technology[year]
+            self.df.loc[year, "co2_emissions_2019technology"]
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.co2_emissions_2019technology[year]
+            self.df.loc[year, "co2_emissions_2019technology"]
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )
@@ -680,18 +674,12 @@ class CumulativeMACC:
             [
                 elt / 1000000
                 for elt in [
-                    self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                        start_year:end_year
-                    ].sum(),
-                    self.df.operations_abatement_effective.loc[start_year:end_year].sum(),
-                    self.df.operations_abatement_effective_freight.loc[start_year:end_year].sum(),
-                    self.df.load_factor_abatement_effective.loc[start_year:end_year].sum(),
+                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"].sum(),
+                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"].sum(),
+                    self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"].sum(),
+                    self.df.loc[start_year:end_year, "operations_abatement_effective"].sum(),
+                    self.df.loc[start_year:end_year, "operations_abatement_effective_freight"].sum(),
+                    self.df.loc[start_year:end_year, "load_factor_abatement_effective"].sum(),
                 ]
             ]
         )
@@ -702,40 +690,28 @@ class CumulativeMACC:
                 el
                 for el in [
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"]
                     ).sum(),
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"]
                     ).sum(),
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_electric.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"]
                     ).sum(),
                     (
-                        self.df.operations_abatement_cost.loc[start_year:end_year]
-                        * self.df.operations_abatement_effective.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "operations_abatement_cost"]
+                        * self.df.loc[start_year:end_year, "operations_abatement_effective"]
                     ).sum(),
                     (
-                        self.df.operations_abatement_cost_freight.loc[start_year:end_year]
-                        * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "operations_abatement_cost_freight"]
+                        * self.df.loc[start_year:end_year, "operations_abatement_effective_freight"]
                     ).sum(),
                     (
-                        self.df.load_factor_abatement_cost.loc[start_year:end_year]
-                        * self.df.load_factor_abatement_effective.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "load_factor_abatement_cost"]
+                        * self.df.loc[start_year:end_year, "load_factor_abatement_effective"]
                     ).sum(),
                 ]
             ]
@@ -754,45 +730,33 @@ class CumulativeMACC:
                 el
                 for el in [
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_dropin.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_dropin"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_dropin"]
                         / power_series
                     ).sum(),
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_hydrogen.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_hydrogen"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_hydrogen"]
                         / power_series
                     ).sum(),
                     (
-                        self.df.aircraft_carbon_abatement_cost_freight_electric.loc[
-                            start_year:end_year
-                        ]
-                        * self.df.aircraft_carbon_abatement_volume_freight_electric.loc[
-                            start_year:end_year
-                        ]
+                        self.df.loc[start_year:end_year, "aircraft_carbon_abatement_cost_freight_electric"]
+                        * self.df.loc[start_year:end_year, "aircraft_carbon_abatement_volume_freight_electric"]
                         / power_series
                     ).sum(),
                     (
-                        self.df.operations_abatement_cost.loc[start_year:end_year]
-                        * self.df.operations_abatement_effective.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "operations_abatement_cost"]
+                        * self.df.loc[start_year:end_year, "operations_abatement_effective"]
                         / power_series
                     ).sum(),
                     (
-                        self.df.operations_abatement_cost_freight.loc[start_year:end_year]
-                        * self.df.operations_abatement_effective_freight.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "operations_abatement_cost_freight"]
+                        * self.df.loc[start_year:end_year, "operations_abatement_effective_freight"]
                         / power_series
                     ).sum(),
                     (
-                        self.df.load_factor_abatement_cost.loc[start_year:end_year]
-                        * self.df.load_factor_abatement_effective.loc[start_year:end_year]
+                        self.df.loc[start_year:end_year, "load_factor_abatement_cost"]
+                        * self.df.loc[start_year:end_year, "load_factor_abatement_effective"]
                         / power_series
                     ).sum(),
                 ]
@@ -1131,10 +1095,10 @@ class CumulativeMACC:
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]] * 1000
+            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"] * 1000
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.cumulative_co2_emissions_2019technology[self.prospective_years[-1]] * 1000
+            self.df.loc[self.prospective_years[-1], "cumulative_co2_emissions_2019technology"] * 1000
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )
@@ -1309,12 +1273,12 @@ class ScenarioMACC:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
+                        self.df.loc[year, "operations_abatement_effective"],
+                        self.df.loc[year, "operations_abatement_effective_freight"],
+                        self.df.loc[year, "load_factor_abatement_effective"],
                     ]
                 ]
             )
@@ -1324,12 +1288,12 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_abatement_cost"],
+                        self.df.loc[year, "operations_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_abatement_cost"],
                     ]
                 ]
             )
@@ -1338,12 +1302,12 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_specific_abatement_cost"],
+                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -1352,18 +1316,12 @@ class ScenarioMACC:
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -1693,12 +1651,12 @@ class ShadowCarbonPrice:
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
+                        self.df.loc[year, "operations_abatement_effective"],
+                        self.df.loc[year, "operations_abatement_effective_freight"],
+                        self.df.loc[year, "load_factor_abatement_effective"],
                     ]
                 ]
             )
@@ -1708,12 +1666,12 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_abatement_cost"],
+                        self.df.loc[year, "operations_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_abatement_cost"],
                     ]
                 ]
             )
@@ -1722,12 +1680,12 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_specific_abatement_cost"],
+                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -1736,18 +1694,12 @@ class ShadowCarbonPrice:
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -1882,7 +1834,6 @@ class ShadowCarbonPrice:
 
 class AnnualMACCSimple(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
         try:
@@ -1894,6 +1845,10 @@ class AnnualMACCSimple(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
+
+    def create_plot(self):
+        # Initial plot setup - actual plotting done in update() via interact
+        pass
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -1960,13 +1915,13 @@ class AnnualMACCSimple(SingleScenarioPlot):
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_passenger_mean[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_passenger_mean"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
+                        self.df.loc[year, "operations_abatement_effective"],
+                        self.df.loc[year, "operations_abatement_effective_freight"],
+                        self.df.loc[year, "load_factor_abatement_effective"],
                     ]
                 ]
             )
@@ -1976,13 +1931,13 @@ class AnnualMACCSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_passenger_mean[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_abatement_cost"],
+                        self.df.loc[year, "operations_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_abatement_cost"],
                     ]
                 ]
             )
@@ -1991,13 +1946,13 @@ class AnnualMACCSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_passenger_mean[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_specific_abatement_cost"],
+                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -2006,21 +1961,13 @@ class AnnualMACCSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_passenger_mean[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -2365,10 +2312,10 @@ class AnnualMACCSimple(SingleScenarioPlot):
         self.ax2.xaxis.set_ticks_position("bottom")
 
         self.ax2.set_xlim(
-            self.df.co2_emissions_2019technology[year]
+            self.df.loc[year, "co2_emissions_2019technology"]
             - self.ax.get_xlim()[0]
             - cumwidths_effective_neg[-1],
-            self.df.co2_emissions_2019technology[year]
+            self.df.loc[year, "co2_emissions_2019technology"]
             - self.ax.get_xlim()[1]
             - cumwidths_effective_neg[-1],
         )
@@ -2383,7 +2330,6 @@ class AnnualMACCSimple(SingleScenarioPlot):
 
 class ShadowCarbonPriceSimple(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
-        self.pathways_manager = process.pathways_manager
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
         try:
@@ -2397,6 +2343,14 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
+
+    def create_plot(self):
+        # Initial plot setup - actual plotting done in update() via interact
+        pass
+
+    def _update_plot_elements(self):
+        # Update handled by update() method via interactive widgets
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -2456,13 +2410,13 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                 [
                     elt / 1000000
                     for elt in [
-                        self.df.aircraft_carbon_abatement_volume_passenger_mean[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_volume_freight_electric[year],
-                        self.df.operations_abatement_effective[year],
-                        self.df.operations_abatement_effective_freight[year],
-                        self.df.load_factor_abatement_effective[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_passenger_mean"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
+                        self.df.loc[year, "operations_abatement_effective"],
+                        self.df.loc[year, "operations_abatement_effective_freight"],
+                        self.df.loc[year, "load_factor_abatement_effective"],
                     ]
                 ]
             )
@@ -2472,13 +2426,13 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_carbon_abatement_cost_passenger_mean[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_abatement_cost[year],
-                        self.df.operations_abatement_cost_freight[year],
-                        self.df.load_factor_abatement_cost[year],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_abatement_cost"],
+                        self.df.loc[year, "operations_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_abatement_cost"],
                     ]
                 ]
             )
@@ -2487,13 +2441,13 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_specific_carbon_abatement_cost_passenger_mean[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_dropin[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_hydrogen[year],
-                        self.df.aircraft_specific_carbon_abatement_cost_freight_electric[year],
-                        self.df.operations_specific_abatement_cost[year],
-                        self.df.operations_specific_abatement_cost_freight[year],
-                        self.df.load_factor_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_specific_abatement_cost"],
+                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_specific_abatement_cost"],
                     ]
                 ]
             )
@@ -2502,21 +2456,13 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
                 [
                     el
                     for el in [
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_passenger_mean[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_dropin[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen[
-                            year
-                        ],
-                        self.df.aircraft_generic_specific_carbon_abatement_cost_freight_electric[
-                            year
-                        ],
-                        self.df.operations_generic_specific_abatement_cost[year],
-                        self.df.operations_generic_specific_abatement_cost_freight[year],
-                        self.df.load_factor_generic_specific_abatement_cost[year],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_passenger_mean"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
+                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
+                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
+                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
                     ]
                 ]
             )

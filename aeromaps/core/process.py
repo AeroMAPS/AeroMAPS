@@ -176,6 +176,9 @@ class AeroMAPSProcess(object):
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
         """
+        # Initialize pathways_manager to None - will be populated if energy models are used
+        self.pathways_manager = None
+        
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
@@ -1295,7 +1298,7 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
-                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup") and self.pathways_manager is not None:
                         # TODO harmonise the way to pass the pathways manager with generic models
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
