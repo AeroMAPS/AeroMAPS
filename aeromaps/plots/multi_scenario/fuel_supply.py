@@ -97,12 +97,10 @@ class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the hydrogen supply comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_hydrogen" in data["df"].columns:
                     years = data["years"]
@@ -112,12 +110,14 @@ class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
                         years, 
                         hydrogen, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_hydrogen" in data["df"].columns:
                     years = data["years"]
@@ -127,7 +127,8 @@ class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
                         years, 
                         hydrogen, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -159,12 +160,10 @@ class ElectricSupplyComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the electric supply comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_electric" in data["df"].columns:
                     years = data["years"]
@@ -174,12 +173,14 @@ class ElectricSupplyComparisonPlot(MultiScenarioPlot):
                         years, 
                         electric, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_electric" in data["df"].columns:
                     years = data["years"]
@@ -189,7 +190,8 @@ class ElectricSupplyComparisonPlot(MultiScenarioPlot):
                         years, 
                         electric, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -221,12 +223,10 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the biofuel production comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_dropin_biofuel" in data["df"].columns:
                     years = data["years"]
@@ -236,12 +236,14 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
                         years, 
                         biofuel, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_dropin_biofuel" in data["df"].columns:
                     years = data["years"]
@@ -251,7 +253,8 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
                         years, 
                         biofuel, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -283,12 +286,10 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the electrofuel production comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
                     years = data["years"]
@@ -298,12 +299,14 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
                         years, 
                         efuel, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
                     years = data["years"]
@@ -313,7 +316,8 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
                         years, 
                         efuel, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
