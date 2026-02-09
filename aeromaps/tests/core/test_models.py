@@ -5,7 +5,6 @@ This module tests that all model groups can be instantiated and run without erro
 """
 
 import pytest
-import os
 from pathlib import Path
 from aeromaps import create_process
 
@@ -13,8 +12,7 @@ CONFIG_DIR = Path(__file__).parent / "tested_configs"
 # Get all model groups dynamically from the tested configs folder
 def get_tested_config_files():
     """Get all model group dictionaries from the models module."""
-    config_files = CONFIG_DIR.glob("*.yaml")
-    print(config_files)
+    config_files = list(CONFIG_DIR.glob("*.yaml"))
     return config_files
 
 CONFIGS_TO_TEST = get_tested_config_files()

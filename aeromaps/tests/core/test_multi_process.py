@@ -4,6 +4,7 @@ Test module for MultiProcess core functionality.
 This module tests the MultiProcess class for managing multiple scenarios.
 Plot-related tests are in test_multi_scenario_plots.py.
 """
+from pathlib import Path
 
 import pytest
 import warnings
@@ -12,9 +13,8 @@ from aeromaps import create_process, create_multi_process
 
 def get_tested_config_files():
     """Get paths for configuration files to initialize process."""
-    return [
-        "AeroMAPS/aeromaps/tests/core/tested_configs/config_basic.yaml",
-    ]
+    config_path = Path(__file__).parent / "tested_configs" / "config_basic.yaml"
+    return [str(config_path)]
 
 
 CONFIGS_TO_TEST = get_tested_config_files()
@@ -84,12 +84,12 @@ def test_error_handling():
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_invalid_plot_name_raises_error(config_file):
-    """Test that invalid plot name raises NameError."""
+    """Test that invalid plot name raises KeyError."""
     proc = create_process(configuration_file=config_file)
     proc.compute()
     multi = create_multi_process({"s1": proc})
 
-    with pytest.raises(NameError):
+    with pytest.raises(KeyError):
         multi.plot("nonexistent_plot_name")
 
 
