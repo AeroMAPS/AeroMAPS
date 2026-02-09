@@ -1,6 +1,5 @@
 """Multi-scenario comparison plots for air traffic."""
 
-import matplotlib.pyplot as plt
 from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
 

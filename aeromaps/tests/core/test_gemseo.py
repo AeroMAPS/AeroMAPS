@@ -4,7 +4,6 @@ Test module for AeroMAPS GEMSEO integration.
 This module tests the GEMSEO wrapper classes and data conversion functionality.
 """
 
-import pytest
 import numpy as np
 import pandas as pd
 from gemseo.core.grammars.simple_grammar import SimpleGrammar

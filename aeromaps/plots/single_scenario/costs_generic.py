@@ -55,10 +55,29 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
         pathway_selected,
         detail_level_selected,
     ):
-        self.ax.cla()
-        pathways = self.process.pathways_manager.get_all()
+        """
+        Update the plot with new data.
 
-    def _update_plot_elements(self):
+        Parameters
+        ----------
+        data : dict
+            New data dictionary from the process
+        """
+        # Extract new data
+        self._extract_data(data)
+
+        # Update plot elements (implemented by subclass)
+        self._update_plot_elements(pathway_selected, detail_level_selected)
+
+        # Clear and redraw fill_between collections
+        self._refresh_collections()
+
+        # Refresh the view
+        self._refresh_view()
+
+    def _update_plot_elements(self, pathway_selected, detail_level_selected):
+        self.ax.cla()
+        pathways = self.pathways_manager.get_all()
         self.create_plot()
         self.fig.canvas.draw()
 

@@ -33,7 +33,7 @@ def processes():
 
     config_full = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_full.yaml"
+        "../core/tested_configs/config_basic_full.yaml"
     )
     proc3 = create_process(configuration_file=config_full)
     proc3.compute()
@@ -160,7 +160,7 @@ def test_multi_scenario_plot_filters_invalid_scenarios(processes):
         assert len(w) > 0
         assert "missing required outputs" in str(w[0].message)
     
-    # Only proc1 should be included
+    # Only proc3 should be included -> climate model
     assert len(plot.processes) == 1
     assert "scenario_3" in plot.processes.keys()
 

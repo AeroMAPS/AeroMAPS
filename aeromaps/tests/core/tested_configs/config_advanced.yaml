@@ -18,6 +18,6 @@ models:
     processes_model_data_file: "./advanced/processes_data.yaml"
 
   standards:
-    - default_models_bottom_up
+    - default_models_top_down
     - models_abatements_cost
     - models_production_cost

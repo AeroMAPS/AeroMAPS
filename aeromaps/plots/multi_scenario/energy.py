@@ -1,7 +1,5 @@
 """Multi-scenario comparison plots for energy consumption."""
 
-import matplotlib.pyplot as plt
-import numpy as np
 from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
 
