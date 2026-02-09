@@ -61,6 +61,7 @@ class SingleScenarioPlot(ABC):
         
         # Extract data from process
         self._extract_data(process.data)
+        self.pathways_manager = process.pathways_manager
 
         # Create figure and axes
         figsize = figsize or self._get_default_figsize()
