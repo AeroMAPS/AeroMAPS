@@ -71,7 +71,6 @@ class MultiScenarioPlot(ABC):
         
         # Store scenario grouping configuration
         self.scenario_groups = scenario_groups
-        self._setup_scenario_styles(processes, scenario_groups)
         
         # Store processes
         self.processes = processes
@@ -79,6 +78,9 @@ class MultiScenarioPlot(ABC):
         # Validate and filter processes if requested
         if check_outputs and self.required_outputs:
             self.processes = self._filter_processes_by_outputs(self.required_outputs)
+        
+        # Setup scenario styles AFTER filtering so styles match the actual scenarios being plotted
+        self._setup_scenario_styles(self.processes, scenario_groups)
 
         # Extract data from all processes
         self._extract_all_data()
