@@ -27,9 +27,9 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
                 style = self.get_scenario_style(scenario_name)
                 
                 # Check if data exists
-                if data["df"] is not None and "co2_emissions" in data["df"].columns:
+                if data["df_climate"] is not None and "co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    emissions = data["df"].loc[years, "co2_emissions"]
+                    emissions = data["df_climate"].loc[years, "co2_emissions"]
                     
                     self.ax.plot(
                         years, 
@@ -45,9 +45,9 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
                 scenario_name = f"scenario_{idx}"
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "co2_emissions" in data["df"].columns:
+                if data["df_climate"] is not None and "co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    emissions = data["df"].loc[years, "co2_emissions"]
+                    emissions = data["df_climate"].loc[years, "co2_emissions"]
                     
                     self.ax.plot(
                         years, 
@@ -89,37 +89,38 @@ class CumulativeCO2ComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the cumulative CO2 emissions comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
-                
-                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
+
+                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
                     
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
-                
-                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
+
+                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
                     
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -151,55 +152,54 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the carbon budget comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         # Plot cumulative emissions for each scenario
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
-                
-                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
+
+                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
                     
                     # Plot emissions line
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
                         label=f"{scenario_name} - Emissions",
-                        color=color,
-                        linewidth=2,
-                        linestyle='-'
+                        color=style['color'],
+                        linestyle=style['linestyle'],
+                        linewidth=2
                     )
                     
-                    # Plot carbon budget if available
+                    # Plot carbon budget if available (use dashed version of same linestyle base)
                     if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
                         self.ax.axhline(
                             y=budget,
-                            color=color,
-                            linestyle='--',
+                            color=style['color'],
+                            linestyle=':',
                             linewidth=1.5,
                             alpha=0.7,
                             label=f"{scenario_name} - Budget"
                         )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
-                
-                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
+
+                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
                     
                     # Plot emissions line
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
                         label=f"Scenario {idx+1} - Emissions",
-                        color=color,
-                        linewidth=2,
-                        linestyle='-'
+                        color=style['color'],
+                        linestyle=style['linestyle'],
+                        linewidth=2
                     )
                     
                     # Plot carbon budget if available
@@ -207,8 +207,8 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                         budget = data["float_outputs"]["aviation_carbon_budget"]
                         self.ax.axhline(
                             y=budget,
-                            color=color,
-                            linestyle='--',
+                            color=style['color'],
+                            linestyle=':',
                             linewidth=1.5,
                             alpha=0.7,
                             label=f"Scenario {idx+1} - Budget"
