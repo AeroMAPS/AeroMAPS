@@ -10,17 +10,6 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
@@ -63,17 +52,6 @@ class MeanLoadFactorPlot(SingleScenarioPlot):
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         self.ax.plot(
