@@ -18,12 +18,10 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the CO2 per RPK comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "co2_emissions_per_rpk" in data["df"].columns:
                     years = data["years"]
@@ -33,12 +31,14 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "co2_emissions_per_rpk" in data["df"].columns:
                     years = data["years"]
@@ -48,7 +48,8 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -80,12 +81,10 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the CO2 per RTK comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "co2_emissions_per_rtk" in data["df"].columns:
                     years = data["years"]
@@ -95,12 +94,14 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "co2_emissions_per_rtk" in data["df"].columns:
                     years = data["years"]
@@ -110,7 +111,8 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -142,12 +144,10 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the energy per ASK comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_per_ask" in data["df"].columns:
                     years = data["years"]
@@ -157,12 +157,14 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_per_ask" in data["df"].columns:
                     years = data["years"]
@@ -172,7 +174,8 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
@@ -204,12 +207,10 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the energy per RTK comparison plot."""
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         if isinstance(self.scenario_data, dict):
-            for idx, (scenario_name, data) in enumerate(self.scenario_data.items()):
-                color = colors[idx % len(colors)]
+            for scenario_name, data in self.scenario_data.items():
+                # Get style from parent class
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_per_rtk" in data["df"].columns:
                     years = data["years"]
@@ -219,12 +220,14 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=scenario_name,
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         else:
             for idx, data in enumerate(self.scenario_data):
-                color = colors[idx % len(colors)]
+                scenario_name = f"scenario_{idx}"
+                style = self.get_scenario_style(scenario_name)
                 
                 if data["df"] is not None and "energy_per_rtk" in data["df"].columns:
                     years = data["years"]
@@ -234,7 +237,8 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
                         years, 
                         intensity, 
                         label=f"Scenario {idx+1}",
-                        color=color,
+                        color=style['color'],
+                        linestyle=style['linestyle'],
                         linewidth=2
                     )
         
