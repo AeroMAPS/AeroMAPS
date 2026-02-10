@@ -1,0 +1,330 @@
+# Aircraft inventory for ATAG W2050 2nd Edition scenarios
+# Reference aircraft definitions and new aircraft specifications
+
+reference_aircraft:
+  # Short Range - Conventional Narrow-body
+  - id: sr_conventional_nb_old
+    name: "SR conventional narrow-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.2472568306010927
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.048375
+      cruise_altitude: 12000.0
+      ask_year: 280000000.0
+      rc_cost: 40000000.0
+      nrc_cost: 10000000000.0
+      oew: 37.0
+  
+  - id: sr_conventional_nb_recent
+    name: "SR conventional narrow-body recent"
+    parameters:
+      entry_into_service_year: 2007.13
+      energy_per_ask: 0.9478251366120218
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.048375
+      cruise_altitude: 12000.0
+      ask_year: 280000000.0
+      rc_cost: 40000000.0
+      nrc_cost: 10000000000.0
+      oew: 43.0
+  
+  # Short Range - Regional Turboprop
+  - id: sr_regional_tp_old
+    name: "SR regional turboprop old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 0.4390837438423645
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.026125
+      cruise_altitude: 6000.0
+      ask_year: 280000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 15.0
+  
+  - id: sr_regional_tp_recent
+    name: "SR regional turboprop recent"
+    parameters:
+      entry_into_service_year: 2010.35
+      energy_per_ask: 0.3945777219416748
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.026125
+      cruise_altitude: 6000.0
+      ask_year: 280000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 15.0
+  
+  # Medium Range - Conventional Narrow-body
+  - id: mr_conventional_nb_old
+    name: "MR conventional narrow-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 0.9163060109289617
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 37.0
+  
+  - id: mr_conventional_nb_recent
+    name: "MR conventional narrow-body recent"
+    parameters:
+      entry_into_service_year: 2010.35
+      energy_per_ask: 0.6979234972677595
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 43.0
+  
+  # Long Range - Conventional Wide-body
+  - id: lr_conventional_wb_old
+    name: "LR conventional wide-body old"
+    parameters:
+      entry_into_service_year: 1970.0
+      energy_per_ask: 1.0337547892020725
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 129.0
+  
+  - id: lr_conventional_wb_recent
+    name: "LR conventional wide-body recent"
+    parameters:
+      entry_into_service_year: 2009.36
+      energy_per_ask: 0.8268142076502732
+      emission_index_nox: 0.01514
+      emission_index_soot: 0.00003
+      doc_non_energy_base: 0.024725
+      cruise_altitude: 12000.0
+      ask_year: 912000000.0
+      rc_cost: 150000000.0
+      nrc_cost: 25000000000.0
+      oew: 129.0
+
+aircraft:
+  # Short Range - New conventional narrow-body aircraft
+  - id: sr_nb_2035
+    name: "New Short-range Narrow-body 2035"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: sr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -15.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 80000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+  
+  - id: sr_nb_2045
+    name: "New Short-range Narrow-body 2045"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: sr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2045
+      consumption_evolution: -30.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+  
+  # Short Range - New turboprop aircraft
+  - id: sr_tp_2030
+    name: "New Regional turboprop 2030"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: sr_regional_tp_recent
+    parameters:
+      entry_into_service_year: 2030
+      consumption_evolution: -20.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 6000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 60000000.0
+      nrc_cost: 10000000000.0
+      oew: 15.0
+  
+  - id: sr_tp_2045
+    name: "New Regional turboprop 2045"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: sr_regional_tp_recent
+    parameters:
+      entry_into_service_year: 2045
+      consumption_evolution: -35.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 6000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 30000000.0
+      nrc_cost: 5000000000.0
+      oew: 15.0
+  
+  # Short Range - Electric aircraft (for S1 and S3 scenarios)
+  - id: sr_electric_2040
+    name: "New Short-range Electric 2040"
+    energy_type: ELECTRIC
+    reference_aircraft: sr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2040
+      consumption_evolution: -40.0
+      nox_evolution: -100.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 70000000.0
+      nrc_cost: 8000000000.0
+      oew: 45.0
+  
+  - id: sr_electric_2050
+    name: "New Short-range Electric 2050"
+    energy_type: ELECTRIC
+    reference_aircraft: sr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2050
+      consumption_evolution: -50.0
+      nox_evolution: -100.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 280000000.0
+      rc_cost: 50000000.0
+      nrc_cost: 6000000000.0
+      oew: 42.0
+  
+  # Medium Range - New conventional narrow-body aircraft
+  - id: mr_nb_2035
+    name: "New Medium-range Narrow-body 2035"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: mr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -15.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 352000000.0
+      rc_cost: 80000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+  
+  - id: mr_nb_2045
+    name: "New Medium-range Narrow-body 2045"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: mr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2045
+      consumption_evolution: -30.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 352000000.0
+      rc_cost: 70000000.0
+      nrc_cost: 10000000000.0
+      oew: 40.0
+  
+  # Medium Range - Hydrogen aircraft (for S3 scenarios)
+  - id: mr_hydrogen_2035
+    name: "New Medium-range Hydrogen 2035"
+    energy_type: HYDROGEN
+    reference_aircraft: mr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -20.0
+      nox_evolution: 0.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 352000000.0
+      rc_cost: 90000000.0
+      nrc_cost: 12000000000.0
+      oew: 45.0
+  
+  - id: mr_hydrogen_2045
+    name: "New Medium-range Hydrogen 2045"
+    energy_type: HYDROGEN
+    reference_aircraft: mr_conventional_nb_recent
+    parameters:
+      entry_into_service_year: 2045
+      consumption_evolution: -35.0
+      nox_evolution: -50.0
+      soot_evolution: -100.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 352000000.0
+      rc_cost: 75000000.0
+      nrc_cost: 10000000000.0
+      oew: 42.0
+  
+  # Long Range - New conventional wide-body aircraft
+  - id: lr_wb_2035
+    name: "New Long-range Wide-body 2035"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: lr_conventional_wb_recent
+    parameters:
+      entry_into_service_year: 2035
+      consumption_evolution: -15.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 912000000.0
+      rc_cost: 180000000.0
+      nrc_cost: 25000000000.0
+      oew: 130.0
+  
+  - id: lr_wb_2045
+    name: "New Long-range Wide-body 2045"
+    energy_type: DROP_IN_FUEL
+    reference_aircraft: lr_conventional_wb_recent
+    parameters:
+      entry_into_service_year: 2045
+      consumption_evolution: -30.0
+      nox_evolution: 0.0
+      soot_evolution: 0.0
+      doc_non_energy_evolution: 0.0
+      cruise_altitude: 12000.0
+      hybridization_factor: 0.0
+      ask_year: 912000000.0
+      rc_cost: 160000000.0
+      nrc_cost: 25000000000.0
+      oew: 125.0

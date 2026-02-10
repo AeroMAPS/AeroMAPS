@@ -8,6 +8,10 @@ models:
   climate:
     climate_model_data_file: default
 
+  fleet:
+    fleet_model_data_file: "../data_inputs/fleet_s2.yaml"
+    aircraft_inventory_model_data_file: "../data_inputs/aircraft_inventory.yaml"
+
   energy:
     energy_carriers_model_data_file: "../data_inputs/s2_energy.yaml"
     resources_model_data_file: "../data_inputs/resources.yaml"
@@ -15,12 +19,12 @@ models:
 
   standards:
     - models_traffic
-    - models_efficiency_top_down_interp
-    - models_energy_with_fuel_effect
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_energy_cost
     - models_emissions
     - models_sustainability
-    - models_energy_cost
-    - models_operation_cost_top_down
+    - models_operation_cost_bottom_up
 
   customs:
     atag_offset: "../models/atag_offset.py::ATAGOffset"
