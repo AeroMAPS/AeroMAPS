@@ -177,9 +177,11 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                                         
                                         energy_data.append(total_energy * 1e-12)
                                         labels_to_plot.append(label)
-                                        color = color_map.get(('dropin_fuel', energy_origin), default_colors[color_idx % len(default_colors)])
+                                        color = color_map.get(('dropin_fuel', energy_origin))
+                                        if color is None:
+                                            color = default_colors[color_idx % len(default_colors)]
+                                            color_idx += 1
                                         colors_to_use.append(color)
-                                        color_idx += 1
                         else:
                             # For non-dropin fuels (hydrogen, electric), aggregate all pathways
                             pathways = self.pathways_manager.get(aircraft_type=aircraft_type)
@@ -198,9 +200,11 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                                     label = aircraft_type.replace('_', ' ').title()
                                     energy_data.append(total_energy * 1e-12)
                                     labels_to_plot.append(label)
-                                    color = color_map.get((aircraft_type, None), default_colors[color_idx % len(default_colors)])
+                                    color = color_map.get((aircraft_type, None))
+                                    if color is None:
+                                        color = default_colors[color_idx % len(default_colors)]
+                                        color_idx += 1
                                     colors_to_use.append(color)
-                                    color_idx += 1
                 
                 # Fallback to legacy columns if pathways approach didn't find anything
                 if not energy_data:

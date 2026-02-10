@@ -90,9 +90,11 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
                                 
                                 fuel_data.append(total_fuel * 1e-12)
                                 labels_to_plot.append(label)
-                                color = color_map.get(energy_origin, default_colors[color_idx % len(default_colors)])
+                                color = color_map.get(energy_origin)
+                                if color is None:
+                                    color = default_colors[color_idx % len(default_colors)]
+                                    color_idx += 1
                                 colors_to_use.append(color)
-                                color_idx += 1
                 
                 # Fallback to legacy column names if pathways didn't find anything
                 if not fuel_data:
