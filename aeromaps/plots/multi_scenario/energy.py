@@ -76,6 +76,10 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
     
     # No hardcoded required outputs - will be determined dynamically
     required_outputs = []
+    
+    # Color palette for energy carriers
+    DEFAULT_CARRIER_COLORS = ['#ff7f0e', '#9467bd', '#2ca02c', '#d62728', '#1f77b4', 
+                              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
     def _get_default_figsize(self):
         """Return default figure size based on number of scenarios."""
@@ -139,10 +143,6 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
             ]
             energy_labels = ['Kerosene', 'Hydrogen', 'Electricity']
         
-        # Define a color palette (can be expanded as needed)
-        default_colors = ['#ff7f0e', '#9467bd', '#2ca02c', '#d62728', '#1f77b4', 
-                         '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
             ax = axes[idx, 0]
@@ -162,7 +162,7 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                         if carrier_energy.sum() > 0:
                             energy_data.append(carrier_energy)
                             labels_to_plot.append(carrier_label)
-                            colors_to_use.append(default_colors[carrier_idx % len(default_colors)])
+                            colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
                 
                 # Create stacked area plot if we have data
                 if energy_data:
