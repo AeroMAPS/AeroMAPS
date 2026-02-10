@@ -530,9 +530,9 @@ fossil_kerosene:
 
 
 
-liquid_hydrogen:
+hydrogen_electrolysis:
   # Metadata
-  name: "liquid_hydrogen"
+  name: "hydrogen_electrolysis"
   environmental_model: "top-down"
   cost_model: "top-down"
   aircraft_type: "hydrogen"
