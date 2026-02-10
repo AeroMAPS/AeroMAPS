@@ -133,7 +133,8 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                             plotted_budgets[budget].append((scenario_name, None))
             
             # Update legend labels based on whether budgets are unique or shared
-            # When there are multiple different budget values, differentiate them
+            # Show "Budget" for scenarios sharing the same value
+            # Show "Budget - Sname" only for scenarios with unique/different values
             num_unique_budgets = len(plotted_budgets)
             
             for budget_val, scenario_info in plotted_budgets.items():
@@ -141,16 +142,17 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                 # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
                 
-                if num_unique_budgets == 1:
-                    # Only one budget value exists - simple label
-                    if len(scenario_names) == 1:
-                        line_handle.set_label("Budget")
-                    else:
-                        # Multiple scenarios share this single budget value
-                        line_handle.set_label(f"Budget - {', '.join(scenario_names)}")
+                # If this budget is shared by multiple scenarios, just label it "Budget"
+                # If only one scenario has this budget value AND there are other budgets, label with scenario name
+                if len(scenario_names) > 1:
+                    # Multiple scenarios share this budget value
+                    line_handle.set_label("Budget")
+                elif num_unique_budgets > 1:
+                    # Only one scenario has this budget and there are other different budgets
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
                 else:
-                    # Multiple different budget values - always show which scenarios
-                    line_handle.set_label(f"Budget - {', '.join(scenario_names)}")
+                    # Only one budget value total, and only one scenario has it
+                    line_handle.set_label("Budget")
             
         else:
             for idx, data in enumerate(self.scenario_data):
@@ -193,7 +195,8 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                             plotted_budgets[budget].append((display_name, None))
             
             # Update legend labels based on whether budgets are unique or shared
-            # When there are multiple different budget values, differentiate them
+            # Show "Budget" for scenarios sharing the same value
+            # Show "Budget - Sname" only for scenarios with unique/different values
             num_unique_budgets = len(plotted_budgets)
             
             for budget_val, scenario_info in plotted_budgets.items():
@@ -201,16 +204,17 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                 # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
                 
-                if num_unique_budgets == 1:
-                    # Only one budget value exists - simple label
-                    if len(scenario_names) == 1:
-                        line_handle.set_label("Budget")
-                    else:
-                        # Multiple scenarios share this single budget value
-                        line_handle.set_label(f"Budget - {', '.join(scenario_names)}")
+                # If this budget is shared by multiple scenarios, just label it "Budget"
+                # If only one scenario has this budget value AND there are other budgets, label with scenario name
+                if len(scenario_names) > 1:
+                    # Multiple scenarios share this budget value
+                    line_handle.set_label("Budget")
+                elif num_unique_budgets > 1:
+                    # Only one scenario has this budget and there are other different budgets
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
                 else:
-                    # Multiple different budget values - always show which scenarios
-                    line_handle.set_label(f"Budget - {', '.join(scenario_names)}")
+                    # Only one budget value total, and only one scenario has it
+                    line_handle.set_label("Budget")
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
