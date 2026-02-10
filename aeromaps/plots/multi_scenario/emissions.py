@@ -147,8 +147,9 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
             
         else:
             for idx, data in enumerate(self.scenario_data):
-                scenario_name = f"Scenario {idx+1}"
-                style = self.get_scenario_style(f"scenario_{idx}")
+                scenario_name = f"scenario_{idx}"  # Key for style lookup
+                display_name = f"Scenario {idx+1}"  # Readable label for display
+                style = self.get_scenario_style(scenario_name)
 
                 if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
                     years = data["years"]
@@ -158,7 +159,7 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
-                        label=f"{scenario_name} - Emissions",
+                        label=f"{display_name} - Emissions",
                         color=style['color'],
                         linestyle=style['linestyle'],
                         linewidth=2
@@ -179,10 +180,10 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                                 alpha=0.7,
                                 label=f"Budget"  # Temporary label, will update later
                             )
-                            plotted_budgets[budget] = [(scenario_name, line)]
+                            plotted_budgets[budget] = [(display_name, line)]
                         else:
                             # Budget already seen - track scenario but don't plot
-                            plotted_budgets[budget].append((scenario_name, None))
+                            plotted_budgets[budget].append((display_name, None))
             
             # Update legend labels based on whether budgets are unique or shared
             for budget_val, scenario_info in plotted_budgets.items():
