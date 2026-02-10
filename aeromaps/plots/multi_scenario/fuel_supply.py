@@ -52,22 +52,23 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
             # Get energy origins from pathways_manager
             energy_origins = self.pathways_manager.get_all_types('energy_origin')
             
-            # Build list of dropin fuel columns by energy origin
-            for energy_origin in energy_origins:
-                # Check for dropin fuel breakdown by origin
-                column_name = f"energy_consumption_dropin_{energy_origin}"
-                fuel_columns.append(column_name)
-                # Create readable label
-                label = energy_origin.replace('_', ' ').title()
-                if 'fossil' in energy_origin.lower():
-                    label = 'Fossil Kerosene'
-                elif 'bio' in energy_origin.lower():
-                    label = 'Biofuel'
-                elif 'electro' in energy_origin.lower() or 'electric' in energy_origin.lower():
-                    label = 'Electrofuel'
-                fuel_labels.append(label)
+            # Build list of dropin fuel columns by energy origin (if origins found)
+            if energy_origins:
+                for energy_origin in energy_origins:
+                    # Check for dropin fuel breakdown by origin
+                    column_name = f"energy_consumption_dropin_{energy_origin}"
+                    fuel_columns.append(column_name)
+                    # Create readable label
+                    label = energy_origin.replace('_', ' ').title()
+                    if 'fossil' in energy_origin.lower():
+                        label = 'Fossil Kerosene'
+                    elif 'bio' in energy_origin.lower():
+                        label = 'Biofuel'
+                    elif 'electro' in energy_origin.lower() or 'electric' in energy_origin.lower():
+                        label = 'Electrofuel'
+                    fuel_labels.append(label)
         
-        # Fallback to hardcoded fuel types if pathways not available
+        # Fallback to hardcoded fuel types if pathways not available or returned no origins
         if not fuel_columns:
             fuel_columns = [
                 "energy_consumption_dropin_fossil_fuel",
