@@ -1,15 +1,15 @@
 data:
   inputs:
-    json_inputs_file: "../data_inputs/s3_inputs.json"
+    json_inputs_file: "../data_inputs/t5_inputs.json"
   outputs:
-    json_outputs_file: "../data_outputs/s3-TTW.json"
+    json_outputs_file: "../data_outputs/t5-TTW.json"
 
 models:
   climate:
     climate_model_data_file: default
 
   energy:
-    energy_carriers_model_data_file: "../data_inputs/s3-TTW_energy.yaml"
+    energy_carriers_model_data_file: "../data_inputs/tech-TTW_energy.yaml"
     resources_model_data_file: "../data_inputs/resources.yaml"
     processes_model_data_file: "../data_inputs/processes.yaml"
 
@@ -17,10 +17,8 @@ models:
     - models_traffic
     - models_efficiency_top_down_interp
     - models_energy_with_fuel_effect
-    - models_energy_cost
     - models_emissions
+    - models_offset
     - models_sustainability
+    - models_energy_cost
     - models_operation_cost_top_down
-
-  customs:
-    atag_offset: "../models/atag_offset.py::ATAGOffset"
