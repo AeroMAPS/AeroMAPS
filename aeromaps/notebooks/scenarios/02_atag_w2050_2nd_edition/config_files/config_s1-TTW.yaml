@@ -1,6 +1,6 @@
 data:
   inputs:
-    json_inputs_file: "../data_inputs/s1-TTW_inputs.json"
+    json_inputs_file: "../data_inputs/s1_inputs.json"
   outputs:
     json_outputs_file: "../data_outputs/s1-TTW.json"
 
