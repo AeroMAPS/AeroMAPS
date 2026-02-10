@@ -27,6 +27,7 @@ from aeromaps.plots.multi_scenario.fuel_supply import (
     ElectricSupplyComparisonPlot,
     BiofuelProductionComparisonPlot,
     ElectrofuelProductionComparisonPlot,
+    BiofuelMixComparisonPlot,
 )
 
 # Dictionary of available multi-scenario plots
@@ -55,4 +56,5 @@ available_multi_plots = {
     "electric_supply_comparison": ElectricSupplyComparisonPlot,
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
     "electrofuel_production_comparison": ElectrofuelProductionComparisonPlot,
+    "biofuel_mix_comparison": BiofuelMixComparisonPlot,
 }
