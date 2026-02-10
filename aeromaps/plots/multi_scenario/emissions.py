@@ -72,70 +72,6 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
         # Recreate the plot
         self.create_plot()
 
-
-class CumulativeCO2ComparisonPlot(MultiScenarioPlot):
-    """
-    Compare cumulative CO2 emissions across multiple scenarios.
-    
-    Shows the accumulated CO2 emissions over time for each scenario,
-    useful for understanding total carbon budget consumption.
-    """
-    
-    required_outputs = ["cumulative_co2_emissions"]
-    
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
-    
-    def create_plot(self):
-        """Create the cumulative CO2 emissions comparison plot."""
-        if isinstance(self.scenario_data, dict):
-            for scenario_name, data in self.scenario_data.items():
-                # Get style from parent class
-                style = self.get_scenario_style(scenario_name)
-
-                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
-                    years = data["years"]
-                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
-                    
-                    self.ax.plot(
-                        years, 
-                        cumulative_emissions, 
-                        label=scenario_name,
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
-        else:
-            for idx, data in enumerate(self.scenario_data):
-                scenario_name = f"scenario_{idx}"
-                style = self.get_scenario_style(scenario_name)
-
-                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
-                    years = data["years"]
-                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
-                    
-                    self.ax.plot(
-                        years, 
-                        cumulative_emissions, 
-                        label=f"Scenario {idx+1}",
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
-        
-        self.ax.set_xlabel("Year", fontsize=12)
-        self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
-        self.ax.set_title("Cumulative CO2 Emissions Comparison", fontsize=14)
-        self.ax.legend(loc='best')
-        self.ax.grid(True, alpha=0.3)
-    
-    def _update_plot_elements(self):
-        """Update plot elements with new data."""
-        self.ax.clear()
-        self.create_plot()
-
-
 class CarbonBudgetComparisonPlot(MultiScenarioPlot):
     """
     Compare cumulative CO2 emissions against carbon budget across scenarios.
@@ -152,15 +88,19 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the carbon budget comparison plot."""
+        # Track budgets to only plot unique ones
+        # Maps budget value to list of (scenario_name, line_handle)
+        plotted_budgets = {}
+        
         # Plot cumulative emissions for each scenario
         if isinstance(self.scenario_data, dict):
             for scenario_name, data in self.scenario_data.items():
                 # Get style from parent class
                 style = self.get_scenario_style(scenario_name)
 
-                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
+                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
                     
                     # Plot emissions line
                     self.ax.plot(
@@ -172,47 +112,109 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                         linewidth=2
                     )
                     
-                    # Plot carbon budget if available (use dashed version of same linestyle base)
+                    # Plot carbon budget if available and unique
                     if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
-                        self.ax.axhline(
-                            y=budget,
-                            color=style['color'],
-                            linestyle=':',
-                            linewidth=1.5,
-                            alpha=0.7,
-                            label=f"{scenario_name} - Budget"
-                        )
+                        
+                        # Check if this budget value has been plotted before
+                        if budget not in plotted_budgets:
+                            # First time seeing this budget value - plot it
+                            line = self.ax.axhline(
+                                y=budget,
+                                color="k",
+                                linestyle='-',
+                                linewidth=1,
+                                alpha=0.7,
+                                label=f"Budget"  # Temporary label, will update later
+                            )
+                            plotted_budgets[budget] = [(scenario_name, line)]
+                        else:
+                            # Budget already seen - track scenario but don't plot
+                            plotted_budgets[budget].append((scenario_name, None))
+            
+            # Update legend labels based on whether budgets are unique or shared
+            # Show "Budget" for scenarios sharing the same value
+            # Show "Budget - Sname" only for scenarios with unique/different values
+            num_unique_budgets = len(plotted_budgets)
+            
+            for budget_val, scenario_info in plotted_budgets.items():
+                scenario_names = [name for name, line in scenario_info]
+                # Get the line handle (first entry has the actual line)
+                line_handle = scenario_info[0][1]
+                
+                # If this budget is shared by multiple scenarios, just label it "Budget"
+                # If only one scenario has this budget value AND there are other budgets, label with scenario name
+                if len(scenario_names) > 1:
+                    # Multiple scenarios share this budget value
+                    line_handle.set_label("Budget")
+                elif num_unique_budgets > 1:
+                    # Only one scenario has this budget and there are other different budgets
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
+                else:
+                    # Only one budget value total, and only one scenario has it
+                    line_handle.set_label("Budget")
+            
         else:
             for idx, data in enumerate(self.scenario_data):
-                scenario_name = f"scenario_{idx}"
+                scenario_name = f"scenario_{idx}"  # Key for style lookup
+                display_name = f"Scenario {idx+1}"  # Readable label for display
                 style = self.get_scenario_style(scenario_name)
 
-                if data["df_climate"] is not None and "cumulative_co2_emissions" in data["df_climate"].columns:
+                if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
                     years = data["years"]
-                    cumulative_emissions = data["df_climate"].loc[years, "cumulative_co2_emissions"]
+                    cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
                     
                     # Plot emissions line
                     self.ax.plot(
                         years, 
                         cumulative_emissions, 
-                        label=f"Scenario {idx+1} - Emissions",
+                        label=f"{display_name} - Emissions",
                         color=style['color'],
                         linestyle=style['linestyle'],
                         linewidth=2
                     )
                     
-                    # Plot carbon budget if available
+                    # Plot carbon budget if available and unique
                     if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
-                        self.ax.axhline(
-                            y=budget,
-                            color=style['color'],
-                            linestyle=':',
-                            linewidth=1.5,
-                            alpha=0.7,
-                            label=f"Scenario {idx+1} - Budget"
-                        )
+                        
+                        # Check if this budget value has been plotted before
+                        if budget not in plotted_budgets:
+                            # First time seeing this budget value - plot it
+                            line = self.ax.axhline(
+                                y=budget,
+                                color="k",
+                                linestyle='-',
+                                linewidth=1,
+                                alpha=0.7,
+                                label=f"Budget"  # Temporary label, will update later
+                            )
+                            plotted_budgets[budget] = [(display_name, line)]
+                        else:
+                            # Budget already seen - track scenario but don't plot
+                            plotted_budgets[budget].append((display_name, None))
+            
+            # Update legend labels based on whether budgets are unique or shared
+            # Show "Budget" for scenarios sharing the same value
+            # Show "Budget - Sname" only for scenarios with unique/different values
+            num_unique_budgets = len(plotted_budgets)
+            
+            for budget_val, scenario_info in plotted_budgets.items():
+                scenario_names = [name for name, line in scenario_info]
+                # Get the line handle (first entry has the actual line)
+                line_handle = scenario_info[0][1]
+                
+                # If this budget is shared by multiple scenarios, just label it "Budget"
+                # If only one scenario has this budget value AND there are other budgets, label with scenario name
+                if len(scenario_names) > 1:
+                    # Multiple scenarios share this budget value
+                    line_handle.set_label("Budget")
+                elif num_unique_budgets > 1:
+                    # Only one scenario has this budget and there are other different budgets
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
+                else:
+                    # Only one budget value total, and only one scenario has it
+                    line_handle.set_label("Budget")
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)

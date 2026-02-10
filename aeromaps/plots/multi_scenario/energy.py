@@ -67,18 +67,20 @@ class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
 
 class EnergyMixComparisonPlot(MultiScenarioPlot):
     """
-    Compare energy mix (kerosene, hydrogen, electricity) across scenarios.
-    
-    Shows stacked area plots for each scenario's energy sources.
+    Compare energy mix across scenarios.
+
+    Shows stacked area plots for each scenario's energy carriers.
     Creates subplots for each scenario to show the evolution of the energy mix.
+    Energy carriers are determined dynamically from the pathways_manager.
     """
     
-    required_outputs = [
-        "energy_consumption_dropin_fuel",
-        "energy_consumption_hydrogen", 
-        "energy_consumption_electric"
-    ]
+    # No hardcoded required outputs - will be determined dynamically
+    required_outputs = []
     
+    # Color palette for energy carriers
+    DEFAULT_CARRIER_COLORS = ['#ff7f0e', '#9467bd', '#2ca02c', '#d62728', '#1f77b4', 
+                              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
     def _get_default_figsize(self):
         """Return default figure size based on number of scenarios."""
         n_scenarios = len(self.scenario_data)
@@ -95,10 +97,25 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                              for i, data in enumerate(self.scenario_data)]
         
         n_scenarios = len(scenario_items)
-        
+
         # Clear existing axes and create subplots
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
+        
+        # Find common year range using prospective_years (not full years)
+        min_year = None
+        max_year = None
+        for scenario_name, data in scenario_items:
+            # Use prospective_years if available, otherwise fall back to years
+            years_to_check = data.get("prospective_years")
+            if years_to_check is None or len(years_to_check) == 0:
+                years_to_check = data.get("years")
+            
+            if years_to_check is not None and len(years_to_check) > 0:
+                if min_year is None or years_to_check[0] < min_year:
+                    min_year = years_to_check[0]
+                if max_year is None or years_to_check[-1] > max_year:
+                    max_year = years_to_check[-1]
         
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
@@ -107,26 +124,54 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
             if data["df"] is not None:
                 years = data["years"]
                 
-                # Get energy data (convert to EJ)
-                kerosene = data["df"].loc[years, "energy_consumption_dropin_fuel"] * 1e-12
-                hydrogen = data["df"].loc[years, "energy_consumption_hydrogen"] * 1e-12
-                electricity = data["df"].loc[years, "energy_consumption_electric"] * 1e-12
+                # Collect energy data using aggregated columns
+                energy_data = []
+                labels_to_plot = []
+                colors_to_use = []
                 
-                # Create stacked area plot
-                ax.stackplot(
-                    years,
-                    kerosene,
-                    hydrogen, 
-                    electricity,
-                    labels=['Kerosene', 'Hydrogen', 'Electricity'],
-                    colors=['#ff7f0e', '#9467bd', '#2ca02c'],
-                    alpha=0.8
-                )
+                # Define energy carriers to plot with their columns, labels, and colors
+                # These are the aggregated columns that exist in the output data
+                energy_carriers = [
+                    ("energy_consumption_kerosene", "Fossil Kerosene", '#d62728'),     # Red
+                    ("energy_consumption_biofuel", "Biofuel", '#2ca02c'),             # Green  
+                    ("energy_consumption_electrofuel", "Electrofuel", '#1f77b4'),     # Blue
+                    ("energy_consumption_hydrogen", "Hydrogen", '#9467bd'),           # Purple
+                    ("energy_consumption_electric", "Electricity", '#ff7f0e'),        # Orange
+                ]
                 
-                ax.set_ylabel("Energy [EJ]", fontsize=10)
-                ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
-                ax.legend(loc='upper left', fontsize=9)
-                ax.grid(True, alpha=0.3)
+                # Check each carrier and add if it exists and has data
+                for carrier_col, carrier_label, color in energy_carriers:
+                    if carrier_col in data["df"].columns:
+                        carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
+                        if carrier_energy.sum() > 0:
+                            energy_data.append(carrier_energy)
+                            labels_to_plot.append(carrier_label)
+                            colors_to_use.append(color)
+                
+                # Create stacked area plot if we have data
+                if energy_data:
+                    ax.stackplot(
+                        years,
+                        *energy_data,
+                        labels=labels_to_plot,
+                        colors=colors_to_use,
+                        alpha=0.8
+                    )
+
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                    ax.legend(loc='upper left', fontsize=9)
+                    ax.grid(True, alpha=0.3)
+                else:
+                    # No energy data available
+                    ax.text(0.5, 0.5, 'No energy data available', 
+                           ha='center', va='center', transform=ax.transAxes)
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                
+                # Set consistent x-axis limits for all subplots
+                if min_year is not None and max_year is not None:
+                    ax.set_xlim(min_year, max_year)
                 
                 # Only show x-label on bottom subplot
                 if idx == n_scenarios - 1:
@@ -142,3 +187,4 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
         """Update plot elements with new data."""
         self.fig.clear()
         self.create_plot()
+

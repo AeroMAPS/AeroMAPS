@@ -71,14 +71,24 @@ class MultiScenarioPlot(ABC):
         
         # Store scenario grouping configuration
         self.scenario_groups = scenario_groups
-        self._setup_scenario_styles(processes, scenario_groups)
         
         # Store processes
         self.processes = processes
         
+        # Extract pathways_manager from first process (all should have same pathways)
+        if isinstance(processes, dict):
+            first_process = next(iter(processes.values()))
+        else:
+            first_process = processes[0] if processes else None
+        
+        self.pathways_manager = first_process.pathways_manager if first_process and hasattr(first_process, 'pathways_manager') else None
+        
         # Validate and filter processes if requested
         if check_outputs and self.required_outputs:
             self.processes = self._filter_processes_by_outputs(self.required_outputs)
+        
+        # Setup scenario styles AFTER filtering so styles match the actual scenarios being plotted
+        self._setup_scenario_styles(self.processes, scenario_groups)
 
         # Extract data from all processes
         self._extract_all_data()
