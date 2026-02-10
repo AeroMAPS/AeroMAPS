@@ -77,17 +77,16 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
                         colors=fuel_colors,
                         alpha=0.8
                     )
-                    
-                    ax.set_ylabel("Energy [EJ]", fontsize=10)
-                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
                     ax.legend(loc='upper left', fontsize=9)
                     ax.grid(True, alpha=0.3)
                 else:
                     # No fuel breakdown data available
                     ax.text(0.5, 0.5, 'No fuel breakdown data available', 
                            ha='center', va='center', transform=ax.transAxes)
-                    ax.set_ylabel("Energy [EJ]", fontsize=10)
-                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                
+                # Set common labels regardless of data availability
+                ax.set_ylabel("Energy [EJ]", fontsize=10)
+                ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
                 
                 # Only show x-label on bottom subplot
                 if idx == n_scenarios - 1:

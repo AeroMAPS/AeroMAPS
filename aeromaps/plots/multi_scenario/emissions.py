@@ -134,14 +134,14 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
             
             # Update legend labels based on whether budgets are unique or shared
             # When there are multiple different budget values, differentiate them
-            unique_budget_values = len(plotted_budgets)
+            num_unique_budgets = len(plotted_budgets)
             
             for budget_val, scenario_info in plotted_budgets.items():
                 scenario_names = [name for name, line in scenario_info]
                 # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
                 
-                if unique_budget_values == 1:
+                if num_unique_budgets == 1:
                     # Only one budget value exists - simple label
                     if len(scenario_names) == 1:
                         line_handle.set_label("Budget")
@@ -194,14 +194,14 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
             
             # Update legend labels based on whether budgets are unique or shared
             # When there are multiple different budget values, differentiate them
-            unique_budget_values = len(plotted_budgets)
+            num_unique_budgets = len(plotted_budgets)
             
             for budget_val, scenario_info in plotted_budgets.items():
                 scenario_names = [name for name, line in scenario_info]
                 # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
                 
-                if unique_budget_values == 1:
+                if num_unique_budgets == 1:
                     # Only one budget value exists - simple label
                     if len(scenario_names) == 1:
                         line_handle.set_label("Budget")
