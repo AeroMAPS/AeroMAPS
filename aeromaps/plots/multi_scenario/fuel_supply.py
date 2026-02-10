@@ -35,6 +35,47 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
         
+        # Determine fuel types from pathways_manager dynamically
+        # This is similar to how EnergyMix determines carriers
+        fuel_columns = []
+        fuel_labels = []
+        fuel_colors_map = {
+            'fossil': '#d62728',
+            'biomass': '#2ca02c', 
+            'electricity': '#1f77b4',
+            'biofuel': '#2ca02c',
+            'electrofuel': '#1f77b4',
+        }
+        default_fuel_colors = ['#d62728', '#2ca02c', '#1f77b4', '#9467bd', '#8c564b']
+        
+        if self.pathways_manager and hasattr(self.pathways_manager, 'get_all_types'):
+            # Get energy origins from pathways_manager
+            energy_origins = self.pathways_manager.get_all_types('energy_origin')
+            
+            # Build list of dropin fuel columns by energy origin
+            for energy_origin in energy_origins:
+                # Check for dropin fuel breakdown by origin
+                column_name = f"energy_consumption_dropin_{energy_origin}"
+                fuel_columns.append(column_name)
+                # Create readable label
+                label = energy_origin.replace('_', ' ').title()
+                if 'fossil' in energy_origin.lower():
+                    label = 'Fossil Kerosene'
+                elif 'bio' in energy_origin.lower():
+                    label = 'Biofuel'
+                elif 'electro' in energy_origin.lower() or 'electric' in energy_origin.lower():
+                    label = 'Electrofuel'
+                fuel_labels.append(label)
+        
+        # Fallback to hardcoded fuel types if pathways not available
+        if not fuel_columns:
+            fuel_columns = [
+                "energy_consumption_dropin_fossil_fuel",
+                "energy_consumption_dropin_biofuel",
+                "energy_consumption_dropin_electrofuel"
+            ]
+            fuel_labels = ['Fossil Kerosene', 'Biofuel', 'Electrofuel']
+        
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
             ax = axes[idx, 0]
@@ -44,37 +85,31 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
                 
                 # Check which fuel types are available and collect them
                 fuel_data = []
-                fuel_labels = []
-                fuel_colors = []
+                labels_to_plot = []
+                colors_to_use = []
                 
-                # Try to get fossil fuel data
-                if "energy_consumption_dropin_fossil_fuel" in data["df"].columns:
-                    fossil = data["df"].loc[years, "energy_consumption_dropin_fossil_fuel"] * 1e-12
-                    fuel_data.append(fossil)
-                    fuel_labels.append('Fossil Kerosene')
-                    fuel_colors.append('#d62728')
-                
-                # Try to get biofuel data
-                if "energy_consumption_dropin_biofuel" in data["df"].columns:
-                    biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"] * 1e-12
-                    fuel_data.append(biofuel)
-                    fuel_labels.append('Biofuel')
-                    fuel_colors.append('#2ca02c')
-                
-                # Try to get electrofuel data
-                if "energy_consumption_dropin_electrofuel" in data["df"].columns:
-                    efuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"] * 1e-12
-                    fuel_data.append(efuel)
-                    fuel_labels.append('Electrofuel')
-                    fuel_colors.append('#1f77b4')
+                for fuel_idx, (fuel_col, fuel_label) in enumerate(zip(fuel_columns, fuel_labels)):
+                    if fuel_col in data["df"].columns:
+                        fuel_energy = data["df"].loc[years, fuel_col] * 1e-12
+                        fuel_data.append(fuel_energy)
+                        labels_to_plot.append(fuel_label)
+                        # Try to get color from map, otherwise use default palette
+                        color_key = fuel_label.lower().replace(' ', '_')
+                        if 'fossil' in color_key:
+                            color_key = 'fossil'
+                        elif 'bio' in color_key:
+                            color_key = 'biofuel'
+                        elif 'electro' in color_key:
+                            color_key = 'electrofuel'
+                        colors_to_use.append(fuel_colors_map.get(color_key, default_fuel_colors[fuel_idx % len(default_fuel_colors)]))
                 
                 # Create stacked area plot if we have data
                 if fuel_data:
                     ax.stackplot(
                         years,
                         *fuel_data,
-                        labels=fuel_labels,
-                        colors=fuel_colors,
+                        labels=labels_to_plot,
+                        colors=colors_to_use,
                         alpha=0.8
                     )
                     ax.legend(loc='upper left', fontsize=9)

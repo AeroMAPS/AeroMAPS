@@ -145,6 +145,16 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                     column_name = f"energy_consumption_{aircraft_type}"
                     energy_carriers.append(column_name)
                     energy_labels.append(aircraft_type.replace('_', ' ').title())
+            
+            # Also add fallback to standard energy carriers if we didn't find any
+            # This ensures compatibility with both generic and legacy column naming
+            if not energy_carriers:
+                energy_carriers = [
+                    "energy_consumption_dropin_fuel",
+                    "energy_consumption_hydrogen",
+                    "energy_consumption_electric"
+                ]
+                energy_labels = ['Kerosene', 'Hydrogen', 'Electricity']
         else:
             # Fallback to legacy hardcoded carriers
             energy_carriers = [
@@ -166,6 +176,7 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 labels_to_plot = []
                 colors_to_use = []
                 
+                # First try the dynamically determined carriers
                 for carrier_idx, (carrier_col, carrier_label) in enumerate(zip(energy_carriers, energy_labels)):
                     if carrier_col in data["df"].columns:
                         carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
@@ -173,6 +184,20 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                         energy_data.append(carrier_energy)
                         labels_to_plot.append(carrier_label)
                         colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
+                
+                # If no data found with dynamic carriers, try legacy column names
+                if not energy_data:
+                    legacy_carriers = [
+                        ("energy_consumption_dropin_fuel", "Kerosene"),
+                        ("energy_consumption_hydrogen", "Hydrogen"),
+                        ("energy_consumption_electric", "Electricity")
+                    ]
+                    for carrier_idx, (carrier_col, carrier_label) in enumerate(legacy_carriers):
+                        if carrier_col in data["df"].columns:
+                            carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
+                            energy_data.append(carrier_energy)
+                            labels_to_plot.append(carrier_label)
+                            colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
                 
                 # Create stacked area plot if we have data
                 if energy_data:
