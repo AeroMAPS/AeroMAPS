@@ -11,11 +11,8 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
     fossil, biofuel, and electrofuel (efuel).
     """
     
-    required_outputs = [
-        "energy_consumption_dropin_fossil_fuel",
-        "energy_consumption_dropin_biofuel",
-        "energy_consumption_dropin_electrofuel"
-    ]
+    # Don't require specific outputs - check dynamically
+    required_outputs = []
     
     def _get_default_figsize(self):
         """Return default figure size based on number of scenarios."""
@@ -45,26 +42,52 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
             if data["df"] is not None:
                 years = data["years"]
                 
-                # Get fuel data (convert to EJ)
-                fossil = data["df"].loc[years, "energy_consumption_dropin_fossil_fuel"] * 1e-12
-                biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"] * 1e-12
-                efuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"] * 1e-12
+                # Check which fuel types are available and collect them
+                fuel_data = []
+                fuel_labels = []
+                fuel_colors = []
                 
-                # Create stacked area plot
-                ax.stackplot(
-                    years,
-                    fossil,
-                    biofuel, 
-                    efuel,
-                    labels=['Fossil Kerosene', 'Biofuel', 'Electrofuel'],
-                    colors=['#d62728', '#2ca02c', '#1f77b4'],
-                    alpha=0.8
-                )
+                # Try to get fossil fuel data
+                if "energy_consumption_dropin_fossil_fuel" in data["df"].columns:
+                    fossil = data["df"].loc[years, "energy_consumption_dropin_fossil_fuel"] * 1e-12
+                    fuel_data.append(fossil)
+                    fuel_labels.append('Fossil Kerosene')
+                    fuel_colors.append('#d62728')
                 
-                ax.set_ylabel("Energy [EJ]", fontsize=10)
-                ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
-                ax.legend(loc='upper left', fontsize=9)
-                ax.grid(True, alpha=0.3)
+                # Try to get biofuel data
+                if "energy_consumption_dropin_biofuel" in data["df"].columns:
+                    biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"] * 1e-12
+                    fuel_data.append(biofuel)
+                    fuel_labels.append('Biofuel')
+                    fuel_colors.append('#2ca02c')
+                
+                # Try to get electrofuel data
+                if "energy_consumption_dropin_electrofuel" in data["df"].columns:
+                    efuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"] * 1e-12
+                    fuel_data.append(efuel)
+                    fuel_labels.append('Electrofuel')
+                    fuel_colors.append('#1f77b4')
+                
+                # Create stacked area plot if we have data
+                if fuel_data:
+                    ax.stackplot(
+                        years,
+                        *fuel_data,
+                        labels=fuel_labels,
+                        colors=fuel_colors,
+                        alpha=0.8
+                    )
+                    
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                    ax.legend(loc='upper left', fontsize=9)
+                    ax.grid(True, alpha=0.3)
+                else:
+                    # No fuel breakdown data available
+                    ax.text(0.5, 0.5, 'No fuel breakdown data available', 
+                           ha='center', va='center', transform=ax.transAxes)
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
                 
                 # Only show x-label on bottom subplot
                 if idx == n_scenarios - 1:

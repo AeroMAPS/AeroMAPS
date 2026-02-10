@@ -102,6 +102,17 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
         
+        # Find common year range across all scenarios to ensure consistent x-axis
+        min_year = None
+        max_year = None
+        for scenario_name, data in scenario_items:
+            if data["years"] is not None and len(data["years"]) > 0:
+                years = data["years"]
+                if min_year is None or years[0] < min_year:
+                    min_year = years[0]
+                if max_year is None or years[-1] > max_year:
+                    max_year = years[-1]
+        
         # Determine energy carriers from pathways_manager
         # Default to legacy carriers if pathways_manager is not available
         if self.pathways_manager and hasattr(self.pathways_manager, 'get_all_types'):
@@ -158,11 +169,11 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 for carrier_idx, (carrier_col, carrier_label) in enumerate(zip(energy_carriers, energy_labels)):
                     if carrier_col in data["df"].columns:
                         carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
-                        # Only include if there's any non-zero data
-                        if carrier_energy.sum() > 0:
-                            energy_data.append(carrier_energy)
-                            labels_to_plot.append(carrier_label)
-                            colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
+                        # Include carrier even if sum is zero - it may have data in some years
+                        # This ensures consistent carriers across all scenarios
+                        energy_data.append(carrier_energy)
+                        labels_to_plot.append(carrier_label)
+                        colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
                 
                 # Create stacked area plot if we have data
                 if energy_data:
@@ -184,6 +195,10 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                            ha='center', va='center', transform=ax.transAxes)
                     ax.set_ylabel("Energy [EJ]", fontsize=10)
                     ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                
+                # Set consistent x-axis limits for all subplots
+                if min_year is not None and max_year is not None:
+                    ax.set_xlim(min_year, max_year)
                 
                 # Only show x-label on bottom subplot
                 if idx == n_scenarios - 1:
