@@ -35,47 +35,12 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
         
-        # Determine fuel types from pathways_manager dynamically
-        # This is similar to how EnergyMix determines carriers
-        fuel_columns = []
-        fuel_labels = []
-        fuel_colors_map = {
-            'fossil': '#d62728',
-            'biomass': '#2ca02c', 
-            'electricity': '#1f77b4',
-            'biofuel': '#2ca02c',
-            'electrofuel': '#1f77b4',
-        }
-        default_fuel_colors = ['#d62728', '#2ca02c', '#1f77b4', '#9467bd', '#8c564b']
-        
-        if self.pathways_manager and hasattr(self.pathways_manager, 'get_all_types'):
-            # Get energy origins from pathways_manager
-            energy_origins = self.pathways_manager.get_all_types('energy_origin')
-            
-            # Build list of dropin fuel columns by energy origin (if origins found)
-            if energy_origins:
-                for energy_origin in energy_origins:
-                    # Check for dropin fuel breakdown by origin
-                    column_name = f"energy_consumption_dropin_{energy_origin}"
-                    fuel_columns.append(column_name)
-                    # Create readable label
-                    label = energy_origin.replace('_', ' ').title()
-                    if 'fossil' in energy_origin.lower():
-                        label = 'Fossil Kerosene'
-                    elif 'bio' in energy_origin.lower():
-                        label = 'Biofuel'
-                    elif 'electro' in energy_origin.lower() or 'electric' in energy_origin.lower():
-                        label = 'Electrofuel'
-                    fuel_labels.append(label)
-        
-        # Fallback to hardcoded fuel types if pathways not available or returned no origins
-        if not fuel_columns:
-            fuel_columns = [
-                "energy_consumption_dropin_fossil_fuel",
-                "energy_consumption_dropin_biofuel",
-                "energy_consumption_dropin_electrofuel"
-            ]
-            fuel_labels = ['Fossil Kerosene', 'Biofuel', 'Electrofuel']
+        # Define fuel types to show (by energy origin for dropin_fuel)
+        fuel_types_to_show = [
+            ("fossil", "Fossil Kerosene", '#d62728'),
+            ("biomass", "Biofuel", '#2ca02c'),
+            ("electricity", "Electrofuel", '#1f77b4')
+        ]
         
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
@@ -84,25 +49,48 @@ class FuelSupplyBreakdownPlot(MultiScenarioPlot):
             if data["df"] is not None:
                 years = data["years"]
                 
-                # Check which fuel types are available and collect them
+                # Collect fuel data by aggregating dropin_fuel pathways by energy origin
                 fuel_data = []
                 labels_to_plot = []
                 colors_to_use = []
                 
-                for fuel_idx, (fuel_col, fuel_label) in enumerate(zip(fuel_columns, fuel_labels)):
-                    if fuel_col in data["df"].columns:
-                        fuel_energy = data["df"].loc[years, fuel_col] * 1e-12
-                        fuel_data.append(fuel_energy)
-                        labels_to_plot.append(fuel_label)
-                        # Try to get color from map, otherwise use default palette
-                        color_key = fuel_label.lower().replace(' ', '_')
-                        if 'fossil' in color_key:
-                            color_key = 'fossil'
-                        elif 'bio' in color_key:
-                            color_key = 'biofuel'
-                        elif 'electro' in color_key:
-                            color_key = 'electrofuel'
-                        colors_to_use.append(fuel_colors_map.get(color_key, default_fuel_colors[fuel_idx % len(default_fuel_colors)]))
+                for energy_origin, label, color in fuel_types_to_show:
+                    # Try to aggregate all dropin_fuel pathways with this energy origin
+                    total_fuel = None
+                    
+                    if self.pathways_manager:
+                        # Get all dropin_fuel pathways with this energy origin
+                        pathways = self.pathways_manager.get(
+                            aircraft_type="dropin_fuel",
+                            energy_origin=energy_origin
+                        )
+                        if pathways:
+                            for pathway in pathways:
+                                col_name = f"{pathway.name}_energy_consumption"
+                                if col_name in data["df"].columns:
+                                    pathway_fuel = data["df"].loc[years, col_name]
+                                    if total_fuel is None:
+                                        total_fuel = pathway_fuel.copy()
+                                    else:
+                                        total_fuel += pathway_fuel
+                    
+                    # Try legacy column names if pathways didn't work
+                    if total_fuel is None:
+                        # Map energy origins to legacy column names
+                        legacy_map = {
+                            "fossil": "energy_consumption_dropin_fossil_fuel",
+                            "biomass": "energy_consumption_dropin_biofuel",
+                            "electricity": "energy_consumption_dropin_electrofuel"
+                        }
+                        legacy_col = legacy_map.get(energy_origin)
+                        if legacy_col and legacy_col in data["df"].columns:
+                            total_fuel = data["df"].loc[years, legacy_col]
+                    
+                    # Add to plot if we found data
+                    if total_fuel is not None:
+                        fuel_data.append(total_fuel * 1e-12)  # Convert to EJ
+                        labels_to_plot.append(label)
+                        colors_to_use.append(color)
                 
                 # Create stacked area plot if we have data
                 if fuel_data:
@@ -270,10 +258,12 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
     """
     Compare biofuel production across scenarios.
     
-    Shows the evolution of biofuel consumption/production.
+    Shows the evolution of biofuel consumption/production by aggregating
+    all dropin_fuel pathways with biomass energy origin.
     """
     
-    required_outputs = ["energy_consumption_dropin_biofuel"]
+    # Don't require specific columns - aggregate dynamically
+    required_outputs = []
     
     def _get_default_figsize(self):
         """Return default figure size."""
@@ -286,35 +276,79 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
                 # Get style from parent class
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_consumption_dropin_biofuel" in data["df"].columns:
+                if data["df"] is not None:
                     years = data["years"]
-                    biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"] * 1e-12  # Convert to EJ
                     
-                    self.ax.plot(
-                        years, 
-                        biofuel, 
-                        label=scenario_name,
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
+                    # Aggregate all biomass dropin_fuel pathways
+                    biofuel = None
+                    if self.pathways_manager:
+                        pathways = self.pathways_manager.get(
+                            aircraft_type="dropin_fuel",
+                            energy_origin="biomass"
+                        )
+                        if pathways:
+                            for pathway in pathways:
+                                col_name = f"{pathway.name}_energy_consumption"
+                                if col_name in data["df"].columns:
+                                    pathway_energy = data["df"].loc[years, col_name]
+                                    if biofuel is None:
+                                        biofuel = pathway_energy.copy()
+                                    else:
+                                        biofuel += pathway_energy
+                    
+                    # Try legacy column if pathways didn't work
+                    if biofuel is None and "energy_consumption_dropin_biofuel" in data["df"].columns:
+                        biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"]
+                    
+                    # Plot if we found data
+                    if biofuel is not None:
+                        self.ax.plot(
+                            years, 
+                            biofuel * 1e-12,  # Convert to EJ
+                            label=scenario_name,
+                            color=style['color'],
+                            linestyle=style['linestyle'],
+                            linewidth=2
+                        )
         else:
             for idx, data in enumerate(self.scenario_data):
                 scenario_name = f"scenario_{idx}"
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_consumption_dropin_biofuel" in data["df"].columns:
+                if data["df"] is not None:
                     years = data["years"]
-                    biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"] * 1e-12
                     
-                    self.ax.plot(
-                        years, 
-                        biofuel, 
-                        label=f"Scenario {idx+1}",
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
+                    # Aggregate all biomass dropin_fuel pathways
+                    biofuel = None
+                    if self.pathways_manager:
+                        pathways = self.pathways_manager.get(
+                            aircraft_type="dropin_fuel",
+                            energy_origin="biomass"
+                        )
+                        if pathways:
+                            for pathway in pathways:
+                                col_name = f"{pathway.name}_energy_consumption"
+                                if col_name in data["df"].columns:
+                                    pathway_energy = data["df"].loc[years, col_name]
+                                    if biofuel is None:
+                                        biofuel = pathway_energy.copy()
+                                    else:
+                                        biofuel += pathway_energy
+                    
+                    # Try legacy column if pathways didn't work
+                    if biofuel is None and "energy_consumption_dropin_biofuel" in data["df"].columns:
+                        biofuel = data["df"].loc[years, "energy_consumption_dropin_biofuel"]
+                    
+                    # Plot if we found data
+                    if biofuel is not None:
+                        self.ax.plot(
+                            years, 
+                            biofuel * 1e-12,  # Convert to EJ
+                            label=f"Scenario {idx+1}",
+                            color=style['color'],
+                            linestyle=style['linestyle'],
+                            linewidth=2
+                        )
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Biofuel Production [EJ]", fontsize=12)
@@ -333,10 +367,12 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
     """
     Compare electrofuel (efuel) production across scenarios.
     
-    Shows the evolution of electrofuel consumption/production.
+    Shows the evolution of electrofuel consumption/production by aggregating
+    all dropin_fuel pathways with electricity energy origin.
     """
     
-    required_outputs = ["energy_consumption_dropin_electrofuel"]
+    # Don't require specific columns - aggregate dynamically
+    required_outputs = []
     
     def _get_default_figsize(self):
         """Return default figure size."""
@@ -349,35 +385,79 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
                 # Get style from parent class
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
+                if data["df"] is not None:
                     years = data["years"]
-                    efuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"] * 1e-12  # Convert to EJ
                     
-                    self.ax.plot(
-                        years, 
-                        efuel, 
-                        label=scenario_name,
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
+                    # Aggregate all electricity dropin_fuel pathways
+                    electrofuel = None
+                    if self.pathways_manager:
+                        pathways = self.pathways_manager.get(
+                            aircraft_type="dropin_fuel",
+                            energy_origin="electricity"
+                        )
+                        if pathways:
+                            for pathway in pathways:
+                                col_name = f"{pathway.name}_energy_consumption"
+                                if col_name in data["df"].columns:
+                                    pathway_energy = data["df"].loc[years, col_name]
+                                    if electrofuel is None:
+                                        electrofuel = pathway_energy.copy()
+                                    else:
+                                        electrofuel += pathway_energy
+                    
+                    # Try legacy column if pathways didn't work
+                    if electrofuel is None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
+                        electrofuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"]
+                    
+                    # Plot if we found data
+                    if electrofuel is not None:
+                        self.ax.plot(
+                            years, 
+                            electrofuel * 1e-12,  # Convert to EJ
+                            label=scenario_name,
+                            color=style['color'],
+                            linestyle=style['linestyle'],
+                            linewidth=2
+                        )
         else:
             for idx, data in enumerate(self.scenario_data):
                 scenario_name = f"scenario_{idx}"
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
+                if data["df"] is not None:
                     years = data["years"]
-                    efuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"] * 1e-12
                     
-                    self.ax.plot(
-                        years, 
-                        efuel, 
-                        label=f"Scenario {idx+1}",
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
+                    # Aggregate all electricity dropin_fuel pathways
+                    electrofuel = None
+                    if self.pathways_manager:
+                        pathways = self.pathways_manager.get(
+                            aircraft_type="dropin_fuel",
+                            energy_origin="electricity"
+                        )
+                        if pathways:
+                            for pathway in pathways:
+                                col_name = f"{pathway.name}_energy_consumption"
+                                if col_name in data["df"].columns:
+                                    pathway_energy = data["df"].loc[years, col_name]
+                                    if electrofuel is None:
+                                        electrofuel = pathway_energy.copy()
+                                    else:
+                                        electrofuel += pathway_energy
+                    
+                    # Try legacy column if pathways didn't work
+                    if electrofuel is None and "energy_consumption_dropin_electrofuel" in data["df"].columns:
+                        electrofuel = data["df"].loc[years, "energy_consumption_dropin_electrofuel"]
+                    
+                    # Plot if we found data
+                    if electrofuel is not None:
+                        self.ax.plot(
+                            years, 
+                            electrofuel * 1e-12,  # Convert to EJ
+                            label=f"Scenario {idx+1}",
+                            color=style['color'],
+                            linestyle=style['linestyle'],
+                            linewidth=2
+                        )
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Electrofuel Production [EJ]", fontsize=12)
