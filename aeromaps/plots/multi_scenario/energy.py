@@ -67,17 +67,15 @@ class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
 
 class EnergyMixComparisonPlot(MultiScenarioPlot):
     """
-    Compare energy mix (kerosene, hydrogen, electricity) across scenarios.
+    Compare energy mix across scenarios.
 
-    Shows stacked area plots for each scenario's energy sources.
+    Shows stacked area plots for each scenario's energy carriers.
     Creates subplots for each scenario to show the evolution of the energy mix.
+    Energy carriers are determined dynamically from the pathways_manager.
     """
     
-    required_outputs = [
-        "energy_consumption_dropin_fuel",
-        "energy_consumption_hydrogen",
-        "energy_consumption_electric"
-    ]
+    # No hardcoded required outputs - will be determined dynamically
+    required_outputs = []
 
     def _get_default_figsize(self):
         """Return default figure size based on number of scenarios."""
@@ -100,6 +98,51 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
         
+        # Determine energy carriers from pathways_manager
+        # Default to legacy carriers if pathways_manager is not available
+        if self.pathways_manager and hasattr(self.pathways_manager, 'get_all_types'):
+            aircraft_types = self.pathways_manager.get_all_types('aircraft_type')
+            
+            # Build list of energy carrier columns to plot
+            energy_carriers = []
+            energy_labels = []
+            
+            for aircraft_type in aircraft_types:
+                # Get all energy origins for this aircraft type
+                energy_origins = self.pathways_manager.get_all_types('energy_origin')
+                
+                for energy_origin in energy_origins:
+                    # Check if this combination exists
+                    pathways = self.pathways_manager.get(
+                        aircraft_type=aircraft_type,
+                        energy_origin=energy_origin
+                    )
+                    if pathways:
+                        column_name = f"{aircraft_type}_{energy_origin}_energy_consumption"
+                        energy_carriers.append(column_name)
+                        # Create readable label
+                        label = f"{aircraft_type.replace('_', ' ').title()} - {energy_origin.replace('_', ' ').title()}"
+                        energy_labels.append(label)
+            
+            # If no specific aircraft/origin combinations found, try aircraft types
+            if not energy_carriers:
+                for aircraft_type in aircraft_types:
+                    column_name = f"energy_consumption_{aircraft_type}"
+                    energy_carriers.append(column_name)
+                    energy_labels.append(aircraft_type.replace('_', ' ').title())
+        else:
+            # Fallback to legacy hardcoded carriers
+            energy_carriers = [
+                "energy_consumption_dropin_fuel",
+                "energy_consumption_hydrogen",
+                "energy_consumption_electric"
+            ]
+            energy_labels = ['Kerosene', 'Hydrogen', 'Electricity']
+        
+        # Define a color palette (can be expanded as needed)
+        default_colors = ['#ff7f0e', '#9467bd', '#2ca02c', '#d62728', '#1f77b4', 
+                         '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
             ax = axes[idx, 0]
@@ -107,26 +150,40 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
             if data["df"] is not None:
                 years = data["years"]
                 
-                # Get energy data (convert to EJ)
-                kerosene = data["df"].loc[years, "energy_consumption_dropin_fuel"] * 1e-12
-                hydrogen = data["df"].loc[years, "energy_consumption_hydrogen"] * 1e-12
-                electricity = data["df"].loc[years, "energy_consumption_electric"] * 1e-12
+                # Collect energy data for available carriers (convert to EJ)
+                energy_data = []
+                labels_to_plot = []
+                colors_to_use = []
+                
+                for carrier_idx, (carrier_col, carrier_label) in enumerate(zip(energy_carriers, energy_labels)):
+                    if carrier_col in data["df"].columns:
+                        carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
+                        # Only include if there's any non-zero data
+                        if carrier_energy.sum() > 0:
+                            energy_data.append(carrier_energy)
+                            labels_to_plot.append(carrier_label)
+                            colors_to_use.append(default_colors[carrier_idx % len(default_colors)])
+                
+                # Create stacked area plot if we have data
+                if energy_data:
+                    ax.stackplot(
+                        years,
+                        *energy_data,
+                        labels=labels_to_plot,
+                        colors=colors_to_use,
+                        alpha=0.8
+                    )
 
-                # Create stacked area plot
-                ax.stackplot(
-                    years,
-                    kerosene,
-                    hydrogen,
-                    electricity,
-                    labels=['Kerosene', 'Hydrogen', 'Electricity'],
-                    colors=['#ff7f0e', '#9467bd', '#2ca02c'],
-                    alpha=0.8
-                )
-
-                ax.set_ylabel("Energy [EJ]", fontsize=10)
-                ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
-                ax.legend(loc='upper left', fontsize=9)
-                ax.grid(True, alpha=0.3)
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
+                    ax.legend(loc='upper left', fontsize=9)
+                    ax.grid(True, alpha=0.3)
+                else:
+                    # No energy data available
+                    ax.text(0.5, 0.5, 'No energy data available', 
+                           ha='center', va='center', transform=ax.transAxes)
+                    ax.set_ylabel("Energy [EJ]", fontsize=10)
+                    ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
                 
                 # Only show x-label on bottom subplot
                 if idx == n_scenarios - 1:

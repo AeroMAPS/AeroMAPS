@@ -88,6 +88,9 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
     
     def create_plot(self):
         """Create the carbon budget comparison plot."""
+        # Track budgets to only plot unique ones
+        plotted_budgets = {}  # Maps budget value to scenario name
+        
         # Plot cumulative emissions for each scenario
         if isinstance(self.scenario_data, dict):
             for scenario_name, data in self.scenario_data.items():
@@ -108,17 +111,45 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                         linewidth=2
                     )
                     
-                    # Plot carbon budget if available (use dashed version of same linestyle base)
+                    # Plot carbon budget if available and unique
                     if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
-                        self.ax.axhline(
-                            y=budget,
-                            color="k",
-                            linestyle='-',
-                            linewidth=1,
-                            alpha=0.7,
-                            label=f"{scenario_name} - Budget"
-                        )
+                        
+                        # Check if this budget value has been plotted before
+                        if budget not in plotted_budgets:
+                            # First time seeing this budget value - plot it
+                            plotted_budgets[budget] = [scenario_name]
+                            self.ax.axhline(
+                                y=budget,
+                                color="k",
+                                linestyle='-',
+                                linewidth=1,
+                                alpha=0.7,
+                                label=f"Budget"
+                            )
+                        else:
+                            # Budget already seen - track but don't plot
+                            plotted_budgets[budget].append(scenario_name)
+            
+            # Update legend for budgets shared by multiple scenarios
+            # Get current legend and update budget labels if needed
+            handles, labels = self.ax.get_legend_handles_labels()
+            updated_labels = []
+            for handle, label in zip(handles, labels):
+                if label == "Budget":
+                    # Find which budget value this is
+                    for budget_val, scenario_names in plotted_budgets.items():
+                        if len(scenario_names) == 1:
+                            # Only one scenario has this budget, keep simple "Budget" label
+                            updated_labels.append("Budget")
+                            break
+                        elif len(scenario_names) > 1:
+                            # Multiple scenarios share this budget, use detailed label
+                            updated_labels.append(f"Budget - {', '.join(scenario_names)}")
+                            break
+                else:
+                    updated_labels.append(label)
+            
         else:
             for idx, data in enumerate(self.scenario_data):
                 scenario_name = f"scenario_{idx}"
@@ -138,22 +169,51 @@ class CarbonBudgetComparisonPlot(MultiScenarioPlot):
                         linewidth=2
                     )
                     
-                    # Plot carbon budget if available
+                    # Plot carbon budget if available and unique
                     if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
-                        self.ax.axhline(
-                            y=budget,
-                            color=style['color'],
-                            linestyle=':',
-                            linewidth=1.5,
-                            alpha=0.7,
-                            label=f"Scenario {idx+1} - Budget"
-                        )
+                        
+                        # Check if this budget value has been plotted before
+                        if budget not in plotted_budgets:
+                            # First time seeing this budget value - plot it
+                            plotted_budgets[budget] = [f"Scenario {idx+1}"]
+                            self.ax.axhline(
+                                y=budget,
+                                color="k",
+                                linestyle='-',
+                                linewidth=1,
+                                alpha=0.7,
+                                label=f"Budget"
+                            )
+                        else:
+                            # Budget already seen - track but don't plot
+                            plotted_budgets[budget].append(f"Scenario {idx+1}")
+            
+            # Update legend for budgets shared by multiple scenarios
+            handles, labels = self.ax.get_legend_handles_labels()
+            updated_labels = []
+            for handle, label in zip(handles, labels):
+                if label == "Budget":
+                    # Find which budget value this is
+                    for budget_val, scenario_names in plotted_budgets.items():
+                        if len(scenario_names) == 1:
+                            # Only one scenario has this budget, keep simple "Budget" label
+                            updated_labels.append("Budget")
+                            break
+                        elif len(scenario_names) > 1:
+                            # Multiple scenarios share this budget, use detailed label
+                            updated_labels.append(f"Budget - {', '.join(scenario_names)}")
+                            break
+                else:
+                    updated_labels.append(label)
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
         self.ax.set_title("Cumulative CO2 vs Carbon Budget Comparison", fontsize=14)
-        self.ax.legend(loc='best', fontsize=9)
+        
+        # Set legend with updated labels if we modified any
+        handles, labels = self.ax.get_legend_handles_labels()
+        self.ax.legend(handles, updated_labels if 'updated_labels' in locals() else labels, loc='best', fontsize=9)
         self.ax.grid(True, alpha=0.3)
     
     def _update_plot_elements(self):
