@@ -56,5 +56,20 @@
         3
     ],
     "load_factor_end_year": 88.389,
+    "electric_final_market_share_short_range": 0.0,
+    "electric_introduction_year_short_range": 2050,
+    "electric_final_market_share_medium_range": 0.0,
+    "electric_introduction_year_medium_range": 2050,
+    "electric_final_market_share_long_range": 0.0,
+    "electric_introduction_year_long_range": 2050,
+    "hydrogen_final_market_share_short_range": 0.0,
+    "hydrogen_introduction_year_short_range": 2050,
+    "hydrogen_final_market_share_medium_range": 0.0,
+    "hydrogen_introduction_year_medium_range": 2050,
+    "hydrogen_final_market_share_long_range": 0.0,
+    "hydrogen_introduction_year_long_range": 2050,
+    "energy_per_ask_short_range_dropin_fuel_gain": -32.3,
+    "energy_per_ask_medium_range_dropin_fuel_gain": -32.3,
+    "energy_per_ask_long_range_dropin_fuel_gain": -32.3,
     "dropin_fuel_mean_lhv": 44
 }
