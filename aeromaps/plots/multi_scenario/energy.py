@@ -169,8 +169,7 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 for carrier_idx, (carrier_col, carrier_label) in enumerate(zip(energy_carriers, energy_labels)):
                     if carrier_col in data["df"].columns:
                         carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
-                        # Include carrier even if sum is zero - it may have data in some years
-                        # This ensures consistent carriers across all scenarios
+                        # Include all available carriers to ensure consistency across scenarios
                         energy_data.append(carrier_energy)
                         labels_to_plot.append(carrier_label)
                         colors_to_use.append(self.DEFAULT_CARRIER_COLORS[carrier_idx % len(self.DEFAULT_CARRIER_COLORS)])
