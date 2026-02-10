@@ -3,10 +3,10 @@
 # Conventional aircraft for medium and long range
 
 subcategories:
-  # Short Range - Conventional narrow-body (74% share)
+  # Short Range - Conventional narrow-body (74% of SR = 54.76% total)
   - id: sr_conventional_nb
     name: "SR conventional narrow-body"
-    share: 54.0  # 74% of short-range = 74% * 73% ≈ 54%
+    share: 54.76  # 74% of short-range traffic
     reference_aircraft:
       old_ref: sr_conventional_nb_old
       recent_ref: sr_conventional_nb_recent
@@ -14,10 +14,10 @@ subcategories:
       - sr_nb_2035
       - sr_nb_2045
 
-  # Short Range - Regional turboprop (still conventional)
+  # Short Range - Regional turboprop (remaining conventional SR)
   - id: sr_regional_tp
     name: "SR regional turboprop"
-    share: 19.0  # Remaining conventional short-range
+    share: 19.24  # Remaining conventional short-range
     reference_aircraft:
       old_ref: sr_regional_tp_old
       recent_ref: sr_regional_tp_recent
@@ -25,10 +25,10 @@ subcategories:
       - sr_tp_2030
       - sr_tp_2045
 
-  # Short Range - Electric (26% share from 2040)
+  # Short Range - Electric (26% of SR from 2040)
   - id: sr_electric
     name: "SR electric narrow-body"
-    share: 26.0  # 26% of short-range
+    share: 26.0  # 26% of short-range traffic
     reference_aircraft:
       old_ref: sr_conventional_nb_old
       recent_ref: sr_conventional_nb_recent
