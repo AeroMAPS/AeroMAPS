@@ -41,8 +41,8 @@ subcategories:
     name: "MR hydrogen narrow-body"
     share: 100.0
     reference_aircraft:
-      old_ref: mr_conventional_nb_old
-      recent_ref: mr_conventional_nb_recent
+      old_ref: mr_hydrogen_nb_old
+      recent_ref: mr_hydrogen_nb_recent
     aircraft:
       - mr_hydrogen_2035
       - mr_hydrogen_2045

@@ -89,6 +89,35 @@ reference_aircraft:
       nrc_cost: 10000000000.0
       oew: 43.0
   
+  # Medium Range - Hydrogen Narrow-body (reference aircraft for hydrogen fleet)
+  - id: mr_hydrogen_nb_old
+    name: "MR hydrogen narrow-body old"
+    parameters:
+      entry_into_service_year: 2035.0
+      energy_per_ask: 0.4893848087414876  # 0.6979 * 0.7 (assumes 30% better efficiency than conventional)
+      emission_index_nox: 0.007
+      emission_index_soot: 0.0
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 90000000.0
+      nrc_cost: 12000000000.0
+      oew: 45.0
+  
+  - id: mr_hydrogen_nb_recent
+    name: "MR hydrogen narrow-body recent"
+    parameters:
+      entry_into_service_year: 2045.0
+      energy_per_ask: 0.4537502731240537  # 0.6979 * 0.65 (35% better than conventional)
+      emission_index_nox: 0.0035
+      emission_index_soot: 0.0
+      doc_non_energy_base: 0.0301
+      cruise_altitude: 12000.0
+      ask_year: 352000000.0
+      rc_cost: 75000000.0
+      nrc_cost: 10000000000.0
+      oew: 42.0
+  
   # Long Range - Conventional Wide-body
   - id: lr_conventional_wb_old
     name: "LR conventional wide-body old"
