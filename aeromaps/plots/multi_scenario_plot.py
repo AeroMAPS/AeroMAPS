@@ -79,7 +79,7 @@ class MultiScenarioPlot(ABC):
         if isinstance(processes, dict):
             first_process = next(iter(processes.values()))
         else:
-            first_process = processes[0] if len(processes) > 0 else None
+            first_process = processes[0] if processes else None
         
         self.pathways_manager = first_process.pathways_manager if first_process and hasattr(first_process, 'pathways_manager') else None
         
