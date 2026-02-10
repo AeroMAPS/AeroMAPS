@@ -124,102 +124,29 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
             if data["df"] is not None:
                 years = data["years"]
                 
-                # Collect energy data by dynamically discovering pathways
+                # Collect energy data using aggregated columns
                 energy_data = []
                 labels_to_plot = []
                 colors_to_use = []
                 
-                # Color palette for different energy types
-                color_map = {
-                    ('dropin_fuel', 'fossil'): '#d62728',      # Red for fossil
-                    ('dropin_fuel', 'biomass'): '#2ca02c',     # Green for biomass
-                    ('dropin_fuel', 'electricity'): '#1f77b4', # Blue for electrofuel
-                    ('hydrogen', None): '#9467bd',              # Purple for hydrogen
-                    ('electric', None): '#ff7f0e',              # Orange for electric
-                }
-                default_colors = ['#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-                color_idx = 0
+                # Define energy carriers to plot with their columns, labels, and colors
+                # These are the aggregated columns that exist in the output data
+                energy_carriers = [
+                    ("energy_consumption_kerosene", "Fossil Kerosene", '#d62728'),     # Red
+                    ("energy_consumption_biofuel", "Biofuel", '#2ca02c'),             # Green  
+                    ("energy_consumption_electrofuel", "Electrofuel", '#1f77b4'),     # Blue
+                    ("energy_consumption_hydrogen", "Hydrogen", '#9467bd'),           # Purple
+                    ("energy_consumption_electric", "Electricity", '#ff7f0e'),        # Orange
+                ]
                 
-                if self.pathways_manager:
-                    # Dynamically discover all aircraft types and energy origins
-                    aircraft_types = self.pathways_manager.get_all_types('aircraft_type')
-                    
-                    for aircraft_type in aircraft_types:
-                        if aircraft_type == 'dropin_fuel':
-                            # For dropin_fuel, separate by energy origin
-                            energy_origins = self.pathways_manager.get_all_types('energy_origin')
-                            for energy_origin in energy_origins:
-                                pathways = self.pathways_manager.get(
-                                    aircraft_type='dropin_fuel',
-                                    energy_origin=energy_origin
-                                )
-                                if pathways:
-                                    total_energy = None
-                                    for pathway in pathways:
-                                        col_name = f"{pathway.name}_energy_consumption"
-                                        if col_name in data["df"].columns:
-                                            pathway_energy = data["df"].loc[years, col_name]
-                                            if total_energy is None:
-                                                total_energy = pathway_energy.copy()
-                                            else:
-                                                total_energy += pathway_energy
-                                    
-                                    if total_energy is not None and total_energy.sum() > 0:
-                                        # Create readable label
-                                        if energy_origin == 'fossil':
-                                            label = 'Fossil Kerosene'
-                                        elif energy_origin == 'biomass':
-                                            label = 'Biofuel'
-                                        elif energy_origin == 'electricity':
-                                            label = 'Electrofuel'
-                                        else:
-                                            label = f"Drop-in {energy_origin.replace('_', ' ').title()}"
-                                        
-                                        energy_data.append(total_energy * 1e-12)
-                                        labels_to_plot.append(label)
-                                        color = color_map.get(('dropin_fuel', energy_origin))
-                                        if color is None:
-                                            color = default_colors[color_idx % len(default_colors)]
-                                            color_idx += 1
-                                        colors_to_use.append(color)
-                        else:
-                            # For non-dropin fuels (hydrogen, electric), aggregate all pathways
-                            pathways = self.pathways_manager.get(aircraft_type=aircraft_type)
-                            if pathways:
-                                total_energy = None
-                                for pathway in pathways:
-                                    col_name = f"{pathway.name}_energy_consumption"
-                                    if col_name in data["df"].columns:
-                                        pathway_energy = data["df"].loc[years, col_name]
-                                        if total_energy is None:
-                                            total_energy = pathway_energy.copy()
-                                        else:
-                                            total_energy += pathway_energy
-                                
-                                if total_energy is not None and total_energy.sum() > 0:
-                                    label = aircraft_type.replace('_', ' ').title()
-                                    energy_data.append(total_energy * 1e-12)
-                                    labels_to_plot.append(label)
-                                    color = color_map.get((aircraft_type, None))
-                                    if color is None:
-                                        color = default_colors[color_idx % len(default_colors)]
-                                        color_idx += 1
-                                    colors_to_use.append(color)
-                
-                # Fallback to legacy columns if pathways approach didn't find anything
-                if not energy_data:
-                    legacy_carriers = [
-                        ("energy_consumption_dropin_fuel", "Kerosene", '#ff7f0e'),
-                        ("energy_consumption_hydrogen", "Hydrogen", '#9467bd'),
-                        ("energy_consumption_electric", "Electricity", '#2ca02c')
-                    ]
-                    for carrier_col, carrier_label, color in legacy_carriers:
-                        if carrier_col in data["df"].columns:
-                            carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
-                            if carrier_energy.sum() > 0:
-                                energy_data.append(carrier_energy)
-                                labels_to_plot.append(carrier_label)
-                                colors_to_use.append(color)
+                # Check each carrier and add if it exists and has data
+                for carrier_col, carrier_label, color in energy_carriers:
+                    if carrier_col in data["df"].columns:
+                        carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
+                        if carrier_energy.sum() > 0:
+                            energy_data.append(carrier_energy)
+                            labels_to_plot.append(carrier_label)
+                            colors_to_use.append(color)
                 
                 # Create stacked area plot if we have data
                 if energy_data:
