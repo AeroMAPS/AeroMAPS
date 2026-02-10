@@ -136,7 +136,7 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
     Shows energy intensity evolution for passenger capacity.
     """
     
-    required_outputs = ["energy_per_ask"]
+    required_outputs = ["energy_per_ask_mean"]
     
     def _get_default_figsize(self):
         """Return default figure size."""
@@ -149,9 +149,9 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
                 # Get style from parent class
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_per_ask" in data["df"].columns:
+                if data["df"] is not None and "energy_per_ask_mean" in data["df"].columns:
                     years = data["years"]
-                    intensity = data["df"].loc[years, "energy_per_ask"]
+                    intensity = data["df"].loc[years, "energy_per_ask_mean"]
                     
                     self.ax.plot(
                         years, 
@@ -166,9 +166,9 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
                 scenario_name = f"scenario_{idx}"
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_per_ask" in data["df"].columns:
+                if data["df"] is not None and "energy_per_ask_mean" in data["df"].columns:
                     years = data["years"]
-                    intensity = data["df"].loc[years, "energy_per_ask"]
+                    intensity = data["df"].loc[years, "energy_per_ask_mean"]
                     
                     self.ax.plot(
                         years, 
@@ -199,7 +199,7 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
     Shows energy intensity evolution for freight operations.
     """
     
-    required_outputs = ["energy_per_rtk"]
+    required_outputs = ["energy_per_rtk_mean"]
     
     def _get_default_figsize(self):
         """Return default figure size."""
@@ -212,9 +212,9 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
                 # Get style from parent class
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_per_rtk" in data["df"].columns:
+                if data["df"] is not None and "energy_per_rtk_mean" in data["df"].columns:
                     years = data["years"]
-                    intensity = data["df"].loc[years, "energy_per_rtk"]
+                    intensity = data["df"].loc[years, "energy_per_rtk_mean"]
                     
                     self.ax.plot(
                         years, 
@@ -229,9 +229,9 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
                 scenario_name = f"scenario_{idx}"
                 style = self.get_scenario_style(scenario_name)
                 
-                if data["df"] is not None and "energy_per_rtk" in data["df"].columns:
+                if data["df"] is not None and "energy_per_rtk_mean" in data["df"].columns:
                     years = data["years"]
-                    intensity = data["df"].loc[years, "energy_per_rtk"]
+                    intensity = data["df"].loc[years, "energy_per_rtk_mean"]
                     
                     self.ax.plot(
                         years, 

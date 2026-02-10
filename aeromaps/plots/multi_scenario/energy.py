@@ -68,17 +68,17 @@ class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
 class EnergyMixComparisonPlot(MultiScenarioPlot):
     """
     Compare energy mix (kerosene, hydrogen, electricity) across scenarios.
-    
+
     Shows stacked area plots for each scenario's energy sources.
     Creates subplots for each scenario to show the evolution of the energy mix.
     """
     
     required_outputs = [
         "energy_consumption_dropin_fuel",
-        "energy_consumption_hydrogen", 
+        "energy_consumption_hydrogen",
         "energy_consumption_electric"
     ]
-    
+
     def _get_default_figsize(self):
         """Return default figure size based on number of scenarios."""
         n_scenarios = len(self.scenario_data)
@@ -95,7 +95,7 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                              for i, data in enumerate(self.scenario_data)]
         
         n_scenarios = len(scenario_items)
-        
+
         # Clear existing axes and create subplots
         self.fig.clear()
         axes = self.fig.subplots(n_scenarios, 1, squeeze=False)
@@ -111,18 +111,18 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 kerosene = data["df"].loc[years, "energy_consumption_dropin_fuel"] * 1e-12
                 hydrogen = data["df"].loc[years, "energy_consumption_hydrogen"] * 1e-12
                 electricity = data["df"].loc[years, "energy_consumption_electric"] * 1e-12
-                
+
                 # Create stacked area plot
                 ax.stackplot(
                     years,
                     kerosene,
-                    hydrogen, 
+                    hydrogen,
                     electricity,
                     labels=['Kerosene', 'Hydrogen', 'Electricity'],
                     colors=['#ff7f0e', '#9467bd', '#2ca02c'],
                     alpha=0.8
                 )
-                
+
                 ax.set_ylabel("Energy [EJ]", fontsize=10)
                 ax.set_title(f"{scenario_name}", fontsize=11, fontweight='bold')
                 ax.legend(loc='upper left', fontsize=9)
@@ -142,3 +142,4 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
         """Update plot elements with new data."""
         self.fig.clear()
         self.create_plot()
+
