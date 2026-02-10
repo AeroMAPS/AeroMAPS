@@ -115,54 +115,53 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
         
         # Determine energy carriers from pathways_manager
         # Default to legacy carriers if pathways_manager is not available
+        energy_carriers = []
+        energy_labels = []
+        
         if self.pathways_manager and hasattr(self.pathways_manager, 'get_all_types'):
             aircraft_types = self.pathways_manager.get_all_types('aircraft_type')
             
-            # Build list of energy carrier columns to plot
-            energy_carriers = []
-            energy_labels = []
-            
-            for aircraft_type in aircraft_types:
-                # Get all energy origins for this aircraft type
-                energy_origins = self.pathways_manager.get_all_types('energy_origin')
-                
-                for energy_origin in energy_origins:
-                    # Check if this combination exists
-                    pathways = self.pathways_manager.get(
-                        aircraft_type=aircraft_type,
-                        energy_origin=energy_origin
-                    )
-                    if pathways:
-                        column_name = f"{aircraft_type}_{energy_origin}_energy_consumption"
-                        energy_carriers.append(column_name)
-                        # Create readable label
-                        label = f"{aircraft_type.replace('_', ' ').title()} - {energy_origin.replace('_', ' ').title()}"
-                        energy_labels.append(label)
-            
-            # If no specific aircraft/origin combinations found, try aircraft types
-            if not energy_carriers:
+            if aircraft_types:
+                # Build list of energy carrier columns to plot
                 for aircraft_type in aircraft_types:
-                    column_name = f"energy_consumption_{aircraft_type}"
-                    energy_carriers.append(column_name)
-                    energy_labels.append(aircraft_type.replace('_', ' ').title())
-            
-            # Also add fallback to standard energy carriers if we didn't find any
-            # This ensures compatibility with both generic and legacy column naming
-            if not energy_carriers:
-                energy_carriers = [
-                    "energy_consumption_dropin_fuel",
-                    "energy_consumption_hydrogen",
-                    "energy_consumption_electric"
-                ]
-                energy_labels = ['Kerosene', 'Hydrogen', 'Electricity']
-        else:
-            # Fallback to legacy hardcoded carriers
+                    # Get all energy origins for this aircraft type
+                    energy_origins = self.pathways_manager.get_all_types('energy_origin')
+                    
+                    for energy_origin in energy_origins:
+                        # Check if this combination exists
+                        pathways = self.pathways_manager.get(
+                            aircraft_type=aircraft_type,
+                            energy_origin=energy_origin
+                        )
+                        if pathways:
+                            column_name = f"{aircraft_type}_{energy_origin}_energy_consumption"
+                            energy_carriers.append(column_name)
+                            # Create readable label
+                            label = f"{aircraft_type.replace('_', ' ').title()} - {energy_origin.replace('_', ' ').title()}"
+                            energy_labels.append(label)
+                
+                # If no specific aircraft/origin combinations found, try aircraft types
+                if not energy_carriers:
+                    for aircraft_type in aircraft_types:
+                        column_name = f"energy_consumption_{aircraft_type}"
+                        energy_carriers.append(column_name)
+                        energy_labels.append(aircraft_type.replace('_', ' ').title())
+        
+        # Fallback to legacy hardcoded carriers if pathways unavailable or returned nothing
+        if not energy_carriers:
             energy_carriers = [
                 "energy_consumption_dropin_fuel",
                 "energy_consumption_hydrogen",
                 "energy_consumption_electric"
             ]
             energy_labels = ['Kerosene', 'Hydrogen', 'Electricity']
+        
+        # Define legacy carriers once for use in fallback (if needed per scenario)
+        legacy_carriers = [
+            ("energy_consumption_dropin_fuel", "Kerosene"),
+            ("energy_consumption_hydrogen", "Hydrogen"),
+            ("energy_consumption_electric", "Electricity")
+        ]
         
         # Plot each scenario
         for idx, (scenario_name, data) in enumerate(scenario_items):
@@ -187,11 +186,6 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 
                 # If no data found with dynamic carriers, try legacy column names
                 if not energy_data:
-                    legacy_carriers = [
-                        ("energy_consumption_dropin_fuel", "Kerosene"),
-                        ("energy_consumption_hydrogen", "Hydrogen"),
-                        ("energy_consumption_electric", "Electricity")
-                    ]
                     for carrier_idx, (carrier_col, carrier_label) in enumerate(legacy_carriers):
                         if carrier_col in data["df"].columns:
                             carrier_energy = data["df"].loc[years, carrier_col] * 1e-12
