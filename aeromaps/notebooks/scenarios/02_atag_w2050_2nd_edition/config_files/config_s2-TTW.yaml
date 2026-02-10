@@ -9,7 +9,7 @@ models:
     climate_model_data_file: default
 
   energy:
-    energy_carriers_model_data_file: "../data_inputs/s2_energy.yaml"
+    energy_carriers_model_data_file: "../data_inputs/s2-TTW_energy.yaml"
     resources_model_data_file: "../data_inputs/resources.yaml"
     processes_model_data_file: "../data_inputs/processes.yaml"
 
