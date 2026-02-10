@@ -1,26 +1,30 @@
 data:
   inputs:
-    json_inputs_file: "../data_inputs/s1_inputs.json"
+    json_inputs_file: "../data_inputs/s1-TTW_inputs.json"
   outputs:
-    json_outputs_file: "../data_outputs/s1.json"
+    json_outputs_file: "../data_outputs/s1-TTW.json"
 
 models:
   climate:
     climate_model_data_file: default
 
+  fleet:
+    fleet_model_data_file: "../data_inputs/fleet_s1.yaml"
+    aircraft_inventory_model_data_file: "../data_inputs/aircraft_inventory.yaml"
+
   energy:
-    energy_carriers_model_data_file: "../data_inputs/s1-TTW_energy.yaml"
-    resources_model_data_file: "../data_inputs/resources-TTW.yaml"
+    energy_carriers_model_data_file: "../data_inputs/s1_energy.yaml"
+    resources_model_data_file: "../data_inputs/resources.yaml"
     processes_model_data_file: "../data_inputs/processes.yaml"
 
   standards:
     - models_traffic
-    - models_efficiency_top_down_interp
-    - models_energy_with_fuel_effect
+    - models_efficiency_bottom_up
+    - models_energy_without_fuel_effect
+    - models_energy_cost
     - models_emissions
     - models_sustainability
-    - models_energy_cost
-    - models_operation_cost_top_down
+    - models_operation_cost_bottom_up
 
   customs:
     atag_offset: "../models/atag_offset.py::ATAGOffset"
