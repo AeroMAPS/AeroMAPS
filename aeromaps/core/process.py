@@ -661,7 +661,7 @@ class AeroMAPSProcess(object):
         if name in available_plots_fleet:
             try:
                 # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
-                fig = available_plots_fleet[name](self, self.fleet_model)
+                fig = available_plots_fleet[name](self)
                 if save:
                     if size_inches is not None:
                         fig.fig.set_size_inches(size_inches)
