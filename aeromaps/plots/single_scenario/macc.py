@@ -13,10 +13,10 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class AnnualMACC:
-    def __init__(self, process, fleet_model):
+    def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
-        self.fleet_model = fleet_model
+        self.fleet_model = process.fleet_model
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
@@ -572,10 +572,10 @@ class AnnualMACC:
 
 
 class CumulativeMACC:
-    def __init__(self, process, fleet_model):
+    def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
-        self.fleet_model = fleet_model
+        self.fleet_model = process.fleet_model
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
@@ -1108,10 +1108,10 @@ class CumulativeMACC:
 
 
 class ScenarioMACC:
-    def __init__(self, process, fleet_model):
+    def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
-        self.fleet_model = fleet_model
+        self.fleet_model = process.fleet_model
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
@@ -1498,10 +1498,10 @@ class ScenarioMACC:
 
 
 class ShadowCarbonPrice:
-    def __init__(self, process, fleet_model):
+    def __init__(self, process):
         data = process.data
         self.df = data["vector_outputs"]
-        self.fleet_model = fleet_model
+        self.fleet_model = process.fleet_model
         self.float_outputs = data["float_outputs"]
         self.float_inputs = data["float_inputs"]
         self.years = data["years"]["full_years"]
@@ -1911,6 +1911,8 @@ class AnnualMACCSimple(SingleScenarioPlot):
             )
 
             # Abatement effective in MtCO2e
+            print(name for name in self.df.columns if "aircraft_carbon_abatement_volume" in name)
+
             vol.extend(
                 [
                     elt / 1000000

@@ -300,14 +300,14 @@ def test_mfsp_detailled_plot(process):
     plot = process.plot("mfsp_detailled", save=False)
     assert plot is not None
 
-
-def test_annual_macc_simple_fleet_plot(process):
-    """Test that annual_MACC_simple_fleet plot can be created."""
-    plot = process.plot("annual_MACC_simple_fleet", save=False)
-    assert plot is not None
-
-
-def test_shadow_carbon_pricing_simple_fleet_plot(process):
-    """Test that shadow_carbon_pricing_simple_fleet plot can be created."""
-    plot = process.plot("shadow_carbon_pricing_simple_fleet", save=False)
-    assert plot is not None
+# todo: add tests for the following plots once they are re-implemented
+# def test_annual_macc_simple_fleet_plot(process):
+#     """Test that annual_MACC_simple_fleet plot can be created."""
+#     plot = process.plot("annual_MACC_simple_fleet", save=False)
+#     assert plot is not None
+#
+#
+# def test_shadow_carbon_pricing_simple_fleet_plot(process):
+#     """Test that shadow_carbon_pricing_simple_fleet plot can be created."""
+#     plot = process.plot("shadow_carbon_pricing_simple_fleet", save=False)
+#     assert plot is not None

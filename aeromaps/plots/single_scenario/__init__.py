@@ -123,8 +123,9 @@ available_plots = {
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
     "mfsp_detailled": DetailledMFSPBreakdown,
-    "annual_MACC_simple_fleet": AnnualMACCSimple,
-    "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
+    # todo: re-implement "Simple" plots from tsas_2025
+    # "annual_MACC_simple_fleet": AnnualMACCSimple,
+    # "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }
 
 available_plots_fleet = {

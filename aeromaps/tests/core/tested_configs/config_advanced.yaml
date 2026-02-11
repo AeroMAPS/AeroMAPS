@@ -10,7 +10,7 @@ models:
 
   fleet:
     aircraft_inventory_model_data_file: "./advanced/aircraft_inventory.yaml"
-    fleet_model_data_file: "./tested_configs/advanced/fleet.yaml"
+    fleet_model_data_file: "./advanced/fleet.yaml"
 
   energy:
     energy_carriers_model_data_file: "./advanced/energy_carriers_data.yaml"
@@ -18,6 +18,6 @@ models:
     processes_model_data_file: "./advanced/processes_data.yaml"
 
   standards:
-    - default_models_top_down
+    - default_models_bottom_up
     - models_abatements_cost
     - models_production_cost
