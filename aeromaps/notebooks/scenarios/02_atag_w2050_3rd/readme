@@ -1,0 +1,15 @@
+Reproduction of ATAG Waypoint scenarios in AeroMAPS
+
+The scenarios from the 3rd edition are made based on the 2nd edition, with some adjustments on assumptions regarding:
+- Technology: old T5 scenario with focus on hydrogen is removed
+- SAF: the mandate quantities are revised downwards, but a steeper ramp-up is assumed (to match their backcasting to
+reach 90% SAF in 2050). The split among pathways is also revised, with more emphasis on advanced feedstocks and less on
+ HEFA.
+
+SAF quantities were estimated from figures in the report, without the need for extra assumptions of how to split among
+feedstocks. Prices however are not disclosed in the document, so they are assumed to be the same as the 2nd edition.
+
+!! ISSUES:
+- Demand growth with CAGR do not account for faster growth in early years (both in the 2nd and 3rd edition)
+- SAF quantities are explicitly stated in the report, but our estimations of total fuel demand is lower than report
+(may be linked to lower demand in early years). Such that, fossil kerosene is phased out in both 2nd and 3rd edition!
