@@ -1,0 +1,117 @@
+# ============================================================================
+# Multi-Regional AeroMAPS Configuration - All Regions (Simple)
+# ============================================================================
+# This configuration runs all available regions using default AeroMAPS settings.
+# Uses separate_processes mode for sequential/parallel execution.
+# ============================================================================
+
+models:
+  standards:
+    - default_models_top_down
+
+regionalisation:
+  execution_mode: "separate_processes"
+  global_namespace: "overall"
+
+  regions:
+    # Africa Domestic
+    AF_DOM:
+      config_file: "data/region_af_dom/config.yaml"
+    
+    # Africa International
+    AF_INT:
+      config_file: "data/region_af_int/config.yaml"
+    
+    # Asia Domestic
+    AS_DOM:
+      config_file: "data/region_as_dom/config.yaml"
+    
+    # Brazil Domestic
+    BRAS_DOM:
+      config_file: "data/region_bras_dom/config.yaml"
+    
+    # EU Domestic
+    EU_DOM:
+      config_file: "data/region_eu_dom*/config.yaml"
+    
+    # EU International
+    EU_INT:
+      config_file: "data/region_eu_int*/config.yaml"
+    
+    # Oceania Domestic
+    OC_DOM:
+      config_file: "data/region_oc_dom/config.yaml"
+    
+    # Oceania International
+    OC_INT:
+      config_file: "data/region_oc_int/config.yaml"
+    
+    # Other Asia International
+    OTHER_AS_INT:
+      config_file: "data/region_other_as_int/config.yaml"
+    
+    # Other Europe Domestic
+    OTHER_EUR_DOM:
+      config_file: "data/region_other_eur_dom/config.yaml"
+    
+    # Other Europe International
+    OTHER_EUR_INT:
+      config_file: "data/region_other_eur_int/config.yaml"
+    
+    # Other North America Domestic
+    OTHER_NAM_DOM:
+      config_file: "data/region_other_nam_dom/config.yaml"
+    
+    # Other North America International
+    OTHER_NAM_INT:
+      config_file: "data/region_other_nam_int/config.yaml"
+    
+    # Other South America Domestic
+    OTHER_SAM_DOM:
+      config_file: "data/region_other_sam_dom/config.yaml"
+    
+    # Singapore International
+    SIN_INT:
+      config_file: "data/region_sin_int/config.yaml"
+    
+    # UK Domestic
+    UK_DOM:
+      config_file: "data/region_uk_dom*/config.yaml"
+    
+    # UK International
+    UK_INT:
+      config_file: "data/regiuon_uk_int*/config.yaml"
+    
+    # USA Domestic
+    USA_DOM:
+      config_file: "data/region_usa_dom/config.yaml"
+    
+    # USA International
+    USA_INT:
+      config_file: "data/region_usa_int/config.yaml"
+    
+    # South America International
+    SAM_INT:
+      config_file: "data/regiuon_sam_int/config.yaml"
+
+  # --------------------------------------------------------------------------
+  # Aggregation Rules
+  # --------------------------------------------------------------------------
+  aggregation:
+    sum:
+      #- co2_emissions
+      #- cumulative_co2_emissions
+      - rpk
+      - ask
+      #- energy_consumption
+      #- energy_consumption_kerosene
+      #- energy_consumption_biofuel
+      #- energy_consumption_electrofuel
+      #- energy_consumption_electricity
+      #- energy_consumption_hydrogen
+
+    weighted_average:
+      - variable: load_factor
+        weight_by: ask
+      #- variable: energy_per_ask
+      #  weight_by: ask
