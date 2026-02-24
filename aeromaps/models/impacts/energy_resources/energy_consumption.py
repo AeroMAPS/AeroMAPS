@@ -111,24 +111,52 @@ class DropInFuelConsumption(AeroMAPSModel):
 
         # WITHOUT OPERATIONS
         # Drop-in fuel
-        energy_consumption_short_range_dropin_fuel_without_operations = (
+
+        ### Handle potential NaN values in energy per ASK for drop-in fuel without operations (e.g., due to zero ASK for certain market segments in some years) by filling NaN with 0, which will lead to zero energy consumption for those segments instead of propagating NaN values.
+        if ask_short_range_dropin_fuel.sum() == 0.0:
+            energy_consumption_short_range_dropin_fuel_without_operations = (
+            0.0 * ask_short_range_dropin_fuel
+        )
+        else:
+            energy_consumption_short_range_dropin_fuel_without_operations = (
             energy_per_ask_without_operations_short_range_dropin_fuel * ask_short_range_dropin_fuel
         )
-        energy_consumption_medium_range_dropin_fuel_without_operations = (
-            energy_per_ask_without_operations_medium_range_dropin_fuel
-            * ask_medium_range_dropin_fuel
+            
+        if ask_medium_range_dropin_fuel.sum() == 0.0:
+            energy_consumption_medium_range_dropin_fuel_without_operations = (
+            0.0 * ask_medium_range_dropin_fuel
         )
-        energy_consumption_long_range_dropin_fuel_without_operations = (
-            energy_per_ask_without_operations_long_range_dropin_fuel * ask_long_range_dropin_fuel
+        else:
+            energy_consumption_medium_range_dropin_fuel_without_operations = (
+                energy_per_ask_without_operations_medium_range_dropin_fuel
+                * ask_medium_range_dropin_fuel
+            )
+
+        if ask_long_range_dropin_fuel.sum() == 0.0:
+            energy_consumption_long_range_dropin_fuel_without_operations = (
+            0.0 * ask_long_range_dropin_fuel
         )
+        else:
+            energy_consumption_long_range_dropin_fuel_without_operations = (
+                energy_per_ask_without_operations_long_range_dropin_fuel * ask_long_range_dropin_fuel
+            )
+
         energy_consumption_passenger_dropin_fuel_without_operations = (
             energy_consumption_short_range_dropin_fuel_without_operations
             + energy_consumption_medium_range_dropin_fuel_without_operations
             + energy_consumption_long_range_dropin_fuel_without_operations
         )
-        energy_consumption_freight_dropin_fuel_without_operations = (
+
+        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively 
+        if rtk_dropin_fuel.sum() == 0.0:
+             energy_consumption_freight_dropin_fuel_without_operations = (
+            0.0 * rtk_dropin_fuel
+        )
+        else:
+            energy_consumption_freight_dropin_fuel_without_operations = (
             energy_per_rtk_without_operations_freight_dropin_fuel * rtk_dropin_fuel
         )
+            
         energy_consumption_dropin_fuel_without_operations = (
             energy_consumption_passenger_dropin_fuel_without_operations
             + energy_consumption_freight_dropin_fuel_without_operations
@@ -155,23 +183,49 @@ class DropInFuelConsumption(AeroMAPSModel):
 
         # WITH OPERATIONS
         # Drop-in fuel
-        energy_consumption_short_range_dropin_fuel = (
+
+        if ask_short_range_dropin_fuel.sum() == 0.0:
+             energy_consumption_short_range_dropin_fuel = (
+            0.0 * ask_short_range_dropin_fuel
+        )
+        else:
+            energy_consumption_short_range_dropin_fuel = (
             energy_per_ask_short_range_dropin_fuel * ask_short_range_dropin_fuel
         )
-        energy_consumption_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
+        if ask_medium_range_dropin_fuel.sum() == 0.0:
+             energy_consumption_medium_range_dropin_fuel = (
+            0.0 * ask_medium_range_dropin_fuel
         )
-        energy_consumption_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
-        )
+        else:
+            energy_consumption_medium_range_dropin_fuel = (
+                energy_per_ask_medium_range_dropin_fuel * ask_medium_range_dropin_fuel
+            )
+        if ask_long_range_dropin_fuel.sum() == 0.0:
+             energy_consumption_long_range_dropin_fuel = (
+            0.0 * ask_long_range_dropin_fuel
+        )     
+        else:
+            energy_consumption_long_range_dropin_fuel = (
+                energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel
+            )
+
         energy_consumption_passenger_dropin_fuel = (
             energy_consumption_short_range_dropin_fuel
             + energy_consumption_medium_range_dropin_fuel
             + energy_consumption_long_range_dropin_fuel
         )
-        energy_consumption_freight_dropin_fuel = (
-            energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
+
+        # in case freight consumption becomes independant of pax in the future, case discjunction still made preventively 
+        if rtk_dropin_fuel.sum() == 0.0:
+             energy_consumption_freight_dropin_fuel = (
+            0.0 * rtk_dropin_fuel
         )
+        else:
+            energy_consumption_freight_dropin_fuel = (
+                energy_per_rtk_freight_dropin_fuel * rtk_dropin_fuel
+            )
+
+
         energy_consumption_dropin_fuel = (
             energy_consumption_passenger_dropin_fuel + energy_consumption_freight_dropin_fuel
         )

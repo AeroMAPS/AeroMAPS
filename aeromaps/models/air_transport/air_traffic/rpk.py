@@ -191,6 +191,8 @@ class RPK(AeroMAPSModel):
             self.df.loc[k, "rpk_short_range"] = self.df.loc[
                 covid_start_year - 1, "rpk_short_range"
             ] * covid_function(k)
+
+        # todo : remove these for loops!!
         for k in range(covid_end_year_passenger + 1, self.end_year + 1):
             self.df.loc[k, "rpk_short_range"] = self.df.loc[k - 1, "rpk_short_range"] * (
                 1 + self.df.loc[k, "annual_growth_rate_passenger_short_range"] / 100
