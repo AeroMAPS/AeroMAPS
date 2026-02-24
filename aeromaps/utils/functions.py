@@ -161,15 +161,18 @@ def create_partitioning(file, path=""):
         * total_ask_2019
         / (1 - freight_energy_share_2019_partitioned / 2 / 100)
     )  # Dedicated freight (half of total freight) not included in AeroSCOPE
+
+    ded_freight_ratio = freight_energy_share_2019_partitioned / 2 / 100
+
     short_range_energy_consumption_2019 = (
         short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
+    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
     medium_range_energy_consumption_2019 = (
         medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
+    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
     long_range_energy_consumption_2019 = (
         long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
+    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
 
     # Calculation of the partitioned input values
 
@@ -183,6 +186,7 @@ def create_partitioning(file, path=""):
     long_range_energy_share_2019_partitioned = (
         long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
+    print(long_range_energy_consumption_2019)
     short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
     medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
     long_range_rpk_share_2019_partitioned = long_range_ask_2019 / total_ask_2019 * 100
