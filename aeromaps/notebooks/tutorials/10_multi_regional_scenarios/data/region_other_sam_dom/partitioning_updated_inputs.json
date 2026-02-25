@@ -2,7 +2,7 @@
     "other_float_data": {
         "short_range_energy_share_2019": 77.46376335426463,
         "medium_range_energy_share_2019": 7.536236645735331,
-        "long_range_energy_share_2019": NaN,
+        "long_range_energy_share_2019": 0.0,
         "freight_energy_share_2019": 15.0,
         "short_range_rpk_share_2019": 88.35550133653425,
         "medium_range_rpk_share_2019": 11.64449866346576,

@@ -80,7 +80,7 @@ regionalisation:
     
     # UK International
     UK_INT:
-      config_file: "data/regiuon_uk_int*/config.yaml"
+      config_file: "data/region_uk_int*/config.yaml"
     
     # USA Domestic
     USA_DOM:
@@ -92,15 +92,15 @@ regionalisation:
     
     # South America International
     SAM_INT:
-      config_file: "data/regiuon_sam_int/config.yaml"
+      config_file: "data/region_sam_int/config.yaml"
 
   # --------------------------------------------------------------------------
   # Aggregation Rules
   # --------------------------------------------------------------------------
   aggregation:
     sum:
-      #- co2_emissions
-      #- cumulative_co2_emissions
+      - co2_emissions_including_energy
+      - co2_emissions_2019technology
       - rpk
       - ask
       #- energy_consumption

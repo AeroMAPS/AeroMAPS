@@ -1,10 +1,15 @@
 data:
   inputs:
+    json_inputs_file: "./inputs.json"
     partitioning_data_file: "./partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "./outputs.json"
 
 models:
+  fleet:
+    fleet_model_data_file: "./../fleet/fleet.yaml"
+    aircraft_inventory_model_data_file: "./../fleet/aircraft_inventory.yaml" 
+
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: default

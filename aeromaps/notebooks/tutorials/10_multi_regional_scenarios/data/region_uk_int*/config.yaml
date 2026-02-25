@@ -1,11 +1,14 @@
-# Default region configuration template
-# Each region will have its own partitioning data
-
 data:
   inputs:
     partitioning_data_file: "./partitioning_updated_inputs.json"
+  outputs:
+    json_outputs_file: "./outputs.json"
 
 models:
+  fleet:
+    fleet_model_data_file: "./../fleet/fleet.yaml"
+    aircraft_inventory_model_data_file: "./../fleet/aircraft_inventory.yaml" 
+
   energy:
     energy_carriers_model_data_file: "./energy_carriers_data.yaml"
     resources_model_data_file: default
@@ -13,7 +16,7 @@ models:
 
   standards:
     - models_traffic
-    - models_efficiency_top_down
+    - models_efficiency_bottom_up
     - models_energy_without_fuel_effect
     - models_energy_cost
     - models_offset
