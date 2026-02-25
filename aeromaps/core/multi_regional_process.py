@@ -16,7 +16,9 @@ Two execution modes are supported:
 # Standard library imports
 import logging
 import os
+import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
 from copy import deepcopy
 from typing import Dict, List, Optional, Literal
 
@@ -242,11 +244,12 @@ class MultiRegionalProcess(AeroMAPSProcess):
         for region_id, config_file in pbar:
             pbar.set_postfix_str(f"Region: {region_id}")
 
-            regional_process = AeroMAPSProcess(
-                configuration_file=config_file,
-                custom_models=self._custom_models,
-                optimisation=False,
-            )
+            with self._regional_warning_context(region_id):
+                regional_process = AeroMAPSProcess(
+                    configuration_file=config_file,
+                    custom_models=self._custom_models,
+                    optimisation=False,
+                )
 
             self._regional_processes[region_id] = regional_process
 
@@ -434,6 +437,33 @@ class MultiRegionalProcess(AeroMAPSProcess):
         # Aggregate results from all regional processes
         self._aggregate_regional_outputs()
 
+    @contextmanager
+    def _regional_warning_context(self, region_id: str):
+        """Context manager to prefix warnings with region ID.
+        
+        Parameters
+        ----------
+        region_id
+            The region identifier to prefix warnings with.
+        
+        Yields
+        ------
+        None
+            Context where warnings are prefixed with [region_id].
+        """
+        original_showwarning = warnings.showwarning
+        
+        def regional_showwarning(message, category, filename, lineno, file=None, line=None):
+            # Prefix the warning message with region ID
+            prefixed_message = f"Region: [{region_id}] {message}"
+            original_showwarning(prefixed_message, category, filename, lineno, file, line)
+        
+        try:
+            warnings.showwarning = regional_showwarning
+            yield
+        finally:
+            warnings.showwarning = original_showwarning
+
     def _execute_sequential(self):
         """Execute all regional processes sequentially with progress bar."""
         pbar = tqdm(
@@ -444,7 +474,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
         )
         for region_id, regional_process in pbar:
             pbar.set_postfix_str(f"Region: {region_id}")
-            regional_process.compute()
+            with self._regional_warning_context(region_id):
+                regional_process.compute()
 
     def _execute_parallel(self, max_workers: Optional[int] = None):
         """Execute regional processes in parallel using ThreadPoolExecutor with progress bar."""
@@ -453,7 +484,8 @@ class MultiRegionalProcess(AeroMAPSProcess):
 
         def compute_region(region_id: str) -> str:
             """Compute a single region and return its ID."""
-            self._regional_processes[region_id].compute()
+            with self._regional_warning_context(region_id):
+                self._regional_processes[region_id].compute()
             return region_id
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
