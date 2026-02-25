@@ -164,15 +164,40 @@ def create_partitioning(file, path=""):
 
     ded_freight_ratio = freight_energy_share_2019_partitioned / 2 / 100
 
-    short_range_energy_consumption_2019 = (
-        short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
-    medium_range_energy_consumption_2019 = (
-        medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
-    long_range_energy_consumption_2019 = (
-        long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
+    # Check short range: case distinction if there is no traffic.
+    if pd.isna(short_range_ask_2019) or short_range_ask_2019==0.0:
+        logging.warning("No traffic is assumed for short range.")
+        short_range_energy_consumption_2019 = 0
+    # If there is traffic, energy per ASK should not be null
+    elif pd.isna(short_range_energy_consumption_per_ask_2019) or short_range_energy_consumption_per_ask_2019 is None:
+        raise ValueError("Short range ASK is not null but energy per ASK is null.")
+    # nominal case: both values are not null
+    else:
+        short_range_energy_consumption_2019 = (
+            short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
+    
+    # Check medium range
+    if pd.isna(medium_range_ask_2019) or medium_range_ask_2019==0.0:
+        logging.warning("No traffic is assumed for medium range.")
+        medium_range_energy_consumption_2019 = 0
+    elif pd.isna(medium_range_energy_consumption_per_ask_2019) or medium_range_energy_consumption_per_ask_2019 is None:
+        raise ValueError("Medium range ASK is not null but energy per ASK is null.")
+    else:
+        medium_range_energy_consumption_2019 = (
+            medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
+    
+    # Check long range
+    if pd.isna(long_range_ask_2019) or long_range_ask_2019==0.0:
+        logging.warning("No traffic is assumed for long range.")
+        long_range_energy_consumption_2019 = 0
+    elif pd.isna(long_range_energy_consumption_per_ask_2019) or long_range_energy_consumption_per_ask_2019 is None:
+        raise ValueError("Long range ASK is not null but energy per ASK is null.")
+    else:
+        long_range_energy_consumption_2019 = (
+            long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
+        ) * (1 - ded_freight_ratio / (1 - ded_freight_ratio))
 
     # Calculation of the partitioned input values
 
@@ -186,7 +211,7 @@ def create_partitioning(file, path=""):
     long_range_energy_share_2019_partitioned = (
         long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
     )
-    print(long_range_energy_consumption_2019)
+
     short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
     medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
     long_range_rpk_share_2019_partitioned = long_range_ask_2019 / total_ask_2019 * 100
