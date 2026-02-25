@@ -872,7 +872,7 @@ class Fleet(object):
             if old_sr_energy is None or recent_sr_energy is None:
                 raise ValueError("Short Range reference aircraft energy_per_ask must be defined")
             
-            if self.parameters.long_range_rpk_share_2019==0.0:
+            if self.parameters.short_range_rpk_share_2019==0.0:
                 mean_energy_init_ask_short_range = np.nan
             else:
                 mean_energy_init_ask_short_range = (
@@ -927,7 +927,7 @@ class Fleet(object):
             if old_mr_energy is None or recent_mr_energy is None:
                 raise ValueError("Medium Range reference aircraft energy_per_ask must be defined")
 
-            if self.parameters.long_range_rpk_share_2019==0.0:
+            if self.parameters.medium_range_rpk_share_2019==0.0:
                 mean_energy_init_ask_medium_range = np.nan
             else:
                 mean_energy_init_ask_medium_range = (
