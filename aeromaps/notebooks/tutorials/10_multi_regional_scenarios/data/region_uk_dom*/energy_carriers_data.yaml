@@ -39,3 +39,46 @@ fossil_kerosene:
         0.007299796, 0.01202598, 0.019909217, 0.014922935, 0.012596014, 0.012]
         method: linear
   outputs:
+
+
+generic_saf:
+  # Metadata
+  name: "generic_saf"
+  environmental_model: "top-down"
+  cost_model: "top-down"
+  aircraft_type: "dropin_fuel"
+  energy_origin: "biomass and electricity" 
+  default: False
+  abatement_cost: False
+  # Until level two used to separate inputs. Then concatenated in variable name.
+  inputs:
+    # Policy
+    mandate:
+      mandate_type: "share"
+      mandate_share: !AeroMapsCustomDataType
+        years:  [2020, 2024, 2025, 2030, 2040, 2050]
+        values: [0.0, 0.0, 6.5, 32.9, 82.3, 82.3] # used a linear interp as planned in fuel of the future + conversion for co2 based target (-1 in 2027; -10 in 2037)
+        method: linear
+    # Technical:
+    technical:
+      resource_names: [ "ft_others_biomass" ]
+      resource_specific_consumption:
+        ft_others_biomass: 2.17
+      kerosene_selectivity: 0.15
+      lhv: 44
+    # Environmental:
+    environmental:
+      mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
+        years: []
+        values: [10.48]
+        method: linear
+      emission_index:
+        h2o: 1.231 #
+        nox: 0.01514
+        sulfur: 0.0
+        soot: 6.0e-06
+        particles_number: 8.0e+13
+    # Economics:
+    economics:
+    # Not defined for this application
+  outputs:

@@ -16,5 +16,9 @@
   "reference_cagr_freight_reference_periods_values": [3.8],
   "load_factor_end_year": 89.0,
   "operations_gain_reference_years": [],
-  "operations_gain_reference_years_values": [3.0]
+  "operations_gain_reference_years_values": [3.0],
+  "carbon_offset_baseline_level_vs_2019_reference_periods": [],
+  "carbon_offset_baseline_level_vs_2019_reference_periods_values": [85.0], 
+  "carbon_offset_baseline_share_total_emissions_reference_periods": [2020, 2026, 2027, 2050],
+  "carbon_offset_baseline_share_total_emissions_reference_periods_values": [60.0, 60.0, 85.0, 85.0]
 }

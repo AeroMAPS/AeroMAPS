@@ -100,7 +100,10 @@ regionalisation:
   aggregation:
     sum:
       - co2_emissions_including_energy
+      - co2_emissions_including_aircraft_efficiency
+      - co2_emissions_including_load_factor
       - co2_emissions_2019technology
+      - carbon_offset
       - rpk
       - ask
       #- energy_consumption
