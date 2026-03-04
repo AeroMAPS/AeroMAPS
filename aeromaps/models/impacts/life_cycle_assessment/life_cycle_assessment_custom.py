@@ -163,7 +163,7 @@ class LifeCycleAssessmentCustom(AeroMAPSModel):
         res = self._multi_lca_algebraic_raw(**params_dict)
 
         # --- Store xarray to enable user to access data after process calculation ---
-        res["params"] = params_dict[KEY_YEAR]  # replace param index by actual years
+        res["params"] = params_dict.get(KEY_YEAR, self.years)  # replace param index by actual years
         res = res.rename({"params": KEY_YEAR})  # rename 'params' dimension to 'year'
         self.xarray_lca = res
 
