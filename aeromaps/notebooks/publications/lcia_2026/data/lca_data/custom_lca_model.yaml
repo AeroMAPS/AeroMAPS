@@ -1,0 +1,111 @@
+# --- Project name ---
+project: ecats2026
+reset_project: False  # <-- Set to true only if you want to clean the entire brightway/premise project 
+
+
+# --- Ecoinvent settings ---
+ecoinvent:
+    version: '3.12'
+    model: 'cutoff'
+    # Note: import of ecoinvent requires to provide credentials.
+    # For privacy reasons, we ask you to create a file named .env, that you will not share /commit,
+    # and contains the following :
+        # ECOINVENT_LOGIN=<your_login>
+        # ECOINVENT_PASSWORD=<your_password>
+
+
+# --- LCA model ---
+model:
+            
+    contrails:
+        amount: total_aircraft_distance * fuel_effect_correction_contrails # correction factor for SAFs blending
+        name: 'contrail'  # This is a new biosphere flow implemented by the updated LCIA method for climate change
+        categories:  # <-- compartments of biosphere flow
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'contrails'
+            
+    CO2:
+        amount: (fossil_kerosene_total_co2_emissions + lcaf_total_co2_emissions + saf_ftg_total_co2_emissions + saf_dac_total_co2_emissions + saf_co2_total_co2_emissions + lh2_total_co2_emissions) * 1e-3  # ICAO's approach to life-cycle GHG emissions (see ltag_data_inputs .yaml files)
+        name: 'carbon dioxide, fossil'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'CO2'
+            
+    NOx:
+        amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_nox + lcaf_mass_consumption * lcaf_emission_index_nox + saf_ftg_mass_consumption * saf_ftg_emission_index_nox + saf_dac_emission_index_nox * saf_dac_mass_consumption + saf_co2_emission_index_nox * saf_co2_mass_consumption
+        name: 'nitrogen oxides'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'NOx'
+            
+    NOx_LH2:
+        amount: lh2_mass_consumption * lh2_emission_index_nox
+        name: 'nitrogen oxides'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'NOx LH2'
+            
+    SOx:
+        amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_sulfur + lcaf_mass_consumption * lcaf_emission_index_sulfur + saf_ftg_mass_consumption * saf_ftg_emission_index_sulfur + saf_dac_emission_index_sulfur * saf_dac_mass_consumption + saf_co2_emission_index_sulfur * saf_co2_mass_consumption
+        name: 'sulfur dioxide'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'sulfur'
+
+    H2O:
+        amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_h2o + lcaf_mass_consumption * lcaf_emission_index_h2o + saf_ftg_mass_consumption * saf_ftg_emission_index_h2o + saf_dac_emission_index_h2o * saf_dac_mass_consumption + saf_co2_emission_index_h2o * saf_co2_mass_consumption + lh2_mass_consumption * lh2_emission_index_h2o
+        name: 'water vapour'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'water vapour'
+
+    soot:
+        amount: fossil_kerosene_mass_consumption * fossil_kerosene_emission_index_soot + lcaf_mass_consumption * lcaf_emission_index_soot + saf_ftg_mass_consumption * saf_ftg_emission_index_soot + saf_dac_emission_index_soot * saf_dac_mass_consumption + saf_co2_emission_index_soot * saf_co2_mass_consumption
+        name: 'soot' # or 'Particulate Matter, < 2.5 um' in ecoinvent
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'soot'
+            
+    total_fuel_burn_aq:
+        amount: fossil_kerosene_mass_consumption + lcaf_mass_consumption + saf_ftg_mass_consumption + saf_dac_mass_consumption + saf_co2_mass_consumption  # assuming similar composition to 2019 fossil fuel. Excluding LH2 (only NOx contribution).
+        name: 'fuel burn aq'
+        categories:
+            - 'air'
+            - 'lower stratosphere + upper troposphere'
+        tags:
+            - phase: 'fuel_burn_air_quality'
+
+
+# --- Select LCIA methods for assessment ---
+methods:
+    - "('ReCiPe 2016 v1.03, endpoint (H)', 'total: human health', 'human health')"
+
+
+# --- Additional/custom LCIA methods provided by the user ---
+custom_methods:
+      
+    - name: "('LCIA Aviation', 'human health', 'climate change: human health')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_short_term.csv'
+      unit: 'DALY'
+      
+    - name: "('LCIA Aviation', 'human health', 'pm25: human health')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_particulate_matter_average.csv'
+      unit: 'DALY'
+      
+    - name: "('LCIA Aviation', 'human health', 'o3: human health')"
+      filepath: './data/lca_data/LCIA/CFs_human_health_ozone_average.csv'
+      unit: 'DALY'
