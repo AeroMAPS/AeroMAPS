@@ -1,22 +1,44 @@
 { 
   "end_year": 2050,
-  "covid_end_year_passenger": 2024,
-  "covid_end_year_freight": 2024,
-  "cagr_passenger_short_range_reference_periods": [],
-  "cagr_passenger_short_range_reference_periods_values": [4.76],
-  "cagr_passenger_medium_range_reference_periods": [],
-  "cagr_passenger_medium_range_reference_periods_values": [4.76],
-  "cagr_passenger_long_range_reference_periods": [],
-  "cagr_passenger_long_range_reference_periods_values": [4.76],
-  "cagr_freight_reference_periods": [],
-  "cagr_freight_reference_periods_values": [4.76],
-  "reference_cagr_passenger_reference_periods": [],
-  "reference_cagr_passenger_reference_periods_values": [4.76],
-  "reference_cagr_freight_reference_periods": [],
-  "reference_cagr_freight_reference_periods_values": [4.76],
-  "load_factor_end_year": 89.0,
-  "operations_gain_reference_years": [],
-  "operations_gain_reference_years_values": [3.0],
+  "covid_end_year_passenger": 2023,
+  "covid_end_year_freight": 2023,
+"covid_end_year_reference_rpk_ratio": 96.5,
+  "cagr_passenger_short_range_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "cagr_passenger_short_range_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
+  "cagr_passenger_medium_range_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "cagr_passenger_medium_range_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
+  "cagr_passenger_long_range_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "cagr_passenger_long_range_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
+  "cagr_freight_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "cagr_freight_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
+  "reference_cagr_passenger_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "reference_cagr_passenger_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
+  "reference_cagr_freight_reference_periods": [
+    2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033,
+    2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043,
+    2044, 2045, 2046, 2047, 2048, 2049,2050
+  ],
+  "reference_cagr_freight_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
   "carbon_offset_baseline_level_vs_2019_reference_periods": [],
   "carbon_offset_baseline_level_vs_2019_reference_periods_values": [85.0], 
   "carbon_offset_baseline_share_total_emissions_reference_periods": [2020, 2026, 2027, 2050],

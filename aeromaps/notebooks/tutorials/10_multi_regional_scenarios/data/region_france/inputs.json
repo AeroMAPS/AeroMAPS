@@ -1,7 +1,7 @@
 { 
   "end_year": 2050,
-  "covid_end_year_passenger": 2024,
-  "covid_end_year_freight": 2024,
+  "covid_end_year_passenger": 2023,
+  "covid_end_year_freight": 2023,
   "cagr_passenger_short_range_reference_periods": [],
   "cagr_passenger_short_range_reference_periods_values": [4.1],
   "cagr_passenger_medium_range_reference_periods": [],
@@ -14,7 +14,7 @@
   "reference_cagr_passenger_reference_periods_values": [4.1],
   "reference_cagr_freight_reference_periods": [],
   "reference_cagr_freight_reference_periods_values": [4.1],
-  "load_factor_end_year": 89.0,
+  "load_factor_end_year": 82.4,
   "operations_gain_reference_years": [],
-  "operations_gain_reference_years_values": [3.0]
+  "operations_gain_reference_years_values": [5.0]
 }

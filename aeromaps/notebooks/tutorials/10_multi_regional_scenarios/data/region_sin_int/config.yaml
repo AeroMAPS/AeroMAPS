@@ -1,5 +1,6 @@
 data:
   inputs:
+    json_inputs_file: "./inputs.json"
     partitioning_data_file: "./partitioning_updated_inputs.json"
   outputs:
     json_outputs_file: "./outputs.json"

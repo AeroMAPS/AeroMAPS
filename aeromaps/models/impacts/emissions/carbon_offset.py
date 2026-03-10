@@ -34,7 +34,7 @@ class LevelCarbonOffset(AeroMAPSModel):
         co2_emissions: pd.Series,
         carbon_offset_baseline_level_vs_2019_reference_periods: list,
         carbon_offset_baseline_level_vs_2019_reference_periods_values: list,
-        carbon_offset_baseline_share_total_emissions_reference_periods: list, 
+        carbon_offset_baseline_share_total_emissions_reference_periods: list,
         carbon_offset_baseline_share_total_emissions_reference_periods_values: list,
     ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """
@@ -75,7 +75,6 @@ class LevelCarbonOffset(AeroMAPSModel):
             model_name=self.name,
         )
 
-
         self.df.loc[:, "carbon_offset_baseline_level_vs_2019"] = (
             carbon_offset_baseline_level_vs_2019
         )
@@ -83,25 +82,45 @@ class LevelCarbonOffset(AeroMAPSModel):
             carbon_offset_baseline_share_total_emissions
         )
 
-        self.df.loc[self.historic_start_year:self.prospection_start_year-1, "level_carbon_offset"] = 0.0
+        self.df.loc[
+            self.historic_start_year : self.prospection_start_year - 1, "level_carbon_offset"
+        ] = 0.0
 
         baseline_level = (
             co2_emissions.loc[2019]
-            * self.df.loc[self.prospection_start_year:self.end_year, "carbon_offset_baseline_level_vs_2019"]
+            * self.df.loc[
+                self.prospection_start_year : self.end_year, "carbon_offset_baseline_level_vs_2019"
+            ]
             / 100
-            * self.df.loc[self.prospection_start_year:self.end_year, "carbon_offset_baseline_share_total_emissions"]/100
         )
 
-        # compute the ammount offsetted. "clip" sets it to zero if emissions do not exceeds the baseline. 
-        self.df.loc[self.prospection_start_year:self.end_year, "level_carbon_offset"] = (
-            (co2_emissions.loc[self.prospection_start_year:self.end_year]
-            * self.df.loc[self.prospection_start_year:self.end_year, "carbon_offset_baseline_share_total_emissions"]/100  - baseline_level)
-            .clip(lower=0.0)
+        # compute the ammount offsetted. "clip" sets it to zero if emissions do not exceeds the baseline.
+        self.df.loc[self.prospection_start_year : self.end_year, "level_carbon_offset"] = (
+            (
+                (
+                    co2_emissions.loc[self.prospection_start_year : self.end_year]
+                    * self.df.loc[
+                        self.prospection_start_year : self.end_year,
+                        "carbon_offset_baseline_share_total_emissions",
+                    ]
+                    / 100
+                    - baseline_level
+                ).clip(lower=0.0)
+            )
+            * self.df.loc[
+                self.prospection_start_year : self.end_year,
+                "carbon_offset_baseline_share_total_emissions",
+            ]
+            / 100
         )
 
         level_carbon_offset = self.df["level_carbon_offset"]
 
-        return (carbon_offset_baseline_level_vs_2019, carbon_offset_baseline_share_total_emissions, level_carbon_offset)
+        return (
+            carbon_offset_baseline_level_vs_2019,
+            carbon_offset_baseline_share_total_emissions,
+            level_carbon_offset,
+        )
 
 
 class ResidualCarbonOffset(AeroMAPSModel):
