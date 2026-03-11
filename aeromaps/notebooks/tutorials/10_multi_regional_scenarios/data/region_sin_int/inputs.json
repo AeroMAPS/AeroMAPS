@@ -39,11 +39,11 @@
     2044, 2045, 2046, 2047, 2048, 2049,2050
   ],
   "reference_cagr_freight_reference_periods_values": [12.05, 12.05, 7.36, 7.48, 6.17, 5.65, 6.19, 5.09, 3.93, 4.57, 4.37, 4.24, 4.02, 3.85, 3.81, 3.65, 4.05, 3.45, 4.4, 3.79, 3.61, 4.0, 3.88, 3.77, 4.03, 3.53, 3.87, 3.87],
-  "load_factor_end_year": 82.4,
+    "load_factor_end_year": 88.5,
   "operations_gain_reference_years": [],
   "operations_gain_reference_years_values": [5.0],
   "carbon_offset_baseline_level_vs_2019_reference_periods": [],
-  "carbon_offset_baseline_level_vs_2019_reference_periods_values": [85.0], 
+  "carbon_offset_baseline_level_vs_2019_reference_periods_values": [82.75],
   "carbon_offset_baseline_share_total_emissions_reference_periods": [2020, 2026, 2027, 2050],
   "carbon_offset_baseline_share_total_emissions_reference_periods_values": [60.0, 60.0, 85.0, 85.0]
 }

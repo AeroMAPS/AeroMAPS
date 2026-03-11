@@ -108,6 +108,7 @@ regionalisation:
       - cumulative_co2_emissions_including_load_factor
       - cumulative_co2_emissions_2019technology
       - cumulative_carbon_offset
+      - biomass_total_consumption
       - carbon_offset
       - rpk
       - ask

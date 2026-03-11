@@ -39,7 +39,7 @@
     2044, 2045, 2046, 2047, 2048, 2049,2050
   ],
   "reference_cagr_freight_reference_periods_values": [7.85, 7.85, 6.27, 5.55, 3.91, 3.92, 3.69, 3.47, 2.48, 3.3, 2.25, 2.22, 2.87, 2.08, 1.95, 2.03, 1.9, 1.93, 2.61, 1.88, 2.5, 1.78, 1.78, 2.42, 2.33, 1.69, 2.36, 2.36],
-  "load_factor_end_year": 82.4,
+    "load_factor_end_year": 88.5,
   "operations_gain_reference_years": [],
   "operations_gain_reference_years_values": [5.0]
 }
