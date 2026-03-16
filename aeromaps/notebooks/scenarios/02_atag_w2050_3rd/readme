@@ -1,3 +1,5 @@
+!! This structure was made before lifecycle scope was added to config files !!
+
 Reproduction of ATAG Waypoint scenarios in AeroMAPS
 
 The scenarios from the 3rd edition are made based on the 2nd edition, with some adjustments on assumptions regarding:
