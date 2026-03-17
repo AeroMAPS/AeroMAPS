@@ -195,11 +195,11 @@ class SingleScenarioPlot(ABC):
         # Extract new data
         self._extract_data(data)
 
+        # Clear existing fill_between collections before subclass recreates them
+        self._refresh_collections()
+
         # Update plot elements (implemented by subclass)
         self._update_plot_elements()
-
-        # Clear and redraw fill_between collections
-        self._refresh_collections()
 
         # Refresh the view
         self._refresh_view()
@@ -215,7 +215,7 @@ class SingleScenarioPlot(ABC):
         pass
 
     def _refresh_collections(self):
-        """Remove all collections (fill_between areas) from the axes."""
+        """Remove existing collections (fill_between/stackplot areas) from the axes before they are redrawn."""
         for collection in self.ax.collections:
             collection.remove()
 
