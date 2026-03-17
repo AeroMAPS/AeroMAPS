@@ -105,6 +105,8 @@ regionalisation:
       - co2_emissions_including_load_factor
       - co2_emissions_2019technology
       - cumulative_co2_emissions
+      - cumulative_co2_emissions_including_aircraft_efficiency
+      - cumulative_co2_emissions_including_operations
       - cumulative_co2_emissions_including_load_factor
       - cumulative_co2_emissions_2019technology
       - cumulative_carbon_offset
