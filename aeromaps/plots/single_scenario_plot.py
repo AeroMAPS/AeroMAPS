@@ -157,8 +157,10 @@ class SingleScenarioPlot(ABC):
 
     def _configure_canvas(self):
         """Configure matplotlib canvas properties."""
-        self.fig.canvas.header_visible = False
-        self.fig.canvas.toolbar_position = "bottom"
+        if hasattr(self.fig.canvas, "header_visible"):
+            self.fig.canvas.header_visible = False
+        if hasattr(self.fig.canvas, "toolbar_position"):
+            self.fig.canvas.toolbar_position = "bottom"
         self.fig.tight_layout()
 
     @abstractmethod
