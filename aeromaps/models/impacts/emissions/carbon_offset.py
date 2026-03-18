@@ -68,7 +68,7 @@ class LevelCarbonOffset(AeroMAPSModel):
             model_name=self.name,
         )
 
-        carbon_offset_baseline_share_total_emissions = aeromaps_interpolation_function(
+        carbon_offset_baseline_share_total_emissions = aeromaps_leveling_function(
             self,
             carbon_offset_baseline_share_total_emissions_reference_periods,
             carbon_offset_baseline_share_total_emissions_reference_periods_values,
