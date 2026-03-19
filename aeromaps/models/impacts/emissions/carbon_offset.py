@@ -98,13 +98,7 @@ class LevelCarbonOffset(AeroMAPSModel):
         self.df.loc[self.prospection_start_year : self.end_year, "level_carbon_offset"] = (
             (
                 (
-                    co2_emissions.loc[self.prospection_start_year : self.end_year]
-                    * self.df.loc[
-                        self.prospection_start_year : self.end_year,
-                        "carbon_offset_baseline_share_total_emissions",
-                    ]
-                    / 100
-                    - baseline_level
+                    co2_emissions.loc[self.prospection_start_year : self.end_year] - baseline_level
                 ).clip(lower=0.0)
             )
             * self.df.loc[
