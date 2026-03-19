@@ -57,8 +57,12 @@ generic_saf:
       mandate_type: "share"
       mandate_share: !AeroMapsCustomDataType
         years:  [2020, 2024, 2025, 2030, 2040, 2050]
-        values: [0.0, 0.0, 6.5, 32.9, 82.3, 82.3] # used a linear interp as planned in fuel of the future + conversion for co2 based target (-1 in 2027; -10 in 2037)
+        values: [0.0, 0.0, 2.0, 10.0, 22.0, 22.0] 
         method: linear
+      #mandate_share: !AeroMapsCustomDataType
+      #  years:  [2020, 2024, 2025, 2030, 2040, 2050]
+      #  values: [0.0, 0.0, 6.5, 32.9, 82.3, 82.3] 
+      #  method: linear
     # Technical:
     technical:
       resource_names: [ "ft_others_biomass" ]
