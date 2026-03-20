@@ -51,6 +51,10 @@
         0,
         3
     ],
+    "covid_end_year_passenger": 2023,
+    "covid_end_year_reference_rpk_ratio": 100.0,
+    "covid_end_year_freight": 2023,
+    "covid_end_year_reference_rtk_ratio": 100.0,
     "load_factor_end_year": 88.389,
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years": [2019, 2030, 2040, 2050],
     "energy_per_ask_short_range_dropin_fuel_gain_reference_years_values": [0.3, 0.5, 1.6, 1.3],
