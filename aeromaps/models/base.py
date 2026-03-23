@@ -198,6 +198,15 @@ def aeromaps_interpolation_function(
         Series of interpolated values indexed by year taken from the model's DataFrame.
     """
     # Main
+    if len(reference_years_values) == 0:
+        raise ValueError(
+            f"[{model_name}] reference_years_values must not be empty."
+        )
+    if len(reference_years) > 0 and len(reference_years) != len(reference_years_values):
+        raise ValueError(
+            f"[{model_name}] reference_years and reference_years_values must have the same length "
+            f"(got {len(reference_years)} years and {len(reference_years_values)} values)."
+        )
     if len(reference_years) == 0:
         for k in range(self.prospection_start_year, self.end_year + 1):
             self.df.loc[k, "interpolation_function_values"] = reference_years_values[0]
