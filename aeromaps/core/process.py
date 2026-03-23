@@ -1348,8 +1348,9 @@ class AeroMAPSProcess(object):
                             model = AeroMAPSAutoModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
-                        logging.warning(
-                            "Model '%s' has no compute() method and will be skipped.", model.name
+                        raise AttributeError(
+                            f"Model '{model.name}' has no compute() method. "
+                            "All AeroMAPSModel subclasses must implement compute()."
                         )
                 else:
                     logging.warning(
