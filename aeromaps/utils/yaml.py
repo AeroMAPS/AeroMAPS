@@ -23,22 +23,38 @@ yaml.add_constructor("!AeroMapsCustomDataType", aeromaps_custom_data_type_constr
 
 def read_yaml_file(file_name="parameters.yaml"):
     """
-    Example function to read a YAML file and returns its contents as a dictionary.
+    Read a YAML file and return its contents as a dictionary.
 
     Parameters
     ----------
-    file_name : str
-        The path to the YAML file to be read (default is "parameters.yaml").
+    file_name : str or None
+        The path to the YAML file to be read. If None, returns an empty dict.
 
     Returns
     -------
     dict
         The contents of the YAML file as a dictionary.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the file does not exist.
+    yaml.YAMLError
+        If the file contains invalid YAML.
+    ValueError
+        If the file does not contain a YAML mapping (dict).
     """
+    if file_name is None:
+        return {}
     try:
         with open(file_name, "r", encoding="utf-8") as file:
             data = yaml.load(file, Loader=yaml.Loader)
-            return data if isinstance(data, dict) else {}
-    except Exception as e:
-        print(f"Error reading YAML file: {e}")
-        return {}
+    except FileNotFoundError:
+        raise FileNotFoundError(f"YAML file not found: '{file_name}'")
+    except yaml.YAMLError as e:
+        raise yaml.YAMLError(f"Invalid YAML in '{file_name}': {e}") from e
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"Expected a YAML mapping in '{file_name}', got {type(data).__name__}"
+        )
+    return data
