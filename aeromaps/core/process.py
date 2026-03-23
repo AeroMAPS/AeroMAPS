@@ -1438,8 +1438,8 @@ class AeroMAPSProcess(object):
                     for key, value in data.items():
                         if key in merged_data:
                             logging.warning(
-                                "Parameter '%s' defined in multiple input files; "
-                                "the value from '%s' will be used.",
+                                "Parameter '%s' is defined in multiple input JSON files; "
+                                "the value from file '%s' will override the previous one.",
                                 key, json_file,
                             )
                         merged_data[key] = value
@@ -1641,8 +1641,11 @@ class AeroMAPSProcess(object):
                     setattr(self.parameters, field_name, new_value)
                 else:
                     logging.warning(
-                        "Field '%s' has an unexpected size %d and will not be reformatted.",
-                        field_name, field_value.size
+                        "Field '%s' has an unexpected size %d (expected %d or %d); "
+                        "cannot reformat it to a time-indexed Series.",
+                        field_name, field_value.size,
+                        self.parameters.end_year - self.parameters.climate_historic_start_year + 1,
+                        self.parameters.end_year - self.parameters.historic_start_year + 1,
                     )
 
     def _update_variables(self):
