@@ -1187,8 +1187,9 @@ class AeroMAPSProcess(object):
                             "All AeroMAPSModel subclasses must implement compute()."
                         )
                 else:
-                    logging.warning(
-                        "Entry '%s' is not an AeroMAPSModel instance and will be skipped.", key
+                    raise TypeError(
+                        f"Entry '{key}' in the models dict is not an AeroMAPSModel instance "
+                        f"(got {type(value).__name__}). Only AeroMAPSModel subclasses are allowed."
                     )
 
         check_instance_in_dict(self.models)
