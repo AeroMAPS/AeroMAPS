@@ -6,6 +6,7 @@ AeroMAPS framework.
 """
 
 # Standard library imports
+import json
 import logging
 import os
 from json import load, dump
@@ -702,7 +703,11 @@ class AeroMAPSProcess(object):
         # Load the default configuration file
         self._default_config = read_yaml_file(DEFAULT_CONFIG_PATH)
         self.config = deepcopy(self._default_config)
-        
+        if not self.config:
+            raise RuntimeError(
+                f"Default configuration file is empty or missing: '{DEFAULT_CONFIG_PATH}'"
+            )
+
         # Set the base directory for resolving relative paths
         self._config_base_dir = DEFAULT_RESOURCES_DATA_DIR
 
@@ -1380,14 +1385,26 @@ class AeroMAPSProcess(object):
                 merged_data = {}
                 for json_file in json_inputs_config:
                     file_path = os.path.join(self._config_base_dir, json_file)
-                    with open(file_path, "r") as f:
-                        data = load(f)
-                        for key, value in data.items():
-                            if key in merged_data:
-                                print(
-                                    f"Warning: '{key}' was given twice, only the last value was kept."
-                                )
-                            merged_data[key] = value
+                    try:
+                        with open(file_path, "r") as f:
+                            data = load(f)
+                    except FileNotFoundError:
+                        raise FileNotFoundError(
+                            f"Input JSON file not found: '{file_path}' "
+                            f"(referenced in configuration under 'data.inputs.json_inputs_file')"
+                        )
+                    except json.JSONDecodeError as e:
+                        raise json.JSONDecodeError(
+                            f"Invalid JSON in '{file_path}': {e.msg}", e.doc, e.pos
+                        ) from e
+                    for key, value in data.items():
+                        if key in merged_data:
+                            logging.warning(
+                                "Parameter '%s' defined in multiple input files; "
+                                "the value from '%s' will be used.",
+                                key, json_file,
+                            )
+                        merged_data[key] = value
                 self.parameters.read_json_direct(merged_data)
             # If the alternative file is a single json file
             else:
@@ -1501,9 +1518,19 @@ class AeroMAPSProcess(object):
             default_filename="../climate_data/temperature_historical_dataset.csv"
         )
 
-        historical_dataset_df = pd.read_csv(
-            climate_historical_data_file_path, delimiter=";", header=None
-        )
+        try:
+            historical_dataset_df = pd.read_csv(
+                climate_historical_data_file_path, delimiter=";", header=None
+            )
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Climate historical data file not found: '{climate_historical_data_file_path}'"
+            )
+        except Exception as e:
+            raise ValueError(
+                f"Failed to parse climate historical data file "
+                f"'{climate_historical_data_file_path}': {e}"
+            ) from e
         self.climate_historical_data = historical_dataset_df.values
 
     def _initialize_gemseo_settings(self):
@@ -1627,7 +1654,7 @@ class AeroMAPSProcess(object):
                             new_values.append(val)
                     self.data["vector_inputs"][name] = new_values
             except AttributeError:
-                pass
+                logging.debug("Input '%s' not found in process parameters; skipping.", name)
 
         # Outputs
         if self.data["vector_outputs"].columns.size == 0:
