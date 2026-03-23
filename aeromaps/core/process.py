@@ -1158,12 +1158,6 @@ class AeroMAPSProcess(object):
                     model._initialize_df()
                     if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
                         # TODO harmonise the way to pass the pathways manager with generic models
-                        if not hasattr(self, "pathways_manager"):
-                            raise RuntimeError(
-                                f"Model '{model.name}' requires a pathways_manager but "
-                                "generic energy has not been initialized. "
-                                "Call setup_mda() before _initialize_disciplines()."
-                            )
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
                     if hasattr(self, "fleet_model"):
