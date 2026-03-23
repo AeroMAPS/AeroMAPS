@@ -467,17 +467,25 @@ class AeroMAPSProcess(object):
         input_data = self._pre_compute()
         if hasattr(self, "scenario") and self.scenario:
             if hasattr(self, "scenario_adapted") and self.scenario_adapted:
-                print("Running bi-level MDO")
+                if self.gemseo_settings.get("algorithm_outer") is None:
+                    raise ValueError(
+                        "Cannot run bi-level MDO: 'algorithm_outer' is not set in gemseo_settings."
+                    )
+                logging.info("Running bi-level MDO")
                 # self.scenario.default_inputs.update(self.scenario.options)
                 self.scenario_adapted.execute(self.gemseo_settings["algorithm_outer"])
             else:
-                print("Running MDO")
+                if self.gemseo_settings.get("algorithm") is None:
+                    raise ValueError(
+                        "Cannot run MDO: 'algorithm' is not set in gemseo_settings."
+                    )
+                logging.info("Running MDO")
                 self.scenario.execute(self.gemseo_settings["algorithm"])
         else:
             if not hasattr(self, "mda_chain") or self.mda_chain is None:
                 raise ValueError("MDA chain not created. Please call setup_mda() first.")
             else:
-                print("Running MDA")
+                logging.info("Running MDA")
                 self.mda_chain.execute(input_data=input_data)
 
         self._update_data_from_model()
@@ -535,15 +543,23 @@ class AeroMAPSProcess(object):
                 "data", "outputs", "json_outputs_file",
                 default_filename="outputs.json"
             )
+        if file_name is None:
+            raise ValueError("Cannot resolve output JSON file path. Check your configuration.")
 
         # Ensure the directory exists
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        try:
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        except OSError as e:
+            raise OSError(f"Cannot create output directory for '{file_name}': {e}") from e
 
         # Retrieve the data from the model
         json_data = self.get_json()
 
-        with open(file_name, "w", encoding="utf-8") as f:
-            dump(json_data, f, ensure_ascii=False, indent=4)
+        try:
+            with open(file_name, "w", encoding="utf-8") as f:
+                dump(json_data, f, ensure_ascii=False, indent=4)
+        except OSError as e:
+            raise OSError(f"Failed to write JSON output to '{file_name}': {e}") from e
 
     def write_excel(self, file_name=None):
         """Write main result tables to an Excel workbook.
@@ -562,15 +578,20 @@ class AeroMAPSProcess(object):
                 "data", "outputs", "excel_outputs_file",
                 default_filename="data.xlsx"
             )
-        with pd.ExcelWriter(file_name) as writer:
-            self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
-            self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
-            self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
-            self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
-            self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
-            self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
-            self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
-            # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
+        if file_name is None:
+            raise ValueError("Cannot resolve output Excel file path. Check your configuration.")
+        try:
+            with pd.ExcelWriter(file_name) as writer:
+                self._get_data_information_df().to_excel(writer, sheet_name="Data Information")
+                self._get_vector_inputs_df().to_excel(writer, sheet_name="Vector Inputs")
+                self._get_float_inputs_df().to_excel(writer, sheet_name="Float Inputs")
+                self._get_str_inputs_df().to_excel(writer, sheet_name="String Inputs")
+                self._get_vector_outputs_df().to_excel(writer, sheet_name="Vector Outputs")
+                self._get_float_outputs_df().to_excel(writer, sheet_name="Float Outputs")
+                self._get_climate_outputs_df().to_excel(writer, sheet_name="Climate Outputs")
+                # self.lca_outputs_xarray.to_excel(writer, sheet_name="LCA Outputs")
+        except OSError as e:
+            raise OSError(f"Failed to write Excel output to '{file_name}': {e}") from e
 
     def generate_n2(self):
         """Generate an N2 diagram for the current disciplines.
@@ -1303,22 +1324,37 @@ class AeroMAPSProcess(object):
                     model._initialize_df()
                     if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
                         # TODO harmonise the way to pass the pathways manager with generic models
+                        if not hasattr(self, "pathways_manager"):
+                            raise RuntimeError(
+                                f"Model '{model.name}' requires a pathways_manager but "
+                                "generic energy has not been initialized. "
+                                "Call setup_mda() before _initialize_disciplines()."
+                            )
                         model.pathways_manager = self.pathways_manager
                         model.custom_setup()
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
                     if hasattr(model, "climate_historical_data"):
+                        if not hasattr(self, "climate_historical_data"):
+                            raise RuntimeError(
+                                f"Model '{model.name}' requires climate_historical_data but "
+                                "climate data has not been initialized."
+                            )
                         model.climate_historical_data = self.climate_historical_data
                     if hasattr(model, "compute"):
-                        if model.model_type == "custom":
+                        if getattr(model, "model_type", "auto") == "custom":
                             model = AeroMAPSCustomModelWrapper(model=model)
                         else:
                             model = AeroMAPSAutoModelWrapper(model=model)
                         self.disciplines.append(model)
                     else:
-                        print(model.name)
+                        logging.warning(
+                            "Model '%s' has no compute() method and will be skipped.", model.name
+                        )
                 else:
-                    print(f"{key} is not an instance of AeroMAPSModel")
+                    logging.warning(
+                        "Entry '%s' is not an AeroMAPSModel instance and will be skipped.", key
+                    )
 
         check_instance_in_dict(self.models)
 
@@ -1602,7 +1638,10 @@ class AeroMAPSProcess(object):
                     new_value = pd.Series(field_value, index=index)
                     setattr(self.parameters, field_name, new_value)
                 else:
-                    print(f"Field {field_name} has an unexpected size {field_value.size}")
+                    logging.warning(
+                        "Field '%s' has an unexpected size %d and will not be reformatted.",
+                        field_name, field_value.size
+                    )
 
     def _update_variables(self):
         """Refresh data, DataFrames, and JSON cache from model results.
@@ -1850,7 +1889,18 @@ class AeroMAPSProcess(object):
                 "data", "inputs", "csv_data_information_file",
                 default_filename="data_information.csv"
             )
-        df = pd.read_csv(file_name, encoding="utf-8", sep=";")
+        if file_name is None:
+            raise ValueError(
+                "Cannot resolve data information CSV file path. Check your configuration."
+            )
+        try:
+            df = pd.read_csv(file_name, encoding="utf-8", sep=";")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Data information file not found: '{file_name}'")
+        except Exception as e:
+            raise ValueError(
+                f"Failed to parse data information file '{file_name}': {e}"
+            ) from e
 
         var_infos_df = pd.DataFrame()
         for data_type, variables in self.data.items():
