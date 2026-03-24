@@ -21,7 +21,10 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
+import sys
+import traceback
 from numbers import Number
 from typing import TYPE_CHECKING, ClassVar
 from typing import Final
@@ -50,6 +53,17 @@ if TYPE_CHECKING:
 
 DataType = Union[float, ndarray]
 LOGGER = logging.getLogger(__name__)
+
+
+def _format_model_traceback(model_file: str) -> str:
+    """Extract and format traceback frames originating from the given model file."""
+    exc_tb = sys.exc_info()[2]
+    if exc_tb is None:
+        return ""
+    frames = [f for f in traceback.extract_tb(exc_tb) if f.filename == model_file]
+    if not frames:
+        return ""
+    return "".join(traceback.StackSummary.from_list(frames).format())
 
 
 class ExtendedJSONGrammar(JSONGrammar):
@@ -156,6 +170,20 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
 
+    def _run(self, input_data):
+        try:
+            return super()._run(input_data)
+        except Exception:
+            model_file = inspect.getfile(type(self.model))
+            model_tb = _format_model_traceback(model_file)
+            LOGGER.error(
+                "An error occurred when executing model: %s (file: %s)\n%s",
+                self.model.name,
+                model_file,
+                model_tb,
+            )
+            raise
+
 
 class AeroMAPSCustomModelWrapper(Discipline):
     """
@@ -194,7 +222,18 @@ class AeroMAPSCustomModelWrapper(Discipline):
 
     def _run(self, input_data):
         if hasattr(self.model, "compute"):
-            return self.model.compute(input_data)
+            try:
+                return self.model.compute(input_data)
+            except Exception:
+                model_file = inspect.getfile(type(self.model))
+                model_tb = _format_model_traceback(model_file)
+                LOGGER.error(
+                    "An error occurred when executing model: %s (file: %s)\n%s",
+                    self.model.name,
+                    model_file,
+                    model_tb,
+                )
+                raise
         else:
             raise AttributeError(f"Model {self.name} does not have a compute method")
 

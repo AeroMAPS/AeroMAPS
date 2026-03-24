@@ -26,9 +26,23 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     -------
     dict
         Dictionary containing the parameters from the JSON file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the file does not exist.
+    json.JSONDecodeError
+        If the file contains invalid JSON.
     """
-    with open(file_name, "r", encoding="utf-8") as f:
-        parameters_dict = load(f)
+    try:
+        with open(file_name, "r", encoding="utf-8") as f:
+            parameters_dict = load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Parameters file not found: '{file_name}'")
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(
+            f"Invalid JSON in '{file_name}': {e.msg}", e.doc, e.pos
+        ) from e
     dict = _dict_from_parameters_dict(parameters_dict)
     return dict
 

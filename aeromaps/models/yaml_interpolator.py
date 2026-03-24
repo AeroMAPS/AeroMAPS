@@ -108,6 +108,16 @@ class YAMLInterpolator(AeroMAPSModel):
     ):
         interpolation_function_values = []
 
+        if len(reference_years_values) == 0:
+            raise ValueError(
+                f"[{model_name}] reference_years_values must not be empty."
+            )
+        if len(reference_years) > 0 and len(reference_years) != len(reference_years_values):
+            raise ValueError(
+                f"[{model_name}] reference_years and reference_years_values must have the same length "
+                f"(got {len(reference_years)} years and {len(reference_years_values)} values)."
+            )
+
         # If no reference years are provided, use the first reference value for all years
         if len(reference_years) == 0:
             interpolation_function_values = [reference_years_values[0]] * (
