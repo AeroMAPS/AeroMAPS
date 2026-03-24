@@ -6244,8 +6244,7 @@ pure MDA chain.</p>
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
-<span class="normal">153</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -6301,7 +6300,8 @@ pure MDA chain.</p>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">209</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">configuration_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">custom_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -6402,8 +6402,7 @@ example aircraft and subcategories to the fleet.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">335</span>
-<span class="normal">336</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
@@ -6418,7 +6417,8 @@ example aircraft and subcategories to the fleet.</p>
 <span class="normal">348</span>
 <span class="normal">349</span>
 <span class="normal">350</span>
-<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">351</span>
+<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform common setup steps independent of analysis type.</span>
 
 <span class="sd">    This method initializes the disciplines list, the main data</span>
@@ -6467,8 +6467,7 @@ for multidisciplinary analysis execution of AeroMAPS.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">353</span>
-<span class="normal">354</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
@@ -6493,7 +6492,8 @@ for multidisciplinary analysis execution of AeroMAPS.</p>
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
-<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_mda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_mda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for a standalone MDA chain.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
@@ -6546,13 +6546,13 @@ so that optimization scenarios can be defined and executed later.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
-<span class="normal">382</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">setup_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the process for GEMSEO-based optimization.</span>
 
 <span class="sd">    This method initializes the internal GEMSEO settings dictionary</span>
@@ -6587,8 +6587,7 @@ and formulation.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">389</span>
-<span class="normal">390</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">390</span>
 <span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span>
@@ -6614,7 +6613,8 @@ and formulation.</p>
 <span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
-<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a single-level GEMSEO MDO scenario.</span>
 
 <span class="sd">    This method initializes generic energy inputs and disciplines,</span>
@@ -6670,8 +6670,7 @@ defined, it is created using the current <code>gemseo_settings</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
-<span class="normal">419</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
@@ -6708,7 +6707,8 @@ defined, it is created using the current <code>gemseo_settings</code>.</p>
 <span class="normal">453</span>
 <span class="normal">454</span>
 <span class="normal">455</span>
-<span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_bilevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">456</span>
+<span class="normal">457</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_gemseo_bilevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a GEMSEO bilevel optimization formulation.</span>
 
 <span class="sd">    This method wraps an inner GEMSEO scenario in an</span>
@@ -6775,8 +6775,7 @@ updates the internal data structures with model outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
-<span class="normal">459</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">459</span>
 <span class="normal">460</span>
 <span class="normal">461</span>
 <span class="normal">462</span>
@@ -6799,7 +6798,16 @@ updates the internal data structures with model outputs.</p>
 <span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
-<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the configured analysis or optimization.</span>
 
 <span class="sd">    This method prepares input data, then executes either a bilevel</span>
@@ -6810,17 +6818,25 @@ updates the internal data structures with model outputs.</p>
     <span class="n">input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_compute</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;scenario&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;scenario_adapted&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running bi-level MDO&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm_outer&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot run bi-level MDO: &#39;algorithm_outer&#39; is not set in gemseo_settings.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running bi-level MDO&quot;</span><span class="p">)</span>
             <span class="c1"># self.scenario.default_inputs.update(self.scenario.options)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scenario_adapted</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;algorithm_outer&quot;</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running MDO&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algorithm&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot run MDO: &#39;algorithm&#39; is not set in gemseo_settings.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running MDO&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gemseo_settings</span><span class="p">[</span><span class="s2">&quot;algorithm&quot;</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;mda_chain&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MDA chain not created. Please call setup_mda() first.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running MDA&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running MDA&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mda_chain</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_update_data_from_model</span><span class="p">()</span>
@@ -6875,16 +6891,7 @@ instances for data information, inputs, and outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
-<span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
 <span class="normal">496</span>
@@ -6897,7 +6904,16 @@ instances for data information, inputs, and outputs.</p>
 <span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
-<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all main DataFrames as a dictionary, generated on demand.</span>
 
 <span class="sd">    This method generates and returns a dictionary of key DataFrames</span>
@@ -6967,16 +6983,16 @@ instances for data information, inputs, and outputs.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the model outputs as a JSON-serializable dictionary.</span>
 
@@ -7044,16 +7060,7 @@ configuration is used.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
@@ -7070,7 +7077,24 @@ configuration is used.</p>
 <span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
-<span class="normal">545</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write model inputs and outputs to a JSON file.</span>
 
 <span class="sd">    This method builds the JSON-compatible data and writes it to</span>
@@ -7088,15 +7112,23 @@ configuration is used.</p>
             <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;json_outputs_file&quot;</span><span class="p">,</span>
             <span class="n">default_filename</span><span class="o">=</span><span class="s2">&quot;outputs.json&quot;</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot resolve output JSON file path. Check your configuration.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Ensure the directory exists</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot create output directory for &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="c1"># Retrieve the data from the model</span>
     <span class="n">json_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">dump</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">dump</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write JSON output to &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7154,31 +7186,37 @@ configuration is used.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
 <span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
-<span class="normal">571</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write main result tables to an Excel workbook.</span>
 
 <span class="sd">    This method exports data information, inputs, and outputs into</span>
@@ -7195,14 +7233,20 @@ configuration is used.</p>
             <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;excel_outputs_file&quot;</span><span class="p">,</span>
             <span class="n">default_filename</span><span class="o">=</span><span class="s2">&quot;data.xlsx&quot;</span>
         <span class="p">)</span>
-    <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Data Information&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Inputs&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Inputs&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;String Inputs&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Outputs&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Outputs&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Climate Outputs&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot resolve output Excel file path. Check your configuration.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_information_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Data Information&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Inputs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Inputs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_str_inputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;String Inputs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_vector_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Vector Outputs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_float_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Float Outputs&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_climate_outputs_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Climate Outputs&quot;</span><span class="p">)</span>
+            <span class="c1"># self.lca_outputs_xarray.to_excel(writer, sheet_name=&quot;LCA Outputs&quot;)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write Excel output to &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7229,13 +7273,13 @@ coupling structure between the configured disciplines.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_n2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_n2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an N2 diagram for the current disciplines.</span>
 
 <span class="sd">    This method calls GEMSEO to create an N2 plot describing the</span>
@@ -7289,15 +7333,15 @@ coupling structure between the configured disciplines.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span>
-<span class="normal">586</span>
-<span class="normal">587</span>
-<span class="normal">588</span>
-<span class="normal">589</span>
-<span class="normal">590</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_available_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_available_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List the names of supported plots.</span>
 
 <span class="sd">    Returns</span>
@@ -7353,15 +7397,15 @@ coupling structure between the configured disciplines.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_float_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_float_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current scalar input values.</span>
 
 <span class="sd">    Returns</span>
@@ -7417,15 +7461,15 @@ coupling structure between the configured disciplines.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_str_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_str_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current string input values.</span>
 
 <span class="sd">    Returns</span>
@@ -7560,29 +7604,7 @@ function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/core/process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span>
-<span class="normal">617</span>
-<span class="normal">618</span>
-<span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">634</span>
 <span class="normal">635</span>
 <span class="normal">636</span>
 <span class="normal">637</span>
@@ -7610,7 +7632,29 @@ function.</p>
 <span class="normal">659</span>
 <span class="normal">660</span>
 <span class="normal">661</span>
-<span class="normal">662</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">size_inches</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_title</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">size_inches</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_title</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a predefined AeroMAPS plot.</span>
 
 <span class="sd">    Depending on the plot name, this method uses either generic or</span>

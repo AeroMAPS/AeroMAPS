@@ -5833,7 +5833,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Example function to read a YAML file and returns its contents as a dictionary.</p>
+        <p>Read a YAML file and return its contents as a dictionary.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -5852,11 +5852,11 @@
                 <code>file_name</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="str">str</span> or None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The path to the YAML file to be read (default is "parameters.yaml").</p>
+                <p>The path to the YAML file to be read. If None, returns an empty dict.</p>
               </div>
             </td>
             <td>
@@ -5890,6 +5890,49 @@
     </table>
 
 
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the file does not exist.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="yaml.YAMLError">YAMLError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the file contains invalid YAML.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the file does not contain a YAML mapping (dict).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/utils/yaml.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
@@ -5912,27 +5955,59 @@
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_yaml_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;parameters.yaml&quot;</span><span class="p">):</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_yaml_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;parameters.yaml&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Example function to read a YAML file and returns its contents as a dictionary.</span>
+<span class="sd">    Read a YAML file and return its contents as a dictionary.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    file_name : str</span>
-<span class="sd">        The path to the YAML file to be read (default is &quot;parameters.yaml&quot;).</span>
+<span class="sd">    file_name : str or None</span>
+<span class="sd">        The path to the YAML file to be read. If None, returns an empty dict.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        The contents of the YAML file as a dictionary.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        If the file does not exist.</span>
+<span class="sd">    yaml.YAMLError</span>
+<span class="sd">        If the file contains invalid YAML.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the file does not contain a YAML mapping (dict).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading YAML file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;YAML file not found: &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid YAML in &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected a YAML mapping in &#39;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -6450,7 +6450,16 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_interpolation_function</span><span class="p">(</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_interpolation_function</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">reference_years</span><span class="p">,</span>
     <span class="n">reference_years_values</span><span class="p">,</span>
@@ -6480,6 +6489,15 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 <span class="sd">        Series of interpolated values indexed by year taken from the model&#39;s DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Main</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years_values must not be empty.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] reference_years and reference_years_values must have the same length &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span><span class="si">}</span><span class="s2"> years and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reference_years_values</span><span class="p">)</span><span class="si">}</span><span class="s2"> values).&quot;</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reference_years</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prospection_start_year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;interpolation_function_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reference_years_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -6651,16 +6669,7 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>aeromaps/models/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
@@ -6715,7 +6724,16 @@ instantiates an interpolation model from yaml_interpolator.py</p>
 <span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_leveling_function</span><span class="p">(</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">aeromaps_leveling_function</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">reference_periods</span><span class="p">,</span> <span class="n">reference_periods_values</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;Not provided&quot;</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
