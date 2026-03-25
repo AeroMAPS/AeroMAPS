@@ -1,14 +1,14 @@
 """
-Test module for MultiProcess core functionality.
+Test module for AeroMAPSProcesses core functionality.
 
-This module tests the MultiProcess class for managing multiple scenarios.
+This module tests the AeroMAPSProcesses class for managing multiple scenarios.
 Plot-related tests are in test_multi_scenario_plots.py.
 """
 from pathlib import Path
 
 import pytest
 import warnings
-from aeromaps import create_process, create_multi_process
+from aeromaps import create_process, assemble_processes
 
 
 def get_tested_config_files():
@@ -22,7 +22,7 @@ CONFIGS_TO_TEST = get_tested_config_files()
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_multi_process_creation_and_operations(config_file):
-    """Test MultiProcess creation, indexing, and basic operations."""
+    """Test AeroMAPSProcesses creation, indexing, and basic operations."""
     proc1 = create_process(configuration_file=config_file)
     proc1.compute()
     proc2 = create_process(configuration_file=config_file)
@@ -32,12 +32,12 @@ def test_multi_process_creation_and_operations(config_file):
     processes_list = list(processes_dict.values())
 
     # Test creation with dict
-    multi_dict = create_multi_process(processes_dict)
+    multi_dict = assemble_processes(processes_dict)
     assert multi_dict is not None
     assert len(multi_dict) == 2
 
     # Test creation with list
-    multi_list = create_multi_process(processes_list)
+    multi_list = assemble_processes(processes_list)
     assert multi_list is not None
     assert len(multi_list) == 2
 
@@ -65,7 +65,7 @@ def test_compute_all(config_file):
     proc2 = create_process(configuration_file=config_file)
     uncomputed = {"scenario_1": proc1, "scenario_2": proc2}
 
-    multi = create_multi_process(uncomputed)
+    multi = assemble_processes(uncomputed)
     multi.compute_all()
 
     for proc in uncomputed.values():
@@ -76,10 +76,10 @@ def test_compute_all(config_file):
 def test_error_handling():
     """Test error handling for invalid inputs."""
     with pytest.raises(ValueError):
-        create_multi_process({})
+        assemble_processes({})
 
     with pytest.raises(TypeError):
-        create_multi_process("not a dict or list")
+        assemble_processes("not a dict or list")
 
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
@@ -87,7 +87,7 @@ def test_invalid_plot_name_raises_error(config_file):
     """Test that invalid plot name raises KeyError."""
     proc = create_process(configuration_file=config_file)
     proc.compute()
-    multi = create_multi_process({"s1": proc})
+    multi = assemble_processes({"s1": proc})
 
     with pytest.raises(KeyError):
         multi.plot("nonexistent_plot_name")

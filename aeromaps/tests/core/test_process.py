@@ -95,7 +95,7 @@ def test_process_models_are_independent():
     # Models should be different instances
     # Test with a common model that should exist in both
     common_models = set(proc1.models.keys()) & set(proc2.models.keys())
-    assert len(common_models) > 0, "Processes should have some common models"
+    assert len(common_models) > 0, "AeroMAPSProcesses should have some common models"
 
     # Check that at least one model is a different instance
     for model_name in list(common_models)[:3]:  # Test first 3 common models

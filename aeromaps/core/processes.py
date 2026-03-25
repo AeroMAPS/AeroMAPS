@@ -1,6 +1,6 @@
 """Multi-process management for scenario comparison.
 
-This module defines the MultiProcess class that manages multiple AeroMAPS
+This module defines the AeroMAPSProcesses class that manages multiple AeroMAPS
 processes for scenario comparison and multi-scenario plotting.
 """
 
@@ -8,11 +8,12 @@ import logging
 import warnings
 from typing import Union, List, Dict
 
+from aeromaps import assemble_processes
 
 logger = logging.getLogger(__name__)
 
 
-class MultiProcess:
+class AeroMAPSProcesses:
     """
     Manager for multiple AeroMAPS processes to enable scenario comparison.
     
@@ -62,7 +63,7 @@ class MultiProcess:
         
         Examples
         --------
-        >>> multi = create_multi_process({"s1": proc1, "s2": proc2})
+        >>> multi = assemble_processes({"s1": proc1, "s2": proc2})
         >>> multi.compute_all()  # Computes both proc1 and proc2
         >>> multi.plot("co2_emissions_comparison")
         """

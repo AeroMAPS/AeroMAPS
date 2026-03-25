@@ -5,7 +5,7 @@ This module tests the multi-scenario plot classes and their functionality.
 """
 
 import pytest
-from aeromaps import create_process, create_multi_process
+from aeromaps import create_process, assemble_processes
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,7 @@ def processes():
 
 def test_list_available_plots(processes):
     """Test that list_available_plots returns plot names."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     plots = multi.list_available_plots()
     
     assert plots is not None
@@ -60,7 +60,7 @@ def test_list_available_plots(processes):
 
 def test_new_intensity_plots_available(processes):
     """Test that new intensity plots are available."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     plots = multi.list_available_plots()
     
     assert "co2_per_rpk_comparison" in plots
@@ -71,7 +71,7 @@ def test_new_intensity_plots_available(processes):
 
 def test_new_fuel_supply_plots_available(processes):
     """Test that new fuel supply plots are available."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     plots = multi.list_available_plots()
     
     assert "fuel_supply_breakdown" in plots
@@ -83,7 +83,7 @@ def test_new_fuel_supply_plots_available(processes):
 
 def test_carbon_budget_plot_available(processes):
     """Test that carbon budget plot is available."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     plots = multi.list_available_plots()
     
     assert "carbon_budget_comparison" in plots
@@ -91,7 +91,7 @@ def test_carbon_budget_plot_available(processes):
 
 def test_plot_co2_emissions_comparison(processes):
     """Test creating CO2 emissions comparison plot."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # Create plot - should not raise exception
     fig = multi.plot("co2_emissions_comparison")
@@ -100,7 +100,7 @@ def test_plot_co2_emissions_comparison(processes):
 
 def test_plot_energy_consumption_comparison(processes):
     """Test creating energy consumption comparison plot."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # Create plot - should not raise exception
     fig = multi.plot("energy_consumption_comparison")
@@ -109,7 +109,7 @@ def test_plot_energy_consumption_comparison(processes):
 
 def test_plot_with_invalid_name(processes):
     """Test that invalid plot name raises KeyError."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     with pytest.raises(KeyError):
         multi.plot("nonexistent_plot")
@@ -117,7 +117,7 @@ def test_plot_with_invalid_name(processes):
 
 def test_required_outputs_validation(processes):
     """Test that plots validate required outputs."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # This should work fine since processes are computed
     fig = multi.plot("co2_emissions_comparison")
@@ -126,7 +126,7 @@ def test_required_outputs_validation(processes):
 
 def test_plot_with_check_outputs_false(processes):
     """Test that check_outputs=False skips validation."""
-    multi = create_multi_process(processes)
+    multi = assemble_processes(processes)
     
     # Should work even if validation is disabled
     fig = multi.plot("co2_emissions_comparison", check_outputs=False)
