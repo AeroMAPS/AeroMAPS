@@ -72,7 +72,7 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
         # Recreate the plot
         self.create_plot()
 
-class CarbonBudgetComparisonPlot(MultiScenarioPlot):
+class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
     """
     Compare cumulative CO2 emissions against carbon budget across scenarios.
     

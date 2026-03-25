@@ -5,7 +5,7 @@ This module provides plots for comparing multiple AeroMAPS scenarios.
 
 from aeromaps.plots.multi_scenario.emissions import (
     CO2EmissionsComparisonPlot,
-    CarbonBudgetComparisonPlot,
+    CumulativeCO2EmissionsComparisonPlot,
 )
 from aeromaps.plots.multi_scenario.energy import (
     EnergyConsumptionComparisonPlot,
@@ -34,7 +34,7 @@ from aeromaps.plots.multi_scenario.fuel_supply import (
 available_multi_plots = {
     # Emissions
     "co2_emissions_comparison": CO2EmissionsComparisonPlot,
-    "carbon_budget_comparison": CarbonBudgetComparisonPlot,
+    "cumulative_co2_emissions_comparison": CumulativeCO2EmissionsComparisonPlot,
     
     # Energy
     "energy_consumption_comparison": EnergyConsumptionComparisonPlot,
