@@ -41,52 +41,38 @@ def processes():
     return {"scenario_1": proc1, "scenario_2": proc2, "scenario_3": proc3}
 
 
-def test_list_available_plots(processes):
-    """Test that list_available_plots returns plot names."""
+EXPECTED_PLOTS = [
+    # Emissions
+    "co2_emissions_comparison",
+    "cumulative_co2_emissions_comparison",
+    # Energy
+    "energy_consumption_comparison",
+    # Intensity
+    "co2_per_rpk_comparison",
+    "co2_per_rtk_comparison",
+    "energy_per_ask_comparison",
+    "energy_per_rtk_comparison",
+    # Fuel supply
+    "drop_in_supply_breakdown",
+    "hydrogen_supply_comparison",
+    "electric_supply_comparison",
+    "biofuel_production_comparison",
+    "electrofuel_production_comparison",
+]
+
+
+def test_expected_plots_available(processes):
+    """Test that list_available_plots returns all expected plot names."""
     multi = assemble_processes(processes)
     plots = multi.list_available_plots()
-    
+
     assert plots is not None
     assert isinstance(plots, list)
     assert len(plots) > 0
-    
-    # Check some expected plots are available
-    assert "co2_emissions_comparison" in plots
-    assert "energy_consumption_comparison" in plots
-    assert "co2_per_rpk_comparison" in plots
-    assert "fuel_supply_breakdown" in plots
-    assert "carbon_budget_comparison" in plots
 
+    for plot_name in EXPECTED_PLOTS:
+        assert plot_name in plots, f"Expected plot '{plot_name}' not found in available plots"
 
-def test_new_intensity_plots_available(processes):
-    """Test that new intensity plots are available."""
-    multi = assemble_processes(processes)
-    plots = multi.list_available_plots()
-    
-    assert "co2_per_rpk_comparison" in plots
-    assert "co2_per_rtk_comparison" in plots
-    assert "energy_per_ask_comparison" in plots
-    assert "energy_per_rtk_comparison" in plots
-
-
-def test_new_fuel_supply_plots_available(processes):
-    """Test that new fuel supply plots are available."""
-    multi = assemble_processes(processes)
-    plots = multi.list_available_plots()
-    
-    assert "drop_in_supply_breakdown" in plots
-    assert "hydrogen_supply_comparison" in plots
-    assert "electric_supply_comparison" in plots
-    assert "biofuel_production_comparison" in plots
-    assert "electrofuel_production_comparison" in plots
-
-
-def test_carbon_budget_plot_available(processes):
-    """Test that carbon budget plot is available."""
-    multi = assemble_processes(processes)
-    plots = multi.list_available_plots()
-    
-    assert "carbon_budget_comparison" in plots
 
 
 def test_plot_co2_emissions_comparison(processes):
@@ -139,7 +125,11 @@ def test_multi_scenario_plot_filters_invalid_scenarios(processes):
 
     # Create a test plot class
     class TestPlot(MultiScenarioPlot):
-        required_outputs = ["total_erf"]
+
+        def __init__(self, processes):
+                super().__init__(
+                    processes, check_outputs=True, required_outputs=["total_erf"]
+                )
 
         def _get_default_figsize(self):
             return (10, 6)
