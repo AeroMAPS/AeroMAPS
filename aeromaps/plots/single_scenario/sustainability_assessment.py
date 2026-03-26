@@ -4,17 +4,17 @@ import numpy as np
 import pandas as pd
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
-from aeromaps.plots.single_scenario_plot import plot_3_x
-from aeromaps.plots.single_scenario_plot import plot_3_y
+from aeromaps.plots.single_scenario_plot import plot_2_x
+from aeromaps.plots.single_scenario_plot import plot_2_y
 
 
 class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
+        super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         # Data to plot
@@ -276,10 +276,10 @@ class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
 class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
+        super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         # Data to plot
@@ -579,10 +579,10 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
+        super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         # Data to plot
@@ -834,10 +834,10 @@ class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
 class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize, subplot_kw={"projection": "polar"})
+        super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         # Data to plot (updated to new input format)
@@ -1095,7 +1095,7 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         # Carbon budget

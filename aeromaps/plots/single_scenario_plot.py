@@ -64,9 +64,12 @@ class SingleScenarioPlot(ABC):
         self.pathways_manager = process.pathways_manager
 
         # Create figure and axes
+        # Constrained layout distorts polar axes, so disable it for polar plots
         figsize = figsize or self._get_default_figsize()
+        is_polar = kwargs.get("subplot_kw", {}).get("projection") == "polar"
+        layout = None if is_polar else "constrained"
         self.fig, self.ax = plt.subplots(
-            figsize=figsize, layout='constrained', **kwargs
+            figsize=figsize, layout=layout, **kwargs
         )
 
         # Configure canvas
@@ -88,7 +91,7 @@ class SingleScenarioPlot(ABC):
             Data dictionary from the process
         """
         missing_outputs = []
-        
+
         # Check in vector_outputs
         if "vector_outputs" in data and data["vector_outputs"] is not None:
             df = data["vector_outputs"]
@@ -98,7 +101,7 @@ class SingleScenarioPlot(ABC):
         else:
             # No vector_outputs at all
             missing_outputs = self.required_outputs.copy()
-        
+
         if missing_outputs:
             warnings.warn(
                 f"{self.__class__.__name__} requires outputs {self.required_outputs} "
@@ -161,7 +164,6 @@ class SingleScenarioPlot(ABC):
             self.fig.canvas.header_visible = False
         if hasattr(self.fig.canvas, "toolbar_position"):
             self.fig.canvas.toolbar_position = "bottom"
-        self.fig.tight_layout()
 
     @abstractmethod
     def _get_default_figsize(self):
