@@ -1,7 +1,8 @@
 """
 Test module for AeroMAPS process.
 
-This module tests the AeroMAPSProcess class functionality.
+This module tests the AeroMAPSProcess class functionality and that all model
+groups can be instantiated and run without errors.
 """
 from pathlib import Path
 
@@ -9,13 +10,12 @@ import pytest
 import os
 from aeromaps import create_process
 
+CONFIG_DIR = Path(__file__).parent / "tested_configs"
+
 
 def get_tested_config_files():
-    """Get paths for configuration files to initialize process."""
-    config_paths = [
-        Path(__file__).parent / f"tested_configs/config_{name}.yaml"
-        for name in ["basic", "advanced"]
-    ]
+    """Get paths for all configuration files in tested_configs, plus None."""
+    config_paths = list(CONFIG_DIR.glob("*.yaml"))
     config_paths.append(None)
     return config_paths
 
@@ -85,6 +85,28 @@ def test_compute(config_file):
     vector_outputs = data['vector_outputs']
     assert vector_outputs is not None
     assert len(vector_outputs) > 0
+
+@pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
+def test_model_group(config_file):
+    """Test that a model group can run successfully with default inputs."""
+    proc = create_process(configuration_file=str(config_file) if config_file else config_file)
+
+    # Assert process is instantiated
+    assert proc is not None
+
+    # Compute the process
+    proc.compute()
+
+    # Assert process has data
+    assert hasattr(proc, 'data')
+    assert proc.data is not None
+
+    # Assert vector_outputs exist and is not empty
+    assert 'vector_outputs' in proc.data
+    vector_outputs = proc.data['vector_outputs']
+    assert vector_outputs is not None
+    assert len(vector_outputs) > 0
+
 
 def test_process_models_are_independent():
     """Test that model instances are independent between processes."""
