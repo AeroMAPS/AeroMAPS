@@ -101,21 +101,12 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
                 if data["df"] is not None and "cumulative_co2_emissions" in data["df"].columns:
                     years = data["years"]
                     cumulative_emissions = data["df"].loc[years, "cumulative_co2_emissions"]
-                    
-                    # Plot emissions line
-                    self.ax.plot(
-                        years, 
-                        cumulative_emissions, 
-                        label=f"{scenario_name} - Emissions",
-                        color=style['color'],
-                        linestyle=style['linestyle'],
-                        linewidth=2
-                    )
-                    
+
                     # Plot carbon budget if available and unique
-                    if data["float_outputs"] is not None and "aviation_carbon_budget" in data["float_outputs"]:
+                    if data["float_outputs"] is not None and "aviation_carbon_budget" in \
+                            data["float_outputs"]:
                         budget = data["float_outputs"]["aviation_carbon_budget"]
-                        
+
                         # Check if this budget value has been plotted before
                         if budget not in plotted_budgets:
                             # First time seeing this budget value - plot it
@@ -131,6 +122,16 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
                         else:
                             # Budget already seen - track scenario but don't plot
                             plotted_budgets[budget].append((scenario_name, None))
+                    
+                    # Plot emissions line
+                    self.ax.plot(
+                        years, 
+                        cumulative_emissions, 
+                        label=f"{scenario_name} - Emissions",
+                        color=style['color'],
+                        linestyle=style['linestyle'],
+                        linewidth=2
+                    )
             
             # Update legend labels based on whether budgets are unique or shared
             # Show "Budget" for scenarios sharing the same value

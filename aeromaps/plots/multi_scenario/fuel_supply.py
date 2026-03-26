@@ -3,7 +3,7 @@
 from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
 
-class FuelSupplyBreakdownPlot(MultiScenarioPlot):
+class DropInSupplyBreakdownPlot(MultiScenarioPlot):
     """
     Compare fuel supply breakdown across scenarios.
     

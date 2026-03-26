@@ -74,7 +74,7 @@ def test_new_fuel_supply_plots_available(processes):
     multi = assemble_processes(processes)
     plots = multi.list_available_plots()
     
-    assert "fuel_supply_breakdown" in plots
+    assert "drop_in_supply_breakdown" in plots
     assert "hydrogen_supply_comparison" in plots
     assert "electric_supply_comparison" in plots
     assert "biofuel_production_comparison" in plots

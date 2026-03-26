@@ -22,7 +22,7 @@ from aeromaps.plots.multi_scenario.intensities import (
     EnergyPerRTKComparisonPlot,
 )
 from aeromaps.plots.multi_scenario.fuel_supply import (
-    FuelSupplyBreakdownPlot,
+    DropInSupplyBreakdownPlot,
     HydrogenSupplyComparisonPlot,
     ElectricSupplyComparisonPlot,
     BiofuelProductionComparisonPlot,
@@ -51,7 +51,7 @@ available_multi_plots = {
     "energy_per_rtk_comparison": EnergyPerRTKComparisonPlot,
     
     # Fuel Supply
-    "fuel_supply_breakdown": FuelSupplyBreakdownPlot,
+    "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "hydrogen_supply_comparison": HydrogenSupplyComparisonPlot,
     "electric_supply_comparison": ElectricSupplyComparisonPlot,
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
