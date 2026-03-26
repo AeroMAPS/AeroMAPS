@@ -5,8 +5,31 @@ This module tests that all single scenario plots can be created without errors
 when running a scenario with default configuration.
 """
 
+import warnings
+
 import pytest
 from aeromaps import create_process
+from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+
+
+class TestPlot(SingleScenarioPlot):
+    """Minimal concrete subclass used to test SingleScenarioPlot behaviour."""
+
+    def __init__(self, process, check_outputs=True, required_outputs=None):
+        super().__init__(
+            process,
+            check_outputs=check_outputs,
+            required_outputs=required_outputs,
+        )
+
+    def _get_default_figsize(self):
+        return (10, 6)
+
+    def _update_plot_elements(self):
+        pass
+
+    def create_plot(self):
+        pass
 
 
 @pytest.fixture(scope="module")
@@ -300,14 +323,77 @@ def test_mfsp_detailled_plot(process):
     plot = process.plot("mfsp_detailled", save=False)
     assert plot is not None
 
-# todo: add tests for the following plots once they are re-implemented
-# def test_annual_macc_simple_fleet_plot(process):
-#     """Test that annual_MACC_simple_fleet plot can be created."""
-#     plot = process.plot("annual_MACC_simple_fleet", save=False)
-#     assert plot is not None
-#
-#
-# def test_shadow_carbon_pricing_simple_fleet_plot(process):
-#     """Test that shadow_carbon_pricing_simple_fleet plot can be created."""
-#     plot = process.plot("shadow_carbon_pricing_simple_fleet", save=False)
-#     assert plot is not None
+# ---------------------------------------------------------------------------
+# TestPlot-based tests for check_outputs / required_outputs behaviour
+# ---------------------------------------------------------------------------
+
+def test_required_outputs_warns_on_missing(process):
+    """Test that a warning is issued when required outputs are missing."""
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        plot = TestPlot(
+            process,
+            check_outputs=True,
+            required_outputs=["nonexistent_output"],
+        )
+
+        assert len(w) > 0
+        assert "missing" in str(w[0].message).lower()
+
+    # The plot should still be created despite the warning
+    assert plot is not None
+
+
+def test_required_outputs_no_warning_when_present(process):
+    """Test that no warning is issued when required outputs are present."""
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        plot = TestPlot(
+            process,
+            check_outputs=True,
+            required_outputs=["rpk"],
+        )
+
+        output_warnings = [
+            x for x in w if "missing" in str(x.message).lower()
+        ]
+        assert len(output_warnings) == 0
+
+    assert plot is not None
+
+
+def test_check_outputs_false_skips_validation(process):
+    """Test that check_outputs=False skips output validation entirely."""
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        plot = TestPlot(
+            process,
+            check_outputs=False,
+            required_outputs=["nonexistent_output"],
+        )
+
+        output_warnings = [
+            x for x in w if "missing" in str(x.message).lower()
+        ]
+        assert len(output_warnings) == 0
+
+    assert plot is not None
+
+
+def test_no_required_outputs_no_warning(process):
+    """Test that no warning is issued when required_outputs is empty."""
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        plot = TestPlot(
+            process,
+            check_outputs=True,
+            required_outputs=[],
+        )
+
+        output_warnings = [
+            x for x in w if "missing" in str(x.message).lower()
+        ]
+        assert len(output_warnings) == 0
+
+    assert plot is not None
+

@@ -200,21 +200,8 @@ class SingleScenarioPlot(ABC):
         # Clear existing fill_between collections before subclass recreates them
         self._refresh_collections()
 
-        # Update plot elements (implemented by subclass)
-        self._update_plot_elements()
-
         # Refresh the view
         self._refresh_view()
-
-    @abstractmethod
-    def _update_plot_elements(self):
-        """
-        Update plot elements with new data.
-
-        This method should be implemented by subclasses to update
-        line data, bar heights, etc.
-        """
-        pass
 
     def _refresh_collections(self):
         """Remove existing collections (fill_between/stackplot areas) from the axes before they are redrawn."""
