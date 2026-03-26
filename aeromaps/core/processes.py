@@ -8,8 +8,6 @@ import logging
 import warnings
 from typing import Union, List, Dict
 
-from aeromaps import assemble_processes
-
 logger = logging.getLogger(__name__)
 
 

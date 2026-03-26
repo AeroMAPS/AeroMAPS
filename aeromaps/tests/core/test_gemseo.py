@@ -135,6 +135,12 @@ def test_auto_model_wrapper_inputs_outputs():
     assert len(wrapper.input_grammar) > 0
     assert len(wrapper.output_grammar) > 0
 
+    assert all(key in wrapper.input_grammar.names for key in ["x", "y"])
+    assert all(key in wrapper.output_grammar.names for key in ["z", "product"])
+
+    assert all(wrapper.input_grammar[key] == float for key in ["x", "y"])
+    assert all(wrapper.output_grammar[key] == float for key in ["z", "product"])
+
 
 def test_auto_model_wrapper_execution():
     """Test AeroMAPSAutoModelWrapper executes with changing inputs."""

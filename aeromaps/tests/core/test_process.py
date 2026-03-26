@@ -92,6 +92,11 @@ def test_process_models_are_independent():
     proc1 = create_process()
     proc2 = create_process()
 
+    proc1.parameters.cagr_freight_reference_periods_values = [0.0]
+    assert (proc1.parameters.cagr_freight_reference_periods_values !=
+            proc2.parameters.cagr_freight_reference_periods_values), \
+        "Changing parameters in one process should not affect the other process"
+
     # Models should be different instances
     # Test with a common model that should exist in both
     common_models = set(proc1.models.keys()) & set(proc2.models.keys())
