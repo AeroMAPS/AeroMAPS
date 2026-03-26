@@ -21,7 +21,7 @@ from aeromaps.plots.multi_scenario.intensities import (
     EnergyPerASKComparisonPlot,
     EnergyPerRTKComparisonPlot,
 )
-from aeromaps.plots.multi_scenario.fuel_supply import (
+from aeromaps.plots.multi_scenario.drop_in_supply import (
     DropInSupplyBreakdownPlot,
     HydrogenSupplyComparisonPlot,
     ElectricSupplyComparisonPlot,

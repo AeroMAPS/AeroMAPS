@@ -21,6 +21,18 @@ DEFAULT_COLORS = [
 # Default line styles for scenarios within a group
 DEFAULT_LINESTYLES = ['-', '--', '-.', ':']
 
+# Color palette for energy origins (used by energy/fuel supply plots)
+ENERGY_ORIGIN_COLORS = {
+    'fossil': '#d62728',      # red
+    'biomass': '#2ca02c',     # green
+    'electricity': '#1f77b4', # blue
+}
+
+# Fallback colors when energy_origin is not in the map above
+ENERGY_ORIGIN_FALLBACK_COLORS = [
+    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+]
+
 
 class MultiScenarioPlot(ABC):
     """
@@ -481,3 +493,44 @@ class MultiScenarioPlot(ABC):
             return self.scenario_data.keys()
         else:
             return range(len(self.scenario_data))
+
+    @staticmethod
+    def _aggregate_pathways_energy(df, years, pathways):
+        """
+        Sum ``{pathway.name}_energy_consumption`` columns for the given pathways.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            The vector_outputs DataFrame for one scenario.
+        years : array-like
+            Year index to slice on.
+        pathways : list of EnergyCarrierMetadata
+            Pathways whose energy consumption columns should be summed.
+
+        Returns
+        -------
+        pd.Series or None
+            Aggregated energy consumption, or *None* if no matching columns
+            were found in *df*.
+        """
+        total = None
+        for pathway in pathways:
+            col = f"{pathway.name}_energy_consumption"
+            if col in df.columns:
+                values = df.loc[years, col].fillna(0)
+                total = values if total is None else total + values
+        return total
+
+    @staticmethod
+    def _get_origin_color(energy_origin, fallback_index=0):
+        """Return a colour for an energy origin, falling back to a rotating palette."""
+        if energy_origin in ENERGY_ORIGIN_COLORS:
+            return ENERGY_ORIGIN_COLORS[energy_origin]
+        return ENERGY_ORIGIN_FALLBACK_COLORS[fallback_index % len(ENERGY_ORIGIN_FALLBACK_COLORS)]
+
+    @staticmethod
+    def _readable_label(raw_name):
+        """Turn a snake_case pathway / origin name into a readable label."""
+        return raw_name.replace('_', ' ').title()
+

@@ -49,6 +49,12 @@ from aeromaps.plots.single_scenario.climate import (
 )
 from aeromaps.plots.single_scenario.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
 
+from aeromaps.plots.single_scenario.energy_mix import (
+    EnergyMixPlot,
+    DropInSupplyBreakdownPlot,
+    BiofuelMixPlot,
+)
+
 from aeromaps.plots.single_scenario.costs import (
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
@@ -123,6 +129,10 @@ available_plots = {
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
     "mfsp_detailled": DetailledMFSPBreakdown,
+    # Generic pathways-manager-driven plots
+    "energy_mix": EnergyMixPlot,
+    "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
+    "biofuel_mix": BiofuelMixPlot,
     # todo: re-implement "Simple" plots from tsas_2025
     # "annual_MACC_simple_fleet": AnnualMACCSimple,
     # "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
