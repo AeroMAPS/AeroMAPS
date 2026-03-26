@@ -29,6 +29,19 @@ from aeromaps.plots.multi_scenario.fuel_supply import (
     ElectrofuelProductionComparisonPlot,
     BiofuelMixComparisonPlot,
 )
+from aeromaps.plots.multi_scenario.climate import (
+    TotalERFComparisonPlot,
+    TemperatureIncreaseComparisonPlot,
+    CO2ERFComparisonPlot,
+    NonCO2ERFComparisonPlot,
+)
+from aeromaps.plots.multi_scenario.costs import (
+    EnergyExpensesComparisonPlot,
+    NetEnergyExpensesComparisonPlot,
+    DOCComparisonPlot,
+    DOCEnergyComparisonPlot,
+    AirfareComparisonPlot,
+)
 
 # Dictionary of available multi-scenario plots
 available_multi_plots = {
@@ -57,4 +70,17 @@ available_multi_plots = {
     "biofuel_production_comparison": BiofuelProductionComparisonPlot,
     "electrofuel_production_comparison": ElectrofuelProductionComparisonPlot,
     "biofuel_mix_comparison": BiofuelMixComparisonPlot,
+
+    # Climate
+    "total_erf_comparison": TotalERFComparisonPlot,
+    "temperature_increase_comparison": TemperatureIncreaseComparisonPlot,
+    "co2_erf_comparison": CO2ERFComparisonPlot,
+    "non_co2_erf_comparison": NonCO2ERFComparisonPlot,
+
+    # Costs
+    "energy_expenses_comparison": EnergyExpensesComparisonPlot,
+    "net_energy_expenses_comparison": NetEnergyExpensesComparisonPlot,
+    "doc_comparison": DOCComparisonPlot,
+    "doc_energy_comparison": DOCEnergyComparisonPlot,
+    "airfare_comparison": AirfareComparisonPlot,
 }
