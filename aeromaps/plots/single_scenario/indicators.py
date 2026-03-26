@@ -4,6 +4,10 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class MeanCO2PerRPKPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_emissions_per_rpk",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -46,6 +50,10 @@ class MeanCO2PerRPKPlot(SingleScenarioPlot):
 
 
 class MeanCO2PerRTKPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_emissions_per_rtk",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -88,6 +96,14 @@ class MeanCO2PerRTKPlot(SingleScenarioPlot):
 
 
 class PassengerKayaFactorsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_emissions_passenger",
+        "rpk",
+        "energy_per_ask_mean",
+        "load_factor",
+        "co2_per_energy_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -170,6 +186,13 @@ class PassengerKayaFactorsPlot(SingleScenarioPlot):
 
 
 class FreightKayaFactorsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_emissions_freight",
+        "rtk",
+        "energy_per_rtk_mean",
+        "co2_per_energy_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -240,6 +263,14 @@ class FreightKayaFactorsPlot(SingleScenarioPlot):
 
 
 class LeversOfActionDistributionPlot(SingleScenarioPlot):
+    required_outputs = [
+        "cumulative_co2_emissions_2019technology_baseline3",
+        "cumulative_co2_emissions_2019technology",
+        "cumulative_co2_emissions_including_load_factor",
+        "cumulative_co2_emissions_including_energy",
+        "cumulative_co2_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

@@ -7,6 +7,15 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
+    required_outputs = [
+        "total_erf",
+        "contrails_erf",
+        "aerosol_erf",
+        "h2o_erf",
+        "nox_erf",
+        "co2_erf",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -70,6 +79,15 @@ class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
 
 
 class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_erf",
+        "h2o_erf",
+        "nox_erf",
+        "contrails_erf",
+        "aerosol_erf",
+        "total_erf",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -178,6 +196,11 @@ class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
 
 
 class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
+    required_outputs = [
+        "temperature_increase_from_aviation",
+        "temperature_increase_from_co2_from_aviation",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -264,6 +287,19 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
 
 
 class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
+    required_outputs = [
+        "temperature_increase_from_aviation",
+        "temperature_increase_from_co2_from_aviation",
+        "temperature_increase_from_nox_short_term_o3_increase_from_aviation",
+        "temperature_increase_from_h2o_from_aviation",
+        "temperature_increase_from_contrails_from_aviation",
+        "temperature_increase_from_nox_long_term_o3_decrease_from_aviation",
+        "temperature_increase_from_nox_ch4_decrease_from_aviation",
+        "temperature_increase_from_nox_stratospheric_water_vapor_decrease_from_aviation",
+        "temperature_increase_from_soot_from_aviation",
+        "temperature_increase_from_sulfur_from_aviation",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

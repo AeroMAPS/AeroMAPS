@@ -7,6 +7,10 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class BiomassConsumptionPlot(SingleScenarioPlot):
+    required_outputs = [
+        "biomass_total_consumption",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -39,6 +43,10 @@ class BiomassConsumptionPlot(SingleScenarioPlot):
 
 
 class ElectricityConsumptionPlot(SingleScenarioPlot):
+    required_outputs = [
+        "electricity_total_consumption",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

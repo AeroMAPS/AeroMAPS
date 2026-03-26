@@ -4,6 +4,10 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class RevenuePassengerKilometerPlot(SingleScenarioPlot):
+    required_outputs = [
+        "rpk",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -43,6 +47,10 @@ class RevenuePassengerKilometerPlot(SingleScenarioPlot):
 
 
 class RevenueTonneKilometerPlot(SingleScenarioPlot):
+    required_outputs = [
+        "rtk",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -82,6 +90,10 @@ class RevenueTonneKilometerPlot(SingleScenarioPlot):
 
 
 class AvailableSeatKilometerPlot(SingleScenarioPlot):
+    required_outputs = [
+        "ask",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -121,6 +133,10 @@ class AvailableSeatKilometerPlot(SingleScenarioPlot):
 
 
 class TotalAircraftDistancePlot(SingleScenarioPlot):
+    required_outputs = [
+        "total_aircraft_distance",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

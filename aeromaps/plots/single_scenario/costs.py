@@ -13,6 +13,15 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
+    required_outputs = [
+        "non_discounted_energy_expenses",
+        "non_discounted_net_energy_expenses",
+        "non_discounted_bau_energy_expenses",
+        "carbon_tax_bau",
+        "non_discounted_full_kero_energy_expenses",
+        "carbon_tax_full_kero",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -155,6 +164,11 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
 
 
 class DiscountEffect(SingleScenarioPlot):
+    required_outputs = [
+        "non_discounted_energy_expenses",
+        "discounted_energy_expenses",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -554,23 +568,22 @@ class DropInMACC:
 
 
 class DOCEvolutionBreakdown(SingleScenarioPlot):
+    required_outputs = [
+        "doc_total_per_ask_mean",
+        "doc_non_energy_per_ask_mean",
+        "doc_energy_per_ask_mean",
+        "doc_energy_tax_per_ask_mean",
+        "doc_energy_carbon_tax_per_ask_mean",
+        "doc_energy_subsidy_per_ask_mean",
+        "doc_carbon_tax_lowering_offset_per_ask_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        self.fig, self.ax = plt.subplots(
-            figsize=(plot_3_x, plot_3_y),
-        )
-        self.create_plot()
 
     def create_plot(self):
         (self.line_total,) = self.ax.plot(
@@ -719,98 +732,21 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
         # self.ax.set_ylim(0,)
 
-    def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.float_outputs = data["float_outputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-
-        for collection in self.ax.collections:
-            collection.remove()
-
-        self.line_total.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
-
-        self.line_total_adjusted.set_ydata(
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
-            - self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_carbon_tax_lowering_offset_per_ask_mean"]
-        )
-
-        self.line_total_gross.set_ydata(
-            self.df.loc[self.prospective_years, "doc_total_per_ask_mean"]
-            - self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            - self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"]
-        )
-
-        self.ax.fill_between(
-            self.prospective_years,
-            -self.df.loc[self.prospective_years, "doc_energy_subsidy_per_ask_mean"],
-            np.zeros(len(self.prospective_years)),
-            color="cornflowerblue",
-            hatch="xx",
-            label="Energy subsidy",
-            edgecolor="dimgray",
-            linewidth=0.5,
-        )
-
-        self.ax.fill_between(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
-            np.zeros(len(self.prospective_years)),
-            color="royalblue",
-            label="Non-energy",
-            edgecolor="dimgray",
-            linewidth=0.5,
-        )
-
-        self.ax.fill_between(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"],
-            color="cornflowerblue",
-            label="Energy",
-            edgecolor="dimgray",
-            linewidth=0.5,
-        )
-
-        self.ax.fill_between(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"],
-            color="cornflowerblue",
-            hatch="//",
-            linewidth=0.5,
-            edgecolor="dimgray",
-            label="Energy taxes (non-carbon)",
-        )
-
-        self.ax.fill_between(
-            self.prospective_years,
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_carbon_tax_per_ask_mean"],
-            self.df.loc[self.prospective_years, "doc_non_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_per_ask_mean"]
-            + self.df.loc[self.prospective_years, "doc_energy_tax_per_ask_mean"],
-            color="cornflowerblue",
-            hatch="..",
-            linewidth=0.5,
-            edgecolor="dimgray",
-            label="Carbon tax",
-        )
-        self.fig.canvas.draw()
-
 
 class DOCEvolutionCategory(SingleScenarioPlot):
+    required_outputs = [
+        "doc_total_per_ask_short_range_dropin_fuel",
+        "doc_total_per_ask_medium_range_dropin_fuel",
+        "doc_total_per_ask_long_range_dropin_fuel",
+        "doc_total_per_ask_short_range_hydrogen",
+        "doc_total_per_ask_medium_range_hydrogen",
+        "doc_total_per_ask_long_range_hydrogen",
+        "doc_total_per_ask_short_range_electric",
+        "doc_total_per_ask_medium_range_electric",
+        "doc_total_per_ask_long_range_electric",
+        "doc_total_per_ask_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -948,6 +884,21 @@ class DOCEvolutionCategory(SingleScenarioPlot):
 
 
 class AirfareEvolutionBreakdown(SingleScenarioPlot):
+    required_outputs = [
+        "doc_total_per_ask_mean",
+        "doc_non_energy_per_ask_mean",
+        "doc_energy_per_ask_mean",
+        "doc_energy_tax_per_ask_mean",
+        "doc_energy_carbon_tax_per_ask_mean",
+        "doc_energy_subsidy_per_ask_mean",
+        "doc_carbon_tax_lowering_offset_per_ask_mean",
+        "noc_carbon_offset_per_ask",
+        "non_operating_cost_per_ask",
+        "passenger_tax_per_ask",
+        "indirect_operating_cost_per_ask",
+        "operational_profit_per_ask",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

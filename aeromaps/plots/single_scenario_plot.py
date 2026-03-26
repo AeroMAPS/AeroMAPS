@@ -81,7 +81,7 @@ class SingleScenarioPlot(ABC):
     def _validate_required_outputs(self, data):
         """
         Validate that all required outputs are present in the data.
-        
+
         Issues warnings for missing outputs but does not raise exceptions,
         allowing plots to attempt rendering even with incomplete data.
 
@@ -92,15 +92,16 @@ class SingleScenarioPlot(ABC):
         """
         missing_outputs = []
 
-        # Check in vector_outputs
+        # Collect available column names from both vector_outputs and climate_outputs
+        available_columns = set()
         if "vector_outputs" in data and data["vector_outputs"] is not None:
-            df = data["vector_outputs"]
-            for output in self.required_outputs:
-                if output not in df.columns:
-                    missing_outputs.append(output)
-        else:
-            # No vector_outputs at all
-            missing_outputs = self.required_outputs.copy()
+            available_columns.update(data["vector_outputs"].columns)
+        if "climate_outputs" in data and data["climate_outputs"] is not None:
+            available_columns.update(data["climate_outputs"].columns)
+
+        for output in self.required_outputs:
+            if output not in available_columns:
+                missing_outputs.append(output)
 
         if missing_outputs:
             warnings.warn(

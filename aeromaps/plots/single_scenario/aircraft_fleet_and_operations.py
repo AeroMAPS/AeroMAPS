@@ -6,6 +6,10 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
+    required_outputs = [
+        "dropin_fuel_consumption_liter_per_pax_100km",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -49,6 +53,10 @@ class DropinFuelConsumptionLiterPerPAX100kmPlot(SingleScenarioPlot):
 
 
 class MeanLoadFactorPlot(SingleScenarioPlot):
+    required_outputs = [
+        "load_factor",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -88,6 +96,10 @@ class MeanLoadFactorPlot(SingleScenarioPlot):
 
 
 class MeanEnergyPerASKPlot(SingleScenarioPlot):
+    required_outputs = [
+        "energy_per_ask_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -131,6 +143,10 @@ class MeanEnergyPerASKPlot(SingleScenarioPlot):
 
 
 class MeanEnergyPerRTKPlot(SingleScenarioPlot):
+    required_outputs = [
+        "energy_per_rtk_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

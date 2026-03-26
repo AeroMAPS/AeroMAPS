@@ -9,6 +9,11 @@ from aeromaps.plots.single_scenario_plot import plot_2_y
 
 
 class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
+    required_outputs = [
+        "cumulative_carbon_offset",
+        "cumulative_co2_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -274,6 +279,10 @@ class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
 
 
 class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
+    required_outputs = [
+        "temperature_increase_from_aviation",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -577,6 +586,13 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
 
 
 class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
+    required_outputs = [
+        "biomass_availability_aviation_allocated",
+        "biomass_total_consumption",
+        "biomass_availability_global",
+        "biomass_overall_aviation_allocated_share",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -832,6 +848,13 @@ class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
 
 
 class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
+    required_outputs = [
+        "electricity_availability_aviation_allocated",
+        "electricity_total_consumption",
+        "electricity_availability_global",
+        "electricity_overall_aviation_allocated_share",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -1090,6 +1113,17 @@ class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
 
 
 class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
+    required_outputs = [
+        "cumulative_co2_emissions",
+        "biomass_availability_global",
+        "biomass_availability_aviation_allocated",
+        "biomass_total_consumption",
+        "electricity_availability_global",
+        "electricity_availability_aviation_allocated",
+        "electricity_total_consumption",
+        "temperature_increase_from_aviation",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, subplot_kw={"projection": "polar"})

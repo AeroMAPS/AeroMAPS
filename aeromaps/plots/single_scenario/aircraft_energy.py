@@ -12,6 +12,10 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
+    required_outputs = [
+        "co2_per_energy_mean",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -55,6 +59,14 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
 
 
 class EmissionFactorPerFuelCategory(SingleScenarioPlot):
+    required_outputs = [
+        "dropin_fuel_biomass_mean_co2_emission_factor",
+        "hydrogen_mean_co2_emission_factor",
+        "dropin_fuel_electricity_mean_co2_emission_factor",
+        "fossil_kerosene_mean_co2_emission_factor",
+        "electric_mean_co2_emission_factor",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -135,6 +147,9 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
 
 
 class EmissionFactorPerFuel(SingleScenarioPlot):
+    # Dynamic columns based on pathways - no static required_outputs
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -263,6 +278,9 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
 
 
 class ShareFuelPlot(SingleScenarioPlot):
+    # Dynamic columns based on pathways - no static required_outputs
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -458,6 +476,10 @@ class ShareFuelPlot(SingleScenarioPlot):
 
 
 class EnergyConsumptionPlot(SingleScenarioPlot):
+    required_outputs = [
+        "energy_consumption",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

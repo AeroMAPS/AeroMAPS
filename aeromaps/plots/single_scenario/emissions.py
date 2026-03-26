@@ -4,6 +4,10 @@ from aeromaps.plots.single_scenario_plot import SingleScenarioPlot, plot_3_x, pl
 
 
 class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "cumulative_co2_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -53,6 +57,10 @@ class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
 
 
 class DirectH2OEmissionsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "h2o_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -96,6 +104,10 @@ class DirectH2OEmissionsPlot(SingleScenarioPlot):
 
 
 class DirectNOxEmissionsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "nox_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -139,6 +151,10 @@ class DirectNOxEmissionsPlot(SingleScenarioPlot):
 
 
 class DirectSulfurEmissionsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "sulfur_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -181,6 +197,10 @@ class DirectSulfurEmissionsPlot(SingleScenarioPlot):
 
 
 class DirectSootEmissionsPlot(SingleScenarioPlot):
+    required_outputs = [
+        "soot_emissions",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -221,6 +241,10 @@ class DirectSootEmissionsPlot(SingleScenarioPlot):
 
 
 class CarbonOffsetPlot(SingleScenarioPlot):
+    required_outputs = [
+        "carbon_offset",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -259,6 +283,10 @@ class CarbonOffsetPlot(SingleScenarioPlot):
 
 
 class CumulativeCarbonOffsetPlot(SingleScenarioPlot):
+    required_outputs = [
+        "cumulative_carbon_offset",
+    ]
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)

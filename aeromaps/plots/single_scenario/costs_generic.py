@@ -12,6 +12,8 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -216,6 +218,8 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
 
 
 class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         self.hatch_map = {
             "mfsp": "",
@@ -671,6 +675,8 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
 
 
 class DetailledMFSPBreakdown(SingleScenarioPlot):
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         self.hatch_map = {
             "cost": "",
@@ -2833,6 +2839,8 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 
 
 class SimpleMFSP(SingleScenarioPlot):
+    required_outputs = []
+
     def __init__(self, process, figsize=None):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize)
@@ -2971,17 +2979,3 @@ class SimpleMFSP(SingleScenarioPlot):
         self.fig.tight_layout()
         self.fig.canvas.draw()
 
-    def _update_plot_elements(self):
-        self.df = data["vector_outputs"]
-        self.years = data["years"]["full_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = data["pathways_manager"]
-
-        # Clear the current axes
-        self.ax.cla()
-
-        # Recreate the plot with updated data
-        self.create_plot()
-
-        # Redraw the canvas
-        self.fig.canvas.draw()
