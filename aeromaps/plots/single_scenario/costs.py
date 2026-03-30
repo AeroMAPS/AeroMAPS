@@ -253,12 +253,12 @@ class DropInMACC:
         abatement_potential = [
             elt / 1000000
             for elt in [
-                self.df.abatement_potential_hefa_fog[year],
-                self.df.abatement_potential_hefa_others[year],
-                self.df.abatement_potential_atj[year],
-                self.df.abatement_potential_ft_msw[year],
-                self.df.abatement_potential_ft_others[year],
-                self.df.abatement_potential_electrofuel[year],
+                self.df.hefa_fog_abatement_effective[year],
+                self.df.hefa_others_abatement_effective[year],
+                self.df.atj_abatement_effective[year],
+                self.df.ft_msw_abatement_effective[year],
+                self.df.ft_others_abatement_effective[year],
+                self.df.electrofuel_abatement_effective[year],
             ]
         ]
 
@@ -266,23 +266,23 @@ class DropInMACC:
         energy_avail = [
             elt / 1000000000000
             for elt in [
-                self.df.energy_avail_hefa_fog[year],
-                self.df.energy_avail_hefa_others[year],
-                self.df.energy_avail_atj[year],
-                self.df.energy_avail_ft_msw[year],
-                self.df.energy_avail_ft_others[year],
-                self.df.energy_avail_electrofuel[year],
+                self.df.hefa_fog_energy_consumption[year],
+                self.df.hefa_others_energy_consumption[year],
+                self.df.atj_energy_consumption[year],
+                self.df.ft_msw_energy_consumption[year],
+                self.df.ft_others_energy_consumption[year],
+                self.df.electrofuel_energy_consumption[year],
             ]
         ]
 
         # carbon abatement cost in (€/tCO2e)
         carbon_abatement_cost = [
-            self.df.carbon_abatement_cost_hefa_fog[year],
-            self.df.carbon_abatement_cost_hefa_others[year],
-            self.df.carbon_abatement_cost_atj[year],
-            self.df.carbon_abatement_cost_ft_msw[year],
-            self.df.carbon_abatement_cost_ft_others[year],
-            self.df.carbon_abatement_cost_electrofuel[year],
+            self.df.hefa_fog_carbon_abatement_cost[year],
+            self.df.hefa_others_carbon_abatement_cost[year],
+            self.df.atj_carbon_abatement_cost[year],
+            self.df.ft_msw_carbon_abatement_cost[year],
+            self.df.ft_others_carbon_abatement_cost[year],
+            self.df.electrofuel_carbon_abatement_cost[year],
         ]
 
         colors = ["#ee9b00", "#ffbf47", "#bb3e03", "#097223", "#0c9e30", "#828782"]
@@ -432,12 +432,12 @@ class DropInMACC:
         abatement_potential = [
             elt / 1000000
             for elt in [
-                self.df.abatement_potential_hefa_fog[year],
-                self.df.abatement_potential_hefa_others[year],
-                self.df.abatement_potential_atj[year],
-                self.df.abatement_potential_ft_msw[year],
-                self.df.abatement_potential_ft_others[year],
-                self.df.abatement_potential_electrofuel[year],
+                self.df.hefa_fog_abatement_effective[year],
+                self.df.hefa_others_abatement_effective[year],
+                self.df.atj_abatement_effective[year],
+                self.df.ft_msw_abatement_effective[year],
+                self.df.ft_others_abatement_effective[year],
+                self.df.electrofuel_abatement_effective[year],
             ]
         ]
 
@@ -445,23 +445,23 @@ class DropInMACC:
         energy_avail = [
             elt / 1000000000000
             for elt in [
-                self.df.energy_avail_hefa_fog[year],
-                self.df.energy_avail_hefa_others[year],
-                self.df.energy_avail_atj[year],
-                self.df.energy_avail_ft_msw[year],
-                self.df.energy_avail_ft_others[year],
-                self.df.energy_avail_electrofuel[year],
+                self.df.hefa_fog_energy_consumption[year],
+                self.df.hefa_others_energy_consumption[year],
+                self.df.atj_energy_consumption[year],
+                self.df.ft_msw_energy_consumption[year],
+                self.df.ft_others_energy_consumption[year],
+                self.df.electrofuel_energy_consumption[year],
             ]
         ]
 
         # carbon abatement cost in (€/tCO2e)
         carbon_abatement_cost = [
-            self.df.carbon_abatement_cost_hefa_fog[year],
-            self.df.carbon_abatement_cost_hefa_others[year],
-            self.df.carbon_abatement_cost_atj[year],
-            self.df.carbon_abatement_cost_ft_msw[year],
-            self.df.carbon_abatement_cost_ft_others[year],
-            self.df.carbon_abatement_cost_electrofuel[year],
+            self.df.hefa_fog_carbon_abatement_cost[year],
+            self.df.hefa_others_carbon_abatement_cost[year],
+            self.df.atj_carbon_abatement_cost[year],
+            self.df.ft_msw_carbon_abatement_cost[year],
+            self.df.ft_others_carbon_abatement_cost[year],
+            self.df.electrofuel_carbon_abatement_cost[year],
         ]
 
         colors = ["#ee9b00", "#ffbf47", "#bb3e03", "#097223", "#0c9e30", "#828782"]
