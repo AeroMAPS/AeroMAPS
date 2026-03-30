@@ -13,7 +13,7 @@ from aeromaps import create_process, assemble_processes
 
 def get_tested_config_files():
     """Get paths for configuration files to initialize process."""
-    config_path = Path(__file__).parent / "tested_configs" / "config_basic.yaml"
+    config_path = Path(__file__).parent.parent / "tested_configs" / "config_basic.yaml"
     return [str(config_path)]
 
 

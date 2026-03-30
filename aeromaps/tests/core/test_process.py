@@ -10,7 +10,7 @@ import pytest
 import os
 from aeromaps import create_process
 
-CONFIG_DIR = Path(__file__).parent / "tested_configs"
+CONFIG_DIR = Path(__file__).parent.parent / "tested_configs"
 
 
 def get_tested_config_files():
