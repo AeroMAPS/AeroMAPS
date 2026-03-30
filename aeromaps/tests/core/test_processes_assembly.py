@@ -1,7 +1,7 @@
 """
-Test module for AeroMAPSProcesses core functionality.
+Test module for AeroMAPSProcessesAssembly core functionality.
 
-This module tests the AeroMAPSProcesses class for managing multiple scenarios.
+This module tests the AeroMAPSProcessesAssembly class for managing multiple scenarios.
 Plot-related tests are in test_multi_scenario_plots.py.
 """
 from pathlib import Path
@@ -22,7 +22,7 @@ CONFIGS_TO_TEST = get_tested_config_files()
 
 @pytest.mark.parametrize("config_file", CONFIGS_TO_TEST)
 def test_multi_process_creation_and_operations(config_file):
-    """Test AeroMAPSProcesses creation, indexing, and basic operations."""
+    """Test AeroMAPSProcessesAssembly creation, indexing, and basic operations."""
     proc1 = create_process(configuration_file=config_file)
     proc1.compute()
     proc2 = create_process(configuration_file=config_file)

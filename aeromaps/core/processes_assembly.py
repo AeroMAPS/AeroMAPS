@@ -1,6 +1,6 @@
 """Multi-process management for scenario comparison.
 
-This module defines the AeroMAPSProcesses class that manages multiple AeroMAPS
+This module defines the AeroMAPSProcessesAssembly class that manages multiple AeroMAPS
 processes for scenario comparison and multi-scenario plotting.
 """
 
@@ -11,7 +11,7 @@ from typing import Union, List, Dict
 logger = logging.getLogger(__name__)
 
 
-class AeroMAPSProcesses:
+class AeroMAPSProcessesAssembly:
     """
     Manager for multiple AeroMAPS processes to enable scenario comparison.
     
