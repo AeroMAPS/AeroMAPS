@@ -7,6 +7,10 @@ from ipywidgets import interact
 from ipywidgets import widgets
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_1_x
+from aeromaps.plots.single_scenario_plot import plot_1_y
+from aeromaps.plots.single_scenario_plot import plot_2_x
+from aeromaps.plots.single_scenario_plot import plot_2_y
 from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
@@ -21,7 +25,7 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
         self.plot_interact()
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_1_x, plot_1_y)
 
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
@@ -207,7 +211,7 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
                 new_labels.append(la)
                 seen.add(la)
         # Ajout de la mention bottom-up
-        self.ax.legend(new_handles, new_labels, loc="upper right")
+        self.ax.legend(new_handles, new_labels, bbox_to_anchor=(1.1, 0.9))
         self.ax.grid(axis="x")
         self.ax.set_title("Annual capital expenses (bottom-up pathways only)")
         self.ax.set_ylabel("Capital expenses [M€]")
@@ -251,7 +255,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
         self.plot_interact()
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def plot_interact(self):
         pathway_widget = widgets.SelectMultiple(
@@ -692,7 +696,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
         self.plot_interact()
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_1_x, plot_1_y)
 
     def _create_color_map(self):
         # Color mapping for each (process, resource) pair
@@ -1807,9 +1811,8 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             self.ax.get_ylim()[1] * 1.1,
         )
 
-        self.fig.canvas.header_visible = False
+        self.fig.reviewcanvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
-        self.fig.tight_layout()
         self.fig.canvas.draw()
 
     def update_pathway_over_time(self, pathway):
@@ -2183,7 +2186,6 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             self.ax.get_ylim()[1] * 1.1,
         )
 
-        self.fig.tight_layout()
         self.fig.canvas.draw()
 
     def update_pathway_over_time_bottomup(self, pathway):
@@ -2834,7 +2836,6 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             self.ax.get_ylim()[1] * 1.1,
         )
 
-        self.fig.tight_layout()
         self.fig.canvas.draw()
 
 
@@ -2848,7 +2849,7 @@ class SimpleMFSP(SingleScenarioPlot):
         self.plot_interact()
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_1_x, plot_1_y)
 
     def plot_interact(self):
         mfsp_toggle = widgets.ToggleButtons(
@@ -2976,6 +2977,5 @@ class SimpleMFSP(SingleScenarioPlot):
         self.ax.set_ylabel("Net MFSP [€/MJ]" if mfsp_type == "net_mfsp" else "MFSP [€/MJ]")
         self.ax.legend(new_handles, new_labels)
         self.ax.grid(True)
-        self.fig.tight_layout()
         self.fig.canvas.draw()
 

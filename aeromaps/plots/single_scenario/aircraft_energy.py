@@ -7,6 +7,8 @@ from ipywidgets import interact
 from matplotlib.lines import Line2D
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_1_x
+from aeromaps.plots.single_scenario_plot import plot_1_y
 from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
@@ -155,7 +157,7 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (10, 6)
+        return (plot_1_x, plot_1_y)
 
     def create_plot(self):
         pathways = self.process.pathways_manager.get_all()

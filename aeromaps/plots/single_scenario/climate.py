@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_2_x
+from aeromaps.plots.single_scenario_plot import plot_2_y
 from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
@@ -305,7 +307,7 @@ class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         self.ax.plot(

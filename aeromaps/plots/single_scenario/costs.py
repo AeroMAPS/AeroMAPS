@@ -8,6 +8,10 @@ import pandas as pd
 from matplotlib.patches import Patch
 
 from aeromaps.plots.single_scenario_plot import SingleScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_1_x
+from aeromaps.plots.single_scenario_plot import plot_1_y
+from aeromaps.plots.single_scenario_plot import plot_2_x
+from aeromaps.plots.single_scenario_plot import plot_2_y
 from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
@@ -27,7 +31,7 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         (self.line_energy_expenses,) = self.ax.plot(
@@ -224,7 +228,7 @@ class DropInMACC:
 
         try:
             self.fig, self.ax = plt.subplots(
-                figsize=(plot_3_x, plot_3_y),
+                figsize=(plot_1_x, plot_1_y),
             )
             self.create_plot()
         except Exception as e:
@@ -387,15 +391,15 @@ class DropInMACC:
         self.ax.legend(
             fancybox=True,
             shadow=True,
-            loc="lower left",
-            bbox_to_anchor=[0.00, -0.2],
+            loc="upper left",
+            bbox_to_anchor=(0.05,0.9),
             prop={"size": 8},
         )
         self.ax2.legend(
             fancybox=True,
             shadow=True,
-            loc="lower right",
-            bbox_to_anchor=[1, -0.2],
+            loc="upper right",
+            bbox_to_anchor=(0.95,0.9),
             prop={"size": 8},
         )
 
@@ -752,7 +756,7 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         (self.line_srdi,) = self.ax.plot(
@@ -904,7 +908,7 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         super().__init__(process, figsize)
 
     def _get_default_figsize(self):
-        return (plot_3_x, plot_3_y)
+        return (plot_2_x, plot_2_y)
 
     def create_plot(self):
         (self.line_total_airfare,) = self.ax.plot(
