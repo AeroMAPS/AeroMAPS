@@ -44,7 +44,7 @@ def process():
     import os
     config_path = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_advanced.yaml"
+        "../tested_configs/config_advanced.yaml"
     )
     proc = create_process(configuration_file=config_path)
     

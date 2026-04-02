@@ -15,7 +15,7 @@ def processes():
     # Create first process
     config_basic = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_basic.yaml"
+        "../tested_configs/config_basic.yaml"
     )
     proc1 = create_process(configuration_file=config_basic)
     proc1.compute()
@@ -33,7 +33,7 @@ def processes():
 
     config_full = os.path.join(
         os.path.dirname(__file__),
-        "../core/tested_configs/config_basic_full.yaml"
+        "../tested_configs/config_basic_full.yaml"
     )
     proc3 = create_process(configuration_file=config_full)
     proc3.compute()
