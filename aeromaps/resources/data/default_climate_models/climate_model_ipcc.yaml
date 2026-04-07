@@ -30,12 +30,22 @@ species_settings:
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
-  Soot:
+  Soot - ARI:
     sensitivity_rf: 1.0e-10
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
-  Sulfur:
+  Soot - ACI:
+    sensitivity_rf: 0.0
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Sulfur - ARI:
     sensitivity_rf: -2.0e-11
+    ratio_erf_rf: 1.0
+    efficacy_erf: 1.0
+
+  Sulfur - ACI:
+    sensitivity_rf: 0.0
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0

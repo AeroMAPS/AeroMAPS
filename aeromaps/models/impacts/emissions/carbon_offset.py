@@ -171,7 +171,8 @@ class CarbonOffset(AeroMAPSModel):
         self,
         level_carbon_offset: pd.Series,
         residual_carbon_offset: pd.Series,
-    ) -> pd.Series:
+        co2_emissions: pd.Series,
+    ) -> Tuple[pd.Series, pd.Series]:
         """
         Execute the computation of total carbon offset.
 
@@ -187,12 +188,20 @@ class CarbonOffset(AeroMAPSModel):
         carbon_offset
             Total annual carbon offset [MtCO2].
 
+        co2_emissions_with_offset
+            Total annual CO2 emissions by subtracting carbon offset [MtCO2].
+
         """
         carbon_offset = level_carbon_offset + residual_carbon_offset
-
         self.df.loc[:, "carbon_offset"] = carbon_offset
 
-        return carbon_offset
+        self.df_climate["co2_emissions_with_offset"] = co2_emissions
+        for k in range(self.prospection_start_year, self.end_year + 1):
+            self.df_climate.loc[k, "co2_emissions_with_offset"] = co2_emissions.loc[k] - \
+                                                                  carbon_offset.loc[k]
+        co2_emissions_with_offset = self.df_climate["co2_emissions_with_offset"]
+
+        return carbon_offset, co2_emissions_with_offset
 
 
 class CumulativeCarbonOffset(AeroMAPSModel):
