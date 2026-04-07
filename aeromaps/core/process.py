@@ -612,7 +612,7 @@ class AeroMAPSProcess(object):
         plot_names
             List of strings identifying available plot functions.
         """
-        return list(available_plots.keys())
+        return list([*available_plots.keys(), *available_plots_fleet.keys()])
 
     def list_float_inputs(self):
         """Return the current scalar input values.

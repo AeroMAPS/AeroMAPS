@@ -54,6 +54,28 @@ def process():
     return proc
 
 
+@pytest.fixture(scope="module")
+def process_simple():
+    """
+    Create and run an AeroMAPS process with test configuration.
+
+    This fixture is module-scoped to avoid running the computation multiple times.
+    Uses the full test configuration which includes all necessary models.
+    """
+    # Create process with full test configuration
+    import os
+    config_path = os.path.join(
+        os.path.dirname(__file__),
+        "../tested_configs/config_advanced_simplified.yaml"
+    )
+    proc = create_process(configuration_file=config_path)
+
+    # Run the scenario
+    proc.compute()
+
+    return proc
+
+
 def test_air_transport_co2_emissions_plot(process):
     """Test that air_transport_co2_emissions plot can be created."""
     plot = process.plot("air_transport_co2_emissions", save=False)
@@ -321,6 +343,60 @@ def test_airfare_breakdown_plot(process):
 def test_mfsp_detailled_plot(process):
     """Test that mfsp_detailled plot can be created."""
     plot = process.plot("mfsp_detailled", save=False)
+    assert plot is not None
+
+
+def test_energy_mix_plot(process):
+    """Test that energy_mix plot can be created."""
+    plot = process.plot("energy_mix", save=False)
+    assert plot is not None
+
+
+def test_drop_in_supply_breakdown_plot(process):
+    """Test that drop_in_supply_breakdown plot can be created."""
+    plot = process.plot("drop_in_supply_breakdown", save=False)
+    assert plot is not None
+
+
+def test_biofuel_mix_plot(process):
+    """Test that biofuel_mix plot can be created."""
+    plot = process.plot("biofuel_mix", save=False)
+    assert plot is not None
+
+
+def test_annual_MACC_plot(process):
+    """Test that annual_MACC plot can be created."""
+    plot = process.plot("annual_MACC", save=False)
+    assert plot is not None
+
+
+def test_scenario_MACC_plot(process):
+    """Test that scenario_MACC plot can be created."""
+    plot = process.plot("scenario_MACC", save=False)
+    assert plot is not None
+
+
+def test_cumulative_MACC_plot(process):
+    """Test that cumulative_MACC plot can be created."""
+    plot = process.plot("cumulative_MACC", save=False)
+    assert plot is not None
+
+
+def test_shadow_carbon_pricing_plot(process):
+    """Test that shadow_carbon_pricing plot can be created."""
+    plot = process.plot("shadow_carbon_pricing", save=False)
+    assert plot is not None
+
+
+def test_annual_macc_simple_plot(process_simple):
+    """Test that annual_MACC_simple_fleet plot can be created."""
+    plot = process_simple.plot("annual_MACC_simple_fleet", save=False)
+    assert plot is not None
+
+
+def test_shadow_carbon_pricing_simple_plot(process_simple):
+    """Test that shadow_carbon_pricing_simple_fleet plot can be created."""
+    plot = process_simple.plot("shadow_carbon_pricing_simple_fleet", save=False)
     assert plot is not None
 
 # ---------------------------------------------------------------------------

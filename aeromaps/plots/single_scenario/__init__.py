@@ -58,7 +58,6 @@ from aeromaps.plots.single_scenario.energy_mix import (
 from aeromaps.plots.single_scenario.costs import (
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
-    DropInMACC,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
     AirfareEvolutionBreakdown,
@@ -124,7 +123,6 @@ available_plots = {
     "energy_mfsp": SimpleMFSP,
     "energy_expenses_discounted": DiscountEffect,
     "energy_expenses_comparison": ScenarioEnergyExpensesComparison,
-    "drop_in_macc_curve": DropInMACC,
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
@@ -133,9 +131,8 @@ available_plots = {
     "energy_mix": EnergyMixPlot,
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "biofuel_mix": BiofuelMixPlot,
-    # todo: re-implement "Simple" plots from tsas_2025
-    # "annual_MACC_simple_fleet": AnnualMACCSimple,
-    # "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
+    "annual_MACC_simple_fleet": AnnualMACCSimple,
+    "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }
 
 available_plots_fleet = {
