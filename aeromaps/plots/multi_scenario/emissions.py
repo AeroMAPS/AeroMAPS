@@ -133,28 +133,27 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
                         linewidth=2
                     )
             
-            # Update legend labels based on whether budgets are unique or shared
-            # Show "Budget" for scenarios sharing the same value
-            # Show "Budget - Sname" only for scenarios with unique/different values
+            # Update legend labels based on whether budgets are unique or shared:
+            # Case 1 - single budget for all:          "Budget"
+            # Case 2 - all budgets are unique:         "Budget - ScenarioName" for each
+            # Case 3 - mixed (some unique, some rest): "Budget - ScenarioName" for unique ones,
+            #                                          "Budget - Rest" for the shared group
             num_unique_budgets = len(plotted_budgets)
-            
+
             for budget_val, scenario_info in plotted_budgets.items():
                 scenario_names = [name for name, line in scenario_info]
-                # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
-                
-                # If this budget is shared by multiple scenarios, just label it "Budget"
-                # If only one scenario has this budget value AND there are other budgets, label with scenario name
-                if len(scenario_names) > 1:
-                    # Multiple scenarios share this budget value
+
+                if num_unique_budgets == 1:
+                    # Case 1: single budget value shared by all scenarios
                     line_handle.set_label("Budget")
-                elif num_unique_budgets > 1:
-                    # Only one scenario has this budget and there are other different budgets
-                    line_handle.set_label(f"Budget - {scenario_names[0]}")
+                elif len(scenario_names) > 1:
+                    # Case 3: this budget is shared by several scenarios (the "rest" group)
+                    line_handle.set_label("Budget - Rest")
                 else:
-                    # Only one budget value total, and only one scenario has it
-                    line_handle.set_label("Budget")
-            
+                    # Case 2 / Case 3: this budget is unique to one scenario
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
+
         else:
             for idx, data in enumerate(self.scenario_data):
                 scenario_name = f"scenario_{idx}"  # Key for style lookup
@@ -195,27 +194,26 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
                             # Budget already seen - track scenario but don't plot
                             plotted_budgets[budget].append((display_name, None))
             
-            # Update legend labels based on whether budgets are unique or shared
-            # Show "Budget" for scenarios sharing the same value
-            # Show "Budget - Sname" only for scenarios with unique/different values
+            # Update legend labels based on whether budgets are unique or shared:
+            # Case 1 - single budget for all:          "Budget"
+            # Case 2 - all budgets are unique:         "Budget - ScenarioName" for each
+            # Case 3 - mixed (some unique, some rest): "Budget - ScenarioName" for unique ones,
+            #                                          "Budget - Rest" for the shared group
             num_unique_budgets = len(plotted_budgets)
-            
+
             for budget_val, scenario_info in plotted_budgets.items():
                 scenario_names = [name for name, line in scenario_info]
-                # Get the line handle (first entry has the actual line)
                 line_handle = scenario_info[0][1]
-                
-                # If this budget is shared by multiple scenarios, just label it "Budget"
-                # If only one scenario has this budget value AND there are other budgets, label with scenario name
-                if len(scenario_names) > 1:
-                    # Multiple scenarios share this budget value
+
+                if num_unique_budgets == 1:
+                    # Case 1: single budget value shared by all scenarios
                     line_handle.set_label("Budget")
-                elif num_unique_budgets > 1:
-                    # Only one scenario has this budget and there are other different budgets
-                    line_handle.set_label(f"Budget - {scenario_names[0]}")
+                elif len(scenario_names) > 1:
+                    # Case 3: this budget is shared by several scenarios (the "rest" group)
+                    line_handle.set_label("Budget - Rest")
                 else:
-                    # Only one budget value total, and only one scenario has it
-                    line_handle.set_label("Budget")
+                    # Case 2 / Case 3: this budget is unique to one scenario
+                    line_handle.set_label(f"Budget - {scenario_names[0]}")
         
         self.ax.set_xlabel("Year", fontsize=12)
         self.ax.set_ylabel("Cumulative CO2 Emissions [Gt CO2]", fontsize=12)
