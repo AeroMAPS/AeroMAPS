@@ -34,9 +34,9 @@ aircraft:
     parameters:
       entry_into_service_year: 2035
       consumption_evolution: -20.0
-      nox_evolution: 0.0
-      soot_evolution: 0.0
-      doc_non_energy_evolution: 0.0
+      nox_evolution: -10.0
+      soot_evolution: -5.0
+      doc_non_energy_evolution: -5.0
       cruise_altitude: 12000.0
       hybridization_factor: 0.0
       ask_year: 280000000.0
@@ -50,9 +50,9 @@ aircraft:
     parameters:
       entry_into_service_year: 2045
       consumption_evolution: -35.0
-      nox_evolution: 0.0
-      soot_evolution: 0.0
-      doc_non_energy_evolution: 0.0
+      nox_evolution: -20.0
+      soot_evolution: -10.0
+      doc_non_energy_evolution: -10.0
       cruise_altitude: 12000.0
       hybridization_factor: 0.0
       ask_year: 280000000.0
