@@ -55,5 +55,5 @@ species_settings:
 model_settings:
   background_scenario: "RCP45"
 
-# CO2 emissions choice
-include_offset: True  # Whether to include offset in CO2 emissions
+# Inclusion of offset in CO2 emissions for calculating the temperature response
+include_offset: False  # Whether to include offset in CO2 emissions

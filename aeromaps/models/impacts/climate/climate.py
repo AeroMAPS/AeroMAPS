@@ -64,6 +64,7 @@ class ClimateModel(AeroMAPSModel):
         # --- Declare input names ---
         self.input_names = [
             "co2_emissions",
+            "co2_emissions_with_offset",
             "nox_emissions",
             "h2o_emissions",
             "sulfur_emissions",

@@ -54,3 +54,6 @@ species_settings:
 # See AeroCM documentation for available model settings depending on the climate model
 model_settings:
   background_scenario: "RCP45"
+  
+# Inclusion of offset in CO2 emissions for calculating the temperature response
+include_offset: False  # Whether to include offset in CO2 emissions

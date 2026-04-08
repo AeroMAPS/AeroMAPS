@@ -49,3 +49,6 @@ species_settings:
     sensitivity_rf: 0.0
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
+
+# Inclusion of offset in CO2 emissions for calculating the temperature response
+include_offset: False  # Whether to include offset in CO2 emissions

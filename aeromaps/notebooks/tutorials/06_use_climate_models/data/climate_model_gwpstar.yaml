@@ -54,3 +54,6 @@ species_settings:
 # See AeroCM documentation for available model settings depending on the climate model
 model_settings:
   tcre: 0.00045
+  
+# Inclusion of offset in CO2 emissions for calculating the temperature response
+include_offset: False  # Whether to include offset in CO2 emissions
