@@ -1211,17 +1211,6 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         plt.plot()
         # plt.savefig("fleet_renewal.pdf")
 
-    def plot_energy_contributions(self):
-        """Plot individual aircraft contributions to fleet energy efficiency.
-
-        Convenience wrapper around :meth:`plot_performance_contributions` for energy.
-
-        Returns
-        -------
-        matplotlib.figure.Figure
-        """
-        return self.plot_performance_contributions("energy")
-
     def plot_performance_contributions(self, metric="energy"):
         """Plot individual aircraft contributions to a fleet performance metric.
 
