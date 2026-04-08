@@ -138,7 +138,7 @@ aircraft:
     parameters:
       entry_into_service_year: 2035
       consumption_evolution: -15.0
-      nox_evolution: 0.0
+      nox_evolution: -15.0
       soot_evolution: 0.0
       doc_non_energy_evolution: 0.0
       cruise_altitude: 12000.0

@@ -850,60 +850,144 @@ class FleetPerformanceMixin:
         final_df = pd.DataFrame(final_dict, index=self.df.index)
         self.df = pd.concat([self.df, final_df], axis=1)
 
-    def _compute_aircraft_energy_contribution(self):
-        """Compute each aircraft's individual contribution to fleet energy efficiency.
+    def _compute_aircraft_performance_contributions(self):
+        """Compute each aircraft's individual contribution to all fleet performance metrics.
 
         For each new aircraft and the old reference aircraft, computes how much its
-        presence shifts the fleet mean energy per ASK relative to the recent reference
-        aircraft baseline:
+        presence shifts the fleet mean metric relative to the recent reference baseline:
 
-            contribution(t) = aircraft_share(t) / 100 * (energy_recent_ref - energy_aircraft)
+            contribution(t) = aircraft_share(t) / 100 * (metric_recent_ref - metric_aircraft)
 
-        A positive contribution means the aircraft is more efficient than the recent
-        reference and pulls the fleet mean energy down.  A negative contribution (old
-        reference aircraft) means it is less efficient and pulls the fleet mean up.
+        Positive contribution = aircraft is better than recent reference (pulls metric down
+        for energy/emissions/DOC).  Negative = worse (old reference aircraft).
 
-        The sum of all contributions equals the total deviation from the recent reference
-        baseline, so:
+        The identity holds for every metric m:
+            fleet_mean_m(t) = m_recent_ref - sum_i(contribution_i(t))
 
-            fleet_mean_energy = energy_recent_ref - sum(contributions)
+        Stored columns (prefix = ``{category}:{subcategory}:{aircraft}``):
 
-        Results are stored in the DataFrame with keys like:
-        ``{category}:{subcategory}:{aircraft}:energy_efficiency_contribution``
-        ``{category}:{subcategory}:old_reference:energy_efficiency_contribution``
+        * ``...:energy_efficiency_contribution``  [MJ/ASK]
+        * ``...:doc_contribution``                [€/ASK]
+        * ``...:nox_contribution``                [kg/ASK]
+        * ``...:soot_contribution``               [kg/ASK]
         """
         temp_dict = {}
 
         for category in self.fleet.categories.values():
             first_subcategory = category.subcategories[0]
-            energy_ref_recent = float(first_subcategory.recent_reference_aircraft.energy_per_ask)
-            energy_ref_old = float(first_subcategory.old_reference_aircraft.energy_per_ask)
+            ref_recent = first_subcategory.recent_reference_aircraft
+            ref_old    = first_subcategory.old_reference_aircraft
+
+            metrics = {
+                "energy_efficiency_contribution": (
+                    float(ref_recent.energy_per_ask),
+                    float(ref_old.energy_per_ask),
+                    "consumption_evolution",
+                    lambda ref, evo: ref * (1 + evo / 100),
+                ),
+                "doc_contribution": (
+                    float(ref_recent.doc_non_energy_base),
+                    float(ref_old.doc_non_energy_base),
+                    "doc_non_energy_evolution",
+                    lambda ref, evo: ref * (1 + evo / 100),
+                ),
+                "nox_contribution": (
+                    float(ref_recent.emission_index_nox),
+                    float(ref_old.emission_index_nox),
+                    "nox_evolution",
+                    lambda ref, evo: ref * (1 + evo / 100),
+                ),
+                "soot_contribution": (
+                    float(ref_recent.emission_index_soot),
+                    float(ref_old.emission_index_soot),
+                    "soot_evolution",
+                    lambda ref, evo: ref * (1 + evo / 100),
+                ),
+            }
 
             prefix = f"{category.name}:{first_subcategory.name}"
-            old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
+            old_ref_share    = self.df[f"{prefix}:old_reference:aircraft_share"].values
             recent_ref_share = self.df[f"{prefix}:recent_reference:aircraft_share"].values
 
-            # Old reference: negative contribution (less efficient than recent ref)
-            temp_dict[f"{prefix}:old_reference:energy_efficiency_contribution"] = (
-                old_ref_share / 100 * (energy_ref_recent - energy_ref_old)
-            )
-            # Recent reference: zero by definition (it is the baseline)
-            temp_dict[f"{prefix}:recent_reference:energy_efficiency_contribution"] = (
-                recent_ref_share / 100 * 0.0
-            )
+            for col_suffix, (val_recent, val_old, evo_attr, val_fn) in metrics.items():
+                # Old reference: negative contribution (less efficient than recent ref)
+                temp_dict[f"{prefix}:old_reference:{col_suffix}"] = (
+                    old_ref_share / 100 * (val_recent - val_old)
+                )
+                # Recent reference: zero by definition
+                temp_dict[f"{prefix}:recent_reference:{col_suffix}"] = (
+                    np.zeros_like(old_ref_share)
+                )
 
             for subcategory in category.subcategories.values():
                 subcat_key = f"{category.name}:{subcategory.name}"
                 for aircraft in self._sorted_aircraft(subcategory):
-                    aircraft_energy = energy_ref_recent * (
-                        1 + float(aircraft.parameters.consumption_evolution) / 100
-                    )
                     aircraft_share = self.df[
                         f"{subcat_key}:{aircraft.name}:aircraft_share"
                     ].values
-                    temp_dict[
-                        f"{subcat_key}:{aircraft.name}:energy_efficiency_contribution"
-                    ] = aircraft_share / 100 * (energy_ref_recent - aircraft_energy)
+                    for col_suffix, (val_recent, val_old, evo_attr, val_fn) in metrics.items():
+                        evo = float(getattr(aircraft.parameters, evo_attr))
+                        aircraft_val = val_fn(val_recent, evo)
+                        temp_dict[
+                            f"{subcat_key}:{aircraft.name}:{col_suffix}"
+                        ] = aircraft_share / 100 * (val_recent - aircraft_val)
+
+        final_df = pd.DataFrame(temp_dict, index=self.df.index)
+        self.df = pd.concat([self.df, final_df], axis=1)
+
+    def _compute_fleet_renewal_performance(self):
+        """Compute counterfactual fleet performance with fleet renewal only (no new aircraft).
+
+        For each category and performance metric, computes what the fleet mean would be
+        if no new aircraft ever entered service — only the gradual replacement of old
+        reference aircraft by the recent reference aircraft (fleet renewal):
+
+            metric_renewal(t) = metric_old * old_share(t)/100
+                               + metric_recent * (1 - old_share(t)/100)
+
+        This provides a baseline to isolate the additional gain from new technology
+        beyond pure fleet renewal.
+
+        Stored columns (one per category):
+
+        * ``{category}:energy_renewal_only``   [MJ/ASK]
+        * ``{category}:doc_renewal_only``      [€/ASK]
+        * ``{category}:nox_renewal_only``      [kg/ASK]
+        * ``{category}:soot_renewal_only``     [kg/ASK]
+        """
+        temp_dict = {}
+
+        for category in self.fleet.categories.values():
+            first_subcategory = category.subcategories[0]
+            ref_recent = first_subcategory.recent_reference_aircraft
+            ref_old    = first_subcategory.old_reference_aircraft
+
+            prefix = f"{category.name}:{first_subcategory.name}"
+            old_share = self.df[f"{prefix}:old_reference:aircraft_share"].values  # 0–100
+
+            metrics = {
+                "energy_renewal_only": (
+                    float(ref_old.energy_per_ask),
+                    float(ref_recent.energy_per_ask),
+                ),
+                "doc_renewal_only": (
+                    float(ref_old.doc_non_energy_base),
+                    float(ref_recent.doc_non_energy_base),
+                ),
+                "nox_renewal_only": (
+                    float(ref_old.emission_index_nox),
+                    float(ref_recent.emission_index_nox),
+                ),
+                "soot_renewal_only": (
+                    float(ref_old.emission_index_soot),
+                    float(ref_recent.emission_index_soot),
+                ),
+            }
+
+            for col_suffix, (val_old, val_recent) in metrics.items():
+                temp_dict[f"{category.name}:{col_suffix}"] = (
+                    val_old * old_share / 100 + val_recent * (1 - old_share / 100)
+                )
 
         final_df = pd.DataFrame(temp_dict, index=self.df.index)
         self.df = pd.concat([self.df, final_df], axis=1)
