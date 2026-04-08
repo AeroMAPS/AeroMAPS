@@ -1111,6 +1111,9 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
 
+        # Compute individual aircraft contributions to fleet energy efficiency
+        self._compute_aircraft_energy_contribution()
+
     def plot(self):
         """Generate fleet renewal visualization plots.
 
@@ -1204,4 +1207,99 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
 
         plt.plot()
         # plt.savefig("fleet_renewal.pdf")
+
+    def plot_energy_contributions(self):
+        """Plot individual aircraft contributions to fleet energy efficiency.
+
+        For each category, shows how each aircraft shifts the fleet mean energy
+        per ASK relative to the recent reference aircraft baseline:
+
+        - Dashed grey line: recent reference energy (the neutral baseline).
+        - Red area above the baseline: penalty from old aircraft still in service
+          (less efficient than recent reference, pulling the fleet mean upward).
+        - Stacked coloured areas below the baseline: efficiency gain contributed
+          by each new aircraft type (more efficient than recent reference).
+        - Black line: resulting fleet mean energy consumption.
+
+        The stacked areas decompose the total efficiency improvement so that
+        the contribution of every individual aircraft type is visible over time.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+        """
+        x = np.arange(self.prospection_start_year, self.end_year + 1)
+        years = self.df.loc[self.prospection_start_year : self.end_year].index
+
+        categories = list(self.fleet.categories.values())
+        fig, axs = plt.subplots(
+            1, len(categories), figsize=(8 * len(categories), 5), squeeze=False
+        )
+
+        cmap = plt.get_cmap("tab10")
+
+        for col_idx, category in enumerate(categories):
+            ax = axs[0, col_idx]
+            first_subcategory = category.subcategories[0]
+            energy_ref_recent = float(first_subcategory.recent_reference_aircraft.energy_per_ask)
+            prefix = f"{category.name}:{first_subcategory.name}"
+
+            # Old-reference penalty (above baseline — contribution is negative so flip sign)
+            old_penalty = -self.df.loc[
+                self.prospection_start_year : self.end_year,
+                f"{prefix}:old_reference:energy_efficiency_contribution",
+            ].values
+            ax.fill_between(
+                years,
+                energy_ref_recent,
+                energy_ref_recent + old_penalty,
+                color="tomato",
+                alpha=0.75,
+                label="Old reference aircraft (penalty)",
+            )
+
+            # New aircraft gains (below baseline, stacked oldest → newest EIS)
+            y_top = np.full(len(years), energy_ref_recent)
+            color_idx = 0
+            for subcategory in category.subcategories.values():
+                for aircraft in self._sorted_aircraft(subcategory):
+                    gain = self.df.loc[
+                        self.prospection_start_year : self.end_year,
+                        f"{category.name}:{subcategory.name}:{aircraft.name}:energy_efficiency_contribution",
+                    ].values
+                    ax.fill_between(
+                        years,
+                        y_top - gain,
+                        y_top,
+                        color=cmap(color_idx),
+                        alpha=0.75,
+                        label=f"{aircraft.name} (gain)",
+                    )
+                    y_top = y_top - gain
+                    color_idx += 1
+
+            # Recent reference baseline
+            ax.axhline(
+                energy_ref_recent,
+                color="grey",
+                linestyle="--",
+                linewidth=1,
+                label="Recent reference baseline",
+            )
+
+            # Actual fleet mean energy
+            fleet_mean = self.df.loc[
+                self.prospection_start_year : self.end_year,
+                f"{category.name}:energy_consumption",
+            ].values
+            ax.plot(years, fleet_mean, color="black", linewidth=2, label="Fleet mean energy")
+
+            ax.set_xlim(self.prospection_start_year, self.end_year)
+            ax.set_xlabel("Year")
+            ax.set_ylabel("Energy per ASK [MJ/ASK]")
+            ax.set_title(category.name)
+            ax.legend(loc="upper right", prop={"size": 8})
+
+        fig.tight_layout()
+        return fig
 

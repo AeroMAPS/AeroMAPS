@@ -849,3 +849,62 @@ class FleetPerformanceMixin:
 
         final_df = pd.DataFrame(final_dict, index=self.df.index)
         self.df = pd.concat([self.df, final_df], axis=1)
+
+    def _compute_aircraft_energy_contribution(self):
+        """Compute each aircraft's individual contribution to fleet energy efficiency.
+
+        For each new aircraft and the old reference aircraft, computes how much its
+        presence shifts the fleet mean energy per ASK relative to the recent reference
+        aircraft baseline:
+
+            contribution(t) = aircraft_share(t) / 100 * (energy_recent_ref - energy_aircraft)
+
+        A positive contribution means the aircraft is more efficient than the recent
+        reference and pulls the fleet mean energy down.  A negative contribution (old
+        reference aircraft) means it is less efficient and pulls the fleet mean up.
+
+        The sum of all contributions equals the total deviation from the recent reference
+        baseline, so:
+
+            fleet_mean_energy = energy_recent_ref - sum(contributions)
+
+        Results are stored in the DataFrame with keys like:
+        ``{category}:{subcategory}:{aircraft}:energy_efficiency_contribution``
+        ``{category}:{subcategory}:old_reference:energy_efficiency_contribution``
+        """
+        temp_dict = {}
+
+        for category in self.fleet.categories.values():
+            first_subcategory = category.subcategories[0]
+            energy_ref_recent = float(first_subcategory.recent_reference_aircraft.energy_per_ask)
+            energy_ref_old = float(first_subcategory.old_reference_aircraft.energy_per_ask)
+
+            prefix = f"{category.name}:{first_subcategory.name}"
+            old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
+            recent_ref_share = self.df[f"{prefix}:recent_reference:aircraft_share"].values
+
+            # Old reference: negative contribution (less efficient than recent ref)
+            temp_dict[f"{prefix}:old_reference:energy_efficiency_contribution"] = (
+                old_ref_share / 100 * (energy_ref_recent - energy_ref_old)
+            )
+            # Recent reference: zero by definition (it is the baseline)
+            temp_dict[f"{prefix}:recent_reference:energy_efficiency_contribution"] = (
+                recent_ref_share / 100 * 0.0
+            )
+
+            for subcategory in category.subcategories.values():
+                subcat_key = f"{category.name}:{subcategory.name}"
+                for aircraft in self._sorted_aircraft(subcategory):
+                    aircraft_energy = energy_ref_recent * (
+                        1 + float(aircraft.parameters.consumption_evolution) / 100
+                    )
+                    aircraft_share = self.df[
+                        f"{subcat_key}:{aircraft.name}:aircraft_share"
+                    ].values
+                    temp_dict[
+                        f"{subcat_key}:{aircraft.name}:energy_efficiency_contribution"
+                    ] = aircraft_share / 100 * (energy_ref_recent - aircraft_energy)
+
+        final_df = pd.DataFrame(temp_dict, index=self.df.index)
+        self.df = pd.concat([self.df, final_df], axis=1)
+
