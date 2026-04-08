@@ -1105,6 +1105,18 @@ class FleetModel(AeroMAPSModel):
         # Compute mean non-CO2 emission index per category with respect to energy type
         self._compute_mean_non_co2_emission_index()
 
+    @staticmethod
+    def _sorted_aircraft(subcategory):
+        """Return aircraft in a subcategory sorted by entry_into_service_year (oldest first).
+
+        This ensures share computations are order-independent with respect to
+        how aircraft are listed in the YAML configuration.
+        """
+        return sorted(
+            subcategory.aircraft.values(),
+            key=lambda a: float(a.parameters.entry_into_service_year),
+        )
+
     def _compute_single_aircraft_share(self):
         """Compute cumulative single aircraft market penetration shares.
 
@@ -1164,7 +1176,7 @@ class FleetModel(AeroMAPSModel):
                     f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
                 ] = ref_old_single_aircraft_share
 
-                for aircraft in subcategory.aircraft.values():
+                for aircraft in self._sorted_aircraft(subcategory):
                     single_aircraft_share = self._compute(
                         float(category.parameters.life),
                         float(aircraft.parameters.entry_into_service_year),
@@ -1176,7 +1188,7 @@ class FleetModel(AeroMAPSModel):
 
             elif len(category.subcategories) == 2:
                 subcategory = list(category.subcategories.values())[-1]
-                for i, aircraft in subcategory.aircraft.items():
+                for i, aircraft in enumerate(self._sorted_aircraft(subcategory)):
                     single_aircraft_share = self._compute(
                         float(category.parameters.life),
                         float(aircraft.parameters.entry_into_service_year),
@@ -1214,7 +1226,7 @@ class FleetModel(AeroMAPSModel):
                     f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
                 ] = ref_old_single_aircraft_share
 
-                for aircraft in subcategory.aircraft.values():
+                for aircraft in self._sorted_aircraft(subcategory):
                     single_aircraft_share = oldest_single_aircraft_share + self._compute(
                         float(category.parameters.life),
                         float(aircraft.parameters.entry_into_service_year),
@@ -1227,7 +1239,7 @@ class FleetModel(AeroMAPSModel):
             else:
                 for key, subcategory in reversed(category.subcategories.items()):
                     if key == list(category.subcategories.keys())[-1]:
-                        for i, aircraft in subcategory.aircraft.items():
+                        for i, aircraft in enumerate(self._sorted_aircraft(subcategory)):
                             single_aircraft_share = self._compute(
                                 float(category.parameters.life),
                                 float(aircraft.parameters.entry_into_service_year),
@@ -1268,7 +1280,7 @@ class FleetModel(AeroMAPSModel):
                             f"{category.name}:{subcategory.name}:old_reference:single_aircraft_share"
                         ] = ref_old_single_aircraft_share
 
-                        for aircraft in subcategory.aircraft.values():
+                        for aircraft in self._sorted_aircraft(subcategory):
                             single_aircraft_share = oldest_single_aircraft_share + self._compute(
                                 float(category.parameters.life),
                                 float(aircraft.parameters.entry_into_service_year),
@@ -1279,7 +1291,7 @@ class FleetModel(AeroMAPSModel):
                             ] = single_aircraft_share
 
                     else:
-                        for i, aircraft in subcategory.aircraft.items():
+                        for i, aircraft in enumerate(self._sorted_aircraft(subcategory)):
                             single_aircraft_share = oldest_single_aircraft_share + self._compute(
                                 float(category.parameters.life),
                                 float(aircraft.parameters.entry_into_service_year),
@@ -1323,21 +1335,22 @@ class FleetModel(AeroMAPSModel):
 
         for category in self.fleet.categories.values():
             for key, subcategory in reversed(category.subcategories.items()):
-                for i, aircraft in reversed(subcategory.aircraft.items()):
+                sorted_ac = self._sorted_aircraft(subcategory)
+                n = len(sorted_ac)
+                for j, aircraft in enumerate(reversed(sorted_ac)):
+                    i = n - 1 - j  # 0 = oldest, n-1 = newest in sorted order
                     subcategory_key = f"{category.name}:{subcategory.name}:{aircraft.name}"
 
-                    if (i == list(subcategory.aircraft.keys())[-1]) and (
-                        key == list(category.subcategories.keys())[-1]
-                    ):
+                    if (i == n - 1) and (key == list(category.subcategories.keys())[-1]):
                         aircraft_share = self.df[f"{subcategory_key}:single_aircraft_share"].values
-                    elif (i == list(subcategory.aircraft.keys())[-1]) and (
-                        key != list(category.subcategories.keys())[-1]
-                    ):
+                    elif (i == n - 1) and (key != list(category.subcategories.keys())[-1]):
+                        next_subcategory = category.subcategories[key + 1]
+                        next_oldest = self._sorted_aircraft(next_subcategory)[0]
                         single_aircraft_share = self.df[
                             f"{subcategory_key}:single_aircraft_share"
                         ].values
                         single_aircraft_share_n1 = self.df[
-                            f"{category.name}:{category.subcategories[key + 1].name}:{category.subcategories[key + 1].aircraft[0].name}:single_aircraft_share"
+                            f"{category.name}:{next_subcategory.name}:{next_oldest.name}:single_aircraft_share"
                         ].values
                         aircraft_share = single_aircraft_share - single_aircraft_share_n1
                     else:
@@ -1345,7 +1358,7 @@ class FleetModel(AeroMAPSModel):
                             f"{subcategory_key}:single_aircraft_share"
                         ].values
                         single_aircraft_share_n1 = self.df[
-                            f"{category.name}:{subcategory.name}:{subcategory.aircraft[i + 1].name}:single_aircraft_share"
+                            f"{category.name}:{subcategory.name}:{sorted_ac[i + 1].name}:single_aircraft_share"
                         ].values
                         aircraft_share = single_aircraft_share - single_aircraft_share_n1
 
@@ -1356,8 +1369,9 @@ class FleetModel(AeroMAPSModel):
             ].values
 
             if subcategory.aircraft:
+                first_subcat_oldest = self._sorted_aircraft(category.subcategories[0])[0]
                 next_aircraft_single_share = self.df[
-                    f"{category.name}:{category.subcategories[0].name}:{subcategory.aircraft[0].name}:single_aircraft_share"
+                    f"{category.name}:{category.subcategories[0].name}:{first_subcat_oldest.name}:single_aircraft_share"
                 ].values
             else:
                 next_aircraft_single_share = np.zeros_like(ref_recent_single_aircraft_share)

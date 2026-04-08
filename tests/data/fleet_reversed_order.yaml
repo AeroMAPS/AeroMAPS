@@ -1,0 +1,22 @@
+# Fleet configuration with aircraft listed in REVERSED EIS order (2045 → 2035).
+# A user might write this configuration by mistake.  Before the EIS-sort fix,
+# this produced wrong (and sometimes negative) individual share curves.
+
+subcategories:
+  - id: sr_conventional_nb
+    name: "SR conventional narrow-body"
+    share: 100.0
+    reference_aircraft:
+      old_ref: sr_nb_old
+      recent_ref: sr_nb_recent
+    aircraft:
+      - sr_nb_2045   # EIS 2045 — listed first (reversed, wrong order)
+      - sr_nb_2035   # EIS 2035 — listed second (reversed, wrong order)
+
+categories:
+  - name: "Short Range"
+    parameters:
+      life: 25
+      limit: 2
+    subcategories:
+      - sr_conventional_nb
