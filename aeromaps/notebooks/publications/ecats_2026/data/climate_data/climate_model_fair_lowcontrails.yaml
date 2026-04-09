@@ -30,14 +30,6 @@ species_settings:
     ratio_erf_rf: 1.0
     efficacy_erf: 1.0
 
-  Soot:
-    ratio_erf_rf: 1.0
-    efficacy_erf: 1.0
-
-  Sulfur:
-    ratio_erf_rf: 1.0
-    efficacy_erf: 1.0
-
 # Default model settings from AeroCM
 # See AeroCM documentation for available model settings depending on the climate model
 model_settings:
