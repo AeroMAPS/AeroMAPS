@@ -560,7 +560,11 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         ask_long_range: pd.Series,
         ask_medium_range: pd.Series,
         ask_short_range: pd.Series,
+        rpk_long_range: pd.Series,
+        rpk_medium_range: pd.Series,
+        rpk_short_range: pd.Series,
     ) -> Tuple[
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -627,6 +631,12 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
         ask_short_range
             Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
+        rpk_long_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger long-range market [RPK].
+        rpk_medium_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger medium-range market [RPK].
+        rpk_short_range
+            Number of Revenue Passenger Kilometer (RPK) for passenger short-range market [RPK].
 
         Returns
         -------
@@ -656,6 +666,8 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             Direct operating cost attributable to energy expenses, for long range fleet [€/ASK].
         doc_energy_per_ask_mean
             Direct operating cost attributable to energy expenses, for overall fleet [€/ASK].
+        doc_energy_per_rpk
+            Direct operating cost attributable to energy expenses, per Revenue Passenger Kilometer [€/RPK].
         """
         # Drop-in
         doc_energy_per_ask_long_range_dropin_fuel = (
@@ -756,6 +768,13 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         self.df.loc[:, "doc_energy_per_ask_short_range_mean"] = doc_energy_per_ask_short_range_mean
         self.df.loc[:, "doc_energy_per_ask_mean"] = doc_energy_per_ask_mean
 
+        doc_energy_per_rpk = (
+            doc_energy_per_ask_long_range_mean * ask_long_range
+            + doc_energy_per_ask_medium_range_mean * ask_medium_range
+            + doc_energy_per_ask_short_range_mean * ask_short_range
+        ) / (rpk_long_range + rpk_medium_range + rpk_short_range)
+        self.df.loc[:, "doc_energy_per_rpk"] = doc_energy_per_rpk
+
         return (
             doc_energy_per_ask_long_range_dropin_fuel,
             doc_energy_per_ask_medium_range_dropin_fuel,
@@ -770,6 +789,7 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             doc_energy_per_ask_medium_range_mean,
             doc_energy_per_ask_short_range_mean,
             doc_energy_per_ask_mean,
+            doc_energy_per_rpk,
         )
 
 
