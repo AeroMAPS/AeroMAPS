@@ -57,7 +57,7 @@ FLEET_YAML = DATA_DIR / "fleet_eis_order.yaml"
 
 CAT = "Short Range"
 SUBCAT = "SR conventional narrow-body"
-P = f"{CAT}:{SUBCAT}"   # subcategory prefix
+P = f"{CAT}:{SUBCAT}"  # subcategory prefix
 
 
 # ── shared fixture ────────────────────────────────────────────────────────────
@@ -144,20 +144,14 @@ class TestFleetAssignment:
 
     def test_aircraft_share_nb2035_at_2040(self, fleet_df):
         # share = single(NB2035) − single(NB2045)  [NB2045 not yet active]
-        assert fleet_df.loc[2040, f"{P}:NB_EIS2035:aircraft_share"] == approx(
-            8.825804290469849
-        )
+        assert fleet_df.loc[2040, f"{P}:NB_EIS2035:aircraft_share"] == approx(8.825804290469849)
 
     def test_aircraft_share_nb2045_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{P}:NB_EIS2045:aircraft_share"] == approx(
-            8.825804290469849
-        )
+        assert fleet_df.loc[2050, f"{P}:NB_EIS2045:aircraft_share"] == approx(8.825804290469849)
 
     def test_aircraft_share_nb2035_at_2050(self, fleet_df):
         # share = single(NB2035) − single(NB2045)
-        assert fleet_df.loc[2050, f"{P}:NB_EIS2035:aircraft_share"] == approx(
-            59.70693813718816
-        )
+        assert fleet_df.loc[2050, f"{P}:NB_EIS2035:aircraft_share"] == approx(59.70693813718816)
 
     def test_aircraft_share_recent_reference_at_2040(self, fleet_df):
         assert fleet_df.loc[2040, f"{P}:recent_reference:aircraft_share"] == approx(
@@ -165,13 +159,13 @@ class TestFleetAssignment:
         )
 
     def test_aircraft_share_old_reference_at_2040(self, fleet_df):
-        assert fleet_df.loc[2040, f"{P}:old_reference:aircraft_share"] == approx(
-            0.1687892436260654
-        )
+        assert fleet_df.loc[2040, f"{P}:old_reference:aircraft_share"] == approx(0.1687892436260654)
 
     def test_all_aircraft_shares_sum_to_100(self, fleet_df):
         """At every year, all aircraft shares (incl. references) sum to 100 %."""
-        share_cols = [c for c in fleet_df.columns if c.startswith(P) and c.endswith(":aircraft_share")]
+        share_cols = [
+            c for c in fleet_df.columns if c.startswith(P) and c.endswith(":aircraft_share")
+        ]
         total = fleet_df[share_cols].sum(axis=1)
         assert (total - 100.0).abs().max() == approx(0.0, rel=1e-6)
 
@@ -192,26 +186,26 @@ class TestFleetPerformance:
 
     def test_subcategory_energy_dropin_at_2030(self, fleet_df):
         """Before any new aircraft, energy equals the weighted reference baseline."""
-        assert fleet_df.loc[2030, f"{P}:energy_consumption:dropin_fuel"] == approx(
-            0.9587979795318491
-        )
+        assert fleet_df.loc[
+            2030, f"{P}:energy_consumption:weighted_contribution:dropin_fuel"
+        ] == approx(0.9587979795318491)
 
     def test_subcategory_energy_dropin_at_2040(self, fleet_df):
         """NB_EIS2035 (−20 % consumption) has entered; fleet mean must fall."""
-        assert fleet_df.loc[2040, f"{P}:energy_consumption:dropin_fuel"] == approx(
-            0.9315999067888316
-        )
+        assert fleet_df.loc[
+            2040, f"{P}:energy_consumption:weighted_contribution:dropin_fuel"
+        ] == approx(0.9315999067888316)
 
     def test_subcategory_energy_dropin_at_2050(self, fleet_df):
         """Both NB_EIS2035 and NB_EIS2045 contribute; fleet mean falls further."""
-        assert fleet_df.loc[2050, f"{P}:energy_consumption:dropin_fuel"] == approx(
-            0.805385546184729
-        )
+        assert fleet_df.loc[
+            2050, f"{P}:energy_consumption:weighted_contribution:dropin_fuel"
+        ] == approx(0.805385546184729)
 
     def test_subcategory_energy_alt_types_zero(self, fleet_df):
         """All aircraft are DROP_IN_FUEL; hydrogen/electric consumption is 0."""
         for energy_type in ("hydrogen", "electric", "hybrid_electric"):
-            col = f"{P}:energy_consumption:{energy_type}"
+            col = f"{P}:energy_consumption:weighted_contribution:{energy_type}"
             assert (fleet_df[col] == 0.0).all(), f"{col} should be all zeros"
 
     def test_subcategory_dropin_share_always_100(self, fleet_df):
@@ -222,51 +216,51 @@ class TestFleetPerformance:
 
     def test_subcategory_doc_at_2030(self, fleet_df):
         """Before new aircraft, DOC equals weighted reference baseline."""
-        assert fleet_df.loc[2030, f"{P}:doc_non_energy:dropin_fuel"] == approx(
-            0.048375
-        )
+        assert fleet_df.loc[
+            2030, f"{P}:doc_non_energy:weighted_contribution:dropin_fuel"
+        ] == approx(0.048375)
 
     def test_subcategory_doc_at_2040(self, fleet_df):
         """NB_EIS2035 (−5 % DOC) reduces fleet-mean DOC."""
-        assert fleet_df.loc[2040, f"{P}:doc_non_energy:dropin_fuel"] == approx(
-            0.048161525858724255
-        )
+        assert fleet_df.loc[
+            2040, f"{P}:doc_non_energy:weighted_contribution:dropin_fuel"
+        ] == approx(0.048161525858724255)
 
     def test_subcategory_doc_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{P}:doc_non_energy:dropin_fuel"] == approx(
-            0.04650389015125528
-        )
+        assert fleet_df.loc[
+            2050, f"{P}:doc_non_energy:weighted_contribution:dropin_fuel"
+        ] == approx(0.04650389015125528)
 
     # ---- subcategory: NOx emission index ------------------------------------
 
     def test_subcategory_nox_at_2030(self, fleet_df):
-        assert fleet_df.loc[2030, f"{P}:emission_index_nox:dropin_fuel"] == approx(
-            0.01514
-        )
+        assert fleet_df.loc[
+            2030, f"{P}:emission_index_nox:weighted_contribution:dropin_fuel"
+        ] == approx(0.01514)
 
     def test_subcategory_nox_at_2040(self, fleet_df):
         """NB_EIS2035 (−10 % NOx) reduces fleet-mean NOx index."""
-        assert fleet_df.loc[2040, f"{P}:emission_index_nox:dropin_fuel"] == approx(
-            0.015006377323042287
-        )
+        assert fleet_df.loc[
+            2040, f"{P}:emission_index_nox:weighted_contribution:dropin_fuel"
+        ] == approx(0.015006377323042287)
 
     def test_subcategory_nox_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{P}:emission_index_nox:dropin_fuel"] == approx(
-            0.013968791602687545
-        )
+        assert fleet_df.loc[
+            2050, f"{P}:emission_index_nox:weighted_contribution:dropin_fuel"
+        ] == approx(0.013968791602687545)
 
     # ---- subcategory: soot emission index -----------------------------------
 
     def test_subcategory_soot_at_2040(self, fleet_df):
         """NB_EIS2035 (−5 % soot) reduces fleet-mean soot index."""
-        assert fleet_df.loc[2040, f"{P}:emission_index_soot:dropin_fuel"] == approx(
-            2.986761293564295e-05
-        )
+        assert fleet_df.loc[
+            2040, f"{P}:emission_index_soot:weighted_contribution:dropin_fuel"
+        ] == approx(2.986761293564295e-05)
 
     def test_subcategory_soot_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{P}:emission_index_soot:dropin_fuel"] == approx(
-            2.883962179922808e-05
-        )
+        assert fleet_df.loc[
+            2050, f"{P}:emission_index_soot:weighted_contribution:dropin_fuel"
+        ] == approx(2.883962179922808e-05)
 
     # ---- category means (aggregated by _compute_mean_* methods) -------------
 
@@ -274,34 +268,24 @@ class TestFleetPerformance:
         """With one subcategory, category mean energy equals subcategory energy."""
         diff = (
             fleet_df[f"{CAT}:energy_consumption"]
-            - fleet_df[f"{P}:energy_consumption:dropin_fuel"]
+            - fleet_df[f"{P}:energy_consumption:weighted_contribution:dropin_fuel"]
         ).abs()
         assert diff.max() == approx(0.0, rel=1e-9)
 
     def test_category_energy_at_2040(self, fleet_df):
-        assert fleet_df.loc[2040, f"{CAT}:energy_consumption"] == approx(
-            0.9315999067888316
-        )
+        assert fleet_df.loc[2040, f"{CAT}:energy_consumption"] == approx(0.9315999067888316)
 
     def test_category_energy_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{CAT}:energy_consumption"] == approx(
-            0.805385546184729
-        )
+        assert fleet_df.loc[2050, f"{CAT}:energy_consumption"] == approx(0.805385546184729)
 
     def test_category_doc_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{CAT}:doc_non_energy"] == approx(
-            0.04650389015125528
-        )
+        assert fleet_df.loc[2050, f"{CAT}:doc_non_energy"] == approx(0.04650389015125528)
 
     def test_category_nox_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{CAT}:emission_index_nox"] == approx(
-            0.013968791602687545
-        )
+        assert fleet_df.loc[2050, f"{CAT}:emission_index_nox"] == approx(0.013968791602687545)
 
     def test_category_soot_at_2050(self, fleet_df):
-        assert fleet_df.loc[2050, f"{CAT}:emission_index_soot"] == approx(
-            2.883962179922808e-05
-        )
+        assert fleet_df.loc[2050, f"{CAT}:emission_index_soot"] == approx(2.883962179922808e-05)
 
     def test_category_alt_energy_types_zero(self, fleet_df):
         """Category-level hydrogen/electric/hybrid-electric columns are all zero."""
