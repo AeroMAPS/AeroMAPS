@@ -286,5 +286,6 @@
     "model": "remind",
     "pathway": "SSP2_Base",
     "elec_solar_share": 1.0,
-    "load_factor_photovoltaic": 1.0
+    "load_factor_photovoltaic": 1.0,
+    "karcher_curve_case": "No vPM"
 }
