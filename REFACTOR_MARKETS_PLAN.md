@@ -140,6 +140,68 @@ The many-to-many binding means the fleet model must:
 
 Contract enforced by GEMSEO grammar matching at MDA build time (no Python ABC needed).
 
+### 4.1 Fleet model prep work — synergies with internal clean-up
+
+The colleague's recently updated fleet model ([fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py), [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py), [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py), [fleet_numeric.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py)) has several internal patterns that, if cleaned up first, significantly reduce the complexity of the market integration in Phase 3. These are standalone refactors that can land immediately — each one shrinks the Phase 3 diff and lowers its risk.
+
+#### Prep A — Generic calibration loop *(direct prep for Phase 3)*
+
+**Current state:** `_calibrate_reference_aircraft` ([fleet_model.py:869-1023](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py#L869-L1023)) repeats the same 50-line block three times for Short Range, Medium Range, and Long Range, with hardcoded subcategory names like `"SR conventional narrow-body"`.
+
+**Refactor:** Extract into a single loop over a config list:
+```python
+CALIBRATION_CONFIG = [
+    ("Short Range", "SR conventional narrow-body",
+     "short_range_energy_share_2019", "short_range_rpk_share_2019"),
+    ...
+]
+```
+
+**Link to market plan:** This is a strict subset of Phase 3. In the final market-integrated form, the config list is replaced by `FleetMarketBinding.get_markets_for_category()` and parameters come from `MarketRegistry`. Doing this prep step means Phase 3 only needs to swap the config source — the loop structure is already correct.
+
+**Effort:** Low | **Risk:** Low | **~95 lines saved**
+
+#### Prep B — Data-driven energy type handling *(prep for Phase 4)*
+
+**Current state:** [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) has repeated `if energy_type == "DROP_IN_FUEL"` / `elif "HYDROGEN"` / `elif "ELECTRIC"` / `elif "HYBRID_ELECTRIC"` blocks in `_compute_energy_consumption_and_share_wrt_energy_type`, `_compute_doc_non_energy`, and `_compute_non_co2_emission_index` (6+ methods total). Adding a new energy type requires touching all of them.
+
+**Refactor:** Define `ENERGY_TYPES = ["dropin_fuel", "hydrogen", "electric", "hybrid_electric"]` and loop. Hybrid-electric's split logic (using `hybridization_factor`) is handled via a dispatch dict mapping `energy_type → [(target_bucket, weight_fn)]`.
+
+**Link to market plan:** In Phase 4, downstream models like `DropInFuelConsumption` migrate to `AeroMAPSCustomModelWrapper` with dynamic I/O templated as `energy_per_ask_<market>_<carrier>`. If the fleet model already loops over energy types cleanly, the `custom_setup()` method just iterates `markets × energy_types` — two clean loops. Without this prep, Phase 4 models inherit the hardcoded branching and must refactor it during the wrapper migration, increasing that phase's scope.
+
+**Effort:** Low-Medium | **Risk:** Medium (needs numerical regression test) | **~100 lines saved**
+
+#### Prep C — Vectorize performance methods *(prep for Phase 3 output distribution)*
+
+**Current state:** Several methods in [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) use row-by-row `for idx in self.df.index: self.df.at[idx, ...] += ...` loops, particularly `_compute_non_co2_emission_index` (lines 386-457), `_compute_mean_energy_consumption_per_category_wrt_energy_type` (lines 556-634), `_compute_mean_doc_non_energy` (lines 651-717), and `_compute_mean_non_co2_emission_index` (lines 737-851). Meanwhile, the assignment step and subcategory-level energy/DOC methods already use vectorized numpy with `temp_dict` patterns.
+
+**Refactor:** Replace row-by-row loops with the vectorized `temp_dict` + `pd.DataFrame()` pattern already used elsewhere in the same file.
+
+**Link to market plan:** Phase 3 adds a final output distribution step: for each `(market, share)` in the binding, scale the fleet category outputs and rename to market-templated keys. With vectorized methods, this is a clean array multiply + rename. With row-by-row loops, it would require adding another inner loop level, making the code harder to read and review.
+
+**Effort:** Low | **Risk:** Low | **~200 lines saved**
+
+#### Prep D — Unify N-subcategory branching *(optional, prep for many-to-many)*
+
+**Current state:** `_compute_single_aircraft_share` in [fleet_assignment.py:74-233](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py#L74-L233) has three separate code paths for categories with 1, 2, or 3+ subcategories.
+
+**Refactor:** Collapse into a single general algorithm that iterates subcategories from last to first, each aircraft's cumulative share = `offset + S_curve(...)`, where offset = 0 for the last subcategory and = oldest aircraft share of the next subcategory for earlier ones.
+
+**Link to market plan:** The `widebody_cat` example (one category serving two markets) implies fleet categories may evolve beyond the current range-based structure. A unified N-subcategory algorithm is cleaner ground for categories that don't map 1:1 to the traditional Short/Medium/Long Range split.
+
+**Effort:** Medium-High | **Risk:** High (core S-curve stacking logic) | **~100 lines saved**
+
+#### Prep summary
+
+| Step | Effort | Risk | Lines saved | Link to market plan |
+|------|--------|------|-------------|---------------------|
+| Prep A — Calibration loop | Low | Low | ~95 | Direct subset of Phase 3 |
+| Prep B — Energy type loop | Low-Medium | Medium | ~100 | Simplifies Phase 4 `custom_setup()` |
+| Prep C — Vectorize perf. | Low | Low | ~200 | Enables clean Phase 3 output distribution |
+| Prep D — Subcategory unify | Medium-High | High | ~100 | Supports many-to-many category evolution |
+
+**Recommendation:** Prep A–C should be done before Phase 3. Prep D can be combined with Phase 3 or deferred if the risk is deemed too high.
+
 ## 5. File-by-file impact
 
 ### New files
@@ -155,6 +217,9 @@ Contract enforced by GEMSEO grammar matching at MDA build time (no Python ABC ne
 
 | File | Change | Phase |
 |------|--------|-------|
+| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Prep A: generic calibration loop (standalone) | Prep |
+| [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) | Prep B: data-driven energy types; Prep C: vectorize performance methods | Prep |
+| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | Prep D (optional): unify subcategory branching | Prep / 3 |
 | [process.py](aeromaps/core/process.py) | Add `_initialize_markets()`, instantiate per-market disciplines, push templated params | 1 |
 | [models.py](aeromaps/core/models.py) | Replace static model dicts with builders taking `MarketRegistry` | 2 |
 | [config.yaml](aeromaps/resources/data/config.yaml) | Add `models.markets.markets_data_file` | 1 |
@@ -162,7 +227,7 @@ Contract enforced by GEMSEO grammar matching at MDA build time (no Python ABC ne
 | [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py) | Per-market instances replacing 3-way loops (lines 144-220) | 2 |
 | [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py) | Unify with RPK (same math, different unit) or keep separate | 2 |
 | [ask.py](aeromaps/models/air_transport/air_traffic/ask.py) | Iterate over registry's passenger markets | 2 |
-| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Generic calibration loop over `(category, markets)` pairs; many-to-many distribution | 3 |
+| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Phase 3: many-to-many distribution via `FleetMarketBinding`; calibration reads from registry | 3 |
 | [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | Per-market disciplines + custom wrapper pattern | 3 |
 | [energy_consumption.py](aeromaps/models/impacts/energy_resources/energy_consumption.py) | Custom wrapper with dynamic I/O from registry (~40 hard-coded args removed) | 4 |
 | [direct_operating_costs.py](aeromaps/models/impacts/costs/airlines/direct_operating_costs.py) | Same custom wrapper treatment | 4 |
@@ -178,6 +243,16 @@ Contract enforced by GEMSEO grammar matching at MDA build time (no Python ABC ne
 ## 6. Phased work plan
 
 Each phase ends with notebooks passing before moving on.
+
+### Phase Prep — Fleet model clean-up
+
+Standalone refactors on the fleet model that reduce Phase 3 complexity. Can be done immediately, independently of the market refactor infrastructure. Each step is verified by full DataFrame diff (before/after) to confirm zero numerical change.
+
+- **Prep A:** Generic calibration loop in `_calibrate_reference_aircraft` — replace 3 copy-pasted blocks with a single parameterized loop.
+- **Prep B:** Data-driven energy type handling in `fleet_performance.py` — replace `if/elif` branching with loop over energy types list.
+- **Prep C:** Vectorize performance methods in `fleet_performance.py` — replace row-by-row `.at[]` loops with numpy array operations (matching the pattern already used in the assignment step).
+- **Prep D (optional):** Unify 1/2/3+ subcategory branching in `_compute_single_aircraft_share` into a single N-subcategory algorithm.
+- **Exit:** Fleet model code is cleaner; all outputs numerically identical.
 
 ### Phase 0 — Data model & registry
 
@@ -208,7 +283,10 @@ Each phase ends with notebooks passing before moving on.
 
 - `serves_markets` in fleet.yaml with many-to-many support.
 - `_build_fleet_from_yaml()` reads binding.
-- Calibration blocks become generic `(category, markets)` loop with share distribution.
+- Calibration loop (already generic from Prep A) swaps its config source from hardcoded tuples to `MarketRegistry` + `FleetMarketBinding`.
+- Output distribution: for each `(market, share)` in binding, scale category outputs and publish under market-templated names. Vectorized performance methods (from Prep C) make this a clean array multiply + rename step.
+- Energy type loop (from Prep B) ensures the distribution covers all `market × energy_type` combinations cleanly.
+- If Prep D was deferred, consider combining it here — many-to-many binding is the natural moment to generalize subcategory handling.
 - Coordinate with colleague's new fleet model on output naming.
 - **Exit:** fleet model emits outputs under market ids with proper share allocation.
 
@@ -220,6 +298,8 @@ This is the bulk of the line-count work. Each model follows the `NOxEmissionInde
 2. Implement `custom_setup()` building `input_names`/`output_names` from registry.
 3. Switch to `AeroMAPSCustomModelWrapper`.
 4. Refactor `compute()` to use `input_data` dict.
+
+Because Prep B made the fleet model's energy type handling data-driven, the `custom_setup()` methods in downstream models can iterate `markets × energy_types` — two clean loops — rather than inheriting hardcoded branching.
 
 **Models to migrate:**
 - `DropInFuelConsumption` (~630 hard-coded refs)
@@ -250,9 +330,10 @@ This is the bulk of the line-count work. Each model follows the `NOxEmissionInde
 | 1 | GEMSEO dynamic grammar with custom wrapper | Phase 1 spike: prototype one discipline end-to-end |
 | 2 | Numerical drift during refactor | Set tolerance in test suite or accept output-update commit |
 | 3 | Fleet output key rename cascade | Atomic rename in phase 3 or alias layer — pick based on diff size |
-| 4 | Coordination with colleague's fleet model | Land phase 3 binding early, communicate naming convention |
+| 4 | Coordination with colleague's fleet model | Land Prep phase early so colleague's code is clean before Phase 3; communicate naming convention |
 | 5 | Many-to-many complexity in calibration | Default config is 1:1 at 100% share — complex cases tested incrementally |
 | 6 | `data_information.csv` consumed by GUI | Verify before removing rows in phase 5 |
+| 7 | Fleet prep refactors introducing regressions | Each prep step verified by full DataFrame diff before/after; prep lands as separate commits |
 
 ## 8. Migration strategy
 
@@ -262,6 +343,8 @@ This is the bulk of the line-count work. Each model follows the `NOxEmissionInde
 3. Notebook test suite is the safety net.
 
 User upgrade path: default scenarios need no action; custom scenarios move market params from `parameters.json` to a custom `markets.yaml`.
+
+**Fleet prep work** lands first as independent commits on the current codebase. This de-risks Phase 3 and can be reviewed/merged without waiting for the market infrastructure (Phases 0–2).
 
 ## 9. Decision log
 
@@ -276,3 +359,5 @@ User upgrade path: default scenarios need no action; custom scenarios move marke
 | One discipline per market | Consistent with energy carriers pattern |
 | `serves_markets` in fleet.yaml | Fleet knows its markets; markets shouldn't enumerate fleet categories |
 | Belly freight out of scope | Adds market-to-market coupling; follow-up once basic refactor stable |
+| Fleet prep before market phases | Reduces Phase 3 diff size and risk; lands independently; no wasted work even if market refactor is delayed |
+| Data-driven energy types in fleet | Orthogonal to market dimension but synergistic: simplifies Phase 4 `custom_setup()` implementations |
