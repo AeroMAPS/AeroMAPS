@@ -870,157 +870,84 @@ class Fleet(object):
         if self.parameters is None:
             return
 
-        sr_cat = self.categories.get("Short Range")
-        sr_nb_cat = self._get_subcategory("Short Range", "SR conventional narrow-body")
-        if sr_cat is not None and sr_nb_cat is not None:
-            old_sr_energy = sr_nb_cat.old_reference_aircraft.energy_per_ask
-            recent_sr_energy = sr_nb_cat.recent_reference_aircraft.energy_per_ask
-            if old_sr_energy is None or recent_sr_energy is None:
-                raise ValueError("Short Range reference aircraft energy_per_ask must be defined")
+        # Config: (category_name, subcategory_name, energy_share_param, rpk_share_param)
+        # In Phase 3 od the fleet/market refactor this list will be replaced by MarketRegistry iteration.
+        CALIBRATION_CONFIG = [
+            (
+                "Short Range",
+                "SR conventional narrow-body",
+                "short_range_energy_share_2019",
+                "short_range_rpk_share_2019",
+            ),
+            (
+                "Medium Range",
+                "MR conventional narrow-body",
+                "medium_range_energy_share_2019",
+                "medium_range_rpk_share_2019",
+            ),
+            (
+                "Long Range",
+                "LR conventional wide-body",
+                "long_range_energy_share_2019",
+                "long_range_rpk_share_2019",
+            ),
+        ]
 
-            mean_energy_init_ask_short_range = (
+        for (
+            category_name,
+            subcategory_name,
+            energy_share_param,
+            rpk_share_param,
+        ) in CALIBRATION_CONFIG:
+            subcat = self._get_subcategory(category_name, subcategory_name)
+            if subcat is None:
+                continue
+
+            old_energy = subcat.old_reference_aircraft.energy_per_ask
+            recent_energy = subcat.recent_reference_aircraft.energy_per_ask
+            if old_energy is None or recent_energy is None:
+                raise ValueError(
+                    f"{category_name} reference aircraft energy_per_ask must be defined"
+                )
+
+            mean_energy_init_ask = (
                 self.parameters.energy_consumption_init[2019]
-                * self.parameters.short_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.short_range_rpk_share_2019)
+                * getattr(self.parameters, energy_share_param)
+            ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
 
-            share_recent_short_range = (mean_energy_init_ask_short_range - old_sr_energy) / (
-                recent_sr_energy - old_sr_energy
-            )
+            share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
 
-            # We fix the life of short-range aircraft to 25 years for calibration
+            # We fix the life to 25 years for calibration
             # This way the share between old and recent reference aircraft in 2019 remains the same
-            sr_life = 25
-            # sr_life = sr_cat.parameters.life
-            lambda_short_range = np.log(100 / 2 - 1) / (sr_life / 2)
+            life = 25
+            lam = np.log(100 / 2 - 1) / (life / 2)
 
-            if 1 > share_recent_short_range > 0:
-                t0_sr = np.log(
-                    (1 - share_recent_short_range) / share_recent_short_range
-                ) / lambda_short_range + (self.parameters.prospection_start_year - 1)
-                t_eis_short_range = t0_sr - sr_life / 2
-            elif share_recent_short_range > 1:
+            if 1 > share_recent > 0:
+                t0 = np.log((1 - share_recent) / share_recent) / lam + (
+                    self.parameters.prospection_start_year - 1
+                )
+                t_eis = t0 - life / 2
+            elif share_recent > 1:
                 warnings.warn(
-                    "Warning Message - Fleet Model: Short Range Aircraft: "
-                    "Average initial short-range fleet energy per ASK is lower than default energy per ASK "
-                    "for the recent reference aircraft - AeroMAPS is using initial short-range fleet energy per ASK "
-                    "as old and recent reference aircraft energy performances!"
+                    f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                    f"Average initial {category_name} fleet energy per ASK is lower than default energy per ASK "
+                    f"for the recent reference aircraft - AeroMAPS is using initial {category_name} fleet energy per ASK "
+                    f"as old and recent reference aircraft energy performances!"
                 )
-                t_eis_short_range = self.parameters.prospection_start_year - 1 - sr_life
-                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
-                sr_nb_cat.recent_reference_aircraft.energy_per_ask = (
-                    mean_energy_init_ask_short_range
-                )
+                t_eis = self.parameters.prospection_start_year - 1 - life
+                subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
+                subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask
             else:
                 warnings.warn(
-                    "Warning Message - Fleet Model: Short Range Aircraft: "
-                    "Average initial short-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial short-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
+                    f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                    f"Average initial {category_name} fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                    f"AeroMAPS is using initial {category_name} fleet energy per ASK as old aircraft energy performances. "
+                    f"Recent reference aircraft is introduced on first prospective year"
                 )
-                t_eis_short_range = self.parameters.prospection_start_year
-                sr_nb_cat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_short_range
+                t_eis = self.parameters.prospection_start_year
+                subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
 
-            sr_nb_cat.recent_reference_aircraft.entry_into_service_year = t_eis_short_range
-
-        mr_cat = self.categories.get("Medium Range")
-        mr_subcat = self._get_subcategory("Medium Range", "MR conventional narrow-body")
-        if mr_cat is not None and mr_subcat is not None:
-            old_mr_energy = mr_subcat.old_reference_aircraft.energy_per_ask
-            recent_mr_energy = mr_subcat.recent_reference_aircraft.energy_per_ask
-            if old_mr_energy is None or recent_mr_energy is None:
-                raise ValueError("Medium Range reference aircraft energy_per_ask must be defined")
-
-            mean_energy_init_ask_medium_range = (
-                self.parameters.energy_consumption_init[2019]
-                * self.parameters.medium_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.medium_range_rpk_share_2019)
-
-            share_recent_medium_range = (mean_energy_init_ask_medium_range - old_mr_energy) / (
-                recent_mr_energy - old_mr_energy
-            )
-
-            # We fix the life of short-range aircraft to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            mr_life = 25
-            # mr_life = mr_cat.parameters.life
-            lambda_medium_range = np.log(100 / 2 - 1) / (mr_life / 2)
-
-            if 1 > share_recent_medium_range > 0:
-                t0_mr = np.log(
-                    (1 - share_recent_medium_range) / share_recent_medium_range
-                ) / lambda_medium_range + (self.parameters.prospection_start_year - 1)
-                t_eis_medium_range = t0_mr - mr_life / 2
-            elif share_recent_medium_range > 1:
-                warnings.warn(
-                    "Warning Message - Fleet Model: medium Range Aircraft: "
-                    "Average initial medium-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                    "AeroMAPS is using initial medium-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-                )
-                t_eis_medium_range = self.parameters.prospection_start_year - 1 - mr_life
-                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-                mr_subcat.recent_reference_aircraft.energy_per_ask = (
-                    mean_energy_init_ask_medium_range
-                )
-            else:
-                warnings.warn(
-                    "Warning Message - Fleet Model: medium Range Aircraft: "
-                    "Average initial medium-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial medium-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis_medium_range = self.parameters.prospection_start_year
-                mr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_medium_range
-
-            mr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_medium_range
-
-        lr_cat = self.categories.get("Long Range")
-        lr_subcat = self._get_subcategory("Long Range", "LR conventional wide-body")
-        if lr_cat is not None and lr_subcat is not None:
-            old_lr_energy = lr_subcat.old_reference_aircraft.energy_per_ask
-            recent_lr_energy = lr_subcat.recent_reference_aircraft.energy_per_ask
-            if old_lr_energy is None or recent_lr_energy is None:
-                raise ValueError("Long Range reference aircraft energy_per_ask must be defined")
-
-            mean_energy_init_ask_long_range = (
-                self.parameters.energy_consumption_init[2019]
-                * self.parameters.long_range_energy_share_2019
-            ) / (self.parameters.ask_init[2019] * self.parameters.long_range_rpk_share_2019)
-
-            share_recent_long_range = (mean_energy_init_ask_long_range - old_lr_energy) / (
-                recent_lr_energy - old_lr_energy
-            )
-
-            # We fix the life of short-range aircraft to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            lr_life = 25
-            # lr_life = lr_cat.parameters.life
-            lambda_long_range = np.log(100 / 2 - 1) / (lr_life / 2)
-
-            if 1 > share_recent_long_range > 0:
-                t0_lr = np.log(
-                    (1 - share_recent_long_range) / share_recent_long_range
-                ) / lambda_long_range + (self.parameters.prospection_start_year - 1)
-                t_eis_long_range = t0_lr - lr_life / 2
-            elif share_recent_long_range > 1:
-                warnings.warn(
-                    "Warning Message - Fleet Model: long Range Aircraft: "
-                    "Average initial long-range fleet energy per ASK is lower than default energy per ASK for the recent reference aircraft - "
-                    "AeroMAPS is using initial long-range fleet energy per ASK as old and recent reference aircraft energy performances!"
-                )
-                t_eis_long_range = self.parameters.prospection_start_year - 1 - lr_life
-                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-                lr_subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-            else:
-                warnings.warn(
-                    "Warning Message - Fleet Model: long Range Aircraft: "
-                    "Average initial long-range fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    "AeroMAPS is using initial long-range fleet energy per ASK as old aircraft energy performances. "
-                    "Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis_long_range = self.parameters.prospection_start_year
-                lr_subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask_long_range
-
-            lr_subcat.recent_reference_aircraft.entry_into_service_year = t_eis_long_range
+            subcat.recent_reference_aircraft.entry_into_service_year = t_eis
 
 
 class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
@@ -1235,36 +1162,39 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
         """
         _cfg = {
             "energy": {
-                "fleet_col":    lambda cat: f"{cat}:energy_consumption",
-                "renewal_col":  lambda cat: f"{cat}:energy_renewal_only",
-                "contrib_col":  lambda cat, sub, ac: f"{cat}:{sub}:{ac}:energy_efficiency_contribution",
-                "old_col":      lambda cat, sub: f"{cat}:{sub}:old_reference:energy_efficiency_contribution",
-                "ref_val":      lambda ref: float(ref.energy_per_ask),
-                "ylabel":       "Energy per ASK [MJ/ASK]",
+                "fleet_col": lambda cat: f"{cat}:energy_consumption",
+                "renewal_col": lambda cat: f"{cat}:energy_renewal_only",
+                "contrib_col": lambda cat,
+                sub,
+                ac: f"{cat}:{sub}:{ac}:energy_efficiency_contribution",
+                "old_col": lambda cat,
+                sub: f"{cat}:{sub}:old_reference:energy_efficiency_contribution",
+                "ref_val": lambda ref: float(ref.energy_per_ask),
+                "ylabel": "Energy per ASK [MJ/ASK]",
             },
             "doc": {
-                "fleet_col":    lambda cat: f"{cat}:doc_non_energy",
-                "renewal_col":  lambda cat: f"{cat}:doc_renewal_only",
-                "contrib_col":  lambda cat, sub, ac: f"{cat}:{sub}:{ac}:doc_contribution",
-                "old_col":      lambda cat, sub: f"{cat}:{sub}:old_reference:doc_contribution",
-                "ref_val":      lambda ref: float(ref.doc_non_energy_base),
-                "ylabel":       "Non-energy DOC [€/ASK]",
+                "fleet_col": lambda cat: f"{cat}:doc_non_energy",
+                "renewal_col": lambda cat: f"{cat}:doc_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:doc_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:doc_contribution",
+                "ref_val": lambda ref: float(ref.doc_non_energy_base),
+                "ylabel": "Non-energy DOC [€/ASK]",
             },
             "nox": {
-                "fleet_col":    lambda cat: f"{cat}:emission_index_nox",
-                "renewal_col":  lambda cat: f"{cat}:nox_renewal_only",
-                "contrib_col":  lambda cat, sub, ac: f"{cat}:{sub}:{ac}:nox_contribution",
-                "old_col":      lambda cat, sub: f"{cat}:{sub}:old_reference:nox_contribution",
-                "ref_val":      lambda ref: float(ref.emission_index_nox),
-                "ylabel":       "NOx emission index [kg/ASK]",
+                "fleet_col": lambda cat: f"{cat}:emission_index_nox",
+                "renewal_col": lambda cat: f"{cat}:nox_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:nox_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:nox_contribution",
+                "ref_val": lambda ref: float(ref.emission_index_nox),
+                "ylabel": "NOx emission index [kg/ASK]",
             },
             "soot": {
-                "fleet_col":    lambda cat: f"{cat}:emission_index_soot",
-                "renewal_col":  lambda cat: f"{cat}:soot_renewal_only",
-                "contrib_col":  lambda cat, sub, ac: f"{cat}:{sub}:{ac}:soot_contribution",
-                "old_col":      lambda cat, sub: f"{cat}:{sub}:old_reference:soot_contribution",
-                "ref_val":      lambda ref: float(ref.emission_index_soot),
-                "ylabel":       "Soot emission index [kg/ASK]",
+                "fleet_col": lambda cat: f"{cat}:emission_index_soot",
+                "renewal_col": lambda cat: f"{cat}:soot_renewal_only",
+                "contrib_col": lambda cat, sub, ac: f"{cat}:{sub}:{ac}:soot_contribution",
+                "old_col": lambda cat, sub: f"{cat}:{sub}:old_reference:soot_contribution",
+                "ref_val": lambda ref: float(ref.emission_index_soot),
+                "ylabel": "Soot emission index [kg/ASK]",
             },
         }
         if metric not in _cfg:
@@ -1273,19 +1203,19 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
 
         years = self.df.loc[self.prospection_start_year : self.end_year].index
         categories = list(self.fleet.categories.values())
-        fig, axs = plt.subplots(
-            1, len(categories), figsize=(8 * len(categories), 5), squeeze=False
-        )
+        fig, axs = plt.subplots(1, len(categories), figsize=(8 * len(categories), 5), squeeze=False)
         cmap = plt.get_cmap("tab10")
 
         for col_idx, category in enumerate(categories):
             ax = axs[0, col_idx]
             first_subcategory = category.subcategories[0]
             ref_recent_val = cfg["ref_val"](first_subcategory.recent_reference_aircraft)
-            prefix = f"{category.name}:{first_subcategory.name}"
+            # prefix = f"{category.name}:{first_subcategory.name}"
 
             # Old-reference penalty (above baseline)
-            old_penalty = -self.df.loc[years, cfg["old_col"](category.name, first_subcategory.name)].values
+            old_penalty = -self.df.loc[
+                years, cfg["old_col"](category.name, first_subcategory.name)
+            ].values
             ax.fill_between(
                 years,
                 ref_recent_val,
@@ -1316,13 +1246,24 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
                     color_idx += 1
 
             # Recent reference baseline
-            ax.axhline(ref_recent_val, color="grey", linestyle="--", linewidth=1,
-                       label="Recent reference baseline")
+            ax.axhline(
+                ref_recent_val,
+                color="grey",
+                linestyle="--",
+                linewidth=1,
+                label="Recent reference baseline",
+            )
 
             # Fleet-renewal-only counterfactual
             renewal = self.df.loc[years, cfg["renewal_col"](category.name)].values
-            ax.plot(years, renewal, color="orange", linestyle="--", linewidth=1.5,
-                    label="Fleet renewal only (no new aircraft)")
+            ax.plot(
+                years,
+                renewal,
+                color="orange",
+                linestyle="--",
+                linewidth=1.5,
+                label="Fleet renewal only (no new aircraft)",
+            )
 
             # Actual fleet mean
             fleet_mean = self.df.loc[years, cfg["fleet_col"](category.name)].values
@@ -1336,4 +1277,3 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
 
         fig.tight_layout()
         return fig
-

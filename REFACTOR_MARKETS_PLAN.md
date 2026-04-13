@@ -1,6 +1,6 @@
 # AeroMAPS — User-Defined Markets Refactor Plan
 
-**Status:** Draft for review  |  **Author:** A. Salgas (with Claude)  |  **Updated:** 2026-04-10
+**Status:** Draft for review |  **Updated:** 2026-04-10
 
 ---
 
