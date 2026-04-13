@@ -1,0 +1,136 @@
+# Default market definitions for AeroMAPS.
+# These reproduce the previous hard-coded 4-market structure exactly.
+# FLEET REFACTORING FLAG In Phase 3 the fleet.yaml will reference these market ids.
+#
+# Schema notes:
+#   traffic_type : passenger | freight
+#   traffic_unit : RPK | RTK
+#   inputs.initial      : share and energy calibration values for 2019
+#   inputs.growth       : CAGR leveling function inputs (reference_periods / values)
+#   inputs.covid        : per-market COVID recovery parameters
+#   inputs.measures     : demand-reduction policy parameters (passenger markets only)
+#   inputs.efficiency_simple : top-down efficiency model parameters (passenger markets only)
+#   inputs.costs        : DOC non-energy parameters (passenger markets only)
+
+short_range:
+  name: "Short Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 27.2
+      energy_share_2019: 26.01
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 0.0
+      start_year: 2051
+      duration: 5.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 0.0
+      hydrogen_introduction_year: 2051
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.048375
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+medium_range:
+  name: "Medium Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 35.1
+      energy_share_2019: 26.18
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 0.0
+      start_year: 2051
+      duration: 5.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 0.0
+      hydrogen_introduction_year: 2051
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.0301
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+long_range:
+  name: "Long Range"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 37.7
+      energy_share_2019: 32.81
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 0.0
+      start_year: 2051
+      duration: 5.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 0.0
+      hydrogen_introduction_year: 2051
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.024725
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+freight:
+  name: "Freight"
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      energy_share_2019: 15.0
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
