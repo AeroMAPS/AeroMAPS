@@ -871,7 +871,7 @@ class Fleet(object):
             return
 
         # Config: (category_name, subcategory_name, energy_share_param, rpk_share_param)
-        # In Phase 3 od the fleet/market refactor this list will be replaced by MarketRegistry iteration.
+        # FLEET REFACTORING FLAG: In Phase 3 of the fleet/market refactor this list will be replaced by MarketRegistry iteration.
         CALIBRATION_CONFIG = [
             (
                 "Short Range",
