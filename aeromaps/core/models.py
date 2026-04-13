@@ -3,6 +3,10 @@ This module creates dictionaries of default models for various AeroMAPS configur
 """
 
 from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
+from aeromaps.models.air_transport.air_traffic.rpk_constant_elasticity import \
+    RPKConstantElasticity
+from aeromaps.models.air_transport.air_traffic.rpk_price_adjusted_logistic import \
+    RPKPriceAdjustedLogistic
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -168,6 +172,28 @@ models_traffic = {
 
 models_traffic_cost_feedback = {
     "rpk_with_elasticity": RPKWithElasticity("rpk_with_elasticity"),
+    "rpk_measures": RPKMeasures("rpk_measures"),
+    "rpk_reference": RPKReference("rpk_reference"),
+    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
+    "rtk": RTK("rtk"),
+    "rtk_reference": RTKReference("rtk_reference"),
+    "ask": ASK("ask"),
+}
+
+
+models_traffic_price_adjusted_logistic = {
+    "rpk_price_adjusted_logistic": RPKPriceAdjustedLogistic("rpk_with_elasticity"),
+    "rpk_measures": RPKMeasures("rpk_measures"),
+    "rpk_reference": RPKReference("rpk_reference"),
+    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
+    "rtk": RTK("rtk"),
+    "rtk_reference": RTKReference("rtk_reference"),
+    "ask": ASK("ask"),
+}
+
+
+models_traffic_constant_elasticities = {
+    "rpk_constant_elasticity": RPKConstantElasticity("rpk_with_elasticity"),
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
