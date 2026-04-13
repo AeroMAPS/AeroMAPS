@@ -375,51 +375,37 @@ class FleetPerformanceMixin:
                 for aircraft in subcategory.aircraft.values():
                     aircraft_share_key = f"{subcategory_key}:{aircraft.name}:aircraft_share"
                     if aircraft_share_key in self.df.columns:
-                        for idx in self.df.index:
-                            aircraft_share = self.df.at[idx, aircraft_share_key]
-                            if aircraft_share != 0.0:
-                                evolution_nox = 1 + float(aircraft.parameters.nox_evolution) / 100
-                                evolution_soot = 1 + float(aircraft.parameters.soot_evolution) / 100
+                        aircraft_share = self.df[aircraft_share_key].values
+                        evolution_nox = 1 + float(aircraft.parameters.nox_evolution) / 100
+                        evolution_soot = 1 + float(aircraft.parameters.soot_evolution) / 100
 
-                                self.df.at[
-                                    idx,
-                                    f"{subcategory_key}:emission_index_nox:weighted_contribution",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * evolution_nox
-                                    * aircraft_share
-                                    / 100
-                                )
-                                self.df.at[
-                                    idx,
-                                    f"{subcategory_key}:emission_index_soot:weighted_contribution",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_soot
-                                    * evolution_soot
-                                    * aircraft_share
-                                    / 100
-                                )
+                        nox_wc = (
+                            recent_reference_aircraft_emission_index_nox
+                            * evolution_nox
+                            * aircraft_share
+                            / 100
+                        )
+                        soot_wc = (
+                            recent_reference_aircraft_emission_index_soot
+                            * evolution_soot
+                            * aircraft_share
+                            / 100
+                        )
 
-                                energy_type_key = ENERGY_TYPE_KEY_MAP[aircraft.energy_type]
-                                self.df.at[
-                                    idx,
-                                    f"{subcategory_key}:emission_index_nox:weighted_contribution:{energy_type_key}",
-                                ] += (
-                                    recent_reference_aircraft_emission_index_nox
-                                    * evolution_nox
-                                    * aircraft_share
-                                    / 100
-                                )
-                                if aircraft.energy_type in SOOT_ENERGY_TYPES:
-                                    self.df.at[
-                                        idx,
-                                        f"{subcategory_key}:emission_index_soot:weighted_contribution:{energy_type_key}",
-                                    ] += (
-                                        recent_reference_aircraft_emission_index_soot
-                                        * evolution_soot
-                                        * aircraft_share
-                                        / 100
-                                    )
+                        energy_type_key = ENERGY_TYPE_KEY_MAP[aircraft.energy_type]
+                        self.df[f"{subcategory_key}:emission_index_nox:weighted_contribution"] += (
+                            nox_wc
+                        )
+                        self.df[f"{subcategory_key}:emission_index_soot:weighted_contribution"] += (
+                            soot_wc
+                        )
+                        self.df[
+                            f"{subcategory_key}:emission_index_nox:weighted_contribution:{energy_type_key}"
+                        ] += nox_wc
+                        if aircraft.energy_type in SOOT_ENERGY_TYPES:
+                            self.df[
+                                f"{subcategory_key}:emission_index_soot:weighted_contribution:{energy_type_key}"
+                            ] += soot_wc
 
     def _compute_mean_energy_consumption_per_category_wrt_energy_type(self):
         """Compute mean energy consumption per category by energy type.
@@ -445,23 +431,23 @@ class FleetPerformanceMixin:
             # Calculation
             for subcategory in category.subcategories.values():
                 # TODO: verify aircraft order
-                for k in self.df.index:
-                    for energy_type in ENERGY_TYPES:
-                        share = self.df.loc[k, f"{cat}:share:{energy_type}"]
-                        col = f"{cat}:energy_consumption:{energy_type}"
-                        wc_col = f"{cat}:{subcategory.name}:energy_consumption:weighted_contribution:{energy_type}"
-                        if share != 0.0:
-                            self.df.loc[k, col] += self.df.loc[k, wc_col] / (share / 100)
-                        else:
-                            self.df.loc[k, col] = 0.0
+                for energy_type in ENERGY_TYPES:
+                    share = self.df[f"{cat}:share:{energy_type}"].values
+                    col = f"{cat}:energy_consumption:{energy_type}"
+                    wc_col = f"{cat}:{subcategory.name}:energy_consumption:weighted_contribution:{energy_type}"
+                    safe_share = np.where(share != 0.0, share / 100, 1.0)
+                    self.df[col] = np.where(
+                        share != 0.0,
+                        self.df[col].values + self.df[wc_col].values / safe_share,
+                        0.0,
+                    )
 
             # Mean consumption
-            for k in self.df.index:
-                self.df.loc[k, f"{cat}:energy_consumption"] = sum(
-                    self.df.loc[k, f"{cat}:energy_consumption:{energy_type}"]
-                    * (self.df.loc[k, f"{cat}:share:{energy_type}"] / 100)
-                    for energy_type in ENERGY_TYPES
-                )
+            self.df[f"{cat}:energy_consumption"] = sum(
+                self.df[f"{cat}:energy_consumption:{energy_type}"].values
+                * (self.df[f"{cat}:share:{energy_type}"].values / 100)
+                for energy_type in ENERGY_TYPES
+            )
 
     def _compute_mean_doc_non_energy(self):
         """Compute mean non-energy DOC per category by energy type.
@@ -486,23 +472,23 @@ class FleetPerformanceMixin:
             # Calculation
             for subcategory in category.subcategories.values():
                 # TODO: verify aircraft order
-                for k in self.df.index:
-                    for energy_type in ENERGY_TYPES:
-                        share = self.df.loc[k, f"{cat}:share:{energy_type}"]
-                        col = f"{cat}:doc_non_energy:{energy_type}"
-                        wc_col = f"{cat}:{subcategory.name}:doc_non_energy:weighted_contribution:{energy_type}"
-                        if share != 0.0:
-                            self.df.loc[k, col] += self.df.loc[k, wc_col] / (share / 100)
-                        else:
-                            self.df.loc[k, col] = 0.0
+                for energy_type in ENERGY_TYPES:
+                    share = self.df[f"{cat}:share:{energy_type}"].values
+                    col = f"{cat}:doc_non_energy:{energy_type}"
+                    wc_col = f"{cat}:{subcategory.name}:doc_non_energy:weighted_contribution:{energy_type}"
+                    safe_share = np.where(share != 0.0, share / 100, 1.0)
+                    self.df[col] = np.where(
+                        share != 0.0,
+                        self.df[col].values + self.df[wc_col].values / safe_share,
+                        0.0,
+                    )
 
             # Mean non energy DOC
-            for k in self.df.index:
-                self.df.loc[k, f"{cat}:doc_non_energy"] = sum(
-                    self.df.loc[k, f"{cat}:doc_non_energy:{energy_type}"]
-                    * (self.df.loc[k, f"{cat}:share:{energy_type}"] / 100)
-                    for energy_type in ENERGY_TYPES
-                )
+            self.df[f"{cat}:doc_non_energy"] = sum(
+                self.df[f"{cat}:doc_non_energy:{energy_type}"].values
+                * (self.df[f"{cat}:share:{energy_type}"].values / 100)
+                for energy_type in ENERGY_TYPES
+            )
 
     def _compute_mean_non_co2_emission_index(self):
         """Compute mean NOx and soot emission indices per category.
@@ -537,28 +523,24 @@ class FleetPerformanceMixin:
 
             for subcategory in category.subcategories.values():
                 subcategory_key = f"{category_name}:{subcategory.name}"
-                for k in self.df.index:
-                    idx = k - self.df.index[0]
-                    for energy_type in ENERGY_TYPES:
-                        share = self.df.at[k, f"{category_name}:share:{energy_type}"]
-                        if share != 0.0:
-                            for metric in ["nox", "soot"]:
-                                temp_dict[f"{category_name}:emission_index_{metric}:{energy_type}"][
-                                    idx
-                                ] += self.df.at[
-                                    k,
-                                    f"{subcategory_key}:emission_index_{metric}:weighted_contribution:{energy_type}",
-                                ] / (share / 100)
+                for energy_type in ENERGY_TYPES:
+                    share = self.df[f"{category_name}:share:{energy_type}"].values
+                    safe_share = np.where(share != 0.0, share / 100, 1.0)
+                    for metric in ["nox", "soot"]:
+                        wc = self.df[
+                            f"{subcategory_key}:emission_index_{metric}:weighted_contribution:{energy_type}"
+                        ].values
+                        temp_dict[f"{category_name}:emission_index_{metric}:{energy_type}"] += (
+                            np.where(share != 0.0, wc / safe_share, 0.0)
+                        )
 
-            # Calculate mean emission index
-            for k in self.df.index:
-                idx = k - self.df.index[0]
-                for metric in ["nox", "soot"]:
-                    self.df.at[k, f"{category_name}:emission_index_{metric}"] = sum(
-                        temp_dict[f"{category_name}:emission_index_{metric}:{energy_type}"][idx]
-                        * (self.df.at[k, f"{category_name}:share:{energy_type}"] / 100)
-                        for energy_type in ENERGY_TYPES
-                    )
+            # Calculate mean emission index (stored in temp_dict for final concat)
+            for metric in ["nox", "soot"]:
+                temp_dict[f"{category_name}:emission_index_{metric}"] = sum(
+                    temp_dict[f"{category_name}:emission_index_{metric}:{energy_type}"]
+                    * (self.df[f"{category_name}:share:{energy_type}"].values / 100)
+                    for energy_type in ENERGY_TYPES
+                )
 
         final_dict = {
             key: np.array(values) if isinstance(values, list) else values
