@@ -70,7 +70,7 @@ class SocioeconomicDrivers(AeroMAPSModel):
         self.df.loc[:, "gdp_per_capita"] = gdp_per_capita
 
         # GDP per capita at COVID end year
-        gdp_per_capita_covid_end = int(self.df.loc[covid_end_year_passenger, "gdp_per_capita"])
+        gdp_per_capita_covid_end = float(self.df.loc[covid_end_year_passenger, "gdp_per_capita"])
         self.float_outputs["gdp_per_capita_covid_end"] = gdp_per_capita_covid_end
 
         return (population, gdp_per_capita, gdp_per_capita_covid_end)

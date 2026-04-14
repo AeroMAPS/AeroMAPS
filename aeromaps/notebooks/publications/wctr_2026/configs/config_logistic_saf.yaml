@@ -1,6 +1,6 @@
 data:
   inputs:
-    json_inputs_file: "../data/inputs.json"
+    json_inputs_file: "../data/inputs_2070.json"
   outputs:
     json_outputs_file: "../data/outputs.json"
 

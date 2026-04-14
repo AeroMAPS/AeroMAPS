@@ -1,4 +1,5 @@
-{"end_year": 2070,
+{
+  "end_year": 2070,
   "historic_start_year": 2000,
   "prospection_start_year": 2020,
   "covid_end_year_passenger": 2024,
@@ -142,7 +143,5 @@
   "social_discount_rate": 0.045,
   "private_discount_rate": 0.06,
   "electricity_load_factor_reference_years": [],
-  "electricity_load_factor_reference_years_values": [0.5],
-  "kerosene_price_reference_years": [],
-  "kerosene_price_reference_years_values": [0.54]
+  "electricity_load_factor_reference_years_values": [0.5]
 }

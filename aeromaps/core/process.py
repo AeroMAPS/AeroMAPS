@@ -1614,6 +1614,8 @@ class AeroMAPSProcess(object):
                 "freight_init",
                 "energy_consumption_init",
                 "total_aircraft_distance_init",
+                "gdp_per_capita_init",
+                "population_init",
             ]
             if field_name in list_init:
                 new_size = self.parameters.end_year - self.parameters.historic_start_year + 1

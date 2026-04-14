@@ -1,6 +1,6 @@
 data:
   inputs:
-    json_inputs_file: "../data/inputs_2070.json"
+    json_inputs_file: "../data/inputs_2100.json"
   outputs:
     json_outputs_file: "../data/outputs.json"
 
@@ -9,7 +9,7 @@ models:
     climate_model_data_file: default
 
   energy:
-    energy_carriers_model_data_file: "../data/energy_data_fossil_2019.yaml"
+    energy_carriers_model_data_file: "../data/energy_data_fossil_min.yaml"
     resources_model_data_file: "../data/resources_data.yaml"
     processes_model_data_file: default
 

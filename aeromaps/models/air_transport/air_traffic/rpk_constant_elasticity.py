@@ -41,6 +41,16 @@ class RPKConstantElasticity(AeroMAPSModel):
         # Exchange rate used to convert doc_energy_per_rpk from EUR to USD [EUR/USD]
         self.eur_usd_exchange_rate: float = 0.9
 
+    def _initialize_df(self):
+        super()._initialize_df()
+        # Seed value for MDA coupling initialization: approximate 2019 energy cost per RPK
+        self._coupling_defaults = {
+            "doc_energy_per_rpk": pd.Series(
+                0.012,  # EUR/RPK
+                index=range(self.historic_start_year, self.end_year + 1),
+            )
+        }
+
     def compute(
         self,
         rpk_init: pd.Series,
@@ -58,6 +68,7 @@ class RPKConstantElasticity(AeroMAPSModel):
         rpk_medium_range_measures_impact: pd.Series,
         rpk_long_range_measures_impact: pd.Series,
     ) -> Tuple[
+        pd.Series,
         pd.Series,
         pd.Series,
         pd.Series,
@@ -122,6 +133,8 @@ class RPKConstantElasticity(AeroMAPSModel):
             Number of RPK for passenger long-range market [RPK].
         rpk
             Number of RPK for total passenger air transport [RPK].
+        rpk_no_elasticity
+            RPKs without considering price elasticity (income-driven only) [RPK].
         rpk_per_capita
             Annual RPKs per capita [RPK/capita].
         annual_growth_rate_passenger_short_range
@@ -196,6 +209,27 @@ class RPKConstantElasticity(AeroMAPSModel):
 
         rpk = rpk_short_range + rpk_medium_range + rpk_long_range
 
+        # --- RPK without price elasticity (income-driven only) ---
+        rpk_per_capita_no_price = (
+            self.sigma
+            * ((gdp_per_capita - covid_shift) ** self.income_elast)
+        )
+        rpk_no_price_total = population * rpk_per_capita_no_price
+
+        rpk_no_elast_short = rpk_no_price_total * short_range_rpk_share_2019 / 100
+        rpk_no_elast_medium = rpk_no_price_total * medium_range_rpk_share_2019 / 100
+        rpk_no_elast_long = rpk_no_price_total * long_range_rpk_share_2019 / 100
+
+        rpk_no_elast_short.loc[hist_slice] = rpk_init.loc[hist_slice] * short_range_rpk_share_2019 / 100
+        rpk_no_elast_medium.loc[hist_slice] = rpk_init.loc[hist_slice] * medium_range_rpk_share_2019 / 100
+        rpk_no_elast_long.loc[hist_slice] = rpk_init.loc[hist_slice] * long_range_rpk_share_2019 / 100
+
+        rpk_no_elast_short = rpk_no_elast_short * rpk_short_range_measures_impact
+        rpk_no_elast_medium = rpk_no_elast_medium * rpk_medium_range_measures_impact
+        rpk_no_elast_long = rpk_no_elast_long * rpk_long_range_measures_impact
+
+        rpk_no_elasticity = rpk_no_elast_short + rpk_no_elast_medium + rpk_no_elast_long
+
         # --- rpk_model_without_covid: apply measures to segment split ---
         rpk_wc_short = rpk_model_without_covid_raw * short_range_rpk_share_2019 / 100 * rpk_short_range_measures_impact
         rpk_wc_medium = rpk_model_without_covid_raw * medium_range_rpk_share_2019 / 100 * rpk_medium_range_measures_impact
@@ -246,6 +280,7 @@ class RPKConstantElasticity(AeroMAPSModel):
         self.df.loc[:, "rpk_medium_range"] = rpk_medium_range
         self.df.loc[:, "rpk_long_range"] = rpk_long_range
         self.df.loc[:, "rpk"] = rpk
+        self.df.loc[:, "rpk_no_elasticity"] = rpk_no_elasticity
         self.df.loc[:, "rpk_per_capita"] = rpk_per_capita
         self.df.loc[:, "annual_growth_rate_passenger_short_range"] = annual_growth_rate_passenger_short_range
         self.df.loc[:, "annual_growth_rate_passenger_medium_range"] = annual_growth_rate_passenger_medium_range
@@ -267,6 +302,7 @@ class RPKConstantElasticity(AeroMAPSModel):
             rpk_medium_range,
             rpk_long_range,
             rpk,
+            rpk_no_elasticity,
             rpk_per_capita,
             annual_growth_rate_passenger_short_range,
             annual_growth_rate_passenger_medium_range,
