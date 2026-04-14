@@ -154,7 +154,7 @@ class RPK(AeroMAPSModel):
         ]
         covid_function = interp1d(reference_years, reference_values_covid, kind="linear")
 
-        # CAGR function
+        # CAGR conversion to annual growth rates (constant growth rate)
         ## Short range
         annual_growth_rate_passenger_short_range_prospective = aeromaps_leveling_function(
             self,

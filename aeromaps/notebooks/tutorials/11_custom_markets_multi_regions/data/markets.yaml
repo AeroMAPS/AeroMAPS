@@ -1,0 +1,126 @@
+# Custom market definitions for a France regional study.
+# Replaces the default short/medium/long range segmentation
+# with a geographic segmentation: domestic, intra-EU, intercontinental.
+
+domestic:
+  name: "Domestic"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 15.3
+      energy_share_2019: 12.8
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [1.5]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 20.0
+      start_year: 2025
+      duration: 5.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 20.0
+      hydrogen_introduction_year: 2035
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.048
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+intra_eu:
+  name: "Intra-EU"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 42.1
+      energy_share_2019: 38.5
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [2.5]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 5.0
+      start_year: 2030
+      duration: 10.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 10.0
+      hydrogen_introduction_year: 2038
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.035
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+intercontinental:
+  name: "Intercontinental"
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 42.6
+      energy_share_2019: 33.7
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.5]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
+    measures:
+      final_impact: 0.0
+      start_year: 2051
+      duration: 5.0
+    efficiency_simple:
+      energy_per_ask_dropin_fuel_gain_reference_years: []
+      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+      hydrogen_final_market_share: 0.0
+      hydrogen_introduction_year: 2051
+      electric_final_market_share: 0.0
+      electric_introduction_year: 2051
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.025
+      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+
+freight:
+  name: "Freight"
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      energy_share_2019: 15.0
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]
+    covid:
+      drop_start_year: 66.0
+      end_year: 2024
+      end_year_reference_ratio: 100.0
