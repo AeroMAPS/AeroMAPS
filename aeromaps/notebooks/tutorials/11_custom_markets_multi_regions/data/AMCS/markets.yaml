@@ -1,0 +1,98 @@
+NBI:
+  name: Narrow Body Improved
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+NBL:
+  name: Narrow Body Large
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+NBS:
+  name: Narrow Body Small
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+RJ:
+  name: Regional Jet
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+RT:
+  name: Regional Turboprop
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+WBL:
+  name: Wide Body Large
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
+WBSI:
+  name: Wide Body Small International
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      ask_share_2019: x%
+      ask_share_2025: x%
+      fleet_productivity_2025: xx
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values:
+      - x%
+      fleet_productivity_2045: xx
