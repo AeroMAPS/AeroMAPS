@@ -6553,8 +6553,8 @@ yaml files and outputs of other models.</p>
                                 <span class="n">energy_consumption</span><span class="o">.</span><span class="n">index</span>
                             <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-                            <span class="n">modified_years</span> <span class="o">=</span> <span class="n">pathway_consumption</span><span class="p">[</span>
-                                <span class="n">pathway_consumption</span> <span class="o">!=</span> <span class="n">original</span>
+                            <span class="n">modified_years</span> <span class="o">=</span> <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">][</span>
+                                <span class="n">pathway_consumption</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">!=</span> <span class="n">original</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">original</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
                             <span class="p">]</span>
 
                             <span class="k">if</span> <span class="ow">not</span> <span class="n">modified_years</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
