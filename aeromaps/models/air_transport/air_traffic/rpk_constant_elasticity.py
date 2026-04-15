@@ -22,7 +22,7 @@ class RPKConstantElasticity(AeroMAPSModel):
         rpk_per_capita = sigma * gdp_per_capita^income_elast * price^price_elast
 
     where ``sigma``, ``income_elast`` and ``price_elast`` are calibrated coefficients
-    fixed at the class level.  The price input (``doc_energy_per_rpk``) is expressed
+    fixed at the class level.  The price input (``doc_all_energy_costs_per_rpk``) is expressed
     in EUR/RPK and is converted to USD before evaluation so that the units match the
     original calibration.
 
@@ -38,14 +38,14 @@ class RPKConstantElasticity(AeroMAPSModel):
         self.sigma: float = 0.0015018367707702585
         self.income_elast: float = 1.318374753418146
         self.price_elast: float = -0.2808214954796415
-        # Exchange rate used to convert doc_energy_per_rpk from EUR to USD [EUR/USD]
+        # Exchange rate used to convert doc_all_energy_costs_per_rpk from EUR to USD [EUR/USD]
         self.eur_usd_exchange_rate: float = 0.9
 
     def _initialize_df(self):
         super()._initialize_df()
-        # Seed value for MDA coupling initialization: approximate 2019 energy cost per RPK
+        # Seed value for MDA coupling initialization: approximate 2019 all-energy cost per RPK
         self._coupling_defaults = {
-            "doc_energy_per_rpk": pd.Series(
+            "doc_all_energy_costs_per_rpk": pd.Series(
                 0.012,  # EUR/RPK
                 index=range(self.historic_start_year, self.end_year + 1),
             )
@@ -56,7 +56,7 @@ class RPKConstantElasticity(AeroMAPSModel):
         rpk_init: pd.Series,
         population: pd.Series,
         gdp_per_capita: pd.Series,
-        doc_energy_per_rpk: pd.Series,
+        doc_all_energy_costs_per_rpk: pd.Series,
         gdp_per_capita_2019: float,
         gdp_per_capita_covid_end: float,
         gdp_per_capita_init: pd.Series,
@@ -99,9 +99,9 @@ class RPKConstantElasticity(AeroMAPSModel):
             Annual world population [people].
         gdp_per_capita
             Annual GDP per capita [USD/capita].
-        doc_energy_per_rpk
-            Direct operating cost attributable to energy expenses per Revenue
-            Passenger Kilometer [€/RPK].
+        doc_all_energy_costs_per_rpk
+            Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax)
+            per Revenue Passenger Kilometer [€/RPK].
         gdp_per_capita_2019
             GDP per capita at 2019 [USD/capita].
         gdp_per_capita_covid_end
@@ -167,7 +167,7 @@ class RPKConstantElasticity(AeroMAPSModel):
             (at reference price); prospective years use the projected inputs without the
             COVID shift [RPK].
         """
-        price_usd = doc_energy_per_rpk / self.eur_usd_exchange_rate
+        price_usd = doc_all_energy_costs_per_rpk / self.eur_usd_exchange_rate
         covid_shift = gdp_per_capita_covid_end - gdp_per_capita_2019
         hist_slice = slice(self.historic_start_year, self.prospection_start_year - 1)
 

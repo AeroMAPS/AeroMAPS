@@ -59,16 +59,16 @@ class RPKPriceAdjustedLogistic(AeroMAPSModel):
         self.asymptote_coeff: float = 1.148428926
         self.x_lag: float = 0.0
         self.price_elast: float = -0.26608795863374457
-        # Reference energy cost per RPK from calibration [USD/RPK]
+        # Reference all-energy cost per RPK from calibration [USD/RPK]
         self.price_ref: float = 0.012613517478578513
         # Exchange rate used to convert price_ref from USD to EUR [EUR/USD]
         self.eur_usd_exchange_rate: float = 0.9
 
     def _initialize_df(self):
         super()._initialize_df()
-        # Seed value for MDA coupling initialization: reference energy cost per RPK in EUR
+        # Seed value for MDA coupling initialization: reference all-energy cost per RPK in EUR
         self._coupling_defaults = {
-            "doc_energy_per_rpk": pd.Series(
+            "doc_all_energy_costs_per_rpk": pd.Series(
                 self.price_ref * self.eur_usd_exchange_rate,  # EUR/RPK
                 index=range(self.historic_start_year, self.end_year + 1),
             )
@@ -79,7 +79,7 @@ class RPKPriceAdjustedLogistic(AeroMAPSModel):
         rpk_init: pd.Series,
         population: pd.Series,
         gdp_per_capita: pd.Series,
-        doc_energy_per_rpk: pd.Series,
+        doc_all_energy_costs_per_rpk: pd.Series,
         gdp_per_capita_2019: float,
         gdp_per_capita_covid_end: float,
         gdp_per_capita_init: pd.Series,
@@ -124,8 +124,8 @@ class RPKPriceAdjustedLogistic(AeroMAPSModel):
             Annual population [people].
         gdp_per_capita
             Annual GDP per capita [USD/capita].
-        doc_energy_per_rpk
-            Direct operating cost attributable to energy expenses per Revenue Passenger Kilometer [€/RPK].
+        doc_all_energy_costs_per_rpk
+            Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax) per Revenue Passenger Kilometer [€/RPK].
         gdp_per_capita_2019
             GDP per capita at 2019 [USD/capita].
         gdp_per_capita_covid_end
@@ -228,7 +228,7 @@ class RPKPriceAdjustedLogistic(AeroMAPSModel):
             x_lag=self.x_lag,
         )
 
-        price_index = (doc_energy_per_rpk / price_ref_eur) ** self.price_elast
+        price_index = (doc_all_energy_costs_per_rpk / price_ref_eur) ** self.price_elast
         rpk_per_capita = rpk_per_capita_trend * price_index
 
         # --- Total RPK (model, no measures yet) ---
