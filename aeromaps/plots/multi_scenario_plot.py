@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 import warnings
 import itertools
 
+from aeromaps.plots.single_scenario_plot import plot_1_x, plot_1_y
+
 
 # Default color palette for scenario groups
 DEFAULT_COLORS = [
@@ -107,7 +109,7 @@ class MultiScenarioPlot(ABC):
 
         # Create figure and axes
         figsize = figsize or self._get_default_figsize()
-        self.fig, self.ax = plt.subplots(figsize=figsize)
+        self.fig, self.ax = plt.subplots(figsize=figsize, layout="constrained")
 
         # Configure canvas
         self._configure_canvas()
@@ -381,9 +383,7 @@ class MultiScenarioPlot(ABC):
             self.fig.canvas.header_visible = False
         if hasattr(self.fig.canvas, 'toolbar_position'):
             self.fig.canvas.toolbar_position = "bottom"
-        self.fig.tight_layout()
 
-    @abstractmethod
     def _get_default_figsize(self):
         """
         Return the default figure size for this plot.
@@ -393,7 +393,7 @@ class MultiScenarioPlot(ABC):
         tuple
             Figure size as (width, height)
         """
-        pass
+        return (plot_1_x, plot_1_y)
 
     @abstractmethod
     def create_plot(self):

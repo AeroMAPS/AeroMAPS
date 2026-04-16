@@ -281,12 +281,12 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
         net_mfsp_checkbox = widgets.Checkbox(
             value=True, description="Net Airlines Expenses", disabled=False
         )
-        subsidies_checkbox = widgets.Checkbox(value=False, description="Subsidies", disabled=False)
+        subsidies_checkbox = widgets.Checkbox(value=True, description="Subsidies", disabled=False)
         carbon_tax_checbox = widgets.Checkbox(
-            value=False, description="Carbon Taxes", disabled=False
+            value=True, description="Carbon Taxes", disabled=False
         )
         other_taxes_checkbox = widgets.Checkbox(
-            value=False, description="Other Taxes", disabled=False
+            value=True, description="Other Taxes", disabled=False
         )
 
         interact(

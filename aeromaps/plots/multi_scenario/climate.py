@@ -8,8 +8,6 @@ class TotalERFComparisonPlot(MultiScenarioPlot):
 
     required_outputs = ["total_erf"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -39,8 +37,6 @@ class TemperatureIncreaseComparisonPlot(MultiScenarioPlot):
 
     required_outputs = ["temperature_increase_from_aviation"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -70,8 +66,6 @@ class CO2ERFComparisonPlot(MultiScenarioPlot):
 
     required_outputs = ["co2_erf"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -101,8 +95,6 @@ class NonCO2ERFComparisonPlot(MultiScenarioPlot):
 
     required_outputs = ["total_erf", "co2_erf"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():

@@ -532,6 +532,299 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
 
+class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
+    """Stacked-area breakdown of energy-related costs per RPK by pathway.
+
+    Inspired by :class:`ScenarioEnergyExpensesPlot`: uses the
+    ``pathways_manager`` to dynamically discover energy carriers so that
+    **only carriers with non-zero energy consumption** appear in the legend.
+    Each carrier's cost is broken down (via hatch patterns) into:
+
+    * Base energy cost (MFSP)
+    * Carbon tax
+    * Energy tax
+    * Subsidy (shown as a negative area below zero)
+
+    A black total line for ``doc_all_energy_costs_per_rpk`` is overlaid.
+    """
+
+    required_outputs = [
+        "doc_all_energy_costs_per_rpk",
+        "rpk_long_range",
+        "rpk_medium_range",
+        "rpk_short_range",
+    ]
+
+    # Hatch / label maps – same visual language as ScenarioEnergyExpensesPlot
+    _HATCH_MAP = {
+        "mfsp": "",
+        "tax": "//",
+        "carbon_tax": "..",
+        "subsidy": "xx",
+    }
+    _LABEL_MAP = {
+        "mfsp": "Energy cost",
+        "tax": "Energy taxes",
+        "carbon_tax": "Carbon tax",
+        "subsidy": "Subsidies",
+    }
+
+    def __init__(self, process, figsize=None):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize)
+
+    def _get_default_figsize(self):
+        return (plot_2_x, plot_2_y)
+
+    # -- helpers ----------------------------------------------------------
+
+    def _get_active_pathways(self):
+        """Return pathways with non-zero energy consumption, sorted by first usage year."""
+        pathways = self.pathways_manager.get_all()
+
+        def first_usage_year(p):
+            col = f"{p.name}_energy_consumption"
+            if col not in self.df.columns:
+                return max(self.prospective_years) + 1
+            series = self.df.loc[self.prospective_years, col]
+            valid = series[~(series.isna() | (series == 0.0))].index.tolist()
+            return min(valid) if valid else max(self.prospective_years) + 1
+
+        return [
+            p
+            for p in sorted(pathways, key=first_usage_year)
+            if first_usage_year(p) <= max(self.prospective_years)
+        ]
+
+    def _total_rpk(self):
+        y = self.prospective_years
+        return (
+            self.df.loc[y, "rpk_long_range"]
+            + self.df.loc[y, "rpk_medium_range"]
+            + self.df.loc[y, "rpk_short_range"]
+        ).values
+
+    def _compute_pathway_data(self, pathways, total_rpk):
+        """Build per-pathway cost-component arrays expressed in €/RPK.
+
+        Uses only the **passenger** share of each pathway's energy consumption
+        so that the stacked areas are consistent with ``doc_all_energy_costs_per_rpk``
+        (which is derived from per-ASK costs × total_ASK / total_RPK and therefore
+        excludes freight energy).
+        """
+        y = self.prospective_years
+
+        # Pre-compute passenger-to-total energy ratios per aircraft type so
+        # that each pathway's energy is scaled to passenger-only.
+        pax_ratios = {}
+        if self.pathways_manager is not None:
+            for atype in self.pathways_manager.get_all_types("aircraft_type"):
+                total_col = f"energy_consumption_{atype}"
+                pax_col = f"energy_consumption_passenger_{atype}"
+                if total_col in self.df.columns and pax_col in self.df.columns:
+                    total_e = self.df.loc[y, total_col].fillna(0).values
+                    pax_e = self.df.loc[y, pax_col].fillna(0).values
+                    with np.errstate(divide="ignore", invalid="ignore"):
+                        ratio = np.where(total_e > 0, pax_e / total_e, 0.0)
+                    pax_ratios[atype] = ratio
+                else:
+                    pax_ratios[atype] = np.ones(len(y))
+
+        data = {}
+        for p in pathways:
+            raw_energy = self.df.loc[y, f"{p.name}_energy_consumption"].fillna(0).values
+            # Scale to passenger-only energy
+            ratio = pax_ratios.get(p.aircraft_type, np.ones(len(y)))
+            energy = raw_energy * ratio
+
+            data[p.name] = {
+                "mfsp": energy
+                * self.df.loc[y, f"{p.name}_mean_mfsp"].fillna(0).values
+                / total_rpk,
+                "carbon_tax": energy
+                * self.df.loc[y, f"{p.name}_mean_unit_carbon_tax"].fillna(0).values
+                / total_rpk,
+                "tax": energy
+                * self.df.loc[y, f"{p.name}_mean_unit_tax"].fillna(0).values
+                / total_rpk,
+                "subsidy": energy
+                * self.df.loc[y, f"{p.name}_mean_unit_subsidy"].fillna(0).values
+                / total_rpk,
+            }
+
+        # Normalise so that the stacked net total exactly matches the model's
+        # ``doc_all_energy_costs_per_rpk``.  In price-elastic MDA loops the
+        # pathway shares used by EnergyCarriersMeans may lag behind the final
+        # energy values, causing a small discrepancy.
+        model_total = self.df.loc[y, "doc_all_energy_costs_per_rpk"].fillna(0).values
+        stacked_total = np.zeros(len(y))
+        for p in pathways:
+            d = data[p.name]
+            stacked_total += d["mfsp"] + d["carbon_tax"] + d["tax"] - d["subsidy"]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            scale = np.where(
+                np.abs(stacked_total) > 1e-12,
+                model_total / stacked_total,
+                1.0,
+            )
+        for p in pathways:
+            for comp in ("mfsp", "carbon_tax", "tax", "subsidy"):
+                data[p.name][comp] = data[p.name][comp] * scale
+
+        return data
+
+    # -- plotting ---------------------------------------------------------
+
+    def _draw_stacked(self, pathways, data, pathway_colors):
+        """Draw the stacked areas and total line; shared by create_plot / _update."""
+        y = self.prospective_years
+        positive_components = ["mfsp", "tax", "carbon_tax"]
+
+        # --- positive stack (per pathway, per component) ---
+        bottom = np.zeros(len(y))
+        for idx, p in enumerate(pathways):
+            comp_bottom = bottom.copy()
+            for comp in positive_components:
+                vals = data[p.name].get(comp, np.zeros(len(y)))
+                comp_top = comp_bottom + vals
+                self.ax.fill_between(
+                    y,
+                    comp_bottom,
+                    comp_top,
+                    facecolor=pathway_colors[p.name],
+                    hatch=self._HATCH_MAP[comp],
+                    edgecolor="black",
+                    linewidth=0.5,
+                    alpha=0.5,
+                    linestyle=":",
+                )
+                comp_bottom = comp_top
+            bottom = comp_bottom
+
+        # --- negative stack for subsidies ---
+        bottom_neg = np.zeros(len(y))
+        for p in pathways:
+            vals = data[p.name].get("subsidy", np.zeros(len(y)))
+            comp_top = bottom_neg - vals
+            self.ax.fill_between(
+                y,
+                bottom_neg,
+                comp_top,
+                facecolor=pathway_colors[p.name],
+                hatch=self._HATCH_MAP["subsidy"],
+                edgecolor="black",
+                linewidth=0.5,
+                linestyle=":",
+                alpha=0.5,
+            )
+            bottom_neg = comp_top
+
+        # --- total line ---
+        self.ax.plot(
+            y,
+            self.df.loc[y, "doc_all_energy_costs_per_rpk"],
+            color="black",
+            linestyle="-",
+            linewidth=2,
+            zorder=4,
+            label="Total energy costs per RPK",
+        )
+
+    def _draw_legends(self, pathways, pathway_colors):
+        """Add two legends: one for carrier colours, one for component hatches."""
+        from matplotlib.lines import Line2D
+        # Left legend – active energy carriers
+        carrier_handles = [
+            Patch(
+                facecolor=pathway_colors[p.name],
+                edgecolor="black",
+                alpha=0.5,
+                label=p.name,
+            )
+            for p in pathways
+        ]
+        legend1 = self.ax.legend(
+            handles=carrier_handles,
+            title="Energy carrier" if len(carrier_handles) == 1 else "Energy carriers",
+            loc="upper left",
+            prop={"size": 7},
+        )
+
+        # Right legend – cost components (hatch) + total line
+        overlay_handles = [
+            Patch(edgecolor="black", facecolor="none", label=self._LABEL_MAP["mfsp"]),
+            Patch(
+                edgecolor="black",
+                facecolor="none",
+                hatch=self._HATCH_MAP["tax"],
+                label=self._LABEL_MAP["tax"],
+            ),
+            Patch(
+                edgecolor="black",
+                facecolor="none",
+                hatch=self._HATCH_MAP["carbon_tax"],
+                label=self._LABEL_MAP["carbon_tax"],
+            ),
+            Patch(
+                edgecolor="black",
+                facecolor="none",
+                hatch=self._HATCH_MAP["subsidy"],
+                label=self._LABEL_MAP["subsidy"],
+            ),
+            Line2D(
+                [0],
+                [0],
+                color="black",
+                linewidth=2,
+                linestyle="solid",
+                label="Total energy costs per RPK",
+            ),
+        ]
+        legend2 = self.ax.legend(
+            handles=overlay_handles,
+            loc="upper right",
+            prop={"size": 7},
+        )
+        self.ax.add_artist(legend1)
+        self.ax.add_artist(legend2)
+
+    def create_plot(self):
+        pathways = self._get_active_pathways()
+        colors_cmap = plt.cm.get_cmap("tab20", max(len(self.pathways_manager.get_all()), 1))
+        all_pathways = self.pathways_manager.get_all()
+        pathway_colors = {p.name: colors_cmap(i) for i, p in enumerate(all_pathways)}
+
+        total_rpk = self._total_rpk()
+        data = self._compute_pathway_data(pathways, total_rpk)
+
+        self._draw_stacked(pathways, data, pathway_colors)
+        self._draw_legends(pathways, pathway_colors)
+
+        self.ax.grid(axis="x")
+        self.ax.set_title("Energy costs per RPK – Breakdown by carrier")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Energy costs [€/RPK]")
+        self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
+
+    def _update_plot_elements(self):
+        for collection in self.ax.collections:
+            collection.remove()
+        for line in self.ax.lines:
+            line.remove()
+
+        pathways = self._get_active_pathways()
+        colors_cmap = plt.cm.get_cmap("tab20", max(len(self.pathways_manager.get_all()), 1))
+        all_pathways = self.pathways_manager.get_all()
+        pathway_colors = {p.name: colors_cmap(i) for i, p in enumerate(all_pathways)}
+
+        total_rpk = self._total_rpk()
+        data = self._compute_pathway_data(pathways, total_rpk)
+
+        self._draw_stacked(pathways, data, pathway_colors)
+        self._draw_legends(pathways, pathway_colors)
+        self.fig.canvas.draw()
+
+
 class AirfareEvolutionBreakdown(SingleScenarioPlot):
     required_outputs = [
         "doc_total_per_ask_mean",

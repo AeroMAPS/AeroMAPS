@@ -141,9 +141,39 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
                 axes[i].set_title(var_units_name_convert[key][1])
                 axes[i].set_ylabel(var_units_name_convert[key][0])
                 axes[i].set_xlabel("Year")
+                axes[i].set_xlim(left=2010, right=2100)
         axes[0].legend(loc="lower right")
         axes[0].set_ylim(bottom=0)
         axes[1].set_ylim(bottom=0)
-        axes[2].set_ylim(bottom=0)
+        axes[2].set_ylim(bottom=0, top=10000)
+
+        # Inset zoom axes for GDP and carbon tax
+        inset_configs = {
+            1: {"xlim": (2019, 2031), "ylim": (14, 19)},      # GDP per capita
+            2: {"xlim": (2019, 2031), "ylim": (0, 250)},       # Carbon price
+        }
+        for ax_idx, cfg in inset_configs.items():
+            ax_inset = axes[ax_idx].inset_axes([0.15, 0.45, 0.55, 0.5])
+            lines = lines_gen()
+            color = "royalblue"
+            for scenario in scenario_to_model:
+                line = next(lines)
+                if scenario == list(scenario_to_model.keys())[-1]:
+                    line = next(lines)
+                key = list(var_units_name_convert.keys())[ax_idx]
+                ax_inset.plot(
+                    years,
+                    [
+                        value / var_units_name_convert[key][-1]
+                        for value in ar6_data[key][scenario]
+                    ],
+                    color=color,
+                    linestyle=line,
+                    linewidth=2,
+                )
+            ax_inset.set_xlim(*cfg["xlim"])
+            ax_inset.set_ylim(*cfg["ylim"])
+            ax_inset.tick_params(labelsize=7)
+            axes[ax_idx].indicate_inset_zoom(ax_inset, edgecolor="black")
 
     return ar6_data, years

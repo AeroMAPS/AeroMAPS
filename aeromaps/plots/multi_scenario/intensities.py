@@ -12,9 +12,6 @@ class CO2PerRPKComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["co2_emissions_per_rpk"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the CO2 per RPK comparison plot."""
@@ -75,9 +72,6 @@ class CO2PerRTKComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["co2_emissions_per_rtk"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the CO2 per RTK comparison plot."""
@@ -138,9 +132,6 @@ class EnergyPerASKComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["energy_per_ask_mean"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the energy per ASK comparison plot."""
@@ -201,9 +192,6 @@ class EnergyPerRTKComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["energy_per_rtk_mean"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the energy per RTK comparison plot."""

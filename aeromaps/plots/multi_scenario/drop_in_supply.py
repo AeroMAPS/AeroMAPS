@@ -3,6 +3,8 @@
 All plots discover energy carriers dynamically via ``pathways_manager``.
 """
 
+from aeromaps.plots.single_scenario_plot import plot_1_x
+
 from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
 
@@ -23,7 +25,7 @@ class DropInSupplyBreakdownPlot(MultiScenarioPlot):
 
     def _get_default_figsize(self):
         n = len(self.scenario_data)
-        return (12, max(4, 3 * n))
+        return (plot_1_x, max(4, 3 * n))
 
     def create_plot(self):
         scenario_items = list(self.scenario_data.items())
@@ -71,7 +73,6 @@ class DropInSupplyBreakdownPlot(MultiScenarioPlot):
                 ax.set_xlabel("Year", fontsize=12)
 
         self.fig.suptitle("Drop-in Fuel Supply Breakdown", fontsize=14, y=0.995)
-        self.fig.tight_layout()
         self.axes = axes
 
     def _update_plot_elements(self):
@@ -87,9 +88,6 @@ class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
     """Compare total hydrogen energy consumption across scenarios."""
 
     required_outputs = []
-
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -129,8 +127,6 @@ class ElectricSupplyComparisonPlot(MultiScenarioPlot):
 
     required_outputs = []
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -174,8 +170,6 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
 
     required_outputs = []
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -215,8 +209,6 @@ class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
 
     required_outputs = []
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -275,7 +267,7 @@ class BiofuelMixComparisonPlot(MultiScenarioPlot):
 
     def _get_default_figsize(self):
         n = len(self.scenario_data)
-        return (12, max(4, 3 * n))
+        return (plot_1_x, max(4, 3 * n))
 
     def create_plot(self):
         scenario_items = list(self.scenario_data.items())
@@ -324,7 +316,6 @@ class BiofuelMixComparisonPlot(MultiScenarioPlot):
                 ax.set_xlabel("Year", fontsize=12)
 
         self.fig.suptitle("Biofuel Mix Comparison Across Scenarios", fontsize=14, y=0.995)
-        self.fig.tight_layout()
         self.axes = axes
 
     def _update_plot_elements(self):

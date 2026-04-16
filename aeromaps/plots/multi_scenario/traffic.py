@@ -12,9 +12,6 @@ class RPKComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["rpk"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the RPK comparison plot."""
@@ -74,9 +71,6 @@ class LoadFactorComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["load_factor"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the load factor comparison plot."""

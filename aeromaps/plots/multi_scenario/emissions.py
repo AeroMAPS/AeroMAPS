@@ -14,9 +14,6 @@ class CO2EmissionsComparisonPlot(MultiScenarioPlot):
     # Define required outputs for validation
     required_outputs = ["co2_emissions"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the CO2 emissions comparison plot."""
@@ -82,9 +79,6 @@ class CumulativeCO2EmissionsComparisonPlot(MultiScenarioPlot):
     
     required_outputs = ["cumulative_co2_emissions"]
     
-    def _get_default_figsize(self):
-        """Return default figure size."""
-        return (12, 6)
     
     def create_plot(self):
         """Create the carbon budget comparison plot."""

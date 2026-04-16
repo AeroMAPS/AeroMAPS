@@ -1,6 +1,7 @@
 """Multi-scenario comparison plots for energy consumption."""
 
 from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
+from aeromaps.plots.single_scenario_plot import plot_1_x
 
 
 class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
@@ -8,8 +9,6 @@ class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
 
     required_outputs = ["energy_consumption"]
 
-    def _get_default_figsize(self):
-        return (12, 6)
 
     def create_plot(self):
         for scenario_name, data in self.scenario_data.items():
@@ -49,7 +48,7 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
 
     def _get_default_figsize(self):
         n_scenarios = len(self.scenario_data)
-        return (12, max(4, 3 * n_scenarios))
+        return (plot_1_x, max(4, 3 * n_scenarios))
 
     def create_plot(self):
         scenario_items = list(self.scenario_data.items())
@@ -110,7 +109,6 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
                 ax.set_xlabel("Year", fontsize=12)
 
         self.fig.suptitle("Energy Mix Comparison Across Scenarios", fontsize=14, y=0.995)
-        self.fig.tight_layout()
         self.axes = axes
 
     def _update_plot_elements(self):
