@@ -1,6 +1,8 @@
 # AeroMAPS — User-Defined Markets Refactor Plan
 
-**Status:** Draft for review |  **Updated:** 2026-04-10
+**Status:** Draft for review |  **Updated:** 2026-04-17
+
+**Detailed Phase Interface design notes:** `.claude/plans/optimized-singing-scott.md`
 
 ---
 
@@ -310,6 +312,73 @@ Standalone refactors on the fleet model that reduce Phase 3 complexity. Can be d
 - Define `markets.yaml` schema, implement `Market` and `MarketRegistry`.
 - Unit test loader against default 4-market file.
 - **Exit:** `MarketRegistry.from_yaml()` matches today's constants.
+
+### Phase Interface — Demo case "Custom Markets × Multi-Regions"
+
+Delivers a user-driven mode end-to-end for a demo case (8 regions × 7 aircraft-subcategory markets from an Excel file), without modifying the legacy bottom-up/top-down paths. Coexists with Phases 1–5 which handle the full GEMSEO wiring.
+
+Six chantiers, ordered **A → B & C → D → E → F**:
+
+| # | Chantier | Key files | Purpose |
+|---|----------|-----------|---------|
+| A | Aircraft YAML schema extensions | `fleet_model.py`, `fleet_performance.py` | Add `share` (`AeroMapsCustomDataType`), `energy_per_ask_absolute`, `continuous_improvement_factor_energy` to aircraft cards. Add `_resolve_field` helper. Loader switched to `read_yaml_file`. Energy resolution order: absolute → relative → × factor. |
+| B | Linear RPK growth model + elasticity | NEW `rpk_linear.py` | `RPKLinearGrowth` + `RPKLinearGrowthWithElasticity`: linear interpolation between RPK waypoints per market. No flow inversion — script converts ASK→RPK upstream. Reuses `aeromaps_interpolation_function`. |
+| C | FleetModel share-decoupling | `fleet_model.py` | When aircraft cards carry `share: !AeroMapsCustomDataType`, skip S-curve (`_compute_single_aircraft_share` + `_compute_aircraft_share`); populate `aircraft_share` columns directly from interpolated user shares. Reference-aircraft get residual. |
+| D | `FleetEvolutionFromShares` | `fleet_numeric.py` | Compute `aircraft_in_fleet = ceil(share/100 × ASK_market / ask_year_market(t))`. Productivity (`ask_year`) read at market level from `markets.yaml` `inputs.productivity.ask_year`. |
+| E | Excel → YAML generator | `generate_regional_markets.py` | ASK→RPK conversion via `load_factor`; emit RPK waypoints + market-level `ask_year`; generate `aircraft_inventory.yaml` + `fleet.yaml` per region. |
+| F | Demo notebook | `example_notebook.ipynb` | Multi-region parallel process using per-region `config.yaml`. |
+
+**`markets.yaml` schema extensions** (new `inputs` blocks):
+```yaml
+inputs:
+  growth:
+    mode: linear_rpk            # NEW — else 'cagr' (default)
+    rpk_waypoint_years:   [2019, 2025, 2050]
+    rpk_waypoint_values:  [8.7e11, 9.5e11, 1.7e12]
+  productivity:                 # NEW — market-level, not per-aircraft
+    ask_year: !AeroMapsCustomDataType
+      years: [2025, 2045]
+      values: [3.0e8, 3.4e8]
+```
+
+**Aircraft YAML schema extensions** (new fields in `aircraft_inventory.yaml`):
+```yaml
+parameters:
+  energy_per_ask_absolute: 0.85                       # NEW (alt. to consumption_evolution)
+  continuous_improvement_factor_energy: !AeroMapsCustomDataType  # NEW
+    years: [2025, 2050]
+    values: [1.0, 0.85]
+  share: !AeroMapsCustomDataType                      # NEW (bypasses S-curve)
+    years: [2025, 2035, 2050]
+    values: [0, 30, 50]
+```
+
+**New files:**
+| Path | Purpose |
+|------|---------|
+| `aeromaps/models/air_transport/air_traffic/rpk_linear.py` | `RPKLinearGrowth` + `RPKLinearGrowthWithElasticity` |
+| `data/<REGION>/{markets,aircraft_inventory,fleet,config}.yaml` | Generated per-region inputs (demo only) |
+
+**Modified files:**
+| File | Change |
+|------|--------|
+| `fleet_model.py` | A: new dataclass fields, `_resolve_field`, loader. C: share-decoupling mode switch. |
+| `fleet_performance.py` | A: energy resolution order (absolute vs relative + continuous improvement factor). |
+| `fleet_numeric.py` | D: `FleetEvolutionFromShares` alongside `FleetEvolution`. |
+| `models.py` | B+C+D: builder selection for linear RPK and user-driven fleet variants. |
+| `generate_regional_markets.py` | E: ASK→RPK, market productivity, aircraft cards. |
+| `example_notebook.ipynb` | F: restructure. |
+
+**Open questions:**
+1. Reference-aircraft share in user-driven fleet mode: residual (`100 - Σ`, proposed default) vs require user to fully specify.
+2. Load factor as `AeroMapsCustomDataType` vs simple `{year: value}` dict.
+
+**Consequences for later phases:**
+- Phase 1: must flatten `inputs.growth.rpk_waypoint_*` and `inputs.productivity.ask_year`.
+- Phase 2: can reuse `RPKLinearGrowth`/`RPKLinearGrowthWithElasticity` as reference per-market disciplines.
+- Phase 3: share-decoupling (C) and `FleetEvolutionFromShares` (D) already iterate over markets; Phase 3 extends this to the S-curve path.
+
+**Exit:** Demo notebook runs end-to-end for 8 regions × 7 markets. Legacy notebooks unaffected.
 
 ### Phase 1 — Process integration
 
