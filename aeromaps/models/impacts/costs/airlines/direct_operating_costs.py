@@ -659,33 +659,33 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
         """
         # Drop-in
         doc_energy_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
+            energy_per_ask_long_range_dropin_fuel.replace(0, np.nan) * dropin_fuel_mean_mfsp
         )
         doc_energy_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
+            energy_per_ask_medium_range_dropin_fuel.replace(0, np.nan) * dropin_fuel_mean_mfsp
         )
         doc_energy_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel.replace(0, np.NaN) * dropin_fuel_mean_mfsp
+            energy_per_ask_short_range_dropin_fuel.replace(0, np.nan) * dropin_fuel_mean_mfsp
         )
         # Hydrogen
         doc_energy_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
+            energy_per_ask_long_range_hydrogen.replace(0, np.nan) * hydrogen_mean_mfsp
         )
         doc_energy_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
+            energy_per_ask_medium_range_hydrogen.replace(0, np.nan) * hydrogen_mean_mfsp
         )
         doc_energy_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_mfsp
+            energy_per_ask_short_range_hydrogen.replace(0, np.nan) * hydrogen_mean_mfsp
         )
         # Electric
         doc_energy_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric.replace(0, np.NaN) * electric_mean_mfsp
+            energy_per_ask_long_range_electric.replace(0, np.nan) * electric_mean_mfsp
         )
         doc_energy_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric.replace(0, np.NaN) * electric_mean_mfsp
+            energy_per_ask_medium_range_electric.replace(0, np.nan) * electric_mean_mfsp
         )
         doc_energy_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_mfsp
+            energy_per_ask_short_range_electric.replace(0, np.nan) * electric_mean_mfsp
         )
 
         # Means
@@ -930,36 +930,36 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         """
         # Drop-in
         doc_energy_carbon_tax_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel.replace(0, np.NaN)
+            energy_per_ask_long_range_dropin_fuel.replace(0, np.nan)
             * dropin_fuel_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel.replace(0, np.NaN)
+            energy_per_ask_medium_range_dropin_fuel.replace(0, np.nan)
             * dropin_fuel_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel.replace(0, np.NaN)
+            energy_per_ask_short_range_dropin_fuel.replace(0, np.nan)
             * dropin_fuel_mean_unit_carbon_tax
         )
         # Hydrogen
         doc_energy_carbon_tax_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_long_range_hydrogen.replace(0, np.nan) * hydrogen_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_medium_range_hydrogen.replace(0, np.nan) * hydrogen_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
+            energy_per_ask_short_range_hydrogen.replace(0, np.nan) * hydrogen_mean_unit_carbon_tax
         )
         # Electric
         doc_energy_carbon_tax_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
+            energy_per_ask_long_range_electric.replace(0, np.nan) * electric_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
+            energy_per_ask_medium_range_electric.replace(0, np.nan) * electric_mean_unit_carbon_tax
         )
         doc_energy_carbon_tax_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
+            energy_per_ask_short_range_electric.replace(0, np.nan) * electric_mean_unit_carbon_tax
         )
 
         # Means

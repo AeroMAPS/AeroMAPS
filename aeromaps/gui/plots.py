@@ -1,38 +1,30 @@
-from aeromaps.plots.costs_generic import SimpleMFSP, ScenarioEnergyCapitalPlot
-from aeromaps.plots.main import AirTransportCO2EmissionsPlot, AirTransportClimateImpactsPlot
-from aeromaps.plots.sustainability_assessment import (
+from aeromaps.plots.single_scenario import (
+    SimpleMFSP,
+    ScenarioEnergyCapitalPlot,
+    AirTransportCO2EmissionsPlot,
+    AirTransportClimateImpactsPlot,
     CarbonBudgetAssessmentPlot,
     TemperatureTargetAssessmentPlot,
     BiomassResourceBudgetAssessmentPlot,
     ElectricityResourceBudgetAssessmentPlot,
     MultidisciplinaryAssessmentPlot,
-)
-from aeromaps.plots.indicators import (
     MeanCO2PerRPKPlot,
     MeanCO2PerRTKPlot,
     PassengerKayaFactorsPlot,
     FreightKayaFactorsPlot,
     LeversOfActionDistributionPlot,
-)
-from aeromaps.plots.air_traffic import (
     RevenuePassengerKilometerPlot,
     RevenueTonneKilometerPlot,
     AvailableSeatKilometerPlot,
     TotalAircraftDistancePlot,
-)
-from aeromaps.plots.aircraft_fleet_and_operations import (
     DropinFuelConsumptionLiterPerPAX100kmPlot,
     MeanLoadFactorPlot,
     MeanEnergyPerASKPlot,
     MeanEnergyPerRTKPlot,
-)
-from aeromaps.plots.aircraft_energy import (
     MeanFuelEmissionFactorPlot,
     EmissionFactorPerFuelCategory,
     EnergyConsumptionPlot,
     ShareFuelPlot,
-)
-from aeromaps.plots.emissions import (
     CumulativeCO2EmissionsPlot,
     DirectH2OEmissionsPlot,
     DirectNOxEmissionsPlot,
@@ -40,15 +32,11 @@ from aeromaps.plots.emissions import (
     DirectSootEmissionsPlot,
     CarbonOffsetPlot,
     CumulativeCarbonOffsetPlot,
-)
-from aeromaps.plots.climate import (
     FinalEffectiveRadiativeForcingPlot,
     DistributionEffectiveRadiativeForcingPlot,
     TemperatureIncreaseFromAirTransportPlot,
-)
-from aeromaps.plots.energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
-
-from aeromaps.plots.costs import (
+    BiomassConsumptionPlot,
+    ElectricityConsumptionPlot,
     DiscountEffect,
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,

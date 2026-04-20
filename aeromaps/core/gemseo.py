@@ -21,14 +21,16 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
+import sys
+import traceback
 from numbers import Number
 from typing import TYPE_CHECKING, ClassVar
 from typing import Final
 from typing import Union
 from typing import Any
 from typing import cast
-import os
 
 import numpy as np
 import pandas as pd
@@ -58,24 +60,24 @@ _EXECUTION_STATISTICS_PATCHED = False
 
 def disable_gemseo_execution_statistics():
     """Disable GEMSEO's execution statistics shared memory.
-    
+
     GEMSEO's ExecutionStatistics creates semaphores for each discipline via
     multiprocessing.Value(). With many disciplines (20+ regions × 50+ models),
     this exhausts macOS semaphore limits (kern.sysv.shmmni=32).
-    
+
     This function patches ExecutionStatistics to use regular Python attributes
     instead of shared memory, avoiding semaphore creation.
-    
+
     Safe to call multiple times (only patches once).
     """
     global _EXECUTION_STATISTICS_PATCHED
-    
+
     if _EXECUTION_STATISTICS_PATCHED:
         return
-    
+
     try:
         from gemseo.core.execution_statistics import ExecutionStatistics
-        
+
         def _patched_init(self):
             """Skip shared memory initialization to avoid semaphore exhaustion."""
             # Initialize as regular attributes instead of shared memory
@@ -84,12 +86,23 @@ def disable_gemseo_execution_statistics():
             self._ExecutionStatistics__n_linearizations = 0
             self._ExecutionStatistics__n_calls_to_jacobian = 0
             self._ExecutionStatistics__execution_time = {}
-        
+
         ExecutionStatistics._init_shared_memory_attrs_before = _patched_init
         _EXECUTION_STATISTICS_PATCHED = True
         LOGGER.debug("Patched GEMSEO ExecutionStatistics to use non-shared state")
     except Exception as patch_err:
         LOGGER.warning(f"Could not patch GEMSEO ExecutionStatistics: {patch_err}")
+
+
+def _format_model_traceback(model_file: str) -> str:
+    """Extract and format traceback frames originating from the given model file."""
+    exc_tb = sys.exc_info()[2]
+    if exc_tb is None:
+        return ""
+    frames = [f for f in traceback.extract_tb(exc_tb) if f.filename == model_file]
+    if not frames:
+        return ""
+    return "".join(traceback.StackSummary.from_list(frames).format())
 
 
 class ExtendedJSONGrammar(JSONGrammar):
@@ -196,6 +209,20 @@ class AeroMAPSAutoModelWrapper(AutoPyDiscipline):
             if hasattr(self.model.parameters, input):
                 self.default_input_data[input] = getattr(self.model.parameters, input)
 
+    def _run(self, input_data):
+        try:
+            return super()._run(input_data)
+        except Exception:
+            model_file = inspect.getfile(type(self.model))
+            model_tb = _format_model_traceback(model_file)
+            LOGGER.error(
+                "An error occurred when executing model: %s (file: %s)\n%s",
+                self.model.name,
+                model_file,
+                model_tb,
+            )
+            raise
+
 
 class AeroMAPSCustomModelWrapper(Discipline):
     """
@@ -234,7 +261,18 @@ class AeroMAPSCustomModelWrapper(Discipline):
 
     def _run(self, input_data):
         if hasattr(self.model, "compute"):
-            return self.model.compute(input_data)
+            try:
+                return self.model.compute(input_data)
+            except Exception:
+                model_file = inspect.getfile(type(self.model))
+                model_tb = _format_model_traceback(model_file)
+                LOGGER.error(
+                    "An error occurred when executing model: %s (file: %s)\n%s",
+                    self.model.name,
+                    model_file,
+                    model_tb,
+                )
+                raise
         else:
             raise AttributeError(f"Model {self.name} does not have a compute method")
 

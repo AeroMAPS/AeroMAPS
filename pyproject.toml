@@ -8,6 +8,7 @@ authors = [
     "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",
     "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
     "Felix POLLET <felix.pollet@isae-supaero.fr>",
+    "Ian COSTA ALVES <ian.costa-alves@isae-supaero.fr>",
 ]
 keywords = [
     "air transport",
@@ -30,8 +31,6 @@ gemseo = "<6.3.0"
 deepdiff = "^8"
 sympy = "^1.14.0"
 dill = "^0.4.0"
-
-# External models
 aerocm = "0.1.1b0"
 
 # Data visualization

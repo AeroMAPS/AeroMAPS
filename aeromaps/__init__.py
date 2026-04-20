@@ -10,6 +10,7 @@ from typing import Optional, Union
 
 from aeromaps.core.process import AeroMAPSProcess
 from aeromaps.core.multi_regional_process import MultiRegionalProcess
+from aeromaps.core.processes_assembly import AeroMAPSProcessesAssembly
 
 
 def create_process(
@@ -58,7 +59,7 @@ def create_process(
     >>> # Single-region process
     >>> process = create_process(configuration_file="config.yaml")
     >>> process.compute()
-    >>> 
+    >>>
     >>> # Multi-regional process (auto-detected from config)
     >>> process = create_process(configuration_file="config_with_regionalisation.yaml")
     >>> process.compute()
@@ -71,6 +72,7 @@ def create_process(
         # Auto-detect from configuration file
         try:
             from aeromaps.utils.yaml import read_yaml_file
+
             config = read_yaml_file(configuration_file)
             use_multi_regional = "regionalisation" in config
         except Exception:
@@ -79,10 +81,11 @@ def create_process(
     if use_multi_regional:
         if optimisation:
             import warnings
+
             warnings.warn(
                 "Optimisation mode is not yet supported for multi-regional processes. "
                 "Using standard MDA mode instead.",
-                UserWarning
+                UserWarning,
             )
 
         return MultiRegionalProcess(
@@ -128,12 +131,12 @@ def create_multi_regional_process(
     --------
     >>> process = create_multi_regional_process("config.yaml")
     >>> process.compute(parallel=True, max_workers=4)
-    >>> 
+    >>>
     >>> # Access regional data
     >>> for region_id in process.list_regions():
     ...     regional_proc = process.regional_processes[region_id]
     ...     print(f"{region_id}: {regional_proc.data['vector_outputs']['co2_emissions'].iloc[-1]}")
-    >>> 
+    >>>
     >>> # Get aggregated global results
     >>> global_outputs = process.get_global_outputs()
     """
@@ -142,3 +145,31 @@ def create_multi_regional_process(
         custom_models=custom_models,
         disable_execution_statistics=disable_execution_statistics,
     )
+
+
+def assemble_processes(processes) -> AeroMAPSProcessesAssembly:
+    """
+    Create a MultiProcess manager for scenario comparison.
+
+    Parameters
+    ----------
+    processes : dict or list
+        Dictionary mapping scenario names to AeroMAPSProcess objects,
+        or a list of AeroMAPSProcess objects.
+
+    Returns
+    -------
+    AeroMAPSProcessesAssembly
+        An instance of the MultiProcess class for managing multiple scenarios.
+
+    Examples
+    --------
+    >>> process1 = create_process(configuration_file="config1.yaml")
+    >>> process2 = create_process(configuration_file="config2.yaml")
+    >>> process1.compute()
+    >>> process2.compute()
+    >>> multi = assemble_processes({"scenario_1": process1, "scenario_2": process2})
+    >>> multi.list_available_plots()
+    >>> multi.plot("co2_emissions_comparison")
+    """
+    return AeroMAPSProcessesAssembly(processes)
