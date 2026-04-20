@@ -436,7 +436,7 @@ hydrogen_gas:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
-        values: [30.83]
+        values: [100]
         method: linear
       emission_index:
         h2o: 9.0
@@ -557,7 +557,7 @@ hydrogen_coal_ccs:
     environmental:
       mean_co2_emission_factor_without_resource: !AeroMapsCustomDataType
         years: []
-        values: [40.83]
+        values: [191.6]
         method: linear
       emission_index:
         h2o: 9.0
