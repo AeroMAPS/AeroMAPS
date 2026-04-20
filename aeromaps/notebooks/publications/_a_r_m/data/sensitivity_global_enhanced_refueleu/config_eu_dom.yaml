@@ -1,9 +1,9 @@
 data:
   inputs:
-    json_inputs_file: ../region_uk_dom*/inputs.json
-    partitioning_data_file: ../region_uk_dom*/partitioning_updated_inputs.json
+    json_inputs_file: ../region_eu_dom/inputs.json
+    partitioning_data_file: ../region_eu_dom/partitioning_updated_inputs.json
   outputs:
-    json_outputs_file: ./uk_dom_outputs.json
+    json_outputs_file: ./eu_dom_outputs.json
 models:
   fleet:
     fleet_model_data_file: ../fleet/fleet.yaml

@@ -32,11 +32,11 @@ regionalisation:
     
     # EU Domestic
     EU_DOM:
-      config_file: "data/region_eu_dom*/config.yaml"
+      config_file: "data/region_eu_dom/config.yaml"
     
     # EU International
     EU_INT:
-      config_file: "data/region_eu_int*/config.yaml"
+      config_file: "data/region_eu_int/config.yaml"
     
     # Oceania Domestic
     OC_DOM:
@@ -76,11 +76,11 @@ regionalisation:
     
     # UK Domestic
     UK_DOM:
-      config_file: "data/region_uk_dom*/config.yaml"
+      config_file: "data/region_uk_dom/config.yaml"
     
     # UK International
     UK_INT:
-      config_file: "data/region_uk_int*/config.yaml"
+      config_file: "data/region_uk_int/config.yaml"
     
     # USA Domestic
     USA_DOM:

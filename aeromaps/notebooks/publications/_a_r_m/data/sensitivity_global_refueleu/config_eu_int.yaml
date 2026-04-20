@@ -1,7 +1,7 @@
 data:
   inputs:
-    json_inputs_file: ../region_eu_int*/inputs.json
-    partitioning_data_file: ../region_eu_int*/partitioning_updated_inputs.json
+    json_inputs_file: ../region_eu_int/inputs.json
+    partitioning_data_file: ../region_eu_int/partitioning_updated_inputs.json
   outputs:
     json_outputs_file: ./eu_int_outputs.json
 models:
