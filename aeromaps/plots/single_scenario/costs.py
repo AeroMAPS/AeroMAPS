@@ -638,18 +638,18 @@ class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
             energy = raw_energy * ratio
 
             data[p.name] = {
-                "mfsp": (energy
+                "mfsp": np.where(total_rpk > 0, energy
                 * self.df.loc[y, f"{p.name}_mean_mfsp"].fillna(0).values
-                / total_rpk).where(total_rpk > 0, 0),
-                "carbon_tax": (energy
+                / total_rpk, 0),
+                "carbon_tax": np.where(total_rpk > 0, energy
                 * self.df.loc[y, f"{p.name}_mean_unit_carbon_tax"].fillna(0).values
-                / total_rpk).where(total_rpk > 0, 0),
-                "tax": (energy
+                / total_rpk, 0),
+                "tax": np.where(total_rpk > 0, energy
                 * self.df.loc[y, f"{p.name}_mean_unit_tax"].fillna(0).values
-                / total_rpk).where(total_rpk > 0, 0),
-                "subsidy": (energy
+                / total_rpk, 0),
+                "subsidy": np.where(total_rpk > 0, energy
                 * self.df.loc[y, f"{p.name}_mean_unit_subsidy"].fillna(0).values
-                / total_rpk).where(total_rpk > 0, 0),
+                / total_rpk, 0),
             }
 
         # Normalise so that the stacked net total exactly matches the model's
