@@ -638,18 +638,18 @@ class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
             energy = raw_energy * ratio
 
             data[p.name] = {
-                "mfsp": energy
+                "mfsp": (energy
                 * self.df.loc[y, f"{p.name}_mean_mfsp"].fillna(0).values
-                / total_rpk,
-                "carbon_tax": energy
+                / total_rpk).where(total_rpk > 0, 0),
+                "carbon_tax": (energy
                 * self.df.loc[y, f"{p.name}_mean_unit_carbon_tax"].fillna(0).values
-                / total_rpk,
-                "tax": energy
+                / total_rpk).where(total_rpk > 0, 0),
+                "tax": (energy
                 * self.df.loc[y, f"{p.name}_mean_unit_tax"].fillna(0).values
-                / total_rpk,
-                "subsidy": energy
+                / total_rpk).where(total_rpk > 0, 0),
+                "subsidy": (energy
                 * self.df.loc[y, f"{p.name}_mean_unit_subsidy"].fillna(0).values
-                / total_rpk,
+                / total_rpk).where(total_rpk > 0, 0),
             }
 
         # Normalise so that the stacked net total exactly matches the model's
@@ -807,9 +807,9 @@ class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
         self.ax.set_xlim(self.prospective_years[0], self.prospective_years[-1])
 
     def _update_plot_elements(self):
-        for collection in self.ax.collections:
+        for collection in list(self.ax.collections):
             collection.remove()
-        for line in self.ax.lines:
+        for line in list(self.ax.lines):
             line.remove()
 
         pathways = self._get_active_pathways()
