@@ -2294,11 +2294,11 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         )
 
         # Convert to per-RPK using ASK-weighted costs over total RPK
+        total_ask = ask_long_range + ask_medium_range + ask_short_range
+        total_rpk = rpk_long_range + rpk_medium_range + rpk_short_range
         doc_all_energy_costs_per_rpk = (
-            doc_all_energy_costs_per_ask_mean
-            * (ask_long_range + ask_medium_range + ask_short_range)
-            / (rpk_long_range + rpk_medium_range + rpk_short_range)
-        )
+            doc_all_energy_costs_per_ask_mean * total_ask / total_rpk
+        ).where(total_rpk > 0, 0)
         self.df.loc[:, "doc_all_energy_costs_per_rpk"] = doc_all_energy_costs_per_rpk
 
         return (
