@@ -11,6 +11,9 @@ models:
   climate:
     climate_model_data_file: "./default_climate_models/climate_model_fair.yaml"
 
+  markets:
+    markets_data_file: "./default_markets/markets.yaml"
+
   fleet:
     aircraft_inventory_model_data_file: "./default_fleet/aircraft_inventory.yaml"
     fleet_model_data_file: "./default_fleet/fleet.yaml"
