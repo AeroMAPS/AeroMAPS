@@ -44,9 +44,9 @@ class EnergyMixPlot(SingleScenarioPlot):
 
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -101,9 +101,9 @@ class DropInSupplyBreakdownPlot(SingleScenarioPlot):
 
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -157,6 +157,76 @@ _PATHWAY_COLORS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Blending mandates — relative share of drop-in fuel by energy origin (%)
+# ---------------------------------------------------------------------------
+
+class BlendingMandatePlot(SingleScenarioPlot):
+    """
+    Stacked area (0–100 %) showing the share of each energy origin in the
+    drop-in fuel blend.
+
+    Uses ``{pathway.name}_share_dropin_fuel`` columns, aggregated by origin,
+    so the areas always sum to 100 % for each prospective year.
+    Historic years are included if the data covers them.
+    """
+
+    required_outputs = []
+
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
+
+    def _get_default_figsize(self):
+        return (plot_3_x, plot_3_y)
+
+    def create_plot(self):
+        if self.pathways_manager is None:
+            return
+
+        energy_origins = self.pathways_manager.get_all_types("energy_origin")
+        years = self.years
+
+        stack_data, stack_labels, stack_colors = [], [], []
+        fallback_idx = 0
+
+        for origin in energy_origins:
+            pathways = self.pathways_manager.get(
+                aircraft_type="dropin_fuel", energy_origin=origin,
+            )
+            # Sum individual pathway shares for this origin
+            total_share = None
+            for pathway in pathways:
+                col = f"{pathway.name}_share_dropin_fuel"
+                if col in self.df.columns:
+                    values = self.df.loc[years, col].fillna(0)
+                    total_share = values if total_share is None else total_share + values
+
+            if total_share is not None and total_share.sum() > 0:
+                stack_data.append(total_share)
+                stack_labels.append(_readable_label(origin))
+                stack_colors.append(_get_origin_color(origin, fallback_idx))
+                fallback_idx += 1
+
+        if stack_data:
+            self.ax.stackplot(
+                years, *stack_data,
+                labels=stack_labels, colors=stack_colors, alpha=0.8,
+            )
+            self.ax.legend(loc="upper left", fontsize=9)
+            self.ax.set_ylim(0, 100)
+
+        self.ax.grid(True, alpha=0.3)
+        self.ax.set_title("Drop-in fuel blending mandate (share by origin)")
+        self.ax.set_xlabel("Year")
+        self.ax.set_ylabel("Share of drop-in fuel blend [%]")
+        self.ax.set_xlim(years[0], years[-1])
+
+    def _update_plot_elements(self):
+        self.ax.clear()
+        self.create_plot()
+
+
 class BiofuelMixPlot(SingleScenarioPlot):
     """
     Stacked area of individual biomass-origin drop-in pathways.
@@ -164,9 +234,9 @@ class BiofuelMixPlot(SingleScenarioPlot):
 
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)

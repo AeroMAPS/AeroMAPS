@@ -53,8 +53,8 @@ class MultiScenarioPlot(ABC):
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None, 
-                 scenario_groups=None):
+    def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None,
+                 scenario_groups=None, fig=None, ax=None, legend=True, colors=None):
         """
         Initialize the plot with data from multiple processes.
 
@@ -75,7 +75,29 @@ class MultiScenarioPlot(ABC):
             within a group will share the same color but use different line styles.
             Example: {"Baseline": ["s1", "s2"], "Optimistic": ["s3", "s4"]}
             If None, each scenario gets its own color.
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
+        colors : list or dict, optional
+            Custom colors for scenarios.  Two forms are accepted:
+
+            * **list** – one color per scenario, in the same order as the
+              scenarios appear in *processes* (dict order / list order).
+              E.g. ``["red", "blue", "#2ca02c"]``.
+            * **dict** – maps *group names* to colors when *scenario_groups*
+              is used.  E.g. ``{"Baseline": "steelblue", "Optimistic": "green"}``.
+              All scenarios within a group share that group's color.
+
+            If ``None`` (default) the built-in ``DEFAULT_COLORS`` palette is used.
         """
+        # Store legend preference
+        self._legend_setting = legend
         # Set instance-level required_outputs (override class default if provided)
         if required_outputs is not None:
             self.required_outputs = required_outputs
@@ -83,6 +105,9 @@ class MultiScenarioPlot(ABC):
             # Use class attribute - create instance copy to avoid mutation
             self.required_outputs = self.__class__.required_outputs.copy() if self.__class__.required_outputs else []
         
+        # Store custom colors
+        self._custom_colors = colors
+
         # Store scenario grouping configuration
         self.scenario_groups = scenario_groups
         
@@ -102,22 +127,29 @@ class MultiScenarioPlot(ABC):
             self.processes = self._filter_processes_by_outputs(self.required_outputs)
         
         # Setup scenario styles AFTER filtering so styles match the actual scenarios being plotted
-        self._setup_scenario_styles(self.processes, scenario_groups)
+        self._setup_scenario_styles(self.processes, scenario_groups, colors)
 
         # Extract data from all processes
         self._extract_all_data()
 
-        # Create figure and axes
-        figsize = figsize or self._get_default_figsize()
-        self.fig, self.ax = plt.subplots(figsize=figsize, layout="constrained")
+        # Create figure and axes (or reuse provided ones)
+        if fig is not None and ax is not None:
+            self.fig = fig
+            self.ax = ax
+        else:
+            figsize = figsize or self._get_default_figsize()
+            self.fig, self.ax = plt.subplots(figsize=figsize, layout="constrained")
 
         # Configure canvas
         self._configure_canvas()
 
         # Create the actual plot (implemented by subclass)
         self.create_plot()
-    
-    def _setup_scenario_styles(self, processes, scenario_groups):
+
+        # Apply legend settings after plot creation
+        self._apply_legend_setting()
+
+    def _setup_scenario_styles(self, processes, scenario_groups, colors=None):
         """
         Setup color and line style mapping for scenarios.
         
@@ -127,6 +159,9 @@ class MultiScenarioPlot(ABC):
             Process objects
         scenario_groups : dict or None
             Scenario grouping configuration
+        colors : list or dict or None
+            Custom colors.  A list assigns one color per scenario (in order);
+            a dict maps group names to colors when *scenario_groups* is used.
         """
         self.scenario_styles = {}
         
@@ -138,7 +173,11 @@ class MultiScenarioPlot(ABC):
         
         if scenario_groups is None:
             # No grouping - each scenario gets its own color, solid line style
-            color_cycle = itertools.cycle(DEFAULT_COLORS)
+            if isinstance(colors, list):
+                # Use provided list, cycling if too short
+                color_cycle = itertools.cycle(colors)
+            else:
+                color_cycle = itertools.cycle(DEFAULT_COLORS)
             for scenario_name in scenario_names:
                 self.scenario_styles[scenario_name] = {
                     'color': next(color_cycle),
@@ -147,12 +186,21 @@ class MultiScenarioPlot(ABC):
                 }
         else:
             # With grouping - assign colors to groups, line styles within groups
-            color_cycle = itertools.cycle(DEFAULT_COLORS)
-            group_colors = {}
-            
-            # Assign color to each group
-            for group_name in scenario_groups.keys():
-                group_colors[group_name] = next(color_cycle)
+            # Build group_colors from custom dict, list, or default palette
+            group_names = list(scenario_groups.keys())
+            if isinstance(colors, dict):
+                # Explicit per-group colors; fall back to default for missing groups
+                default_cycle = itertools.cycle(DEFAULT_COLORS)
+                group_colors = {}
+                for group_name in group_names:
+                    group_colors[group_name] = colors.get(group_name, next(default_cycle))
+            elif isinstance(colors, list):
+                # One color per group in order
+                color_cycle = itertools.cycle(colors)
+                group_colors = {g: next(color_cycle) for g in group_names}
+            else:
+                color_cycle = itertools.cycle(DEFAULT_COLORS)
+                group_colors = {g: next(color_cycle) for g in group_names}
             
             # Assign styles to scenarios within groups
             for group_name, group_scenarios in scenario_groups.items():
@@ -174,7 +222,10 @@ class MultiScenarioPlot(ABC):
             
             ungrouped = set(scenario_names) - grouped_scenarios
             if ungrouped:
-                ungrouped_color_cycle = itertools.cycle(DEFAULT_COLORS[len(scenario_groups):])
+                if isinstance(colors, list):
+                    ungrouped_color_cycle = itertools.cycle(colors[len(scenario_groups):] or colors)
+                else:
+                    ungrouped_color_cycle = itertools.cycle(DEFAULT_COLORS[len(scenario_groups):])
                 for scenario_name in ungrouped:
                     self.scenario_styles[scenario_name] = {
                         'color': next(ungrouped_color_cycle),
@@ -375,6 +426,18 @@ class MultiScenarioPlot(ABC):
             "historic_years": years.get("historic_years"),
             "prospective_years": years.get("prospective_years"),
         }
+
+    def _apply_legend_setting(self):
+        """Apply the legend setting configured at initialisation."""
+        legend = self._legend_setting
+        if legend is False:
+            leg = self.ax.get_legend()
+            if leg is not None:
+                leg.set_visible(False)
+        elif isinstance(legend, str):
+            handles, labels = self.ax.get_legend_handles_labels()
+            if handles:
+                self.ax.legend(handles, labels, loc=legend)
 
     def _configure_canvas(self):
         """Configure matplotlib canvas properties."""

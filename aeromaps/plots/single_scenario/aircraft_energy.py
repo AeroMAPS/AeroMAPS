@@ -18,9 +18,9 @@ class MeanFuelEmissionFactorPlot(SingleScenarioPlot):
         "co2_per_energy_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -69,9 +69,9 @@ class EmissionFactorPerFuelCategory(SingleScenarioPlot):
         "electric_mean_co2_emission_factor",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -152,9 +152,9 @@ class EmissionFactorPerFuel(SingleScenarioPlot):
     # Dynamic columns based on pathways - no static required_outputs
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
@@ -283,9 +283,9 @@ class ShareFuelPlot(SingleScenarioPlot):
     # Dynamic columns based on pathways - no static required_outputs
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
@@ -482,9 +482,9 @@ class EnergyConsumptionPlot(SingleScenarioPlot):
         "energy_consumption",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)

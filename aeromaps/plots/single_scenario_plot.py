@@ -28,7 +28,8 @@ class SingleScenarioPlot(ABC):
     # Default: no required outputs (subclasses should override)
     required_outputs = []
 
-    def __init__(self, process, figsize=None, check_outputs=True, required_outputs=None, **kwargs):
+    def __init__(self, process, figsize=None, check_outputs=True, required_outputs=None,
+                 fig=None, ax=None, legend=True, **kwargs):
         """
         Initialize the plot with data from a process.
 
@@ -44,10 +45,22 @@ class SingleScenarioPlot(ABC):
         required_outputs : list of str, optional
             List of output field names required for this plot. If provided,
             overrides the class-level required_outputs. If None, uses class default.
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
         """
         # Store the process object for access by subclasses
         self.process = process
-        
+
+        # Store legend preference
+        self._legend_setting = legend
+
         # Set instance-level required_outputs (override class default if provided)
         if required_outputs is not None:
             self.required_outputs = required_outputs
@@ -63,20 +76,27 @@ class SingleScenarioPlot(ABC):
         self._extract_data(process.data)
         self.pathways_manager = process.pathways_manager
 
-        # Create figure and axes
-        # Constrained layout distorts polar axes, so disable it for polar plots
-        figsize = figsize or self._get_default_figsize()
-        is_polar = kwargs.get("subplot_kw", {}).get("projection") == "polar"
-        layout = None if is_polar else "constrained"
-        self.fig, self.ax = plt.subplots(
-            figsize=figsize, layout=layout, **kwargs
-        )
+        # Create figure and axes (or reuse provided ones)
+        if fig is not None and ax is not None:
+            self.fig = fig
+            self.ax = ax
+        else:
+            # Constrained layout distorts polar axes, so disable it for polar plots
+            figsize = figsize or self._get_default_figsize()
+            is_polar = kwargs.get("subplot_kw", {}).get("projection") == "polar"
+            layout = None if is_polar else "constrained"
+            self.fig, self.ax = plt.subplots(
+                figsize=figsize, layout=layout, **kwargs
+            )
 
         # Configure canvas
         self._configure_canvas()
 
         # Create the actual plot (implemented by subclass)
         self.create_plot()
+
+        # Apply legend settings after plot creation
+        self._apply_legend_setting()
 
     def _validate_required_outputs(self, data):
         """
@@ -158,6 +178,18 @@ class SingleScenarioPlot(ABC):
         self.years = years.get("full_years")
         self.historic_years = years.get("historic_years")
         self.prospective_years = years.get("prospective_years")
+
+    def _apply_legend_setting(self):
+        """Apply the legend setting configured at initialisation."""
+        legend = self._legend_setting
+        if legend is False:
+            leg = self.ax.get_legend()
+            if leg is not None:
+                leg.set_visible(False)
+        elif isinstance(legend, str):
+            handles, labels = self.ax.get_legend_handles_labels()
+            if handles:
+                self.ax.legend(handles, labels, loc=legend)
 
     def _configure_canvas(self):
         """Configure matplotlib canvas properties."""

@@ -175,5 +175,6 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
             ax_inset.set_ylim(*cfg["ylim"])
             ax_inset.tick_params(labelsize=7)
             axes[ax_idx].indicate_inset_zoom(ax_inset, edgecolor="black")
+        # fig.savefig("scenario_data.pdf")
 
     return ar6_data, years

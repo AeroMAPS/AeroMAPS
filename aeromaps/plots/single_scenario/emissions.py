@@ -8,9 +8,9 @@ class CumulativeCO2EmissionsPlot(SingleScenarioPlot):
         "cumulative_co2_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -61,9 +61,9 @@ class DirectH2OEmissionsPlot(SingleScenarioPlot):
         "h2o_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -108,9 +108,9 @@ class DirectNOxEmissionsPlot(SingleScenarioPlot):
         "nox_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -155,9 +155,9 @@ class DirectSulfurEmissionsPlot(SingleScenarioPlot):
         "sulfur_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -201,9 +201,9 @@ class DirectSootEmissionsPlot(SingleScenarioPlot):
         "soot_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -245,9 +245,9 @@ class CarbonOffsetPlot(SingleScenarioPlot):
         "carbon_offset",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -287,9 +287,9 @@ class CumulativeCarbonOffsetPlot(SingleScenarioPlot):
         "cumulative_carbon_offset",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)

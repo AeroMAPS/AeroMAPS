@@ -2216,9 +2216,9 @@ class ShadowCarbonPrice:
 
 
 class AnnualMACCSimple(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         try:
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
@@ -2709,9 +2709,9 @@ class AnnualMACCSimple(SingleScenarioPlot):
 
 
 class ShadowCarbonPriceSimple(SingleScenarioPlot):
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         try:
             self.create_plot_data()
             self.plot_interact()

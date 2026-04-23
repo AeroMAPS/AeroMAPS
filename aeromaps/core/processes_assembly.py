@@ -154,7 +154,8 @@ class AeroMAPSProcessesAssembly:
     
     def plot(self, name: str, save: bool = False, size_inches=None, 
              remove_title: bool = False, check_outputs: bool = True,
-             scenario_groups: dict = None):
+             scenario_groups: dict = None, fig=None, ax=None, legend=True,
+             colors=None):
         """
         Generate a multi-scenario comparison plot.
         
@@ -177,7 +178,20 @@ class AeroMAPSProcessesAssembly:
             within a group will share the same color but use different line styles.
             Example: {"Baseline": ["s1", "s2"], "Optimistic": ["s3", "s4"]}
             If None, each scenario gets its own color.
-            
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
+        colors : list or dict, optional
+            Custom colors for scenarios. A list assigns one color per scenario
+            (in scenario order). A dict maps group names to colors when
+            ``scenario_groups`` is used. If ``None``, the default palette is used.
+
         Returns
         -------
         fig
@@ -205,7 +219,11 @@ class AeroMAPSProcessesAssembly:
             self.processes, 
             figsize=size_inches,
             check_outputs=check_outputs,
-            scenario_groups=scenario_groups
+            scenario_groups=scenario_groups,
+            fig=fig,
+            ax=ax,
+            legend=legend,
+            colors=colors,
         )
         
         # Save if requested

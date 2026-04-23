@@ -53,6 +53,7 @@ from aeromaps.plots.single_scenario.energy_mix import (
     EnergyMixPlot,
     DropInSupplyBreakdownPlot,
     BiofuelMixPlot,
+    BlendingMandatePlot,
 )
 
 from aeromaps.plots.single_scenario.costs import (
@@ -133,6 +134,7 @@ available_plots = {
     "energy_mix": EnergyMixPlot,
     "drop_in_supply_breakdown": DropInSupplyBreakdownPlot,
     "biofuel_mix": BiofuelMixPlot,
+    "blending_mandate": BlendingMandatePlot,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
 }

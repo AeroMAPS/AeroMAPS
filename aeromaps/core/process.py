@@ -634,7 +634,8 @@ class AeroMAPSProcess(object):
         """
         return self.data["str_inputs"]
 
-    def plot(self, name, save=False, size_inches=None, remove_title=False):
+    def plot(self, name, save=False, size_inches=None, remove_title=False,
+             fig=None, ax=None, legend=True):
         """Generate a predefined AeroMAPS plot.
 
         Depending on the plot name, this method uses either generic or
@@ -651,6 +652,15 @@ class AeroMAPSProcess(object):
             Optional figure size in inches as a tuple or list.
         remove_title
             Whether to remove the plot title before saving.
+        fig : matplotlib.figure.Figure, optional
+            Existing figure to draw into. If provided together with ``ax``,
+            no new figure/axes are created.
+        ax : matplotlib.axes.Axes, optional
+            Existing axes to draw into. Must be provided together with ``fig``.
+        legend : bool or str, optional
+            Controls the legend. ``True`` (default) keeps the legend as created
+            by the plot. ``False`` hides it. A string value (e.g. ``"upper right"``)
+            moves the legend to the given location.
 
         Returns
         -------
@@ -658,32 +668,33 @@ class AeroMAPSProcess(object):
             Object holding the created plot, as returned by the plot
             function.
         """
+        plot_kwargs = dict(fig=fig, ax=ax, legend=legend)
         if name in available_plots_fleet:
             try:
-                fig = available_plots_fleet[name](self)
+                fig_obj = available_plots_fleet[name](self, **plot_kwargs)
                 if save:
                     if size_inches is not None:
-                        fig.fig.set_size_inches(size_inches)
+                        fig_obj.fig.set_size_inches(size_inches)
                     if remove_title:
-                        fig.fig.gca().set_title("")
-                    fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                        fig_obj.fig.gca().set_title("")
+                    fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
             except AttributeError as e:
                 raise NameError(
                     f"Plot {name} requires using bottom up fleet model. Original error: {e}"
                 )
         elif name in available_plots:
-            fig = available_plots[name](self)
+            fig_obj = available_plots[name](self, **plot_kwargs)
             if save:
                 if size_inches is not None:
-                    fig.fig.set_size_inches(size_inches)
+                    fig_obj.fig.set_size_inches(size_inches)
                 if remove_title:
-                    fig.fig.gca().set_title("")
-                fig.fig.savefig(f"{name}.pdf", bbox_inches="tight")
+                    fig_obj.fig.gca().set_title("")
+                fig_obj.fig.savefig(f"{name}.pdf", bbox_inches="tight")
         else:
             raise NameError(
                 f"Plot {name} is not available. List of available plots: {list(available_plots.keys()), list(available_plots_fleet.keys())}"
             )
-        return fig
+        return fig_obj
 
     def _pre_compute(self):
         """Prepare inputs and dependent models before execution.

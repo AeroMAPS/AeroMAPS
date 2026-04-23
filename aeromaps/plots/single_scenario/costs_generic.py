@@ -18,9 +18,9 @@ from aeromaps.plots.single_scenario_plot import plot_3_y
 class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
@@ -224,7 +224,7 @@ class ScenarioEnergyCapitalPlot(SingleScenarioPlot):
 class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         self.hatch_map = {
             "mfsp": "",
             "tax": "//",
@@ -250,7 +250,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
             "subsidy": ":",
         }
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 
@@ -681,7 +681,7 @@ class ScenarioEnergyExpensesPlot(SingleScenarioPlot):
 class DetailledMFSPBreakdown(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         self.hatch_map = {
             "cost": "",
             "tax": "//",
@@ -689,7 +689,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             "subsidy": "xx",
         }
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.pathways_data = self.process.energy_carriers_data
         self.resource_color_map = self._create_color_map()
@@ -2842,9 +2842,9 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
 class SimpleMFSP(SingleScenarioPlot):
     required_outputs = []
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
         self.pathways_manager = self.process.pathways_manager
         self.plot_interact()
 

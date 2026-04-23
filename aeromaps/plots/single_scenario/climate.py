@@ -18,9 +18,9 @@ class FinalEffectiveRadiativeForcingPlot(SingleScenarioPlot):
         "co2_erf",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -90,9 +90,9 @@ class DistributionEffectiveRadiativeForcingPlot(SingleScenarioPlot):
         "total_erf",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -203,9 +203,9 @@ class TemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         "temperature_increase_from_co2_from_aviation",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -302,9 +302,9 @@ class DetailedTemperatureIncreaseFromAirTransportPlot(SingleScenarioPlot):
         "temperature_increase_from_sulfur_from_aviation",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)

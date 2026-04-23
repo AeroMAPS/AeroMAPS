@@ -17,9 +17,9 @@ class AirTransportCO2EmissionsPlot(SingleScenarioPlot):
         "co2_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)
@@ -235,9 +235,9 @@ class AirTransportClimateImpactsPlot(SingleScenarioPlot):
         "total_erf",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_1_x, plot_1_y)

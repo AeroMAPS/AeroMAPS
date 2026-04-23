@@ -26,9 +26,9 @@ class ScenarioEnergyExpensesComparison(SingleScenarioPlot):
         "carbon_tax_full_kero",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -173,9 +173,9 @@ class DiscountEffect(SingleScenarioPlot):
         "discounted_energy_expenses",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -227,9 +227,9 @@ class DOCEvolutionBreakdown(SingleScenarioPlot):
         "doc_carbon_tax_lowering_offset_per_ask_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_3_x, plot_3_y)
@@ -396,9 +396,9 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         "doc_total_per_ask_mean",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -569,9 +569,9 @@ class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
         "subsidy": "Subsidies",
     }
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -841,9 +841,9 @@ class AirfareEvolutionBreakdown(SingleScenarioPlot):
         "operational_profit_per_ask",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)

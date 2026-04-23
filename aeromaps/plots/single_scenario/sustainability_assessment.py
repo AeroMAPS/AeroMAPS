@@ -14,9 +14,9 @@ class CarbonBudgetAssessmentPlot(SingleScenarioPlot):
         "cumulative_co2_emissions",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -283,9 +283,9 @@ class TemperatureTargetAssessmentPlot(SingleScenarioPlot):
         "temperature_increase_from_aviation",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -593,9 +593,9 @@ class BiomassResourceBudgetAssessmentPlot(SingleScenarioPlot):
         "biomass_overall_aviation_allocated_share",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -855,9 +855,9 @@ class ElectricityResourceBudgetAssessmentPlot(SingleScenarioPlot):
         "electricity_overall_aviation_allocated_share",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
-        super().__init__(process, figsize)
+        super().__init__(process, figsize, **kwargs)
 
     def _get_default_figsize(self):
         return (plot_2_x, plot_2_y)
@@ -1124,7 +1124,7 @@ class MultidisciplinaryAssessmentPlot(SingleScenarioPlot):
         "temperature_increase_from_aviation",
     ]
 
-    def __init__(self, process, figsize=None):
+    def __init__(self, process, figsize=None, **kwargs):
         figsize = figsize or self._get_default_figsize()
         super().__init__(process, figsize, subplot_kw={"projection": "polar"})
 
