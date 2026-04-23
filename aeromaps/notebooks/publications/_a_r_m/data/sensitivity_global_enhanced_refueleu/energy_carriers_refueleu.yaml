@@ -56,7 +56,7 @@ generic_saf:
       mandate_type: "share"
       mandate_share: !AeroMapsCustomDataType
         years:  [2020, 2024, 2025, 2030, 2035, 2040, 2045, 2050]
-        values: [0.0,  0.0,  2.0, 6.0, 20.0, 54.0, 82.0, 88.0]
+        values: [0.0,  0.0,  2.0, 6.0, 20.0, 56.0, 82.0, 88.0]
         method: linear
     # Technical:
     technical:

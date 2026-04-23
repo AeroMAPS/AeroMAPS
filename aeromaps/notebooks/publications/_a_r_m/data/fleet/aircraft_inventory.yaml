@@ -107,11 +107,11 @@ aircraft:
       ask_year: 352000000.0
       rc_cost: 60000000.0
       nrc_cost: 10000000000.0
-  - id: lr_wb_2035
+  - id: lr_wb_2040
     name: "New Long-Range"
     energy_type: DROP_IN_FUEL
     parameters:
-      entry_into_service_year: 2035
+      entry_into_service_year: 2040
       consumption_evolution: -20.0
       nox_evolution: 0.0
       soot_evolution: 0.0
