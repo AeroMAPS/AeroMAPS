@@ -216,7 +216,7 @@ class CarbonOffset(AeroMAPSModel):
             Total annual carbon offset [MtCO2].
 
         """
-        carbon_offset = level_carbon_offset + residual_carbon_offset
+        carbon_offset = level_carbon_offset.fillna(0) + residual_carbon_offset.fillna(0)
 
         self.df.loc[:, "carbon_offset"] = carbon_offset
 
