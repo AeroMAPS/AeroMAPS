@@ -305,15 +305,13 @@ class AeroMAPSProcess(object):
 
             if not os.path.exists(module_path):
                 raise ValueError(
-                    f"Custom model file not found: '{module_path}' " f"(model: {model_name})"
+                    f"Custom model file not found: '{module_path}' (model: {model_name})"
                 )
 
             # Dynamically import the module
             spec = importlib.util.spec_from_file_location(model_name, module_path)
             if spec is None or spec.loader is None:
-                raise ImportError(
-                    f"Cannot load module from '{module_path}' " f"(model: {model_name})"
-                )
+                raise ImportError(f"Cannot load module from '{module_path}' (model: {model_name})")
 
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -403,6 +401,7 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
+        self._initialize_markets()
         self._initialize_generic_energy()
         self._initialize_climate_model()
         self._initialize_lca_model()

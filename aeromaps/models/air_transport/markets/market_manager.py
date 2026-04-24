@@ -1,7 +1,5 @@
 from typing import List, Optional
 
-import yaml
-
 from aeromaps.models.air_transport.markets.market import Market
 
 
@@ -20,37 +18,6 @@ class MarketManager:
 
     def __init__(self, markets: List[Market] = None):
         self.markets: List[Market] = markets if markets is not None else []
-
-    @classmethod
-    def from_yaml(cls, path: str) -> "MarketManager":
-        """Load a ``markets.yaml`` file and return a populated :class:`MarketManager`.
-
-        Parameters
-        ----------
-        path : str
-            Absolute or relative path to the YAML file.
-
-        Returns
-        -------
-        MarketManager
-            Manager instance containing one :class:`Market` per YAML top-level key,
-            in declaration order.
-        """
-        with open(path, "r") as f:
-            data = yaml.safe_load(f)
-
-        markets = []
-        for market_id, market_data in data.items():
-            markets.append(
-                Market(
-                    id=market_id,
-                    name=market_data["name"],
-                    traffic_type=market_data["traffic_type"],
-                    traffic_unit=market_data["traffic_unit"],
-                    inputs=market_data.get("inputs", {}),
-                )
-            )
-        return cls(markets=markets)
 
     def add(self, market: Market) -> None:
         """Append a market to the manager."""
