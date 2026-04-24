@@ -1,8 +1,31 @@
 # AeroMAPS — User-Defined Markets Refactor Plan
 
-**Status:** Draft for review |  **Updated:** 2026-04-17
+**Status:** In progress |  **Updated:** 2026-04-24
 
 **Detailed Phase Interface design notes:** `.claude/plans/optimized-singing-scott.md`
+
+## 0. Progress snapshot
+
+| Phase | Status | Landed in |
+|-------|--------|-----------|
+| Prep A — Generic calibration loop | ✅ done | `6a4df264` |
+| Prep B — Data-driven energy types + subcategory semantics | ✅ done | `9ada8844`, `47640c39` |
+| Prep C — Vectorize performance methods | ✅ done | `af31d25d` |
+| Prep D — Unify 1/2/3+ subcategory branching | ⏳ deferred | (optional; TBD) |
+| Phase 0 — `Market` + `MarketManager` + default `markets.yaml` | ✅ done | `e5f9229e` |
+| Phase 1 — Process integration (`_initialize_markets`, flattener) | ✅ done | `70aae1bf`, `0f31098c`, naming fix on top |
+| Phase Interface — Flex-market demo ("Custom Markets × Multi-Regions") | 🚧 WIP | chantier commits on `fleet-refactoring` branch |
+| Phase 2 — Air traffic disciplines | ⏱ next | — |
+| Phase 3 — Fleet model market integration | ⏱ pending | — |
+| Phase 4 — Downstream impacts (custom wrapper migration) | ⏱ pending | — |
+| Phase 5 — Migration & cleanup | ⏱ pending | — |
+| Phase 6 — Plots & GUI | ⏱ deferred | — |
+
+**Conventions locked in by Phase 0–1:**
+- Registry class is named **`MarketManager`** (not `MarketManager` as the early drafts read).
+- Variable naming is **market-as-prefix**: `<market_id>_<leaf_key>` (e.g. `short_range_rpk_share_2019`, `short_range_measures_final_impact`, `short_range_covid_drop_start_year`). See §3.5.
+- `markets.yaml` sub-grouping keys (`initial`, `growth`, `covid`, `measures`, `efficiency_simple`, `costs`) are **organisational only** — the flattener drops them. Leaves that would be ambiguous (e.g. `start_year`, `end_year`, `duration`) explicitly carry the group name, e.g. `measures_start_year`, `covid_end_year`.
+- **COVID is now per-market** in `markets.yaml` (legacy had global `covid_rpk_drop_start_year`, `covid_end_year_passenger`, …). Until downstream models migrate (Phase 2+), legacy COVID names remain authoritative in `parameters.json`; the per-market names are additive shadows.
 
 ---
 
@@ -75,14 +98,19 @@ short_range:
 
 Default file ships 4 markets reproducing today's numerics exactly. Sub-keys under `inputs` are flattened on load with `<key>_<market_id>` naming and pushed to `self.parameters` (same pattern as `_instantiate_generic_energy_models()` at [process.py:1048](aeromaps/core/process.py#L1048)).
 
-### 3.3 `Market` and `MarketRegistry`
+### 3.3 `Market` and `MarketManager` *(built — Phase 0/1)*
 
-New module `aeromaps/models/air_transport/markets/`:
+Module `aeromaps/models/air_transport/markets/`:
 
-- **`Market`** dataclass: id, name, traffic_type, traffic_unit, flattened inputs.
-- **`MarketRegistry`** (analogous to `EnergyCarrierManager`): `get_all()`, `get(traffic_type=...)`, `get_ids()`, etc.
+- **`Market`** dataclass — `id`, `name`, `traffic_type`, `traffic_unit`, `inputs` (raw nested dict from YAML, not flattened on the dataclass itself). See [market.py](aeromaps/models/air_transport/markets/market.py).
+- **`MarketManager`** (analogous to `EnergyCarrierManager`) — `from_yaml(path)` classmethod, plus `get_all()`, `get_ids()`, `get(traffic_type=...)` filter, `add()`, `__iter__`, `__len__`. See [market_manager.py](aeromaps/models/air_transport/markets/market_manager.py).
 
-Built once in `AeroMAPSProcess._initialize_markets()`, stored as `self.markets`.
+Built once in [`AeroMAPSProcess._initialize_markets()`](aeromaps/core/process.py#L962), stored as `self.markets`. The method flattens each market's `inputs` into `self.parameters` under `<market_id>_<leaf_key>` names — **no sub-group key is included** (they are dropped when merging sub-group dicts before flattening). Skipped when the user's `config.yaml` has no `models.markets` block, so legacy configs stay functional.
+
+**Validation currently implemented:** none beyond YAML well-formedness. Phase 2/3 will add:
+- traffic_type ∈ {passenger, freight}, traffic_unit ∈ {RPK, RTK};
+- every passenger market in `MarketManager` has a `fleet.yaml` entry (when bottom-up fleet is active);
+- subcategory shares sum to 100%.
 
 ### 3.4 `fleet.yaml` — fleet structure per market
 
@@ -136,24 +164,40 @@ subcategories:
 ```
 
 **Validation at load time:**
-- Every passenger market in the `MarketRegistry` must have a corresponding entry in `fleet.yaml` (when bottom-up fleet model is active).
+- Every passenger market in the `MarketManager` must have a corresponding entry in `fleet.yaml` (when bottom-up fleet model is active).
 - Subcategory shares within each market must sum to 100%.
 - Freight markets are handled by the freight efficiency model, not present in `fleet.yaml`.
 
 **Aircraft in multiple markets:** An aircraft that serves both short and medium range (e.g. a versatile narrow-body) is simply referenced in the subcategory inventories of both markets, potentially with different parameters in `aircraft_inventory.yaml` (different ASK/year, different performance deltas, etc.).
 
-### 3.5 Variable naming
+### 3.5 Variable naming *(convention locked — Phase 1)*
 
-Underscore concatenation (unchanged from today):
+**Rule:** market id is always the first segment of the flattened name: `<market_id>_<leaf_key>`. The flattener in `_initialize_markets()` drops the sub-group key (`initial`, `growth`, `covid`, …) and prefixes every leaf with the market id.
+
+| Source in YAML | Flattened name | Example |
+|----------------|----------------|---------|
+| `inputs.initial.rpk_share_2019` | `<market>_rpk_share_2019` | `short_range_rpk_share_2019` |
+| `inputs.initial.energy_share_2019` | `<market>_energy_share_2019` | `short_range_energy_share_2019` |
+| `inputs.growth.cagr_reference_periods` | `<market>_cagr_reference_periods` | `long_range_cagr_reference_periods` |
+| `inputs.covid.covid_drop_start_year` | `<market>_covid_drop_start_year` | `short_range_covid_drop_start_year` |
+| `inputs.covid.covid_end_year` | `<market>_covid_end_year` | `medium_range_covid_end_year` |
+| `inputs.measures.measures_final_impact` | `<market>_measures_final_impact` | `short_range_measures_final_impact` |
+| `inputs.measures.measures_start_year` | `<market>_measures_start_year` | `long_range_measures_start_year` |
+| `inputs.efficiency_simple.hydrogen_final_market_share` | `<market>_hydrogen_final_market_share` | `short_range_hydrogen_final_market_share` |
+| `inputs.costs.doc_non_energy_per_ask_dropin_fuel_init` | `<market>_doc_non_energy_per_ask_dropin_fuel_init` | `short_range_doc_non_energy_per_ask_dropin_fuel_init` |
+
+**Disambiguation rule:** where a leaf key would be meaningless on its own (`start_year`, `end_year`, `duration`, `drop_start_year`, `final_impact`, `end_year_reference_ratio`), the YAML leaf key carries its group name as a prefix (`measures_start_year`, `covid_drop_start_year`, …) so the flattened name is self-describing. Groups whose leaves are already semantically clear (`rpk_share_2019`, `hydrogen_final_market_share`, `doc_non_energy_per_ask_dropin_fuel_init`) are *not* prefixed.
+
+**Downstream model names** (produced in Phase 2+) follow the same market-as-prefix rule for consistency with the flattened parameter names:
 
 | Concept | Template | Example |
 |---------|----------|---------|
-| Traffic | `rpk_<market>` / `rtk_<market>` | `rpk_short_range` |
-| ASK | `ask_<market>` | `ask_medium_range` |
-| Energy/ASK | `energy_per_ask_<market>_<carrier>` | `energy_per_ask_long_range_dropin_fuel` |
-| CAGR | `cagr_<market>` | `cagr_freight` |
+| Traffic | `<market>_rpk` / `<market>_rtk` | `short_range_rpk` |
+| ASK | `<market>_ask` | `medium_range_ask` |
+| Energy/ASK | `<market>_energy_per_ask_<carrier>` | `long_range_energy_per_ask_dropin_fuel` |
+| CAGR | `<market>_cagr` | `freight_cagr` |
 
-Default market ids = legacy names, so variable names are unchanged for default scenarios.
+**Divergence from legacy:** today's `parameters.json` uses three different conventions (prefix `short_range_rpk_share_2019`, infix `energy_per_ask_short_range_dropin_fuel_gain_reference_years`, suffix `hydrogen_final_market_share_short_range`). Phase 1 does *not* reproduce these names — it creates new templated names as additional attributes on `self.parameters`, while legacy names remain authoritative for downstream consumers. Phase 2/4 completes the rename as models migrate.
 
 ### 3.6 GEMSEO discipline strategy
 
@@ -166,12 +210,12 @@ A large part of the work is making **downstream models** (energy consumption, co
 **The pattern to follow is `NOxEmissionIndexComplex`** ([non_co2_emissions.py:157](aeromaps/models/impacts/emissions/non_co2_emissions.py#L157)):
 
 1. The model inherits from `AeroMAPSModel` with `model_type="custom"`.
-2. It implements a **`custom_setup()`** method that dynamically builds `self.input_names` and `self.output_names` dicts based on runtime information (the `MarketRegistry` here, the `EnergyCarrierManager` in the existing example).
+2. It implements a **`custom_setup()`** method that dynamically builds `self.input_names` and `self.output_names` dicts based on runtime information (the `MarketManager` here, the `EnergyCarrierManager` in the existing example).
 3. It is wrapped with **`AeroMAPSCustomModelWrapper`** ([gemseo.py:200](aeromaps/core/gemseo.py#L200)) instead of `AeroMAPSAutoModelWrapper`. The custom wrapper reads `input_names`/`output_names` to build GEMSEO grammars, rather than introspecting the `compute()` signature.
 4. `compute()` receives an `input_data` dict and returns an `output_data` dict — no typed signature, fully dynamic.
 
 **Applied to the market refactor:** every model that today has hard-coded `ask_short_range_dropin_fuel`, `ask_medium_range_hydrogen`, etc. in its signature will instead:
-- Receive the `MarketRegistry` at `__init__`
+- Receive the `MarketManager` at `__init__`
 - Build `input_names`/`output_names` in `custom_setup()` by iterating over `self.markets.get_all()` and templating variable names
 - Use `AeroMAPSCustomModelWrapper` for GEMSEO integration
 
@@ -182,10 +226,10 @@ This is the **same migration done for the generic energy models**, now applied t
 All fleet renewal models (existing `FleetModel`, `PassengerAircraftEfficiencySimpleShares`, and colleague's new model) must publish outputs under templated market names: `energy_per_ask_<market>_<carrier>`, `ask_<market>_<carrier>_share`, etc.
 
 Since the market *is* the fleet category, the fleet model simply:
-- Iterates over markets from the `MarketRegistry`.
+- Iterates over markets from the `MarketManager`.
 - Runs its S-curve assignment + performance computation independently per market.
 - Publishes market-level aggregates under market-templated names (subcategory details remain internal to `self.df`).
-- The calibration loop at [fleet_model.py:869-1023](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py#L869-L1023) becomes a generic loop over markets, with calibration parameters sourced from `MarketRegistry`.
+- The calibration loop at [fleet_model.py:869-1023](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py#L869-L1023) becomes a generic loop over markets, with calibration parameters sourced from `MarketManager`.
 
 Contract enforced by GEMSEO grammar matching at MDA build time (no Python ABC needed).
 
@@ -206,7 +250,7 @@ CALIBRATION_CONFIG = [
 ]
 ```
 
-**Link to market plan:** This is a strict subset of Phase 3. In the final market-integrated form, the config list is replaced by `MarketRegistry` iteration and calibration parameters come from each market's flattened inputs. Doing this prep step means Phase 3 only needs to swap the config source — the loop structure is already correct.
+**Link to market plan:** This is a strict subset of Phase 3. In the final market-integrated form, the config list is replaced by `MarketManager` iteration and calibration parameters come from each market's flattened inputs. Doing this prep step means Phase 3 only needs to swap the config source — the loop structure is already correct.
 
 **Effort:** Low | **Risk:** Low | **~95 lines saved**
 
@@ -259,27 +303,27 @@ Note on hybrid-electric: the `hybridization_factor` split only applies to energy
 
 ### New files
 
-| Path | Purpose |
-|------|---------|
-| `aeromaps/resources/data/default_markets/markets.yaml` | Default 4-market definition |
-| `aeromaps/models/air_transport/markets/market.py` | `Market` dataclass |
-| `aeromaps/models/air_transport/markets/market_registry.py` | `MarketRegistry`, YAML loader, validation |
+| Path | Purpose | Status |
+|------|---------|--------|
+| `aeromaps/resources/data/default_markets/markets.yaml` | Default 4-market definition | ✅ done (Phase 0) |
+| `aeromaps/models/air_transport/markets/market.py` | `Market` dataclass | ✅ done (Phase 0) |
+| `aeromaps/models/air_transport/markets/market_manager.py` | `MarketManager`, YAML loader, validation | ✅ partial (Phase 0; validation TODO) |
 
 ### Refactored files
 
-| File | Change | Phase |
-|------|--------|-------|
-| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Prep A: generic calibration loop (standalone) | Prep |
-| [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) | Prep B: data-driven energy types; Prep C: vectorize performance methods | Prep |
-| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | Prep D (optional): unify subcategory branching | Prep / 3 |
-| [process.py](aeromaps/core/process.py) | Add `_initialize_markets()`, instantiate per-market disciplines, push templated params | 1 |
-| [models.py](aeromaps/core/models.py) | Replace static model dicts with builders taking `MarketRegistry` | 2 |
-| [config.yaml](aeromaps/resources/data/config.yaml) | Add `models.markets.markets_data_file` | 1 |
+| File | Change | Phase | Status |
+|------|--------|-------|--------|
+| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Prep A: generic calibration loop (standalone) | Prep | ✅ |
+| [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) | Prep B: data-driven energy types; Prep C: vectorize performance methods | Prep | ✅ |
+| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | Prep D (optional): unify subcategory branching | Prep / 3 | ⏳ deferred |
+| [process.py](aeromaps/core/process.py) | Add `_initialize_markets()`, instantiate per-market disciplines, push templated params | 1 | ✅ (instantiation + per-market disciplines moved to Phase 2) |
+| [models.py](aeromaps/core/models.py) | Replace static model dicts with builders taking `MarketManager` | 2 | ⏱ |
+| [config.yaml](aeromaps/resources/data/config.yaml) | Add `models.markets.markets_data_file` | 1 | ✅ |
 | [fleet.yaml](aeromaps/resources/data/default_fleet/fleet.yaml) | Replace `categories` with `markets` keying; subcategories and aircraft unchanged | 3 |
 | [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py) | Per-market instances replacing 3-way loops (lines 144-220) | 2 |
 | [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py) | Unify with RPK (same math, different unit) or keep separate | 2 |
 | [ask.py](aeromaps/models/air_transport/air_traffic/ask.py) | Iterate over registry's passenger markets | 2 |
-| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Phase 3: iterate over `MarketRegistry`; rename `Category` → market-driven; publish market-templated outputs | 3 |
+| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Phase 3: iterate over `MarketManager`; rename `Category` → market-driven; publish market-templated outputs | 3 |
 | [fleet_numeric.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py) | Replace hardcoded Short/Medium/Long Range dispatch with market iteration | 3 |
 | [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | Per-market disciplines + custom wrapper pattern | 3 |
 | [energy_consumption.py](aeromaps/models/impacts/energy_resources/energy_consumption.py) | Custom wrapper with dynamic I/O from registry (~40 hard-coded args removed) | 4 |
@@ -297,21 +341,23 @@ Note on hybrid-electric: the `hybridization_factor` split only applies to energy
 
 Each phase ends with notebooks passing before moving on.
 
-### Phase Prep — Fleet model clean-up
+### Phase Prep — Fleet model clean-up ✅ *(A/B/C done, D deferred)*
 
-Standalone refactors on the fleet model that reduce Phase 3 complexity. Can be done immediately, independently of the market refactor infrastructure. Each step is verified by full DataFrame diff (before/after) to confirm zero numerical change.
+Standalone refactors on the fleet model that reduce Phase 3 complexity. Each step was verified by full DataFrame diff to confirm zero numerical change.
 
-- **Prep A:** Generic calibration loop in `_calibrate_reference_aircraft` — replace 3 copy-pasted blocks with a single parameterized loop.
-- **Prep B:** Data-driven energy type handling in `fleet_performance.py` — replace `if/elif` branching with loop over energy types list. Also fix subcategory-level per-energy-type values (`energy_consumption`, `doc_non_energy`, `emission_index_nox/soot`) to be proper means rather than share-weighted contributions. Note: `hybridization_factor` split only applies to energy consumption; DOC and non-CO2 emissions treat hybrid-electric as its own category.
-- **Prep C:** Vectorize performance methods in `fleet_performance.py` — replace row-by-row `.at[]` loops with numpy array operations (matching the pattern already used in the assignment step).
-- **Prep D (optional):** Unify 1/2/3+ subcategory branching in `_compute_single_aircraft_share` into a single N-subcategory algorithm.
-- **Exit:** Fleet model code is cleaner; all outputs numerically identical.
+- **Prep A** ✅ `6a4df264` — Generic calibration loop in `_calibrate_reference_aircraft` (3 copy-pasted blocks → single parameterized loop).
+- **Prep B** ✅ `9ada8844` + `47640c39` — Data-driven energy type handling in `fleet_performance.py` (`if/elif` → loop over energy types); subcategory-level per-energy-type values corrected to proper means rather than share-weighted contributions. Variable naming clarified. `hybridization_factor` split confined to energy consumption only; DOC and non-CO2 emissions treat hybrid-electric as its own category.
+- **Prep C** ✅ `af31d25d` — Vectorized performance methods in `fleet_performance.py` (row-by-row `.at[]` loops → numpy array operations).
+- **Prep D** ⏳ deferred — Unify 1/2/3+ subcategory branching in `_compute_single_aircraft_share` into a single N-subcategory algorithm. Can be folded into Phase 3 if risk is acceptable; safe to keep deferred.
 
-### Phase 0 — Data model & registry
+### Phase 0 — Data model & registry ✅ *(done — `e5f9229e`)*
 
-- Define `markets.yaml` schema, implement `Market` and `MarketRegistry`.
-- Unit test loader against default 4-market file.
-- **Exit:** `MarketRegistry.from_yaml()` matches today's constants.
+Landed:
+- [`aeromaps/models/air_transport/markets/market.py`](aeromaps/models/air_transport/markets/market.py) — `Market` dataclass (id, name, traffic_type, traffic_unit, inputs).
+- [`aeromaps/models/air_transport/markets/market_manager.py`](aeromaps/models/air_transport/markets/market_manager.py) — `MarketManager` with `from_yaml`, `get_all`, `get_ids`, `get(traffic_type=...)`, `add`, `__iter__`, `__len__`.
+- [`aeromaps/resources/data/default_markets/markets.yaml`](aeromaps/resources/data/default_markets/markets.yaml) — 4 markets reproducing legacy numerics.
+
+Not yet done (follow-up for Phase 2/3 when downstream validation is wired in): dedicated unit tests for the loader and schema validators (traffic_type whitelist, fleet.yaml cross-check, subcategory share sum).
 
 ### Phase Interface — Demo case "Custom Markets × Multi-Regions"
 
@@ -380,41 +426,54 @@ parameters:
 
 **Exit:** Demo notebook runs end-to-end for 8 regions × 7 markets. Legacy notebooks unaffected.
 
-### Phase 1 — Process integration
+### Phase 1 — Process integration ✅ *(done — `70aae1bf`, `0f31098c`, + naming fix)*
 
-- Add `markets_data_file` to config, `_initialize_markets()` in process.py.
-- Push flattened market params to `self.parameters`.
-- Both `parameters.json` and `markets.yaml` work; YAML takes precedence.
+Landed:
+- `models.markets.markets_data_file` added to [config.yaml](aeromaps/resources/data/config.yaml).
+- [`_initialize_markets()`](aeromaps/core/process.py#L962) — loads `markets.yaml` via `MarketManager.from_yaml`, stores as `self.markets`, flattens each market's `inputs` into `self.parameters` under `<market_id>_<leaf_key>` names. Called from `setup_mda()` and `create_gemseo_scenario()` before `_initialize_disciplines()`, mirroring the energy carriers hook point. Early-returns when `models.markets` is absent from user config so legacy configs stay functional.
+- YAML leaf keys renamed to eliminate ambiguity after flattening: `covid.{drop_start_year,end_year,end_year_reference_ratio}` → `covid.covid_*`; `measures.{final_impact,start_year,duration}` → `measures.measures_*`.
+- 40 unit tests green; `01_run_a_basic_calculation` unaffected (it does not opt into `models.markets`).
+
+**Known caveats to address in Phase 2:**
+- **Phase 1 is a numerical no-op because legacy names in `parameters.json` remain authoritative for downstream consumers.** The YAML-derived names land as *additional* attributes on `self.parameters` that no discipline reads yet. The original Phase 1 commit message framed this as "flattener reproduces legacy names verbatim" — that is only true for the `initial` sub-group (`<market>_rpk_share_2019`, `<market>_energy_share_2019`). All other sub-groups emit new names that differ from `parameters.json` conventions. See §3.5.
+- **COVID is now per-market** (previously global). Legacy `covid_rpk_drop_start_year`, `covid_end_year_passenger`, `covid_end_year_reference_rpk_ratio` remain the authoritative values consumed by today's disciplines.
+- `MarketManager.from_yaml` does not yet validate `traffic_type`/`traffic_unit` or cross-check against `fleet.yaml`. Add when Phase 2/3 gives it a consumer.
+
+**Not done (moved to Phase 2):**
 - Audit LCA/climate for per-market dependencies.
-- **Spike:** prototype one discipline with `AeroMAPSCustomModelWrapper` to confirm dynamic grammar generation works with the market registry.
-- **Exit:** notebooks pass unchanged.
+- `AeroMAPSCustomModelWrapper` spike — not blocking for Phase 1 since `_initialize_markets` is pure data loading. To be done as the first chantier of Phase 2 on a real air-traffic discipline.
 
-### Phase 2 — Air traffic disciplines
+### Phase 2 — Air traffic disciplines ⏱ *(next up)*
 
+Starts from a working `MarketManager` on `self.markets` and flattened per-market parameters on `self.parameters`. First task is the Phase 1-deferred spike: migrate one air-traffic discipline to `AeroMAPSCustomModelWrapper` with dynamic I/O names driven by `self.markets`, confirm GEMSEO grammar resolves, then roll the pattern across the rest.
+
+- **Spike first:** prototype one discipline (recommend `RPK`) end-to-end with `AeroMAPSCustomModelWrapper` + `custom_setup()` iterating `self.markets.get(traffic_type="passenger")`.
 - `RPK`, `RPKReference`, `RPKMeasures` become per-market instances with custom wrapper.
 - `RTK` unified or kept separate (same math, different unit — decide here).
 - `ASK` iterates over passenger markets.
 - Aggregator discipline sums totals.
-- Update `models.py` builders.
-- **Exit:** traffic fully driven by registry; legacy traffic code deleted.
+- Update `models.py` builders to take `MarketManager`.
+- Rename legacy COVID globals to per-market (`covid_rpk_drop_start_year` → `<market>_covid_drop_start_year`), or keep a shim in the `RPKReference` discipline that reads whichever set is present. Decide at spike time.
+- Audit LCA/climate for per-market dependencies (carried over from Phase 1).
+- **Exit:** traffic fully driven by `MarketManager`; legacy traffic code deleted; COVID semantic shift realised end-to-end.
 
 ### Phase 3 — Fleet model market integration
 
 - `fleet.yaml` restructured: `categories` replaced by `markets` keying; subcategories and aircraft assignments unchanged.
-- `Category` class renamed/replaced by market-driven grouping (or simply reads its `name` from the `MarketRegistry` entry).
-- Calibration loop (already generic from Prep A) swaps its config source from hardcoded tuples to `MarketRegistry` iteration.
+- `Category` class renamed/replaced by market-driven grouping (or simply reads its `name` from the `MarketManager` entry).
+- Calibration loop (already generic from Prep A) swaps its config source from hardcoded tuples to `MarketManager` iteration.
 - Fleet model publishes market-level aggregates under market-templated names; subcategory-level details remain internal to `self.df`.
 - Energy type loop (from Prep B) ensures the publishing covers all `market × energy_type` combinations cleanly.
-- `fleet_numeric.py`: replace hardcoded `if category == "Short Range"` / `"Medium Range"` / `"Long Range"` dispatch with iteration over `MarketRegistry` passenger markets.
+- `fleet_numeric.py`: replace hardcoded `if category == "Short Range"` / `"Medium Range"` / `"Long Range"` dispatch with iteration over `MarketManager` passenger markets.
 - If Prep D was deferred, consider combining it here.
 - Coordinate with colleague's fleet model on output naming.
-- **Exit:** fleet model driven by `MarketRegistry`; outputs under market-templated names.
+- **Exit:** fleet model driven by `MarketManager`; outputs under market-templated names.
 
 ### Phase 4 — Downstream impacts (custom wrapper migration)
 
 This is the bulk of the line-count work. Each model follows the `NOxEmissionIndexComplex` pattern:
 
-1. Add `MarketRegistry` to `__init__`.
+1. Add `MarketManager` to `__init__`.
 2. Implement `custom_setup()` building `input_names`/`output_names` from registry.
 3. Switch to `AeroMAPSCustomModelWrapper`.
 4. Refactor `compute()` to use `input_data` dict.
@@ -447,7 +506,7 @@ Because Prep B made the fleet model's energy type handling data-driven, the `cus
 
 | # | Risk | Mitigation |
 |---|------|------------|
-| 1 | GEMSEO dynamic grammar with custom wrapper | Phase 1 spike: prototype one discipline end-to-end |
+| 1 | GEMSEO dynamic grammar with custom wrapper | Phase 2 spike (first chantier): prototype `RPK` end-to-end with `AeroMAPSCustomModelWrapper` — confirms grammar before rolling to the rest |
 | 2 | Numerical drift during refactor | Set tolerance in test suite or accept output-update commit |
 | 3 | Fleet output key rename cascade | Atomic rename in Phase 3 or alias layer — pick based on diff size |
 | 4 | Coordination with colleague's fleet model | Land Prep phase early so colleague's code is clean before Phase 3; communicate naming convention |
@@ -481,3 +540,7 @@ User upgrade path: default scenarios need no action; custom scenarios move marke
 | Belly freight out of scope | Adds market-to-market coupling; follow-up once basic refactor stable |
 | Fleet prep before market phases | Reduces Phase 3 diff size and risk; lands independently; no wasted work even if market refactor is delayed |
 | Data-driven energy types in fleet | Orthogonal to market dimension but synergistic: simplifies Phase 4 `custom_setup()` implementations |
+| Registry class named `MarketManager` (not `MarketRegistry`) | Matches existing `EnergyCarrierManager` sibling in the codebase |
+| Market-as-prefix flattened names (`<market>_<leaf>`) | Chosen 2026-04-24 after Phase 1 review: simplest to emit from the generic flattener; legacy `parameters.json` inconsistency (prefix/infix/suffix) was a strong signal to standardise. Downstream models rename during Phase 2/4 |
+| Sub-group keys dropped by flattener; ambiguous leaves carry group name in YAML | Keeps the flattener trivial; documentation stays close to the data (`measures_start_year` self-describes) |
+| COVID promoted to per-market | Enables regional COVID profiles; cost is trivial since YAML authoring supports repetition. Legacy global COVID names coexist until Phase 2 rewires them |
