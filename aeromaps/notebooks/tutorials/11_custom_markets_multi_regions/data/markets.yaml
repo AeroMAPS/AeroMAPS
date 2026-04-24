@@ -14,13 +14,13 @@ domestic:
       cagr_reference_periods: []
       cagr_reference_periods_values: [1.5]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 20.0
-      start_year: 2025
-      duration: 5.0
+      measures_final_impact: 20.0
+      measures_start_year: 2025
+      measures_duration: 5.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -50,13 +50,13 @@ intra_eu:
       cagr_reference_periods: []
       cagr_reference_periods_values: [2.5]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 5.0
-      start_year: 2030
-      duration: 10.0
+      measures_final_impact: 5.0
+      measures_start_year: 2030
+      measures_duration: 10.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -86,13 +86,13 @@ intercontinental:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.5]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 0.0
-      start_year: 2051
-      duration: 5.0
+      measures_final_impact: 0.0
+      measures_start_year: 2051
+      measures_duration: 5.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -121,6 +121,6 @@ freight:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.0]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0

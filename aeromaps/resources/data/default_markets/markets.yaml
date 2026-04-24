@@ -11,6 +11,13 @@
 #   inputs.measures     : demand-reduction policy parameters (passenger markets only)
 #   inputs.efficiency_simple : top-down efficiency model parameters (passenger markets only)
 #   inputs.costs        : DOC non-energy parameters (passenger markets only)
+#
+# Naming convention: leaf keys are flattened to ``<market_id>_<leaf_key>`` and
+# pushed to ``self.parameters``. The sub-grouping keys (initial, growth, covid,
+# measures, efficiency_simple, costs) are organisational only — they are NOT
+# included in the flattened names. Leaf keys that would otherwise be ambiguous
+# (e.g. ``start_year``, ``end_year``, ``duration``) therefore embed the group
+# name explicitly (``measures_start_year``, ``covid_end_year``, ...).
 
 short_range:
   name: "Short Range"
@@ -24,13 +31,13 @@ short_range:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.0]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 0.0
-      start_year: 2051
-      duration: 5.0
+      measures_final_impact: 0.0
+      measures_start_year: 2051
+      measures_duration: 5.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -60,13 +67,13 @@ medium_range:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.0]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 0.0
-      start_year: 2051
-      duration: 5.0
+      measures_final_impact: 0.0
+      measures_start_year: 2051
+      measures_duration: 5.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -96,13 +103,13 @@ long_range:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.0]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
     measures:
-      final_impact: 0.0
-      start_year: 2051
-      duration: 5.0
+      measures_final_impact: 0.0
+      measures_start_year: 2051
+      measures_duration: 5.0
     efficiency_simple:
       energy_per_ask_dropin_fuel_gain_reference_years: []
       energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
@@ -131,6 +138,6 @@ freight:
       cagr_reference_periods: []
       cagr_reference_periods_values: [3.0]
     covid:
-      drop_start_year: 66.0
-      end_year: 2024
-      end_year_reference_ratio: 100.0
+      covid_drop_start_year: 66.0
+      covid_end_year: 2024
+      covid_end_year_reference_ratio: 100.0
