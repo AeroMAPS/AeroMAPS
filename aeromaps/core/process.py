@@ -60,6 +60,7 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 )
 
 # Markets registry
+from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
 
 # Climate model imports
@@ -979,6 +980,7 @@ class AeroMAPSProcess(object):
         Skipped if the ``models.markets`` key is not present in the user config.
         """
         self.markets = MarketManager()
+        self.markets_data = {}
         markets_config = self._get_user_config_value("models", "markets", default=None)
         if markets_config is None:
             return
@@ -992,18 +994,37 @@ class AeroMAPSProcess(object):
         if markets_file_path is None or not markets_file_path.exists():
             return
 
-        self.markets = MarketManager.from_yaml(str(markets_file_path))
+        self.markets_data = read_yaml_file(str(markets_file_path))
 
-        for market in self.markets.get_all():
-            # Merge all sub-groupings (initial, growth, covid, measures, ...)
-            # into one flat dict, then prefix leaf keys with the market id.
-            merged: dict = {}
-            for group_value in market.inputs.values():
-                if isinstance(group_value, dict):
-                    merged.update(group_value)
-            flattened = _flatten_dict(merged, market.id)
-            flattened = self._convert_custom_data_types(flattened)
-            self.parameters.from_dict(flattened)
+        # The first level of the yaml conf file contains all the markets
+        market_ids = list(self.markets_data.keys())
+
+        for market_id in market_ids:
+            market_data = self.markets_data[market_id]
+            if "name" not in market_data:
+                raise ValueError("The market configuration file should contain its name")
+            if "inputs" not in market_data:
+                raise ValueError("The market configuration file should contain inputs")
+
+            market = Market(
+                id=market_id,
+                name=market_data["name"],
+                traffic_type=market_data.get("traffic_type"),
+                traffic_unit=market_data.get("traffic_unit"),
+                inputs=market_data.get("inputs", {}),
+            )
+            self.markets.add(market)
+
+            # Flatten each input group with <market_id> prefix and push values to parameters.
+            inputs = market_data["inputs"]
+            for key, value in inputs.items():
+                if isinstance(value, dict):
+                    flattened_yaml = _flatten_dict(value, market.id)
+                    inputs[key] = self._convert_custom_data_types(flattened_yaml)
+                    self.parameters.from_dict(inputs[key])
+
+            market_data["inputs"] = inputs
+            self.markets_data[market_id] = market_data
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
