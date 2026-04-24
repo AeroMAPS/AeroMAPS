@@ -62,6 +62,10 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 # Markets registry
 from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
+from aeromaps.models.air_transport.markets.markets_factory import (
+    create_market_rpk_models,
+    create_market_rtk_models,
+)
 
 # Climate model imports
 from aeromaps.models.impacts.climate.climate import ClimateModel
@@ -1024,6 +1028,25 @@ class AeroMAPSProcess(object):
 
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
+
+        # Add one RPK discipline per passenger market (Phase 2 incremental migration).
+        if isinstance(self.models.get("models_traffic"), dict):
+            traffic_models = self.models["models_traffic"]
+            traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
+
+            market_rtk_models = create_market_rtk_models(self.markets)
+            if market_rtk_models:
+                # Avoid two disciplines producing the same legacy outputs (rtk, annual_growth_rate_freight, ...).
+                traffic_models.pop("rtk", None)
+                traffic_models.update(market_rtk_models)
+        elif isinstance(self.models.get("models_traffic_cost_feedback"), dict):
+            traffic_models = self.models["models_traffic_cost_feedback"]
+            traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
+
+            market_rtk_models = create_market_rtk_models(self.markets)
+            if market_rtk_models:
+                traffic_models.pop("rtk", None)
+                traffic_models.update(market_rtk_models)
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.

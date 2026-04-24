@@ -3,6 +3,9 @@ ask
 ===============
 
 Module for computing Available Seat Kilometers (ASK).
+
+``ASK``       — legacy single-model for the hard-coded 3-range structure.
+``ASKMarkets`` — per-market version using ``AeroMAPSCustomModelWrapper``.
 """
 
 from typing import Tuple
@@ -84,3 +87,46 @@ class ASK(AeroMAPSModel):
         ask_long_range = self.df["ask_long_range"]
 
         return ask, ask_short_range, ask_medium_range, ask_long_range
+
+
+class ASKMarkets(AeroMAPSModel):
+    """Per-market ASK for use when a MarketManager is loaded.
+
+    For each passenger market: ``<mid>_ask = <mid>_rpk / (load_factor / 100)``.
+    Also outputs the total ``ask`` consumed by downstream models.
+
+    Parameters
+    ----------
+    name : str
+        Discipline name.
+    passenger_market_ids : list of str
+        Ordered list of passenger market ids.
+    """
+
+    def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.passenger_market_ids = list(passenger_market_ids)
+        self.input_names = {"load_factor": pd.Series([0.0])}
+        for mid in self.passenger_market_ids:
+            self.input_names[f"{mid}_rpk"] = pd.Series([0.0])
+        self.output_names = {"ask": pd.Series([0.0])}
+        for mid in self.passenger_market_ids:
+            self.output_names[f"{mid}_ask"] = pd.Series([0.0])
+
+    def compute(self, input_data: dict) -> dict:
+        load_factor = input_data["load_factor"]
+        output_data = {}
+        total_ask = None
+
+        for mid in self.passenger_market_ids:
+            rpk = input_data[f"{mid}_rpk"]
+            ask = rpk / (load_factor / 100)
+            self.df.loc[:, f"{mid}_ask"] = ask
+            output_data[f"{mid}_ask"] = ask
+            total_ask = ask if total_ask is None else total_ask + ask
+
+        self.df.loc[:, "ask"] = total_ask
+        output_data["ask"] = total_ask
+
+        self._store_outputs(output_data)
+        return output_data
