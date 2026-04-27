@@ -1004,6 +1004,22 @@ class AeroMAPSProcess(object):
 
         self.markets_data = read_yaml_file(str(markets_file_path))
 
+        # Pop the optional ``defaults`` block (keyed by traffic_type) so it is not
+        # treated as a market.  Each market's ``inputs`` is deep-merged on top of
+        # the corresponding traffic_type defaults — market values win at every
+        # leaf, lists are replaced wholesale, and absent sub-groups stay absent
+        # (so optional disciplines remain opt-in via their factory checks).
+        defaults = self.markets_data.pop("defaults", {}) or {}
+
+        def _deep_merge(base: dict, override: dict) -> dict:
+            out = dict(base)
+            for k, v in override.items():
+                if isinstance(v, dict) and isinstance(out.get(k), dict):
+                    out[k] = _deep_merge(out[k], v)
+                else:
+                    out[k] = v
+            return out
+
         # The first level of the yaml conf file contains all the markets
         market_ids = list(self.markets_data.keys())
 
@@ -1013,6 +1029,12 @@ class AeroMAPSProcess(object):
                 raise ValueError("The market configuration file should contain its name")
             if "inputs" not in market_data:
                 raise ValueError("The market configuration file should contain inputs")
+
+            tt_defaults = defaults.get(market_data.get("traffic_type"), {})
+            market_data["inputs"] = _deep_merge(
+                tt_defaults.get("inputs", {}),
+                market_data.get("inputs", {}),
+            )
 
             market = Market(
                 id=market_id,

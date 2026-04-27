@@ -11,13 +11,65 @@
 #   inputs.measures     : demand-reduction policy parameters (passenger markets only)
 #   inputs.efficiency_simple : top-down efficiency model parameters (passenger markets only)
 #   inputs.costs        : DOC non-energy parameters (passenger markets only)
+#   inputs.reference    : counterfactual CAGR for the reference (no-policy) trajectory
 #
 # Naming convention: leaf keys are flattened to ``<market_id>_<leaf_key>`` and
 # pushed to ``self.parameters``. The sub-grouping keys (initial, growth, covid,
-# measures, efficiency_simple, costs) are organisational only — they are NOT
-# included in the flattened names. Leaf keys that would otherwise be ambiguous
-# (e.g. ``start_year``, ``end_year``, ``duration``) therefore embed the group
-# name explicitly (``measures_start_year``, ``covid_end_year``, ...).
+# measures, efficiency_simple, costs, reference) are organisational only — they
+# are NOT included in the flattened names. Leaf keys that would otherwise be
+# ambiguous (e.g. ``start_year``, ``end_year``, ``duration``) therefore embed
+# the group name explicitly (``measures_start_year``, ``covid_end_year``, ...).
+#
+# Defaults: the optional ``defaults`` block (keyed by traffic_type) is deep-merged
+# into every market's ``inputs`` before flattening. Per-market values override
+# defaults at the leaf level; lists are replaced wholesale; sub-groups absent in
+# both defaults and the market remain absent (so optional disciplines stay
+# opt-in via their factory checks).
+
+defaults:
+  passenger:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      measures:
+        measures_final_impact: 0.0
+        measures_start_year: 2051
+        measures_duration: 5.0
+      efficiency_simple:
+        energy_per_ask_dropin_fuel_gain_reference_years: []
+        energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+        hydrogen_final_market_share: 0.0
+        hydrogen_introduction_year: 2051
+        electric_final_market_share: 0.0
+        electric_introduction_year: 2051
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+        relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+        relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+      costs:
+        doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+        relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
+  freight:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
 
 short_range:
   name: "Short Range"
@@ -27,33 +79,8 @@ short_range:
     initial:
       rpk_share_2019: 27.2
       energy_share_2019: 26.01
-    growth:
-      cagr_reference_periods: []
-      cagr_reference_periods_values: [3.0]
-    covid:
-      covid_drop_start_year: 66.0
-      covid_end_year: 2024
-      covid_end_year_reference_ratio: 100.0
-    measures:
-      measures_final_impact: 0.0
-      measures_start_year: 2051
-      measures_duration: 5.0
-    efficiency_simple:
-      energy_per_ask_dropin_fuel_gain_reference_years: []
-      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
-      hydrogen_final_market_share: 0.0
-      hydrogen_introduction_year: 2051
-      electric_final_market_share: 0.0
-      electric_introduction_year: 2051
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
-      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
-      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375
-      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
-      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
-      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
 
 medium_range:
   name: "Medium Range"
@@ -63,33 +90,8 @@ medium_range:
     initial:
       rpk_share_2019: 35.1
       energy_share_2019: 26.18
-    growth:
-      cagr_reference_periods: []
-      cagr_reference_periods_values: [3.0]
-    covid:
-      covid_drop_start_year: 66.0
-      covid_end_year: 2024
-      covid_end_year_reference_ratio: 100.0
-    measures:
-      measures_final_impact: 0.0
-      measures_start_year: 2051
-      measures_duration: 5.0
-    efficiency_simple:
-      energy_per_ask_dropin_fuel_gain_reference_years: []
-      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
-      hydrogen_final_market_share: 0.0
-      hydrogen_introduction_year: 2051
-      electric_final_market_share: 0.0
-      electric_introduction_year: 2051
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
-      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
-      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.0301
-      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
-      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
-      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
 
 long_range:
   name: "Long Range"
@@ -99,33 +101,8 @@ long_range:
     initial:
       rpk_share_2019: 37.7
       energy_share_2019: 32.81
-    growth:
-      cagr_reference_periods: []
-      cagr_reference_periods_values: [3.0]
-    covid:
-      covid_drop_start_year: 66.0
-      covid_end_year: 2024
-      covid_end_year_reference_ratio: 100.0
-    measures:
-      measures_final_impact: 0.0
-      measures_start_year: 2051
-      measures_duration: 5.0
-    efficiency_simple:
-      energy_per_ask_dropin_fuel_gain_reference_years: []
-      energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
-      hydrogen_final_market_share: 0.0
-      hydrogen_introduction_year: 2051
-      electric_final_market_share: 0.0
-      electric_introduction_year: 2051
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
-      relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
-      relative_energy_per_ask_electric_wrt_dropin_reference_years: []
-      relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.024725
-      doc_non_energy_per_ask_dropin_fuel_gain: 0.0
-      relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
-      relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
 
 freight:
   name: "Freight"
@@ -134,10 +111,3 @@ freight:
   inputs:
     initial:
       energy_share_2019: 15.0
-    growth:
-      cagr_reference_periods: []
-      cagr_reference_periods_values: [3.0]
-    covid:
-      covid_drop_start_year: 66.0
-      covid_end_year: 2024
-      covid_end_year_reference_ratio: 100.0
