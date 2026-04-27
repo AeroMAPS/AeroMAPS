@@ -1,34 +1,23 @@
 """Factory helpers to instantiate market-driven traffic models."""
 
+from aeromaps.models.air_transport.air_traffic.ask import ASKMarkets
 from aeromaps.models.air_transport.air_traffic.rpk_market import (
+    RPKAggregator,
     RPKMarket,
     RPKMeasuresMarket,
     RPKReferenceMarket,
 )
-from aeromaps.models.air_transport.air_traffic.rtk_market import RTKMarket
+from aeromaps.models.air_transport.air_traffic.rtk_market import RTKMarket, RTKReferenceMarket
 
 
 def _has_measures_inputs(market_inputs: dict) -> bool:
-    measures = market_inputs.get("measures", {}) if isinstance(market_inputs, dict) else {}
-    return all(
-        key in measures
-        for key in (
-            "measures_final_impact",
-            "measures_start_year",
-            "measures_duration",
-        )
-    )
+    """True when the market YAML has a 'measures' sub-group (keys are already flattened)."""
+    return isinstance(market_inputs, dict) and "measures" in market_inputs
 
 
 def _has_reference_inputs(market_inputs: dict) -> bool:
-    reference = market_inputs.get("reference", {}) if isinstance(market_inputs, dict) else {}
-    return all(
-        key in reference
-        for key in (
-            "reference_cagr_reference_periods",
-            "reference_cagr_reference_periods_values",
-        )
-    )
+    """True when the market YAML has a 'reference' sub-group for per-market reference CAGR."""
+    return isinstance(market_inputs, dict) and "reference" in market_inputs
 
 
 def create_market_rpk_models(markets, markets_data: dict = None) -> dict:
@@ -62,12 +51,44 @@ def create_market_rpk_models(markets, markets_data: dict = None) -> dict:
     return models
 
 
-def create_market_rtk_models(markets) -> dict:
-    """Create market-driven RTK model for freight.
+def create_market_rpk_aggregator(markets) -> dict:
+    """Create an RPKAggregator that sums per-market rpk into the total ``rpk``.
+
+    Returns an empty mapping when no markets registry is available.
+    """
+    if markets is None:
+        return {}
+    passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
+    if not passenger_ids:
+        return {}
+    model = RPKAggregator(name="rpk_aggregator", passenger_market_ids=passenger_ids)
+    return {"rpk_aggregator": model}
+
+
+def create_market_ask_model(markets) -> dict:
+    """Create one ASKMarkets aggregator for all passenger markets.
+
+    Returns an empty mapping when no markets registry is available.
+    """
+    if markets is None:
+        return {}
+    passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
+    if not passenger_ids:
+        return {}
+    model = ASKMarkets(name="ask_markets", passenger_market_ids=passenger_ids)
+    return {"ask_markets": model}
+
+
+def create_market_rtk_models(markets, markets_data: dict = None) -> dict:
+    """Create market-driven RTK models for freight.
+
+    Always creates one ``RTKMarket`` for the freight market.
+    Creates ``RTKReferenceMarket`` only when a ``reference`` sub-group is
+    present in the freight market's inputs.
 
     Returns an empty mapping when no freight market is configured.
     Raises when multiple freight markets are configured, as the current
-    RTKMarket implementation is intentionally single-market.
+    implementation is intentionally single-market.
     """
     models = {}
     if markets is None:
@@ -79,7 +100,16 @@ def create_market_rtk_models(markets) -> dict:
     if len(freight_markets) > 1:
         raise ValueError("Only one freight market is currently supported for RTK market mode.")
 
+    markets_data = markets_data or {}
     market = freight_markets[0]
-    model_name = f"rtk_{market.id}"
-    models[model_name] = RTKMarket(name=model_name, market_id=market.id)
+    mid = market.id
+
+    model_name = f"rtk_{mid}"
+    models[model_name] = RTKMarket(name=model_name, market_id=mid)
+
+    market_inputs = markets_data.get(mid, {}).get("inputs", {})
+    if _has_reference_inputs(market_inputs):
+        ref_name = f"rtk_reference_{mid}"
+        models[ref_name] = RTKReferenceMarket(name=ref_name, market_id=mid)
+
     return models

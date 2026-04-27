@@ -6,6 +6,11 @@ Module for computing Available Seat Kilometers (ASK).
 
 ``ASK``       — legacy single-model for the hard-coded 3-range structure.
 ``ASKMarkets`` — per-market version using ``AeroMAPSCustomModelWrapper``.
+
+.. note::
+    PHASE-5-CLEANUP: ``ASK`` is a legacy class superseded by ``ASKMarkets``.
+    Delete it (and its import in ``models.py``) once the per-market path is
+    validated end-to-end.
 """
 
 from typing import Tuple

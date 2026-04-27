@@ -205,6 +205,69 @@ class RPKMarket(AeroMAPSModel):
         return output_data
 
 
+class RPKAggregator(AeroMAPSModel):
+    """Sum per-market RPKs into a single total ``rpk`` consumed by downstream models.
+
+    Also computes total ``annual_growth_rate_passenger``, ``cagr_rpk``, and
+    ``prospective_evolution_rpk`` so legacy downstream disciplines need no changes.
+
+    Parameters
+    ----------
+    name : str
+        Discipline name.
+    passenger_market_ids : list of str
+        Ordered list of passenger market ids.
+    """
+
+    def __init__(self, name: str, passenger_market_ids: list, *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.passenger_market_ids = list(passenger_market_ids)
+        self.input_names = {}
+        for mid in self.passenger_market_ids:
+            self.input_names[f"{mid}_rpk"] = pd.Series([0.0])
+        self.output_names = {
+            "rpk": pd.Series([0.0]),
+            "annual_growth_rate_passenger": pd.Series([0.0]),
+            "cagr_rpk": 0.0,
+            "prospective_evolution_rpk": 0.0,
+        }
+
+    def compute(self, input_data: dict) -> dict:
+        total_rpk = None
+        for mid in self.passenger_market_ids:
+            series = input_data[f"{mid}_rpk"]
+            total_rpk = series if total_rpk is None else total_rpk + series
+
+        self.df.loc[:, "rpk"] = total_rpk
+
+        for k in range(self.historic_start_year + 1, self.end_year + 1):
+            self.df.loc[k, "annual_growth_rate_passenger"] = (
+                self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
+            ) * 100
+
+        cagr_rpk = 100 * (
+            (
+                self.df.loc[self.end_year, "rpk"]
+                / self.df.loc[self.prospection_start_year - 1, "rpk"]
+            )
+            ** (1 / (self.end_year - self.prospection_start_year))
+            - 1
+        )
+        prospective_evolution_rpk = 100 * (
+            self.df.loc[self.end_year, "rpk"] / self.df.loc[self.prospection_start_year - 1, "rpk"]
+            - 1
+        )
+
+        output_data = {
+            "rpk": self.df["rpk"],
+            "annual_growth_rate_passenger": self.df["annual_growth_rate_passenger"],
+            "cagr_rpk": cagr_rpk,
+            "prospective_evolution_rpk": prospective_evolution_rpk,
+        }
+        self._store_outputs(output_data)
+        return output_data
+
+
 class RPKReferenceMarket(AeroMAPSModel):
     """Reference RPK trajectory for one passenger market.
 

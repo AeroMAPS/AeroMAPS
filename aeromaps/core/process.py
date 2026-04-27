@@ -63,6 +63,8 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
 from aeromaps.models.air_transport.markets.markets_factory import (
+    create_market_ask_model,
+    create_market_rpk_aggregator,
     create_market_rpk_models,
     create_market_rtk_models,
 )
@@ -980,14 +982,17 @@ class AeroMAPSProcess(object):
         scenarios the push is a numerical no-op.  Names introduced under new
         sub-groupings are harmless extras until Phase 2 consumes them.
 
-        Skipped if the ``models.markets`` key is not present in the user config.
+        Always runs: when ``models.markets`` is absent from the user config the
+        default ``default_markets/markets.yaml`` is used, reproducing the legacy
+        four-market numerics exactly.  A custom file can be supplied via
+        ``models.markets.markets_data_file`` in the user config.
         """
         self.markets = MarketManager()
         self.markets_data = {}
-        markets_config = self._get_user_config_value("models", "markets", default=None)
-        if markets_config is None:
-            return
 
+        # Always load markets — default_markets/markets.yaml is the fallback when the
+        # user config has no models.markets block.  A custom file can be pointed to via
+        # models.markets.markets_data_file in the user config.yaml.
         markets_file_path = self._resolve_config_path(
             "models",
             "markets",
@@ -1029,24 +1034,36 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
-        # Add one RPK discipline per passenger market (Phase 2 incremental migration).
-        if isinstance(self.models.get("models_traffic"), dict):
-            traffic_models = self.models["models_traffic"]
+        # Replace legacy traffic disciplines with per-market models (Phase 2).
+        for traffic_key in ("models_traffic", "models_traffic_cost_feedback"):
+            traffic_models = self.models.get(traffic_key)
+            if not isinstance(traffic_models, dict):
+                continue
+
+            # Per-market RPK + measures (replaces legacy monolithic rpk / rpk_measures).
+            traffic_models.pop("rpk", None)
+            traffic_models.pop("rpk_measures", None)
             traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
 
-            market_rtk_models = create_market_rtk_models(self.markets)
-            if market_rtk_models:
-                # Avoid two disciplines producing the same legacy outputs (rtk, annual_growth_rate_freight, ...).
-                traffic_models.pop("rtk", None)
-                traffic_models.update(market_rtk_models)
-        elif isinstance(self.models.get("models_traffic_cost_feedback"), dict):
-            traffic_models = self.models["models_traffic_cost_feedback"]
-            traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
+            # Aggregator: sums per-market rpk → total rpk consumed by rpk_reference and ASK.
+            rpk_agg = create_market_rpk_aggregator(self.markets)
+            if rpk_agg:
+                traffic_models.update(rpk_agg)
 
-            market_rtk_models = create_market_rtk_models(self.markets)
+            # RTK: replace legacy disciplines when a freight market is configured.
+            market_rtk_models = create_market_rtk_models(self.markets, self.markets_data)
             if market_rtk_models:
                 traffic_models.pop("rtk", None)
+                # Pop legacy rtk_reference only when a per-market replacement was created.
+                if any("rtk_reference" in k for k in market_rtk_models):
+                    traffic_models.pop("rtk_reference", None)
                 traffic_models.update(market_rtk_models)
+
+            # ASK: replace legacy ask discipline with per-market version.
+            ask_model = create_market_ask_model(self.markets)
+            if ask_model:
+                traffic_models.pop("ask", None)
+                traffic_models.update(ask_model)
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.

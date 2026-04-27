@@ -3,6 +3,12 @@ rtk
 ===
 
 Module to compute freight traffic.
+
+.. note::
+    PHASE-5-CLEANUP: ``RTK`` is a legacy monolithic class superseded by
+    ``RTKMarket`` in ``rtk_market.py``.  ``RTKReference`` has no per-market
+    replacement yet (single freight market assumed).  Delete ``RTK`` and its
+    imports in ``models.py`` once the per-market path is validated end-to-end.
 """
 
 from typing import Tuple

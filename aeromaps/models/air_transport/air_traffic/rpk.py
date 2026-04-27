@@ -3,6 +3,12 @@ rpk
 =============================
 
 Module for computing air traffic (RPK) without price elasticity and effect of ad-hoc measures to reduce traffic.
+
+.. note::
+    PHASE-5-CLEANUP: ``RPK``, ``RPKReference``, and ``RPKMeasures`` are legacy
+    monolithic classes superseded by the per-market disciplines in
+    ``rpk_market.py``.  Delete this module (and its imports in ``models.py``)
+    once the per-market path is validated end-to-end.
 """
 
 from typing import Tuple

@@ -2,15 +2,14 @@
 rtk_market
 ==========
 
-Per-market RTK model for freight markets when a MarketManager is loaded.
+Per-market RTK models for freight markets when a MarketManager is loaded.
 
-``RTKMarket`` reads per-market parameters flattened from ``markets.yaml``
-(``<market_id>_cagr_reference_periods``, ``<market_id>_covid_*``) and outputs
-the legacy ``rtk`` / ``annual_growth_rate_freight`` names so that downstream
-models (``RTKReference``, ``TotalAircraftDistance``) remain unaffected.
+``RTKMarket``          — CAGR + COVID freight traffic for one freight market.
+``RTKReferenceMarket`` — reference (counterfactual) RTK trajectory for one freight market.
 
-Only one freight market is supported (the single ``traffic_type=freight`` entry
-in ``markets.yaml``).
+Both classes use ``model_type="custom"`` (``AeroMAPSCustomModelWrapper``).
+Output names follow the legacy convention (``rtk``, ``rtk_reference``, …) since
+only one freight market is supported; downstream models need no changes.
 """
 
 import pandas as pd
@@ -69,10 +68,9 @@ class RTKMarket(AeroMAPSModel):
         cagr_ref_periods = list(input_data[f"{mid}_cagr_reference_periods"])
         cagr_ref_values = list(input_data[f"{mid}_cagr_reference_periods_values"])
 
-        # Initialise from last historic value (prospection_start_year - 1)
-        self.df.loc[self.prospection_start_year - 1, "rtk"] = rtk_init.loc[
-            self.prospection_start_year - 1
-        ]
+        # Historic initialisation: populate full historic range from rtk_init
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "rtk"] = rtk_init.loc[k]
 
         # COVID interpolation
         covid_func = interp1d(
@@ -87,19 +85,17 @@ class RTKMarket(AeroMAPSModel):
         )
         self.df.loc[:, "annual_growth_rate_freight"] = annual_gr
 
-        # COVID years
+        # COVID years (direct interpolation from last pre-COVID value)
         for k in range(covid_start_year, covid_end_year + 1):
             self.df.loc[k, "rtk"] = self.df.loc[covid_start_year - 1, "rtk"] * covid_func(k)
 
-        # Post-COVID growth
+        # Post-COVID compounding growth
         for k in range(covid_end_year + 1, self.end_year + 1):
             self.df.loc[k, "rtk"] = self.df.loc[k - 1, "rtk"] * (
                 1 + self.df.loc[k, "annual_growth_rate_freight"] / 100
             )
 
-        # Fill in full historic series
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "rtk"] = rtk_init.loc[k]
+        # Overwrite with actual historic growth rates
         for k in range(self.historic_start_year + 1, self.prospection_start_year):
             self.df.loc[k, "annual_growth_rate_freight"] = (
                 self.df.loc[k, "rtk"] / self.df.loc[k - 1, "rtk"] - 1
@@ -123,6 +119,82 @@ class RTKMarket(AeroMAPSModel):
             "annual_growth_rate_freight": self.df["annual_growth_rate_freight"],
             "cagr_rtk": cagr_rtk,
             "prospective_evolution_rtk": prospective_evolution_rtk,
+        }
+        self._store_outputs(output_data)
+        return output_data
+
+
+class RTKReferenceMarket(AeroMAPSModel):
+    """Reference RTK trajectory for one freight market.
+
+    Reads the actual ``rtk`` series (output of ``RTKMarket``) and applies an
+    independent reference CAGR + COVID recovery to produce the counterfactual
+    ``rtk_reference`` used by downstream abatement-cost and policy models.
+
+    Parameters
+    ----------
+    name : str
+        Discipline name.
+    market_id : str
+        Market identifier for the freight market (e.g. ``'freight'``).
+    """
+
+    def __init__(self, name: str, market_id: str, *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        mid = market_id
+        self.market_id = mid
+        self.input_names = {
+            "rtk": pd.Series([0.0]),
+            f"{mid}_reference_cagr_reference_periods": [],
+            f"{mid}_reference_cagr_reference_periods_values": [0.0],
+            "covid_start_year": 0.0,
+            f"{mid}_covid_drop_start_year": 0.0,
+            f"{mid}_covid_end_year": 0.0,
+            f"{mid}_covid_end_year_reference_ratio": 0.0,
+        }
+        self.output_names = {
+            "rtk_reference": pd.Series([0.0]),
+            "reference_annual_growth_rate_freight": pd.Series([0.0]),
+        }
+
+    def compute(self, input_data: dict) -> dict:
+        mid = self.market_id
+        rtk = input_data["rtk"]
+        reference_periods = list(input_data[f"{mid}_reference_cagr_reference_periods"])
+        reference_values = list(input_data[f"{mid}_reference_cagr_reference_periods_values"])
+        covid_start_year = int(input_data["covid_start_year"])
+        covid_drop = float(input_data[f"{mid}_covid_drop_start_year"])
+        covid_end_year = int(input_data[f"{mid}_covid_end_year"])
+        covid_end_ratio = float(input_data[f"{mid}_covid_end_year_reference_ratio"])
+
+        for k in range(self.historic_start_year, self.prospection_start_year):
+            self.df.loc[k, "rtk_reference"] = rtk.loc[k]
+
+        self.df.loc[covid_start_year - 1, "rtk_reference"] = rtk.loc[covid_start_year - 1]
+
+        covid_function = interp1d(
+            [covid_start_year, covid_end_year],
+            [1 - covid_drop / 100, covid_end_ratio / 100],
+            kind="linear",
+        )
+
+        reference_annual_growth_rate = aeromaps_leveling_function(
+            self, reference_periods, reference_values, model_name=self.name
+        )
+        self.df.loc[:, "reference_annual_growth_rate_freight"] = reference_annual_growth_rate
+
+        for k in range(covid_start_year, covid_end_year + 1):
+            self.df.loc[k, "rtk_reference"] = self.df.loc[
+                covid_start_year - 1, "rtk_reference"
+            ] * covid_function(k)
+        for k in range(covid_end_year + 1, self.end_year + 1):
+            self.df.loc[k, "rtk_reference"] = self.df.loc[k - 1, "rtk_reference"] * (
+                1 + self.df.loc[k, "reference_annual_growth_rate_freight"] / 100
+            )
+
+        output_data = {
+            "rtk_reference": self.df["rtk_reference"],
+            "reference_annual_growth_rate_freight": self.df["reference_annual_growth_rate_freight"],
         }
         self._store_outputs(output_data)
         return output_data
