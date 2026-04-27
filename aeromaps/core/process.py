@@ -63,7 +63,7 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_factory
 from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
 from aeromaps.models.air_transport.markets.markets_factory import (
-    create_market_ask_model,
+    create_market_ask_models,
     create_market_rpk_aggregator,
     create_market_rpk_models,
     create_market_rtk_models,
@@ -1034,7 +1034,8 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
-        # Replace legacy traffic disciplines with per-market models (Phase 2).
+        # Replace legacy traffic disciplines with per-market models
+        # TODO (Phase 2 ONLY, TO BE DELETED).
         for traffic_key in ("models_traffic", "models_traffic_cost_feedback"):
             traffic_models = self.models.get(traffic_key)
             if not isinstance(traffic_models, dict):
@@ -1060,10 +1061,10 @@ class AeroMAPSProcess(object):
                 traffic_models.update(market_rtk_models)
 
             # ASK: replace legacy ask discipline with per-market version.
-            ask_model = create_market_ask_model(self.markets)
-            if ask_model:
+            ask_models = create_market_ask_models(self.markets)
+            if ask_models:
                 traffic_models.pop("ask", None)
-                traffic_models.update(ask_model)
+                traffic_models.update(ask_models)
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.

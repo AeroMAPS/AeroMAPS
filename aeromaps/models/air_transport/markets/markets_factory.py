@@ -1,6 +1,6 @@
 """Factory helpers to instantiate market-driven traffic models."""
 
-from aeromaps.models.air_transport.air_traffic.ask import ASKMarkets
+from aeromaps.models.air_transport.air_traffic.ask_market import ASKAggregator, ASKMarket
 from aeromaps.models.air_transport.air_traffic.rpk_market import (
     RPKAggregator,
     RPKMarket,
@@ -65,8 +65,8 @@ def create_market_rpk_aggregator(markets) -> dict:
     return {"rpk_aggregator": model}
 
 
-def create_market_ask_model(markets) -> dict:
-    """Create one ASKMarkets aggregator for all passenger markets.
+def create_market_ask_models(markets) -> dict:
+    """Create per-market ASKMarket models and one ASKAggregator.
 
     Returns an empty mapping when no markets registry is available.
     """
@@ -75,8 +75,14 @@ def create_market_ask_model(markets) -> dict:
     passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
     if not passenger_ids:
         return {}
-    model = ASKMarkets(name="ask_markets", passenger_market_ids=passenger_ids)
-    return {"ask_markets": model}
+    models = {}
+    for mid in passenger_ids:
+        ask_name = f"ask_{mid}"
+        models[ask_name] = ASKMarket(name=ask_name, market_id=mid)
+    models["ask_aggregator"] = ASKAggregator(
+        name="ask_aggregator", passenger_market_ids=passenger_ids
+    )
+    return models
 
 
 def create_market_rtk_models(markets, markets_data: dict = None) -> dict:
