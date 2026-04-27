@@ -331,27 +331,39 @@ class Category(object):
     Parameters
     ----------
     name
-        Name identifier for the category (e.g., 'Short Range', 'Medium Range', 'Long Range').
+        Human-readable display name for the category (e.g., 'Short Range', 'Medium Range',
+        'Long Range'). When built from a ``market_served:`` block, this is populated from
+        :class:`~aeromaps.models.air_transport.markets.market.Market`.name.
     parameters
         Category parameters including aircraft lifetime.
+    market_id
+        Market identifier that references this category's entry in ``markets.yaml``
+        (e.g., ``short_range``).  ``None`` when the fleet was built from the legacy
+        ``categories:`` schema (test fixtures, backwards-compat path).
 
     Attributes
     ----------
     name : str
-        Name identifier for the category.
+        Human-readable display name for the category.
+    market_id : str or None
+        Market identifier string (e.g., ``"short_range"``).
     parameters : CategoryParameters
         Category parameters including aircraft lifetime.
     subcategories : Dict[int, SubCategory]
         Dictionary of subcategories within this category.
     total_shares : float
         Sum of all subcategory market shares (should equal 100%).
+    calibration_subcategory_id : str or None
+        ID of the subcategory used for reference aircraft calibration (set by 3.B).
     """
 
-    def __init__(self, name: str, parameters: CategoryParameters):
+    def __init__(self, name: str, parameters: CategoryParameters, market_id: Optional[str] = None):
         self.name = name
+        self.market_id = market_id
         self.parameters = parameters
         self.subcategories: Dict[int, SubCategory] = {}
         self.total_shares = 0.0
+        self.calibration_subcategory_id: Optional[str] = None
 
     def _compute(self) -> None:
         """Validate shares and compute all subcategories."""
@@ -417,6 +429,12 @@ class Fleet(object):
     fleet_config_path
         Path to the YAML file containing the fleet structure configuration.
         Defaults to the package's default fleet configuration.
+    markets
+        :class:`~aeromaps.models.air_transport.markets.market_manager.MarketManager`
+        instance used to look up market display names and validate ``market_served:``
+        entries in ``fleet.yaml``.  When ``None``, the legacy ``categories:`` schema
+        (with explicit ``name:`` fields) is accepted as a backwards-compatible
+        fallback (used by test fixtures).
 
     Attributes
     ----------
@@ -424,6 +442,9 @@ class Fleet(object):
         Dictionary of aircraft categories indexed by category name.
     parameters
         External parameters for reference aircraft calibration.
+    markets
+        The :class:`~aeromaps.models.air_transport.markets.market_manager.MarketManager`
+        passed at construction time (or ``None``).
     aircraft_inventory_path : Path
         Path to the aircraft inventory YAML file.
     fleet_config_path : Path
@@ -437,9 +458,11 @@ class Fleet(object):
         parameters=None,
         aircraft_inventory_path: Optional[Path] = None,
         fleet_config_path: Optional[Path] = None,
+        markets=None,
     ):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
+        self.markets = markets
         self.aircraft_inventory_path = (
             Path(aircraft_inventory_path)
             if aircraft_inventory_path is not None
@@ -735,50 +758,149 @@ class Fleet(object):
             fleet_config.get("subcategories", [])
         )
 
-        for category_cfg in fleet_config.get("categories", []):
-            cat_name = category_cfg.get("name")
-            if cat_name is None:
-                continue
-            cat_params = CategoryParameters(**category_cfg.get("parameters", {}))
-            category = Category(cat_name, parameters=cat_params)
+        # Support both new ``market_served:`` schema and legacy ``categories:`` schema.
+        # The legacy schema is accepted as a backwards-compatible fallback (e.g. test
+        # fixtures) when a MarketManager has not been provided.
+        market_served_entries = fleet_config.get("market_served")
+        categories_entries = fleet_config.get("categories")
 
-            for sub_cfg_entry in category_cfg.get("subcategories", []):
-                sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
-                resolved_sub_cfg = self._resolve_subcategory_config(sub_cfg, subcategory_inventory)
+        if market_served_entries is not None:
+            # ── New schema: market_served ─────────────────────────────────────────
+            # Build a lookup from market_id → Market when MarketManager is available.
+            market_lookup: Dict[str, Any] = {}
+            if self.markets is not None:
+                market_lookup = {m.id: m for m in self.markets.get_all()}
 
-                share_value = resolved_sub_cfg.get("share", 0.0)
+            # Validate: every market_served entry must reference a known market_id.
+            if self.markets is not None:
+                unknown_ids = [
+                    entry.get("market")
+                    for entry in market_served_entries
+                    if entry.get("market") not in market_lookup
+                ]
+                if unknown_ids:
+                    raise KeyError(
+                        f"fleet.yaml references unknown market IDs: {unknown_ids}. "
+                        f"Known market IDs: {list(market_lookup)}"
+                    )
 
-                subcategory = SubCategory(
-                    resolved_sub_cfg.get("name"),
-                    parameters=SubcategoryParameters(share=share_value),
-                )
+                # Validate: every passenger market must have a market_served entry.
+                served_ids = {entry.get("market") for entry in market_served_entries}
+                passenger_market_ids = {m.id for m in self.markets.get(traffic_type="passenger")}
+                missing_ids = passenger_market_ids - served_ids
+                if missing_ids:
+                    raise KeyError(
+                        f"fleet.yaml is missing market_served entries for passenger markets: "
+                        f"{sorted(missing_ids)}"
+                    )
 
-                reference_cfg = resolved_sub_cfg.get("reference_aircraft", {})
-                subcategory.old_reference_aircraft = self._select_reference_aircraft(
-                    reference_cfg,
-                    "old",
-                    reference_inventory,
-                    subcategory.old_reference_aircraft,
-                )
-                subcategory.recent_reference_aircraft = self._select_reference_aircraft(
-                    reference_cfg,
-                    "recent",
-                    reference_inventory,
-                    subcategory.recent_reference_aircraft,
-                )
+            for market_cfg in market_served_entries:
+                market_id = market_cfg.get("market")
+                if market_id is None:
+                    continue
 
-                for aircraft_entry in resolved_sub_cfg.get("aircraft", []):
-                    aircraft_id = self._extract_aircraft_id(aircraft_entry)
-                    if aircraft_id not in inventory:
-                        raise KeyError(
-                            f"Aircraft '{aircraft_id}' is missing from inventory {self.aircraft_inventory_path}"
-                        )
-                    subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
+                # Resolve display name: prefer MarketManager, fall back to market_id.
+                if market_id in market_lookup:
+                    cat_name = market_lookup[market_id].name
+                else:
+                    cat_name = market_id  # fallback when no MarketManager provided
 
-                category.add_subcategory(subcategory=subcategory)
+                cat_params = CategoryParameters(**market_cfg.get("parameters", {}))
+                category = Category(cat_name, parameters=cat_params, market_id=market_id)
 
-            categories[category.name] = category
-            category._check_shares()
+                # Store calibration subcategory id for use by Chantier 3.B.
+                category.calibration_subcategory_id = market_cfg.get("calibration_subcategory")
+
+                for sub_cfg_entry in market_cfg.get("subcategories", []):
+                    sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
+                    resolved_sub_cfg = self._resolve_subcategory_config(
+                        sub_cfg, subcategory_inventory
+                    )
+
+                    share_value = resolved_sub_cfg.get("share", 0.0)
+                    subcategory = SubCategory(
+                        resolved_sub_cfg.get("name"),
+                        parameters=SubcategoryParameters(share=share_value),
+                    )
+
+                    reference_cfg = resolved_sub_cfg.get("reference_aircraft", {})
+                    subcategory.old_reference_aircraft = self._select_reference_aircraft(
+                        reference_cfg,
+                        "old",
+                        reference_inventory,
+                        subcategory.old_reference_aircraft,
+                    )
+                    subcategory.recent_reference_aircraft = self._select_reference_aircraft(
+                        reference_cfg,
+                        "recent",
+                        reference_inventory,
+                        subcategory.recent_reference_aircraft,
+                    )
+
+                    for aircraft_entry in resolved_sub_cfg.get("aircraft", []):
+                        aircraft_id = self._extract_aircraft_id(aircraft_entry)
+                        if aircraft_id not in inventory:
+                            raise KeyError(
+                                f"Aircraft '{aircraft_id}' is missing from inventory "
+                                f"{self.aircraft_inventory_path}"
+                            )
+                        subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
+
+                    category.add_subcategory(subcategory=subcategory)
+
+                categories[category.name] = category
+                category._check_shares()
+
+        elif categories_entries is not None:
+            # ── Legacy schema: categories (backwards-compat for test fixtures) ───
+            for category_cfg in categories_entries:
+                cat_name = category_cfg.get("name")
+                if cat_name is None:
+                    continue
+                cat_params = CategoryParameters(**category_cfg.get("parameters", {}))
+                # Legacy entries may carry an ``id`` field; store it as market_id.
+                legacy_id = category_cfg.get("id")
+                category = Category(cat_name, parameters=cat_params, market_id=legacy_id)
+
+                for sub_cfg_entry in category_cfg.get("subcategories", []):
+                    sub_cfg = self._normalize_subcategory_entry(sub_cfg_entry)
+                    resolved_sub_cfg = self._resolve_subcategory_config(
+                        sub_cfg, subcategory_inventory
+                    )
+
+                    share_value = resolved_sub_cfg.get("share", 0.0)
+                    subcategory = SubCategory(
+                        resolved_sub_cfg.get("name"),
+                        parameters=SubcategoryParameters(share=share_value),
+                    )
+
+                    reference_cfg = resolved_sub_cfg.get("reference_aircraft", {})
+                    subcategory.old_reference_aircraft = self._select_reference_aircraft(
+                        reference_cfg,
+                        "old",
+                        reference_inventory,
+                        subcategory.old_reference_aircraft,
+                    )
+                    subcategory.recent_reference_aircraft = self._select_reference_aircraft(
+                        reference_cfg,
+                        "recent",
+                        reference_inventory,
+                        subcategory.recent_reference_aircraft,
+                    )
+
+                    for aircraft_entry in resolved_sub_cfg.get("aircraft", []):
+                        aircraft_id = self._extract_aircraft_id(aircraft_entry)
+                        if aircraft_id not in inventory:
+                            raise KeyError(
+                                f"Aircraft '{aircraft_id}' is missing from inventory "
+                                f"{self.aircraft_inventory_path}"
+                            )
+                        subcategory.add_aircraft(aircraft=deepcopy(inventory[aircraft_id]))
+
+                    category.add_subcategory(subcategory=subcategory)
+
+                categories[category.name] = category
+                category._check_shares()
 
         self.categories = categories
         self._calibrate_reference_aircraft()
@@ -986,9 +1108,10 @@ class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
     - **Category means**: Weighted averages across subcategories for each category
     """
 
-    def __init__(self, name="fleet_model", fleet=None, *args, **kwargs):
+    def __init__(self, name="fleet_model", fleet=None, markets=None, *args, **kwargs):
         super().__init__(name, *args, **kwargs)
         self.fleet = fleet
+        self.markets = markets
 
     def compute(
         self,

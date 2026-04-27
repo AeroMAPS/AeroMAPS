@@ -1502,8 +1502,9 @@ class AeroMAPSProcess(object):
                 parameters=self.parameters,
                 aircraft_inventory_path=aircraft_inventory_path,
                 fleet_config_path=fleet_config_path,
+                markets=self.markets,
             )
-            self.fleet_model = FleetModel(fleet=self.fleet)
+            self.fleet_model = FleetModel(fleet=self.fleet, markets=self.markets)
             self.fleet_model.parameters = self.parameters
             self.fleet_model._initialize_df()
         else:

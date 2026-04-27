@@ -49,29 +49,29 @@ subcategories:
       - lr_wb_2045
 
 
-categories:
-  - id: short_range
-    name: "Short Range"
+market_served:
+  - market: short_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: sr_conventional_nb
     subcategories:
       - sr_conventional_nb
       - sr_regional_tp
       - sr_hydrogen_nb
 
-  - id: medium_range
-    name: "Medium Range"
+  - market: medium_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: mr_conventional_nb
     subcategories:
       - mr_conventional_nb
 
-  - id: long_range
-    name: "Long Range"
+  - market: long_range
     parameters:
       life: 25
       limit: 2
+    calibration_subcategory: lr_conventional_wb
     subcategories:
       - lr_conventional_wb
