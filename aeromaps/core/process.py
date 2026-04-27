@@ -64,6 +64,7 @@ from aeromaps.models.air_transport.markets.market import Market
 from aeromaps.models.air_transport.markets.market_manager import MarketManager
 from aeromaps.models.air_transport.markets.markets_factory import (
     create_market_ask_models,
+    create_market_load_factor_models,
     create_market_rpk_aggregator,
     create_market_rpk_models,
     create_market_rtk_models,
@@ -1087,6 +1088,24 @@ class AeroMAPSProcess(object):
             if ask_models:
                 traffic_models.pop("ask", None)
                 traffic_models.update(ask_models)
+
+        # Load factor lives in the efficiency dicts (not models_traffic). Swap the
+        # legacy global ``load_factor`` for per-market LoadFactorMarket instances
+        # plus an aggregator that produces the global ``load_factor`` consumed by
+        # downstream disciplines (CO2 emissions, airline costs, plots, ...).
+        # TODO (Phase 2 ONLY, TO BE DELETED).
+        for eff_key in (
+            "models_efficiency_top_down",
+            "models_efficiency_top_down_interp",
+            "models_efficiency_bottom_up",
+        ):
+            eff_models = self.models.get(eff_key)
+            if not isinstance(eff_models, dict):
+                continue
+            lf_models = create_market_load_factor_models(self.markets)
+            if lf_models:
+                eff_models.pop("load_factor", None)
+                eff_models.update(lf_models)
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.

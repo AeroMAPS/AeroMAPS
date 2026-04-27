@@ -36,6 +36,9 @@ defaults:
         covid_drop_start_year: 66.0
         covid_end_year: 2024
         covid_end_year_reference_ratio: 100.0
+      load_factor:
+        load_factor_end_year: 85.0
+        covid_load_factor_2020: 65.2
       measures:
         measures_final_impact: 0.0
         measures_start_year: 2051

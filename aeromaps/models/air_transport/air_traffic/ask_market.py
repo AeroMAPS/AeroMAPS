@@ -20,7 +20,7 @@ from aeromaps.models.base import AeroMAPSModel
 
 
 class ASKMarket(AeroMAPSModel):
-    """ASK for one passenger market: ``<mid>_ask = <mid>_rpk / (load_factor / 100)``.
+    """ASK for one passenger market: ``<mid>_ask = <mid>_rpk / (<mid>_load_factor / 100)``.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ class ASKMarket(AeroMAPSModel):
         mid = market_id
         self.market_id = mid
         self.input_names = {
-            "load_factor": pd.Series([0.0]),
+            f"{mid}_load_factor": pd.Series([0.0]),
             f"{mid}_rpk": pd.Series([0.0]),
         }
         self.output_names = {
@@ -44,7 +44,7 @@ class ASKMarket(AeroMAPSModel):
 
     def compute(self, input_data: dict) -> dict:
         mid = self.market_id
-        load_factor = input_data["load_factor"]
+        load_factor = input_data[f"{mid}_load_factor"]
         rpk = input_data[f"{mid}_rpk"]
 
         ask = rpk / (load_factor / 100)

@@ -8,6 +8,10 @@ from aeromaps.models.air_transport.air_traffic.rpk_market import (
     RPKReferenceMarket,
 )
 from aeromaps.models.air_transport.air_traffic.rtk_market import RTKMarket, RTKReferenceMarket
+from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
+    LoadFactorAggregator,
+    LoadFactorMarket,
+)
 
 
 def _has_measures_inputs(market_inputs: dict) -> bool:
@@ -82,6 +86,29 @@ def create_market_ask_models(markets) -> dict:
     models["ask_aggregator"] = ASKAggregator(
         name="ask_aggregator", passenger_market_ids=passenger_ids
     )
+    return models
+
+
+def create_market_load_factor_models(markets) -> dict:
+    """Create per-market LoadFactorMarket models and one LoadFactorAggregator.
+
+    Always creates one ``LoadFactorMarket`` per passenger market (load_factor
+    inputs are guaranteed by the ``defaults.passenger`` block in markets.yaml).
+    The aggregator recombines per-market load factors into the global
+    ``load_factor`` consumed by downstream disciplines.
+
+    Returns an empty mapping when no passenger markets are configured.
+    """
+    if markets is None:
+        return {}
+    passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
+    if not passenger_ids:
+        return {}
+    models = {}
+    for mid in passenger_ids:
+        lf_name = f"load_factor_{mid}"
+        models[lf_name] = LoadFactorMarket(name=lf_name, market_id=mid)
+    models["load_factor_aggregator"] = LoadFactorAggregator(name="load_factor_aggregator")
     return models
 
 
