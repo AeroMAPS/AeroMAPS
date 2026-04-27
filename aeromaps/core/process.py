@@ -245,20 +245,22 @@ class AeroMAPSProcess(object):
         """
         standards = self._get_config_value("models", "standards", default=[])
 
-        if not standards:
-            # Fallback to default_models_top_down if no standards specified
-            return aeromaps_models.default_models_top_down
+        # Bypassing standards loading if the user explicitly set an empty list (to avoid loading default models)
+        # if not standards:
+        #    # Fallback to default_models_top_down if no standards specified
+        #    return aeromaps_models.default_models_top_down
 
         models = {}
-        for model_name in standards:
-            if hasattr(aeromaps_models, model_name):
-                model_dict = getattr(aeromaps_models, model_name)
-                models[model_name] = model_dict
-            else:
-                raise ValueError(
-                    f"Model '{model_name}' specified in config.yaml is not found in "
-                    f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
-                )
+        if standards:
+            for model_name in standards:
+                if hasattr(aeromaps_models, model_name):
+                    model_dict = getattr(aeromaps_models, model_name)
+                    models[model_name] = model_dict
+                else:
+                    raise ValueError(
+                        f"Model '{model_name}' specified in config.yaml is not found in "
+                        f"aeromaps.core.models. Available models: {[name for name in dir(aeromaps_models) if name.startswith('models_')]}"
+                    )
 
         # Load custom models from config if specified
         customs = self._get_user_config_value("models", "customs", default=None)
@@ -1061,12 +1063,13 @@ class AeroMAPSProcess(object):
         # TODO (Phase 2 ONLY, TO BE DELETED).
         for traffic_key in ("models_traffic", "models_traffic_cost_feedback"):
             traffic_models = self.models.get(traffic_key)
-            if not isinstance(traffic_models, dict):
-                continue
 
             # Per-market RPK + measures (replaces legacy monolithic rpk / rpk_measures).
-            traffic_models.pop("rpk", None)
-            traffic_models.pop("rpk_measures", None)
+            if traffic_models is not None:
+                traffic_models.pop("rpk", None)
+                traffic_models.pop("rpk_measures", None)
+            else:
+                traffic_models = {}
             traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
 
             # Aggregator: sums per-market rpk → total rpk consumed by rpk_reference and ASK.
@@ -1089,6 +1092,9 @@ class AeroMAPSProcess(object):
                 traffic_models.pop("ask", None)
                 traffic_models.update(ask_models)
 
+            for model_name, model in traffic_models.items():
+                self.models[model_name] = model
+
         # Load factor lives in the efficiency dicts (not models_traffic). Swap the
         # legacy global ``load_factor`` for per-market LoadFactorMarket instances
         # plus an aggregator that produces the global ``load_factor`` consumed by
@@ -1100,12 +1106,18 @@ class AeroMAPSProcess(object):
             "models_efficiency_bottom_up",
         ):
             eff_models = self.models.get(eff_key)
-            if not isinstance(eff_models, dict):
-                continue
+
+            if eff_models is None:
+                eff_models = {}
+
             lf_models = create_market_load_factor_models(self.markets)
             if lf_models:
                 eff_models.pop("load_factor", None)
                 eff_models.update(lf_models)
+
+            # add models to self.models individually
+            for model_name, model in eff_models.items():
+                self.models[model_name] = model
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.

@@ -43,7 +43,7 @@ class RPKMeasuresMarket(AeroMAPSModel):
             f"{mid}_measures_duration": 1.0,
         }
         self.output_names = {
-            f"{mid}_measures_impact": pd.Series([1.0]),
+            f"{mid}_measures_impact": pd.Series([0.0]),
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -70,6 +70,8 @@ class RPKMeasuresMarket(AeroMAPSModel):
                 )
 
         output_data = {col: self.df[col]}
+
+        print(f"Computed {col} for market {mid}:", output_data[col])  # Debug print
         self._store_outputs(output_data)
         return output_data
 
@@ -110,7 +112,7 @@ class RPKMarket(AeroMAPSModel):
             f"{mid}_covid_end_year": 0.0,
             f"{mid}_covid_end_year_reference_ratio": 0.0,
             # Optional default=1.0 when no dedicated measures discipline is instantiated.
-            f"{mid}_measures_impact": 1.0,
+            f"{mid}_measures_impact": pd.Series([0.0]),
         }
         self.output_names = {
             f"{mid}_rpk": pd.Series([0.0]),
