@@ -18,7 +18,7 @@ colors_26 = ["#E41A1C",     "#377EB8",    "#4DAF4A",      "#984EA3",
     "#808000",    "#87CEEB",      "#B22222",    "#CFA0E9",
     "#FFD700",    "#228B22",      "#003F5C",   "#D100D1",    "#000000",]
 
-def visualise_5y_seats_deliveries_by_submarket(
+def visualise_10y_seats_deliveries_by_submarket(
     classification_yaml_path: str,
     aircraft_parameters_excel_path: str,
     fleet_excel_path: str,
@@ -99,7 +99,7 @@ def visualise_5y_seats_deliveries_by_submarket(
     production_df.index = production_df.index.astype(str).str.strip()
     production_df.columns = [str(col).strip() for col in production_df.columns]
 
-    years = [2020, 2021, 2022, 2023, 2024]
+    years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
     result_rows = []
 
     for year in years:
@@ -593,3 +593,12 @@ def visu_retirement_age(vol_obs,
     plt.tight_layout()
     plt.show()
     return(None)
+
+def visu_energy_intensity(energy_content, ask_content, years, market_name):
+    plt.grid(axis='y', color='grey', linestyle='--')
+    plt.plot(years, energy_content.sum(axis=(1, 2)) / ask_content.sum(axis=(1, 2)))
+    plt.title('Energy efficiency ' + market_name)
+    plt.ylim(ymin=0)
+    plt.xlim(xmin=years[0], xmax=years[-1])
+    plt.show()
+    return None
