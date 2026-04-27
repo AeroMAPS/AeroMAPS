@@ -1066,8 +1066,9 @@ class AeroMAPSProcess(object):
 
             # Per-market RPK + measures (replaces legacy monolithic rpk / rpk_measures).
             if traffic_models is not None:
-                traffic_models.pop("rpk", None)
-                traffic_models.pop("rpk_measures", None)
+                continue
+                # traffic_models.pop("rpk", None)
+                # traffic_models.pop("rpk_measures", None)
             else:
                 traffic_models = {}
             traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
@@ -1083,13 +1084,14 @@ class AeroMAPSProcess(object):
                 traffic_models.pop("rtk", None)
                 # Pop legacy rtk_reference only when a per-market replacement was created.
                 if any("rtk_reference" in k for k in market_rtk_models):
-                    traffic_models.pop("rtk_reference", None)
+                    # traffic_models.pop("rtk_reference", None)
+                    continue
                 traffic_models.update(market_rtk_models)
 
             # ASK: replace legacy ask discipline with per-market version.
             ask_models = create_market_ask_models(self.markets)
             if ask_models:
-                traffic_models.pop("ask", None)
+                # traffic_models.pop("ask", None)
                 traffic_models.update(ask_models)
 
             for model_name, model in traffic_models.items():
@@ -1112,7 +1114,7 @@ class AeroMAPSProcess(object):
 
             lf_models = create_market_load_factor_models(self.markets)
             if lf_models:
-                eff_models.pop("load_factor", None)
+                # eff_models.pop("load_factor", None)
                 eff_models.update(lf_models)
 
             # add models to self.models individually
