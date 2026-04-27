@@ -1534,6 +1534,12 @@ class AeroMAPSProcess(object):
                         model.custom_setup()
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
+                        # Allow custom models to rebuild their I/O grammar once
+                        # fleet_model is injected (e.g. FleetEvolution 3.C).
+                        if hasattr(model, "custom_setup") and not hasattr(
+                            model, "pathways_manager"
+                        ):
+                            model.custom_setup()
                     if hasattr(model, "climate_historical_data"):
                         if not hasattr(self, "climate_historical_data"):
                             raise RuntimeError(
