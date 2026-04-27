@@ -15,8 +15,8 @@
 | Phase 0 — `Market` + `MarketManager` + default `markets.yaml` | ✅ done | `e5f9229e` |
 | Phase 1 — Process integration (`_initialize_markets`, flattener) | ✅ done | `70aae1bf`, `0f31098c`, naming fix on top |
 | Phase Interface — Flex-market demo ("Custom Markets × Multi-Regions") | 🚧 WIP | chantier commits on `fleet-refactoring` branch |
-| Phase 2 — Air traffic disciplines | ⏱ next | — |
-| Phase 3 — Fleet model market integration | ⏱ pending | — |
+| Phase 2 — Air traffic disciplines | ✅ done | `720c0f02`–`2b64fde3` |
+| Phase 3 — Fleet model market integration | ⏱ next | — |
 | Phase 4 — Downstream impacts (custom wrapper migration) | ⏱ pending | — |
 | Phase 5 — Migration & cleanup | ⏱ pending | — |
 | Phase 6 — Plots & GUI | ⏱ deferred | — |
@@ -443,19 +443,22 @@ Landed:
 - Audit LCA/climate for per-market dependencies.
 - `AeroMAPSCustomModelWrapper` spike — not blocking for Phase 1 since `_initialize_markets` is pure data loading. To be done as the first chantier of Phase 2 on a real air-traffic discipline.
 
-### Phase 2 — Air traffic disciplines ⏱ *(next up)*
+### Phase 2 — Air traffic disciplines ✅ *(done — `720c0f02`–`2b64fde3`)*
 
-Starts from a working `MarketManager` on `self.markets` and flattened per-market parameters on `self.parameters`. First task is the Phase 1-deferred spike: migrate one air-traffic discipline to `AeroMAPSCustomModelWrapper` with dynamic I/O names driven by `self.markets`, confirm GEMSEO grammar resolves, then roll the pattern across the rest.
+Landed:
+- **`RPKMarket`**, **`RPKMeasuresMarket`**, **`RPKReferenceMarket`**, **`RPKAggregator`** — per-passenger-market RPK with optional measures and reference trajectories; aggregator emits the legacy `rpk` / `annual_growth_rate_passenger` / `cagr_rpk` / `prospective_evolution_rpk` names so downstream models are unaffected. All use `model_type="custom"` (I/O names built at `__init__` time; no `custom_setup` hook needed).
+- **`RTKMarket`**, **`RTKReferenceMarket`** — per-freight-market RTK keeping legacy output names (`rtk`, `rtk_reference`, …) for full downstream compatibility. Only one freight market supported (raises if multiple are configured).
+- **`ASKMarket`**, **`ASKAggregator`** — per-passenger-market ASK derived from `<mid>_rpk / (<mid>_load_factor / 100)`; aggregator emits legacy `ask`.
+- **`LoadFactorMarket`**, **`LoadFactorAggregator`** — per-passenger-market load factor (quadratic model); aggregator recombines into global `load_factor` consumed by downstream disciplines.
+- **`markets_factory.py`** — factory helpers (`create_market_rpk_models`, `create_market_rpk_aggregator`, `create_market_ask_models`, `create_market_load_factor_models`, `create_market_rtk_models`) that wire the `MarketManager` into discipline instantiation; optional sub-models (measures, reference) are only created when the corresponding YAML sub-group is present.
+- **Deep defaults merge in `markets.yaml`** — a top-level `defaults.passenger` (and `defaults.freight`) block allows shared parameter values without repeating them for every market; `_initialize_markets()` deep-merges per-market inputs on top of the defaults.
+- **Test notebook** (`12_default_markets_test/test_default_markets.ipynb`) — minimal end-to-end run using per-market traffic disciplines; validates the full `MarketManager` → traffic → ASK chain.
 
-- **Spike first:** prototype one discipline (recommend `RPK`) end-to-end with `AeroMAPSCustomModelWrapper` + `custom_setup()` iterating `self.markets.get(traffic_type="passenger")`.
-- `RPK`, `RPKReference`, `RPKMeasures` become per-market instances with custom wrapper.
-- `RTK` unified or kept separate (same math, different unit — decide here).
-- `ASK` iterates over passenger markets.
-- Aggregator discipline sums totals.
-- Update `models.py` builders to take `MarketManager`.
-- Rename legacy COVID globals to per-market (`covid_rpk_drop_start_year` → `<market>_covid_drop_start_year`), or keep a shim in the `RPKReference` discipline that reads whichever set is present. Decide at spike time.
-- Audit LCA/climate for per-market dependencies (carried over from Phase 1).
-- **Exit:** traffic fully driven by `MarketManager`; legacy traffic code deleted; COVID semantic shift realised end-to-end.
+**Known caveats / deferred to Phase 5:**
+- Legacy `LoadFactor`, legacy `RPK`/`RTK`/`ASK` classes still exist and are marked `PHASE-5-CLEANUP`; they are superseded but not yet deleted.
+- COVID global-to-per-market rename (`covid_rpk_drop_start_year` → `<market>_covid_drop_start_year`) is realised in the new per-market models, but legacy global names in `parameters.json` are unchanged — will be cleaned up in Phase 5.
+- `RTKMarket` keeps legacy output names (`rtk`, `rtk_reference`) to avoid touching downstream models before Phase 4. A multi-freight-market generalisation is deferred.
+- LCA/climate audit for per-market dependencies still pending (carried forward to Phase 3/4 as context is needed from fleet outputs).
 
 ### Phase 3 — Fleet model market integration
 
