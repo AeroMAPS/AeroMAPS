@@ -463,6 +463,8 @@ class Fleet(object):
         self._categories: Dict[str, Category] = {}
         self.parameters = parameters
         self.markets = markets
+        # Populated during _build_fleet_from_yaml: subcategory id → display name.
+        self._subcategory_name_by_id: Dict[str, str] = {}
         self.aircraft_inventory_path = (
             Path(aircraft_inventory_path)
             if aircraft_inventory_path is not None
@@ -757,6 +759,10 @@ class Fleet(object):
         subcategory_inventory = self._build_subcategory_inventory(
             fleet_config.get("subcategories", [])
         )
+        # Build id → display name lookup used by _calibrate_reference_aircraft (3.B).
+        self._subcategory_name_by_id = {
+            sub_id: entry.get("name", sub_id) for sub_id, entry in subcategory_inventory.items()
+        }
 
         # Support both new ``market_served:`` schema and legacy ``categories:`` schema.
         # The legacy schema is accepted as a backwards-compatible fallback (e.g. test
@@ -988,88 +994,162 @@ class Fleet(object):
                 return subcategory
         return None
 
+    def _calibration_subcategory_for(self, market_id: str) -> Optional[str]:
+        """Return the calibration subcategory id for the given market id.
+
+        Looks up the :class:`Category` whose ``market_id`` matches *market_id*
+        and returns its ``calibration_subcategory_id`` (set during
+        ``_build_fleet_from_yaml`` from the ``calibration_subcategory:`` YAML
+        field).  Returns ``None`` if no matching category is found.
+        """
+        for cat in self.categories.values():
+            if cat.market_id == market_id:
+                return cat.calibration_subcategory_id
+        return None
+
+    def _subcategory_display_name(self, sub_id: str) -> Optional[str]:
+        """Return the display name for a subcategory id.
+
+        Uses the ``_subcategory_name_by_id`` lookup populated during
+        ``_build_fleet_from_yaml``.  Returns ``None`` when *sub_id* is not
+        found (e.g. when the fleet was built from the legacy schema).
+        """
+        return self._subcategory_name_by_id.get(sub_id)
+
     def _calibrate_reference_aircraft(self):
         if self.parameters is None:
             return
 
-        # Config: (category_name, subcategory_name, energy_share_param, rpk_share_param)
-        # FLEET REFACTORING FLAG: In Phase 3 of the fleet/market refactor this list will be replaced by MarketRegistry iteration.
-        CALIBRATION_CONFIG = [
-            (
-                "Short Range",
-                "SR conventional narrow-body",
-                "short_range_energy_share_2019",
-                "short_range_rpk_share_2019",
-            ),
-            (
-                "Medium Range",
-                "MR conventional narrow-body",
-                "medium_range_energy_share_2019",
-                "medium_range_rpk_share_2019",
-            ),
-            (
-                "Long Range",
-                "LR conventional wide-body",
-                "long_range_energy_share_2019",
-                "long_range_rpk_share_2019",
-            ),
-        ]
+        if self.markets is not None:
+            # ── New path (3.B): iterate passenger markets from MarketManager ─
+            for market in self.markets.get(traffic_type="passenger"):
+                mid = market.id
+                cat_name = market.name
 
-        for (
-            category_name,
-            subcategory_name,
-            energy_share_param,
-            rpk_share_param,
-        ) in CALIBRATION_CONFIG:
-            subcat = self._get_subcategory(category_name, subcategory_name)
-            if subcat is None:
-                continue
+                # Calibration subcategory is declared in fleet.yaml via
+                # ``calibration_subcategory: <id>`` (added in chantier 3.A).
+                sub_id = self._calibration_subcategory_for(mid)
+                if sub_id is None:
+                    continue
+                sub_name = self._subcategory_display_name(sub_id)
+                if sub_name is None:
+                    continue
 
-            old_energy = subcat.old_reference_aircraft.energy_per_ask
-            recent_energy = subcat.recent_reference_aircraft.energy_per_ask
-            if old_energy is None or recent_energy is None:
-                raise ValueError(
-                    f"{category_name} reference aircraft energy_per_ask must be defined"
+                subcat = self._get_subcategory(cat_name, sub_name)
+                if subcat is None:
+                    continue
+
+                energy_share_param = f"{mid}_energy_share_2019"
+                rpk_share_param = f"{mid}_rpk_share_2019"
+                self._run_calibration_for_subcat(
+                    subcat, cat_name, energy_share_param, rpk_share_param
+                )
+        else:
+            # ── Legacy path: hardcoded CALIBRATION_CONFIG (backwards-compat) ─
+            # Used when no MarketManager is provided (e.g. legacy schema test
+            # fixtures, or when Fleet is instantiated without a markets kwarg).
+            CALIBRATION_CONFIG = [
+                (
+                    "Short Range",
+                    "SR conventional narrow-body",
+                    "short_range_energy_share_2019",
+                    "short_range_rpk_share_2019",
+                ),
+                (
+                    "Medium Range",
+                    "MR conventional narrow-body",
+                    "medium_range_energy_share_2019",
+                    "medium_range_rpk_share_2019",
+                ),
+                (
+                    "Long Range",
+                    "LR conventional wide-body",
+                    "long_range_energy_share_2019",
+                    "long_range_rpk_share_2019",
+                ),
+            ]
+
+            for (
+                category_name,
+                subcategory_name,
+                energy_share_param,
+                rpk_share_param,
+            ) in CALIBRATION_CONFIG:
+                subcat = self._get_subcategory(category_name, subcategory_name)
+                if subcat is None:
+                    continue
+                self._run_calibration_for_subcat(
+                    subcat, category_name, energy_share_param, rpk_share_param
                 )
 
-            mean_energy_init_ask = (
-                self.parameters.energy_consumption_init[2019]
-                * getattr(self.parameters, energy_share_param)
-            ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
+    def _run_calibration_for_subcat(
+        self,
+        subcat,
+        category_name: str,
+        energy_share_param: str,
+        rpk_share_param: str,
+    ) -> None:
+        """Calibrate a single reference-aircraft pair.
 
-            share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
+        Shared implementation called by both the new MarketManager-driven path
+        and the legacy hardcoded-config path of ``_calibrate_reference_aircraft``.
 
-            # We fix the life to 25 years for calibration
-            # This way the share between old and recent reference aircraft in 2019 remains the same
-            life = 25
-            lam = np.log(100 / 2 - 1) / (life / 2)
+        Parameters
+        ----------
+        subcat
+            The :class:`SubCategory` whose reference aircraft will be calibrated.
+        category_name
+            Human-readable market / category name (used in warning messages).
+        energy_share_param
+            Attribute name on ``self.parameters`` for the 2019 energy share
+            (e.g. ``"short_range_energy_share_2019"``).
+        rpk_share_param
+            Attribute name on ``self.parameters`` for the 2019 RPK share
+            (e.g. ``"short_range_rpk_share_2019"``).
+        """
+        old_energy = subcat.old_reference_aircraft.energy_per_ask
+        recent_energy = subcat.recent_reference_aircraft.energy_per_ask
+        if old_energy is None or recent_energy is None:
+            raise ValueError(f"{category_name} reference aircraft energy_per_ask must be defined")
 
-            if 1 > share_recent > 0:
-                t0 = np.log((1 - share_recent) / share_recent) / lam + (
-                    self.parameters.prospection_start_year - 1
-                )
-                t_eis = t0 - life / 2
-            elif share_recent > 1:
-                warnings.warn(
-                    f"Warning Message - Fleet Model: {category_name} Aircraft: "
-                    f"Average initial {category_name} fleet energy per ASK is lower than default energy per ASK "
-                    f"for the recent reference aircraft - AeroMAPS is using initial {category_name} fleet energy per ASK "
-                    f"as old and recent reference aircraft energy performances!"
-                )
-                t_eis = self.parameters.prospection_start_year - 1 - life
-                subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
-                subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask
-            else:
-                warnings.warn(
-                    f"Warning Message - Fleet Model: {category_name} Aircraft: "
-                    f"Average initial {category_name} fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
-                    f"AeroMAPS is using initial {category_name} fleet energy per ASK as old aircraft energy performances. "
-                    f"Recent reference aircraft is introduced on first prospective year"
-                )
-                t_eis = self.parameters.prospection_start_year
-                subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
+        mean_energy_init_ask = (
+            self.parameters.energy_consumption_init[2019]
+            * getattr(self.parameters, energy_share_param)
+        ) / (self.parameters.ask_init[2019] * getattr(self.parameters, rpk_share_param))
 
-            subcat.recent_reference_aircraft.entry_into_service_year = t_eis
+        share_recent = (mean_energy_init_ask - old_energy) / (recent_energy - old_energy)
+
+        # We fix the life to 25 years for calibration
+        # This way the share between old and recent reference aircraft in 2019 remains the same
+        life = 25
+        lam = np.log(100 / 2 - 1) / (life / 2)
+
+        if 1 > share_recent > 0:
+            t0 = np.log((1 - share_recent) / share_recent) / lam + (
+                self.parameters.prospection_start_year - 1
+            )
+            t_eis = t0 - life / 2
+        elif share_recent > 1:
+            warnings.warn(
+                f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                f"Average initial {category_name} fleet energy per ASK is lower than default energy per ASK "
+                f"for the recent reference aircraft - AeroMAPS is using initial {category_name} fleet energy per ASK "
+                f"as old and recent reference aircraft energy performances!"
+            )
+            t_eis = self.parameters.prospection_start_year - 1 - life
+            subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
+            subcat.recent_reference_aircraft.energy_per_ask = mean_energy_init_ask
+        else:
+            warnings.warn(
+                f"Warning Message - Fleet Model: {category_name} Aircraft: "
+                f"Average initial {category_name} fleet energy per ASK is higher than default energy per ASK for the old reference aircraft - "
+                f"AeroMAPS is using initial {category_name} fleet energy per ASK as old aircraft energy performances. "
+                f"Recent reference aircraft is introduced on first prospective year"
+            )
+            t_eis = self.parameters.prospection_start_year
+            subcat.old_reference_aircraft.energy_per_ask = mean_energy_init_ask
+
+        subcat.recent_reference_aircraft.entry_into_service_year = t_eis
 
 
 class FleetModel(FleetAssignmentMixin, FleetPerformanceMixin, AeroMAPSModel):
