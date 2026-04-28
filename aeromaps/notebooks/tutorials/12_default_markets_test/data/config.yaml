@@ -5,12 +5,10 @@ data:
 
 models:
   fleet:
-    fleet_model_data_file: default
-    aircraft_inventory_model_data_file: default
-    
+    fleet_model_data_file: "./custom_fleet.yaml"
+    aircraft_inventory_model_data_file: "./custom_aircraft_inventory.yaml"
+
   markets:
-    markets_data_file: default
+    markets_data_file: "./custom_markets.yaml"
 
   standards:
-
-
