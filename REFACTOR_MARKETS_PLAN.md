@@ -16,8 +16,8 @@
 | Phase 1 — Process integration (`_initialize_markets`, flattener) | ✅ done | `70aae1bf`, `0f31098c`, naming fix on top |
 | Phase Interface — Flex-market demo ("Custom Markets × Multi-Regions") | 🚧 WIP | chantier commits on `fleet-refactoring` branch |
 | Phase 2 — Air traffic disciplines | ✅ done | `720c0f02`–`2b64fde3` |
-| Phase 3 — Fleet model market integration | ⏱ next | — |
-| Phase 4 — Downstream impacts (custom wrapper migration) | ⏱ pending | — |
+| Phase 3 — Fleet model market integration | ✅ done | `c42d2a67`–`febffdb8` |
+| Phase 4 — Downstream impacts (custom wrapper migration) | ⏱ next | — |
 | Phase 5 — Migration & cleanup | ⏱ pending | — |
 | Phase 6 — Plots & GUI | ⏱ deferred | — |
 
@@ -119,7 +119,7 @@ Built once in [`AeroMAPSProcess._initialize_markets()`](aeromaps/core/process.py
 ```yaml
 # aeromaps/resources/data/default_fleet/fleet.yaml
 markets:
-  - market: short_range
+  - market_served: short_range
     parameters:
       life: 25
       limit: 2
@@ -127,14 +127,14 @@ markets:
       - sr_conventional_nb
       - sr_hydrogen_nb
 
-  - market: medium_range
+  - market_served: medium_range
     parameters:
       life: 25
       limit: 2
     subcategories:
       - mr_conventional_nb
 
-  - market: long_range
+  - market_served: long_range
     parameters:
       life: 30
       limit: 2
@@ -162,6 +162,8 @@ subcategories:
 
   # ... other subcategories
 ```
+
+*(As-landed in chantier 3.A: the top-level key is `market_served:` — not `market:` as the early draft read. The `MarketManager` cross-checks this field against registered market ids at fleet load time.)*
 
 **Validation at load time:**
 - Every passenger market in the `MarketManager` must have a corresponding entry in `fleet.yaml` (when bottom-up fleet model is active).
@@ -315,17 +317,18 @@ Note on hybrid-electric: the `hybridization_factor` split only applies to energy
 |------|--------|-------|--------|
 | [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Prep A: generic calibration loop (standalone) | Prep | ✅ |
 | [fleet_performance.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py) | Prep B: data-driven energy types; Prep C: vectorize performance methods | Prep | ✅ |
-| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | Prep D (optional): unify subcategory branching | Prep / 3 | ⏳ deferred |
+| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | Prep D (optional): unify subcategory branching; Phase 3: `market_id` plumbing | Prep / 3 | ⏳ Prep D deferred; Phase 3 changes ✅ (3.D) |
 | [process.py](aeromaps/core/process.py) | Add `_initialize_markets()`, instantiate per-market disciplines, push templated params | 1 | ✅ (instantiation + per-market disciplines moved to Phase 2) |
 | [models.py](aeromaps/core/models.py) | Replace static model dicts with builders taking `MarketManager` | 2 | ⏱ |
 | [config.yaml](aeromaps/resources/data/config.yaml) | Add `models.markets.markets_data_file` | 1 | ✅ |
-| [fleet.yaml](aeromaps/resources/data/default_fleet/fleet.yaml) | Replace `categories` with `markets` keying; subcategories and aircraft unchanged | 3 |
-| [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py) | Per-market instances replacing 3-way loops (lines 144-220) | 2 |
-| [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py) | Unify with RPK (same math, different unit) or keep separate | 2 |
-| [ask.py](aeromaps/models/air_transport/air_traffic/ask.py) | Iterate over registry's passenger markets | 2 |
-| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Phase 3: iterate over `MarketManager`; rename `Category` → market-driven; publish market-templated outputs | 3 |
-| [fleet_numeric.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py) | Replace hardcoded Short/Medium/Long Range dispatch with market iteration | 3 |
-| [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | Per-market disciplines + custom wrapper pattern | 3 |
+| [fleet.yaml](aeromaps/resources/data/default_fleet/fleet.yaml) | `categories:` → `markets:` with `market_served:` key per entry | 3 | ✅ (3.A) |
+| [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py) | Per-market instances replacing 3-way loops (lines 144-220) | 2 | ✅ |
+| [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py) | Unify with RPK (same math, different unit) or keep separate | 2 | ✅ |
+| [ask.py](aeromaps/models/air_transport/air_traffic/ask.py) | Iterate over registry's passenger markets | 2 | ✅ |
+| [fleet_model.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py) | Phase 3: iterate over `MarketManager`; calibration from registry; publish market-templated outputs via custom wrapper | 3 | ✅ (3.B–3.C) |
+| [fleet_numeric.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py) | Market-driven dispatch replacing hardcoded Short/Medium/Long Range; `FleetEvolutionFromShares` | 3 | ✅ (3.C) |
+| [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | `market_id` plumbing + explicit first-subcategory ref | 3 | ✅ (3.D) |
+| [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | Per-market disciplines + custom wrapper pattern | 3 | ✅ (3.E) |
 | [energy_consumption.py](aeromaps/models/impacts/energy_resources/energy_consumption.py) | Custom wrapper with dynamic I/O from registry (~40 hard-coded args removed) | 4 |
 | [direct_operating_costs.py](aeromaps/models/impacts/costs/airlines/direct_operating_costs.py) | Same custom wrapper treatment | 4 |
 | [non_co2_emissions.py](aeromaps/models/impacts/emissions/non_co2_emissions.py) | Add market dimension to existing custom setup | 4 |
@@ -460,17 +463,25 @@ Landed:
 - `RTKMarket` keeps legacy output names (`rtk`, `rtk_reference`) to avoid touching downstream models before Phase 4. A multi-freight-market generalisation is deferred.
 - LCA/climate audit for per-market dependencies still pending (carried forward to Phase 3/4 as context is needed from fleet outputs).
 
-### Phase 3 — Fleet model market integration
+### Phase 3 — Fleet model market integration ✅ *(done — `c42d2a67`–`febffdb8`)*
 
-- `fleet.yaml` restructured: `categories` replaced by `markets` keying; subcategories and aircraft assignments unchanged.
-- `Category` class renamed/replaced by market-driven grouping (or simply reads its `name` from the `MarketManager` entry).
-- Calibration loop (already generic from Prep A) swaps its config source from hardcoded tuples to `MarketManager` iteration.
-- Fleet model publishes market-level aggregates under market-templated names; subcategory-level details remain internal to `self.df`.
-- Energy type loop (from Prep B) ensures the publishing covers all `market × energy_type` combinations cleanly.
-- `fleet_numeric.py`: replace hardcoded `if category == "Short Range"` / `"Medium Range"` / `"Long Range"` dispatch with iteration over `MarketManager` passenger markets.
-- If Prep D was deferred, consider combining it here.
-- Coordinate with colleague's fleet model on output naming.
-- **Exit:** fleet model driven by `MarketManager`; outputs under market-templated names.
+Landed across six chantiers (2026-04-27/28):
+
+- **3.A** `c42d2a67` — `fleet.yaml` schema migration: `categories:` top-level key replaced by `markets:` with `market_served:` field per entry (not `market:`); loader updated accordingly.
+- **3.B** `c6a82996` — Calibration loop (`_calibrate_reference_aircraft`) now sourced from `MarketManager`; the hardcoded `CALIBRATION_CONFIG` tuples from Prep A are replaced by registry iteration.
+- **3.C** `bb820059` — `FleetEvolution` migrated to custom wrapper with market-driven dispatch; `FleetModel` publishes market-level aggregates under market-templated output names.
+- **3.D** `16ed74b9` — `fleet_assignment` audit: `market_id` plumbing through subcategory share computation; explicit first-subcategory reference handling.
+- **3.E** `cec18670` — `FleetPerformanceMixin` verified for arbitrary market count via a 5-market smoke test; energy type loop from Prep B confirmed clean across all market × energy_type combinations.
+- **3.F** `febffdb8` — Custom-market smoke test: 5-market `FleetModel` + `FleetEvolution` end-to-end; 73 tests passing total.
+
+**Deferred (3.G / Prep D):** Unify 1/2/3+ subcategory branching in `_compute_single_aircraft_share` — explicitly out of scope for this run; owner-restricted (human or Opus only).
+
+**Known pre-existing issues (not caused by Phase 3):**
+- `AeroMAPSProcess()` constructor fails with `RuntimeError: Model 'nox_emission_index_complex' requires a pathways_manager` — pre-existing on branch.
+- `recurring_costs.py` / `non_recurring_costs.py` pandas `TypeError` — pre-existing.
+- Notebook 05 `outputs.json` numerical drift — inherited from earlier branch work.
+
+**Exit:** fleet model driven by `MarketManager`; outputs under market-templated names; 73 tests green.
 
 ### Phase 4 — Downstream impacts (custom wrapper migration)
 
