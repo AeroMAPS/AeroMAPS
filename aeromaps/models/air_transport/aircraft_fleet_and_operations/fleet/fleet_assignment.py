@@ -72,6 +72,9 @@ class FleetAssignmentMixin:
         temp_dict = {}
 
         for category in self.fleet.categories.values():
+            # category.market_id links this category to its entry in markets.yaml
+            # (e.g. "short_range").  Column names still use category.name (display
+            # string) — the id→name rename is Phase 4 scope.
             limit = 2
             life_base = 25
             parameter_base = np.log(100 / limit - 1) / (life_base / 2)
@@ -262,6 +265,9 @@ class FleetAssignmentMixin:
         temp_dict = {}
 
         for category in self.fleet.categories.values():
+            # category.market_id links this category to its entry in markets.yaml
+            # (e.g. "short_range").  Column names still use category.name (display
+            # string) — the id→name rename is Phase 4 scope.
             for key, subcategory in reversed(category.subcategories.items()):
                 sorted_ac = self._sorted_aircraft(subcategory)
                 n = len(sorted_ac)
@@ -292,14 +298,15 @@ class FleetAssignmentMixin:
 
                     temp_dict[f"{subcategory_key}:aircraft_share"] = aircraft_share
 
+            first_subcategory = category.subcategories[0]
             ref_recent_single_aircraft_share = self.df[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:single_aircraft_share"
+                f"{category.name}:{first_subcategory.name}:recent_reference:single_aircraft_share"
             ].values
 
-            if subcategory.aircraft:
-                first_subcat_oldest = self._sorted_aircraft(category.subcategories[0])[0]
+            if first_subcategory.aircraft:
+                first_subcat_oldest = self._sorted_aircraft(first_subcategory)[0]
                 next_aircraft_single_share = self.df[
-                    f"{category.name}:{category.subcategories[0].name}:{first_subcat_oldest.name}:single_aircraft_share"
+                    f"{category.name}:{first_subcategory.name}:{first_subcat_oldest.name}:single_aircraft_share"
                 ].values
             else:
                 next_aircraft_single_share = np.zeros_like(ref_recent_single_aircraft_share)
@@ -308,13 +315,13 @@ class FleetAssignmentMixin:
                 ref_recent_single_aircraft_share - next_aircraft_single_share
             )
             temp_dict[
-                f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
+                f"{category.name}:{first_subcategory.name}:recent_reference:aircraft_share"
             ] = ref_recent_aircraft_share
 
             ref_old_aircraft_share = 100 - ref_recent_single_aircraft_share
-            temp_dict[
-                f"{category.name}:{category.subcategories[0].name}:old_reference:aircraft_share"
-            ] = ref_old_aircraft_share
+            temp_dict[f"{category.name}:{first_subcategory.name}:old_reference:aircraft_share"] = (
+                ref_old_aircraft_share
+            )
 
         final_dict = {
             key: np.array(values) if isinstance(values, list) else values
