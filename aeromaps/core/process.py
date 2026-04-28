@@ -1464,6 +1464,10 @@ class AeroMAPSProcess(object):
                     # TODO: check how to avoid providing all parameters
                     model.parameters = self.parameters
                     model._initialize_df()
+                    needs_custom_setup = False
+                    if hasattr(model, "markets") and hasattr(model, "custom_setup"):
+                        model.markets = self.markets
+                        needs_custom_setup = True
                     if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         # self.pathways_manager is only set when models.energy is present in config;
@@ -1475,15 +1479,15 @@ class AeroMAPSProcess(object):
                                 "Add 'models.energy' to your configuration."
                             )
                         model.pathways_manager = self.pathways_manager
-                        model.custom_setup()
+                        needs_custom_setup = True
                     if hasattr(self, "fleet_model"):
                         model.fleet_model = self.fleet_model
                         # Allow custom models to rebuild their I/O grammar once
                         # fleet_model is injected (e.g. FleetEvolution 3.C).
-                        if hasattr(model, "custom_setup") and not hasattr(
-                            model, "pathways_manager"
-                        ):
-                            model.custom_setup()
+                        if hasattr(model, "custom_setup"):
+                            needs_custom_setup = True
+                    if needs_custom_setup:
+                        model.custom_setup()
                     if hasattr(model, "climate_historical_data"):
                         if not hasattr(self, "climate_historical_data"):
                             raise RuntimeError(
