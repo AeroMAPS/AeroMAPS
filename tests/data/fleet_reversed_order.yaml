@@ -14,7 +14,7 @@ subcategories:
       - sr_nb_2035   # EIS 2035 — listed second (reversed, wrong order)
 
 categories:
-  - name: "Short Range"
+  - market_served: short_range
     parameters:
       life: 25
       limit: 2

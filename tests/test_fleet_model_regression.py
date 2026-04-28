@@ -55,7 +55,8 @@ FLEET_YAML = DATA_DIR / "fleet_eis_order.yaml"
 
 # ── column name helpers ───────────────────────────────────────────────────────
 
-CAT = "Short Range"
+# Tests construct Fleet without a MarketManager → display name falls back to market_id.
+CAT = "short_range"
 SUBCAT = "SR conventional narrow-body"
 P = f"{CAT}:{SUBCAT}"  # subcategory prefix
 

@@ -161,8 +161,8 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         aircraft:
           - ac_2035
 
-    market_served:
-      - market: regional
+    categories:
+      - market_served: regional
         parameters:
           life: 25
           limit: 2
@@ -170,7 +170,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - regional_sub
 
-      - market: mainline
+      - market_served: mainline
         parameters:
           life: 25
           limit: 2
@@ -178,7 +178,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - mainline_sub
 
-      - market: medium_range
+      - market_served: medium_range
         parameters:
           life: 25
           limit: 2
@@ -186,7 +186,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - mr_sub
 
-      - market: long_range
+      - market_served: long_range
         parameters:
           life: 25
           limit: 2
@@ -194,7 +194,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - lr_sub
 
-      - market: ultra_long
+      - market_served: ultra_long
         parameters:
           life: 25
           limit: 2
@@ -317,8 +317,7 @@ class TestFleetModelFiveMarkets:
         """Fleet must contain exactly 5 Category objects."""
         fleet, _, __ = five_market_setup
         assert len(fleet.categories) == 5, (
-            f"Expected 5 categories, got {len(fleet.categories)}: "
-            f"{list(fleet.categories.keys())}"
+            f"Expected 5 categories, got {len(fleet.categories)}: {list(fleet.categories.keys())}"
         )
 
     def test_market_id_set_on_all_categories(self, five_market_setup):
@@ -332,18 +331,18 @@ class TestFleetModelFiveMarkets:
         fleet, _, mm = five_market_setup
         valid_ids = {m.id for m in mm.get_all()}
         for cat in fleet.categories.values():
-            assert (
-                cat.market_id in valid_ids
-            ), f"category.market_id='{cat.market_id}' not in {valid_ids}"
+            assert cat.market_id in valid_ids, (
+                f"category.market_id='{cat.market_id}' not in {valid_ids}"
+            )
 
     def test_display_names_match_market_manager(self, five_market_setup):
         """Category.name must be the display name from MarketManager."""
         fleet, _, mm = five_market_setup
         market_names = {m.name for m in mm.get_all()}
         for cat in fleet.categories.values():
-            assert (
-                cat.name in market_names
-            ), f"Category display name '{cat.name}' not in MarketManager names {market_names}"
+            assert cat.name in market_names, (
+                f"Category display name '{cat.name}' not in MarketManager names {market_names}"
+            )
 
     def test_share_energy_type_columns_exist(self, five_market_setup):
         """<display_name>:share:<energy_type> columns must exist for every market."""
@@ -381,9 +380,9 @@ class TestFleetModelFiveMarkets:
             assert share_cols, f"No aircraft_share columns for category '{cat.name}'"
             total = df[share_cols].sum(axis=1)
             max_err = (total - 100.0).abs().max()
-            assert (
-                max_err < 1e-6
-            ), f"Category '{cat.name}': shares don't sum to 100 (max_err={max_err:.2e})"
+            assert max_err < 1e-6, (
+                f"Category '{cat.name}': shares don't sum to 100 (max_err={max_err:.2e})"
+            )
 
 
 class TestFleetEvolutionFiveMarkets:
@@ -445,9 +444,9 @@ class TestFleetEvolutionFiveMarkets:
         for name, series in output["ask_aircraft_value_dict"].items():
             window = series.loc[pstart:]
             vals = window.values
-            assert np.all(
-                np.isfinite(vals)
-            ), f"{name}: ASK contains non-finite values in prospection window"
+            assert np.all(np.isfinite(vals)), (
+                f"{name}: ASK contains non-finite values in prospection window"
+            )
             assert np.all(vals >= -1e-6), f"{name}: ASK contains negative values"
 
     def test_rpk_values_finite_and_non_negative(self, fleet_evolution_output):
@@ -460,9 +459,9 @@ class TestFleetEvolutionFiveMarkets:
         for name, series in output["rpk_aircraft_value_dict"].items():
             window = series.loc[pstart:]
             vals = window.values
-            assert np.all(
-                np.isfinite(vals)
-            ), f"{name}: RPK contains non-finite values in prospection window"
+            assert np.all(np.isfinite(vals)), (
+                f"{name}: RPK contains non-finite values in prospection window"
+            )
             assert np.all(vals >= -1e-6), f"{name}: RPK contains negative values"
 
     def test_production_series_non_negative(self, fleet_evolution_output):

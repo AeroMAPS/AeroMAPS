@@ -41,7 +41,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pandas as pd
-import pytest
 
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
     Fleet,
@@ -54,7 +53,8 @@ FLEET_EIS_ORDER = DATA_DIR / "fleet_eis_order.yaml"
 FLEET_REVERSED_ORDER = DATA_DIR / "fleet_reversed_order.yaml"
 
 # Column shortcuts
-CAT = "Short Range"
+# Tests construct Fleet without a MarketManager → display name falls back to market_id.
+CAT = "short_range"
 SUBCAT = "SR conventional narrow-body"
 PREFIX = f"{CAT}:{SUBCAT}"
 COL_A = f"{PREFIX}:NB_EIS2035:aircraft_share"
@@ -104,7 +104,6 @@ def _run_without_sort(fleet_yaml: Path) -> pd.DataFrame:
 class TestFleetAircraftOrdering:
     """Fleet model share results must be invariant to aircraft listing order in YAML."""
 
-
     def test_aircraft_shares_invariant_to_listing_order(self):
         """``aircraft_share`` columns are identical for both YAML orderings."""
         df_ordered = _run(FLEET_EIS_ORDER)
@@ -124,7 +123,6 @@ class TestFleetAircraftOrdering:
             "_sorted_aircraft is not applied correctly.\n"
             f"Per-column max diff:\n{diff.max().to_string()}"
         )
-
 
     def test_single_aircraft_shares_invariant_to_listing_order(self):
         """``single_aircraft_share`` cumulative curves are identical for both orderings."""
@@ -160,7 +158,6 @@ class TestFleetAircraftOrdering:
             f"Energy consumption differs by up to {max_diff:.2e} MJ/ASK between orderings."
         )
 
-
     def test_ordering_bug_magnitude(self):
         """Document and bound the error that existed before the EIS-sort fix.
 
@@ -177,8 +174,8 @@ class TestFleetAircraftOrdering:
         2. The old NB_EIS2045 share went negative (displacement computed in the
            wrong direction).
         """
-        df_correct = _run(FLEET_EIS_ORDER)                         # fixed, EIS order
-        df_old_bug = _run_without_sort(FLEET_REVERSED_ORDER)       # old, wrong order
+        df_correct = _run(FLEET_EIS_ORDER)  # fixed, EIS order
+        df_old_bug = _run_without_sort(FLEET_REVERSED_ORDER)  # old, wrong order
 
         diff_a = df_correct[COL_A] - df_old_bug[COL_A]
         diff_b = df_correct[COL_B] - df_old_bug[COL_B]

@@ -145,8 +145,8 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         aircraft:
           - ac_2035
 
-    market_served:
-      - market: regional
+    categories:
+      - market_served: regional
         parameters:
           life: 25
           limit: 2
@@ -154,7 +154,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - regional_sub
 
-      - market: mainline
+      - market_served: mainline
         parameters:
           life: 25
           limit: 2
@@ -162,7 +162,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - mainline_sub
 
-      - market: medium_range
+      - market_served: medium_range
         parameters:
           life: 25
           limit: 2
@@ -170,7 +170,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - mr_sub
 
-      - market: long_range
+      - market_served: long_range
         parameters:
           life: 25
           limit: 2
@@ -178,7 +178,7 @@ _FLEET_5_MARKETS_YAML = textwrap.dedent(
         subcategories:
           - lr_sub
 
-      - market: ultra_long
+      - market_served: ultra_long
         parameters:
           life: 25
           limit: 2
@@ -254,8 +254,7 @@ class TestFleetPerformanceFiveMarkets:
         """Fleet must contain exactly 5 categories."""
         fleet, df = five_market_fleet_df
         assert len(fleet.categories) == 5, (
-            f"Expected 5 categories, got {len(fleet.categories)}: "
-            f"{list(fleet.categories.keys())}"
+            f"Expected 5 categories, got {len(fleet.categories)}: {list(fleet.categories.keys())}"
         )
 
     # ---- 2. market_id plumbed on every category ---------------------------------
