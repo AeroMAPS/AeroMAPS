@@ -70,8 +70,6 @@ class RPKMeasuresMarket(AeroMAPSModel):
                 )
 
         output_data = {col: self.df[col]}
-
-        print(f"Computed {col} for market {mid}:", output_data[col])  # Debug print
         self._store_outputs(output_data)
         return output_data
 

@@ -4,6 +4,10 @@ data:
 
 
 models:
+  fleet:
+    fleet_model_data_file: default
+    aircraft_inventory_model_data_file: default
+    
   markets:
     markets_data_file: default
 

@@ -1059,67 +1059,11 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
-        # Replace legacy traffic disciplines with per-market models
-        # TODO (Phase 2 ONLY, TO BE DELETED).
-        for traffic_key in ("models_traffic", "models_traffic_cost_feedback"):
-            traffic_models = self.models.get(traffic_key)
-
-            # Per-market RPK + measures (replaces legacy monolithic rpk / rpk_measures).
-            if traffic_models is not None:
-                continue
-                # traffic_models.pop("rpk", None)
-                # traffic_models.pop("rpk_measures", None)
-            else:
-                traffic_models = {}
-            traffic_models.update(create_market_rpk_models(self.markets, self.markets_data))
-
-            # Aggregator: sums per-market rpk → total rpk consumed by rpk_reference and ASK.
-            rpk_agg = create_market_rpk_aggregator(self.markets)
-            if rpk_agg:
-                traffic_models.update(rpk_agg)
-
-            # RTK: replace legacy disciplines when a freight market is configured.
-            market_rtk_models = create_market_rtk_models(self.markets, self.markets_data)
-            if market_rtk_models:
-                traffic_models.pop("rtk", None)
-                # Pop legacy rtk_reference only when a per-market replacement was created.
-                if any("rtk_reference" in k for k in market_rtk_models):
-                    # traffic_models.pop("rtk_reference", None)
-                    continue
-                traffic_models.update(market_rtk_models)
-
-            # ASK: replace legacy ask discipline with per-market version.
-            ask_models = create_market_ask_models(self.markets)
-            if ask_models:
-                # traffic_models.pop("ask", None)
-                traffic_models.update(ask_models)
-
-            for model_name, model in traffic_models.items():
-                self.models[model_name] = model
-
-        # Load factor lives in the efficiency dicts (not models_traffic). Swap the
-        # legacy global ``load_factor`` for per-market LoadFactorMarket instances
-        # plus an aggregator that produces the global ``load_factor`` consumed by
-        # downstream disciplines (CO2 emissions, airline costs, plots, ...).
-        # TODO (Phase 2 ONLY, TO BE DELETED).
-        for eff_key in (
-            "models_efficiency_top_down",
-            "models_efficiency_top_down_interp",
-            "models_efficiency_bottom_up",
-        ):
-            eff_models = self.models.get(eff_key)
-
-            if eff_models is None:
-                eff_models = {}
-
-            lf_models = create_market_load_factor_models(self.markets)
-            if lf_models:
-                # eff_models.pop("load_factor", None)
-                eff_models.update(lf_models)
-
-            # add models to self.models individually
-            for model_name, model in eff_models.items():
-                self.models[model_name] = model
+        self.models.update(create_market_rpk_models(self.markets, self.markets_data))
+        self.models.update(create_market_rpk_aggregator(self.markets))
+        self.models.update(create_market_rtk_models(self.markets, self.markets_data))
+        self.models.update(create_market_ask_models(self.markets))
+        self.models.update(create_market_load_factor_models(self.markets))
 
     def _initialize_generic_energy(self):
         """Initialize generic energy resources, processes, and carriers.
