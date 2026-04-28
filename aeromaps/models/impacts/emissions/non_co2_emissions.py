@@ -183,6 +183,7 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
         self.pathways_manager = None
+        self.markets = None
 
     def custom_setup(self):
         """
@@ -198,21 +199,13 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         None
         """
         # TODO caution aircraft types not generic there
-        self.input_names = {
-            "ask_long_range_dropin_fuel": pd.Series([0.0]),
-            "ask_medium_range_dropin_fuel": pd.Series([0.0]),
-            "ask_short_range_dropin_fuel": pd.Series([0.0]),
-            "ask_long_range_hydrogen": pd.Series([0.0]),
-            "ask_medium_range_hydrogen": pd.Series([0.0]),
-            "ask_short_range_hydrogen": pd.Series([0.0]),
-            "ask_long_range_electric": pd.Series([0.0]),
-            "ask_medium_range_electric": pd.Series([0.0]),
-            "ask_short_range_electric": pd.Series([0.0]),
-        }
+        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {}
+        for market in self.markets.get(traffic_type="passenger"):
+            for aircraft_type in aircraft_types:
+                self.input_names[f"ask_{market.id}_{aircraft_type}"] = pd.Series([0.0])
 
         self.output_names = {}
-
-        aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
@@ -260,47 +253,20 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
-            emission_index_nox_short_range = self.fleet_model.df[
-                f"Short Range:emission_index_nox:{aircraft_type}"
-            ]
-            emission_index_nox_medium_range = self.fleet_model.df[
-                f"Medium Range:emission_index_nox:{aircraft_type}"
-            ]
-            emission_index_nox_long_range = self.fleet_model.df[
-                f"Long Range:emission_index_nox:{aircraft_type}"
-            ]
-
-            ask_short_range = input_data.get(
-                f"ask_short_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
-            )
-            ask_medium_range = input_data.get(
-                f"ask_medium_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
-            )
-            ask_long_range = input_data.get(
-                f"ask_long_range_{aircraft_type}",
-                get_default_series(self.historic_start_year, self.end_year),
-            )
-
-            emission_index_aircraft_type = (
-                (
-                    emission_index_nox_short_range.loc[self.historic_start_year : self.end_year]
-                    * ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
+            numerator = get_default_series(self.historic_start_year, self.end_year)
+            denominator = get_default_series(self.historic_start_year, self.end_year)
+            for market in self.markets.get(traffic_type="passenger"):
+                ei_market = self.fleet_model.df[f"{market.name}:emission_index_nox:{aircraft_type}"]
+                ask_market = input_data.get(
+                    f"ask_{market.id}_{aircraft_type}",
+                    get_default_series(self.historic_start_year, self.end_year),
                 )
-                + (
-                    emission_index_nox_medium_range.loc[self.historic_start_year : self.end_year]
-                    * ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
+                ask_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(0)
+                numerator = (
+                    numerator + ei_market.loc[self.historic_start_year : self.end_year] * ask_filled
                 )
-                + (
-                    emission_index_nox_long_range.loc[self.historic_start_year : self.end_year]
-                    * ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                )
-            ) / (
-                ask_short_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_medium_range.loc[self.historic_start_year : self.end_year].fillna(0)
-                + ask_long_range.loc[self.historic_start_year : self.end_year].fillna(0)
-            )
+                denominator = denominator + ask_filled
+            emission_index_aircraft_type = numerator / denominator
 
             relative_emission_index_aircraft_type = (
                 emission_index_aircraft_type
