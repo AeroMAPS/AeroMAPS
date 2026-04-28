@@ -49,8 +49,8 @@ subcategories:
       - lr_wb_2045
 
 
-market_served:
-  - market: short_range
+categories:
+  - market_served: short_range
     parameters:
       life: 25
       limit: 2
@@ -60,7 +60,7 @@ market_served:
       - sr_regional_tp
       - sr_hydrogen_nb
 
-  - market: medium_range
+  - market_served: medium_range
     parameters:
       life: 25
       limit: 2
@@ -68,7 +68,7 @@ market_served:
     subcategories:
       - mr_conventional_nb
 
-  - market: long_range
+  - market_served: long_range
     parameters:
       life: 25
       limit: 2

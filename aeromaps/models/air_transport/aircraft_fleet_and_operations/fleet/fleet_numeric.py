@@ -104,17 +104,9 @@ class FleetEvolution(AeroMAPSModel):
         aircraft_in_out_value_dict = {}
 
         for category_name, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-            # Resolve the market id for this category.
-            cat_obj = self.fleet_model.fleet.categories[category_name]
-            mid = cat_obj.market_id
-
-            if mid is not None:
-                # New path: market-driven lookup.
-                category_ask = input_data[f"ask_{mid}"]
-                category_rpk = input_data[f"rpk_{mid}"]
-            else:
-                # Safety fallback when no market_id is set (legacy test fixtures).
-                continue
+            mid = self.fleet_model.fleet.categories[category_name].market_id
+            category_ask = input_data[f"ask_{mid}"]
+            category_rpk = input_data[f"rpk_{mid}"]
 
             # Compute virtual-fleet demand assuming production catches up after COVID.
             category_ask_covid_levelling = category_ask.copy()

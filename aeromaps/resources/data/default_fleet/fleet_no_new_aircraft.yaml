@@ -21,8 +21,8 @@ subcategories:
       recent_ref: lr_conventional_wb_recent
 
 
-market_served:
-  - market: short_range
+categories:
+  - market_served: short_range
     parameters:
       life: 25
       limit: 2
@@ -30,7 +30,7 @@ market_served:
     subcategories:
       - sr_conventional_nb
 
-  - market: medium_range
+  - market_served: medium_range
     parameters:
       life: 25
       limit: 2
@@ -38,7 +38,7 @@ market_served:
     subcategories:
       - mr_conventional_nb
 
-  - market: long_range
+  - market_served: long_range
     parameters:
       life: 25
       limit: 2
