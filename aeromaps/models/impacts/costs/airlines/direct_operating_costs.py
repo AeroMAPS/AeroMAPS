@@ -122,275 +122,116 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_doc_non_energy_simple", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        doc_non_energy_per_ask_short_range_dropin_fuel_init: float,
-        doc_non_energy_per_ask_medium_range_dropin_fuel_init: float,
-        doc_non_energy_per_ask_long_range_dropin_fuel_init: float,
-        doc_non_energy_per_ask_short_range_dropin_fuel_gain: float,
-        doc_non_energy_per_ask_medium_range_dropin_fuel_gain: float,
-        doc_non_energy_per_ask_long_range_dropin_fuel_gain: float,
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range: float,
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range: float,
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range: float,
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range: float,
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range: float,
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range: float,
-        ask_long_range_hydrogen_share: pd.Series,
-        ask_long_range_dropin_fuel_share: pd.Series,
-        ask_medium_range_hydrogen_share: pd.Series,
-        ask_medium_range_dropin_fuel_share: pd.Series,
-        ask_short_range_hydrogen_share: pd.Series,
-        ask_short_range_dropin_fuel_share: pd.Series,
-        ask_long_range_electric_share: pd.Series,
-        ask_medium_range_electric_share: pd.Series,
-        ask_short_range_electric_share: pd.Series,
-        ask_long_range: pd.Series,
-        ask_medium_range: pd.Series,
-        ask_short_range: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        DOC (without energy DOC) per ASK calculation using simple models.
-
-        Parameters
-        ----------
-        doc_non_energy_per_ask_short_range_dropin_fuel_init
-            Initial value for short range non-energy related direct operating cost [€/ASK].
-        doc_non_energy_per_ask_medium_range_dropin_fuel_init
-            Initial value for medium range non-energy related direct operating cost [€/ASK].
-        doc_non_energy_per_ask_long_range_dropin_fuel_init
-            Initial value for long range non-energy related direct operating cost [€/ASK].
-        doc_non_energy_per_ask_short_range_dropin_fuel_gain
-            Annual gain value for short-range non-energy related direct operating cost [%].
-        doc_non_energy_per_ask_medium_range_dropin_fuel_gain
-            Annual gain value for medium-range non-energy related direct operating cost [%].
-        doc_non_energy_per_ask_long_range_dropin_fuel_gain
-            Annual gain value for long-range non-energy related direct operating cost [%].
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range
-            Relative non-energy related direct operating cost for hydrogen short-range aircraft with respect to drop-in fuel aircraft [%].
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range
-            Relative non-energy related direct operating cost for hydrogen medium-range aircraft with respect to drop-in fuel aircraft [%].
-        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range
-            Relative non-energy related direct operating cost for hydrogen long-range aircraft with respect to drop-in fuel aircraft [%].
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range
-            Relative non-energy related direct operating cost for electric short-range aircraft with respect to drop-in fuel aircraft [%].
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range
-            Relative non-energy related direct operating cost for electric medium-range aircraft with respect to drop-in fuel aircraft [%].
-        relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
-            Relative non-energy related direct operating cost for electric long-range aircraft with respect to drop-in fuel aircraft [%].
-        ask_long_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
-        ask_long_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
-        ask_medium_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
-        ask_medium_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
-        ask_short_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
-        ask_short_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
-        ask_long_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
-        ask_medium_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
-        ask_short_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
-        ask_long_range
-            Number of Available Seat Kilometer (ASK) for passenger long-range market [ASK].
-        ask_medium_range
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
-        ask_short_range
-            Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
-
-        Returns
-        -------
-        doc_non_energy_per_ask_short_range_dropin_fuel
-            Direct operating cost attributable to non-energy expenses, for short range drop-in fleet [€/ASK].
-        doc_non_energy_per_ask_medium_range_dropin_fuel
-            Direct operating cost attributable to non-energy expenses, for medium range drop-in fleet [€/ASK].
-        doc_non_energy_per_ask_long_range_dropin_fuel
-            Direct operating cost attributable to non-energy expenses, for long range drop-in fleet [€/ASK].
-        doc_non_energy_per_ask_short_range_hydrogen
-            Direct operating cost attributable to non-energy expenses, for short range hydrogen fleet [€/ASK].
-        doc_non_energy_per_ask_medium_range_hydrogen
-            Direct operating cost attributable to non-energy expenses, for medium range hydrogen fleet [€/ASK].
-        doc_non_energy_per_ask_long_range_hydrogen
-            Direct operating cost attributable to non-energy expenses, for long range hydrogen fleet [€/ASK].
-        doc_non_energy_per_ask_short_range_electric
-            Direct operating cost attributable to non-energy expenses, for short range electric fleet [€/ASK].
-        doc_non_energy_per_ask_medium_range_electric
-            Direct operating cost attributable to non-energy expenses, for medium range electric fleet [€/ASK].
-        doc_non_energy_per_ask_long_range_electric
-            Direct operating cost attributable to non-energy expenses, for long range electric fleet [€/ASK].
-        doc_non_energy_per_ask_short_range_mean
-            Direct operating cost attributable to non-energy expenses, for short range fleet [€/ASK].
-        doc_non_energy_per_ask_medium_range_mean
-            Direct operating cost attributable to non-energy expenses, for medium range fleet [€/ASK].
-        doc_non_energy_per_ask_long_range_mean
-            Direct operating cost attributable to non-energy expenses, for long range fleet [€/ASK].
-        doc_non_energy_per_ask_mean
-            Direct operating cost attributable to non-energy expenses, for overall fleet [€/ASK].
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {}
+        self.output_names = {}
 
-        # Initialization based on 2019 values
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            # Scalars: dropin_fuel init/gain + relative-to-dropin coefficients for hydrogen/electric.
+            self.input_names[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"] = 0.0
+            self.input_names[f"doc_non_energy_per_ask_{mid}_dropin_fuel_gain"] = 0.0
+            self.input_names[f"relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_{mid}"] = 0.0
+            self.input_names[f"relative_doc_non_energy_per_ask_electric_wrt_dropin_{mid}"] = 0.0
+            # Series: per-market ASK + per-energy-type ASK shares.
+            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+                self.output_names[f"doc_non_energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+            self.output_names[f"doc_non_energy_per_ask_{mid}_mean"] = pd.Series([0.0])
 
-        for k in range(self.historic_start_year, self.prospection_start_year):
-            self.df.loc[k, "doc_non_energy_per_ask_short_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_short_range_dropin_fuel_init
-            )
-            self.df.loc[k, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_medium_range_dropin_fuel_init
-            )
-            self.df.loc[k, "doc_non_energy_per_ask_long_range_dropin_fuel"] = (
-                doc_non_energy_per_ask_long_range_dropin_fuel_init
-            )
+        self.output_names["doc_non_energy_per_ask_mean"] = pd.Series([0.0])
 
-        # Projections
+    def compute(self, input_data) -> dict:
+        """
+        DOC (without energy DOC) per ASK using simple gain models.
+        Per-market: dropin_fuel rolls forward via init*cumulative_gain;
+        hydrogen and electric are scalar multiples of dropin_fuel.
+        Aggregates to per-market and global ASK-weighted means.
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
 
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            self.df.loc[k, "doc_non_energy_per_ask_short_range_dropin_fuel"] = self.df.loc[
-                k - 1, "doc_non_energy_per_ask_short_range_dropin_fuel"
-            ] * (1 - doc_non_energy_per_ask_short_range_dropin_fuel_gain / 100)
-            self.df.loc[k, "doc_non_energy_per_ask_medium_range_dropin_fuel"] = self.df.loc[
-                k - 1, "doc_non_energy_per_ask_medium_range_dropin_fuel"
-            ] * (1 - doc_non_energy_per_ask_medium_range_dropin_fuel_gain / 100)
-            self.df.loc[k, "doc_non_energy_per_ask_long_range_dropin_fuel"] = self.df.loc[
-                k - 1, "doc_non_energy_per_ask_long_range_dropin_fuel"
-            ] * (1 - doc_non_energy_per_ask_long_range_dropin_fuel_gain / 100)
+        # Per-market series store.
+        doc_pm = {}  # (mid, et) -> pd.Series
+        ask_market = {}  # mid -> pd.Series
+        ask_share = {}  # (mid, et) -> pd.Series
 
-        doc_non_energy_per_ask_short_range_dropin_fuel = self.df[
-            "doc_non_energy_per_ask_short_range_dropin_fuel"
-        ]
-        doc_non_energy_per_ask_medium_range_dropin_fuel = self.df[
-            "doc_non_energy_per_ask_medium_range_dropin_fuel"
-        ]
-        doc_non_energy_per_ask_long_range_dropin_fuel = self.df[
-            "doc_non_energy_per_ask_long_range_dropin_fuel"
-        ]
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            init = float(input_data[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"])
+            gain = float(input_data[f"doc_non_energy_per_ask_{mid}_dropin_fuel_gain"])
+            rel_h = float(input_data[f"relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_{mid}"])
+            rel_e = float(input_data[f"relative_doc_non_energy_per_ask_electric_wrt_dropin_{mid}"])
 
-        # Hydrogen
+            ask_market[mid] = input_data[f"ask_{mid}"]
+            for et in energy_types:
+                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
 
-        doc_non_energy_per_ask_short_range_hydrogen = (
-            doc_non_energy_per_ask_short_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_short_range
-        )
-        doc_non_energy_per_ask_medium_range_hydrogen = (
-            doc_non_energy_per_ask_medium_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_medium_range
-        )
-        doc_non_energy_per_ask_long_range_hydrogen = (
-            doc_non_energy_per_ask_long_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_long_range
-        )
+            col_dropin = f"doc_non_energy_per_ask_{mid}_dropin_fuel"
 
-        self.df.loc[:, "doc_non_energy_per_ask_short_range_hydrogen"] = (
-            doc_non_energy_per_ask_short_range_hydrogen
-        )
-        self.df.loc[:, "doc_non_energy_per_ask_medium_range_hydrogen"] = (
-            doc_non_energy_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "doc_non_energy_per_ask_long_range_hydrogen"] = (
-            doc_non_energy_per_ask_long_range_hydrogen
-        )
+            # Historical block: fixed at init.
+            for k in range(self.historic_start_year, self.prospection_start_year):
+                self.df.loc[k, col_dropin] = init
 
-        # Electric
-        doc_non_energy_per_ask_short_range_electric = (
-            doc_non_energy_per_ask_short_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_electric_wrt_dropin_short_range
-        )
-        doc_non_energy_per_ask_medium_range_electric = (
-            doc_non_energy_per_ask_medium_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_electric_wrt_dropin_medium_range
-        )
-        doc_non_energy_per_ask_long_range_electric = (
-            doc_non_energy_per_ask_long_range_dropin_fuel
-            * relative_doc_non_energy_per_ask_electric_wrt_dropin_long_range
-        )
+            # Projection block: recurrence.
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, col_dropin] = self.df.loc[k - 1, col_dropin] * (1 - gain / 100)
 
-        self.df.loc[:, "doc_non_energy_per_ask_short_range_electric"] = (
-            doc_non_energy_per_ask_short_range_electric
-        )
-        self.df.loc[:, "doc_non_energy_per_ask_medium_range_electric"] = (
-            doc_non_energy_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "doc_non_energy_per_ask_long_range_electric"] = (
-            doc_non_energy_per_ask_long_range_electric
-        )
+            dropin_series = self.df[col_dropin]
+            hydrogen_series = dropin_series * rel_h
+            electric_series = dropin_series * rel_e
 
-        doc_non_energy_per_ask_long_range_mean = (
-            doc_non_energy_per_ask_long_range_hydrogen * ask_long_range_hydrogen_share / 100
-            + doc_non_energy_per_ask_long_range_dropin_fuel * ask_long_range_dropin_fuel_share / 100
-            + doc_non_energy_per_ask_long_range_electric * ask_long_range_electric_share / 100
-        )
+            doc_pm[(mid, "dropin_fuel")] = dropin_series
+            doc_pm[(mid, "hydrogen")] = hydrogen_series
+            doc_pm[(mid, "electric")] = electric_series
 
-        doc_non_energy_per_ask_medium_range_mean = (
-            doc_non_energy_per_ask_medium_range_hydrogen * ask_medium_range_hydrogen_share / 100
-            + doc_non_energy_per_ask_medium_range_dropin_fuel
-            * ask_medium_range_dropin_fuel_share
-            / 100
-            + doc_non_energy_per_ask_medium_range_electric * ask_medium_range_electric_share / 100
-        )
+            for et, series in (
+                ("dropin_fuel", dropin_series),
+                ("hydrogen", hydrogen_series),
+                ("electric", electric_series),
+            ):
+                output_data[f"doc_non_energy_per_ask_{mid}_{et}"] = series
 
-        doc_non_energy_per_ask_short_range_mean = (
-            doc_non_energy_per_ask_short_range_hydrogen * ask_short_range_hydrogen_share / 100
-            + doc_non_energy_per_ask_short_range_dropin_fuel
-            * ask_short_range_dropin_fuel_share
-            / 100
-            + doc_non_energy_per_ask_short_range_electric * ask_short_range_electric_share / 100
-        )
+        # Per-market mean.
+        market_mean = {}
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            total = None
+            for et in energy_types:
+                term = doc_pm[(mid, et)] * ask_share[(mid, et)] / 100
+                total = term if total is None else total + term
+            if total is None:
+                total = pd.Series(0.0, index=self.df.index)
+            market_mean[mid] = total
+            output_data[f"doc_non_energy_per_ask_{mid}_mean"] = total
 
-        doc_non_energy_per_ask_mean = (
-            doc_non_energy_per_ask_long_range_mean * ask_long_range
-            + doc_non_energy_per_ask_medium_range_mean * ask_medium_range
-            + doc_non_energy_per_ask_short_range_mean * ask_short_range
-        ) / (ask_long_range + ask_medium_range + ask_short_range)
+        # Global mean: weighted by per-market ASK totals.
+        numerator = None
+        denominator = None
+        for mid, mm in market_mean.items():
+            ask_m = ask_market[mid]
+            num_term = mm * ask_m
+            numerator = num_term if numerator is None else numerator + num_term
+            denominator = ask_m if denominator is None else denominator + ask_m
 
-        self.df.loc[:, "doc_non_energy_per_ask_long_range_mean"] = (
-            doc_non_energy_per_ask_long_range_mean
-        )
+        if numerator is None:
+            global_mean = pd.Series(0.0, index=self.df.index)
+        else:
+            global_mean = numerator / denominator
 
-        self.df.loc[:, "doc_non_energy_per_ask_medium_range_mean"] = (
-            doc_non_energy_per_ask_medium_range_mean
-        )
+        output_data["doc_non_energy_per_ask_mean"] = global_mean
 
-        self.df.loc[:, "doc_non_energy_per_ask_short_range_mean"] = (
-            doc_non_energy_per_ask_short_range_mean
-        )
-
-        self.df.loc[:, "doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
-
-        return (
-            doc_non_energy_per_ask_short_range_dropin_fuel,
-            doc_non_energy_per_ask_medium_range_dropin_fuel,
-            doc_non_energy_per_ask_long_range_dropin_fuel,
-            doc_non_energy_per_ask_short_range_hydrogen,
-            doc_non_energy_per_ask_medium_range_hydrogen,
-            doc_non_energy_per_ask_long_range_hydrogen,
-            doc_non_energy_per_ask_short_range_electric,
-            doc_non_energy_per_ask_medium_range_electric,
-            doc_non_energy_per_ask_long_range_electric,
-            doc_non_energy_per_ask_short_range_mean,
-            doc_non_energy_per_ask_medium_range_mean,
-            doc_non_energy_per_ask_long_range_mean,
-            doc_non_energy_per_ask_mean,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class PassengerAircraftDocEnergy(AeroMAPSModel):
