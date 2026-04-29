@@ -5,8 +5,6 @@ direct_operating_costs
 Direct Operating Costs (DOC) models for passenger aircraft.
 """
 
-from typing import Tuple
-
 import numpy as np
 import pandas as pd
 
@@ -925,408 +923,82 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_total_doc", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
         self.fleet_model = None
+        self.markets = None
 
-    def compute(
-        self,
-        doc_non_energy_per_ask_short_range_dropin_fuel: pd.Series,
-        doc_non_energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        doc_non_energy_per_ask_long_range_dropin_fuel: pd.Series,
-        doc_non_energy_per_ask_short_range_hydrogen: pd.Series,
-        doc_non_energy_per_ask_medium_range_hydrogen: pd.Series,
-        doc_non_energy_per_ask_long_range_hydrogen: pd.Series,
-        doc_non_energy_per_ask_short_range_mean: pd.Series,
-        doc_non_energy_per_ask_medium_range_mean: pd.Series,
-        doc_non_energy_per_ask_long_range_mean: pd.Series,
-        doc_non_energy_per_ask_mean: pd.Series,
-        doc_energy_per_ask_long_range_dropin_fuel: pd.Series,
-        doc_energy_per_ask_long_range_hydrogen: pd.Series,
-        doc_energy_per_ask_long_range_mean: pd.Series,
-        doc_energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        doc_energy_per_ask_medium_range_hydrogen: pd.Series,
-        doc_energy_per_ask_medium_range_mean: pd.Series,
-        doc_energy_per_ask_short_range_dropin_fuel: pd.Series,
-        doc_energy_per_ask_short_range_hydrogen: pd.Series,
-        doc_energy_per_ask_short_range_mean: pd.Series,
-        doc_energy_per_ask_mean: pd.Series,
-        doc_energy_carbon_tax_per_ask_long_range_dropin_fuel: pd.Series,
-        doc_energy_carbon_tax_per_ask_long_range_hydrogen: pd.Series,
-        doc_energy_carbon_tax_per_ask_long_range_mean: pd.Series,
-        doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel: pd.Series,
-        doc_energy_carbon_tax_per_ask_medium_range_hydrogen: pd.Series,
-        doc_energy_carbon_tax_per_ask_medium_range_mean: pd.Series,
-        doc_energy_carbon_tax_per_ask_short_range_dropin_fuel: pd.Series,
-        doc_energy_carbon_tax_per_ask_short_range_hydrogen: pd.Series,
-        doc_energy_carbon_tax_per_ask_short_range_mean: pd.Series,
-        doc_non_energy_per_ask_short_range_electric: pd.Series,
-        doc_non_energy_per_ask_medium_range_electric: pd.Series,
-        doc_non_energy_per_ask_long_range_electric: pd.Series,
-        doc_energy_per_ask_short_range_electric: pd.Series,
-        doc_energy_per_ask_medium_range_electric: pd.Series,
-        doc_energy_per_ask_long_range_electric: pd.Series,
-        doc_energy_carbon_tax_per_ask_short_range_electric: pd.Series,
-        doc_energy_carbon_tax_per_ask_medium_range_electric: pd.Series,
-        doc_energy_carbon_tax_per_ask_long_range_electric: pd.Series,
-        doc_energy_carbon_tax_per_ask_mean: pd.Series,
-        doc_energy_subsidy_per_ask_long_range_dropin_fuel: pd.Series,
-        doc_energy_subsidy_per_ask_medium_range_dropin_fuel: pd.Series,
-        doc_energy_subsidy_per_ask_short_range_dropin_fuel: pd.Series,
-        doc_energy_subsidy_per_ask_long_range_hydrogen: pd.Series,
-        doc_energy_subsidy_per_ask_medium_range_hydrogen: pd.Series,
-        doc_energy_subsidy_per_ask_short_range_hydrogen: pd.Series,
-        doc_energy_subsidy_per_ask_long_range_electric: pd.Series,
-        doc_energy_subsidy_per_ask_medium_range_electric: pd.Series,
-        doc_energy_subsidy_per_ask_short_range_electric: pd.Series,
-        doc_energy_subsidy_per_ask_long_range_mean: pd.Series,
-        doc_energy_subsidy_per_ask_medium_range_mean: pd.Series,
-        doc_energy_subsidy_per_ask_short_range_mean: pd.Series,
-        doc_energy_subsidy_per_ask_mean: pd.Series,
-        doc_energy_tax_per_ask_long_range_dropin_fuel: pd.Series,
-        doc_energy_tax_per_ask_medium_range_dropin_fuel: pd.Series,
-        doc_energy_tax_per_ask_short_range_dropin_fuel: pd.Series,
-        doc_energy_tax_per_ask_long_range_hydrogen: pd.Series,
-        doc_energy_tax_per_ask_medium_range_hydrogen: pd.Series,
-        doc_energy_tax_per_ask_short_range_hydrogen: pd.Series,
-        doc_energy_tax_per_ask_long_range_electric: pd.Series,
-        doc_energy_tax_per_ask_medium_range_electric: pd.Series,
-        doc_energy_tax_per_ask_short_range_electric: pd.Series,
-        doc_energy_tax_per_ask_long_range_mean: pd.Series,
-        doc_energy_tax_per_ask_medium_range_mean: pd.Series,
-        doc_energy_tax_per_ask_short_range_mean: pd.Series,
-        doc_energy_tax_per_ask_mean: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        Execution of the total DOC per ASK calculation.
-        Parameters
-        ----------
-        doc_non_energy_per_ask_short_range_dropin_fuel
-            Non-energy direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_non_energy_per_ask_medium_range_dropin_fuel
-            Non-energy direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_non_energy_per_ask_long_range_dropin_fuel
-            Non-energy direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_non_energy_per_ask_short_range_hydrogen
-            Non-energy direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_non_energy_per_ask_medium_range_hydrogen
-            Non-energy direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_non_energy_per_ask_long_range_hydrogen
-            Non-energy direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_non_energy_per_ask_short_range_mean
-            Non-energy direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_non_energy_per_ask_medium_range_mean
-            Non-energy direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_non_energy_per_ask_long_range_mean
-            Non-energy direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_non_energy_per_ask_mean
-            Non-energy direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        doc_energy_per_ask_long_range_dropin_fuel
-            Energy direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_per_ask_long_range_hydrogen
-            Energy direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_energy_per_ask_long_range_mean
-            Energy direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_energy_per_ask_medium_range_dropin_fuel
-            Energy direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_per_ask_medium_range_hydrogen
-            Energy direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_energy_per_ask_medium_range_mean
-            Energy direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_energy_per_ask_short_range_dropin_fuel
-            Energy direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_per_ask_short_range_hydrogen
-            Energy direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_energy_per_ask_short_range_mean
-            Energy direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_energy_per_ask_mean
-            Energy direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_dropin_fuel
-            Energy carbon tax direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_hydrogen
-            Energy carbon tax direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_mean
-            Energy carbon tax direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel
-            Energy carbon tax direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_hydrogen
-            Energy carbon tax direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_mean
-            Energy carbon tax direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_dropin_fuel
-            Energy carbon tax direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_hydrogen
-            Energy carbon tax direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_mean
-            Energy carbon tax direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_non_energy_per_ask_short_range_electric
-            Non-energy direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_non_energy_per_ask_medium_range_electric
-            Non-energy direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_non_energy_per_ask_long_range_electric
-            Non-energy direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_per_ask_short_range_electric
-            Energy direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_per_ask_medium_range_electric
-            Energy direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_per_ask_long_range_electric
-            Energy direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_electric
-            Energy carbon tax direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_electric
-            Energy carbon tax direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_electric
-            Energy carbon tax direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_carbon_tax_per_ask_mean
-            Energy carbon tax direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_dropin_fuel
-            Energy subsidy direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_dropin_fuel
-            Energy subsidy direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_dropin_fuel
-            Energy subsidy direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_hydrogen
-            Energy subsidy direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_hydrogen
-            Energy subsidy direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_hydrogen
-            Energy subsidy direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_electric
-            Energy subsidy direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_electric
-            Energy subsidy direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_electric
-            Energy subsidy direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_mean
-            Energy subsidy direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_mean
-            Energy subsidy direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_mean
-            Energy subsidy direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_energy_subsidy_per_ask_mean
-            Energy subsidy direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        doc_energy_tax_per_ask_long_range_dropin_fuel
-            Energy tax direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_tax_per_ask_medium_range_dropin_fuel
-            Energy tax direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_tax_per_ask_short_range_dropin_fuel
-            Energy tax direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_energy_tax_per_ask_long_range_hydrogen
-            Energy tax direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_energy_tax_per_ask_medium_range_hydrogen
-            Energy tax direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_energy_tax_per_ask_short_range_hydrogen
-            Energy tax direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_energy_tax_per_ask_long_range_electric
-            Energy tax direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_tax_per_ask_medium_range_electric
-            Energy tax direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_tax_per_ask_short_range_electric
-            Energy tax direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_energy_tax_per_ask_long_range_mean
-            Energy tax direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_energy_tax_per_ask_medium_range_mean
-            Energy tax direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_energy_tax_per_ask_short_range_mean
-            Energy tax direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_energy_tax_per_ask_mean
-            Energy tax direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-
-        Returns
-        -------
-        doc_total_per_ask_short_range_dropin_fuel
-            Total direct operating cost per ASK for passenger short-range market aircraft using drop-in fuel [€/ASK].
-        doc_total_per_ask_medium_range_dropin_fuel
-            Total direct operating cost per ASK for passenger medium-range market aircraft using drop-in fuel [€/ASK].
-        doc_total_per_ask_long_range_dropin_fuel
-            Total direct operating cost per ASK for passenger long-range market aircraft using drop-in fuel [€/ASK].
-        doc_total_per_ask_short_range_hydrogen
-            Total direct operating cost per ASK for passenger short-range market aircraft using hydrogen [€/ASK].
-        doc_total_per_ask_medium_range_hydrogen
-            Total direct operating cost per ASK for passenger medium-range market aircraft using hydrogen [€/ASK].
-        doc_total_per_ask_long_range_hydrogen
-            Total direct operating cost per ASK for passenger long-range market aircraft using hydrogen [€/ASK].
-        doc_total_per_ask_short_range_electric
-            Total direct operating cost per ASK for passenger short-range market aircraft using electric propulsion [€/ASK].
-        doc_total_per_ask_medium_range_electric
-            Total direct operating cost per ASK for passenger medium-range market aircraft using electric propulsion [€/ASK].
-        doc_total_per_ask_long_range_electric
-            Total direct operating cost per ASK for passenger long-range market aircraft using electric propulsion [€/ASK].
-        doc_total_per_ask_short_range_mean
-            Total direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
-        doc_total_per_ask_medium_range_mean
-            Total direct operating cost per ASK for passenger medium-range market aircraft average [€/ASK].
-        doc_total_per_ask_long_range_mean
-            Total direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
-        doc_total_per_ask_mean
-            Total direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
-        # Drop-in
-        doc_total_per_ask_short_range_dropin_fuel = (
-            doc_non_energy_per_ask_short_range_dropin_fuel
-            + doc_energy_per_ask_short_range_dropin_fuel
-            + doc_energy_carbon_tax_per_ask_short_range_dropin_fuel
-            - doc_energy_subsidy_per_ask_short_range_dropin_fuel
-            + doc_energy_tax_per_ask_short_range_dropin_fuel
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        component_prefixes = [
+            "doc_non_energy_per_ask",
+            "doc_energy_per_ask",
+            "doc_energy_carbon_tax_per_ask",
+            "doc_energy_subsidy_per_ask",
+            "doc_energy_tax_per_ask",
+        ]
+        self.input_names = {}
+        self.output_names = {}
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            for et in energy_types:
+                for prefix in component_prefixes:
+                    self.input_names[f"{prefix}_{mid}_{et}"] = pd.Series([0.0])
+                self.output_names[f"doc_total_per_ask_{mid}_{et}"] = pd.Series([0.0])
+            for prefix in component_prefixes:
+                self.input_names[f"{prefix}_{mid}_mean"] = pd.Series([0.0])
+            self.output_names[f"doc_total_per_ask_{mid}_mean"] = pd.Series([0.0])
+
+        # Global means (no per-market suffix).
+        for prefix in component_prefixes:
+            self.input_names[f"{prefix}_mean"] = pd.Series([0.0])
+        self.output_names["doc_total_per_ask_mean"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """
+        Aggregate DOC components into a total per (market, energy_type),
+        plus per-market and global means. Subsidy enters with a negative sign
+        (income from subsidy reduces the operator's cost).
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+
+        def total(non_energy, energy, carbon_tax, subsidy, tax):
+            return non_energy + energy + carbon_tax - subsidy + tax
+
+        # Per-(market, energy_type) total.
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            for et in energy_types:
+                output_data[f"doc_total_per_ask_{mid}_{et}"] = total(
+                    input_data[f"doc_non_energy_per_ask_{mid}_{et}"],
+                    input_data[f"doc_energy_per_ask_{mid}_{et}"],
+                    input_data[f"doc_energy_carbon_tax_per_ask_{mid}_{et}"],
+                    input_data[f"doc_energy_subsidy_per_ask_{mid}_{et}"],
+                    input_data[f"doc_energy_tax_per_ask_{mid}_{et}"],
+                )
+
+            # Per-market mean.
+            output_data[f"doc_total_per_ask_{mid}_mean"] = total(
+                input_data[f"doc_non_energy_per_ask_{mid}_mean"],
+                input_data[f"doc_energy_per_ask_{mid}_mean"],
+                input_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"],
+                input_data[f"doc_energy_subsidy_per_ask_{mid}_mean"],
+                input_data[f"doc_energy_tax_per_ask_{mid}_mean"],
+            )
+
+        # Global mean.
+        output_data["doc_total_per_ask_mean"] = total(
+            input_data["doc_non_energy_per_ask_mean"],
+            input_data["doc_energy_per_ask_mean"],
+            input_data["doc_energy_carbon_tax_per_ask_mean"],
+            input_data["doc_energy_subsidy_per_ask_mean"],
+            input_data["doc_energy_tax_per_ask_mean"],
         )
 
-        doc_total_per_ask_medium_range_dropin_fuel = (
-            doc_non_energy_per_ask_medium_range_dropin_fuel
-            + doc_energy_per_ask_medium_range_dropin_fuel
-            + doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel
-            - doc_energy_subsidy_per_ask_medium_range_dropin_fuel
-            + doc_energy_tax_per_ask_medium_range_dropin_fuel
-        )
-
-        doc_total_per_ask_long_range_dropin_fuel = (
-            doc_non_energy_per_ask_long_range_dropin_fuel
-            + doc_energy_per_ask_long_range_dropin_fuel
-            + doc_energy_carbon_tax_per_ask_long_range_dropin_fuel
-            - doc_energy_subsidy_per_ask_long_range_dropin_fuel
-            + doc_energy_tax_per_ask_long_range_dropin_fuel
-        )
-
-        # Hydrogen
-        doc_total_per_ask_short_range_hydrogen = (
-            doc_non_energy_per_ask_short_range_hydrogen
-            + doc_energy_per_ask_short_range_hydrogen
-            + doc_energy_carbon_tax_per_ask_short_range_hydrogen
-            - doc_energy_subsidy_per_ask_short_range_hydrogen
-            + doc_energy_tax_per_ask_short_range_hydrogen
-        )
-
-        doc_total_per_ask_medium_range_hydrogen = (
-            doc_non_energy_per_ask_medium_range_hydrogen
-            + doc_energy_per_ask_medium_range_hydrogen
-            + doc_energy_carbon_tax_per_ask_medium_range_hydrogen
-            - doc_energy_subsidy_per_ask_medium_range_hydrogen
-            + doc_energy_tax_per_ask_medium_range_hydrogen
-        )
-
-        doc_total_per_ask_long_range_hydrogen = (
-            doc_non_energy_per_ask_long_range_hydrogen
-            + doc_energy_per_ask_long_range_hydrogen
-            + doc_energy_carbon_tax_per_ask_long_range_hydrogen
-            - doc_energy_subsidy_per_ask_long_range_hydrogen
-            + doc_energy_tax_per_ask_long_range_hydrogen
-        )
-
-        # Electric
-        doc_total_per_ask_short_range_electric = (
-            doc_non_energy_per_ask_short_range_electric
-            + doc_energy_per_ask_short_range_electric
-            + doc_energy_carbon_tax_per_ask_short_range_electric
-            - doc_energy_subsidy_per_ask_short_range_electric
-            + doc_energy_tax_per_ask_short_range_electric
-        )
-
-        doc_total_per_ask_medium_range_electric = (
-            doc_non_energy_per_ask_medium_range_electric
-            + doc_energy_per_ask_medium_range_electric
-            + doc_energy_carbon_tax_per_ask_medium_range_electric
-            - doc_energy_subsidy_per_ask_medium_range_electric
-            + doc_energy_tax_per_ask_medium_range_electric
-        )
-
-        doc_total_per_ask_long_range_electric = (
-            doc_non_energy_per_ask_long_range_electric
-            + doc_energy_per_ask_long_range_electric
-            + doc_energy_carbon_tax_per_ask_long_range_electric
-            - doc_energy_subsidy_per_ask_long_range_electric
-            + doc_energy_tax_per_ask_long_range_electric
-        )
-
-        # Average per category
-        doc_total_per_ask_short_range_mean = (
-            doc_non_energy_per_ask_short_range_mean
-            + doc_energy_per_ask_short_range_mean
-            + doc_energy_carbon_tax_per_ask_short_range_mean
-            - doc_energy_subsidy_per_ask_short_range_mean
-            + doc_energy_tax_per_ask_short_range_mean
-        )
-
-        doc_total_per_ask_medium_range_mean = (
-            doc_non_energy_per_ask_medium_range_mean
-            + doc_energy_per_ask_medium_range_mean
-            + doc_energy_carbon_tax_per_ask_medium_range_mean
-            - doc_energy_subsidy_per_ask_medium_range_mean
-            + doc_energy_tax_per_ask_medium_range_mean
-        )
-
-        doc_total_per_ask_long_range_mean = (
-            doc_non_energy_per_ask_long_range_mean
-            + doc_energy_per_ask_long_range_mean
-            + doc_energy_carbon_tax_per_ask_long_range_mean
-            - doc_energy_subsidy_per_ask_long_range_mean
-            + doc_energy_tax_per_ask_long_range_mean
-        )
-
-        # Total average
-        doc_total_per_ask_mean = (
-            doc_non_energy_per_ask_mean
-            + doc_energy_per_ask_mean
-            + doc_energy_carbon_tax_per_ask_mean
-            - doc_energy_subsidy_per_ask_mean
-            + doc_energy_tax_per_ask_mean
-        )
-
-        self.df.loc[:, "doc_total_per_ask_short_range_dropin_fuel"] = (
-            doc_total_per_ask_short_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_total_per_ask_medium_range_dropin_fuel"] = (
-            doc_total_per_ask_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_total_per_ask_long_range_dropin_fuel"] = (
-            doc_total_per_ask_long_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_total_per_ask_short_range_hydrogen"] = (
-            doc_total_per_ask_short_range_hydrogen
-        )
-        self.df.loc[:, "doc_total_per_ask_medium_range_hydrogen"] = (
-            doc_total_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "doc_total_per_ask_long_range_hydrogen"] = (
-            doc_total_per_ask_long_range_hydrogen
-        )
-        self.df.loc[:, "doc_total_per_ask_short_range_electric"] = (
-            doc_total_per_ask_short_range_electric
-        )
-        self.df.loc[:, "doc_total_per_ask_medium_range_electric"] = (
-            doc_total_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "doc_total_per_ask_long_range_electric"] = (
-            doc_total_per_ask_long_range_electric
-        )
-        self.df.loc[:, "doc_total_per_ask_short_range_mean"] = doc_total_per_ask_short_range_mean
-        self.df.loc[:, "doc_total_per_ask_medium_range_mean"] = doc_total_per_ask_medium_range_mean
-        self.df.loc[:, "doc_total_per_ask_long_range_mean"] = doc_total_per_ask_long_range_mean
-        self.df.loc[:, "doc_total_per_ask_mean"] = doc_total_per_ask_mean
-
-        return (
-            doc_total_per_ask_short_range_dropin_fuel,
-            doc_total_per_ask_medium_range_dropin_fuel,
-            doc_total_per_ask_long_range_dropin_fuel,
-            doc_total_per_ask_short_range_hydrogen,
-            doc_total_per_ask_medium_range_hydrogen,
-            doc_total_per_ask_long_range_hydrogen,
-            doc_total_per_ask_short_range_electric,
-            doc_total_per_ask_medium_range_electric,
-            doc_total_per_ask_long_range_electric,
-            doc_total_per_ask_short_range_mean,
-            doc_total_per_ask_medium_range_mean,
-            doc_total_per_ask_long_range_mean,
-            doc_total_per_ask_mean,
-        )
+        self._store_outputs(output_data)
+        return output_data
