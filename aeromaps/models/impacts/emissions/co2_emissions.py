@@ -174,20 +174,20 @@ class CO2Emissions(AeroMAPSModel):
     --------------
     Inputs
         - load_factor: Load factor [%].
-        - rtk: Freight RTK [RTK].
         - rpk_<market>: Passenger RPK [RPK].
+        - rtk_<market>: Freight RTK [RTK].
         - energy_per_ask_<market>_<energy>: Passenger MJ/ASK.
         - ask_<market>_<energy>_share: Passenger energy shares [%].
-        - energy_per_rtk_freight_<energy>: Freight MJ/RTK (legacy single-freight).
-        - rtk_<energy>_share: Freight energy shares [%].
+        - energy_per_rtk_<market>_<energy>: Freight MJ/RTK.
+        - rtk_<market>_<energy>_share: Freight energy shares [%].
         - <energy>_mean_co2_emission_factor: Mean CO2 factor [gCO2/MJ].
     Outputs
-        - co2_emissions_<market>: Per-passenger-market CO2 [MtCO2].
+        - co2_emissions_<market>: Per-market CO2 [MtCO2].
         - co2_emissions_passenger: Passenger total [MtCO2].
         - co2_emissions_freight: Freight total [MtCO2].
         - co2_emissions: Passenger + freight [MtCO2].
     Notes
-        - <market> is the MarketManager id (passenger markets).
+        - <market> is the MarketManager id (passenger and freight markets).
         - <energy> is one of: dropin_fuel, hydrogen, electric.
         - I/O names are generated from configuration and passed to GEMSEO via
           self.input_names and self.output_names grammars.
@@ -206,7 +206,6 @@ class CO2Emissions(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
         self.input_names = {
             "load_factor": pd.Series([0.0]),
-            "rtk": pd.Series([0.0]),
         }
         self.output_names = {}
 
@@ -219,10 +218,14 @@ class CO2Emissions(AeroMAPSModel):
                 self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
             self.output_names[f"co2_emissions_{mid}"] = pd.Series([0.0])
 
-        # Freight inputs (legacy single-freight-market shape; multi-freight deferred).
-        for et in energy_types:
-            self.input_names[f"energy_per_rtk_freight_{et}"] = pd.Series([0.0])
-            self.input_names[f"rtk_{et}_share"] = pd.Series([0.0])
+        # Per-freight-market inputs and per-market output.
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_rtk_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"rtk_{mid}_{et}_share"] = pd.Series([0.0])
+            self.output_names[f"co2_emissions_{mid}"] = pd.Series([0.0])
 
         # Mean CO2 emission factors (per energy type, global).
         for et in energy_types:
@@ -247,8 +250,6 @@ class CO2Emissions(AeroMAPSModel):
             co2_factor[et] = f
 
         load_factor = input_data["load_factor"]
-        rtk = input_data["rtk"]
-
         output_data = {}
 
         # Per-passenger-market CO2 emissions.
@@ -270,18 +271,28 @@ class CO2Emissions(AeroMAPSModel):
                 else co2_emissions_passenger + co2_market
             )
 
-        # Freight CO2 emissions (single-freight-market legacy shape).
-        type_sum_freight = None
-        for et in energy_types:
-            energy_per_rtk = input_data[f"energy_per_rtk_freight_{et}"]
-            rtk_share = input_data[f"rtk_{et}_share"]
-            term = rtk_share / 100 * (energy_per_rtk * co2_factor[et])
-            type_sum_freight = term if type_sum_freight is None else type_sum_freight + term
-        co2_emissions_freight = rtk * type_sum_freight * 10 ** (-12)
+        # Per-freight-market CO2 emissions.
+        co2_emissions_freight = None
+        for market in self.markets.get(traffic_type="freight"):
+            mid = market.id
+            rtk_m = input_data[f"rtk_{mid}"]
+            type_sum = None
+            for et in energy_types:
+                energy_per_rtk = input_data[f"energy_per_rtk_{mid}_{et}"]
+                rtk_share = input_data[f"rtk_{mid}_{et}_share"]
+                term = rtk_share / 100 * (energy_per_rtk * co2_factor[et])
+                type_sum = term if type_sum is None else type_sum + term
+            co2_market = rtk_m * type_sum * 10 ** (-12)
+            output_data[f"co2_emissions_{mid}"] = co2_market
+            co2_emissions_freight = (
+                co2_market if co2_emissions_freight is None else co2_emissions_freight + co2_market
+            )
 
-        # Defensive default if no passenger markets.
+        # Defensive defaults if no markets.
         if co2_emissions_passenger is None:
             co2_emissions_passenger = pd.Series(0.0, index=self.df.index)
+        if co2_emissions_freight is None:
+            co2_emissions_freight = pd.Series(0.0, index=self.df.index)
 
         # Update climate DataFrame side-effect (matches legacy behaviour).
         historical_co2_emissions_for_temperature = self.climate_historical_data[:, 1]
