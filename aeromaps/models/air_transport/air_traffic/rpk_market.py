@@ -113,10 +113,10 @@ class RPKMarket(AeroMAPSModel):
             f"{mid}_measures_impact": pd.Series([0.0]),
         }
         self.output_names = {
-            f"{mid}_rpk": pd.Series([0.0]),
-            f"{mid}_annual_growth_rate_rpk": pd.Series([0.0]),
-            f"{mid}_cagr_rpk": 0.0,
-            f"{mid}_prospective_evolution_rpk": 0.0,
+            f"rpk_{mid}": pd.Series([0.0]),
+            f"annual_growth_rate_rpk_{mid}": pd.Series([0.0]),
+            f"cagr_rpk_{mid}": 0.0,
+            f"prospective_evolution_rpk_{mid}": 0.0,
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -142,8 +142,8 @@ class RPKMarket(AeroMAPSModel):
                 index=range(self.historic_start_year, self.end_year + 1),
             )
 
-        rpk_col = f"{mid}_rpk"
-        rate_col = f"{mid}_annual_growth_rate_rpk"
+        rpk_col = f"rpk_{mid}"
+        rate_col = f"annual_growth_rate_rpk_{mid}"
 
         # Historic initialisation: split total RPK by market share
         for k in range(self.historic_start_year, self.prospection_start_year):
@@ -198,8 +198,8 @@ class RPKMarket(AeroMAPSModel):
         output_data = {
             rpk_col: self.df[rpk_col],
             rate_col: self.df[rate_col],
-            f"{mid}_cagr_rpk": cagr,
-            f"{mid}_prospective_evolution_rpk": prospective_evolution,
+            f"cagr_rpk_{mid}": cagr,
+            f"prospective_evolution_rpk_{mid}": prospective_evolution,
         }
         self._store_outputs(output_data)
         return output_data
@@ -224,7 +224,7 @@ class RPKAggregator(AeroMAPSModel):
         self.passenger_market_ids = list(passenger_market_ids)
         self.input_names = {}
         for mid in self.passenger_market_ids:
-            self.input_names[f"{mid}_rpk"] = pd.Series([0.0])
+            self.input_names[f"rpk_{mid}"] = pd.Series([0.0])
         self.output_names = {
             "rpk": pd.Series([0.0]),
             "annual_growth_rate_passenger": pd.Series([0.0]),
@@ -235,7 +235,7 @@ class RPKAggregator(AeroMAPSModel):
     def compute(self, input_data: dict) -> dict:
         total_rpk = None
         for mid in self.passenger_market_ids:
-            series = input_data[f"{mid}_rpk"]
+            series = input_data[f"rpk_{mid}"]
             total_rpk = series if total_rpk is None else total_rpk + series
 
         self.df.loc[:, "rpk"] = total_rpk
@@ -284,7 +284,7 @@ class RPKReferenceMarket(AeroMAPSModel):
         mid = market_id
         self.market_id = mid
         self.input_names = {
-            f"{mid}_rpk": pd.Series([0.0]),
+            f"rpk_{mid}": pd.Series([0.0]),
             f"{mid}_reference_cagr_reference_periods": [],
             f"{mid}_reference_cagr_reference_periods_values": [0.0],
             "covid_start_year": 0.0,
@@ -293,13 +293,13 @@ class RPKReferenceMarket(AeroMAPSModel):
             f"{mid}_covid_end_year_reference_ratio": 0.0,
         }
         self.output_names = {
-            f"{mid}_rpk_reference": pd.Series([0.0]),
-            f"{mid}_reference_annual_growth_rate_rpk": pd.Series([0.0]),
+            f"rpk_reference_{mid}": pd.Series([0.0]),
+            f"reference_annual_growth_rate_rpk_{mid}": pd.Series([0.0]),
         }
 
     def compute(self, input_data: dict) -> dict:
         mid = self.market_id
-        rpk = input_data[f"{mid}_rpk"]
+        rpk = input_data[f"rpk_{mid}"]
         reference_periods = list(input_data[f"{mid}_reference_cagr_reference_periods"])
         reference_values = list(input_data[f"{mid}_reference_cagr_reference_periods_values"])
         covid_start_year = int(input_data["covid_start_year"])
@@ -307,8 +307,8 @@ class RPKReferenceMarket(AeroMAPSModel):
         covid_end_year = int(input_data[f"{mid}_covid_end_year"])
         covid_end_ratio = float(input_data[f"{mid}_covid_end_year_reference_ratio"])
 
-        col = f"{mid}_rpk_reference"
-        rate_col = f"{mid}_reference_annual_growth_rate_rpk"
+        col = f"rpk_reference_{mid}"
+        rate_col = f"reference_annual_growth_rate_rpk_{mid}"
 
         for k in range(self.historic_start_year, self.prospection_start_year):
             self.df.loc[k, col] = rpk.loc[k]

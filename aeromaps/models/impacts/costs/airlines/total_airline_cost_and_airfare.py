@@ -26,25 +26,24 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_simple_airfare' by default).
-    total_cost_per_ask
-        Total cost per available seat kilometer (ASK) [€/ASK].
-    total_cost_per_ask_{market_id}
-        Total cost per available seat kilometer (ASK) for a given passenger market [€/ASK].
-    load_factor
-        Load factor [%].
-    operational_profit_per_ask
-        Operational profit per available seat kilometer (ASK) [€/ASK].
 
-    Returns
-    -------
-    airfare_per_ask
-        Airfare per available seat kilometer (ASK) [€/ASK].
-    airfare_per_ask_{market_id}
-        Airfare per available seat kilometer (ASK) for a given passenger market [€/ASK].
-    airfare_per_rpk
-        Airfare per revenue passenger kilometer (RPK) [€/RPK].
-    airfare_per_rpk_{market_id}
-        Airfare per revenue passenger kilometer (RPK) for a given passenger market [€/RPK].
+    Documentation
+    --------------
+    Inputs
+        - total_cost_per_ask: Total cost per available seat kilometer (ASK) [EUR/ASK].
+        - total_cost_per_ask_<market>: Total cost per ASK for a passenger market [EUR/ASK].
+        - load_factor: Load factor [%].
+        - load_factor_<market>: Load factor for a passenger market [%].
+        - operational_profit_per_ask: Operational profit per ASK [EUR/ASK].
+    Outputs
+        - airfare_per_ask: Airfare per available seat kilometer (ASK) [EUR/ASK].
+        - airfare_per_ask_<market>: Airfare per ASK for a passenger market [EUR/ASK].
+        - airfare_per_rpk: Airfare per revenue passenger kilometer (RPK) [EUR/RPK].
+        - airfare_per_rpk_<market>: Airfare per RPK for a passenger market [EUR/RPK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_simple_airfare", fleet_model=None, *args, **kwargs):
@@ -65,6 +64,7 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             self.input_names[f"total_cost_per_ask_{mid}"] = pd.Series([0.0])
+            self.input_names[f"load_factor_{mid}"] = pd.Series([0.0])
             self.output_names[f"airfare_per_ask_{mid}"] = pd.Series([0.0])
             self.output_names[f"airfare_per_rpk_{mid}"] = pd.Series([0.0])
 
@@ -82,10 +82,11 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
+            load_factor_m = input_data[f"load_factor_{mid}"]
             airfare_per_ask_m = (
                 input_data[f"total_cost_per_ask_{mid}"] + input_data["operational_profit_per_ask"]
             )
-            airfare_per_rpk_m = airfare_per_ask_m / (load_factor / 100)
+            airfare_per_rpk_m = airfare_per_ask_m / (load_factor_m / 100)
             output_data[f"airfare_per_ask_{mid}"] = airfare_per_ask_m
             output_data[f"airfare_per_rpk_{mid}"] = airfare_per_rpk_m
 
@@ -101,59 +102,41 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_total_cost' by default).
-    doc_non_energy_per_ask_mean
-        Mean direct operating cost (non-energy) per available seat kilometer (ASK) [€/ASK].
-    doc_non_energy_per_ask_{market_id}_mean
-        Mean direct operating cost (non-energy) per ASK for a given passenger market [€/ASK].
-    doc_energy_per_ask_mean
-        Mean direct operating cost (energy) per available seat kilometer (ASK) [€/ASK].
-    doc_energy_per_ask_{market_id}_mean
-        Mean direct operating cost (energy) per ASK for a given passenger market [€/ASK].
-    doc_carbon_tax_lowering_offset_per_ask_mean
-        Mean carbon tax lowering offset per ASK [€/ASK].
-    doc_carbon_tax_lowering_offset_per_ask_{market_id}_mean
-        Mean carbon tax lowering offset per ASK for a given passenger market [€/ASK].
-    noc_carbon_offset_per_ask
-        Non-operating cost carbon offset per ASK [€/ASK].
-    non_operating_cost_per_ask
-        Non-operating cost per ASK [€/ASK].
-    indirect_operating_cost_per_ask
-        Indirect operating cost per ASK [€/ASK].
-    passenger_tax_per_ask
-        Passenger tax per ASK [€/ASK].
-    operational_efficiency_cost_non_energy_per_ask
-        Operational efficiency cost (non-energy) per ASK [€/ASK].
-    load_factor_cost_non_energy_per_ask
-        Load factor cost (non-energy) per ASK [€/ASK].
-    load_factor
-        Load factor [%].
 
-    Returns
-    -------
-    total_cost_per_ask_without_extra_tax
-        Total cost per ASK excluding extra taxes [€/ASK].
-    total_cost_per_ask_without_extra_tax_{market_id}
-        Total cost per ASK excluding extra taxes for a given passenger market [€/ASK].
-    total_extra_tax_per_ask
-        Total extra tax per ASK [€/ASK].
-    total_extra_tax_per_ask_{market_id}
-        Total extra tax per ASK for a given passenger market [€/ASK].
-    total_extra_tax_per_rpk
-        Total extra tax per revenue passenger kilometer (RPK) [€/RPK].
-    total_extra_tax_per_rpk_{market_id}
-        Total extra tax per RPK for a given passenger market [€/RPK].
-    total_cost_per_ask
-        Total cost per ASK [€/ASK].
-    total_cost_per_ask_{market_id}
-        Total cost per ASK for a given passenger market [€/ASK].
-    total_cost_per_rpk_without_extra_tax
-        Total cost per RPK excluding extra taxes [€/RPK].
-    total_cost_per_rpk_without_extra_tax_{market_id}
-        Total cost per RPK excluding extra taxes for a given passenger market [€/RPK].
-    total_cost_per_rpk
-        Total cost per RPK [€/RPK].
-    total_cost_per_rpk_{market_id}
-        Total cost per RPK for a given passenger market [€/RPK].
+    Documentation
+    --------------
+    Inputs
+        - doc_non_energy_per_ask_mean: Mean DOC (non-energy) per ASK [EUR/ASK].
+        - doc_non_energy_per_ask_<market>_mean: Mean DOC (non-energy) per ASK for a market [EUR/ASK].
+        - doc_energy_per_ask_mean: Mean DOC (energy) per ASK [EUR/ASK].
+        - doc_energy_per_ask_<market>_mean: Mean DOC (energy) per ASK for a market [EUR/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_mean: Mean carbon tax lowering offset per ASK [EUR/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_<market>_mean: Mean carbon tax lowering offset per ASK for a market [EUR/ASK].
+        - noc_carbon_offset_per_ask: Non-operating cost carbon offset per ASK [EUR/ASK].
+        - non_operating_cost_per_ask: Non-operating cost per ASK [EUR/ASK].
+        - indirect_operating_cost_per_ask: Indirect operating cost per ASK [EUR/ASK].
+        - passenger_tax_per_ask: Passenger tax per ASK [EUR/ASK].
+        - operational_efficiency_cost_non_energy_per_ask: Operational efficiency cost (non-energy) per ASK [EUR/ASK].
+        - load_factor_cost_non_energy_per_ask: Load factor cost (non-energy) per ASK [EUR/ASK].
+        - load_factor: Load factor [%].
+        - load_factor_<market>: Load factor for a passenger market [%].
+    Outputs
+        - total_cost_per_ask_without_extra_tax: Total cost per ASK excluding extra taxes [EUR/ASK].
+        - total_cost_per_ask_without_extra_tax_<market>: Total cost per ASK excluding extra taxes for a market [EUR/ASK].
+        - total_extra_tax_per_ask: Total extra tax per ASK [EUR/ASK].
+        - total_extra_tax_per_ask_<market>: Total extra tax per ASK for a market [EUR/ASK].
+        - total_extra_tax_per_rpk: Total extra tax per RPK [EUR/RPK].
+        - total_extra_tax_per_rpk_<market>: Total extra tax per RPK for a market [EUR/RPK].
+        - total_cost_per_ask: Total cost per ASK [EUR/ASK].
+        - total_cost_per_ask_<market>: Total cost per ASK for a market [EUR/ASK].
+        - total_cost_per_rpk_without_extra_tax: Total cost per RPK excluding extra taxes [EUR/RPK].
+        - total_cost_per_rpk_without_extra_tax_<market>: Total cost per RPK excluding extra taxes for a market [EUR/RPK].
+        - total_cost_per_rpk: Total cost per RPK [EUR/RPK].
+        - total_cost_per_rpk_<market>: Total cost per RPK for a market [EUR/RPK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_total_cost", fleet_model=None, *args, **kwargs):
@@ -189,6 +172,7 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             self.input_names[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = pd.Series(
                 [0.0]
             )
+            self.input_names[f"load_factor_{mid}"] = pd.Series([0.0])
 
             self.output_names[f"total_cost_per_ask_without_extra_tax_{mid}"] = pd.Series([0.0])
             self.output_names[f"total_extra_tax_per_ask_{mid}"] = pd.Series([0.0])
@@ -232,6 +216,9 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
+
+            load_factor_m = input_data[f"load_factor_{mid}"]
+
             total_cost_per_ask_without_extra_tax_m = (
                 input_data[f"doc_non_energy_per_ask_{mid}_mean"]
                 + input_data[f"doc_energy_per_ask_{mid}_mean"]
@@ -250,9 +237,9 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             )
 
             total_cost_per_rpk_without_extra_tax_m = total_cost_per_ask_without_extra_tax_m / (
-                load_factor / 100
+                load_factor_m / 100
             )
-            total_extra_tax_per_rpk_m = total_extra_tax_per_ask_m / (load_factor / 100)
+            total_extra_tax_per_rpk_m = total_extra_tax_per_ask_m / (load_factor_m / 100)
             total_cost_per_rpk_m = (
                 total_cost_per_rpk_without_extra_tax_m + total_extra_tax_per_rpk_m
             )

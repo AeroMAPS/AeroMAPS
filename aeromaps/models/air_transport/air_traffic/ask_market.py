@@ -35,22 +35,22 @@ class ASKMarket(AeroMAPSModel):
         mid = market_id
         self.market_id = mid
         self.input_names = {
-            f"{mid}_load_factor": pd.Series([0.0]),
-            f"{mid}_rpk": pd.Series([0.0]),
+            f"load_factor_{mid}": pd.Series([0.0]),
+            f"rpk_{mid}": pd.Series([0.0]),
         }
         self.output_names = {
-            f"{mid}_ask": pd.Series([0.0]),
+            f"ask_{mid}": pd.Series([0.0]),
         }
 
     def compute(self, input_data: dict) -> dict:
         mid = self.market_id
-        load_factor = input_data[f"{mid}_load_factor"]
-        rpk = input_data[f"{mid}_rpk"]
+        load_factor = input_data[f"load_factor_{mid}"]
+        rpk = input_data[f"rpk_{mid}"]
 
         ask = rpk / (load_factor / 100)
-        self.df.loc[:, f"{mid}_ask"] = ask
+        self.df.loc[:, f"ask_{mid}"] = ask
 
-        output_data = {f"{mid}_ask": ask}
+        output_data = {f"ask_{mid}": ask}
         self._store_outputs(output_data)
         return output_data
 
@@ -71,7 +71,7 @@ class ASKAggregator(AeroMAPSModel):
         self.passenger_market_ids = list(passenger_market_ids)
         self.input_names = {}
         for mid in self.passenger_market_ids:
-            self.input_names[f"{mid}_ask"] = pd.Series([0.0])
+            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
         self.output_names = {
             "ask": pd.Series([0.0]),
         }
@@ -79,7 +79,7 @@ class ASKAggregator(AeroMAPSModel):
     def compute(self, input_data: dict) -> dict:
         total_ask = None
         for mid in self.passenger_market_ids:
-            series = input_data[f"{mid}_ask"]
+            series = input_data[f"ask_{mid}"]
             total_ask = series if total_ask is None else total_ask + series
 
         self.df.loc[:, "ask"] = total_ask
