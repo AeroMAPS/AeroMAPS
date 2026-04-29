@@ -10,6 +10,8 @@ Module grouping models to compute total airline costs and airfares for passenger
 """
 
 # import numpy as np
+from typing import Tuple
+
 import pandas as pd
 # from scipy.interpolate import interp1d
 
@@ -24,6 +26,25 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_simple_airfare' by default).
+    total_cost_per_ask
+        Total cost per available seat kilometer (ASK) [€/ASK].
+    total_cost_per_ask_{market_id}
+        Total cost per available seat kilometer (ASK) for a given passenger market [€/ASK].
+    load_factor
+        Load factor [%].
+    operational_profit_per_ask
+        Operational profit per available seat kilometer (ASK) [€/ASK].
+
+    Returns
+    -------
+    airfare_per_ask
+        Airfare per available seat kilometer (ASK) [€/ASK].
+    airfare_per_ask_{market_id}
+        Airfare per available seat kilometer (ASK) for a given passenger market [€/ASK].
+    airfare_per_rpk
+        Airfare per revenue passenger kilometer (RPK) [€/RPK].
+    airfare_per_rpk_{market_id}
+        Airfare per revenue passenger kilometer (RPK) for a given passenger market [€/RPK].
     """
 
     def __init__(self, name="passenger_aircraft_simple_airfare", fleet_model=None, *args, **kwargs):
@@ -48,44 +69,6 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
             self.output_names[f"airfare_per_rpk_{mid}"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
-        """
-        Execute the computation of simple airfare computation.
-
-        Parameters
-        ----------
-        total_cost_per_ask
-            Total cost per available seat kilometer (ASK) [€/ASK].
-        total_cost_per_ask_short_range
-            Total cost per available seat kilometer (ASK) for short-range flights [€/ASK].
-        total_cost_per_ask_medium_range
-            Total cost per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        total_cost_per_ask_long_range
-            Total cost per available seat kilometer (ASK) for long-range flights [€/ASK].
-        load_factor
-            Load factor [%].
-        operational_profit_per_ask
-            Operational profit per available seat kilometer (ASK) [€/ASK].
-
-        Returns
-        -------
-        airfare_per_ask
-            Airfare per available seat kilometer (ASK) [€/ASK].
-        airfare_per_ask_short_range
-            Airfare per available seat kilometer (ASK) for short-range flights [€/ASK].
-        airfare_per_ask_medium_range
-            Airfare per available seat kilometer (ASK) for medium-range flights [€/ASK].
-        airfare_per_ask_long_range
-            Airfare per available seat kilometer (ASK) for long-range flights [€/ASK].
-        airfare_per_rpk
-            Airfare per revenue passenger kilometer (RPK) [€/RPK].
-        airfare_per_rpk_short_range
-            Airfare per revenue passenger kilometer (RPK) for short-range flights [€/RPK].
-        airfare_per_rpk_medium_range
-            Airfare per revenue passenger kilometer (RPK) for medium-range flights [€/RPK].
-        airfare_per_rpk_long_range
-            Airfare per revenue passenger kilometer (RPK) for long-range flights [€/RPK].
-
-        """
         output_data = {}
         load_factor = input_data["load_factor"]
 
@@ -118,6 +101,59 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_total_cost' by default).
+    doc_non_energy_per_ask_mean
+        Mean direct operating cost (non-energy) per available seat kilometer (ASK) [€/ASK].
+    doc_non_energy_per_ask_{market_id}_mean
+        Mean direct operating cost (non-energy) per ASK for a given passenger market [€/ASK].
+    doc_energy_per_ask_mean
+        Mean direct operating cost (energy) per available seat kilometer (ASK) [€/ASK].
+    doc_energy_per_ask_{market_id}_mean
+        Mean direct operating cost (energy) per ASK for a given passenger market [€/ASK].
+    doc_carbon_tax_lowering_offset_per_ask_mean
+        Mean carbon tax lowering offset per ASK [€/ASK].
+    doc_carbon_tax_lowering_offset_per_ask_{market_id}_mean
+        Mean carbon tax lowering offset per ASK for a given passenger market [€/ASK].
+    noc_carbon_offset_per_ask
+        Non-operating cost carbon offset per ASK [€/ASK].
+    non_operating_cost_per_ask
+        Non-operating cost per ASK [€/ASK].
+    indirect_operating_cost_per_ask
+        Indirect operating cost per ASK [€/ASK].
+    passenger_tax_per_ask
+        Passenger tax per ASK [€/ASK].
+    operational_efficiency_cost_non_energy_per_ask
+        Operational efficiency cost (non-energy) per ASK [€/ASK].
+    load_factor_cost_non_energy_per_ask
+        Load factor cost (non-energy) per ASK [€/ASK].
+    load_factor
+        Load factor [%].
+
+    Returns
+    -------
+    total_cost_per_ask_without_extra_tax
+        Total cost per ASK excluding extra taxes [€/ASK].
+    total_cost_per_ask_without_extra_tax_{market_id}
+        Total cost per ASK excluding extra taxes for a given passenger market [€/ASK].
+    total_extra_tax_per_ask
+        Total extra tax per ASK [€/ASK].
+    total_extra_tax_per_ask_{market_id}
+        Total extra tax per ASK for a given passenger market [€/ASK].
+    total_extra_tax_per_rpk
+        Total extra tax per revenue passenger kilometer (RPK) [€/RPK].
+    total_extra_tax_per_rpk_{market_id}
+        Total extra tax per RPK for a given passenger market [€/RPK].
+    total_cost_per_ask
+        Total cost per ASK [€/ASK].
+    total_cost_per_ask_{market_id}
+        Total cost per ASK for a given passenger market [€/ASK].
+    total_cost_per_rpk_without_extra_tax
+        Total cost per RPK excluding extra taxes [€/RPK].
+    total_cost_per_rpk_without_extra_tax_{market_id}
+        Total cost per RPK excluding extra taxes for a given passenger market [€/RPK].
+    total_cost_per_rpk
+        Total cost per RPK [€/RPK].
+    total_cost_per_rpk_{market_id}
+        Total cost per RPK for a given passenger market [€/RPK].
     """
 
     def __init__(self, name="passenger_aircraft_total_cost", fleet_model=None, *args, **kwargs):
@@ -247,23 +283,20 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_marginal_cost", fleet_model=None, *args, **kwargs):
-        super().__init__(name=name, model_type="custom", *args, **kwargs)
-        self.markets = None
+        super().__init__(name=name, *args, **kwargs)
 
-    def custom_setup(self):
-        self.input_names = {
-            "rpk": pd.Series([0.0]),
-            "rpk_no_elasticity": pd.Series([0.0]),
-            "total_cost_per_rpk_without_extra_tax": pd.Series([0.0]),
-            "total_extra_tax_per_rpk": pd.Series([0.0]),
-        }
-        self.output_names = {
-            "marginal_cost_per_rpk": pd.Series([0.0]),
-            "airfare_per_rpk_true": pd.Series([0.0]),
-            "airfare_per_rpk": pd.Series([0.0]),
-        }
-
-    def compute(self, input_data) -> dict:
+    def compute(
+        self,
+        rpk: pd.Series,
+        rpk_no_elasticity: pd.Series,
+        total_cost_per_rpk_without_extra_tax: pd.Series,
+        total_extra_tax_per_rpk: pd.Series,
+    ) -> Tuple[
+        pd.Series,
+        pd.Series,
+        pd.Series,
+        # np.ndarray,
+    ]:
         """
         Execute the computation of marginal cost and airfare.
 
@@ -289,13 +322,6 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
 
 
         """
-        output_data = {}
-
-        rpk = input_data["rpk"]
-        rpk_no_elasticity = input_data["rpk_no_elasticity"]
-        total_cost_per_rpk_without_extra_tax = input_data["total_cost_per_rpk_without_extra_tax"]
-        total_extra_tax_per_rpk = input_data["total_extra_tax_per_rpk"]
-
         intial_total_cost_per_rpk_without_extra_tax = total_cost_per_rpk_without_extra_tax[
             self.prospection_start_year - 1
         ]
@@ -329,9 +355,11 @@ class PassengerAircraftMarginalCost(AeroMAPSModel):
         # ADD 2019 value to the airfare_per_rpk series
         airfare_per_rpk.loc[self.prospection_start_year - 1] = initial_price_per_rpk_corrected
 
-        output_data["marginal_cost_per_rpk"] = marginal_cost_per_rpk
-        output_data["airfare_per_rpk_true"] = airfare_per_rpk_true
-        output_data["airfare_per_rpk"] = airfare_per_rpk
+        self.df.loc[:, "marginal_cost_per_rpk"] = marginal_cost_per_rpk
+        self.df.loc[:, "airfare_per_rpk"] = airfare_per_rpk
 
-        self._store_outputs(output_data)
-        return output_data
+        return (
+            marginal_cost_per_rpk,
+            airfare_per_rpk_true,
+            airfare_per_rpk,
+        )
