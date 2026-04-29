@@ -17,6 +17,29 @@ class DropInFuelConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('drop_in_fuel_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_dropin_fuel: Passenger ASK for drop-in fuel aircraft [ASK].
+        - rtk_<market>_dropin_fuel: Freight RTK for drop-in fuel aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_dropin_fuel: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_dropin_fuel: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_dropin_fuel: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_dropin_fuel: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_dropin_fuel_without_operations: Per-market drop-in [MJ].
+        - energy_consumption_<market>_dropin_fuel: Per-market drop-in [MJ].
+        - energy_consumption_passenger_dropin_fuel_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_dropin_fuel_without_operations: Freight total [MJ].
+        - energy_consumption_dropin_fuel_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_dropin_fuel: Passenger total [MJ].
+        - energy_consumption_freight_dropin_fuel: Freight total [MJ].
+        - energy_consumption_dropin_fuel: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="drop_in_fuel_consumption", *args, **kwargs):
@@ -167,6 +190,29 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('drop_in_fuel_detailled_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - biomass_share_dropin_fuel: Share of biomass-based fuels in drop-in fuels [%].
+        - electricity_share_dropin_fuel: Share of electricity-based fuels in drop-in fuels [%].
+        - fossil_share_dropin_fuel: Share of fossil-based fuels in drop-in fuels [%].
+        - energy_consumption_<market>_dropin_fuel_without_operations: Drop-in fuel energy (no ops) [MJ].
+        - energy_consumption_<market>_dropin_fuel: Drop-in fuel energy (with ops) [MJ].
+    Outputs
+        - energy_consumption_<market>_<fuel>_without_operations: Per-market split by fuel [MJ].
+        - energy_consumption_<market>_<fuel>: Per-market split by fuel [MJ].
+        - energy_consumption_passenger_<fuel>_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_<fuel>_without_operations: Freight total [MJ].
+        - energy_consumption_<fuel>_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_<fuel>: Passenger total [MJ].
+        - energy_consumption_freight_<fuel>: Freight total [MJ].
+        - energy_consumption_<fuel>: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - <fuel> is one of: biofuel, electrofuel, kerosene.
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="drop_in_fuel_detailled_consumption", *args, **kwargs):
@@ -303,6 +349,29 @@ class HydrogenConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('hydrogen_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_hydrogen: Passenger ASK for hydrogen aircraft [ASK].
+        - rtk_<market>_hydrogen: Freight RTK for hydrogen aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_hydrogen: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_hydrogen: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_hydrogen: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_hydrogen: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_hydrogen_without_operations: Per-market hydrogen [MJ].
+        - energy_consumption_<market>_hydrogen: Per-market hydrogen [MJ].
+        - energy_consumption_passenger_hydrogen_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_hydrogen_without_operations: Freight total [MJ].
+        - energy_consumption_hydrogen_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_hydrogen: Passenger total [MJ].
+        - energy_consumption_freight_hydrogen: Freight total [MJ].
+        - energy_consumption_hydrogen: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="hydrogen_consumption", *args, **kwargs):
@@ -432,6 +501,29 @@ class ElectricConsumption(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('electric_consumption' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>_electric: Passenger ASK for electric aircraft [ASK].
+        - rtk_<market>_electric: Freight RTK for electric aircraft [RTK].
+        - energy_per_ask_without_operations_<market>_electric: Passenger MJ/ASK (no ops).
+        - energy_per_ask_<market>_electric: Passenger MJ/ASK (with ops).
+        - energy_per_rtk_without_operations_<market>_electric: Freight MJ/RTK (no ops).
+        - energy_per_rtk_<market>_electric: Freight MJ/RTK (with ops).
+    Outputs
+        - energy_consumption_<market>_electric_without_operations: Per-market electricity [MJ].
+        - energy_consumption_<market>_electric: Per-market electricity [MJ].
+        - energy_consumption_passenger_electric_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_electric_without_operations: Freight total [MJ].
+        - energy_consumption_electric_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger_electric: Passenger total [MJ].
+        - energy_consumption_freight_electric: Freight total [MJ].
+        - energy_consumption_electric: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="electric_consumption", *args, **kwargs):
@@ -556,6 +648,29 @@ class ElectricConsumption(AeroMAPSModel):
 class EnergyConsumption(AeroMAPSModel):
     """
     Class to calculate total energy consumption for each type of market, aggregating all energy sources.
+
+    Documentation
+    --------------
+    Inputs
+        - energy_consumption_<market>_dropin_fuel_without_operations: Drop-in fuel [MJ].
+        - energy_consumption_<market>_hydrogen_without_operations: Hydrogen [MJ].
+        - energy_consumption_<market>_electric_without_operations: Electricity [MJ].
+        - energy_consumption_<market>_dropin_fuel: Drop-in fuel [MJ].
+        - energy_consumption_<market>_hydrogen: Hydrogen [MJ].
+        - energy_consumption_<market>_electric: Electricity [MJ].
+    Outputs
+        - energy_consumption_<market>_without_operations: Per-market total [MJ].
+        - energy_consumption_<market>: Per-market total [MJ].
+        - energy_consumption_passenger_without_operations: Passenger total [MJ].
+        - energy_consumption_freight_without_operations: Freight total [MJ].
+        - energy_consumption_without_operations: Passenger + freight [MJ].
+        - energy_consumption_passenger: Passenger total [MJ].
+        - energy_consumption_freight: Freight total [MJ].
+        - energy_consumption: Passenger + freight [MJ].
+    Notes
+        - <market> is the MarketManager id (passenger and freight markets).
+        - I/O names are generated from configuration and passed to GEMSEO via
+            self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="energy_consumption", *args, **kwargs):
