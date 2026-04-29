@@ -169,6 +169,28 @@ class CO2Emissions(AeroMAPSModel):
     --------------
     name : str
         Name of the model instance ('co2_emissions' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - load_factor: Load factor [%].
+        - rtk: Freight RTK [RTK].
+        - rpk_<market>: Passenger RPK [RPK].
+        - energy_per_ask_<market>_<energy>: Passenger MJ/ASK.
+        - ask_<market>_<energy>_share: Passenger energy shares [%].
+        - energy_per_rtk_freight_<energy>: Freight MJ/RTK (legacy single-freight).
+        - rtk_<energy>_share: Freight energy shares [%].
+        - <energy>_mean_co2_emission_factor: Mean CO2 factor [gCO2/MJ].
+    Outputs
+        - co2_emissions_<market>: Per-passenger-market CO2 [MtCO2].
+        - co2_emissions_passenger: Passenger total [MtCO2].
+        - co2_emissions_freight: Freight total [MtCO2].
+        - co2_emissions: Passenger + freight [MtCO2].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="co2_emissions", *args, **kwargs):
