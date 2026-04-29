@@ -253,20 +253,28 @@ class NOxEmissionIndexComplex(AeroMAPSModel):
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
-            numerator = get_default_series(self.historic_start_year, self.end_year)
-            denominator = get_default_series(self.historic_start_year, self.end_year)
+            weighted_emission_index_nox_sum = get_default_series(
+                self.historic_start_year, self.end_year
+            )
+            ask_sum = get_default_series(self.historic_start_year, self.end_year)
             for market in self.markets.get(traffic_type="passenger"):
-                ei_market = self.fleet_model.df[f"{market.name}:emission_index_nox:{aircraft_type}"]
+                emission_index_nox_market = self.fleet_model.df[
+                    f"{market.name}:emission_index_nox:{aircraft_type}"
+                ]
                 ask_market = input_data.get(
                     f"ask_{market.id}_{aircraft_type}",
                     get_default_series(self.historic_start_year, self.end_year),
                 )
-                ask_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(0)
-                numerator = (
-                    numerator + ei_market.loc[self.historic_start_year : self.end_year] * ask_filled
+                ask_market_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(
+                    0
                 )
-                denominator = denominator + ask_filled
-            emission_index_aircraft_type = numerator / denominator
+                weighted_emission_index_nox_sum = (
+                    weighted_emission_index_nox_sum
+                    + emission_index_nox_market.loc[self.historic_start_year : self.end_year]
+                    * ask_market_filled
+                )
+                ask_sum = ask_sum + ask_market_filled
+            emission_index_aircraft_type = weighted_emission_index_nox_sum / ask_sum
 
             relative_emission_index_aircraft_type = (
                 emission_index_aircraft_type
@@ -553,22 +561,28 @@ class SootEmissionIndexComplex(AeroMAPSModel):
         aircraft_types = ["dropin_fuel", "hydrogen", "electric"]
 
         for aircraft_type in aircraft_types:
-            numerator = get_default_series(self.historic_start_year, self.end_year)
-            denominator = get_default_series(self.historic_start_year, self.end_year)
+            weighted_emission_index_soot_sum = get_default_series(
+                self.historic_start_year, self.end_year
+            )
+            ask_sum = get_default_series(self.historic_start_year, self.end_year)
             for market in self.markets.get(traffic_type="passenger"):
-                ei_market = self.fleet_model.df[
+                emission_index_soot_market = self.fleet_model.df[
                     f"{market.name}:emission_index_soot:{aircraft_type}"
                 ]
                 ask_market = input_data.get(
                     f"ask_{market.id}_{aircraft_type}",
                     get_default_series(self.historic_start_year, self.end_year),
                 )
-                ask_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(0)
-                numerator = (
-                    numerator + ei_market.loc[self.historic_start_year : self.end_year] * ask_filled
+                ask_market_filled = ask_market.loc[self.historic_start_year : self.end_year].fillna(
+                    0
                 )
-                denominator = denominator + ask_filled
-            emission_index_aircraft_type = numerator / denominator
+                weighted_emission_index_soot_sum = (
+                    weighted_emission_index_soot_sum
+                    + emission_index_soot_market.loc[self.historic_start_year : self.end_year]
+                    * ask_market_filled
+                )
+                ask_sum = ask_sum + ask_market_filled
+            emission_index_aircraft_type = weighted_emission_index_soot_sum / ask_sum
 
             relative_emission_index_aircraft_type = (
                 emission_index_aircraft_type

@@ -243,11 +243,11 @@ class CO2Emissions(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
 
         # Locally fill incomplete emission factors with zeros so that sums are not nan.
-        co2_factor = {}
-        for et in energy_types:
-            f = input_data[f"{et}_mean_co2_emission_factor"]
-            f.fillna(0, inplace=True)
-            co2_factor[et] = f
+        co2_emission_factor_by_energy_type = {}
+        for energy_type in energy_types:
+            co2_emission_factor = input_data[f"{energy_type}_mean_co2_emission_factor"]
+            co2_emission_factor.fillna(0, inplace=True)
+            co2_emission_factor_by_energy_type[energy_type] = co2_emission_factor
 
         load_factor = input_data["load_factor"]
         output_data = {}
@@ -256,36 +256,56 @@ class CO2Emissions(AeroMAPSModel):
         co2_emissions_passenger = None
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            rpk_m = input_data[f"rpk_{mid}"]
-            type_sum = None
-            for et in energy_types:
-                energy_per_ask = input_data[f"energy_per_ask_{mid}_{et}"]
-                ask_share = input_data[f"ask_{mid}_{et}_share"]
-                term = ask_share / 100 * (energy_per_ask * co2_factor[et])
-                type_sum = term if type_sum is None else type_sum + term
-            co2_market = rpk_m / (load_factor / 100) * type_sum * 10 ** (-12)
-            output_data[f"co2_emissions_{mid}"] = co2_market
+            rpk_market = input_data[f"rpk_{mid}"]
+            co2_weighted_energy_intensity_sum = None
+            for energy_type in energy_types:
+                energy_per_ask = input_data[f"energy_per_ask_{mid}_{energy_type}"]
+                ask_share = input_data[f"ask_{mid}_{energy_type}_share"]
+                co2_weighted_energy_intensity = (
+                    ask_share
+                    / 100
+                    * (energy_per_ask * co2_emission_factor_by_energy_type[energy_type])
+                )
+                co2_weighted_energy_intensity_sum = (
+                    co2_weighted_energy_intensity
+                    if co2_weighted_energy_intensity_sum is None
+                    else co2_weighted_energy_intensity_sum + co2_weighted_energy_intensity
+                )
+            co2_emissions_market = (
+                rpk_market / (load_factor / 100) * co2_weighted_energy_intensity_sum * 10 ** (-12)
+            )
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
             co2_emissions_passenger = (
-                co2_market
+                co2_emissions_market
                 if co2_emissions_passenger is None
-                else co2_emissions_passenger + co2_market
+                else co2_emissions_passenger + co2_emissions_market
             )
 
         # Per-freight-market CO2 emissions.
         co2_emissions_freight = None
         for market in self.markets.get(traffic_type="freight"):
             mid = market.id
-            rtk_m = input_data[f"rtk_{mid}"]
-            type_sum = None
-            for et in energy_types:
-                energy_per_rtk = input_data[f"energy_per_rtk_{mid}_{et}"]
-                rtk_share = input_data[f"rtk_{mid}_{et}_share"]
-                term = rtk_share / 100 * (energy_per_rtk * co2_factor[et])
-                type_sum = term if type_sum is None else type_sum + term
-            co2_market = rtk_m * type_sum * 10 ** (-12)
-            output_data[f"co2_emissions_{mid}"] = co2_market
+            rtk_market = input_data[f"rtk_{mid}"]
+            co2_weighted_energy_intensity_sum = None
+            for energy_type in energy_types:
+                energy_per_rtk = input_data[f"energy_per_rtk_{mid}_{energy_type}"]
+                rtk_share = input_data[f"rtk_{mid}_{energy_type}_share"]
+                co2_weighted_energy_intensity = (
+                    rtk_share
+                    / 100
+                    * (energy_per_rtk * co2_emission_factor_by_energy_type[energy_type])
+                )
+                co2_weighted_energy_intensity_sum = (
+                    co2_weighted_energy_intensity
+                    if co2_weighted_energy_intensity_sum is None
+                    else co2_weighted_energy_intensity_sum + co2_weighted_energy_intensity
+                )
+            co2_emissions_market = rtk_market * co2_weighted_energy_intensity_sum * 10 ** (-12)
+            output_data[f"co2_emissions_{mid}"] = co2_emissions_market
             co2_emissions_freight = (
-                co2_market if co2_emissions_freight is None else co2_emissions_freight + co2_market
+                co2_emissions_market
+                if co2_emissions_freight is None
+                else co2_emissions_freight + co2_emissions_market
             )
 
         # Defensive defaults if no markets.

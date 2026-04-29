@@ -109,74 +109,89 @@ class DropInFuelConsumption(AeroMAPSModel):
         freight_markets = list(self.markets.get(traffic_type="freight"))
 
         # Per-passenger-market consumption.
-        passenger_total_with = None
-        passenger_total_without = None
+        passenger_dropin_fuel = None
+        passenger_dropin_fuel_without_operations = None
         for market in passenger_markets:
             mid = market.id
             ask = input_data[f"ask_{mid}_dropin_fuel"]
-            eps_without = input_data[f"energy_per_ask_without_operations_{mid}_dropin_fuel"]
-            eps_with = input_data[f"energy_per_ask_{mid}_dropin_fuel"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_dropin_fuel"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_dropin_fuel"]
 
-            ec_without = eps_without * ask
-            ec_with = eps_with * ask
+            energy_consumption_without_operations = energy_per_ask_without_operations * ask
+            energy_consumption = energy_per_ask * ask
 
-            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_dropin_fuel"] = ec_with
-
-            passenger_total_without = (
-                ec_without
-                if passenger_total_without is None
-                else passenger_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                energy_consumption_without_operations
             )
-            passenger_total_with = (
-                ec_with if passenger_total_with is None else passenger_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_dropin_fuel"] = energy_consumption
+
+            passenger_dropin_fuel_without_operations = (
+                energy_consumption_without_operations
+                if passenger_dropin_fuel_without_operations is None
+                else passenger_dropin_fuel_without_operations
+                + energy_consumption_without_operations
+            )
+            passenger_dropin_fuel = (
+                energy_consumption
+                if passenger_dropin_fuel is None
+                else passenger_dropin_fuel + energy_consumption
             )
 
         # Per-freight-market consumption.
-        freight_total_with = None
-        freight_total_without = None
+        freight_dropin_fuel = None
+        freight_dropin_fuel_without_operations = None
         for market in freight_markets:
             mid = market.id
             rtk = input_data[f"rtk_{mid}_dropin_fuel"]
-            eps_without = input_data[f"energy_per_rtk_without_operations_{mid}_dropin_fuel"]
-            eps_with = input_data[f"energy_per_rtk_{mid}_dropin_fuel"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_dropin_fuel"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_dropin_fuel"]
 
-            ec_without = eps_without * rtk
-            ec_with = eps_with * rtk
+            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+            energy_consumption = energy_per_rtk * rtk
 
-            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_dropin_fuel"] = ec_with
-
-            freight_total_without = (
-                ec_without if freight_total_without is None else freight_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"] = (
+                energy_consumption_without_operations
             )
-            freight_total_with = (
-                ec_with if freight_total_with is None else freight_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_dropin_fuel"] = energy_consumption
+
+            freight_dropin_fuel_without_operations = (
+                energy_consumption_without_operations
+                if freight_dropin_fuel_without_operations is None
+                else freight_dropin_fuel_without_operations + energy_consumption_without_operations
+            )
+            freight_dropin_fuel = (
+                energy_consumption
+                if freight_dropin_fuel is None
+                else freight_dropin_fuel + energy_consumption
             )
 
         # Default to zero series when no markets in a traffic_type (defensive — should not happen
         # for the default 4-market config, but custom configs may have e.g. zero freight markets).
-        if passenger_total_without is None:
-            passenger_total_without = pd.Series(0.0, index=self.df.index)
-        if passenger_total_with is None:
-            passenger_total_with = pd.Series(0.0, index=self.df.index)
-        if freight_total_without is None:
-            freight_total_without = pd.Series(0.0, index=self.df.index)
-        if freight_total_with is None:
-            freight_total_with = pd.Series(0.0, index=self.df.index)
+        if passenger_dropin_fuel_without_operations is None:
+            passenger_dropin_fuel_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_dropin_fuel is None:
+            passenger_dropin_fuel = pd.Series(0.0, index=self.df.index)
+        if freight_dropin_fuel_without_operations is None:
+            freight_dropin_fuel_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_dropin_fuel is None:
+            freight_dropin_fuel = pd.Series(0.0, index=self.df.index)
 
         output_data["energy_consumption_passenger_dropin_fuel_without_operations"] = (
-            passenger_total_without
+            passenger_dropin_fuel_without_operations
         )
-        output_data["energy_consumption_passenger_dropin_fuel"] = passenger_total_with
+        output_data["energy_consumption_passenger_dropin_fuel"] = passenger_dropin_fuel
         output_data["energy_consumption_freight_dropin_fuel_without_operations"] = (
-            freight_total_without
+            freight_dropin_fuel_without_operations
         )
-        output_data["energy_consumption_freight_dropin_fuel"] = freight_total_with
+        output_data["energy_consumption_freight_dropin_fuel"] = freight_dropin_fuel
         output_data["energy_consumption_dropin_fuel_without_operations"] = (
-            passenger_total_without + freight_total_without
+            passenger_dropin_fuel_without_operations + freight_dropin_fuel_without_operations
         )
-        output_data["energy_consumption_dropin_fuel"] = passenger_total_with + freight_total_with
+        output_data["energy_consumption_dropin_fuel"] = passenger_dropin_fuel + freight_dropin_fuel
 
         self._store_outputs(output_data)
         return output_data
@@ -267,74 +282,85 @@ class DropInFuelDetailledConsumption(AeroMAPSModel):
             "kerosene": input_data["fossil_share_dropin_fuel"] / 100,
         }
 
-        passenger_totals_without = {fuel: None for fuel in shares}
-        passenger_totals_with = {fuel: None for fuel in shares}
-        freight_totals_without = {fuel: None for fuel in shares}
-        freight_totals_with = {fuel: None for fuel in shares}
+        passenger_fuel_totals_without_operations = {fuel: None for fuel in shares}
+        passenger_fuel_totals = {fuel: None for fuel in shares}
+        freight_fuel_totals_without_operations = {fuel: None for fuel in shares}
+        freight_fuel_totals = {fuel: None for fuel in shares}
 
         for market in passenger_markets:
             mid = market.id
-            ec_without = input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
-            ec_with = input_data[f"energy_consumption_{mid}_dropin_fuel"]
+            dropin_fuel_without_operations = input_data[
+                f"energy_consumption_{mid}_dropin_fuel_without_operations"
+            ]
+            dropin_fuel = input_data[f"energy_consumption_{mid}_dropin_fuel"]
             for fuel, share in shares.items():
-                fuel_without = share * ec_without
-                fuel_with = share * ec_with
-                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = fuel_without
-                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_with
-                passenger_totals_without[fuel] = (
-                    fuel_without
-                    if passenger_totals_without[fuel] is None
-                    else passenger_totals_without[fuel] + fuel_without
+                fuel_energy_without_operations = share * dropin_fuel_without_operations
+                fuel_energy = share * dropin_fuel
+                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                    fuel_energy_without_operations
                 )
-                passenger_totals_with[fuel] = (
-                    fuel_with
-                    if passenger_totals_with[fuel] is None
-                    else passenger_totals_with[fuel] + fuel_with
+                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_energy
+                passenger_fuel_totals_without_operations[fuel] = (
+                    fuel_energy_without_operations
+                    if passenger_fuel_totals_without_operations[fuel] is None
+                    else passenger_fuel_totals_without_operations[fuel]
+                    + fuel_energy_without_operations
+                )
+                passenger_fuel_totals[fuel] = (
+                    fuel_energy
+                    if passenger_fuel_totals[fuel] is None
+                    else passenger_fuel_totals[fuel] + fuel_energy
                 )
 
         for market in freight_markets:
             mid = market.id
-            ec_without = input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
-            ec_with = input_data[f"energy_consumption_{mid}_dropin_fuel"]
+            dropin_fuel_without_operations = input_data[
+                f"energy_consumption_{mid}_dropin_fuel_without_operations"
+            ]
+            dropin_fuel = input_data[f"energy_consumption_{mid}_dropin_fuel"]
             for fuel, share in shares.items():
-                fuel_without = share * ec_without
-                fuel_with = share * ec_with
-                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = fuel_without
-                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_with
-                freight_totals_without[fuel] = (
-                    fuel_without
-                    if freight_totals_without[fuel] is None
-                    else freight_totals_without[fuel] + fuel_without
+                fuel_energy_without_operations = share * dropin_fuel_without_operations
+                fuel_energy = share * dropin_fuel
+                output_data[f"energy_consumption_{mid}_{fuel}_without_operations"] = (
+                    fuel_energy_without_operations
                 )
-                freight_totals_with[fuel] = (
-                    fuel_with
-                    if freight_totals_with[fuel] is None
-                    else freight_totals_with[fuel] + fuel_with
+                output_data[f"energy_consumption_{mid}_{fuel}"] = fuel_energy
+                freight_fuel_totals_without_operations[fuel] = (
+                    fuel_energy_without_operations
+                    if freight_fuel_totals_without_operations[fuel] is None
+                    else freight_fuel_totals_without_operations[fuel]
+                    + fuel_energy_without_operations
+                )
+                freight_fuel_totals[fuel] = (
+                    fuel_energy
+                    if freight_fuel_totals[fuel] is None
+                    else freight_fuel_totals[fuel] + fuel_energy
                 )
 
         for fuel in shares:
-            if passenger_totals_without[fuel] is None:
-                passenger_totals_without[fuel] = pd.Series(0.0, index=self.df.index)
-            if passenger_totals_with[fuel] is None:
-                passenger_totals_with[fuel] = pd.Series(0.0, index=self.df.index)
-            if freight_totals_without[fuel] is None:
-                freight_totals_without[fuel] = pd.Series(0.0, index=self.df.index)
-            if freight_totals_with[fuel] is None:
-                freight_totals_with[fuel] = pd.Series(0.0, index=self.df.index)
+            if passenger_fuel_totals_without_operations[fuel] is None:
+                passenger_fuel_totals_without_operations[fuel] = pd.Series(0.0, index=self.df.index)
+            if passenger_fuel_totals[fuel] is None:
+                passenger_fuel_totals[fuel] = pd.Series(0.0, index=self.df.index)
+            if freight_fuel_totals_without_operations[fuel] is None:
+                freight_fuel_totals_without_operations[fuel] = pd.Series(0.0, index=self.df.index)
+            if freight_fuel_totals[fuel] is None:
+                freight_fuel_totals[fuel] = pd.Series(0.0, index=self.df.index)
 
             output_data[f"energy_consumption_passenger_{fuel}_without_operations"] = (
-                passenger_totals_without[fuel]
+                passenger_fuel_totals_without_operations[fuel]
             )
             output_data[f"energy_consumption_freight_{fuel}_without_operations"] = (
-                freight_totals_without[fuel]
+                freight_fuel_totals_without_operations[fuel]
             )
             output_data[f"energy_consumption_{fuel}_without_operations"] = (
-                passenger_totals_without[fuel] + freight_totals_without[fuel]
+                passenger_fuel_totals_without_operations[fuel]
+                + freight_fuel_totals_without_operations[fuel]
             )
-            output_data[f"energy_consumption_passenger_{fuel}"] = passenger_totals_with[fuel]
-            output_data[f"energy_consumption_freight_{fuel}"] = freight_totals_with[fuel]
+            output_data[f"energy_consumption_passenger_{fuel}"] = passenger_fuel_totals[fuel]
+            output_data[f"energy_consumption_freight_{fuel}"] = freight_fuel_totals[fuel]
             output_data[f"energy_consumption_{fuel}"] = (
-                passenger_totals_with[fuel] + freight_totals_with[fuel]
+                passenger_fuel_totals[fuel] + freight_fuel_totals[fuel]
             )
 
         self._store_outputs(output_data)
@@ -423,71 +449,85 @@ class HydrogenConsumption(AeroMAPSModel):
         passenger_markets = list(self.markets.get(traffic_type="passenger"))
         freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        passenger_total_without = None
-        passenger_total_with = None
+        passenger_hydrogen_without_operations = None
+        passenger_hydrogen = None
         for market in passenger_markets:
             mid = market.id
             ask = input_data[f"ask_{mid}_hydrogen"]
-            eps_without = input_data[f"energy_per_ask_without_operations_{mid}_hydrogen"]
-            eps_with = input_data[f"energy_per_ask_{mid}_hydrogen"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_hydrogen"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_hydrogen"]
 
-            ec_without = eps_without * ask
-            ec_with = eps_with * ask
+            energy_consumption_without_operations = energy_per_ask_without_operations * ask
+            energy_consumption = energy_per_ask * ask
 
-            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_hydrogen"] = ec_with
-
-            passenger_total_without = (
-                ec_without
-                if passenger_total_without is None
-                else passenger_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
+                energy_consumption_without_operations
             )
-            passenger_total_with = (
-                ec_with if passenger_total_with is None else passenger_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_hydrogen"] = energy_consumption
+
+            passenger_hydrogen_without_operations = (
+                energy_consumption_without_operations
+                if passenger_hydrogen_without_operations is None
+                else passenger_hydrogen_without_operations + energy_consumption_without_operations
+            )
+            passenger_hydrogen = (
+                energy_consumption
+                if passenger_hydrogen is None
+                else passenger_hydrogen + energy_consumption
             )
 
-        freight_total_without = None
-        freight_total_with = None
+        freight_hydrogen_without_operations = None
+        freight_hydrogen = None
         for market in freight_markets:
             mid = market.id
             rtk = input_data[f"rtk_{mid}_hydrogen"]
-            eps_without = input_data[f"energy_per_rtk_without_operations_{mid}_hydrogen"]
-            eps_with = input_data[f"energy_per_rtk_{mid}_hydrogen"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_hydrogen"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_hydrogen"]
 
-            ec_without = eps_without * rtk
-            ec_with = eps_with * rtk
+            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+            energy_consumption = energy_per_rtk * rtk
 
-            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_hydrogen"] = ec_with
-
-            freight_total_without = (
-                ec_without if freight_total_without is None else freight_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_hydrogen_without_operations"] = (
+                energy_consumption_without_operations
             )
-            freight_total_with = (
-                ec_with if freight_total_with is None else freight_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_hydrogen"] = energy_consumption
+
+            freight_hydrogen_without_operations = (
+                energy_consumption_without_operations
+                if freight_hydrogen_without_operations is None
+                else freight_hydrogen_without_operations + energy_consumption_without_operations
+            )
+            freight_hydrogen = (
+                energy_consumption
+                if freight_hydrogen is None
+                else freight_hydrogen + energy_consumption
             )
 
-        if passenger_total_without is None:
-            passenger_total_without = pd.Series(0.0, index=self.df.index)
-        if passenger_total_with is None:
-            passenger_total_with = pd.Series(0.0, index=self.df.index)
-        if freight_total_without is None:
-            freight_total_without = pd.Series(0.0, index=self.df.index)
-        if freight_total_with is None:
-            freight_total_with = pd.Series(0.0, index=self.df.index)
+        if passenger_hydrogen_without_operations is None:
+            passenger_hydrogen_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_hydrogen is None:
+            passenger_hydrogen = pd.Series(0.0, index=self.df.index)
+        if freight_hydrogen_without_operations is None:
+            freight_hydrogen_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_hydrogen is None:
+            freight_hydrogen = pd.Series(0.0, index=self.df.index)
 
         output_data["energy_consumption_passenger_hydrogen_without_operations"] = (
-            passenger_total_without
+            passenger_hydrogen_without_operations
         )
         output_data["energy_consumption_freight_hydrogen_without_operations"] = (
-            freight_total_without
+            freight_hydrogen_without_operations
         )
         output_data["energy_consumption_hydrogen_without_operations"] = (
-            passenger_total_without + freight_total_without
+            passenger_hydrogen_without_operations + freight_hydrogen_without_operations
         )
-        output_data["energy_consumption_passenger_hydrogen"] = passenger_total_with
-        output_data["energy_consumption_freight_hydrogen"] = freight_total_with
-        output_data["energy_consumption_hydrogen"] = passenger_total_with + freight_total_with
+        output_data["energy_consumption_passenger_hydrogen"] = passenger_hydrogen
+        output_data["energy_consumption_freight_hydrogen"] = freight_hydrogen
+        output_data["energy_consumption_hydrogen"] = passenger_hydrogen + freight_hydrogen
 
         self._store_outputs(output_data)
         return output_data
@@ -575,71 +615,85 @@ class ElectricConsumption(AeroMAPSModel):
         passenger_markets = list(self.markets.get(traffic_type="passenger"))
         freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        passenger_total_without = None
-        passenger_total_with = None
+        passenger_electric_without_operations = None
+        passenger_electric = None
         for market in passenger_markets:
             mid = market.id
             ask = input_data[f"ask_{mid}_electric"]
-            eps_without = input_data[f"energy_per_ask_without_operations_{mid}_electric"]
-            eps_with = input_data[f"energy_per_ask_{mid}_electric"]
+            energy_per_ask_without_operations = input_data[
+                f"energy_per_ask_without_operations_{mid}_electric"
+            ]
+            energy_per_ask = input_data[f"energy_per_ask_{mid}_electric"]
 
-            ec_without = eps_without * ask
-            ec_with = eps_with * ask
+            energy_consumption_without_operations = energy_per_ask_without_operations * ask
+            energy_consumption = energy_per_ask * ask
 
-            output_data[f"energy_consumption_{mid}_electric_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_electric"] = ec_with
-
-            passenger_total_without = (
-                ec_without
-                if passenger_total_without is None
-                else passenger_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
+                energy_consumption_without_operations
             )
-            passenger_total_with = (
-                ec_with if passenger_total_with is None else passenger_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_electric"] = energy_consumption
+
+            passenger_electric_without_operations = (
+                energy_consumption_without_operations
+                if passenger_electric_without_operations is None
+                else passenger_electric_without_operations + energy_consumption_without_operations
+            )
+            passenger_electric = (
+                energy_consumption
+                if passenger_electric is None
+                else passenger_electric + energy_consumption
             )
 
-        freight_total_without = None
-        freight_total_with = None
+        freight_electric_without_operations = None
+        freight_electric = None
         for market in freight_markets:
             mid = market.id
             rtk = input_data[f"rtk_{mid}_electric"]
-            eps_without = input_data[f"energy_per_rtk_without_operations_{mid}_electric"]
-            eps_with = input_data[f"energy_per_rtk_{mid}_electric"]
+            energy_per_rtk_without_operations = input_data[
+                f"energy_per_rtk_without_operations_{mid}_electric"
+            ]
+            energy_per_rtk = input_data[f"energy_per_rtk_{mid}_electric"]
 
-            ec_without = eps_without * rtk
-            ec_with = eps_with * rtk
+            energy_consumption_without_operations = energy_per_rtk_without_operations * rtk
+            energy_consumption = energy_per_rtk * rtk
 
-            output_data[f"energy_consumption_{mid}_electric_without_operations"] = ec_without
-            output_data[f"energy_consumption_{mid}_electric"] = ec_with
-
-            freight_total_without = (
-                ec_without if freight_total_without is None else freight_total_without + ec_without
+            output_data[f"energy_consumption_{mid}_electric_without_operations"] = (
+                energy_consumption_without_operations
             )
-            freight_total_with = (
-                ec_with if freight_total_with is None else freight_total_with + ec_with
+            output_data[f"energy_consumption_{mid}_electric"] = energy_consumption
+
+            freight_electric_without_operations = (
+                energy_consumption_without_operations
+                if freight_electric_without_operations is None
+                else freight_electric_without_operations + energy_consumption_without_operations
+            )
+            freight_electric = (
+                energy_consumption
+                if freight_electric is None
+                else freight_electric + energy_consumption
             )
 
-        if passenger_total_without is None:
-            passenger_total_without = pd.Series(0.0, index=self.df.index)
-        if passenger_total_with is None:
-            passenger_total_with = pd.Series(0.0, index=self.df.index)
-        if freight_total_without is None:
-            freight_total_without = pd.Series(0.0, index=self.df.index)
-        if freight_total_with is None:
-            freight_total_with = pd.Series(0.0, index=self.df.index)
+        if passenger_electric_without_operations is None:
+            passenger_electric_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_electric is None:
+            passenger_electric = pd.Series(0.0, index=self.df.index)
+        if freight_electric_without_operations is None:
+            freight_electric_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_electric is None:
+            freight_electric = pd.Series(0.0, index=self.df.index)
 
         output_data["energy_consumption_passenger_electric_without_operations"] = (
-            passenger_total_without
+            passenger_electric_without_operations
         )
         output_data["energy_consumption_freight_electric_without_operations"] = (
-            freight_total_without
+            freight_electric_without_operations
         )
         output_data["energy_consumption_electric_without_operations"] = (
-            passenger_total_without + freight_total_without
+            passenger_electric_without_operations + freight_electric_without_operations
         )
-        output_data["energy_consumption_passenger_electric"] = passenger_total_with
-        output_data["energy_consumption_freight_electric"] = freight_total_with
-        output_data["energy_consumption_electric"] = passenger_total_with + freight_total_with
+        output_data["energy_consumption_passenger_electric"] = passenger_electric
+        output_data["energy_consumption_freight_electric"] = freight_electric
+        output_data["energy_consumption_electric"] = passenger_electric + freight_electric
 
         self._store_outputs(output_data)
         return output_data
@@ -708,77 +762,85 @@ class EnergyConsumption(AeroMAPSModel):
         passenger_markets = list(self.markets.get(traffic_type="passenger"))
         freight_markets = list(self.markets.get(traffic_type="freight"))
 
-        passenger_total_without = None
-        passenger_total_with = None
+        passenger_energy_without_operations = None
+        passenger_energy = None
         for market in passenger_markets:
             mid = market.id
-            total_without = (
+            market_energy_without_operations = (
                 input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
                 + input_data[f"energy_consumption_{mid}_hydrogen_without_operations"]
                 + input_data[f"energy_consumption_{mid}_electric_without_operations"]
             )
-            total_with = (
+            market_energy = (
                 input_data[f"energy_consumption_{mid}_dropin_fuel"]
                 + input_data[f"energy_consumption_{mid}_hydrogen"]
                 + input_data[f"energy_consumption_{mid}_electric"]
             )
 
-            output_data[f"energy_consumption_{mid}_without_operations"] = total_without
-            output_data[f"energy_consumption_{mid}"] = total_with
-
-            passenger_total_without = (
-                total_without
-                if passenger_total_without is None
-                else passenger_total_without + total_without
+            output_data[f"energy_consumption_{mid}_without_operations"] = (
+                market_energy_without_operations
             )
-            passenger_total_with = (
-                total_with if passenger_total_with is None else passenger_total_with + total_with
+            output_data[f"energy_consumption_{mid}"] = market_energy
+
+            passenger_energy_without_operations = (
+                market_energy_without_operations
+                if passenger_energy_without_operations is None
+                else passenger_energy_without_operations + market_energy_without_operations
+            )
+            passenger_energy = (
+                market_energy if passenger_energy is None else passenger_energy + market_energy
             )
 
-        freight_total_without = None
-        freight_total_with = None
+        freight_energy_without_operations = None
+        freight_energy = None
         for market in freight_markets:
             mid = market.id
-            total_without = (
+            market_energy_without_operations = (
                 input_data[f"energy_consumption_{mid}_dropin_fuel_without_operations"]
                 + input_data[f"energy_consumption_{mid}_hydrogen_without_operations"]
                 + input_data[f"energy_consumption_{mid}_electric_without_operations"]
             )
-            total_with = (
+            market_energy = (
                 input_data[f"energy_consumption_{mid}_dropin_fuel"]
                 + input_data[f"energy_consumption_{mid}_hydrogen"]
                 + input_data[f"energy_consumption_{mid}_electric"]
             )
 
-            output_data[f"energy_consumption_{mid}_without_operations"] = total_without
-            output_data[f"energy_consumption_{mid}"] = total_with
-
-            freight_total_without = (
-                total_without
-                if freight_total_without is None
-                else freight_total_without + total_without
+            output_data[f"energy_consumption_{mid}_without_operations"] = (
+                market_energy_without_operations
             )
-            freight_total_with = (
-                total_with if freight_total_with is None else freight_total_with + total_with
+            output_data[f"energy_consumption_{mid}"] = market_energy
+
+            freight_energy_without_operations = (
+                market_energy_without_operations
+                if freight_energy_without_operations is None
+                else freight_energy_without_operations + market_energy_without_operations
+            )
+            freight_energy = (
+                market_energy if freight_energy is None else freight_energy + market_energy
             )
 
-        if passenger_total_without is None:
-            passenger_total_without = pd.Series(0.0, index=self.df.index)
-        if passenger_total_with is None:
-            passenger_total_with = pd.Series(0.0, index=self.df.index)
-        if freight_total_without is None:
-            freight_total_without = pd.Series(0.0, index=self.df.index)
-        if freight_total_with is None:
-            freight_total_with = pd.Series(0.0, index=self.df.index)
+        if passenger_energy_without_operations is None:
+            passenger_energy_without_operations = pd.Series(0.0, index=self.df.index)
+        if passenger_energy is None:
+            passenger_energy = pd.Series(0.0, index=self.df.index)
+        if freight_energy_without_operations is None:
+            freight_energy_without_operations = pd.Series(0.0, index=self.df.index)
+        if freight_energy is None:
+            freight_energy = pd.Series(0.0, index=self.df.index)
 
-        output_data["energy_consumption_passenger_without_operations"] = passenger_total_without
-        output_data["energy_consumption_freight_without_operations"] = freight_total_without
-        output_data["energy_consumption_without_operations"] = (
-            passenger_total_without + freight_total_without
+        output_data["energy_consumption_passenger_without_operations"] = (
+            passenger_energy_without_operations
         )
-        output_data["energy_consumption_passenger"] = passenger_total_with
-        output_data["energy_consumption_freight"] = freight_total_with
-        output_data["energy_consumption"] = passenger_total_with + freight_total_with
+        output_data["energy_consumption_freight_without_operations"] = (
+            freight_energy_without_operations
+        )
+        output_data["energy_consumption_without_operations"] = (
+            passenger_energy_without_operations + freight_energy_without_operations
+        )
+        output_data["energy_consumption_passenger"] = passenger_energy
+        output_data["energy_consumption_freight"] = freight_energy
+        output_data["energy_consumption"] = passenger_energy + freight_energy
 
         self._store_outputs(output_data)
         return output_data
