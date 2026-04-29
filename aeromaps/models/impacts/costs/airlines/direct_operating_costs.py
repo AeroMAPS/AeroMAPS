@@ -454,15 +454,6 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             lowering_offset_pm[mid] = lowering
             output_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = lowering
 
-        # Legacy bug preserved (commit history pre-Phase-4): the short_range column of
-        # doc_carbon_tax_lowering_offset_per_ask_<mid>_mean is overwritten with the
-        # medium_range value. Preserved for numerical equivalence with default config.
-        # NOTE: legacy bug preserved
-        if "short_range" in lowering_offset_pm and "medium_range" in lowering_offset_pm:
-            output_data["doc_carbon_tax_lowering_offset_per_ask_short_range_mean"] = (
-                lowering_offset_pm["medium_range"]
-            )
-
         self._store_outputs(output_data)
         return output_data
 
