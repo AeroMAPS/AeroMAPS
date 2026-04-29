@@ -507,30 +507,25 @@ class FreightAircraftEfficiency(AeroMAPSModel):
     --------------
     Inputs
         - energy_consumption_init: Historic total energy consumption [MJ].
-        - rtk: Freight RTK [RTK].
         - ask: Global passenger ASK [ASK].
         - covid_energy_intensity_per_ask_increase_2020: 2020 intensity increase [%].
+        - rtk_<freight>: Freight RTK per freight market [RTK].
+        - <freight>_energy_share_2019: 2019 freight energy share per freight market [%].
         - ask_<market>: Passenger ASK [ASK].
-        - ask_<market>_dropin_fuel: Passenger ASK [ASK].
-        - ask_<market>_hydrogen_share: Hydrogen share [%].
-        - ask_<market>_electric_share: Electric share [%].
+        - ask_<market>_dropin_fuel: Drop-in fuel passenger ASK [ASK].
+        - ask_<market>_hydrogen_share: Hydrogen ASK share [%].
+        - ask_<market>_electric_share: Electric ASK share [%].
         - energy_per_ask_without_operations_<market>_dropin_fuel: Energy per ASK [MJ/ASK].
         - energy_per_ask_without_operations_<market>_hydrogen: Energy per ASK [MJ/ASK].
         - energy_per_ask_without_operations_<market>_electric: Energy per ASK [MJ/ASK].
-        - <freight>_energy_share_2019: 2019 freight energy share [%].
     Outputs
-        - energy_per_rtk_without_operations_freight_dropin_fuel: Energy per RTK [MJ/RTK].
-        - energy_per_rtk_without_operations_freight_hydrogen: Energy per RTK [MJ/RTK].
-        - energy_per_rtk_without_operations_freight_electric: Energy per RTK [MJ/RTK].
-        - rtk_dropin_fuel_share: Freight RTK share [%].
-        - rtk_hydrogen_share: Freight RTK share [%].
-        - rtk_electric_share: Freight RTK share [%].
-        - rtk_dropin_fuel: Freight RTK [RTK].
-        - rtk_hydrogen: Freight RTK [RTK].
-        - rtk_electric: Freight RTK [RTK].
+        - energy_per_rtk_without_operations_<freight>_<energy>: Energy per RTK [MJ/RTK].
+        - rtk_<freight>_<energy>_share: Freight RTK share per energy type [%].
+        - rtk_<freight>_<energy>: Freight RTK per energy type [RTK].
     Notes
         - <market> is the MarketManager id (passenger markets).
         - <freight> is the MarketManager id (freight markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
         - I/O names are generated from configuration and passed to GEMSEO via
           self.input_names and self.output_names grammars.
     """
@@ -545,12 +540,11 @@ class FreightAircraftEfficiency(AeroMAPSModel):
 
         self.input_names = {
             "energy_consumption_init": pd.Series([0.0]),
-            "rtk": pd.Series([0.0]),
             "ask": pd.Series([0.0]),
             "covid_energy_intensity_per_ask_increase_2020": 0.0,
         }
 
-        # Per-passenger-market inputs
+        # Per-passenger-market inputs (used as efficiency proxy for freight)
         for m in passenger_markets:
             mid = m.id
             self.input_names[f"ask_{mid}"] = pd.Series([0.0])
@@ -563,170 +557,241 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             self.input_names[f"energy_per_ask_without_operations_{mid}_hydrogen"] = pd.Series([0.0])
             self.input_names[f"energy_per_ask_without_operations_{mid}_electric"] = pd.Series([0.0])
 
-        # Freight market energy share parameter
+        # Per-freight-market inputs
         for m in freight_markets:
             mid = m.id
+            self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
             self.input_names[f"{mid}_energy_share_2019"] = 0.0
 
-        self.output_names = {
-            "energy_per_rtk_without_operations_freight_dropin_fuel": pd.Series([0.0]),
-            "energy_per_rtk_without_operations_freight_hydrogen": pd.Series([0.0]),
-            "energy_per_rtk_without_operations_freight_electric": pd.Series([0.0]),
-            "rtk_dropin_fuel_share": pd.Series([0.0]),
-            "rtk_hydrogen_share": pd.Series([0.0]),
-            "rtk_electric_share": pd.Series([0.0]),
-            "rtk_dropin_fuel": pd.Series([0.0]),
-            "rtk_hydrogen": pd.Series([0.0]),
-            "rtk_electric": pd.Series([0.0]),
-        }
+        # Per-freight-market outputs
+        self.output_names = {}
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.output_names[f"energy_per_rtk_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
+                self.output_names[f"rtk_{mid}_{energy_type}_share"] = pd.Series([0.0])
+                self.output_names[f"rtk_{mid}_{energy_type}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
         passenger_markets = self.markets.get(traffic_type="passenger")
         freight_markets = self.markets.get(traffic_type="freight")
 
+        # Extract global inputs
         energy_consumption_init = input_data["energy_consumption_init"]
-        rtk = input_data["rtk"]
         ask = input_data["ask"]
-        covid_increase = float(input_data["covid_energy_intensity_per_ask_increase_2020"])
+        covid_energy_intensity_per_ask_increase_2020 = float(
+            input_data["covid_energy_intensity_per_ask_increase_2020"]
+        )
 
-        freight_mid = freight_markets[0].id
-        freight_energy_share_2019 = float(input_data[f"{freight_mid}_energy_share_2019"])
-
+        # Extract per-passenger-market inputs
         ask_per_market = {m.id: input_data[f"ask_{m.id}"] for m in passenger_markets}
-        ask_dropin_per_market = {
+        ask_dropin_fuel_per_market = {
             m.id: input_data[f"ask_{m.id}_dropin_fuel"] for m in passenger_markets
         }
-        ask_h2_share_per_market = {
+        ask_hydrogen_share_per_market = {
             m.id: input_data[f"ask_{m.id}_hydrogen_share"] for m in passenger_markets
         }
-        ask_el_share_per_market = {
+        ask_electric_share_per_market = {
             m.id: input_data[f"ask_{m.id}_electric_share"] for m in passenger_markets
         }
-        ep_dropin_per_market = {
+        energy_per_ask_without_operations_dropin_fuel_per_market = {
             m.id: input_data[f"energy_per_ask_without_operations_{m.id}_dropin_fuel"]
             for m in passenger_markets
         }
-        ep_h2_per_market = {
+        energy_per_ask_without_operations_hydrogen_per_market = {
             m.id: input_data[f"energy_per_ask_without_operations_{m.id}_hydrogen"]
             for m in passenger_markets
         }
-        ep_el_per_market = {
+        energy_per_ask_without_operations_electric_per_market = {
             m.id: input_data[f"energy_per_ask_without_operations_{m.id}_electric"]
             for m in passenger_markets
         }
 
-        hist_years = list(range(self.historic_start_year, self.prospection_start_year))
-        self.df.loc[hist_years, "energy_per_rtk_without_operations_freight_dropin_fuel"] = (
-            energy_consumption_init.loc[hist_years]
-            / rtk.loc[hist_years]
-            * freight_energy_share_2019
-            / 100
+        # RTK shares: freight propulsion mix follows passenger ASK-weighted propulsion mix
+        # (same for all freight markets, driven by the global passenger mix)
+        rtk_hydrogen_share = sum(
+            ask_hydrogen_share_per_market[m.id] * (ask_per_market[m.id] / ask)
+            for m in passenger_markets
+        )
+        rtk_electric_share = sum(
+            ask_electric_share_per_market[m.id] * (ask_per_market[m.id] / ask)
+            for m in passenger_markets
+        )
+        rtk_dropin_fuel_share = 100 - rtk_hydrogen_share - rtk_electric_share
+
+        # Relative efficiency of hydrogen and electric wrt dropin, per passenger market
+        relative_energy_per_ask_hydrogen_wrt_dropin_per_market = {
+            m.id: energy_per_ask_without_operations_hydrogen_per_market[m.id]
+            / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
+            for m in passenger_markets
+        }
+        relative_energy_per_ask_electric_wrt_dropin_per_market = {
+            m.id: energy_per_ask_without_operations_electric_per_market[m.id]
+            / energy_per_ask_without_operations_dropin_fuel_per_market[m.id]
+            for m in passenger_markets
+        }
+
+        # Hydrogen and electric efficiency weighted sums across passenger markets
+        # (same for all freight markets, used to derive freight energy per RTK for alt. propulsion)
+        hydrogen_weighted_sum = sum(
+            relative_energy_per_ask_hydrogen_wrt_dropin_per_market[m.id]
+            * ask_hydrogen_share_per_market[m.id]
+            * (ask_per_market[m.id] / ask)
+            for m in passenger_markets
+        )
+        electric_weighted_sum = sum(
+            relative_energy_per_ask_electric_wrt_dropin_per_market[m.id]
+            * ask_electric_share_per_market[m.id]
+            * (ask_per_market[m.id] / ask)
+            for m in passenger_markets
         )
 
-        init_val = self.df.loc[2019, "energy_per_rtk_without_operations_freight_dropin_fuel"]
-        rtk_dropin_per_market_k = {mid: init_val for mid in ask_dropin_per_market}
+        # Masks for years with/without hydrogen and electric usage (same for all freight markets)
+        hydrogen_zero_mask = rtk_hydrogen_share == 0
+        hydrogen_nonzero_mask = ~hydrogen_zero_mask
+        electric_zero_mask = rtk_electric_share == 0
+        electric_nonzero_mask = ~electric_zero_mask
 
-        for k in range(self.prospection_start_year, self.end_year + 1):
-            for mid in ask_per_market:
-                ep_prev = ep_dropin_per_market[mid].loc[k - 1]
-                ep_curr = ep_dropin_per_market[mid].loc[k]
-                ratio = ep_curr / ep_prev if ep_prev != 0 else 1.0
-                rtk_dropin_per_market_k[mid] = rtk_dropin_per_market_k[mid] * ratio
+        hist_years = list(range(self.historic_start_year, self.prospection_start_year))
+        output_data = {}
 
-            total_ask_dropin_k = sum(
-                ask_dropin_per_market[mid].loc[k] for mid in ask_dropin_per_market
+        for freight_market in freight_markets:
+            freight_mid = freight_market.id
+            rtk = input_data[f"rtk_{freight_mid}"]
+            freight_energy_share_2019 = float(input_data[f"{freight_mid}_energy_share_2019"])
+
+            # Initialization based on 2019 share
+            self.df.loc[
+                hist_years, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+            ] = (
+                energy_consumption_init.loc[hist_years]
+                / rtk.loc[hist_years]
+                * freight_energy_share_2019
+                / 100
             )
 
-            if total_ask_dropin_k > 0:
-                self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = sum(
-                    rtk_dropin_per_market_k[mid]
-                    * ask_dropin_per_market[mid].loc[k]
-                    / total_ask_dropin_k
-                    for mid in ask_dropin_per_market
+            # Projections: freight dropin fuel efficiency follows a weighted average of passenger
+            # market efficiencies, each evolving at the same year-on-year rate as its passenger proxy
+            init_energy_per_rtk_without_operations_dropin_fuel = self.df.loc[
+                2019, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+            ]
+            energy_per_rtk_without_operations_dropin_fuel_per_market_k = {
+                mid: init_energy_per_rtk_without_operations_dropin_fuel
+                for mid in ask_dropin_fuel_per_market
+            }
+
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                # Apply the passenger year-on-year efficiency ratio to each market's freight proxy
+                for mid in ask_per_market:
+                    energy_per_ask_dropin_fuel_prev = (
+                        energy_per_ask_without_operations_dropin_fuel_per_market[mid].loc[k - 1]
+                    )
+                    energy_per_ask_dropin_fuel_k = (
+                        energy_per_ask_without_operations_dropin_fuel_per_market[mid].loc[k]
+                    )
+                    efficiency_ratio = (
+                        energy_per_ask_dropin_fuel_k / energy_per_ask_dropin_fuel_prev
+                        if energy_per_ask_dropin_fuel_prev != 0
+                        else 1.0
+                    )
+                    energy_per_rtk_without_operations_dropin_fuel_per_market_k[mid] = (
+                        energy_per_rtk_without_operations_dropin_fuel_per_market_k[mid]
+                        * efficiency_ratio
+                    )
+
+                # Weighted average across passenger markets by dropin ASK share
+                ask_total_dropin_fuel_k = sum(
+                    ask_dropin_fuel_per_market[mid].loc[k] for mid in ask_dropin_fuel_per_market
                 )
-            else:
-                self.df.loc[k, "energy_per_rtk_without_operations_freight_dropin_fuel"] = init_val
 
-        self.df.loc[2020, "energy_per_rtk_without_operations_freight_dropin_fuel"] = self.df.loc[
-            2019, "energy_per_rtk_without_operations_freight_dropin_fuel"
-        ] * (1 + covid_increase / 100)
+                if ask_total_dropin_fuel_k > 0:
+                    self.df.loc[
+                        k, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+                    ] = sum(
+                        energy_per_rtk_without_operations_dropin_fuel_per_market_k[mid]
+                        * ask_dropin_fuel_per_market[mid].loc[k]
+                        / ask_total_dropin_fuel_k
+                        for mid in ask_dropin_fuel_per_market
+                    )
+                else:
+                    self.df.loc[
+                        k, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+                    ] = init_energy_per_rtk_without_operations_dropin_fuel
 
-        energy_per_rtk_dropin = self.df["energy_per_rtk_without_operations_freight_dropin_fuel"]
+            # Covid: reset 2020 value
+            self.df.loc[2020, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"] = (
+                self.df.loc[2019, f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"]
+                * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+            )
 
-        rtk_h2_share = sum(
-            ask_h2_share_per_market[m.id] * (ask_per_market[m.id] / ask) for m in passenger_markets
-        )
-        rtk_el_share = sum(
-            ask_el_share_per_market[m.id] * (ask_per_market[m.id] / ask) for m in passenger_markets
-        )
-        rtk_dropin_share = 100 - rtk_h2_share - rtk_el_share
+            energy_per_rtk_without_operations_dropin_fuel = self.df[
+                f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+            ]
 
-        self.df.loc[:, "rtk_hydrogen_share"] = rtk_h2_share
-        self.df.loc[:, "rtk_dropin_fuel_share"] = rtk_dropin_share
-        self.df.loc[:, "rtk_electric_share"] = rtk_el_share
+            # RTK volumes per energy type for this freight market
+            rtk_hydrogen = rtk * rtk_hydrogen_share / 100
+            rtk_electric = rtk * rtk_electric_share / 100
+            rtk_dropin_fuel = rtk * rtk_dropin_fuel_share / 100
+            self.df.loc[:, f"rtk_{freight_mid}_hydrogen_share"] = rtk_hydrogen_share
+            self.df.loc[:, f"rtk_{freight_mid}_dropin_fuel_share"] = rtk_dropin_fuel_share
+            self.df.loc[:, f"rtk_{freight_mid}_electric_share"] = rtk_electric_share
+            self.df.loc[:, f"rtk_{freight_mid}_hydrogen"] = rtk_hydrogen
+            self.df.loc[:, f"rtk_{freight_mid}_dropin_fuel"] = rtk_dropin_fuel
+            self.df.loc[:, f"rtk_{freight_mid}_electric"] = rtk_electric
 
-        rtk_h2 = rtk * rtk_h2_share / 100
-        rtk_el = rtk * rtk_el_share / 100
-        rtk_dropin = rtk * rtk_dropin_share / 100
-        self.df.loc[:, "rtk_hydrogen"] = rtk_h2
-        self.df.loc[:, "rtk_dropin_fuel"] = rtk_dropin
-        self.df.loc[:, "rtk_electric"] = rtk_el
+            # Hydrogen energy per RTK: equals dropin when no hydrogen is used,
+            # otherwise ASK-weighted passenger ratio applied to dropin efficiency
+            self.df.loc[
+                hydrogen_zero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_hydrogen",
+            ] = self.df.loc[
+                hydrogen_zero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel",
+            ]
+            self.df.loc[
+                hydrogen_nonzero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_hydrogen",
+            ] = (
+                energy_per_rtk_without_operations_dropin_fuel.loc[hydrogen_nonzero_mask]
+                * hydrogen_weighted_sum.loc[hydrogen_nonzero_mask]
+                / rtk_hydrogen_share.loc[hydrogen_nonzero_mask]
+            )
 
-        rel_h2_per_market = {
-            m.id: ep_h2_per_market[m.id] / ep_dropin_per_market[m.id] for m in passenger_markets
-        }
-        rel_el_per_market = {
-            m.id: ep_el_per_market[m.id] / ep_dropin_per_market[m.id] for m in passenger_markets
-        }
+            # Electric energy per RTK: equals dropin when no electric is used,
+            # otherwise ASK-weighted passenger ratio applied to dropin efficiency
+            self.df.loc[
+                electric_zero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_electric",
+            ] = self.df.loc[
+                electric_zero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel",
+            ]
+            self.df.loc[
+                electric_nonzero_mask,
+                f"energy_per_rtk_without_operations_{freight_mid}_electric",
+            ] = (
+                energy_per_rtk_without_operations_dropin_fuel.loc[electric_nonzero_mask]
+                * electric_weighted_sum.loc[electric_nonzero_mask]
+                / rtk_electric_share.loc[electric_nonzero_mask]
+            )
 
-        h2_zero_mask = rtk_h2_share == 0
-        h2_nonzero_mask = ~h2_zero_mask
+            output_data[f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"] = (
+                energy_per_rtk_without_operations_dropin_fuel
+            )
+            output_data[f"energy_per_rtk_without_operations_{freight_mid}_hydrogen"] = self.df[
+                f"energy_per_rtk_without_operations_{freight_mid}_hydrogen"
+            ]
+            output_data[f"energy_per_rtk_without_operations_{freight_mid}_electric"] = self.df[
+                f"energy_per_rtk_without_operations_{freight_mid}_electric"
+            ]
+            output_data[f"rtk_{freight_mid}_dropin_fuel_share"] = rtk_dropin_fuel_share
+            output_data[f"rtk_{freight_mid}_hydrogen_share"] = rtk_hydrogen_share
+            output_data[f"rtk_{freight_mid}_electric_share"] = rtk_electric_share
+            output_data[f"rtk_{freight_mid}_dropin_fuel"] = rtk_dropin_fuel
+            output_data[f"rtk_{freight_mid}_hydrogen"] = rtk_hydrogen
+            output_data[f"rtk_{freight_mid}_electric"] = rtk_electric
 
-        self.df.loc[h2_zero_mask, "energy_per_rtk_without_operations_freight_hydrogen"] = (
-            self.df.loc[h2_zero_mask, "energy_per_rtk_without_operations_freight_dropin_fuel"]
-        )
-
-        h2_weighted = sum(
-            rel_h2_per_market[m.id] * ask_h2_share_per_market[m.id] * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
-        )
-        h2_weighted_nonzero = h2_weighted.loc[h2_nonzero_mask] / rtk_h2_share.loc[h2_nonzero_mask]
-
-        self.df.loc[h2_nonzero_mask, "energy_per_rtk_without_operations_freight_hydrogen"] = (
-            energy_per_rtk_dropin.loc[h2_nonzero_mask] * h2_weighted_nonzero
-        )
-
-        el_zero_mask = rtk_el_share == 0
-        el_nonzero_mask = ~el_zero_mask
-
-        self.df.loc[el_zero_mask, "energy_per_rtk_without_operations_freight_electric"] = (
-            self.df.loc[el_zero_mask, "energy_per_rtk_without_operations_freight_dropin_fuel"]
-        )
-
-        el_weighted = sum(
-            rel_el_per_market[m.id] * ask_el_share_per_market[m.id] * (ask_per_market[m.id] / ask)
-            for m in passenger_markets
-        )
-        el_weighted_nonzero = el_weighted.loc[el_nonzero_mask] / rtk_el_share.loc[el_nonzero_mask]
-
-        self.df.loc[el_nonzero_mask, "energy_per_rtk_without_operations_freight_electric"] = (
-            energy_per_rtk_dropin.loc[el_nonzero_mask] * el_weighted_nonzero
-        )
-
-        output_data = {
-            "energy_per_rtk_without_operations_freight_dropin_fuel": energy_per_rtk_dropin,
-            "energy_per_rtk_without_operations_freight_hydrogen": self.df[
-                "energy_per_rtk_without_operations_freight_hydrogen"
-            ],
-            "energy_per_rtk_without_operations_freight_electric": self.df[
-                "energy_per_rtk_without_operations_freight_electric"
-            ],
-            "rtk_dropin_fuel_share": rtk_dropin_share,
-            "rtk_hydrogen_share": rtk_h2_share,
-            "rtk_electric_share": rtk_el_share,
-            "rtk_dropin_fuel": rtk_dropin,
-            "rtk_hydrogen": rtk_h2,
-            "rtk_electric": rtk_el,
-        }
         self._store_outputs(output_data)
         return output_data
