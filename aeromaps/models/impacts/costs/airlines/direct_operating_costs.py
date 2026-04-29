@@ -346,315 +346,127 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_carbon_tax", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        energy_per_ask_long_range_dropin_fuel: pd.Series,
-        energy_per_ask_long_range_hydrogen: pd.Series,
-        energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_medium_range_hydrogen: pd.Series,
-        energy_per_ask_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_short_range_hydrogen: pd.Series,
-        energy_per_ask_long_range_electric: pd.Series,
-        energy_per_ask_medium_range_electric: pd.Series,
-        energy_per_ask_short_range_electric: pd.Series,
-        dropin_fuel_mean_unit_carbon_tax: pd.Series,
-        hydrogen_mean_unit_carbon_tax: pd.Series,
-        electric_mean_unit_carbon_tax: pd.Series,
-        ask_long_range_hydrogen_share: pd.Series,
-        ask_long_range_dropin_fuel_share: pd.Series,
-        ask_medium_range_hydrogen_share: pd.Series,
-        ask_medium_range_dropin_fuel_share: pd.Series,
-        ask_short_range_hydrogen_share: pd.Series,
-        ask_short_range_dropin_fuel_share: pd.Series,
-        ask_long_range_electric_share: pd.Series,
-        ask_medium_range_electric_share: pd.Series,
-        ask_short_range_electric_share: pd.Series,
-        ask_long_range: pd.Series,
-        ask_medium_range: pd.Series,
-        ask_short_range: pd.Series,
-        co2_emissions: pd.Series,
-        carbon_offset: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        Execution of the carbon tax DOC per ASK calculation.
-
-        Parameters
-        ----------
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity [MJ/ASK].
-        dropin_fuel_mean_unit_carbon_tax
-            Mean unit carbon tax for drop-in fuels [€/MJ].
-        hydrogen_mean_unit_carbon_tax
-            Mean unit carbon tax for hydrogen [€/MJ].
-        electric_mean_unit_carbon_tax
-            Mean unit carbon tax for electricity [€/MJ].
-        ask_long_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
-        ask_long_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
-        ask_medium_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
-        ask_medium_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
-        ask_short_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
-        ask_short_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
-        ask_long_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
-        ask_medium_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
-        ask_short_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
-        ask_long_range
-            Number of Available Seat Kilometer (ASK) for passenger long-range market [ASK].
-        ask_medium_range
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
-        ask_short_range
-            Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
-        co2_emissions
-            CO2 emissions from the commercial passenger aircraft sector [tonnes CO2].
-        carbon_offset
-            Carbon offset from the commercial passenger aircraft sector [tonnes CO2].
-
-        Returns
-        -------
-        doc_energy_carbon_tax_per_ask_short_range_dropin_fuel
-            Direct operating cost attributable to energy carbon tax, for short range drop-in fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel
-            Direct operating cost attributable to energy carbon tax, for medium range drop-in fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_dropin_fuel
-            Direct operating cost attributable to energy carbon tax, for long range drop-in fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_hydrogen
-            Direct operating cost attributable to energy carbon tax, for short range hydrogen fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_hydrogen
-            Direct operating cost attributable to energy carbon tax, for medium range hydrogen fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_hydrogen
-            Direct operating cost attributable to energy carbon tax, for long range hydrogen fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_electric
-            Direct operating cost attributable to energy carbon tax, for short range electric fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_electric
-            Direct operating cost attributable to energy carbon tax, for medium range electric fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_electric
-            Direct operating cost attributable to energy carbon tax, for long range electric fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_short_range_mean
-            Direct operating cost attributable to energy carbon tax, for short range fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_medium_range_mean
-            Direct operating cost attributable to energy carbon tax, for medium range fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_long_range_mean
-            Direct operating cost attributable to energy carbon tax, for long range fleet [€/ASK].
-        doc_energy_carbon_tax_per_ask_mean
-            Direct operating cost attributable to energy carbon tax, for overall fleet [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_mean
-            Direct operating cost reduction attributable to carbon offset, for overall fleet [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_short_range_mean
-            Direct operating cost reduction attributable to carbon offset, for short range fleet [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
-            Direct operating cost reduction attributable to carbon offset, for medium range fleet [€/ASK].
-        doc_carbon_tax_lowering_offset_per_ask_long_range_mean
-            Direct operating cost reduction attributable to carbon offset, for long range fleet [€/ASK].
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
-        # Drop-in
-        doc_energy_carbon_tax_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel.replace(0, np.NaN)
-            * dropin_fuel_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel.replace(0, np.NaN)
-            * dropin_fuel_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel.replace(0, np.NaN)
-            * dropin_fuel_mean_unit_carbon_tax
-        )
-        # Hydrogen
-        doc_energy_carbon_tax_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen.replace(0, np.NaN) * hydrogen_mean_unit_carbon_tax
-        )
-        # Electric
-        doc_energy_carbon_tax_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
-        )
-        doc_energy_carbon_tax_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric.replace(0, np.NaN) * electric_mean_unit_carbon_tax
-        )
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {
+            "dropin_fuel_mean_unit_carbon_tax": pd.Series([0.0]),
+            "hydrogen_mean_unit_carbon_tax": pd.Series([0.0]),
+            "electric_mean_unit_carbon_tax": pd.Series([0.0]),
+            "co2_emissions": pd.Series([0.0]),
+            "carbon_offset": pd.Series([0.0]),
+        }
+        self.output_names = {}
 
-        # Means
-        doc_energy_carbon_tax_per_ask_long_range_mean = (
-            doc_energy_carbon_tax_per_ask_long_range_hydrogen.fillna(0)
-            * ask_long_range_hydrogen_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_long_range_dropin_fuel.fillna(0)
-            * ask_long_range_dropin_fuel_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_long_range_electric.fillna(0)
-            * ask_long_range_electric_share
-            / 100
-        )
-        doc_energy_carbon_tax_per_ask_medium_range_mean = (
-            doc_energy_carbon_tax_per_ask_medium_range_hydrogen.fillna(0)
-            * ask_medium_range_hydrogen_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel.fillna(0)
-            * ask_medium_range_dropin_fuel_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_medium_range_electric.fillna(0)
-            * ask_medium_range_electric_share
-            / 100
-        )
-        doc_energy_carbon_tax_per_ask_short_range_mean = (
-            doc_energy_carbon_tax_per_ask_short_range_hydrogen.fillna(0)
-            * ask_short_range_hydrogen_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_short_range_dropin_fuel.fillna(0)
-            * ask_short_range_dropin_fuel_share
-            / 100
-            + doc_energy_carbon_tax_per_ask_short_range_electric.fillna(0)
-            * ask_short_range_electric_share
-            / 100
-        )
-        doc_energy_carbon_tax_per_ask_mean = (
-            doc_energy_carbon_tax_per_ask_long_range_mean * ask_long_range
-            + doc_energy_carbon_tax_per_ask_medium_range_mean * ask_medium_range
-            + doc_energy_carbon_tax_per_ask_short_range_mean * ask_short_range
-        ) / (ask_long_range + ask_medium_range + ask_short_range)
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+                self.output_names[f"doc_energy_carbon_tax_per_ask_{mid}_{et}"] = pd.Series([0.0])
+            self.output_names[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] = pd.Series([0.0])
+            self.output_names[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = pd.Series(
+                [0.0]
+            )
 
+        self.output_names["doc_energy_carbon_tax_per_ask_mean"] = pd.Series([0.0])
+        self.output_names["doc_carbon_tax_lowering_offset_per_ask_mean"] = pd.Series([0.0])
+
+    def compute(self, input_data) -> dict:
+        """
+        Carbon-tax DOC per ASK.
+        Per-market per-energy-type: doc = energy_per_ask * mean_unit_carbon_tax
+        (with 0 -> NaN to preserve sparsity); per-market mean weighted by ASK
+        shares (NaN treated as 0); global mean weighted by per-market ASK.
+        Then lowering-offset series scale the means by the carbon_remaining_ratio.
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+
+        scaling = {
+            "dropin_fuel": input_data["dropin_fuel_mean_unit_carbon_tax"],
+            "hydrogen": input_data["hydrogen_mean_unit_carbon_tax"],
+            "electric": input_data["electric_mean_unit_carbon_tax"],
+        }
+
+        doc_pm = {}  # (mid, et) -> pd.Series
+        ask_market = {}  # mid -> pd.Series
+        ask_share = {}  # (mid, et) -> pd.Series
+        market_mean = {}  # mid -> pd.Series
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            ask_market[mid] = input_data[f"ask_{mid}"]
+            for et in energy_types:
+                energy = input_data[f"energy_per_ask_{mid}_{et}"]
+                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy.replace(0, np.NaN) * scaling[et]
+                doc_pm[(mid, et)] = doc
+                output_data[f"doc_energy_carbon_tax_per_ask_{mid}_{et}"] = doc
+
+        # Per-market mean (NaN treated as 0).
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            total = None
+            for et in energy_types:
+                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                total = term if total is None else total + term
+            if total is None:
+                total = pd.Series(0.0, index=self.df.index)
+            market_mean[mid] = total
+            output_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] = total
+
+        # Global mean: weighted by per-market ASK totals.
+        numerator = None
+        denominator = None
+        for mid, mm in market_mean.items():
+            ask_m = ask_market[mid]
+            num_term = mm * ask_m
+            numerator = num_term if numerator is None else numerator + num_term
+            denominator = ask_m if denominator is None else denominator + ask_m
+
+        if numerator is None:
+            global_mean = pd.Series(0.0, index=self.df.index)
+        else:
+            global_mean = numerator / denominator
+
+        output_data["doc_energy_carbon_tax_per_ask_mean"] = global_mean
+
+        # Carbon offset lowering ratio (sliced over historic_start_year..end_year).
+        co2_emissions = input_data["co2_emissions"]
+        carbon_offset = input_data["carbon_offset"]
         carbon_remaining_ratio = (
             co2_emissions.loc[self.historic_start_year : self.end_year] - carbon_offset.fillna(0)
         ) / co2_emissions.loc[self.historic_start_year : self.end_year]
 
-        doc_carbon_tax_lowering_offset_per_ask_mean = (
-            doc_energy_carbon_tax_per_ask_mean * carbon_remaining_ratio
+        output_data["doc_carbon_tax_lowering_offset_per_ask_mean"] = (
+            global_mean * carbon_remaining_ratio
         )
 
-        doc_carbon_tax_lowering_offset_per_ask_short_range_mean = (
-            doc_energy_carbon_tax_per_ask_short_range_mean * carbon_remaining_ratio
-        )
+        lowering_offset_pm = {}
+        for mid, mm in market_mean.items():
+            lowering = mm * carbon_remaining_ratio
+            lowering_offset_pm[mid] = lowering
+            output_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = lowering
 
-        doc_carbon_tax_lowering_offset_per_ask_medium_range_mean = (
-            doc_energy_carbon_tax_per_ask_medium_range_mean * carbon_remaining_ratio
-        )
+        # Legacy bug preserved (commit history pre-Phase-4): the short_range column of
+        # doc_carbon_tax_lowering_offset_per_ask_<mid>_mean is overwritten with the
+        # medium_range value. Preserved for numerical equivalence with default config.
+        # NOTE: legacy bug preserved
+        if "short_range" in lowering_offset_pm and "medium_range" in lowering_offset_pm:
+            output_data["doc_carbon_tax_lowering_offset_per_ask_short_range_mean"] = (
+                lowering_offset_pm["medium_range"]
+            )
 
-        doc_carbon_tax_lowering_offset_per_ask_long_range_mean = (
-            doc_energy_carbon_tax_per_ask_long_range_mean * carbon_remaining_ratio
-        )
-
-        # Stockage dans le DataFrame
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_long_range_dropin_fuel"] = (
-            doc_energy_carbon_tax_per_ask_long_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel"] = (
-            doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_short_range_dropin_fuel"] = (
-            doc_energy_carbon_tax_per_ask_short_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_long_range_hydrogen"] = (
-            doc_energy_carbon_tax_per_ask_long_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_medium_range_hydrogen"] = (
-            doc_energy_carbon_tax_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_short_range_hydrogen"] = (
-            doc_energy_carbon_tax_per_ask_short_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_long_range_electric"] = (
-            doc_energy_carbon_tax_per_ask_long_range_electric
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_medium_range_electric"] = (
-            doc_energy_carbon_tax_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_short_range_electric"] = (
-            doc_energy_carbon_tax_per_ask_short_range_electric
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_long_range_mean"] = (
-            doc_energy_carbon_tax_per_ask_long_range_mean
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_medium_range_mean"] = (
-            doc_energy_carbon_tax_per_ask_medium_range_mean
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_short_range_mean"] = (
-            doc_energy_carbon_tax_per_ask_short_range_mean
-        )
-        self.df.loc[:, "doc_energy_carbon_tax_per_ask_mean"] = doc_energy_carbon_tax_per_ask_mean
-        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_mean"] = (
-            doc_carbon_tax_lowering_offset_per_ask_mean
-        )
-
-        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_short_range_mean"] = (
-            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
-        )
-        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_medium_range_mean"] = (
-            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean
-        )
-        self.df.loc[:, "doc_carbon_tax_lowering_offset_per_ask_long_range_mean"] = (
-            doc_carbon_tax_lowering_offset_per_ask_long_range_mean
-        )
-
-        return (
-            doc_energy_carbon_tax_per_ask_long_range_dropin_fuel,
-            doc_energy_carbon_tax_per_ask_medium_range_dropin_fuel,
-            doc_energy_carbon_tax_per_ask_short_range_dropin_fuel,
-            doc_energy_carbon_tax_per_ask_long_range_hydrogen,
-            doc_energy_carbon_tax_per_ask_medium_range_hydrogen,
-            doc_energy_carbon_tax_per_ask_short_range_hydrogen,
-            doc_energy_carbon_tax_per_ask_long_range_electric,
-            doc_energy_carbon_tax_per_ask_medium_range_electric,
-            doc_energy_carbon_tax_per_ask_short_range_electric,
-            doc_energy_carbon_tax_per_ask_long_range_mean,
-            doc_energy_carbon_tax_per_ask_medium_range_mean,
-            doc_energy_carbon_tax_per_ask_short_range_mean,
-            doc_energy_carbon_tax_per_ask_mean,
-            doc_carbon_tax_lowering_offset_per_ask_mean,
-            doc_carbon_tax_lowering_offset_per_ask_short_range_mean,
-            doc_carbon_tax_lowering_offset_per_ask_medium_range_mean,
-            doc_carbon_tax_lowering_offset_per_ask_long_range_mean,
-        )
+        self._store_outputs(output_data)
+        return output_data
 
 
 class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
@@ -668,257 +480,95 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_subsidy", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        energy_per_ask_long_range_dropin_fuel: pd.Series,
-        energy_per_ask_long_range_hydrogen: pd.Series,
-        energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_medium_range_hydrogen: pd.Series,
-        energy_per_ask_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_short_range_hydrogen: pd.Series,
-        energy_per_ask_long_range_electric: pd.Series,
-        energy_per_ask_medium_range_electric: pd.Series,
-        energy_per_ask_short_range_electric: pd.Series,
-        dropin_fuel_mean_unit_subsidy: pd.Series,
-        hydrogen_mean_unit_subsidy: pd.Series,
-        electric_mean_unit_subsidy: pd.Series,
-        ask_long_range_hydrogen_share: pd.Series,
-        ask_long_range_dropin_fuel_share: pd.Series,
-        ask_medium_range_hydrogen_share: pd.Series,
-        ask_medium_range_dropin_fuel_share: pd.Series,
-        ask_short_range_hydrogen_share: pd.Series,
-        ask_short_range_dropin_fuel_share: pd.Series,
-        ask_long_range_electric_share: pd.Series,
-        ask_medium_range_electric_share: pd.Series,
-        ask_short_range_electric_share: pd.Series,
-        ask_long_range: pd.Series,
-        ask_medium_range: pd.Series,
-        ask_short_range: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        Execution of the energy subsidy DOC per ASK calculation.
-        Parameters
-        ----------
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity [MJ/ASK].
-        dropin_fuel_mean_unit_subsidy
-            Mean unit subsidy for drop-in fuels [€/MJ].
-        hydrogen_mean_unit_subsidy
-            Mean unit subsidy for hydrogen [€/MJ].
-        electric_mean_unit_subsidy
-            Mean unit subsidy for electricity [€/MJ].
-        ask_long_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
-        ask_long_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
-        ask_medium_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
-        ask_medium_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
-        ask_short_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
-        ask_short_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
-        ask_long_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
-        ask_medium_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
-        ask_short_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
-        ask_long_range
-            Number of Available Seat Kilometer (ASK) for passenger long-range market [ASK].
-        ask_medium_range
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
-        ask_short_range
-            Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
-
-        Returns
-        -------
-        doc_energy_subsidy_per_ask_short_range_dropin_fuel
-            Direct operating cost savings attributable to energy subsidy, for short range drop-in fleet [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_dropin_fuel
-            Direct operating cost savings attributable to energy subsidy, for medium range drop-in fleet [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_dropin_fuel
-            Direct operating cost savings attributable to energy subsidy, for long range drop-in fleet [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_hydrogen
-            Direct operating cost savings attributable to energy subsidy, for short range hydrogen fleet [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_hydrogen
-            Direct operating cost savings attributable to energy subsidy, for medium range hydrogen fleet [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_hydrogen
-            Direct operating cost savings attributable to energy subsidy, for long range hydrogen fleet [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_electric
-            Direct operating cost savings attributable to energy subsidy, for short range electric fleet [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_electric
-            Direct operating cost savings attributable to energy subsidy, for medium range electric fleet [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_electric
-            Direct operating cost savings attributable to energy subsidy, for long range electric fleet [€/ASK].
-        doc_energy_subsidy_per_ask_short_range_mean
-            Direct operating cost savings attributable to energy subsidy, for short range fleet [€/ASK].
-        doc_energy_subsidy_per_ask_medium_range_mean
-            Direct operating cost savings attributable to energy subsidy, for medium range fleet [€/ASK].
-        doc_energy_subsidy_per_ask_long_range_mean
-            Direct operating cost savings attributable to energy subsidy, for long range fleet [€/ASK].
-        doc_energy_subsidy_per_ask_mean
-            Direct operating cost savings attributable to energy subsidy, for overall fleet [€/ASK].
-
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
-        # Drop-in
-        doc_energy_subsidy_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_fuel_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_fuel_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_fuel_mean_unit_subsidy
-        )
-        # Hydrogen
-        doc_energy_subsidy_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * hydrogen_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * hydrogen_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen * hydrogen_mean_unit_subsidy
-        )
-        # Electric
-        doc_energy_subsidy_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric * electric_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric * electric_mean_unit_subsidy
-        )
-        doc_energy_subsidy_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric * electric_mean_unit_subsidy
-        )
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {
+            "dropin_fuel_mean_unit_subsidy": pd.Series([0.0]),
+            "hydrogen_mean_unit_subsidy": pd.Series([0.0]),
+            "electric_mean_unit_subsidy": pd.Series([0.0]),
+        }
+        self.output_names = {}
 
-        # Moyennes pondérées
-        doc_energy_subsidy_per_ask_long_range_mean = (
-            doc_energy_subsidy_per_ask_long_range_hydrogen.fillna(0)
-            * ask_long_range_hydrogen_share
-            / 100
-            + doc_energy_subsidy_per_ask_long_range_dropin_fuel.fillna(0)
-            * ask_long_range_dropin_fuel_share
-            / 100
-            + doc_energy_subsidy_per_ask_long_range_electric.fillna(0)
-            * ask_long_range_electric_share
-            / 100
-        )
-        doc_energy_subsidy_per_ask_medium_range_mean = (
-            doc_energy_subsidy_per_ask_medium_range_hydrogen.fillna(0)
-            * ask_medium_range_hydrogen_share
-            / 100
-            + doc_energy_subsidy_per_ask_medium_range_dropin_fuel.fillna(0)
-            * ask_medium_range_dropin_fuel_share
-            / 100
-            + doc_energy_subsidy_per_ask_medium_range_electric.fillna(0)
-            * ask_medium_range_electric_share
-            / 100
-        )
-        doc_energy_subsidy_per_ask_short_range_mean = (
-            doc_energy_subsidy_per_ask_short_range_hydrogen.fillna(0)
-            * ask_short_range_hydrogen_share
-            / 100
-            + doc_energy_subsidy_per_ask_short_range_dropin_fuel.fillna(0)
-            * ask_short_range_dropin_fuel_share
-            / 100
-            + doc_energy_subsidy_per_ask_short_range_electric.fillna(0)
-            * ask_short_range_electric_share
-            / 100
-        )
-        doc_energy_subsidy_per_ask_mean = (
-            doc_energy_subsidy_per_ask_long_range_mean * ask_long_range
-            + doc_energy_subsidy_per_ask_medium_range_mean * ask_medium_range
-            + doc_energy_subsidy_per_ask_short_range_mean * ask_short_range
-        ) / (ask_long_range + ask_medium_range + ask_short_range)
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+                self.output_names[f"doc_energy_subsidy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+            self.output_names[f"doc_energy_subsidy_per_ask_{mid}_mean"] = pd.Series([0.0])
 
-        # Stockage dans le DataFrame
-        self.df.loc[:, "doc_energy_subsidy_per_ask_long_range_dropin_fuel"] = (
-            doc_energy_subsidy_per_ask_long_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_medium_range_dropin_fuel"] = (
-            doc_energy_subsidy_per_ask_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_short_range_dropin_fuel"] = (
-            doc_energy_subsidy_per_ask_short_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_long_range_hydrogen"] = (
-            doc_energy_subsidy_per_ask_long_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_medium_range_hydrogen"] = (
-            doc_energy_subsidy_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_short_range_hydrogen"] = (
-            doc_energy_subsidy_per_ask_short_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_long_range_electric"] = (
-            doc_energy_subsidy_per_ask_long_range_electric
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_medium_range_electric"] = (
-            doc_energy_subsidy_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_short_range_electric"] = (
-            doc_energy_subsidy_per_ask_short_range_electric
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_long_range_mean"] = (
-            doc_energy_subsidy_per_ask_long_range_mean
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_medium_range_mean"] = (
-            doc_energy_subsidy_per_ask_medium_range_mean
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_short_range_mean"] = (
-            doc_energy_subsidy_per_ask_short_range_mean
-        )
-        self.df.loc[:, "doc_energy_subsidy_per_ask_mean"] = doc_energy_subsidy_per_ask_mean
+        self.output_names["doc_energy_subsidy_per_ask_mean"] = pd.Series([0.0])
 
-        return (
-            doc_energy_subsidy_per_ask_long_range_dropin_fuel,
-            doc_energy_subsidy_per_ask_medium_range_dropin_fuel,
-            doc_energy_subsidy_per_ask_short_range_dropin_fuel,
-            doc_energy_subsidy_per_ask_long_range_hydrogen,
-            doc_energy_subsidy_per_ask_medium_range_hydrogen,
-            doc_energy_subsidy_per_ask_short_range_hydrogen,
-            doc_energy_subsidy_per_ask_long_range_electric,
-            doc_energy_subsidy_per_ask_medium_range_electric,
-            doc_energy_subsidy_per_ask_short_range_electric,
-            doc_energy_subsidy_per_ask_long_range_mean,
-            doc_energy_subsidy_per_ask_medium_range_mean,
-            doc_energy_subsidy_per_ask_short_range_mean,
-            doc_energy_subsidy_per_ask_mean,
-        )
+    def compute(self, input_data) -> dict:
+        """
+        Energy-subsidy DOC per ASK.
+        Per-market per-energy-type: doc = energy_per_ask * mean_unit_subsidy
+        (legacy preserved: no .replace(0, np.NaN) on inputs); per-market mean
+        weighted by ASK shares (NaN treated as 0); global mean weighted by
+        per-market ASK.
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+
+        scaling = {
+            "dropin_fuel": input_data["dropin_fuel_mean_unit_subsidy"],
+            "hydrogen": input_data["hydrogen_mean_unit_subsidy"],
+            "electric": input_data["electric_mean_unit_subsidy"],
+        }
+
+        doc_pm = {}  # (mid, et) -> pd.Series
+        ask_market = {}  # mid -> pd.Series
+        ask_share = {}  # (mid, et) -> pd.Series
+        market_mean = {}  # mid -> pd.Series
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            ask_market[mid] = input_data[f"ask_{mid}"]
+            for et in energy_types:
+                energy = input_data[f"energy_per_ask_{mid}_{et}"]
+                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy * scaling[et]
+                doc_pm[(mid, et)] = doc
+                output_data[f"doc_energy_subsidy_per_ask_{mid}_{et}"] = doc
+
+        # Per-market mean (NaN treated as 0).
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            total = None
+            for et in energy_types:
+                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                total = term if total is None else total + term
+            if total is None:
+                total = pd.Series(0.0, index=self.df.index)
+            market_mean[mid] = total
+            output_data[f"doc_energy_subsidy_per_ask_{mid}_mean"] = total
+
+        # Global mean: weighted by per-market ASK totals.
+        numerator = None
+        denominator = None
+        for mid, mm in market_mean.items():
+            ask_m = ask_market[mid]
+            num_term = mm * ask_m
+            numerator = num_term if numerator is None else numerator + num_term
+            denominator = ask_m if denominator is None else denominator + ask_m
+
+        if numerator is None:
+            global_mean = pd.Series(0.0, index=self.df.index)
+        else:
+            global_mean = numerator / denominator
+
+        output_data["doc_energy_subsidy_per_ask_mean"] = global_mean
+
+        self._store_outputs(output_data)
+        return output_data
 
 
 class PassengerAircraftDocEnergyTax(AeroMAPSModel):
@@ -932,256 +582,95 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_tax", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        energy_per_ask_long_range_dropin_fuel: pd.Series,
-        energy_per_ask_long_range_hydrogen: pd.Series,
-        energy_per_ask_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_medium_range_hydrogen: pd.Series,
-        energy_per_ask_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_short_range_hydrogen: pd.Series,
-        energy_per_ask_long_range_electric: pd.Series,
-        energy_per_ask_medium_range_electric: pd.Series,
-        energy_per_ask_short_range_electric: pd.Series,
-        dropin_fuel_mean_unit_tax: pd.Series,
-        hydrogen_mean_unit_tax: pd.Series,
-        electric_mean_unit_tax: pd.Series,
-        ask_long_range_hydrogen_share: pd.Series,
-        ask_long_range_dropin_fuel_share: pd.Series,
-        ask_medium_range_hydrogen_share: pd.Series,
-        ask_medium_range_dropin_fuel_share: pd.Series,
-        ask_short_range_hydrogen_share: pd.Series,
-        ask_short_range_dropin_fuel_share: pd.Series,
-        ask_long_range_electric_share: pd.Series,
-        ask_medium_range_electric_share: pd.Series,
-        ask_short_range_electric_share: pd.Series,
-        ask_long_range: pd.Series,
-        ask_medium_range: pd.Series,
-        ask_short_range: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
+    def custom_setup(self):
         """
-        Execution of the energy tax (non carbon) DOC per ASK calculation.
-        Parameters
-        ----------
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity [MJ/ASK].
-        dropin_fuel_mean_unit_tax
-            Mean unit energy tax for drop-in fuels [€/MJ].
-        hydrogen_mean_unit_tax
-            Mean unit energy tax for hydrogen [€/MJ].
-        electric_mean_unit_tax
-            Mean unit energy tax for electricity [€/MJ].
-        ask_long_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from hydrogen aircraft [%].
-        ask_long_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from drop-in fuel aircraft [%].
-        ask_medium_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from hydrogen aircraft [%].
-        ask_medium_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from drop-in fuel aircraft [%].
-        ask_short_range_hydrogen_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from hydrogen aircraft [%].
-        ask_short_range_dropin_fuel_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from drop-in fuel aircraft [%].
-        ask_long_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger long-range market from electric aircraft [%].
-        ask_medium_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger medium-range market from electric aircraft [%].
-        ask_short_range_electric_share
-            Share of Available Seat Kilometer (ASK) for passenger short-range market from electric aircraft [%].
-        ask_long_range
-            Number of Available Seat Kilometer (ASK) for passenger long-range market [ASK].
-        ask_medium_range
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
-        ask_short_range
-            Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
-
-        Returns
-        -------
-        doc_energy_tax_per_ask_short_range_dropin_fuel
-            Direct operating cost attributable to energy tax, for short range drop-in fleet [€/ASK].
-        doc_energy_tax_per_ask_medium_range_dropin_fuel
-            Direct operating cost attributable to energy tax, for medium range drop-in fleet [€/ASK].
-        doc_energy_tax_per_ask_long_range_dropin_fuel
-            Direct operating cost attributable to energy tax, for long range drop-in fleet [€/ASK].
-        doc_energy_tax_per_ask_short_range_hydrogen
-            Direct operating cost attributable to energy tax, for short range hydrogen fleet [€/ASK].
-        doc_energy_tax_per_ask_medium_range_hydrogen
-            Direct operating cost attributable to energy tax, for medium range hydrogen fleet [€/ASK].
-        doc_energy_tax_per_ask_long_range_hydrogen
-            Direct operating cost attributable to energy tax, for long range hydrogen fleet [€/ASK].
-        doc_energy_tax_per_ask_short_range_electric
-            Direct operating cost attributable to energy tax, for short range electric fleet [€/ASK].
-        doc_energy_tax_per_ask_medium_range_electric
-            Direct operating cost attributable to energy tax, for medium range electric fleet [€/ASK].
-        doc_energy_tax_per_ask_long_range_electric
-            Direct operating cost attributable to energy tax, for long range electric fleet [€/ASK].
-        doc_energy_tax_per_ask_short_range_mean
-            Direct operating cost attributable to energy tax, for short range fleet [€/ASK].
-        doc_energy_tax_per_ask_medium_range_mean
-            Direct operating cost attributable to energy tax, for medium range fleet [€/ASK].
-        doc_energy_tax_per_ask_long_range_mean
-            Direct operating cost attributable to energy tax, for long range fleet [€/ASK].
-        doc_energy_tax_per_ask_mean
-            Direct operating cost attributable to energy tax, for overall fleet [€/ASK].
+        Build input_names / output_names dynamically from the MarketManager.
+        Called once by AeroMAPSProcess after self.markets is injected.
         """
-        # Drop-in
-        doc_energy_tax_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_long_range_dropin_fuel * dropin_fuel_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_medium_range_dropin_fuel * dropin_fuel_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_short_range_dropin_fuel * dropin_fuel_mean_unit_tax
-        )
-        # Hydrogen
-        doc_energy_tax_per_ask_long_range_hydrogen = (
-            energy_per_ask_long_range_hydrogen * hydrogen_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_medium_range_hydrogen = (
-            energy_per_ask_medium_range_hydrogen * hydrogen_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_short_range_hydrogen = (
-            energy_per_ask_short_range_hydrogen * hydrogen_mean_unit_tax
-        )
-        # Electric
-        doc_energy_tax_per_ask_long_range_electric = (
-            energy_per_ask_long_range_electric * electric_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_medium_range_electric = (
-            energy_per_ask_medium_range_electric * electric_mean_unit_tax
-        )
-        doc_energy_tax_per_ask_short_range_electric = (
-            energy_per_ask_short_range_electric * electric_mean_unit_tax
-        )
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        self.input_names = {
+            "dropin_fuel_mean_unit_tax": pd.Series([0.0]),
+            "hydrogen_mean_unit_tax": pd.Series([0.0]),
+            "electric_mean_unit_tax": pd.Series([0.0]),
+        }
+        self.output_names = {}
 
-        # Moyennes pondérées
-        doc_energy_tax_per_ask_long_range_mean = (
-            doc_energy_tax_per_ask_long_range_hydrogen.fillna(0)
-            * ask_long_range_hydrogen_share
-            / 100
-            + doc_energy_tax_per_ask_long_range_dropin_fuel.fillna(0)
-            * ask_long_range_dropin_fuel_share
-            / 100
-            + doc_energy_tax_per_ask_long_range_electric.fillna(0)
-            * ask_long_range_electric_share
-            / 100
-        )
-        doc_energy_tax_per_ask_medium_range_mean = (
-            doc_energy_tax_per_ask_medium_range_hydrogen.fillna(0)
-            * ask_medium_range_hydrogen_share
-            / 100
-            + doc_energy_tax_per_ask_medium_range_dropin_fuel.fillna(0)
-            * ask_medium_range_dropin_fuel_share
-            / 100
-            + doc_energy_tax_per_ask_medium_range_electric.fillna(0)
-            * ask_medium_range_electric_share
-            / 100
-        )
-        doc_energy_tax_per_ask_short_range_mean = (
-            doc_energy_tax_per_ask_short_range_hydrogen.fillna(0)
-            * ask_short_range_hydrogen_share
-            / 100
-            + doc_energy_tax_per_ask_short_range_dropin_fuel.fillna(0)
-            * ask_short_range_dropin_fuel_share
-            / 100
-            + doc_energy_tax_per_ask_short_range_electric.fillna(0)
-            * ask_short_range_electric_share
-            / 100
-        )
-        doc_energy_tax_per_ask_mean = (
-            doc_energy_tax_per_ask_long_range_mean * ask_long_range
-            + doc_energy_tax_per_ask_medium_range_mean * ask_medium_range
-            + doc_energy_tax_per_ask_short_range_mean * ask_short_range
-        ) / (ask_long_range + ask_medium_range + ask_short_range)
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            self.input_names[f"ask_{mid}"] = pd.Series([0.0])
+            for et in energy_types:
+                self.input_names[f"energy_per_ask_{mid}_{et}"] = pd.Series([0.0])
+                self.input_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
+                self.output_names[f"doc_energy_tax_per_ask_{mid}_{et}"] = pd.Series([0.0])
+            self.output_names[f"doc_energy_tax_per_ask_{mid}_mean"] = pd.Series([0.0])
 
-        # Stockage dans le DataFrame
-        self.df.loc[:, "doc_energy_tax_per_ask_long_range_dropin_fuel"] = (
-            doc_energy_tax_per_ask_long_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_medium_range_dropin_fuel"] = (
-            doc_energy_tax_per_ask_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_short_range_dropin_fuel"] = (
-            doc_energy_tax_per_ask_short_range_dropin_fuel
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_long_range_hydrogen"] = (
-            doc_energy_tax_per_ask_long_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_medium_range_hydrogen"] = (
-            doc_energy_tax_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_short_range_hydrogen"] = (
-            doc_energy_tax_per_ask_short_range_hydrogen
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_long_range_electric"] = (
-            doc_energy_tax_per_ask_long_range_electric
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_medium_range_electric"] = (
-            doc_energy_tax_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_short_range_electric"] = (
-            doc_energy_tax_per_ask_short_range_electric
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_long_range_mean"] = (
-            doc_energy_tax_per_ask_long_range_mean
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_medium_range_mean"] = (
-            doc_energy_tax_per_ask_medium_range_mean
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_short_range_mean"] = (
-            doc_energy_tax_per_ask_short_range_mean
-        )
-        self.df.loc[:, "doc_energy_tax_per_ask_mean"] = doc_energy_tax_per_ask_mean
+        self.output_names["doc_energy_tax_per_ask_mean"] = pd.Series([0.0])
 
-        return (
-            doc_energy_tax_per_ask_long_range_dropin_fuel,
-            doc_energy_tax_per_ask_medium_range_dropin_fuel,
-            doc_energy_tax_per_ask_short_range_dropin_fuel,
-            doc_energy_tax_per_ask_long_range_hydrogen,
-            doc_energy_tax_per_ask_medium_range_hydrogen,
-            doc_energy_tax_per_ask_short_range_hydrogen,
-            doc_energy_tax_per_ask_long_range_electric,
-            doc_energy_tax_per_ask_medium_range_electric,
-            doc_energy_tax_per_ask_short_range_electric,
-            doc_energy_tax_per_ask_long_range_mean,
-            doc_energy_tax_per_ask_medium_range_mean,
-            doc_energy_tax_per_ask_short_range_mean,
-            doc_energy_tax_per_ask_mean,
-        )
+    def compute(self, input_data) -> dict:
+        """
+        Energy-tax (non-carbon) DOC per ASK.
+        Per-market per-energy-type: doc = energy_per_ask * mean_unit_tax
+        (legacy preserved: no .replace(0, np.NaN) on inputs); per-market mean
+        weighted by ASK shares (NaN treated as 0); global mean weighted by
+        per-market ASK.
+        """
+        energy_types = ["dropin_fuel", "hydrogen", "electric"]
+        output_data = {}
+
+        scaling = {
+            "dropin_fuel": input_data["dropin_fuel_mean_unit_tax"],
+            "hydrogen": input_data["hydrogen_mean_unit_tax"],
+            "electric": input_data["electric_mean_unit_tax"],
+        }
+
+        doc_pm = {}  # (mid, et) -> pd.Series
+        ask_market = {}  # mid -> pd.Series
+        ask_share = {}  # (mid, et) -> pd.Series
+        market_mean = {}  # mid -> pd.Series
+
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            ask_market[mid] = input_data[f"ask_{mid}"]
+            for et in energy_types:
+                energy = input_data[f"energy_per_ask_{mid}_{et}"]
+                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy * scaling[et]
+                doc_pm[(mid, et)] = doc
+                output_data[f"doc_energy_tax_per_ask_{mid}_{et}"] = doc
+
+        # Per-market mean (NaN treated as 0).
+        for market in self.markets.get(traffic_type="passenger"):
+            mid = market.id
+            total = None
+            for et in energy_types:
+                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                total = term if total is None else total + term
+            if total is None:
+                total = pd.Series(0.0, index=self.df.index)
+            market_mean[mid] = total
+            output_data[f"doc_energy_tax_per_ask_{mid}_mean"] = total
+
+        # Global mean: weighted by per-market ASK totals.
+        numerator = None
+        denominator = None
+        for mid, mm in market_mean.items():
+            ask_m = ask_market[mid]
+            num_term = mm * ask_m
+            numerator = num_term if numerator is None else numerator + num_term
+            denominator = ask_m if denominator is None else denominator + ask_m
+
+        if numerator is None:
+            global_mean = pd.Series(0.0, index=self.df.index)
+        else:
+            global_mean = numerator / denominator
+
+        output_data["doc_energy_tax_per_ask_mean"] = global_mean
+
+        self._store_outputs(output_data)
+        return output_data
 
 
 # class PassengerAircraftDocCarbonTax(AeroMAPSModel):
