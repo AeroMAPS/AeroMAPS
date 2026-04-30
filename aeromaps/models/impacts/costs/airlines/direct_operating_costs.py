@@ -135,10 +135,10 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             # Scalars: dropin_fuel init/gain + relative-to-dropin coefficients for hydrogen/electric.
-            self.input_names[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"] = 0.0
-            self.input_names[f"doc_non_energy_per_ask_{mid}_dropin_fuel_gain"] = 0.0
-            self.input_names[f"relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_{mid}"] = 0.0
-            self.input_names[f"relative_doc_non_energy_per_ask_electric_wrt_dropin_{mid}"] = 0.0
+            self.input_names[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"] = 0.0
+            self.input_names[f"{mid}_doc_non_energy_per_ask_dropin_fuel_gain"] = 0.0
+            self.input_names[f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"] = 0.0
+            self.input_names[f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"] = 0.0
             # Series: per-market ASK + per-energy-type ASK shares.
             self.input_names[f"ask_{mid}"] = pd.Series([0.0])
             for et in energy_types:
@@ -165,10 +165,10 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            init = float(input_data[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"])
-            gain = float(input_data[f"doc_non_energy_per_ask_{mid}_dropin_fuel_gain"])
-            rel_h = float(input_data[f"relative_doc_non_energy_per_ask_hydrogen_wrt_dropin_{mid}"])
-            rel_e = float(input_data[f"relative_doc_non_energy_per_ask_electric_wrt_dropin_{mid}"])
+            init = float(input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"])
+            gain = float(input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_gain"])
+            rel_h = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"])
+            rel_e = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"])
 
             ask_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:

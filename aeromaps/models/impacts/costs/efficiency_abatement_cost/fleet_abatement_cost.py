@@ -52,7 +52,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            self.input_names[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"] = 0.0
+            self.input_names[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"] = 0.0
             self.input_names[f"energy_per_ask_without_operations_{mid}_dropin_fuel"] = pd.Series(
                 [0.0]
             )
@@ -77,7 +77,7 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
             if category not in market_name_to_id:
                 continue
             mid = market_name_to_id[category]
-            category_reference_doc_ne = input_data[f"doc_non_energy_per_ask_{mid}_dropin_fuel_init"]
+            category_reference_doc_ne = input_data[f"{mid}_doc_non_energy_per_ask_dropin_fuel_init"]
             # Assumes 100% drop in at reference year. Sum with non drop in necessary otherwise.
             category_reference_energy = input_data[
                 f"energy_per_ask_without_operations_{mid}_dropin_fuel"

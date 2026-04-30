@@ -39,7 +39,7 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means i
 )
 
 from aeromaps.models.air_transport.air_traffic.rpk import (
-    RPK,
+    # RPK,
     RPKReference,
     RPKMeasures,
 )
@@ -156,13 +156,13 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
 )
 
 models_traffic = {
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk": RPK("rpk"),
-    "rpk_reference": RPKReference("rpk_reference"),
+    # "rpk_measures": RPKMeasures("rpk_measures"),
+    # "rpk": RPK("rpk"),
+    # "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
+    # "rtk": RTK("rtk"),
+    # "rtk_reference": RTKReference("rtk_reference"),
+    # "ask": ASK("ask"),
 }
 
 
@@ -178,7 +178,7 @@ models_traffic_cost_feedback = {
 
 
 models_efficiency_top_down = {
-    "load_factor": LoadFactor("load_factor"),
+    # "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(

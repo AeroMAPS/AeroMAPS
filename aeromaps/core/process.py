@@ -67,6 +67,7 @@ from aeromaps.models.air_transport.markets.markets_factory import (
     create_market_load_factor_models,
     create_market_rpk_aggregator,
     create_market_rpk_models,
+    create_market_rtk_aggregator,
     create_market_rtk_models,
 )
 
@@ -1062,6 +1063,7 @@ class AeroMAPSProcess(object):
         self.models.update(create_market_rpk_models(self.markets, self.markets_data))
         self.models.update(create_market_rpk_aggregator(self.markets))
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
+        self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))
         self.models.update(create_market_load_factor_models(self.markets))
 

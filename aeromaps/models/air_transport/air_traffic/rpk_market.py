@@ -225,24 +225,36 @@ class RPKAggregator(AeroMAPSModel):
         self.input_names = {}
         for mid in self.passenger_market_ids:
             self.input_names[f"rpk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"rpk_reference_{mid}"] = pd.Series([0.0])
         self.output_names = {
             "rpk": pd.Series([0.0]),
             "annual_growth_rate_passenger": pd.Series([0.0]),
             "cagr_rpk": 0.0,
             "prospective_evolution_rpk": 0.0,
+            "rpk_reference": pd.Series([0.0]),
+            "reference_annual_growth_rate_passenger": pd.Series([0.0]),
         }
 
     def compute(self, input_data: dict) -> dict:
         total_rpk = None
+        total_rpk_reference = None
         for mid in self.passenger_market_ids:
             series = input_data[f"rpk_{mid}"]
             total_rpk = series if total_rpk is None else total_rpk + series
+            series_ref = input_data[f"rpk_reference_{mid}"]
+            total_rpk_reference = (
+                series_ref if total_rpk_reference is None else total_rpk_reference + series_ref
+            )
 
         self.df.loc[:, "rpk"] = total_rpk
+        self.df.loc[:, "rpk_reference"] = total_rpk_reference
 
         for k in range(self.historic_start_year + 1, self.end_year + 1):
             self.df.loc[k, "annual_growth_rate_passenger"] = (
                 self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
+            ) * 100
+            self.df.loc[k, "reference_annual_growth_rate_passenger"] = (
+                self.df.loc[k, "rpk_reference"] / self.df.loc[k - 1, "rpk_reference"] - 1
             ) * 100
 
         cagr_rpk = 100 * (
@@ -263,6 +275,10 @@ class RPKAggregator(AeroMAPSModel):
             "annual_growth_rate_passenger": self.df["annual_growth_rate_passenger"],
             "cagr_rpk": cagr_rpk,
             "prospective_evolution_rpk": prospective_evolution_rpk,
+            "rpk_reference": self.df["rpk_reference"],
+            "reference_annual_growth_rate_passenger": self.df[
+                "reference_annual_growth_rate_passenger"
+            ],
         }
         self._store_outputs(output_data)
         return output_data

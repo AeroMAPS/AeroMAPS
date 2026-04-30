@@ -7,7 +7,11 @@ from aeromaps.models.air_transport.air_traffic.rpk_market import (
     RPKMeasuresMarket,
     RPKReferenceMarket,
 )
-from aeromaps.models.air_transport.air_traffic.rtk_market import RTKMarket, RTKReferenceMarket
+from aeromaps.models.air_transport.air_traffic.rtk_market import (
+    RTKAggregator,
+    RTKMarket,
+    RTKReferenceMarket,
+)
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
     LoadFactorAggregator,
     LoadFactorMarket,
@@ -113,36 +117,46 @@ def create_market_load_factor_models(markets) -> dict:
 
 
 def create_market_rtk_models(markets, markets_data: dict = None) -> dict:
-    """Create market-driven RTK models for freight.
+    """Create per-market RTK models for all freight markets.
 
-    Always creates one ``RTKMarket`` for the freight market.
+    Always creates one ``RTKMarket`` per freight market.
     Creates ``RTKReferenceMarket`` only when a ``reference`` sub-group is
     present in the freight market's inputs.
 
     Returns an empty mapping when no freight market is configured.
-    Raises when multiple freight markets are configured, as the current
-    implementation is intentionally single-market.
     """
     models = {}
     if markets is None:
         return models
 
     freight_markets = markets.get(traffic_type="freight")
-    if len(freight_markets) == 0:
+    if not freight_markets:
         return models
-    if len(freight_markets) > 1:
-        raise ValueError("Only one freight market is currently supported for RTK market mode.")
 
     markets_data = markets_data or {}
-    market = freight_markets[0]
-    mid = market.id
 
-    model_name = f"rtk_{mid}"
-    models[model_name] = RTKMarket(name=model_name, market_id=mid)
+    for market in freight_markets:
+        mid = market.id
+        model_name = f"rtk_{mid}"
+        models[model_name] = RTKMarket(name=model_name, market_id=mid)
 
-    market_inputs = markets_data.get(mid, {}).get("inputs", {})
-    if _has_reference_inputs(market_inputs):
-        ref_name = f"rtk_reference_{mid}"
-        models[ref_name] = RTKReferenceMarket(name=ref_name, market_id=mid)
+        market_inputs = markets_data.get(mid, {}).get("inputs", {})
+        if _has_reference_inputs(market_inputs):
+            ref_name = f"rtk_reference_{mid}"
+            models[ref_name] = RTKReferenceMarket(name=ref_name, market_id=mid)
 
     return models
+
+
+def create_market_rtk_aggregator(markets) -> dict:
+    """Create an RTKAggregator that sums per-market rtk into the total ``rtk``.
+
+    Returns an empty mapping when no freight markets are configured.
+    """
+    if markets is None:
+        return {}
+    freight_ids = [m.id for m in markets.get(traffic_type="freight")]
+    if not freight_ids:
+        return {}
+    model = RTKAggregator(name="rtk_aggregator", freight_market_ids=freight_ids)
+    return {"rtk_aggregator": model}
