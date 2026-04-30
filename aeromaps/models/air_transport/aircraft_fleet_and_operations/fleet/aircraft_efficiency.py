@@ -496,7 +496,86 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
 
 
 class FreightAircraftEfficiency(AeroMAPSModel):
-    """Class to compute energy consumption per RTK (without operations) for freight aircraft.
+    """Compute energy per RTK (without operations) and RTK volumes for freight aircraft.
+
+    Freight aircraft do not have a dedicated fleet model.  Their efficiency
+    evolution and propulsion-mix adoption are instead derived from the
+    passenger markets, which *do* have fleet / top-down efficiency models.
+    The derivation follows three steps.
+
+    **Step 1 — Drop-in fuel efficiency (energy_per_rtk_without_operations_<freight>_dropin_fuel)**
+
+    *Historical years* (historic_start_year … prospection_start_year − 1):
+        Calibrated directly from total energy consumption and actual RTK::
+
+            energy_per_rtk_dropin[year] = energy_consumption_init[year]
+                                          / rtk[year]
+                                          * freight_energy_share_2019 / 100
+
+    *Projection years* (prospection_start_year … end_year):
+        Each passenger market m provides a year-on-year efficiency-improvement
+        rate via its drop-in energy-per-ASK series.  The freight model keeps a
+        separate per-market proxy ``energy_per_rtk_dropin_proxy[m]`` that starts
+        at the 2019 freight value and is updated each year by the *same ratio*
+        as that passenger market::
+
+            ratio_m[k] = energy_per_ask_dropin[m, k] / energy_per_ask_dropin[m, k-1]
+            energy_per_rtk_dropin_proxy[m, k] = energy_per_rtk_dropin_proxy[m, k-1] * ratio_m[k]
+
+        The freight efficiency for year k is then a weighted average of these
+        proxies, weighted by each market's dropin ASK volume::
+
+            energy_per_rtk_dropin[k] =
+                Σ_m ( energy_per_rtk_dropin_proxy[m, k] * ask_dropin[m, k] )
+                / Σ_m ( ask_dropin[m, k] )
+
+        Rationale: freight drop-in aircraft renew at a similar pace to passenger
+        aircraft.  By anchoring to each passenger market's rate we capture
+        differences in renewal speed between short/medium/long-range fleets.
+        The ASK-dropin weighted average accounts for the relative size of each
+        market fleet.
+
+    *COVID correction*: the 2020 value is reset to::
+
+        energy_per_rtk_dropin[2019] * (1 + covid_energy_intensity_per_ask_increase_2020 / 100)
+
+    **Step 2 — Propulsion mix (rtk_<freight>_<energy>_share)**
+
+    Freight aircraft are assumed to adopt alternative propulsion in proportion to
+    the passenger fleet.  The RTK share for each energy type is the ASK-weighted
+    average of the corresponding passenger share across all passenger markets::
+
+        rtk_hydrogen_share  = Σ_m ( ask_m / ask_total * ask_hydrogen_share[m] )
+        rtk_electric_share  = Σ_m ( ask_m / ask_total * ask_electric_share[m] )
+        rtk_dropin_share    = 100 − rtk_hydrogen_share − rtk_electric_share
+
+    The same shares apply to *all* freight markets (belly and dedicated carry
+    the same mix assumption).
+
+    **Step 3 — Hydrogen and electric energy per RTK**
+
+    For alternative propulsion types the model derives an average efficiency
+    relative to drop-in by replicating the passenger ratio at the fleet level.
+
+    Define the relative efficiency of propulsion type *p* vs drop-in for market m::
+
+        rel_p[m] = energy_per_ask_p[m] / energy_per_ask_dropin[m]
+
+    The fleet-wide weighted-sum for propulsion p is::
+
+        p_weighted_sum = Σ_m ( rel_p[m] * ask_p_share[m] * ask_m / ask_total )
+
+    Then::
+
+        energy_per_rtk_p = energy_per_rtk_dropin
+                           * p_weighted_sum / rtk_p_share      (when rtk_p_share > 0)
+        energy_per_rtk_p = energy_per_rtk_dropin               (when rtk_p_share = 0,
+                                                                 i.e. no aircraft of
+                                                                 that type in service)
+
+    The zero-share fallback keeps the value well-defined for downstream models
+    even in years before any alternative-propulsion freight aircraft enters
+    service.
 
     Parameters
     ----------
@@ -507,14 +586,14 @@ class FreightAircraftEfficiency(AeroMAPSModel):
     --------------
     Inputs
         - energy_consumption_init: Historic total energy consumption [MJ].
-        - ask: Global passenger ASK [ASK].
+        - ask: Global total passenger ASK [ASK].
         - covid_energy_intensity_per_ask_increase_2020: 2020 intensity increase [%].
         - rtk_<freight>: Freight RTK per freight market [RTK].
         - <freight>_energy_share_2019: 2019 freight energy share per freight market [%].
-        - ask_<market>: Passenger ASK [ASK].
-        - ask_<market>_dropin_fuel: Drop-in fuel passenger ASK [ASK].
-        - ask_<market>_hydrogen_share: Hydrogen ASK share [%].
-        - ask_<market>_electric_share: Electric ASK share [%].
+        - ask_<market>: Passenger ASK per passenger market [ASK].
+        - ask_<market>_dropin_fuel: Drop-in fuel passenger ASK per market [ASK].
+        - ask_<market>_hydrogen_share: Hydrogen ASK share per market [%].
+        - ask_<market>_electric_share: Electric ASK share per market [%].
         - energy_per_ask_without_operations_<market>_dropin_fuel: Energy per ASK [MJ/ASK].
         - energy_per_ask_without_operations_<market>_hydrogen: Energy per ASK [MJ/ASK].
         - energy_per_ask_without_operations_<market>_electric: Energy per ASK [MJ/ASK].
@@ -608,6 +687,8 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             m.id: input_data[f"energy_per_ask_without_operations_{m.id}_electric"]
             for m in passenger_markets
         }
+
+        # begin with operations on passsneger markets to derive freight market values, then loop over freight markets to compute outputs
 
         # RTK shares: freight propulsion mix follows passenger ASK-weighted propulsion mix
         # (same for all freight markets, driven by the global passenger mix)

@@ -6,212 +6,125 @@ Models to compute energy intensities per ASK/RTK for different aircraft pathways
 including effects of operations and contrails.
 """
 
-from typing import Tuple
-
 import pandas as pd
 
 from aeromaps.models.base import AeroMAPSModel
 
 
 class EnergyIntensity(AeroMAPSModel):
-    """Compute energy consumption per ASK/RTK including operational efficiency effects.
+    """Apply operational efficiency corrections to aircraft energy-per-distance metrics.
+
+    For every market (passenger and freight) and every energy type (drop-in fuel,
+    hydrogen, electric) the model applies two corrections to the bare aircraft
+    efficiency values that come from the upstream fleet/efficiency models:
+
+    - ``operations_gain``: percentage reduction from operational improvements
+      (e.g. better routing, airlines practices improvement) [%].
+    - ``operations_contrails_overconsumption``: percentage increase due to
+      contrail-avoidance manoeuvres [%].
+
+    The combined factor applied to each input series is::
+
+        (1 - operations_gain / 100) * (1 + operations_contrails_overconsumption / 100)
 
     Parameters
     ----------
-    name
-        Name of the model instance ('passenger_energy_intensity' by default).
+    name : str
+        Name of the model instance (``'energy_intensity'`` by default).
+
+    Documentation
+    --------------
+    Inputs
+        - operations_gain: Operational efficiency improvement [%].
+        - operations_contrails_overconsumption: Contrail-avoidance fuel penalty [%].
+        - energy_per_ask_without_operations_<market>_<energy>: Passenger energy per ASK
+          before operational corrections [MJ/ASK].
+        - energy_per_rtk_without_operations_<freight>_<energy>: Freight energy per RTK
+          before operational corrections [MJ/RTK].
+    Outputs
+        - energy_per_ask_<market>_<energy>: Passenger energy per ASK after corrections
+          [MJ/ASK].
+        - energy_per_rtk_<freight>_<energy>: Freight energy per RTK after corrections
+          [MJ/RTK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <freight> is the MarketManager id (freight markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
-    def __init__(self, name="passenger_energy_intensity", *args, **kwargs):
-        super().__init__(name=name, *args, **kwargs)
+    def __init__(self, name="energy_intensity", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
 
-    def compute(
-        self,
-        energy_per_ask_without_operations_short_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_medium_range_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_long_range_dropin_fuel: pd.Series,
-        energy_per_rtk_without_operations_freight_dropin_fuel: pd.Series,
-        energy_per_ask_without_operations_short_range_hydrogen: pd.Series,
-        energy_per_ask_without_operations_medium_range_hydrogen: pd.Series,
-        energy_per_ask_without_operations_long_range_hydrogen: pd.Series,
-        energy_per_rtk_without_operations_freight_hydrogen: pd.Series,
-        energy_per_ask_without_operations_short_range_electric: pd.Series,
-        energy_per_ask_without_operations_medium_range_electric: pd.Series,
-        energy_per_ask_without_operations_long_range_electric: pd.Series,
-        energy_per_rtk_without_operations_freight_electric: pd.Series,
-        operations_gain: pd.Series,
-        operations_contrails_overconsumption: pd.Series,
-    ) -> Tuple[
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-        pd.Series,
-    ]:
-        """Compute energy per ASK/RTK for each pathway including operations.
+    def custom_setup(self):
+        passenger_markets = self.markets.get(traffic_type="passenger")
+        freight_markets = self.markets.get(traffic_type="freight")
 
-        Parameters
-        ----------
-        energy_per_ask_without_operations_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_dropin_fuel
-            Energy consumption per RTK for freight market aircraft using drop-in fuel without considering operation improvements [MJ/RTK].
-        energy_per_ask_without_operations_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_hydrogen
-            Energy consumption per RTK for freight market aircraft using hydrogen without considering operation improvements [MJ/RTK].
-        energy_per_ask_without_operations_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electric without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electric without considering operation improvements [MJ/ASK].
-        energy_per_ask_without_operations_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electric without considering operation improvements [MJ/ASK].
-        energy_per_rtk_without_operations_freight_electric
-            Energy consumption per RTK for freight market aircraft using electric without considering operation improvements [MJ/RTK].
-        operations_gain
-            Impact of operational improvements in terms of percentage reduction in fuel consumption per ASK [%].
-        operations_contrails_overconsumption
-            Impact of contrail operational improvements in terms of percentage increase in fuel consumption [%].
+        self.input_names = {
+            "operations_gain": pd.Series([0.0]),
+            "operations_contrails_overconsumption": pd.Series([0.0]),
+        }
+        for m in passenger_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.input_names[f"energy_per_ask_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
 
-        Returns
-        -------
-        energy_per_ask_short_range_dropin_fuel
-            Energy consumption per ASK for passenger short-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_medium_range_dropin_fuel
-            Energy consumption per ASK for passenger medium-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_ask_long_range_dropin_fuel
-            Energy consumption per ASK for passenger long-range market aircraft using drop-in fuel [MJ/ASK].
-        energy_per_rtk_freight_dropin_fuel
-            Energy consumption per RTK for freight market aircraft using drop-in fuel [MJ/RTK].
-        energy_per_ask_short_range_hydrogen
-            Energy consumption per ASK for passenger short-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_medium_range_hydrogen
-            Energy consumption per ASK for passenger medium-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_ask_long_range_hydrogen
-            Energy consumption per ASK for passenger long-range market aircraft using hydrogen [MJ/ASK].
-        energy_per_rtk_freight_hydrogen
-            Energy consumption per RTK for freight market aircraft using hydrogen [MJ/RTK].
-        energy_per_ask_short_range_electric
-            Energy consumption per ASK for passenger short-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_medium_range_electric
-            Energy consumption per ASK for passenger medium-range market aircraft using electricity [MJ/ASK].
-        energy_per_ask_long_range_electric
-            Energy consumption per ASK for passenger long-range market aircraft using electricity [MJ/ASK].
-        energy_per_rtk_freight_electric
-            Energy consumption per RTK for freight market aircraft using electricity [MJ/RTK].
-        """
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.input_names[f"energy_per_rtk_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
 
-        energy_per_ask_short_range_dropin_fuel = (
-            energy_per_ask_without_operations_short_range_dropin_fuel
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_medium_range_dropin_fuel = (
-            energy_per_ask_without_operations_medium_range_dropin_fuel
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_long_range_dropin_fuel = (
-            energy_per_ask_without_operations_long_range_dropin_fuel
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_rtk_freight_dropin_fuel = (
-            energy_per_rtk_without_operations_freight_dropin_fuel
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_short_range_hydrogen = (
-            energy_per_ask_without_operations_short_range_hydrogen
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_medium_range_hydrogen = (
-            energy_per_ask_without_operations_medium_range_hydrogen
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_long_range_hydrogen = (
-            energy_per_ask_without_operations_long_range_hydrogen
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_rtk_freight_hydrogen = (
-            energy_per_rtk_without_operations_freight_hydrogen
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
+        self.output_names = {}
+        for m in passenger_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.output_names[f"energy_per_ask_{mid}_{energy_type}"] = pd.Series([0.0])
+
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.output_names[f"energy_per_rtk_{mid}_{energy_type}"] = pd.Series([0.0])
+
+    def compute(self, input_data: dict) -> dict:
+        passenger_markets = self.markets.get(traffic_type="passenger")
+        freight_markets = self.markets.get(traffic_type="freight")
+
+        operations_gain = input_data["operations_gain"]
+        operations_contrails_overconsumption = input_data["operations_contrails_overconsumption"]
+
+        operations_factor = (1 - operations_gain / 100) * (
+            1 + operations_contrails_overconsumption / 100
         )
 
-        energy_per_ask_short_range_electric = (
-            energy_per_ask_without_operations_short_range_electric
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_medium_range_electric = (
-            energy_per_ask_without_operations_medium_range_electric
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_ask_long_range_electric = (
-            energy_per_ask_without_operations_long_range_electric
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
-        energy_per_rtk_freight_electric = (
-            energy_per_rtk_without_operations_freight_electric
-            * (1 - operations_gain / 100)
-            * (1 + operations_contrails_overconsumption / 100)
-        )
+        output_data = {}
 
-        self.df.loc[:, "energy_per_ask_short_range_dropin_fuel"] = (
-            energy_per_ask_short_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_per_ask_medium_range_dropin_fuel"] = (
-            energy_per_ask_medium_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_per_ask_long_range_dropin_fuel"] = (
-            energy_per_ask_long_range_dropin_fuel
-        )
-        self.df.loc[:, "energy_per_rtk_freight_dropin_fuel"] = energy_per_rtk_freight_dropin_fuel
-        self.df.loc[:, "energy_per_ask_short_range_hydrogen"] = energy_per_ask_short_range_hydrogen
-        self.df.loc[:, "energy_per_ask_medium_range_hydrogen"] = (
-            energy_per_ask_medium_range_hydrogen
-        )
-        self.df.loc[:, "energy_per_ask_long_range_hydrogen"] = energy_per_ask_long_range_hydrogen
-        self.df.loc[:, "energy_per_rtk_freight_hydrogen"] = energy_per_rtk_freight_hydrogen
-        self.df.loc[:, "energy_per_ask_short_range_electric"] = energy_per_ask_short_range_electric
-        self.df.loc[:, "energy_per_ask_medium_range_electric"] = (
-            energy_per_ask_medium_range_electric
-        )
-        self.df.loc[:, "energy_per_ask_long_range_electric"] = energy_per_ask_long_range_electric
-        self.df.loc[:, "energy_per_rtk_freight_electric"] = energy_per_rtk_freight_electric
+        for m in passenger_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                col = f"energy_per_ask_{mid}_{energy_type}"
+                value = (
+                    input_data[f"energy_per_ask_without_operations_{mid}_{energy_type}"]
+                    * operations_factor
+                )
+                self.df.loc[:, col] = value
+                output_data[col] = value
 
-        return (
-            energy_per_ask_short_range_dropin_fuel,
-            energy_per_ask_medium_range_dropin_fuel,
-            energy_per_ask_long_range_dropin_fuel,
-            energy_per_rtk_freight_dropin_fuel,
-            energy_per_ask_short_range_hydrogen,
-            energy_per_ask_medium_range_hydrogen,
-            energy_per_ask_long_range_hydrogen,
-            energy_per_rtk_freight_hydrogen,
-            energy_per_ask_short_range_electric,
-            energy_per_ask_medium_range_electric,
-            energy_per_ask_long_range_electric,
-            energy_per_rtk_freight_electric,
-        )
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                col = f"energy_per_rtk_{mid}_{energy_type}"
+                value = (
+                    input_data[f"energy_per_rtk_without_operations_{mid}_{energy_type}"]
+                    * operations_factor
+                )
+                self.df.loc[:, col] = value
+                output_data[col] = value
+
+        self._store_outputs(output_data)
+        return output_data
