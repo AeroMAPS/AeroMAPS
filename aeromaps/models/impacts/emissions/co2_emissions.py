@@ -331,7 +331,7 @@ class CO2Emissions(AeroMAPSModel):
         output_data["co2_emissions_freight"] = co2_emissions_freight
         output_data["co2_emissions"] = co2_emissions_total
 
-        self._store_outputs(output_data)
+        self._store_outputs(output_data, climate_outputs_keys=["co2_emissions"])
         return output_data
 
 

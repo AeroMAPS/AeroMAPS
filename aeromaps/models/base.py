@@ -126,19 +126,40 @@ class AeroMAPSModel(object):
         self.xarray_lca: xr.DataArray = xr.DataArray()
         self.years = np.linspace(self.historic_start_year, self.end_year, len(self.df.index))
 
-    def _store_outputs(self, output_data):
+    def _store_outputs(self, output_data, climate_outputs_keys=None):
         """
         Store vector outputs in self.df and float outputs in self.float_outputs.
-        Checks if the columns already exist in self.df to update them in place, otherwise joins new columns.
+        Checks if the columns already exist to update them in place, otherwise joins new columns.
 
         Parameters
         ----------
         output_data
             Dictionary with output names as keys and output data as values.
+        climate_outputs_keys
+            List of keys from output_data that should be stored in self.df_climate instead of self.df.
         """
-        # Separate series-like outputs and scalar outputs
-        series_items = {k: v for k, v in output_data.items() if isinstance(v, pd.Series)}
-        other_items = {k: v for k, v in output_data.items() if k not in series_items}
+        # Store climate-specific outputs in self.df_climate if provided
+        if climate_outputs_keys:
+            climate_items = {k: v for k, v in output_data.items() if k in climate_outputs_keys}
+            for key, val in climate_items.items():
+                if isinstance(val, pd.Series):
+                    # check index of climate output series is compatible with climate years
+                    if not val.index.isin(self.df_climate.index).all():
+                        raise ValueError(
+                            f"Climate output {key} has an index that is not compatible with climate years."
+                        )
+                    self.df_climate.loc[:, key] = val
+                else:
+                    raise ValueError(
+                        f"Climate output {key} is not a valid type (expected pandas Series)."
+                    )
+            regular_items = {k: v for k, v in output_data.items() if k not in climate_outputs_keys}
+        else:
+            regular_items = output_data
+
+        # Separate series-like outputs and scalar outputs from regular items
+        series_items = {k: v for k, v in regular_items.items() if isinstance(v, pd.Series)}
+        other_items = {k: v for k, v in regular_items.items() if k not in series_items}
 
         # If there are Series outputs, update existing columns and join new ones
         if series_items:
@@ -197,9 +218,7 @@ def aeromaps_interpolation_function(
     """
     # Main
     if len(reference_years_values) == 0:
-        raise ValueError(
-            f"[{model_name}] reference_years_values must not be empty."
-        )
+        raise ValueError(f"[{model_name}] reference_years_values must not be empty.")
     if len(reference_years) > 0 and len(reference_years) != len(reference_years_values):
         raise ValueError(
             f"[{model_name}] reference_years and reference_years_values must have the same length "
