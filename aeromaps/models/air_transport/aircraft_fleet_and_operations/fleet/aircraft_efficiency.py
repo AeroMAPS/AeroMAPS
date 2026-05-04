@@ -236,6 +236,9 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
         - ask_dropin_fuel: Total passenger ASK [ASK].
         - ask_hydrogen: Total passenger ASK [ASK].
         - ask_electric: Total passenger ASK [ASK].
+        - ask_dropin_fuel_share: Drop-in fuel ASK share for all markets [%].
+        - ask_hydrogen_share: Hydrogen ASK share for all markets [%].
+        - ask_electric_share: Electric ASK share for all markets [%].
     Notes
         - <market> is the MarketManager id (passenger markets).
         - I/O names are generated from configuration and passed to GEMSEO via
@@ -260,17 +263,15 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
         self.output_names = {}
         for m in passenger_markets:
             mid = m.id
-            self.output_names[f"ask_{mid}_dropin_fuel"] = pd.Series([0.0])
-            self.output_names[f"ask_{mid}_hydrogen"] = pd.Series([0.0])
-            self.output_names[f"ask_{mid}_electric"] = pd.Series([0.0])
+            for et in ("dropin_fuel", "hydrogen", "electric"):
+                # Per-market ASK per energy type
+                self.output_names[f"ask_{mid}_{et}"] = pd.Series([0.0])
 
-        self.output_names["ask_dropin_fuel"] = pd.Series([0.0])
-        self.output_names["ask_hydrogen"] = pd.Series([0.0])
-        self.output_names["ask_electric"] = pd.Series([0.0])
-
-        self.output_names["ask_dropin_fuel_share"] = pd.Series([0.0])
-        self.output_names["ask_hydrogen_share"] = pd.Series([0.0])
-        self.output_names["ask_electric_share"] = pd.Series([0.0])
+        for et in ("dropin_fuel", "hydrogen", "electric"):
+            # Overall ASK per energy type
+            self.output_names[f"ask_{et}"] = pd.Series([0.0])
+            # Overall ASK share per energy type
+            self.output_names[f"ask_{et}_share"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
         passenger_markets = self.markets.get(traffic_type="passenger")
@@ -290,30 +291,18 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
             ask_el = ask * el_share / 100
             ask_dropin = ask - ask_h2 - ask_el
 
-            self.df.loc[:, f"ask_{mid}_hydrogen"] = ask_h2
-            self.df.loc[:, f"ask_{mid}_electric"] = ask_el
-            self.df.loc[:, f"ask_{mid}_dropin_fuel"] = ask_dropin
-
-            output_data[f"ask_{mid}_dropin_fuel"] = ask_dropin
             output_data[f"ask_{mid}_hydrogen"] = ask_h2
             output_data[f"ask_{mid}_electric"] = ask_el
+            output_data[f"ask_{mid}_dropin_fuel"] = ask_dropin
 
             total_dropin = ask_dropin if total_dropin is None else total_dropin + ask_dropin
             total_h2 = ask_h2 if total_h2 is None else total_h2 + ask_h2
             total_el = ask_el if total_el is None else total_el + ask_el
 
-        self.df.loc[:, "ask_dropin_fuel"] = total_dropin
-        self.df.loc[:, "ask_hydrogen"] = total_h2
-        self.df.loc[:, "ask_electric"] = total_el
-
         ask_total = input_data["ask"]
         ask_dropin_fuel_share = (total_dropin / ask_total) * 100
         ask_hydrogen_share = (total_h2 / ask_total) * 100
         ask_electric_share = (total_el / ask_total) * 100
-
-        self.df.loc[:, "ask_dropin_fuel_share"] = ask_dropin_fuel_share
-        self.df.loc[:, "ask_hydrogen_share"] = ask_hydrogen_share
-        self.df.loc[:, "ask_electric_share"] = ask_electric_share
 
         output_data["ask_dropin_fuel"] = total_dropin
         output_data["ask_hydrogen"] = total_h2
@@ -353,6 +342,9 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
         - ask_dropin_fuel: Total passenger ASK [ASK].
         - ask_hydrogen: Total passenger ASK [ASK].
         - ask_electric: Total passenger ASK [ASK].
+        - ask_dropin_fuel_share: Drop-in fuel ASK share for all markets [%].
+        - ask_hydrogen_share: Hydrogen ASK share for all markets [%].
+        - ask_electric_share: Electric ASK share for all markets [%].
     Notes
         - <market> is the MarketManager id (passenger markets).
         - <energy> is one of: dropin_fuel, hydrogen, electric.
@@ -393,12 +385,10 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
                 )
                 self.output_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
                 self.output_names[f"ask_{mid}_{et}"] = pd.Series([0.0])
-        self.output_names["ask_dropin_fuel"] = pd.Series([0.0])
-        self.output_names["ask_hydrogen"] = pd.Series([0.0])
-        self.output_names["ask_electric"] = pd.Series([0.0])
-        self.output_names["ask_dropin_fuel_share"] = pd.Series([0.0])
-        self.output_names["ask_hydrogen_share"] = pd.Series([0.0])
-        self.output_names["ask_electric_share"] = pd.Series([0.0])
+
+        for et in ("dropin_fuel", "hydrogen", "electric"):
+            self.output_names[f"ask_{et}_share"] = pd.Series([0.0])
+            self.output_names[f"ask_{et}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
         passenger_markets = self.markets.get(traffic_type="passenger")
@@ -480,10 +470,6 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
             ask_hydrogen = ask_market * self.df[f"ask_{mid}_hydrogen_share"] / 100
             ask_electric = ask_market * self.df[f"ask_{mid}_electric_share"] / 100
 
-            self.df.loc[:, f"ask_{mid}_dropin_fuel"] = ask_dropin_fuel
-            self.df.loc[:, f"ask_{mid}_hydrogen"] = ask_hydrogen
-            self.df.loc[:, f"ask_{mid}_electric"] = ask_electric
-
             output_data[energy_per_ask_without_operations_dropin_fuel_col] = self.df[
                 energy_per_ask_without_operations_dropin_fuel_col
             ]
@@ -506,17 +492,9 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
             total_h2 = ask_hydrogen if total_h2 is None else total_h2 + ask_hydrogen
             total_el = ask_electric if total_el is None else total_el + ask_electric
 
-        self.df.loc[:, "ask_dropin_fuel"] = total_dropin
-        self.df.loc[:, "ask_hydrogen"] = total_h2
-        self.df.loc[:, "ask_electric"] = total_el
-
         ask_dropin_fuel_share = (total_dropin / ask_global) * 100
         ask_hydrogen_share = (total_h2 / ask_global) * 100
         ask_electric_share = (total_el / ask_global) * 100
-
-        self.df.loc[:, "ask_dropin_fuel_share"] = ask_dropin_fuel_share
-        self.df.loc[:, "ask_hydrogen_share"] = ask_hydrogen_share
-        self.df.loc[:, "ask_electric_share"] = ask_electric_share
 
         output_data["ask_dropin_fuel"] = total_dropin
         output_data["ask_hydrogen"] = total_h2
@@ -635,6 +613,8 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         - energy_per_rtk_without_operations_<freight>_<energy>: Energy per RTK [MJ/RTK].
         - rtk_<freight>_<energy>_share: Freight RTK share per energy type [%].
         - rtk_<freight>_<energy>: Freight RTK per energy type [RTK].
+        - rtk_<energy>_share: RTK share of energy type for all freight markets [%].
+        - rtk_<energy>: Total RTK of energy type for all freight markets [RTK].
     Notes
         - <market> is the MarketManager id (passenger markets).
         - <freight> is the MarketManager id (freight markets).
@@ -687,10 +667,12 @@ class FreightAircraftEfficiency(AeroMAPSModel):
                 )
                 self.output_names[f"rtk_{mid}_{energy_type}_share"] = pd.Series([0.0])
                 self.output_names[f"rtk_{mid}_{energy_type}"] = pd.Series([0.0])
-        # Overall freight energy shares
-        self.output_names["rtk_dropin_fuel_share"] = pd.Series([0.0])
-        self.output_names["rtk_hydrogen_share"] = pd.Series([0.0])
-        self.output_names["rtk_electric_share"] = pd.Series([0.0])
+
+        for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+            # Overall freight energy shares
+            self.output_names[f"rtk_{energy_type}_share"] = pd.Series([0.0])
+            # Overall freight RTK per energy type
+            self.output_names[f"rtk_{energy_type}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
         passenger_markets = self.markets.get(traffic_type="passenger")
@@ -857,12 +839,6 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             rtk_hydrogen = rtk * rtk_hydrogen_share / 100
             rtk_electric = rtk * rtk_electric_share / 100
             rtk_dropin_fuel = rtk * rtk_dropin_fuel_share / 100
-            self.df.loc[:, f"rtk_{freight_mid}_hydrogen_share"] = rtk_hydrogen_share
-            self.df.loc[:, f"rtk_{freight_mid}_dropin_fuel_share"] = rtk_dropin_fuel_share
-            self.df.loc[:, f"rtk_{freight_mid}_electric_share"] = rtk_electric_share
-            self.df.loc[:, f"rtk_{freight_mid}_hydrogen"] = rtk_hydrogen
-            self.df.loc[:, f"rtk_{freight_mid}_dropin_fuel"] = rtk_dropin_fuel
-            self.df.loc[:, f"rtk_{freight_mid}_electric"] = rtk_electric
 
             # Hydrogen energy per RTK: equals dropin when no hydrogen is used,
             # otherwise ASK-weighted passenger ratio applied to dropin efficiency
@@ -933,9 +909,9 @@ class FreightAircraftEfficiency(AeroMAPSModel):
         rtk_hydrogen_share = (total_rtk_hydrogen / rtk_total) * 100
         rtk_electric_share = (total_rtk_electric / rtk_total) * 100
 
-        self.df.loc[:, "rtk_dropin_fuel_share"] = rtk_dropin_fuel_share
-        self.df.loc[:, "rtk_hydrogen_share"] = rtk_hydrogen_share
-        self.df.loc[:, "rtk_electric_share"] = rtk_electric_share
+        output_data["rtk_dropin_fuel"] = total_rtk_dropin_fuel
+        output_data["rtk_hydrogen"] = total_rtk_hydrogen
+        output_data["rtk_electric"] = total_rtk_electric
 
         output_data["rtk_dropin_fuel_share"] = rtk_dropin_fuel_share
         output_data["rtk_hydrogen_share"] = rtk_hydrogen_share
