@@ -1,6 +1,6 @@
 # AeroMAPS — User-Defined Markets Refactor Plan
 
-**Status:** In progress |  **Updated:** 2026-04-24
+**Status:** In progress |  **Updated:** 2026-05-04
 
 **Detailed Phase Interface design notes:** `.claude/plans/optimized-singing-scott.md`
 
@@ -17,8 +17,8 @@
 | Phase Interface — Flex-market demo ("Custom Markets × Multi-Regions") | 🚧 WIP | chantier commits on `fleet-refactoring` branch |
 | Phase 2 — Air traffic disciplines | ✅ done | `720c0f02`–`2b64fde3` |
 | Phase 3 — Fleet model market integration | ✅ done | `c42d2a67`–`febffdb8` |
-| Phase 4 — Downstream impacts (custom wrapper migration) | ⏱ next | — |
-| Phase 5 — Migration & cleanup | ⏱ pending | — |
+| Phase 4 — Downstream impacts (custom wrapper migration) | ✅ done | `3f37e04d`–`3950aec3` |
+| Phase 5 — Migration & cleanup | ⏱ next | — |
 | Phase 6 — Plots & GUI | ⏱ deferred | — |
 
 **Conventions locked in by Phase 0–1:**
@@ -329,10 +329,14 @@ Note on hybrid-electric: the `hybridization_factor` split only applies to energy
 | [fleet_numeric.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_numeric.py) | Market-driven dispatch replacing hardcoded Short/Medium/Long Range; `FleetEvolutionFromShares` | 3 | ✅ (3.C) |
 | [fleet_assignment.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_assignment.py) | `market_id` plumbing + explicit first-subcategory ref | 3 | ✅ (3.D) |
 | [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | Per-market disciplines + custom wrapper pattern | 3 | ✅ (3.E) |
-| [energy_consumption.py](aeromaps/models/impacts/energy_resources/energy_consumption.py) | Custom wrapper with dynamic I/O from registry (~40 hard-coded args removed) | 4 |
-| [direct_operating_costs.py](aeromaps/models/impacts/costs/airlines/direct_operating_costs.py) | Same custom wrapper treatment | 4 |
-| [non_co2_emissions.py](aeromaps/models/impacts/emissions/non_co2_emissions.py) | Add market dimension to existing custom setup | 4 |
-| [co2_emissions.py](aeromaps/models/impacts/emissions/co2_emissions.py), [others.py](aeromaps/models/impacts/others/others.py) | Audit and migrate | 4 |
+| [energy_consumption.py](aeromaps/models/impacts/energy_resources/energy_consumption.py) | Custom wrapper with dynamic I/O from registry (~40 hard-coded args removed) | 4 | ✅ (4.C) |
+| [direct_operating_costs.py](aeromaps/models/impacts/costs/airlines/direct_operating_costs.py) | Full DOC chain migrated (NonEnergySimple, NonEnergyComplex, Energy, CarbonTax+Sub+Tax, TotalDoc, TotalCost) | 4 | ✅ (4.E, 4.F.1–4.F.5) |
+| [non_co2_emissions.py](aeromaps/models/impacts/emissions/non_co2_emissions.py) | Market dimension added to NOxEmissionIndexComplex; soot index market-driven | 4 | ✅ (4.B) |
+| [co2_emissions.py](aeromaps/models/impacts/emissions/co2_emissions.py) | Custom wrapper migration; freight markets support; climate-specific _store_outputs | 4 | ✅ (4.D) |
+| [fleet_abatement_cost.py](aeromaps/models/impacts/costs/efficiency_abatement_cost/fleet_abatement_cost.py) | Custom wrapper migration | 4 | ✅ (4.F.6) |
+| [total_airline_cost_and_airfare.py](aeromaps/models/impacts/costs/airlines/total_airline_cost_and_airfare.py) | Custom wrapper migration (marginal cost function kept as AutoModel) | 4 | ✅ (4.F.5) |
+| [aircraft_efficiency.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/aircraft_efficiency.py) | FreightAircraftEfficiency market integration; PassengerAircraftEfficiencySimpleASK refactor; total energy type shares | 4 | ✅ |
+| [others.py](aeromaps/models/impacts/others/others.py) | Audit — EmissionsPerRPK/RTK consume aggregate quantities only; no hard-coded market IDs | 4 | ✅ (no change needed) |
 | [parameters.json](aeromaps/resources/data/parameters.json) | Remove ~40 per-market entries (moved to markets.yaml) | 5 |
 | Tutorial notebooks + JSON | Migrate per-market entries, re-run | 5 |
 
@@ -483,33 +487,45 @@ Landed across six chantiers (2026-04-27/28):
 
 **Exit:** fleet model driven by `MarketManager`; outputs under market-templated names; 73 tests green.
 
-### Phase 4 — Downstream impacts (custom wrapper migration)
+### Phase 4 — Downstream impacts (custom wrapper migration) ✅ *(done — `3f37e04d`–`3950aec3`)*
 
-This is the bulk of the line-count work. Each model follows the `NOxEmissionIndexComplex` pattern:
+Landed across six labelled chantiers plus additional fixes and freight efficiency work (2026-04-28 → 2026-05-04):
 
-1. Add `MarketManager` to `__init__`.
-2. Implement `custom_setup()` building `input_names`/`output_names` from registry.
-3. Switch to `AeroMAPSCustomModelWrapper`.
-4. Refactor `compute()` to use `input_data` dict.
+- **4.A** `3f37e04d` — Markets injection hook in `process.py`; single `custom_setup()` call wired into the MDA build path.
+- **4.B** `563fe331` + fix `96476591` — `NOxEmissionIndexComplex`: market-driven `custom_setup` + `compute`; soot emission index inputs made market-driven.
+- **4.C** `36658ccb` + fixes `fc9bdf4f`, `1326dced` — `DropInFuelConsumption`: custom wrapper migration; documentation retained at class level.
+- **4.D** `79fe0c8e` + fixes `73a4ba03`, `10639edc` — `CO2Emissions`: custom wrapper migration; freight markets wired correctly; documentation retained.
+- **4.E** `8ea73e54` — `PassengerAircraftDocNonEnergyComplex`: custom wrapper migration.
+- **4.F.1** `163c450b` — `PassengerAircraftDocNonEnergySimple`: custom wrapper migration.
+- **4.F.2** `e0dde4ee` — `PassengerAircraftDocEnergy`: custom wrapper migration.
+- **4.F.3** `780e4442` — `DocEnergyCarbonTax` + `DocEnergySubsidy` + `DocEnergyTax`: custom wrapper migration.
+- **4.F.4** `42e659a0` — `PassengerAircraftTotalDoc`: custom wrapper migration.
+- **4.F.5** `6d8dd777` + fix `7716ef7f` — `TotalAirlineCostAndAirfare`: custom wrapper migration; marginal cost function kept as `AutoModel` (no market dimension there).
+- **4.F.6** `b34c078a` — `FleetAbatementCost`: custom wrapper migration.
+- **Freight efficiency** `87199974`, `56696515` — `FreightAircraftEfficiency` significantly refactored for market-driven operation; `PassengerAircraftEfficiencySimpleASK` and `FreightAircraftEfficiency` cleaned up with `_store_outputs`; total energy type shares (whole-simulation, not per market) added to aircraft efficiency.
+- **Post-F fixes** `3d0cff55`, `7f782c58`, `a3ed83b3` — Various fixes: explicit variable names replacing abbreviations, pre-existing bug on carbon tax offset lowering removed (exposed by refactoring), misc corrections.
+- **RTK/RPK aggregator enhancements** `5d860e0d` — `RTKMarket` aggregator and reference models added; input naming conventions unified across markets; DOC and fleet abatement cost minor fixes.
+- **CO2 / base enhancements** `6042ae0b` — `_store_outputs` enhanced for climate-specific outputs; CO2Emissions storage updated.
+- **Documentation** `fb3fa39a` — Doc classes documentation improved; variables made more explicit.
+- **Notebook investigation** `3950aec3` — Numerical diffs in `01_basic` notebook explained: DOC non-energy lowering was a pre-existing bug now fixed; annual growth rate difference in COVID years is a known computation-mode difference, not a regression.
 
-Because Prep B made the fleet model's energy type handling data-driven, the `custom_setup()` methods in downstream models can iterate `markets × energy_types` — two clean loops — rather than inheriting hardcoded branching.
+**`EmissionsPerRPK` / `EmissionsPerRTK` / `DropinFuelConsumptionLiterPerPax100km` ([others.py](aeromaps/models/impacts/others/others.py)):** audited — these consume aggregate `co2_emissions_passenger` / `co2_emissions_freight` / `rtk` / `rpk` quantities only; no hard-coded market IDs; no custom wrapper needed.
 
-**Models to migrate:**
-- `DropInFuelConsumption` (~630 hard-coded refs)
-- `PassengerAircraftDocNonEnergyComplex` (~1150 refs)
-- `TotalAirlineCostAndAirfare` (~170 refs)
-- `NOxEmissionIndexComplex` (add market dimension to existing custom setup)
-- `CO2Emissions`, `EmissionsPerRPK/RTK`, abatement costs — audit and migrate.
+**Known caveats / deferred to Phase 5:**
+- PHASE-5-CLEANUP markers remain in [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py), [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py), [ask.py](aeromaps/models/air_transport/air_traffic/ask.py), [load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py) — legacy monolithic classes kept for backwards compatibility.
+- Per-market entries in `parameters.json` still exist; removal is Phase 5 work.
+- `operations_abatement_cost.py` uses no market IDs (operates on aggregate fuel consumption); no migration needed.
 
-**Exit:** zero hard-coded `short_range`/`medium_range`/`long_range`/`freight` in model code.
+**Exit:** 73 tests green; zero hard-coded `short_range`/`medium_range`/`long_range` market IDs in live model code (only in commented-out dead code in `direct_operating_costs.py`).
 
-### Phase 5 — Migration & cleanup
+### Phase 5 — Migration & cleanup *(next)*
 
+- Remove legacy monolithic classes marked `PHASE-5-CLEANUP` in [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py), [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py), [ask.py](aeromaps/models/air_transport/air_traffic/ask.py), [load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py).
 - Remove per-market entries from `parameters.json`.
 - Update `data_information.csv`.
 - Migrate tutorial notebooks.
 - New tutorial: "Defining your own markets".
-- **Exit:** test suite green, single source of truth.
+- **Exit:** test suite green, single source of truth, no legacy compatibility shims.
 
 ### Phase 6 — Plots & GUI (follow-up)
 

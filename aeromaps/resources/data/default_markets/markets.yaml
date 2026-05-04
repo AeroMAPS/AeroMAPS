@@ -85,7 +85,7 @@ short_range:
     costs:
       doc_non_energy_per_ask_dropin_fuel_init: 0.048375
 
-pollet_personal_ethiopian_trip:
+medium_range:
   name: "Medium Range"
   traffic_type: passenger
   traffic_unit: RPK
