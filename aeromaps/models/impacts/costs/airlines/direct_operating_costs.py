@@ -13,7 +13,7 @@ from aeromaps.models.base import AeroMAPSModel
 
 class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
     """
-    Non energy DOC per ASK calculation using generic fleet model
+    Non energy DOC per ASK calculation using generic fleet model.
 
     Parameters
     ----------
@@ -24,6 +24,22 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
     ----------
     fleet_model : FleetModel(AeroMAPSModel)
         FleetModel instance to be used for complex efficiency computations.
+
+    Documentation
+    --------------
+    Inputs
+        - ask_<market>: Passenger ASK per market [ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
+    Outputs
+        - doc_non_energy_per_ask_<market>_<energy>: Non-energy DOC per ASK per market and aircraft energy type[€/ASK].
+        - doc_non_energy_per_ask_<market>_mean: ASK-weighted mean non-energy DOC per market [€/ASK].
+        - doc_non_energy_per_ask_mean: Global ASK-weighted mean non-energy DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - Per-energy DOC values are read directly from the fleet model DataFrame.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_non_energy_complex", *args, **kwargs):
@@ -60,48 +76,56 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
         output_data = {}
 
         # First pass: extract per-market per-energy-type DOC values from fleet df.
-        doc_per_market_type = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series (per-market total ASK)
-        ask_share = {}  # (mid, et) -> pd.Series
+        doc_non_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%].)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
-                doc_per_market_type[(mid, et)] = self.fleet_model.df[
+                doc_non_energy_per_market_energy_type[(mid, et)] = self.fleet_model.df[
                     f"{market.name}:doc_non_energy:{et}"
                 ]
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
-                output_data[f"doc_non_energy_per_ask_{mid}_{et}"] = doc_per_market_type[(mid, et)]
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                output_data[f"doc_non_energy_per_ask_{mid}_{et}"] = (
+                    doc_non_energy_per_market_energy_type[(mid, et)]
+                )
 
         # Second pass: per-market mean (weighted by energy-type shares).
-        doc_market_mean = {}  # mid -> pd.Series
+        doc_non_energy_mean = {}  # mid -> pd.Series
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             market_mean = None
             for et in energy_types:
-                term = doc_per_market_type[(mid, et)] * ask_share[(mid, et)] / 100
+                term = (
+                    doc_non_energy_per_market_energy_type[(mid, et)]
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 market_mean = term if market_mean is None else market_mean + term
             if market_mean is None:
                 market_mean = pd.Series(0.0, index=self.df.index)
-            doc_market_mean[mid] = market_mean
+            doc_non_energy_mean[mid] = market_mean
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = market_mean
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, market_mean in doc_market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, market_mean in doc_non_energy_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = market_mean * ask_m
             den_term = ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = den_term if denominator is None else denominator + den_term
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = den_term if ask_total is None else ask_total + den_term
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             # No passenger markets — defensive default.
             doc_non_energy_per_ask_mean = pd.Series(0.0, index=self.df.index)
         else:
-            doc_non_energy_per_ask_mean = numerator / denominator
+            doc_non_energy_per_ask_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_non_energy_per_ask_mean"] = doc_non_energy_per_ask_mean
 
@@ -111,12 +135,33 @@ class PassengerAircraftDocNonEnergyComplex(AeroMAPSModel):
 
 class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
     """
-    Non energy DOC per ASK calculation using simple efficiency models
+    Non energy DOC per ASK calculation using simple efficiency models.
 
     Parameters
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_doc_non_energy_simple' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - <market>_doc_non_energy_per_ask_dropin_fuel_init: Initial DOC non energy for drop-in fuel aircraft [€/ASK].
+        - <market>_doc_non_energy_per_ask_dropin_fuel_gain: Annual doc non energy improvement rate for dropin fuel aircraft [%/year].
+        - <market>_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: Hydrogen aircraft non energy cost relative to drop-in [ratio].
+        - <market>_relative_doc_non_energy_per_ask_electric_wrt_dropin: Electric aircraft non energy cost relative to drop-in [ratio].
+        - ask_<market>: Passenger ASK per market [ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type for a given market [%].
+    Outputs
+        - doc_non_energy_per_ask_<market>_<energy>: Non-energy DOC per ASK [€/ASK].
+        - doc_non_energy_per_ask_<market>_mean: ASK-weighted mean non-energy DOC per market [€/ASK].
+        - doc_non_energy_per_ask_mean: Global ASK-weighted mean non-energy DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - Drop-in DOC evolves from init via annual gain multiplicatively.
+        - Hydrogen and electric DOC are scalar multiples of drop-in DOC.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_non_energy_simple", *args, **kwargs):
@@ -158,10 +203,10 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
         output_data = {}
 
-        # Per-market series store.
-        doc_pm = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series
-        ask_share = {}  # (mid, et) -> pd.Series
+        # Per-market per-energy-type series store.
+        doc_non_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type non-energy DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
@@ -170,9 +215,9 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             rel_h = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_hydrogen_wrt_dropin"])
             rel_e = float(input_data[f"{mid}_relative_doc_non_energy_per_ask_electric_wrt_dropin"])
 
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
 
             col_dropin = f"doc_non_energy_per_ask_{mid}_dropin_fuel"
 
@@ -188,9 +233,9 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             hydrogen_series = dropin_series * rel_h
             electric_series = dropin_series * rel_e
 
-            doc_pm[(mid, "dropin_fuel")] = dropin_series
-            doc_pm[(mid, "hydrogen")] = hydrogen_series
-            doc_pm[(mid, "electric")] = electric_series
+            doc_non_energy_per_market_energy_type[(mid, "dropin_fuel")] = dropin_series
+            doc_non_energy_per_market_energy_type[(mid, "hydrogen")] = hydrogen_series
+            doc_non_energy_per_market_energy_type[(mid, "electric")] = electric_series
 
             for et, series in (
                 ("dropin_fuel", dropin_series),
@@ -199,32 +244,38 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
             ):
                 output_data[f"doc_non_energy_per_ask_{mid}_{et}"] = series
 
-        # Per-market mean.
-        market_mean = {}
+        # Per-market mean (ASK-weighted across energy types).
+        doc_non_energy_mean = {}  # mid -> pd.Series
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
             total = None
             for et in energy_types:
-                term = doc_pm[(mid, et)] * ask_share[(mid, et)] / 100
+                term = (
+                    doc_non_energy_per_market_energy_type[(mid, et)]
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 total = term if total is None else total + term
             if total is None:
                 total = pd.Series(0.0, index=self.df.index)
-            market_mean[mid] = total
+            doc_non_energy_mean[mid] = total
             output_data[f"doc_non_energy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, mm in market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, mm in doc_non_energy_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = mm * ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = ask_m if denominator is None else denominator + ask_m
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = ask_m if ask_total is None else ask_total + ask_m
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             global_mean = pd.Series(0.0, index=self.df.index)
         else:
-            global_mean = numerator / denominator
+            global_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_non_energy_per_ask_mean"] = global_mean
 
@@ -234,12 +285,32 @@ class PassengerAircraftDocNonEnergySimple(AeroMAPSModel):
 
 class PassengerAircraftDocEnergy(AeroMAPSModel):
     """
-    Energy DOC per ASK calculation
+    Energy DOC per ASK calculation.
 
     Parameters
     ----------
     name : str
         Name of the model instance ('passenger_aircraft_doc_energy' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - dropin_fuel_mean_mfsp: Mean fuel selling price for drop-in fuel [€/MJ].
+        - hydrogen_mean_mfsp: Mean fuel selling price for hydrogen [€/MJ].
+        - electric_mean_mfsp: Mean fuel selling price for electricity [€/MJ].
+        - ask_<market>: Passenger ASK per market [ASK].
+        - energy_per_ask_<market>_<energy>: Energy consumption per ASK per market and aircraft energy type [MJ/ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
+    Outputs
+        - doc_energy_per_ask_<market>_<energy>: Energy DOC per ASK per market and aircraft energy type [€/ASK].
+        - doc_energy_per_ask_<market>_mean: ASK-weighted mean energy DOC per market [€/ASK].
+        - doc_energy_per_ask_mean: Global ASK-weighted mean energy DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - Zero energy consumption is converted to NaN to preserve sparsity (no cost for unused energy).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy", *args, **kwargs):
@@ -286,19 +357,19 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             "electric": input_data["electric_mean_mfsp"],
         }
 
-        doc_pm = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series
-        ask_share = {}  # (mid, et) -> pd.Series
-        market_mean = {}  # mid -> pd.Series
+        doc_energy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type energy DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
+        doc_energy_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean energy DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
                 doc = energy.replace(0, np.NaN) * mfsp[et]
-                doc_pm[(mid, et)] = doc
+                doc_energy_per_market_energy_type[(mid, et)] = doc
                 output_data[f"doc_energy_per_ask_{mid}_{et}"] = doc
 
         # Per-market mean (NaN treated as 0).
@@ -306,26 +377,32 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
             mid = market.id
             total = None
             for et in energy_types:
-                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                term = (
+                    doc_energy_per_market_energy_type[(mid, et)].fillna(0)
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 total = term if total is None else total + term
             if total is None:
                 total = pd.Series(0.0, index=self.df.index)
-            market_mean[mid] = total
+            doc_energy_mean[mid] = total
             output_data[f"doc_energy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, mm in market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, mm in doc_energy_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = mm * ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = ask_m if denominator is None else denominator + ask_m
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = ask_m if ask_total is None else ask_total + ask_m
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             global_mean = pd.Series(0.0, index=self.df.index)
         else:
-            global_mean = numerator / denominator
+            global_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_energy_per_ask_mean"] = global_mean
 
@@ -335,12 +412,37 @@ class PassengerAircraftDocEnergy(AeroMAPSModel):
 
 class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
     """
-    Carbon tax DOC per ASK calculation
+    Carbon tax DOC per ASK calculation.
 
     Parameters
     ----------
     name : str
-        Name of the model instance ('passenger_aircraft_doc_energy_carbon_tax' by default
+        Name of the model instance ('passenger_aircraft_doc_energy_carbon_tax' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - dropin_fuel_mean_unit_carbon_tax: Carbon tax per energy unit for drop-in fuel [€/MJ].
+        - hydrogen_mean_unit_carbon_tax: Carbon tax per energy unit for hydrogen [€/MJ].
+        - electric_mean_unit_carbon_tax: Carbon tax per energy unit for electricity [€/MJ].
+        - co2_emissions: Total CO2 emissions [units].
+        - carbon_offset: Carbon offset amount [units].
+        - ask_<market>: Passenger ASK per market [ASK].
+        - energy_per_ask_<market>_<energy>: Energy consumption per ASK per market and aircraft energy type [MJ/ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
+    Outputs
+        - doc_energy_carbon_tax_per_ask_<market>_<energy>: Carbon tax DOC per ASK per market and aircraft energy type [€/ASK].
+        - doc_energy_carbon_tax_per_ask_<market>_mean: ASK-weighted mean carbon tax DOC per market [€/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_<market>_mean: Offset-adjusted carbon tax DOC per market [€/ASK].
+        - doc_energy_carbon_tax_per_ask_mean: Global ASK-weighted mean carbon tax DOC [€/ASK].
+        - doc_carbon_tax_lowering_offset_per_ask_mean: Global offset-adjusted carbon tax DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - Zero energy consumption is converted to NaN to preserve sparsity.
+        - Lowering offset applies a carbon_remaining_ratio = (emissions - offset) / emissions.
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_carbon_tax", *args, **kwargs):
@@ -388,25 +490,25 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
         output_data = {}
 
-        scaling = {
+        unit_carbon_tax = {
             "dropin_fuel": input_data["dropin_fuel_mean_unit_carbon_tax"],
             "hydrogen": input_data["hydrogen_mean_unit_carbon_tax"],
             "electric": input_data["electric_mean_unit_carbon_tax"],
         }
 
-        doc_pm = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series
-        ask_share = {}  # (mid, et) -> pd.Series
-        market_mean = {}  # mid -> pd.Series
+        doc_carbon_tax_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type carbon tax DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
+        doc_carbon_tax_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean carbon tax DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
-                doc = energy.replace(0, np.NaN) * scaling[et]
-                doc_pm[(mid, et)] = doc
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy.replace(0, np.NaN) * unit_carbon_tax[et]
+                doc_carbon_tax_per_market_energy_type[(mid, et)] = doc
                 output_data[f"doc_energy_carbon_tax_per_ask_{mid}_{et}"] = doc
 
         # Per-market mean (NaN treated as 0).
@@ -414,26 +516,32 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             mid = market.id
             total = None
             for et in energy_types:
-                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                term = (
+                    doc_carbon_tax_per_market_energy_type[(mid, et)].fillna(0)
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 total = term if total is None else total + term
             if total is None:
                 total = pd.Series(0.0, index=self.df.index)
-            market_mean[mid] = total
+            doc_carbon_tax_mean[mid] = total
             output_data[f"doc_energy_carbon_tax_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, mm in market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, mm in doc_carbon_tax_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = mm * ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = ask_m if denominator is None else denominator + ask_m
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = ask_m if ask_total is None else ask_total + ask_m
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             global_mean = pd.Series(0.0, index=self.df.index)
         else:
-            global_mean = numerator / denominator
+            global_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_energy_carbon_tax_per_ask_mean"] = global_mean
 
@@ -448,10 +556,10 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             global_mean * carbon_remaining_ratio
         )
 
-        lowering_offset_pm = {}
-        for mid, mm in market_mean.items():
+        doc_lowering_offset_per_market = {}  # mid -> pd.Series (per-market carbon tax lowering offset DOC)
+        for mid, mm in doc_carbon_tax_mean.items():
             lowering = mm * carbon_remaining_ratio
-            lowering_offset_pm[mid] = lowering
+            doc_lowering_offset_per_market[mid] = lowering
             output_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = lowering
 
         self._store_outputs(output_data)
@@ -460,12 +568,32 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
 
 class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
     """
-    Energy subsidy DOC per ASK calculation
+    Energy subsidy DOC per ASK calculation.
 
     Parameters
     ----------
     name : str
-        Name of the model instance ('passenger_aircraft_doc_energy_subsidy' by default
+        Name of the model instance ('passenger_aircraft_doc_energy_subsidy' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - dropin_fuel_mean_unit_subsidy: Subsidy per energy unit for drop-in fuel [€/MJ].
+        - hydrogen_mean_unit_subsidy: Subsidy per energy unit for hydrogen [€/MJ].
+        - electric_mean_unit_subsidy: Subsidy per energy unit for electricity [€/MJ].
+        - ask_<market>: Passenger ASK per market [ASK].
+        - energy_per_ask_<market>_<energy>: Energy consumption per ASK per market and aircraft energy type [MJ/ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
+    Outputs
+        - doc_energy_subsidy_per_ask_<market>_<energy>: Subsidy DOC per ASK per market and aircraft energy type [€/ASK].
+        - doc_energy_subsidy_per_ask_<market>_mean: ASK-weighted mean subsidy DOC per market [€/ASK].
+        - doc_energy_subsidy_per_ask_mean: Global ASK-weighted mean subsidy DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - No NaN replacement (legacy behavior preserved).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_subsidy", *args, **kwargs):
@@ -507,25 +635,25 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
         output_data = {}
 
-        scaling = {
+        unit_subsidy = {
             "dropin_fuel": input_data["dropin_fuel_mean_unit_subsidy"],
             "hydrogen": input_data["hydrogen_mean_unit_subsidy"],
             "electric": input_data["electric_mean_unit_subsidy"],
         }
 
-        doc_pm = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series
-        ask_share = {}  # (mid, et) -> pd.Series
-        market_mean = {}  # mid -> pd.Series
+        doc_subsidy_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type subsidy DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
+        doc_subsidy_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean subsidy DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
-                doc = energy * scaling[et]
-                doc_pm[(mid, et)] = doc
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy * unit_subsidy[et]
+                doc_subsidy_per_market_energy_type[(mid, et)] = doc
                 output_data[f"doc_energy_subsidy_per_ask_{mid}_{et}"] = doc
 
         # Per-market mean (NaN treated as 0).
@@ -533,26 +661,32 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
             mid = market.id
             total = None
             for et in energy_types:
-                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                term = (
+                    doc_subsidy_per_market_energy_type[(mid, et)].fillna(0)
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 total = term if total is None else total + term
             if total is None:
                 total = pd.Series(0.0, index=self.df.index)
-            market_mean[mid] = total
+            doc_subsidy_mean[mid] = total
             output_data[f"doc_energy_subsidy_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, mm in market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, mm in doc_subsidy_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = mm * ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = ask_m if denominator is None else denominator + ask_m
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = ask_m if ask_total is None else ask_total + ask_m
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             global_mean = pd.Series(0.0, index=self.df.index)
         else:
-            global_mean = numerator / denominator
+            global_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_energy_subsidy_per_ask_mean"] = global_mean
 
@@ -562,12 +696,32 @@ class PassengerAircraftDocEnergySubsidy(AeroMAPSModel):
 
 class PassengerAircraftDocEnergyTax(AeroMAPSModel):
     """
-    Energy tax (non-carbon) DOC per ASK calculation
+    Energy tax (non-carbon) DOC per ASK calculation.
 
     Parameters
     ----------
     name : str
-        Name of the model instance ('passenger_aircraft_doc_energy_tax' by default
+        Name of the model instance ('passenger_aircraft_doc_energy_tax' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - dropin_fuel_mean_unit_tax: Tax per energy unit for drop-in fuel [€/MJ].
+        - hydrogen_mean_unit_tax: Tax per energy unit for hydrogen [€/MJ].
+        - electric_mean_unit_tax: Tax per energy unit for electricity [€/MJ].
+        - ask_<market>: Passenger ASK per market [ASK].
+        - energy_per_ask_<market>_<energy>: Energy consumption per ASK per market and aircraft energy type [MJ/ASK].
+        - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
+    Outputs
+        - doc_energy_tax_per_ask_<market>_<energy>: Energy tax DOC per ASK per market and aircraft energy type [€/ASK].
+        - doc_energy_tax_per_ask_<market>_mean: ASK-weighted mean energy tax DOC per market [€/ASK].
+        - doc_energy_tax_per_ask_mean: Global ASK-weighted mean energy tax DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - No NaN replacement (legacy behavior preserved).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_doc_energy_tax", *args, **kwargs):
@@ -609,25 +763,25 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
         energy_types = ["dropin_fuel", "hydrogen", "electric"]
         output_data = {}
 
-        scaling = {
+        unit_tax = {
             "dropin_fuel": input_data["dropin_fuel_mean_unit_tax"],
             "hydrogen": input_data["hydrogen_mean_unit_tax"],
             "electric": input_data["electric_mean_unit_tax"],
         }
 
-        doc_pm = {}  # (mid, et) -> pd.Series
-        ask_market = {}  # mid -> pd.Series
-        ask_share = {}  # (mid, et) -> pd.Series
-        market_mean = {}  # mid -> pd.Series
+        doc_tax_per_market_energy_type = {}  # (mid, et) -> pd.Series (per-market per-energy-type tax DOC per ASK)
+        ask_per_market = {}  # mid -> pd.Series (per-market total ASK)
+        ask_market_energy_type_share = {}  # (mid, et) -> pd.Series (ASK share per energy type on a given market [%])
+        doc_tax_mean = {}  # mid -> pd.Series (per-market ASK-weighted mean tax DOC)
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
-            ask_market[mid] = input_data[f"ask_{mid}"]
+            ask_per_market[mid] = input_data[f"ask_{mid}"]
             for et in energy_types:
                 energy = input_data[f"energy_per_ask_{mid}_{et}"]
-                ask_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
-                doc = energy * scaling[et]
-                doc_pm[(mid, et)] = doc
+                ask_market_energy_type_share[(mid, et)] = input_data[f"ask_{mid}_{et}_share"]
+                doc = energy * unit_tax[et]
+                doc_tax_per_market_energy_type[(mid, et)] = doc
                 output_data[f"doc_energy_tax_per_ask_{mid}_{et}"] = doc
 
         # Per-market mean (NaN treated as 0).
@@ -635,26 +789,32 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
             mid = market.id
             total = None
             for et in energy_types:
-                term = doc_pm[(mid, et)].fillna(0) * ask_share[(mid, et)] / 100
+                term = (
+                    doc_tax_per_market_energy_type[(mid, et)].fillna(0)
+                    * ask_market_energy_type_share[(mid, et)]
+                    / 100
+                )
                 total = term if total is None else total + term
             if total is None:
                 total = pd.Series(0.0, index=self.df.index)
-            market_mean[mid] = total
+            doc_tax_mean[mid] = total
             output_data[f"doc_energy_tax_per_ask_{mid}_mean"] = total
 
         # Global mean: weighted by per-market ASK totals.
-        numerator = None
-        denominator = None
-        for mid, mm in market_mean.items():
-            ask_m = ask_market[mid]
+        ask_weighted_doc_sum = None
+        ask_total = None
+        for mid, mm in doc_tax_mean.items():
+            ask_m = ask_per_market[mid]
             num_term = mm * ask_m
-            numerator = num_term if numerator is None else numerator + num_term
-            denominator = ask_m if denominator is None else denominator + ask_m
+            ask_weighted_doc_sum = (
+                num_term if ask_weighted_doc_sum is None else ask_weighted_doc_sum + num_term
+            )
+            ask_total = ask_m if ask_total is None else ask_total + ask_m
 
-        if numerator is None:
+        if ask_weighted_doc_sum is None:
             global_mean = pd.Series(0.0, index=self.df.index)
         else:
-            global_mean = numerator / denominator
+            global_mean = ask_weighted_doc_sum / ask_total
 
         output_data["doc_energy_tax_per_ask_mean"] = global_mean
 
@@ -910,7 +1070,38 @@ class PassengerAircraftDocEnergyTax(AeroMAPSModel):
 
 class PassengerAircraftTotalDoc(AeroMAPSModel):
     """
-    Aggregation of all DOC categories for total DOC per ASK calculation
+    Aggregation of all DOC categories for total DOC per ASK calculation.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model instance ('passenger_aircraft_total_doc' by default).
+
+    Documentation
+    --------------
+    Inputs
+        - doc_non_energy_per_ask_<market>_<energy>: Non-energy DOC per ASK [€/ASK].
+        - doc_non_energy_per_ask_<market>_mean: Non-energy DOC per market [€/ASK].
+        - doc_energy_per_ask_<market>_<energy>: Energy DOC per ASK [€/ASK].
+        - doc_energy_per_ask_<market>_mean: Energy DOC per market [€/ASK].
+        - doc_energy_carbon_tax_per_ask_<market>_<energy>: Carbon tax DOC per ASK [€/ASK].
+        - doc_energy_carbon_tax_per_ask_<market>_mean: Carbon tax DOC per market [€/ASK].
+        - doc_energy_subsidy_per_ask_<market>_<energy>: Subsidy DOC per ASK [€/ASK].
+        - doc_energy_subsidy_per_ask_<market>_mean: Subsidy DOC per market [€/ASK].
+        - doc_energy_tax_per_ask_<market>_<energy>: Tax DOC per ASK [€/ASK].
+        - doc_energy_tax_per_ask_<market>_mean: Tax DOC per market [€/ASK].
+        - All global means (no <market> suffix) of above categories [€/ASK].
+    Outputs
+        - doc_total_per_ask_<market>_<energy>: Total DOC per ASK [€/ASK].
+        - doc_total_per_ask_<market>_mean: Total DOC per market [€/ASK].
+        - doc_total_per_ask_mean: Global total DOC [€/ASK].
+    Notes
+        - <market> is the MarketManager id (passenger markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - Formula: doc_total = non_energy + energy + carbon_tax - subsidy + tax.
+        - Subsidy enters with negative sign (income reduces cost).
+        - I/O names are generated from configuration and passed to GEMSEO via
+          self.input_names and self.output_names grammars.
     """
 
     def __init__(self, name="passenger_aircraft_total_doc", *args, **kwargs):
