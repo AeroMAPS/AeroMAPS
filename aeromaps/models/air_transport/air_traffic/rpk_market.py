@@ -43,7 +43,7 @@ class RPKMeasuresMarket(AeroMAPSModel):
             f"{mid}_measures_duration": 1.0,
         }
         self.output_names = {
-            f"{mid}_measures_impact": pd.Series([0.0]),
+            f"rpk_{mid}_measures_impact": pd.Series([0.0]),
         }
 
     def compute(self, input_data: dict) -> dict:
@@ -52,7 +52,7 @@ class RPKMeasuresMarket(AeroMAPSModel):
         start_year = float(input_data[f"{mid}_measures_start_year"])
         duration = float(input_data[f"{mid}_measures_duration"])
 
-        col = f"{mid}_measures_impact"
+        col = f"rpk_{mid}_measures_impact"
         transition_year = start_year + duration / 2
         limit = 0.02 * final_impact
         parameter = np.log(100 / 2 - 1) / (duration / 2) if duration > 0 else 1e10
@@ -110,7 +110,7 @@ class RPKMarket(AeroMAPSModel):
             f"{mid}_covid_end_year": 0.0,
             f"{mid}_covid_end_year_reference_ratio": 0.0,
             # Optional default=1.0 when no dedicated measures discipline is instantiated.
-            f"{mid}_measures_impact": pd.Series([0.0]),
+            f"rpk_{mid}_measures_impact": pd.Series([0.0]),
         }
         self.output_names = {
             f"rpk_{mid}": pd.Series([0.0]),
@@ -129,7 +129,7 @@ class RPKMarket(AeroMAPSModel):
         covid_drop = float(input_data[f"{mid}_covid_drop_start_year"])
         covid_end_year = int(input_data[f"{mid}_covid_end_year"])
         covid_end_ratio = float(input_data[f"{mid}_covid_end_year_reference_ratio"])
-        measures_impact = input_data[f"{mid}_measures_impact"]
+        measures_impact = input_data[f"rpk_{mid}_measures_impact"]
 
         if not isinstance(rpk_init, pd.Series):
             rpk_init = pd.Series(
@@ -249,13 +249,14 @@ class RPKAggregator(AeroMAPSModel):
         self.df.loc[:, "rpk"] = total_rpk
         self.df.loc[:, "rpk_reference"] = total_rpk_reference
 
-        for k in range(self.historic_start_year + 1, self.end_year + 1):
-            self.df.loc[k, "annual_growth_rate_passenger"] = (
-                self.df.loc[k, "rpk"] / self.df.loc[k - 1, "rpk"] - 1
-            ) * 100
-            self.df.loc[k, "reference_annual_growth_rate_passenger"] = (
-                self.df.loc[k, "rpk_reference"] / self.df.loc[k - 1, "rpk_reference"] - 1
-            ) * 100
+        self.df.loc[
+            self.historic_start_year + 1 : self.end_year, "annual_growth_rate_passenger"
+        ] = self.df["rpk"].pct_change() * 100
+
+        self.df.loc[
+            self.prospection_start_year + 1 : self.end_year,
+            "reference_annual_growth_rate_passenger",
+        ] = self.df["rpk_reference"].pct_change() * 100
 
         cagr_rpk = 100 * (
             (

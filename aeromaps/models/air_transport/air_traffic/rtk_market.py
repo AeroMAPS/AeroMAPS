@@ -242,13 +242,12 @@ class RTKAggregator(AeroMAPSModel):
         self.df.loc[:, "rtk"] = total_rtk
         self.df.loc[:, "rtk_reference"] = total_rtk_reference
 
-        for k in range(self.historic_start_year + 1, self.end_year + 1):
-            self.df.loc[k, "annual_growth_rate_freight"] = (
-                self.df.loc[k, "rtk"] / self.df.loc[k - 1, "rtk"] - 1
-            ) * 100
-            self.df.loc[k, "reference_annual_growth_rate_freight"] = (
-                self.df.loc[k, "rtk_reference"] / self.df.loc[k - 1, "rtk_reference"] - 1
-            ) * 100
+        self.df.loc[self.historic_start_year + 1 : self.end_year, "annual_growth_rate_freight"] = (
+            self.df["rtk"].pct_change() * 100
+        )
+        self.df.loc[
+            self.prospection_start_year + 1 : self.end_year, "reference_annual_growth_rate_freight"
+        ] = self.df["rtk_reference"].pct_change() * 100
 
         cagr_rtk = 100 * (
             (

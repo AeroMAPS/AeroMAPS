@@ -89,6 +89,12 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
         self.output_names = {}
         for m in passenger_markets:
             mid = m.id
+            self.output_names[f"relative_energy_per_ask_hydrogen_wrt_dropin_{mid}"] = pd.Series(
+                [1.0]
+            )
+            self.output_names[f"relative_energy_per_ask_electric_wrt_dropin_{mid}"] = pd.Series(
+                [1.0]
+            )
             for et in ("dropin_fuel", "hydrogen", "electric"):
                 self.output_names[f"energy_per_ask_without_operations_{mid}_{et}"] = pd.Series(
                     [0.0]
@@ -130,6 +136,8 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                 list(input_data[f"{mid}_energy_per_ask_dropin_fuel_gain_reference_years_values"]),
                 model_name=self.name,
             )
+
+            # FIXME not as gemseo variable ? do we want it ?
             self.df.loc[:, f"energy_per_ask_{mid}_dropin_fuel_gain"] = gain
 
             for k in range(self.prospection_start_year, self.end_year + 1):
@@ -156,6 +164,9 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                 ),
                 model_name=self.name,
             )
+
+            output_data[f"relative_energy_per_ask_hydrogen_wrt_dropin_{mid}"] = rel_h2
+
             self.df.loc[idx_hist, h2_col] = dropin_series.loc[idx_hist]
             self.df.loc[idx_proj, h2_col] = dropin_series.loc[idx_proj] * rel_h2.loc[idx_proj]
 
@@ -172,6 +183,9 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                 ),
                 model_name=self.name,
             )
+
+            output_data[f"relative_energy_per_ask_electric_wrt_dropin_{mid}"] = rel_el
+
             self.df.loc[idx_hist, el_col] = dropin_series.loc[idx_hist]
             self.df.loc[idx_proj, el_col] = dropin_series.loc[idx_proj] * rel_el.loc[idx_proj]
 

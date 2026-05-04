@@ -425,8 +425,8 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
         - dropin_fuel_mean_unit_carbon_tax: Carbon tax per energy unit for drop-in fuel [€/MJ].
         - hydrogen_mean_unit_carbon_tax: Carbon tax per energy unit for hydrogen [€/MJ].
         - electric_mean_unit_carbon_tax: Carbon tax per energy unit for electricity [€/MJ].
-        - co2_emissions: Total CO2 emissions [units].
-        - carbon_offset: Carbon offset amount [units].
+        - co2_emissions: Total CO2 emissions [MtCO2].
+        - carbon_offset: Carbon offset amount [MtCO2].
         - ask_<market>: Passenger ASK per market [ASK].
         - energy_per_ask_<market>_<energy>: Energy consumption per ASK per market and aircraft energy type [MJ/ASK].
         - ask_<market>_<energy>_share: ASK share per energy type on a given market [%].
@@ -556,10 +556,8 @@ class PassengerAircraftDocEnergyCarbonTax(AeroMAPSModel):
             global_mean * carbon_remaining_ratio
         )
 
-        doc_lowering_offset_per_market = {}  # mid -> pd.Series (per-market carbon tax lowering offset DOC)
         for mid, mm in doc_carbon_tax_mean.items():
             lowering = mm * carbon_remaining_ratio
-            doc_lowering_offset_per_market[mid] = lowering
             output_data[f"doc_carbon_tax_lowering_offset_per_ask_{mid}_mean"] = lowering
 
         self._store_outputs(output_data)
