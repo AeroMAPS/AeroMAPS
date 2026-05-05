@@ -217,9 +217,6 @@ class AeroMAPSProcess(object):
             k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
         }
 
-        # Initialize inputs
-        self._initialize_inputs()
-
         self.common_setup()
         if not optimisation:
             self.setup_mda()
@@ -360,6 +357,24 @@ class AeroMAPSProcess(object):
         This method should be called only if end year was modified, otherwise it is called in __init__.
 
         """
+        # Initialization order is load-bearing — do not reorder:
+        #   1. _initialize_inputs()        — loads parameters.json + user JSON, then
+        #                                    calls _format_input_vectors() to pad and
+        #                                    index the *_init arrays from that JSON
+        #   2. _initialize_markets()       — pushes market YAML values (growth rates,
+        #                                    covid params, share defaults, …) into parameters
+        #   3. _initialize_climate_model() / _initialize_lca_model() / _initialize_generic_energy()
+        #   4. _initialize_vector_inputs() — loads AeroSCOPE-derived partitioning data;
+        #                                    scalars override YAML defaults for market shares,
+        #                                    vectors use .update() to fill only the historical
+        #                                    slice of already-formatted Series
+        self._initialize_inputs()
+        self._initialize_markets()
+        self._initialize_climate_model()
+        self._initialize_lca_model()
+        self._initialize_generic_energy()
+        self._initialize_vector_inputs()
+
         self.disciplines = []
         self.data = {}
         self.json = {}
@@ -377,13 +392,7 @@ class AeroMAPSProcess(object):
         This method should be called only if end year was modified, otherwise it is called in __init__.
         """
         # Initialize markets registry (must precede disciplines that consume it)
-        self._initialize_markets()
-        # Initialize energy carriers
-        self._initialize_generic_energy()
-        # Initialize climate model
-        self._initialize_climate_model()
-        # Initialize LCA model
-        self._initialize_lca_model()
+
         # Initialize disciplines
         self._initialize_disciplines()
 
@@ -411,10 +420,8 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
-        self._initialize_markets()
-        self._initialize_generic_energy()
-        self._initialize_climate_model()
-        self._initialize_lca_model()
+        # common_setup() (called before this in __init__) already handled markets,
+        # energy, climate, lca, and vector inputs. Only discipline wiring remains.
         self._initialize_disciplines()
 
         self.scenario = create_scenario(
@@ -1045,7 +1052,6 @@ class AeroMAPSProcess(object):
                 name=market_data["name"],
                 traffic_type=market_data.get("traffic_type"),
                 traffic_unit=market_data.get("traffic_unit"),
-                inputs=market_data.get("inputs", {}),
             )
             self.markets.add(market)
 
@@ -1614,9 +1620,10 @@ class AeroMAPSProcess(object):
                 value = value.reindex(new_index, fill_value=np.nan)
                 setattr(self.parameters, key, value)
 
-        self._initialize_vector_inputs()
-        # TODO clarify the role of _initialize_vector_inputs vs read_json_direct @Scott?
-        # Format input vectors
+        # Pad and index the *_init numpy arrays (rpk_init, ask_init, etc.) that come
+        # from parameters.json as plain lists. Must run here, before _initialize_markets()
+        # and _initialize_vector_inputs(), because those two only push scalars or use
+        # .update() to fill in the historical slice of already-formatted Series.
         self._format_input_vectors()
 
     def _initialize_vector_inputs(self):
@@ -1677,7 +1684,15 @@ class AeroMAPSProcess(object):
 
             for param_name, value in other_vector_data.items():
                 if isinstance(value, list) and years_index is not None:
-                    setattr(self.parameters, param_name, pd.Series(value, index=years_index))
+                    new_series = pd.Series(value, index=years_index)
+                    existing = getattr(self.parameters, param_name, None)
+                    if isinstance(existing, pd.Series):
+                        # The Series was already padded to end_year by _format_input_vectors().
+                        # Only overwrite the historical slice; future NaN padding is preserved.
+                        existing.update(new_series)
+                        setattr(self.parameters, param_name, existing)
+                    else:
+                        setattr(self.parameters, param_name, new_series)
                 else:
                     setattr(self.parameters, param_name, value)
 
@@ -1784,6 +1799,7 @@ class AeroMAPSProcess(object):
                 new_value = pd.Series(new_value, index=new_index)
                 setattr(self.parameters, field_name, new_value)
             elif not isinstance(field_value, (float, int, list, str)):
+                print(field_name, field_value, type(field_value))
                 if (
                     field_value.size
                     == self.parameters.end_year - self.parameters.climate_historic_start_year + 1
