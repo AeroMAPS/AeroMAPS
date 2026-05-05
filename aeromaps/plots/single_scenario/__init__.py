@@ -61,9 +61,9 @@ from aeromaps.plots.single_scenario.costs import (
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
-    NetEnergyDOCPerRPKBreakdown,
     AirfareEvolutionBreakdown,
 )
+from aeromaps.plots.single_scenario.costs_generic import NetEnergyDOCPerRPKBreakdown
 
 from aeromaps.plots.single_scenario.macc import (
     AnnualMACC,
