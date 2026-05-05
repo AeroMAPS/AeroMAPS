@@ -2,11 +2,11 @@
 This module creates dictionaries of default models for various AeroMAPS configurations.
 """
 
-from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
-from aeromaps.models.air_transport.air_traffic.rpk_constant_elasticity import \
-    RPKConstantElasticity
-from aeromaps.models.air_transport.air_traffic.rpk_price_adjusted_logistic import \
-    RPKPriceAdjustedLogistic
+from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKPriceElasticity
+from aeromaps.models.air_transport.air_traffic.price_and_income_elasticity import \
+    RPKPriceIncomeElasticity
+from aeromaps.models.air_transport.air_traffic.price_elasticity_logistic_income import \
+    RPKLogisticIncomePriceElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -171,7 +171,7 @@ models_traffic = {
 
 
 models_traffic_cost_feedback = {
-    "rpk_with_elasticity": RPKWithElasticity("rpk_with_elasticity"),
+    "rpk_with_elasticity": RPKPriceElasticity("rpk_with_elasticity"),
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
@@ -182,7 +182,7 @@ models_traffic_cost_feedback = {
 
 
 models_traffic_price_adjusted_logistic = {
-    "rpk_price_adjusted_logistic": RPKPriceAdjustedLogistic("rpk_with_elasticity"),
+    "rpk_logistic_income_price_elasticity": RPKLogisticIncomePriceElasticity("rpk_with_elasticity"),
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
@@ -193,7 +193,7 @@ models_traffic_price_adjusted_logistic = {
 
 
 models_traffic_constant_elasticities = {
-    "rpk_constant_elasticity": RPKConstantElasticity("rpk_with_elasticity"),
+    "rpk_price_income_elasticity": RPKPriceIncomeElasticity("rpk_with_elasticity"),
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk_reference": RPKReference("rpk_reference"),
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),

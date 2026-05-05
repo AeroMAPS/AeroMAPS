@@ -19,7 +19,7 @@ def generalised_logistic_function(
 
     return y
 
-class RPKPriceAdjustedLogistic(AeroMAPSModel):
+class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
     """
     Class to compute Revenue Passenger Kilometers (RPK) per capita using a generalised logistic function adjusted for price effects.
 

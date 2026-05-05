@@ -19,7 +19,7 @@ from aeromaps.models.base import (
 )
 
 
-class RPKWithElasticity(AeroMAPSModel):
+class RPKPriceElasticity(AeroMAPSModel):
     """
     Class to compute Revenue Passenger Kilometers (RPK) with price elasticity and COVID-19 impact, considering exogenous growth rates by segment.
 

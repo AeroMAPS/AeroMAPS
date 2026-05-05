@@ -5,7 +5,7 @@ import pandas as pd
 from aeromaps.models.base import AeroMAPSModel
 
 
-class RPKConstantElasticity(AeroMAPSModel):
+class RPKPriceIncomeElasticity(AeroMAPSModel):
     """
     Compute Revenue Passenger Kilometers (RPK) using a constant-elasticity demand model.
 
