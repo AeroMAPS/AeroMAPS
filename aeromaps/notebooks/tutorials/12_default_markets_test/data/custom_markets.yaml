@@ -85,4 +85,5 @@ air_cargo:
   traffic_unit: RTK
   inputs:
     initial:
+      rtk_share_2019: 100.0
       energy_share_2019: 15.0
