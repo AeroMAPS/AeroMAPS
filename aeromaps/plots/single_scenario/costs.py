@@ -532,7 +532,7 @@ class DOCEvolutionCategory(SingleScenarioPlot):
         self.line_tot.set_ydata(self.df.loc[self.prospective_years, "doc_total_per_ask_mean"])
 
 
-class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
+class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
     """Stacked-area breakdown of energy-related costs per RPK by pathway.
 
     Inspired by :class:`ScenarioEnergyExpensesPlot`: uses the
@@ -549,7 +549,7 @@ class AllEnergyCostsPerRPKBreakdown(SingleScenarioPlot):
     """
 
     required_outputs = [
-        "doc_all_energy_costs_per_rpk",
+        "doc_net_energy_per_rpk_mean",
         "rpk_long_range",
         "rpk_medium_range",
         "rpk_short_range",

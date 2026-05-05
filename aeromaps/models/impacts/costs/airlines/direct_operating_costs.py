@@ -1944,12 +1944,7 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         doc_energy_tax_per_ask_medium_range_mean: pd.Series,
         doc_energy_tax_per_ask_short_range_mean: pd.Series,
         doc_energy_tax_per_ask_mean: pd.Series,
-        ask_long_range: pd.Series,
-        ask_medium_range: pd.Series,
-        ask_short_range: pd.Series,
-        rpk_long_range: pd.Series,
-        rpk_medium_range: pd.Series,
-        rpk_short_range: pd.Series,
+        load_factor: pd.Series,
     ) -> Tuple[
         pd.Series,
         pd.Series,
@@ -2100,18 +2095,8 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             Energy tax direct operating cost per ASK for passenger short-range market aircraft average [€/ASK].
         doc_energy_tax_per_ask_mean
             Energy tax direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        ask_long_range
-            Number of Available Seat Kilometer (ASK) for passenger long-range market [ASK].
-        ask_medium_range
-            Number of Available Seat Kilometer (ASK) for passenger medium-range market [ASK].
-        ask_short_range
-            Number of Available Seat Kilometer (ASK) for passenger short-range market [ASK].
-        rpk_long_range
-            Number of Revenue Passenger Kilometer (RPK) for passenger long-range market [RPK].
-        rpk_medium_range
-            Number of Revenue Passenger Kilometer (RPK) for passenger medium-range market [RPK].
-        rpk_short_range
-            Number of Revenue Passenger Kilometer (RPK) for passenger short-range market [RPK].
+        load_factor
+            Annual passenger load factor [%].
 
         Returns
         -------
@@ -2141,7 +2126,7 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             Total direct operating cost per ASK for passenger long-range market aircraft average [€/ASK].
         doc_total_per_ask_mean
             Total direct operating cost per ASK for passenger overall market aircraft average [€/ASK].
-        doc_all_energy_costs_per_rpk
+        doc_net_energy_per_rpk_mean
             Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax) per Revenue Passenger Kilometer [€/RPK].
         """
         # Drop-in
@@ -2286,20 +2271,18 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
         self.df.loc[:, "doc_total_per_ask_mean"] = doc_total_per_ask_mean
 
         # All energy-related costs per ASK (energy + carbon tax - subsidy + energy tax)
-        doc_all_energy_costs_per_ask_mean = (
+        doc_net_energy_per_ask_mean = (
             doc_energy_per_ask_mean
             + doc_energy_carbon_tax_per_ask_mean
             - doc_energy_subsidy_per_ask_mean
             + doc_energy_tax_per_ask_mean
         )
 
-        # Convert to per-RPK using ASK-weighted costs over total RPK
-        total_ask = ask_long_range + ask_medium_range + ask_short_range
-        total_rpk = rpk_long_range + rpk_medium_range + rpk_short_range
-        doc_all_energy_costs_per_rpk = (
-            doc_all_energy_costs_per_ask_mean * total_ask / total_rpk
-        ).where(total_rpk > 0, 0)
-        self.df.loc[:, "doc_all_energy_costs_per_rpk"] = doc_all_energy_costs_per_rpk
+        # Convert to per-RPK using load factor: RPK = ASK * load_factor / 100
+        doc_net_energy_per_rpk_mean = (doc_net_energy_per_ask_mean * 100 / load_factor).where(
+            load_factor > 0, 0
+        )
+        self.df.loc[:, "doc_net_energy_per_rpk_mean"] = doc_net_energy_per_rpk_mean
 
         return (
             doc_total_per_ask_short_range_dropin_fuel,
@@ -2315,5 +2298,5 @@ class PassengerAircraftTotalDoc(AeroMAPSModel):
             doc_total_per_ask_medium_range_mean,
             doc_total_per_ask_long_range_mean,
             doc_total_per_ask_mean,
-            doc_all_energy_costs_per_rpk,
+            doc_net_energy_per_rpk_mean,
         )

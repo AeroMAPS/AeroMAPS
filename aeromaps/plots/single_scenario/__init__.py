@@ -61,7 +61,7 @@ from aeromaps.plots.single_scenario.costs import (
     ScenarioEnergyExpensesComparison,
     DOCEvolutionBreakdown,
     DOCEvolutionCategory,
-    AllEnergyCostsPerRPKBreakdown,
+    NetEnergyDOCPerRPKBreakdown,
     AirfareEvolutionBreakdown,
 )
 
@@ -128,7 +128,7 @@ available_plots = {
     "doc_fleet_breakdown": DOCEvolutionBreakdown,
     "doc_fleet_category": DOCEvolutionCategory,
     "airfare_breakdown": AirfareEvolutionBreakdown,
-    "all_energy_costs_per_rpk_breakdown": AllEnergyCostsPerRPKBreakdown,
+    "all_energy_costs_per_rpk_breakdown": NetEnergyDOCPerRPKBreakdown,
     "mfsp_detailled": DetailledMFSPBreakdown,
     # Generic pathways-manager-driven plots
     "energy_mix": EnergyMixPlot,
