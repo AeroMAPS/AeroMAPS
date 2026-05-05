@@ -40,9 +40,7 @@ def _dict_from_json(file_name="parameters.json") -> dict:
     except FileNotFoundError:
         raise FileNotFoundError(f"Parameters file not found: '{file_name}'")
     except json.JSONDecodeError as e:
-        raise json.JSONDecodeError(
-            f"Invalid JSON in '{file_name}': {e.msg}", e.doc, e.pos
-        ) from e
+        raise json.JSONDecodeError(f"Invalid JSON in '{file_name}': {e.msg}", e.doc, e.pos) from e
     dict = _dict_from_parameters_dict(parameters_dict)
     return dict
 
@@ -133,9 +131,124 @@ def _dict_to_df(data, orient="index") -> pd.DataFrame:
     return df
 
 
+def compute_partitioning(
+    world_data: dict,
+    per_market_passenger_data: dict,
+    total_seats_2019: float,
+    freight_energy_share_2019: float,
+    path: str = "",
+) -> None:
+    """
+    Generate a partitioned AeroMAPS inputs JSON for a geographic scope.
+
+    Parameters
+    ----------
+    world_data
+        World parameters dict loaded from parameters.json.
+    per_market_passenger_data
+        Mapping of market_id to {"ask_2019": float, "energy_2019": float}
+        for every passenger market in the scope. Energy values must already
+        be expressed in the AeroMAPS scope (i.e. passeger only, belly freight excluded).
+    total_seats_2019
+        Total seats in 2019 for the partitioned scope, used to scale pax_init.
+    freight_energy_share_2019
+        Freight energy share in 2019 for the scope [%]. Must cover all freight
+        (belly + dedicated). Total energy is derived from the market energies
+        and this share: total = passenger_energy / (1 - freight_share / 100).
+    path
+        Directory where partitioning_updated_inputs.json will be written.
+    """
+
+    n_historic_years = world_data["prospection_start_year"] - world_data["historic_start_year"]
+    world_ask_2019 = world_data["ask_init"][n_historic_years - 1]
+    world_seats_2019 = (
+        world_data["pax_init"][n_historic_years - 1]
+        * world_data["ask_init"][n_historic_years - 1]
+        / world_data["rpk_init"][n_historic_years - 1]
+        * 100
+    )
+
+    total_ask_2019 = sum(d["ask_2019"] for d in per_market_passenger_data.values())
+    passenger_energy_2019 = sum(
+        d["energy_ask_2019"] * d["ask_2019"] for d in per_market_passenger_data.values()
+    )
+    total_energy_2019 = passenger_energy_2019 / (1 - freight_energy_share_2019 / 100)
+
+    # Per-market shares
+    market_energy_shares = {
+        mid: d["energy_ask_2019"] * d["ask_2019"] / total_energy_2019 * 100
+        for mid, d in per_market_passenger_data.items()
+    }
+    market_rpk_shares = {
+        mid: d["ask_2019"] / total_ask_2019 * 100 for mid, d in per_market_passenger_data.items()
+    }
+
+    # Scaling ratios for historical vectors
+    share_ask = total_ask_2019 / world_ask_2019 * 100
+    share_seats = total_seats_2019 / world_seats_2019
+    share_energy = (
+        total_energy_2019 / world_data["energy_consumption_init"][n_historic_years - 1] * 100
+    )
+
+    historical_years = range(n_historic_years)
+    scaled_vectors = {
+        "rpk_init": [world_data["rpk_init"][k] * share_ask / 100 for k in historical_years],
+        "ask_init": [world_data["ask_init"][k] * share_ask / 100 for k in historical_years],
+        "rtk_init": [world_data["rtk_init"][k] * share_ask / 100 for k in historical_years],
+        "freight_init": [world_data["freight_init"][k] * share_ask / 100 for k in historical_years],
+        "total_aircraft_distance_init": [
+            world_data["total_aircraft_distance_init"][k] * share_ask / 100
+            for k in historical_years
+        ],
+        "pax_init": [world_data["pax_init"][k] * share_seats / 100 for k in historical_years],
+        "energy_consumption_init": [
+            world_data["energy_consumption_init"][k] * share_energy / 100 for k in historical_years
+        ],
+    }
+
+    # Climate data
+    climate_world_data_path = pth.join(
+        climate_data.__path__[0], "temperature_historical_dataset.csv"
+    )
+    climate_world_data = pd.read_csv(climate_world_data_path, delimiter=";", header=None).values
+    climate_data_dict = {
+        "years": climate_world_data[:, 0].tolist(),
+        "co2_emissions": (climate_world_data[:, 1] * share_energy / 100).tolist(),
+        "nox_emissions": (climate_world_data[:, 2] * share_energy / 100).tolist(),
+        "h2o_emissions": (climate_world_data[:, 3] * share_energy / 100).tolist(),
+        "soot_emissions": (climate_world_data[:, 4] * share_energy / 100).tolist(),
+        "sulfur_emissions": (climate_world_data[:, 5] * share_energy / 100).tolist(),
+        "distance": (climate_world_data[:, 6] * share_ask / 100).tolist(),
+    }
+
+    # Build output — market float data uses <market_id>_<leaf> naming
+    other_float_data = {}
+    for mid, share in market_energy_shares.items():
+        other_float_data[f"{mid}_energy_share_2019"] = share
+    for mid, share in market_rpk_shares.items():
+        other_float_data[f"{mid}_rpk_share_2019"] = share
+    other_float_data["freight_energy_share_2019"] = freight_energy_share_2019
+    other_float_data["commercial_aviation_coefficient"] = 1
+
+    print(market_rpk_shares)
+
+    other_years = list(
+        range(world_data["historic_start_year"], world_data["prospection_start_year"])
+    )
+    output = {
+        "other_float_data": other_float_data,
+        "other_vector_data": {"years": other_years, **scaled_vectors},
+        "climate_data": climate_data_dict,
+    }
+
+    partitioning_updated_inputs_path = pth.join(path, "partitioning_updated_inputs.json")
+    with open(partitioning_updated_inputs_path, "w") as outfile:
+        json.dump(output, outfile, indent=4)
+
+
 def create_partitioning(file, path=""):
     """
-    Generation of a JSON input file (air transport data) and a CSV file (climate data) for running an AeroMAPS process for a partitioned scope.
+    Generate a partitioned AeroMAPS inputs JSON from an AeroSCOPE CSV file.
 
     Parameters
     ----------
@@ -155,180 +268,46 @@ def create_partitioning(file, path=""):
     with open(world_data_path, "r") as parameters_file:
         world_data_dict = json.load(parameters_file)
 
-    # Assumption on freight
+    # Assumption on freight regional share- same as world share.
     freight_energy_share_2019_partitioned = world_data_dict["freight_energy_share_2019"]
 
-    # AeroSCOPE data recovery
-    partitioned_data_df = read_csv(file, delimiter=",")
-    partitioned_data = partitioned_data_df.values
-    total_ask_2019 = partitioned_data[0, 1]
-    short_range_ask_2019 = partitioned_data[0, 2]
-    medium_range_ask_2019 = partitioned_data[0, 3]
-    long_range_ask_2019 = partitioned_data[0, 4]
+    # AeroSCOPE CSV layout (fixed format):
+    #   row 0: ASK        — col 1=total, col 2=SR, col 3=MR, col 4=LR
+    #   row 2: seats      — col 1=total
+    #   row 4: energy/ASK — col 1=total, col 2=SR, col 3=MR, col 4=LR
+    partitioned_data = read_csv(file, delimiter=",").values
     total_seats_2019 = partitioned_data[2, 1]
-    total_energy_consumption_per_ask_2019 = partitioned_data[4, 1]
-    short_range_energy_consumption_per_ask_2019 = partitioned_data[4, 2]
-    medium_range_energy_consumption_per_ask_2019 = partitioned_data[4, 3]
-    long_range_energy_consumption_per_ask_2019 = partitioned_data[4, 4]
-    total_energy_consumption_2019 = (
-        total_energy_consumption_per_ask_2019
-        * total_ask_2019
-        / (1 - freight_energy_share_2019_partitioned / 2 / 100)
-    )  # Dedicated freight (half of total freight) not included in AeroSCOPE
-    short_range_energy_consumption_2019 = (
-        short_range_energy_consumption_per_ask_2019 * short_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
-    medium_range_energy_consumption_2019 = (
-        medium_range_energy_consumption_per_ask_2019 * medium_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
-    long_range_energy_consumption_2019 = (
-        long_range_energy_consumption_per_ask_2019 * long_range_ask_2019
-    ) * (1 - 0.075 / (1 - 0.075))
 
-    # Calculation of the partitioned input values
+    # AeroSCOPE scope → AeroMAPS scope corrections:
+    # 1. Belly freight: AeroSCOPE energy-per-ASK includes belly freight carried on
+    #    passenger aircraft; AeroMAPS accounts for it separately, so we remove it
+    #    from per-market passenger energy using the world belly-freight fraction.
+    # 2. Dedicated freight: AeroSCOPE covers passenger aircraft only; we scale total
+    #    energy up to include dedicated freighters (half of total freight energy share).
+    _BELLY_FREIGHT_FRACTION = freight_energy_share_2019_partitioned / 2 / 100
+    _DEDICATED_FREIGHT_FRACTION = freight_energy_share_2019_partitioned / 2 / 100
+    belly_correction = 1 - _BELLY_FREIGHT_FRACTION / (1 - _DEDICATED_FREIGHT_FRACTION)
 
-    ## Float inputs
-    short_range_energy_share_2019_partitioned = (
-        short_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-    medium_range_energy_share_2019_partitioned = (
-        medium_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-    long_range_energy_share_2019_partitioned = (
-        long_range_energy_consumption_2019 / total_energy_consumption_2019 * 100
-    )
-    short_range_rpk_share_2019_partitioned = short_range_ask_2019 / total_ask_2019 * 100
-    medium_range_rpk_share_2019_partitioned = medium_range_ask_2019 / total_ask_2019 * 100
-    long_range_rpk_share_2019_partitioned = long_range_ask_2019 / total_ask_2019 * 100
-    commercial_aviation_coefficient_partitioned = 1
-
-    ## Vector inputs
-    share_ask_partitioned_vs_world_2019 = total_ask_2019 / world_data_dict["ask_init"][19] * 100
-    share_seats_partitioned_vs_world_2019 = total_seats_2019 / (
-        world_data_dict["pax_init"][19]
-        * world_data_dict["ask_init"][19]
-        / world_data_dict["rpk_init"][19]
-        * 100
-    )
-    share_energy_consumption_partitioned_vs_world_2019 = (
-        total_energy_consumption_2019 / world_data_dict["energy_consumption_init"][19] * 100
-    )
-    rpk_init_partitioned = []
-    ask_init_partitioned = []
-    rtk_init_partitioned = []
-    total_aircraft_distance_init_partitioned = []
-    freight_init_partitioned = []
-    pax_init_partitioned = []
-    energy_consumption_init_partitioned = []
-    for k in range(0, 20):
-        rpk_init_partitioned.append(
-            world_data_dict["rpk_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        ask_init_partitioned.append(
-            world_data_dict["ask_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        rtk_init_partitioned.append(
-            world_data_dict["rtk_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        freight_init_partitioned.append(
-            world_data_dict["freight_init"][k] * share_ask_partitioned_vs_world_2019 / 100
-        )
-        total_aircraft_distance_init_partitioned.append(
-            world_data_dict["total_aircraft_distance_init"][k]
-            * share_ask_partitioned_vs_world_2019
-            / 100
-        )
-        pax_init_partitioned.append(
-            world_data_dict["pax_init"][k] * share_seats_partitioned_vs_world_2019 / 100
-        )
-        energy_consumption_init_partitioned.append(
-            world_data_dict["energy_consumption_init"][k]
-            * share_energy_consumption_partitioned_vs_world_2019
-            / 100
-        )
-
-    historic_start_year_partitioned = world_data_dict["historic_start_year"]
-    prospection_start_year_partitioned = world_data_dict["prospection_start_year"]
-
-    # Climate data computation
-    climate_world_data_path = pth.join(
-        climate_data.__path__[0], "temperature_historical_dataset.csv"
-    )
-    climate_world_data_df = pd.read_csv(climate_world_data_path, delimiter=";", header=None)
-    climate_world_data = climate_world_data_df.values
-    climate_world_data_years = climate_world_data[:, 0]
-    climate_world_data_co2_emissions = climate_world_data[:, 1]
-    climate_world_data_nox_emissions = climate_world_data[:, 2]
-    climate_world_data_h2o_emissions = climate_world_data[:, 3]
-    climate_world_data_soot_emissions = climate_world_data[:, 4]
-    climate_world_data_sulfur_emissions = climate_world_data[:, 5]
-    climate_world_data_distance = climate_world_data[:, 6]
-    
-    climate_partitioned_data_years = climate_world_data_years.tolist()
-    climate_partitioned_data_co2_emissions = (
-        climate_world_data_co2_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_nox_emissions = (
-        climate_world_data_nox_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_h2o_emissions = (
-        climate_world_data_h2o_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_soot_emissions = (
-        climate_world_data_soot_emissions * share_energy_consumption_partitioned_vs_world_2019 / 100
-    ).tolist()
-    climate_partitioned_data_sulfur_emissions = (
-        climate_world_data_sulfur_emissions
-        * share_energy_consumption_partitioned_vs_world_2019
-        / 100
-    ).tolist()
-    climate_partitioned_data_distance = (
-        climate_world_data_distance * share_ask_partitioned_vs_world_2019 / 100
-    ).tolist()
-
-    # Build years list for other_data (historic_start_year to prospection_start_year - 1)
-    other_data_years = list(range(historic_start_year_partitioned, prospection_start_year_partitioned))
-
-    # Generation of a single JSON file with all partitioned inputs
-    partitioning_updated_inputs_dict = {
-        # Float inputs
-        "other_float_data": {
-            "short_range_energy_share_2019": short_range_energy_share_2019_partitioned,
-            "medium_range_energy_share_2019": medium_range_energy_share_2019_partitioned,
-            "long_range_energy_share_2019": long_range_energy_share_2019_partitioned,
-            "freight_energy_share_2019": freight_energy_share_2019_partitioned,
-            "short_range_rpk_share_2019": short_range_rpk_share_2019_partitioned,
-            "medium_range_rpk_share_2019": medium_range_rpk_share_2019_partitioned,
-            "long_range_rpk_share_2019": long_range_rpk_share_2019_partitioned,
-            "commercial_aviation_coefficient": commercial_aviation_coefficient_partitioned
-        },
-        # Other data (lists indexed by historic_start_year to prospection_start_year - 1)
-        "other_vector_data": {
-            "years": other_data_years,
-            "rpk_init": rpk_init_partitioned,
-            "ask_init": ask_init_partitioned,
-            "rtk_init": rtk_init_partitioned,
-            "pax_init": pax_init_partitioned,
-            "freight_init": freight_init_partitioned,
-            "energy_consumption_init": energy_consumption_init_partitioned,
-            "total_aircraft_distance_init": total_aircraft_distance_init_partitioned,
-        },
-        # Climate data (lists indexed by climate_historic_start_year to prospection_start_year - 1)
-        "climate_data": {
-            "years": climate_partitioned_data_years,
-            "co2_emissions": climate_partitioned_data_co2_emissions,
-            "nox_emissions": climate_partitioned_data_nox_emissions,
-            "h2o_emissions": climate_partitioned_data_h2o_emissions,
-            "soot_emissions": climate_partitioned_data_soot_emissions,
-            "sulfur_emissions": climate_partitioned_data_sulfur_emissions,
-            "distance": climate_partitioned_data_distance,
-        },
+    aeroscope_markets = {
+        "short_range": (partitioned_data[0, 2], partitioned_data[4, 2]),
+        "medium_range": (partitioned_data[0, 3], partitioned_data[4, 3]),
+        "long_range": (partitioned_data[0, 4], partitioned_data[4, 4]),
     }
-    partitioning_updated_inputs_path = pth.join(path, "partitioning_updated_inputs.json")
-    with open(partitioning_updated_inputs_path, "w") as outfile:
-        json.dump(partitioning_updated_inputs_dict, outfile, indent=4)
+    per_market_passenger_data = {
+        mid: {
+            "ask_2019": ask,
+            "energy_ask_2019": epask * belly_correction,  # corrected value => e_ask without freight
+        }
+        for mid, (ask, epask) in aeroscope_markets.items()
+    }
 
-    return
+    compute_partitioning(
+        world_data=world_data_dict,
+        per_market_passenger_data=per_market_passenger_data,
+        total_seats_2019=total_seats_2019,
+        freight_energy_share_2019=freight_energy_share_2019_partitioned,
+        path=path,
+    )
 
 
 def merge_json_files(file1, file2, output_file):
