@@ -5,6 +5,9 @@ data:
     json_outputs_file: "./outputs_alternate_high_scenario.json"
 
 models:
+  markets:
+    markets_data_file: default
+
   climate:
     climate_model_data_file: default
     

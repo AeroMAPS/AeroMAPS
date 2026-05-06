@@ -3,6 +3,9 @@ data:
     json_outputs_file: "./outputs.json"
 
 models:
+  markets:
+    markets_data_file: default
+
   fleet:
     aircraft_inventory_model_data_file: default
     fleet_model_data_file: default
