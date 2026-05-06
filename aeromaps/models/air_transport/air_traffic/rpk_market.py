@@ -47,6 +47,18 @@ class RPKMeasuresMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute demand-reduction multiplier for one passenger market.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs for final impact, start year, and duration.
+
+        Returns
+        -------
+        dict
+            Output dictionary with the measures impact series.
+        """
         mid = self.market_id
         final_impact = float(input_data[f"{mid}_measures_final_impact"])
         start_year = float(input_data[f"{mid}_measures_start_year"])
@@ -120,6 +132,18 @@ class RPKMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute per-market RPK with CAGR, COVID recovery, and measures impact.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market shares, CAGR references, and COVID settings.
+
+        Returns
+        -------
+        dict
+            Output series for market RPK and growth metrics.
+        """
         mid = self.market_id
         rpk_init = input_data["rpk_init"]
         rpk_share_2019 = float(input_data[f"{mid}_rpk_share_2019"])
@@ -236,6 +260,18 @@ class RPKAggregator(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Aggregate per-market RPK and compute growth metrics.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing per-market RPK and reference series.
+
+        Returns
+        -------
+        dict
+            Output totals and growth metrics for passenger RPK.
+        """
         total_rpk = None
         total_rpk_reference = None
         for mid in self.passenger_market_ids:
@@ -315,6 +351,18 @@ class RPKReferenceMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute reference RPK trajectory for one passenger market.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market RPK, CAGR reference, and COVID settings.
+
+        Returns
+        -------
+        dict
+            Output series for reference RPK and its growth rate.
+        """
         mid = self.market_id
         rpk = input_data[f"rpk_{mid}"]
         reference_periods = list(input_data[f"{mid}_reference_cagr_reference_periods"])

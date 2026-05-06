@@ -102,6 +102,18 @@ class PassengerAircraftEfficiencySimpleShares(AeroMAPSModel):
                 self.output_names[f"ask_{mid}_{et}_share"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Compute per-market energy per ASK and propulsion shares.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs for passenger market efficiency and propulsion shares.
+
+        Returns
+        -------
+        dict
+            Output series for energy per ASK and ASK shares by energy type.
+        """
         passenger_markets = self.markets.get(traffic_type="passenger")
 
         energy_consumption_init = input_data["energy_consumption_init"]
@@ -288,6 +300,18 @@ class PassengerAircraftEfficiencySimpleASK(AeroMAPSModel):
             self.output_names[f"ask_{et}_share"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Split per-market ASK into energy types and aggregate totals.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing per-market ASK and propulsion shares.
+
+        Returns
+        -------
+        dict
+            ASK series and shares by energy type for each market and total.
+        """
         passenger_markets = self.markets.get(traffic_type="passenger")
 
         output_data = {}
@@ -405,6 +429,18 @@ class PassengerAircraftEfficiencyComplex(AeroMAPSModel):
             self.output_names[f"ask_{et}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Compute energy per ASK and propulsion shares using fleet outputs.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing global ASK, market shares, and fleet signals.
+
+        Returns
+        -------
+        dict
+            Output series for energy per ASK and ASK shares by energy type.
+        """
         passenger_markets = self.markets.get(traffic_type="passenger")
 
         energy_consumption_init = input_data["energy_consumption_init"]
@@ -689,6 +725,18 @@ class FreightAircraftEfficiency(AeroMAPSModel):
             self.output_names[f"rtk_{energy_type}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Derive freight energy per RTK and propulsion mix from passenger proxies.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing passenger market ASK/efficiency and freight RTK.
+
+        Returns
+        -------
+        dict
+            Output series for freight energy per RTK and RTK splits by energy type.
+        """
         passenger_markets = self.markets.get(traffic_type="passenger")
         freight_markets = self.markets.get(traffic_type="freight")
 

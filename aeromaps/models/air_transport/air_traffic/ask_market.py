@@ -43,6 +43,18 @@ class ASKMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute ASK for one passenger market from RPK and load factor.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market RPK and load factor series.
+
+        Returns
+        -------
+        dict
+            Output dictionary with the market ASK series.
+        """
         mid = self.market_id
         load_factor = input_data[f"load_factor_{mid}"]
         rpk = input_data[f"rpk_{mid}"]
@@ -77,6 +89,18 @@ class ASKAggregator(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Aggregate per-market ASK into the total ASK series.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing per-market ASK series.
+
+        Returns
+        -------
+        dict
+            Output dictionary with the total ASK series.
+        """
         total_ask = None
         for mid in self.passenger_market_ids:
             series = input_data[f"ask_{mid}"]

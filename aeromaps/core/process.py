@@ -40,6 +40,7 @@ from aeromaps.models.yaml_interpolator import YAMLInterpolator
 from aeromaps.utils.functions import (
     _dict_to_df,
     _flatten_dict,
+    custom_logger_config,
 )
 from aeromaps.utils.yaml import read_yaml_file
 from aeromaps.plots import available_plots, available_plots_fleet
@@ -194,6 +195,8 @@ class AeroMAPSProcess(object):
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
         """
+        custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
+
         self.configuration_file = (
             os.path.abspath(os.fspath(configuration_file))
             if configuration_file is not None
@@ -369,16 +372,20 @@ class AeroMAPSProcess(object):
         #                                    vectors use .update() to fill only the historical
         #                                    slice of already-formatted Series
         self._initialize_inputs()
+
+        self.disciplines = []
+        self.data = {}
+        self.json = {}
+        self._initialize_data()
+        # Initialize markets registry (must precede disciplines that consume it)
         self._initialize_markets()
         self._initialize_climate_model()
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_vector_inputs()
 
-        self.disciplines = []
-        self.data = {}
-        self.json = {}
-        self._initialize_data()
+        # Initialize conventionaldisciplines
+        self._initialize_disciplines()
 
     def setup_mda(self):
         """Configure the process for a standalone MDA chain.
@@ -391,10 +398,6 @@ class AeroMAPSProcess(object):
         ---------
         This method should be called only if end year was modified, otherwise it is called in __init__.
         """
-        # Initialize markets registry (must precede disciplines that consume it)
-
-        # Initialize disciplines
-        self._initialize_disciplines()
 
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
@@ -420,9 +423,6 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
-        # common_setup() (called before this in __init__) already handled markets,
-        # energy, climate, lca, and vector inputs. Only discipline wiring remains.
-        self._initialize_disciplines()
 
         self.scenario = create_scenario(
             disciplines=self.disciplines,

@@ -69,6 +69,18 @@ class PassengerAircraftSimpleAirfare(AeroMAPSModel):
             self.output_names[f"airfare_per_rpk_{mid}"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
+        """Compute global and per-market airfares from costs and load factors.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing cost per ASK and load factor series.
+
+        Returns
+        -------
+        dict
+            Output airfares per ASK and per RPK for all markets.
+        """
         output_data = {}
         load_factor = input_data["load_factor"]
 
@@ -182,6 +194,18 @@ class PassengerAircraftTotalCost(AeroMAPSModel):
             self.output_names[f"total_cost_per_rpk_{mid}"] = pd.Series([0.0])
 
     def compute(self, input_data) -> dict:
+        """Compute total airline cost per ASK/RPK for global and market splits.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing DOC/NOC and load factor series.
+
+        Returns
+        -------
+        dict
+            Output total cost series per ASK and per RPK.
+        """
         output_data = {}
 
         load_factor = input_data["load_factor"]

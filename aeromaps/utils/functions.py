@@ -567,8 +567,11 @@ def _custom_series_addition(s1, s2) -> pd.Series:
 
 def custom_logger_config(logger):
     """
-    Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
-    Hopefully temporary!!!
+    Configure logging and docstring parsing for GEMSEO disciplines.
+
+    Applies a filter to enrich GEMSEO's missing Args-section warning with the
+    offending callable, and patches GEMSEO's docstring parser to support NumPy
+    "Parameters" sections in addition to Google-style "Args".
 
 
     Parameters
@@ -583,13 +586,132 @@ def custom_logger_config(logger):
 
     """
 
-    # Specific filter to remove a warning triggered in the absence of a docstring in each discipline.
+    # Patch GEMSEO docstring parsing to support NumPy-style Parameters sections.
+    try:
+        import inspect
+        import re
+        import gemseo.utils.source_parsing as source_parsing
+
+        if not getattr(source_parsing, "_aeromaps_numpy_docstring_patch", False):
+
+            def _parse_numpy_parameters(docstring: str) -> dict:
+                lines = inspect.cleandoc(docstring).splitlines()
+                params = {}
+
+                # Locate "Parameters" section header
+                start_idx = None
+                for i, line in enumerate(lines):
+                    if line.strip() == "Parameters":
+                        if i + 1 < len(lines) and set(lines[i + 1].strip()) == {"-"}:
+                            start_idx = i + 2
+                            break
+                if start_idx is None:
+                    return {}
+
+                current_name = None
+                current_desc = []
+
+                def flush_param():
+                    if current_name:
+                        params[current_name] = " ".join(current_desc).strip()
+
+                i = start_idx
+                while i < len(lines):
+                    line = lines[i]
+                    # Stop at next section header
+                    if line and not line.startswith(" "):
+                        if i + 1 < len(lines) and set(lines[i + 1].strip()) == {"-"}:
+                            break
+
+                    if line and not line.startswith(" "):
+                        flush_param()
+                        header = line.strip()
+                        if not header:
+                            current_name = None
+                            current_desc = []
+                        else:
+                            # Accept both "name : type" and bare "name" entries.
+                            name = header.split(" :", 1)[0].strip()
+                            current_name = name if name else None
+                            current_desc = []
+                    else:
+                        if current_name is not None:
+                            current_desc.append(line.strip())
+                    i += 1
+
+                flush_param()
+                return params
+
+            def _parse_google_or_numpy(docstring: str, n_arguments: int = 0) -> dict:
+                args_sections = source_parsing.RE_PATTERN_ARGS_SECTION.findall(docstring)
+                if len(args_sections) == 1:
+                    args_section = inspect.cleandoc(args_sections[0])
+                    parsed_doc = {}
+                    for name, desc in source_parsing.RE_PATTERN_ARGS.findall(args_section):
+                        parsed_doc[name] = re.sub(
+                            r"\n ", "\n", re.sub(r"[\r\t\f\v ]+", " ", desc).strip()
+                        )
+                    return parsed_doc
+
+                numpy_doc = _parse_numpy_parameters(docstring)
+                if numpy_doc:
+                    return numpy_doc
+
+                if n_arguments:
+                    source_parsing.LOGGER.warning("The Args section is missing.")
+                return {}
+
+            source_parsing.parse_google = _parse_google_or_numpy
+            source_parsing._aeromaps_numpy_docstring_patch = True
+    except Exception:
+        # If GEMSEO is unavailable, keep logger config functional.
+        pass
+
+    # Enrich the warning with the originating callable when available.
     class SuppressArgsSectionWarning(logging.Filter):
         def filter(self, record: logging.LogRecord) -> bool:
-            return record.getMessage() != "The Args section is missing."
+            message = record.getMessage()
+            if message != "The Args section is missing.":
+                return True
 
+            model_name = None
+            frame = None
+            try:
+                import inspect
+
+                frame = inspect.currentframe()
+                while frame:
+                    if (
+                        frame.f_code.co_name == "get_options_doc"
+                        and frame.f_globals.get("__name__") == "gemseo.utils.source_parsing"
+                    ):
+                        func = frame.f_locals.get("function")
+                        qualname = getattr(func, "__qualname__", None) if func else None
+                        module = getattr(func, "__module__", None) if func else None
+                        if qualname and module:
+                            model_name = f"{module}.{qualname}"
+                        elif qualname:
+                            model_name = qualname
+                        break
+                    frame = frame.f_back
+            finally:
+                del frame
+
+            if model_name:
+                record.msg = f"{message} (function: {model_name})"
+                record.args = ()
+            return True
+
+    args_warning_filter = getattr(logger, "_aeromaps_args_warning_filter", None)
+    if args_warning_filter is None:
+        args_warning_filter = SuppressArgsSectionWarning()
+        logger._aeromaps_args_warning_filter = args_warning_filter
+
+    if args_warning_filter not in logger.filters:
+        logger.addFilter(args_warning_filter)
     for handler in logger.handlers:
-        handler.addFilter(SuppressArgsSectionWarning())
+        if args_warning_filter not in handler.filters:
+            handler.addFilter(args_warning_filter)
 
     return logger
 

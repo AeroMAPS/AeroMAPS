@@ -92,6 +92,18 @@ class EnergyIntensity(AeroMAPSModel):
                 self.output_names[f"energy_per_rtk_{mid}_{energy_type}"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Apply operational corrections to per-market energy intensities.
+
+        Parameters
+        ----------
+        input_data : dict
+            Model inputs keyed by configured grammar names.
+
+        Returns
+        -------
+        dict
+            Computed energy intensity series per market and energy type.
+        """
         passenger_markets = self.markets.get(traffic_type="passenger")
         freight_markets = self.markets.get(traffic_type="freight")
 

@@ -94,6 +94,18 @@ class FleetEvolution(AeroMAPSModel):
             self.output_names[f"{cat_name}: Aircraft Disposal"] = pd.Series([0.0])
 
     def compute(self, input_data: dict) -> dict:
+        """Compute fleet evolution outputs for each passenger market.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market ASK/RPK series and COVID timing.
+
+        Returns
+        -------
+        dict
+            Fleet-level series and per-aircraft dictionaries.
+        """
         covid_start_year = int(input_data["covid_start_year"])
         covid_end_year_passenger = int(input_data["covid_end_year_passenger"])
 

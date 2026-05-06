@@ -212,6 +212,18 @@ class LoadFactorAggregator(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Aggregate load factor from total RPK and ASK.
+
+        Parameters
+        ----------
+        input_data : dict
+            Model inputs containing aggregated RPK and ASK series.
+
+        Returns
+        -------
+        dict
+            Output dictionary with the global load factor series.
+        """
         rpk = input_data["rpk"]
         ask = input_data["ask"]
 

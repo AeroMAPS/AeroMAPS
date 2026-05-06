@@ -51,6 +51,18 @@ class RTKMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute per-market RTK with CAGR and COVID recovery.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market share, CAGR references, and COVID settings.
+
+        Returns
+        -------
+        dict
+            Output series for market RTK and growth metrics.
+        """
         mid = self.market_id
         rtk_init = input_data["rtk_init"]
         rtk_share_2019 = float(input_data[f"{mid}_rtk_share_2019"])
@@ -160,6 +172,18 @@ class RTKReferenceMarket(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Compute reference RTK trajectory for one freight market.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing market RTK, CAGR reference, and COVID settings.
+
+        Returns
+        -------
+        dict
+            Output series for reference RTK and its growth rate.
+        """
         mid = self.market_id
         rtk = input_data[f"rtk_{mid}"]
         reference_periods = list(input_data[f"{mid}_reference_cagr_reference_periods"])
@@ -229,6 +253,18 @@ class RTKAggregator(AeroMAPSModel):
         }
 
     def compute(self, input_data: dict) -> dict:
+        """Aggregate per-market RTK and reference RTK totals.
+
+        Parameters
+        ----------
+        input_data : dict
+            Inputs containing per-market RTK and RTK reference series.
+
+        Returns
+        -------
+        dict
+            Output totals and growth metrics for freight RTK.
+        """
         total_rtk = None
         total_rtk_reference = None
         for mid in self.freight_market_ids:
