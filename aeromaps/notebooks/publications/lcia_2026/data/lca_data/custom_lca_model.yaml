@@ -27,7 +27,8 @@ model:
             - phase: 'contrails'
             
     CO2:
-        amount: (fossil_kerosene_total_co2_emissions + lcaf_total_co2_emissions + saf_ftg_total_co2_emissions + saf_dac_total_co2_emissions + saf_co2_total_co2_emissions + lh2_total_co2_emissions) * 1e-3  # ICAO's approach to life-cycle GHG emissions (see ltag_data_inputs .yaml files)
+        amount: (74.0/89.0) * (fossil_kerosene_total_co2_emissions + lcaf_total_co2_emissions + saf_ftg_total_co2_emissions + saf_dac_total_co2_emissions + saf_co2_total_co2_emissions + lh2_total_co2_emissions) * 1e-3  
+        # ICAO's approach to life-cycle GHG emissions: life-cycle emissions corrected by ratio of fossil kerosene combustion (74g/MJ) to life-cycle emissions (89g/MJ)
         name: 'carbon dioxide, fossil'
         categories:
             - 'air'
@@ -101,6 +102,10 @@ custom_methods:
     - name: "('LCIA Aviation', 'human health', 'climate change: human health')"
       filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_short_term.csv'
       unit: 'DALY'
+      
+    #- name: "('LCIA Aviation', 'human health', 'climate change: human health')"
+    #  filepath: './data/lca_data/LCIA/CFs_human_health_climate_change_short_and_long_term.csv'
+    #  unit: 'DALY'
       
     - name: "('LCIA Aviation', 'human health', 'pm25: human health')"
       filepath: './data/lca_data/LCIA/CFs_human_health_particulate_matter_average.csv'

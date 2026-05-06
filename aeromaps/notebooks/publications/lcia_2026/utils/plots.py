@@ -5,6 +5,7 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.ticker as ticker
 
 
 #palette = sns.color_palette("Set2", 10)
@@ -377,14 +378,17 @@ def stacked_cascade_impacts(da, year, ax, palette_dict):
 
         # place label at bar extremity
         label_y = top + 1e5 #if impact_total >= 0 else bottom - 0.1
+        exponent = int(np.floor(np.log10(abs(impact_total))))
+        coeff = impact_total / 10**exponent
 
         ax.text(
             i,
             label_y,
-            f"{impact_total:.2e}",
+            #f"{impact_total:.2e}",
+            r"${:.1f}\times10^{{{}}}$".format(coeff, exponent),
             ha="center",
             va="bottom" if impact_total >= 0 else "top",
-            fontsize=9
+            fontsize=10.5
         )
 
         cumulative = max(pos_bottom, neg_bottom)# + impact_total #new_level
@@ -474,6 +478,9 @@ def stacked_cascade_scenarios(scenarios, ylim=None):
         
     if ylim:
         axes[0].set_ylim(ylim)
+    
+    axes[0].yaxis.set_major_formatter(ticker.FuncFormatter(sci_notation))
+    axes[0].tick_params(axis='y', labelsize=12)
 
     legend = fig.legend(
         entries.values(),
@@ -493,3 +500,11 @@ def stacked_cascade_scenarios(scenarios, ylim=None):
     fig.tight_layout(rect=(0, bbox.y1, 1, 1), h_pad=0.5, w_pad=0.5)
 
     plt.show()
+    
+
+def sci_notation(x, pos):
+    if x == 0:
+        return "0"
+    exponent = int(np.floor(np.log10(abs(x))))
+    coeff = x / 10**exponent
+    return r"${:.0f}\times10^{{{}}}$".format(coeff, exponent)
