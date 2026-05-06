@@ -1,0 +1,88 @@
+defaults:
+  passenger:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      load_factor:
+        load_factor_end_year: 89.0
+        covid_load_factor_2020: 65.2
+      measures:
+        measures_final_impact: 0.0
+        measures_start_year: 2051
+        measures_duration: 5.0
+      efficiency_simple:
+        energy_per_ask_dropin_fuel_gain_reference_years: []
+        energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
+        hydrogen_final_market_share: 0.0
+        hydrogen_introduction_year: 2051
+        electric_final_market_share: 0.0
+        electric_introduction_year: 2051
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years: []
+        relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
+        relative_energy_per_ask_electric_wrt_dropin_reference_years: []
+        relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
+      costs:
+        doc_non_energy_per_ask_dropin_fuel_gain: 0.0
+        relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
+        relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
+  freight:
+    inputs:
+      growth:
+        cagr_reference_periods: []
+        cagr_reference_periods_values: [3.0]
+      covid:
+        covid_drop_start_year: 66.0
+        covid_end_year: 2024
+        covid_end_year_reference_ratio: 100.0
+      reference:
+        reference_cagr_reference_periods: []
+        reference_cagr_reference_periods_values: [3.0]
+short_range:
+  name: Short Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 27.2
+      energy_share_2019: 26.01
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.048375
+medium_range:
+  name: Medium Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 35.1
+      energy_share_2019: 26.18
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.0301
+long_range:
+  name: Long Range
+  traffic_type: passenger
+  traffic_unit: RPK
+  inputs:
+    initial:
+      rpk_share_2019: 37.7
+      energy_share_2019: 32.81
+    costs:
+      doc_non_energy_per_ask_dropin_fuel_init: 0.024725
+freight:
+  name: Freight
+  traffic_type: freight
+  traffic_unit: RTK
+  inputs:
+    initial:
+      rtk_share_2019: 100.0
+      energy_share_2019: 15.0
+    growth:
+      cagr_reference_periods: []
+      cagr_reference_periods_values: [3.0]

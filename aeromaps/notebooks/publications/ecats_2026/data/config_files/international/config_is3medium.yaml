@@ -7,7 +7,7 @@ data:
 
 models:
   markets:
-    markets_data_file: default
+    markets_data_file: "../../ltag_data_inputs/markets_is3medium.yaml"
 
   climate:
     climate_model_data_file: default

@@ -6,7 +6,7 @@ data:
 
 models:
   markets:
-    markets_data_file: default
+    markets_data_file: "./markets_elasticity.yaml"
 
   energy:
     energy_carriers_model_data_file: default

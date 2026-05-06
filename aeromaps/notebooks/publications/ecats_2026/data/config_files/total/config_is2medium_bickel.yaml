@@ -6,7 +6,7 @@ data:
 
 models:
   markets:
-    markets_data_file: default
+    markets_data_file: "../../ltag_data_inputs/markets_is2medium.yaml"
 
   climate:
     climate_model_data_file: "../../climate_data/climate_model_fair_bickel.yaml"

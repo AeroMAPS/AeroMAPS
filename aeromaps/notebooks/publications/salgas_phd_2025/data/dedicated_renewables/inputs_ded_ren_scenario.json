@@ -1,21 +1,4 @@
 {
-    "short_range_cagr_reference_periods": [],
-    "short_range_cagr_reference_periods_values": [
-        3.0
-    ],
-    "medium_range_cagr_reference_periods": [],
-    "medium_range_cagr_reference_periods_values": [
-        3.0
-    ],
-    "long_range_cagr_reference_periods": [],
-    "long_range_cagr_reference_periods_values": [
-        3.0
-    ],
-    "freight_cagr_reference_periods": [],
-    "freight_cagr_reference_periods_values": [
-        3.0
-    ],
-    "load_factor_end_year": 89.0,
     "operations_final_gain": 8.0,
     "operations_start_year": 2025,
     "operations_duration": 25.0,
