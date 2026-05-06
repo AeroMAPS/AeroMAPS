@@ -1821,7 +1821,7 @@ class DetailledMFSPBreakdown(SingleScenarioPlot):
             self.ax.get_ylim()[1] * 1.1,
         )
 
-        self.fig.reviewcanvas.header_visible = False
+        self.fig.canvas.header_visible = False
         self.fig.canvas.toolbar_position = "bottom"
         self.fig.canvas.draw()
 
@@ -3003,7 +3003,7 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
     * Energy tax
     * Subsidy (shown as a negative area below zero)
 
-    A black total line for ``doc_all_energy_costs_per_rpk`` is overlaid.
+    A black total line for ``doc_net_energy_per_rpk_mean`` is overlaid.
     """
 
     required_outputs = [
@@ -3066,7 +3066,7 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         """Build per-pathway cost-component arrays expressed in €/RPK.
 
         Uses only the **passenger** share of each pathway's energy consumption
-        so that the stacked areas are consistent with ``doc_all_energy_costs_per_rpk``
+        so that the stacked areas are consistent with ``doc_net_energy_per_rpk_mean``
         (which is derived from per-ASK costs × total_ASK / total_RPK and therefore
         excludes freight energy).
         """
@@ -3111,10 +3111,10 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
             }
 
         # Normalise so that the stacked net total exactly matches the model's
-        # ``doc_all_energy_costs_per_rpk``.  In price-elastic MDA loops the
+        # ``doc_net_energy_per_rpk_mean``.  In price-elastic MDA loops the
         # pathway shares used by EnergyCarriersMeans may lag behind the final
         # energy values, causing a small discrepancy.
-        model_total = self.df.loc[y, "doc_all_energy_costs_per_rpk"].fillna(0).values
+        model_total = self.df.loc[y, "doc_net_energy_per_rpk_mean"].fillna(0).values
         stacked_total = np.zeros(len(y))
         for p in pathways:
             d = data[p.name]
@@ -3180,7 +3180,7 @@ class NetEnergyDOCPerRPKBreakdown(SingleScenarioPlot):
         # --- total line ---
         self.ax.plot(
             y,
-            self.df.loc[y, "doc_all_energy_costs_per_rpk"],
+            self.df.loc[y, "doc_net_energy_per_rpk_mean"],
             color="black",
             linestyle="-",
             linewidth=2,

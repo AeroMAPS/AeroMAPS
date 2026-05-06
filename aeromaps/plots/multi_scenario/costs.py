@@ -156,12 +156,12 @@ class AirfareComparisonPlot(MultiScenarioPlot):
 class AllEnergyCostsPerRPKComparisonPlot(MultiScenarioPlot):
     """Compare total energy-related costs per RPK across scenarios.
 
-    Plots ``doc_all_energy_costs_per_rpk`` (energy + carbon tax − subsidy +
+    Plots ``doc_net_energy_per_rpk_mean`` (energy + carbon tax − subsidy +
     energy tax, expressed per Revenue Passenger Kilometer) as one line per
     scenario so that trajectories can be compared visually.
     """
 
-    required_outputs = ["doc_all_energy_costs_per_rpk"]
+    required_outputs = ["doc_net_energy_per_rpk_mean"]
 
 
     def create_plot(self):
@@ -170,7 +170,7 @@ class AllEnergyCostsPerRPKComparisonPlot(MultiScenarioPlot):
             years = data["prospective_years"]
             self.ax.plot(
                 years,
-                data["df"].loc[years, "doc_all_energy_costs_per_rpk"],
+                data["df"].loc[years, "doc_net_energy_per_rpk_mean"],
                 label=scenario_name,
                 color=style["color"],
                 linestyle=style["linestyle"],

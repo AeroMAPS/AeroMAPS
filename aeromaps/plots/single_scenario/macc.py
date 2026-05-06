@@ -14,31 +14,27 @@ from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
-class AnnualMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class AnnualMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
-            )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
             self.plot_interact()
-
         except Exception as e:
             raise RuntimeError(
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         year_widget = widgets.IntSlider(
@@ -296,7 +292,7 @@ class AnnualMACC:
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.float_inputs["social_discount_rate"])
+                (1 + self.parameters["social_discount_rate"])
                 ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
@@ -573,22 +569,12 @@ class AnnualMACC:
         self.fig.canvas.draw()
 
 
-class CumulativeMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class CumulativeMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(
-                figsize=(10, 7),
-            )
             self.ax2 = self.ax.twiny()
             self.create_plot_data()
             self.update()
@@ -598,8 +584,15 @@ class CumulativeMACC:
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
 
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update()
+        pass
+
     def create_plot_data(self):
-        social_discount_rate = self.float_inputs["social_discount_rate"]
+        social_discount_rate = self.parameters["social_discount_rate"]
         start_year = self.prospective_years[1]  # not 2019
         end_year = self.prospective_years[-1]
 
@@ -1109,31 +1102,25 @@ class CumulativeMACC:
         self.fig.canvas.draw()
 
 
-class ScenarioMACC:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class ScenarioMACC(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, fig=None, ax=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        if fig is None or ax is None:
+            fig, (ax, ax_scc) = plt.subplots(
+                2, 1, figsize=figsize, sharex=True,
+                gridspec_kw={"height_ratios": [20, 1]},
+            )
+        else:
+            ax_scc = None
+        super().__init__(process, figsize=figsize, fig=fig, ax=ax, **kwargs)
+        self.ax_scc = ax_scc
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
-        self.fig, (self.ax, self.ax_scc) = plt.subplots(
-            2, 1, figsize=(10, 7), sharex=True, gridspec_kw={"height_ratios": [20, 1]}
-        )
-        divider = make_axes_locatable(self.ax)
-        dummy_divider = make_axes_locatable(self.ax_scc)
-
         try:
-            # Create ax2 for the colorbar
+            divider = make_axes_locatable(self.ax)
+            dummy_divider = make_axes_locatable(self.ax_scc)
             self.ax2 = divider.append_axes("right", size="3%", pad=0.1)
-            # Create a dummy ax to keep sharex
             self.dummy_ax = dummy_divider.append_axes("right", size="3%", pad=0.1)
             self.dummy_ax.set_visible(False)
-
             self.create_plot_data()
             self.plot_interact()
         except Exception as e:
@@ -1141,6 +1128,13 @@ class ScenarioMACC:
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -1361,12 +1355,6 @@ class ScenarioMACC:
     def update(self, metric, scc_start):
         self.ax.cla()
         scc_list = []
-
-        marginal_cac = []
-        marginal_cac09 = []
-        marginal_cac08 = []
-        marginal_cac05 = []
-        scc_list = []
         years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
 
         for year in years:
@@ -1383,392 +1371,11 @@ class ScenarioMACC:
 
             heights_pos = maccpos_df[metric].to_numpy()
             widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
-
-            if metric == "specific_carbon_abatement_cost":
-                scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
-                    ** (year - self.prospective_years[0])
-                )
-                scc_list.append(scc_year)
-                hatch_list = []
-                for value in heights_pos:
-                    # Check if the value is above the threshold
-                    if value > scc_year:
-                        hatch_list.append("..")
-                    else:
-                        hatch_list.append("")
-
-            elif metric == "generic_specific_carbon_abatement_cost":
-                scc_year = self.df.loc[year, "exogenous_carbon_price_trajectory"]
-                scc_list.append(scc_year)
-                hatch_list = []
-                for value in heights_pos:
-                    # Check if the value is above the threshold
-                    if value > scc_year:
-                        hatch_list.append("..")
-                    else:
-                        hatch_list.append("")
-
-            else:
-                hatch_list = ["" for val in heights_pos]
-
-            norm = Normalize(vmin=-300, vmax=1000)
-
-            for i in range(len(heights_pos)):
-                self.ax.bar(
-                    year,
-                    widths_effective_pos[i],
-                    color=plt.cm.RdBu_r(norm(heights_pos[i])),
-                    bottom=cumwidths_pos[i] - widths_effective_pos[i],
-                    edgecolor="black",
-                    hatch=hatch_list[i],
-                    width=1,
-                )
-
-            ##### NEG ######
-            heights_neg = maccneg_df[metric].to_numpy()
-            widths_effective_neg = maccneg_df["abatement_effective"].to_numpy()
-
-            cumwidths_neg = np.cumsum(widths_effective_neg)
-
-            for i in range(len(heights_neg)):
-                self.ax.bar(
-                    year,
-                    -widths_effective_neg[i],
-                    color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=cumwidths_neg[-1] - cumwidths_neg[i] + widths_effective_neg[i],
-                    edgecolor="black",
-                    hatch="xx",
-                    width=1,
-                )
-
-            # colorbar ssc
-            if metric != "carbon_abatement_cost":
-                self.ax_scc.set_visible(True)
-                self.ax_scc.bar(
-                    year,
-                    1,
-                    color=plt.cm.RdBu_r(norm(scc_year)),
-                    bottom=0,
-                    edgecolor="black",
-                    width=1,
-                )
-
-                self.ax.legend(
-                    handles=[
-                        mpatches.Patch(facecolor="none", edgecolor="black", hatch=".."),
-                        mpatches.Patch(facecolor="none", edgecolor="black"),
-                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
-                    ],
-                    labels=["Above SCC", "Below or Equal to SCC", "Extra Emissions"],
-                )
-            else:
-                self.ax_scc.set_visible(False)
-
-                self.ax.legend(
-                    handles=[
-                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
-                    ],
-                    labels=["Extra Emissions"],
-                )
-
-        # Create a ScalarMappable to display the colormap as a legend
-
-        sm = ScalarMappable(cmap=plt.cm.RdBu_r, norm=norm)
-        sm.set_array([])  # Set an empty array since we don't have specific data values
-
-        self.fig.colorbar(
-            sm, cax=self.ax2, label="Carbon Abatement Cost (€/t$\mathregular{CO_2}$)", norm=norm
-        )
-
-        # Hatch legedn
-
-        self.ax.set_xlabel("Year")
-        self.ax.set_ylabel("Abatement Effective (Mt)")
-        self.ax.tick_params(labelbottom=True)
-
-        self.ax_scc.set_xlim(
-            (2 * self.prospective_years[0] - 1) / 2, (2 * self.prospective_years[-1] + 1) / 2
-        )
-        self.ax_scc.set_ylim(0, 1)
-        self.ax_scc.yaxis.set_visible(False)
-        self.ax_scc.tick_params(top=True, bottom=False, labelbottom=False)
-        self.ax_scc.set_xlabel("Reference carbon value (€/t$\mathregular{CO_2}$)")
-
-        self.ax.set_title("Scenario Carbon Abatement Cost Evolution")
-        self.ax.yaxis.grid(True)
-        self.fig.tight_layout()
-        self.fig.canvas.draw()
-
-
-class ShadowCarbonPrice:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
-        self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
-        try:
-            self.fig, self.ax = plt.subplots(figsize=(10, 7))
-
-            self.create_plot_data()
-            self.plot_interact()
-        except Exception as e:
-            raise RuntimeError(
-                "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
-                "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
-            ) from e
-
-    def plot_interact(self):
-        metric_widget = widgets.Dropdown(
-            options=[
-                ("Specific Carbon Abatement Cost", "specific_carbon_abatement_cost"),
-                (
-                    "Generic Specific Carbon Abatement Cost",
-                    "generic_specific_carbon_abatement_cost",
-                ),
-            ],
-            value="generic_specific_carbon_abatement_cost",
-            description="Metric:",
-        )
-
-        scc_widget = widgets.FloatText(description="Base year SCC (Specific CAC ONLY):")
-
-        def update_numeric_widget(change):
-            if change["new"] == "specific_carbon_abatement_cost":
-                scc_widget.disabled = False
-            else:
-                scc_widget.disabled = True
-                scc_widget.value = 0
-
-        metric_widget.observe(update_numeric_widget, names="value")
-
-        interact(self.update, metric=metric_widget, scc_start=scc_widget)
-
-    def create_plot_data(self):
-        self.macc_dict = {}
-
-        for year in range(self.prospective_years[0], self.prospective_years[-1] + 1):
-            name = []
-            vol = []
-            cost = []
-            spe_cost = []
-            g_spe_cost = []
-
-            colors = []
-            # Start with discrete aircraft from the fleet model
-            for category, sets in self.fleet_model.fleet.all_aircraft_elements.items():
-                for aircraft_var in sets:
-                    if hasattr(aircraft_var, "parameters"):
-                        aircraft_var_name = aircraft_var.parameters.full_name
-                    else:
-                        aircraft_var_name = aircraft_var.full_name
-
-                    vol.append(
-                        self.fleet_model.df.loc[
-                            year, aircraft_var_name + ":aircraft_carbon_abatement_volume"
-                        ]
-                        / 1000000
-                    )
-                    cost.append(
-                        self.fleet_model.df.loc[
-                            year, aircraft_var_name + ":aircraft_carbon_abatement_cost"
-                        ]
-                    )
-
-                    spe_cost.append(
-                        self.fleet_model.df.loc[
-                            year, aircraft_var_name + ":aircraft_specific_carbon_abatement_cost"
-                        ]
-                    )
-
-                    g_spe_cost.append(
-                        self.fleet_model.df.loc[
-                            year,
-                            aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
-                        ]
-                    )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
-                    name.append(aircraft_var_name.split(":")[-1])
-
-            # continue with generic energy production pathways
-
-            for pathway in self.pathways_manager.get_all():
-                if (
-                    pathway.name != "fossil_kerosene"
-                ):  # hard coded for cac now, may be parametrized later
-                    name.append(pathway.name)
-                    abatement_col = f"{pathway.name}_abatement_effective"
-                    if abatement_col not in self.df.columns:
-                        raise ValueError(
-                            f"Pathway {pathway.name} abatement is not defined. Pathways must be defined with bottom-up model."
-                        )
-                    vol.append(self.df[f"{pathway.name}_abatement_effective"][year] / 1000000)
-                    cac_col = f"{pathway.name}_carbon_abatement_cost"
-                    if cac_col not in self.df.columns:
-                        raise ValueError(
-                            f"Pathway {pathway.name} carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
-                        )
-                    cost.append(self.df[f"{pathway.name}_carbon_abatement_cost"][year])
-                    spe_cac_col = f"{pathway.name}_specific_carbon_abatement_cost"
-                    if spe_cac_col not in self.df.columns:
-                        raise ValueError(
-                            f"Pathway {pathway.name} specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
-                        )
-                    spe_cost.append(self.df[f"{pathway.name}_specific_carbon_abatement_cost"][year])
-                    g_spe_cac_col = f"{pathway.name}_generic_specific_carbon_abatement_cost"
-                    if g_spe_cac_col not in self.df.columns:
-                        raise ValueError(
-                            f"Pathway {pathway.name} generic specific carbon abatement cost is not defined. Pathways must be defined with bottom-up model."
-                        )
-                    g_spe_cost.append(
-                        self.df[f"{pathway.name}_generic_specific_carbon_abatement_cost"][year]
-                    )
-                    colors.append("yellowgreen")
-
-            name.extend(
-                [
-                    el
-                    for el in [
-                        "Freighter - Drop in",
-                        "Freighter - Hydrogen",
-                        "Freighter - Electric",
-                        "OPS",
-                        "OPS - Freight",
-                        "Load Factor",
-                    ]
-                ]
-            )
-
-            # Abatement effective in MtCO2e
-            vol.extend(
-                [
-                    elt / 1000000
-                    for elt in [
-                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_dropin"],
-                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_carbon_abatement_volume_freight_electric"],
-                        self.df.loc[year, "operations_abatement_effective"],
-                        self.df.loc[year, "operations_abatement_effective_freight"],
-                        self.df.loc[year, "load_factor_abatement_effective"],
-                    ]
-                ]
-            )
-
-            # carbon abatement cost in (€/tCO2e)
-            cost.extend(
-                [
-                    el
-                    for el in [
-                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_carbon_abatement_cost_freight_electric"],
-                        self.df.loc[year, "operations_abatement_cost"],
-                        self.df.loc[year, "operations_abatement_cost_freight"],
-                        self.df.loc[year, "load_factor_abatement_cost"],
-                    ]
-                ]
-            )
-
-            spe_cost.extend(
-                [
-                    el
-                    for el in [
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_specific_carbon_abatement_cost_freight_electric"],
-                        self.df.loc[year, "operations_specific_abatement_cost"],
-                        self.df.loc[year, "operations_specific_abatement_cost_freight"],
-                        self.df.loc[year, "load_factor_specific_abatement_cost"],
-                    ]
-                ]
-            )
-
-            g_spe_cost.extend(
-                [
-                    el
-                    for el in [
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_dropin"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_hydrogen"],
-                        self.df.loc[year, "aircraft_generic_specific_carbon_abatement_cost_freight_electric"],
-                        self.df.loc[year, "operations_generic_specific_abatement_cost"],
-                        self.df.loc[year, "operations_generic_specific_abatement_cost_freight"],
-                        self.df.loc[year, "load_factor_generic_specific_abatement_cost"],
-                    ]
-                ]
-            )
-
-            colors.extend(
-                [
-                    el
-                    for el in [
-                        "khaki",
-                        "khaki",
-                        "khaki",
-                        "orange",
-                        "orange",
-                        "orange",
-                    ]
-                ]
-            )
-
-            macc_df = pd.DataFrame(
-                data=[vol, cost, spe_cost, g_spe_cost, colors],
-                columns=name,
-                index=[
-                    "abatement_effective",
-                    "carbon_abatement_cost",
-                    "specific_carbon_abatement_cost",
-                    "generic_specific_carbon_abatement_cost",
-                    "colors",
-                ],
-            )
-
-            macc_df = macc_df.transpose()
-
-            self.macc_dict[year] = macc_df
-
-    def update(self, metric, scc_start):
-        self.ax.cla()
-        scc_list = []
-
-        marginal_cac = []
-        marginal_cac09 = []
-        marginal_cac08 = []
-        marginal_cac05 = []
-        scc_list = []
-        years = range(self.prospective_years[0], self.prospective_years[-1] + 1)
-
-        for year in years:
-            macc_df = self.macc_dict[year]
-
-            macc_df = macc_df.sort_values(by=metric)
-
-            macc_df = macc_df.dropna(subset=metric)
-
-            maccneg_df = macc_df[macc_df["abatement_effective"] < 0]
-            maccpos_df = macc_df[macc_df["abatement_effective"] > 0]
-
-            ##### POS ######
-
-            heights_pos = maccpos_df[metric].to_numpy()
-            widths_effective_pos = maccpos_df["abatement_effective"].to_numpy()
-
             cumwidths_pos = np.cumsum(widths_effective_pos)
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
@@ -1807,23 +1414,6 @@ class ShadowCarbonPrice:
                     width=1,
                 )
 
-            ##### NEG ######
-            heights_neg = maccneg_df[metric].to_numpy()
-            widths_effective_neg = maccneg_df["abatement_effective"].to_numpy()
-
-            cumwidths_neg = np.cumsum(widths_effective_neg)
-
-            for i in range(len(heights_neg)):
-                self.ax.bar(
-                    year,
-                    -widths_effective_neg[i],
-                    color=plt.cm.RdBu_r(norm(heights_neg[i])),
-                    bottom=cumwidths_neg[-1] - cumwidths_neg[i] + widths_effective_neg[i],
-                    edgecolor="black",
-                    hatch="xx",
-                    width=1,
-                )
-
             # colorbar ssc
             if metric != "carbon_abatement_cost":
                 self.ax_scc.set_visible(True)
@@ -1840,19 +1430,12 @@ class ShadowCarbonPrice:
                     handles=[
                         mpatches.Patch(facecolor="none", edgecolor="black", hatch=".."),
                         mpatches.Patch(facecolor="none", edgecolor="black"),
-                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
                     ],
-                    labels=["Above SCC", "Below or Equal to SCC", "Extra Emissions"],
+                    labels=["Above SCC", "Below or Equal to SCC"],
                 )
             else:
                 self.ax_scc.set_visible(False)
-
-                self.ax.legend(
-                    handles=[
-                        mpatches.Patch(facecolor="none", edgecolor="black", hatch="xx"),
-                    ],
-                    labels=["Extra Emissions"],
-                )
+                self.ax.legend().set_visible(False)
 
         # Create a ScalarMappable to display the colormap as a legend
 
@@ -1883,21 +1466,12 @@ class ShadowCarbonPrice:
         self.fig.canvas.draw()
 
 
-class ShadowCarbonPrice:
-    def __init__(self, process):
-        data = process.data
-        self.df = data["vector_outputs"]
+class ShadowCarbonPrice(SingleScenarioPlot):
+    def __init__(self, process, figsize=None, **kwargs):
+        figsize = figsize or self._get_default_figsize()
+        super().__init__(process, figsize, **kwargs)
         self.fleet_model = process.fleet_model
-        self.float_outputs = data["float_outputs"]
-        self.float_inputs = data["float_inputs"]
-        self.years = data["years"]["full_years"]
-        self.historic_years = data["years"]["historic_years"]
-        self.prospective_years = data["years"]["prospective_years"]
-        self.pathways_manager = process.pathways_manager
-
         try:
-            self.fig, self.ax = plt.subplots(figsize=(10, 7))
-
             self.create_plot_data()
             self.plot_interact()
         except Exception as e:
@@ -1905,6 +1479,13 @@ class ShadowCarbonPrice:
                 "Error in creating plot. Possible cause: this plot requires top-down fleet model, "
                 "abatement cost and complex energy cost models. Be sure to select them in the scenario settings."
             ) from e
+
+    def _get_default_figsize(self):
+        return (10, 7)
+
+    def create_plot(self):
+        # Drawing happens in update() via ipywidgets.interact
+        pass
 
     def plot_interact(self):
         metric_widget = widgets.Dropdown(
@@ -2148,7 +1729,7 @@ class ShadowCarbonPrice:
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
@@ -2452,7 +2033,7 @@ class AnnualMACCSimple(SingleScenarioPlot):
         scc_year = None
         if metric == "specific_carbon_abatement_cost":
             scc_year = scc_start * (
-                (1 + self.float_inputs["social_discount_rate"])
+                (1 + self.parameters["social_discount_rate"])
                 ** (year - self.prospective_years[0])
             )
         elif metric == "generic_specific_carbon_abatement_cost":
@@ -2939,7 +2520,7 @@ class ShadowCarbonPriceSimple(SingleScenarioPlot):
 
             if metric == "specific_carbon_abatement_cost":
                 scc_year = scc_start * (
-                    (1 + self.float_inputs["social_discount_rate"])
+                    (1 + self.parameters["social_discount_rate"])
                     ** (year - self.prospective_years[0])
                 )
                 scc_list.append(scc_year)
