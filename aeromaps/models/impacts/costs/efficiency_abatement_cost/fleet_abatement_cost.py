@@ -43,12 +43,14 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
             "covid_energy_intensity_per_ask_increase_2020": 0.0,
             "social_discount_rate": 0.0,
         }
-        self.output_names = {
-            "dummy_carbon_abatement_cost_aircraft_value_dict": {},
-            "dummy_carbon_abatement_volume_aircraft_value_dict": {},
-            "dummy_specific_carbon_abatement_cost_aircraft_value_dict": {},
-            "dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict": {},
-        }
+
+        # FIXME no feeding of this model output to other models ? dummy is used by nothing
+        # self.output_names = {
+        #    "dummy_carbon_abatement_cost_aircraft_value_dict": {},
+        #    "dummy_carbon_abatement_volume_aircraft_value_dict": {},
+        #    "dummy_specific_carbon_abatement_cost_aircraft_value_dict": {},
+        #   "dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict": {},
+        # }
 
         for market in self.markets.get(traffic_type="passenger"):
             mid = market.id
@@ -226,18 +228,18 @@ class FleetCarbonAbatementCosts(AeroMAPSModel):
                     aircraft_var_name
                 ] = scac_prime_column
 
-        output_data["dummy_carbon_abatement_cost_aircraft_value_dict"] = (
-            dummy_carbon_abatement_cost_aircraft_value_dict
-        )
-        output_data["dummy_carbon_abatement_volume_aircraft_value_dict"] = (
-            dummy_carbon_abatement_volume_aircraft_value_dict
-        )
-        output_data["dummy_specific_carbon_abatement_cost_aircraft_value_dict"] = (
-            dummy_specific_carbon_abatement_cost_aircraft_value_dict
-        )
-        output_data["dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict"] = (
-            dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict
-        )
+        # output_data["dummy_carbon_abatement_cost_aircraft_value_dict"] = (
+        #    dummy_carbon_abatement_cost_aircraft_value_dict
+        # )
+        # output_data["dummy_carbon_abatement_volume_aircraft_value_dict"] = (
+        #    dummy_carbon_abatement_volume_aircraft_value_dict
+        # )
+        # output_data["dummy_specific_carbon_abatement_cost_aircraft_value_dict"] = (
+        #   dummy_specific_carbon_abatement_cost_aircraft_value_dict
+        # )
+        # output_data["dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict"] = (
+        #    dummy_generic_specific_carbon_abatement_cost_aircraft_value_dict
+        # )
 
         self._store_outputs(output_data)
         return output_data
