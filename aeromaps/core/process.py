@@ -220,6 +220,8 @@ class AeroMAPSProcess(object):
             k: deepcopy(v) if getattr(v, "deepcopy_at_init", True) else v for k, v in models.items()
         }
 
+        self._initialize_inputs()
+
         self.common_setup()
         if not optimisation:
             self.setup_mda()
@@ -374,7 +376,6 @@ class AeroMAPSProcess(object):
 
         # TODO : think about the execution order.
         #    Currently it is driven by what should be available for models and what writes paramaters last (e.g. partitionning after custom setups)
-        self._initialize_inputs()
 
         # Initialize markets registry (must precede disciplines that consume it)
         self._initialize_markets()
