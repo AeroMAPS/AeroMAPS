@@ -371,18 +371,22 @@ class AeroMAPSProcess(object):
         #                                    scalars override YAML defaults for market shares,
         #                                    vectors use .update() to fill only the historical
         #                                    slice of already-formatted Series
+
+        # TODO : think about the execution order.
+        #    Currently it is driven by what should be available for models and what writes paramaters last (e.g. partitionning after custom setups)
         self._initialize_inputs()
 
-        self.disciplines = []
-        self.data = {}
-        self.json = {}
-        self._initialize_data()
         # Initialize markets registry (must precede disciplines that consume it)
         self._initialize_markets()
         self._initialize_climate_model()
         self._initialize_lca_model()
         self._initialize_generic_energy()
         self._initialize_vector_inputs()
+
+        self.disciplines = []
+        self.data = {}
+        self.json = {}
+        self._initialize_data()
 
         # Initialize conventionaldisciplines
         self._initialize_disciplines()
