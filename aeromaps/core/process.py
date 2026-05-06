@@ -388,9 +388,6 @@ class AeroMAPSProcess(object):
         self.json = {}
         self._initialize_data()
 
-        # Initialize conventionaldisciplines
-        self._initialize_disciplines()
-
     def setup_mda(self):
         """Configure the process for a standalone MDA chain.
 
@@ -402,6 +399,10 @@ class AeroMAPSProcess(object):
         ---------
         This method should be called only if end year was modified, otherwise it is called in __init__.
         """
+        #  Initialize conventional disciplines.
+        # Here and not in common_setup because one need to create scenario
+        # and declare constraints as models from the same place. TODO; clarify why though.
+        self._initialize_disciplines()
 
         self.mda_chain = MDAChain(
             disciplines=self.disciplines,
@@ -427,6 +428,7 @@ class AeroMAPSProcess(object):
         ``gemseo_settings`` for objective, design space, scenario type,
         and formulation.
         """
+        self._initialize_disciplines()
 
         self.scenario = create_scenario(
             disciplines=self.disciplines,
