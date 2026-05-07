@@ -155,6 +155,12 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
     PassengerAircraftMarginalCost,
 )
 
+from aeromaps.models.impacts.health_impacts.health_impacts import (
+    HealthImpactsClimate,
+    HealthImpactsSurfaceOzone,
+    HealthImpactsParticulateMatter,
+)
+
 models_traffic = {
     "rpk_measures": RPKMeasures("rpk_measures"),
     "rpk": RPK("rpk"),
@@ -532,4 +538,12 @@ models_optim_bastien = {
     "gross_carbon_budget": GrossCarbonBudget("gross_carbon_budget"),
     "carbon_budget_consumed_share": CarbonBudgetConsumedShare("carbon_budget_consumed_share"),
     "carbon_budget_constraint": CarbonBudgetConstraint("carbon_budget_constraint"),
+}
+
+models_health_impacts = {
+    "health_impacts_climate": HealthImpactsClimate("health_impacts_climate"),
+    "health_impacts_surface_ozone": HealthImpactsSurfaceOzone("health_impacts_surface_ozone"),
+    "health_impacts_particulate_matter": HealthImpactsParticulateMatter(
+        "health_impacts_particulate_matter"
+    ),
 }

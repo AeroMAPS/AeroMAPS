@@ -286,5 +286,15 @@
     "model": "remind",
     "pathway": "SSP2_Base",
     "elec_solar_share": 1.0,
-    "load_factor_photovoltaic": 1.0
+    "load_factor_photovoltaic": 1.0,
+    "damage_factor_climate_change_heat": 23300000.0,
+    "damage_factor_climate_change_dengue": 35800.0,
+    "damage_factor_climate_change_diarrhea": 3120000.0,
+    "damage_factor_climate_change_malaria": 2490000.0,
+    "damage_factor_climate_change_undernutrition": 7910000.0,
+    "damage_factor_climate_change_coastal": 0.0,
+    "characterisation_factor_health_ozone_fuel": 1.60E-06,
+    "characterisation_factor_health_ozone_nox": 9.19E-05,
+    "characterisation_factor_health_particulate_matter_fuel": 1.96E-06,
+    "characterisation_factor_health_particulate_matter_nox": 9.92E-05
 }

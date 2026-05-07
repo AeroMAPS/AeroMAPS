@@ -379,6 +379,11 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
                         ),
                     }
                 )
+            self.output_names.update(
+                {
+                    f"{aircraft_type}_mass_consumption": pd.Series([0.0]),
+                }
+            )
 
     def compute(self, input_data) -> dict:
         """
@@ -403,6 +408,7 @@ class EnergyCarriersMassicShares(AeroMAPSModel):
                 / input_data[f"{pathway.name}_lhv"]
                 for pathway in self.pathways_manager.get(aircraft_type=aircraft_type)
             )
+            output_data[f"{aircraft_type}_mass_consumption"] = mass_consumption
             # initialise the mean values for the aircraft type
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 # Get the pathways for this aircraft type and energy origin

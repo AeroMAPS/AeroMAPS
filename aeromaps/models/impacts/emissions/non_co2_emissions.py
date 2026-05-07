@@ -983,6 +983,15 @@ class NonCO2Emissions(AeroMAPSModel):
                         }
                     )
 
+            self.output_names.update(
+                {
+                    f"{aircraft_type}_soot_emissions": pd.Series([0.0]),
+                    f"{aircraft_type}_h2o_emissions": pd.Series([0.0]),
+                    f"{aircraft_type}_nox_emissions": pd.Series([0.0]),
+                    f"{aircraft_type}_sulfur_emissions": pd.Series([0.0]),
+                }
+            )
+
         self.output_names.update(
             {
                 "soot_emissions": pd.Series([0.0]),
@@ -1030,7 +1039,12 @@ class NonCO2Emissions(AeroMAPSModel):
             historical_sulfur_emissions_for_temperature
         )
 
+        output_data = {}
         for aircraft_type in ["dropin_fuel", "hydrogen"]:
+            soot_emissions_aircraft_type = pd.Series(0.0, index=soot_emissions.index)
+            h2o_emissions_aircraft_type = pd.Series(0.0, index=h2o_emissions.index)
+            nox_emissions_aircraft_type = pd.Series(0.0, index=nox_emissions.index)
+            sulfur_emissions_aircraft_type = pd.Series(0.0, index=sulfur_emissions.index)
             for energy_origin in self.pathways_manager.get_all_types("energy_origin"):
                 if self.pathways_manager.get(
                     aircraft_type=aircraft_type, energy_origin=energy_origin
@@ -1040,33 +1054,39 @@ class NonCO2Emissions(AeroMAPSModel):
                         / input_data[f"{aircraft_type}_{energy_origin}_mean_lhv"]
                         / 10**9  # convert MJ to Mt
                     )
-                    soot_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
+                    soot_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_soot"]
                         * mass_consumption
                     ).fillna(0.0)
-                    h2o_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
+                    h2o_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_h2o"]
                         * mass_consumption
                     ).fillna(0.0)
-                    nox_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
+                    nox_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_nox"]
                         * mass_consumption
                     ).fillna(0.0)
-                    sulfur_emissions.loc[self.historic_start_year + 1 : self.end_year] += (
+                    sulfur_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year] += (
                         input_data[f"{aircraft_type}_{energy_origin}_mean_emission_index_sulfur"]
                         * mass_consumption
                     ).fillna(0.0)
 
-        output_data = {
-            "soot_emissions": soot_emissions,
-            "h2o_emissions": h2o_emissions,
-            "nox_emissions": nox_emissions,
-            "sulfur_emissions": sulfur_emissions,
-        }
+            # Add to total emissions
+            soot_emissions.loc[self.historic_start_year + 1 : self.end_year] += soot_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year]
+            h2o_emissions.loc[self.historic_start_year + 1 : self.end_year] += h2o_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year]
+            nox_emissions.loc[self.historic_start_year + 1 : self.end_year] += nox_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year]
+            sulfur_emissions.loc[self.historic_start_year + 1 : self.end_year] += sulfur_emissions_aircraft_type.loc[self.historic_start_year + 1 : self.end_year]
 
-        self.df_climate.loc[:, "soot_emissions"] = soot_emissions
-        self.df_climate.loc[:, "h2o_emissions"] = h2o_emissions
-        self.df_climate.loc[:, "nox_emissions"] = nox_emissions
-        self.df_climate.loc[:, "sulfur_emissions"] = sulfur_emissions
+            # Store outputs
+            self.df_climate.loc[:, f"{aircraft_type}_soot_emissions"] = output_data[f"{aircraft_type}_soot_emissions"] = soot_emissions_aircraft_type
+            self.df_climate.loc[:, f"{aircraft_type}_h2o_emissions"] = output_data[f"{aircraft_type}_h2o_emissions"] = h2o_emissions_aircraft_type
+            self.df_climate.loc[:, f"{aircraft_type}_nox_emissions"] = output_data[f"{aircraft_type}_nox_emissions"] = nox_emissions_aircraft_type
+            self.df_climate.loc[:, f"{aircraft_type}_sulfur_emissions"] = output_data[f"{aircraft_type}_sulfur_emissions"] = sulfur_emissions_aircraft_type
+
+        # Total emissions
+        output_data["soot_emissions"] = self.df_climate.loc[:, "soot_emissions"] = soot_emissions
+        output_data["h2o_emissions"] = self.df_climate.loc[:, "h2o_emissions"] = h2o_emissions
+        output_data["nox_emissions"] = self.df_climate.loc[:, "nox_emissions"] = nox_emissions
+        output_data["sulfur_emissions"] = self.df_climate.loc[:, "sulfur_emissions"] = sulfur_emissions
 
         return output_data

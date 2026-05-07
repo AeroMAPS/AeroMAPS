@@ -48,6 +48,11 @@ from .climate import (
     DetailedTemperatureIncreaseFromAirTransportPlot,
 )
 from .energy_resources import BiomassConsumptionPlot, ElectricityConsumptionPlot
+from .health_impacts import (
+    HealthImpactsClimateChangePlot,
+    HealthImpactsAirQualityPlot,
+    HealthImpactsTotalPlot,
+)
 
 from aeromaps.plots.costs import (
     DiscountEffect,
@@ -125,6 +130,9 @@ available_plots = {
     "mfsp_detailled": DetailledMFSPBreakdown,
     "annual_MACC_simple_fleet": AnnualMACCSimple,
     "shadow_carbon_pricing_simple_fleet": ShadowCarbonPriceSimple,
+    "health_impacts_climate": HealthImpactsClimateChangePlot,
+    "health_impacts_air_quality": HealthImpactsAirQualityPlot,
+    "health_impacts_total": HealthImpactsTotalPlot,
 }
 
 available_plots_fleet = {
