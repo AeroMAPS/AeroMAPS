@@ -35,6 +35,7 @@ models:
     - models_operation_cost_bottom_up
     - models_production_cost
     - models_abatements_cost
+    - models_health_impacts
 
   # customs:  # Custom models loaded from external Python files
   #   my_custom_model: "./path/to/my_model.py::MyCustomModelClass"

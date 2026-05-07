@@ -18,5 +18,6 @@ models:
     - models_energy_with_fuel_effect
     - models_offset
     - models_emissions
+    - models_health_impacts
     - models_sustainability
     - carbon_tax
