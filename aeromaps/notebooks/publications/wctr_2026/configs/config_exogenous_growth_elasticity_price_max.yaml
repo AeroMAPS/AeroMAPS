@@ -1,6 +1,6 @@
 data:
   inputs:
-    json_inputs_file: "../data/inputs_2100.json"
+    json_inputs_file: "../data/inputs_exogenous_growth.json"
   outputs:
     json_outputs_file: "../data/outputs.json"
 
@@ -23,6 +23,3 @@ models:
     - models_energy_cost
     - models_operation_cost_top_down_feedback
     - models_abatements_cost_simplified
-
-  customs:
-    socioeconomic_drivers: "../models/socioeconomic_drivers.py::SocioeconomicDrivers"

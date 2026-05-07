@@ -48,7 +48,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         super()._initialize_df()
         # Seed value for MDA coupling initialization: reference all-energy cost per RPK in EUR
         self._coupling_defaults = {
-            "doc_all_energy_costs_per_rpk": pd.Series(
+            "doc_net_energy_per_rpk_mean": pd.Series(
                 self.price_ref * self.eur_usd_exchange_rate,  # EUR/RPK
                 index=range(self.historic_start_year, self.end_year + 1),
             )
@@ -59,7 +59,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
         rpk_init: pd.Series,
         population: pd.Series,
         gdp_per_capita: pd.Series,
-        doc_all_energy_costs_per_rpk: pd.Series,
+        doc_net_energy_per_rpk_mean: pd.Series,
         gdp_per_capita_2019: float,
         gdp_per_capita_covid_end: float,
         gdp_per_capita_init: pd.Series,
@@ -104,7 +104,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             Annual population [people].
         gdp_per_capita
             Annual GDP per capita [USD/capita].
-        doc_all_energy_costs_per_rpk
+        doc_net_energy_per_rpk_mean
             Total energy-related direct operating cost (energy + carbon tax - subsidy + energy tax) per Revenue Passenger Kilometer [€/RPK].
         gdp_per_capita_2019
             GDP per capita at 2019 [USD/capita].
@@ -208,7 +208,7 @@ class RPKLogisticIncomePriceElasticity(AeroMAPSModel):
             x_lag=self.x_lag,
         )
 
-        price_index = (doc_all_energy_costs_per_rpk / price_ref_eur) ** self.price_elast
+        price_index = (doc_net_energy_per_rpk_mean / price_ref_eur) ** self.price_elast
         rpk_per_capita = rpk_per_capita_trend * price_index
 
         # --- Total RPK (model, no measures yet) ---

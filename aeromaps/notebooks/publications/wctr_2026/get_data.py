@@ -178,3 +178,68 @@ def get_ar6_input_data(start_year=2010, end_year=2100, plot_data=True):
         # fig.savefig("scenario_data.pdf")
 
     return ar6_data, years
+
+
+def get_ar6_rpk_data(start_year=2005, end_year=2100, plot_data=True):
+    """Get RPK (Revenue Passenger Kilometres) data for all AR6 scenarios."""
+    rpk_data = read_csv(
+        "./ar6_scenarios/rpk.csv",
+        index_col=1,
+    )
+
+    all_years = [
+        int(year)
+        for year in list(rpk_data.keys())[4:]
+        if start_year <= int(year) <= end_year
+    ]
+
+    all_scenarios = rpk_data.index.unique().tolist()
+
+    ar6_rpk = {}  # {scenario: {model: [rpk values]}}
+    years_per_scenario = {}
+
+    for scenario in all_scenarios:
+        scenario_rows = rpk_data.loc[[scenario]]
+        ar6_rpk[scenario] = {}
+        for _, row in scenario_rows.iterrows():
+            model = row["Model"]
+            rpk_values = []
+            valid_years = []
+            for year in all_years:
+                val = row[str(year)]
+                try:
+                    fval = float(val)
+                    if not isnan(fval):
+                        rpk_values.append(fval)
+                        valid_years.append(year)
+                except (ValueError, TypeError):
+                    pass
+            if rpk_values:
+                ar6_rpk[scenario][model] = rpk_values
+                years_per_scenario.setdefault(scenario, valid_years)
+
+    if plot_data:
+        fig, ax = subplots(figsize=(9, 5), layout="constrained")
+        for scenario in all_scenarios:
+            if scenario not in ar6_rpk or not ar6_rpk[scenario]:
+                continue
+            color = get_scenario_color(scenario)
+            lines = lines_gen()
+            for model, values in ar6_rpk[scenario].items():
+                line = next(lines)
+                ax.plot(
+                    years_per_scenario[scenario],
+                    values,
+                    label=f"{scenario} ({model})",
+                    color=color,
+                    linestyle=line,
+                    linewidth=1.5,
+                    alpha=0.7,
+                )
+        ax.set_title("Aviation RPK — AR6 Scenarios")
+        ax.set_ylabel("bn pkm/yr")
+        ax.set_xlabel("Year")
+        ax.set_xlim(left=start_year, right=end_year)
+        ax.set_ylim(bottom=0)
+
+    return ar6_rpk, years_per_scenario

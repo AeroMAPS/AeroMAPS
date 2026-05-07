@@ -24,7 +24,8 @@ class SocioeconomicDrivers(AeroMAPSModel):
         population_reference_years_values: list,
         gdp_per_capita_reference_years: list,
         gdp_per_capita_reference_years_values: list,
-    ) -> Tuple[pd.Series, pd.Series]:
+        covid_end_year_passenger: int,
+    ) -> Tuple[pd.Series, pd.Series, float]:
         """Socioeconomic drivers calculation.
 
         Parameters
@@ -37,6 +38,8 @@ class SocioeconomicDrivers(AeroMAPSModel):
             Reference years for the GDP per capita [yr].
         gdp_per_capita_reference_years_values
             GDP per capita for the reference years [USD/capita].
+        covid_end_year_passenger
+            Year marking the end of the COVID-19 impact on passenger traffic [yr].
 
         Returns
         -------
@@ -44,7 +47,10 @@ class SocioeconomicDrivers(AeroMAPSModel):
             World population [inhabitants].
         gdp_per_capita
             GDP per capita [USD/capita].
+        gdp_per_capita_covid_end
+            GDP per capita at the end of the COVID-19 period [USD/capita].
         """
+
         # Interpolation of world population
         population = aeromaps_interpolation_function(
             self,
@@ -63,4 +69,8 @@ class SocioeconomicDrivers(AeroMAPSModel):
         )
         self.df.loc[:, "gdp_per_capita"] = gdp_per_capita
 
-        return population, gdp_per_capita
+        # GDP per capita at COVID end year
+        gdp_per_capita_covid_end = self.df.loc[covid_end_year_passenger, "gdp_per_capita"]
+        self.float_outputs["gdp_per_capita_covid_end"] = gdp_per_capita_covid_end
+
+        return (population, gdp_per_capita, gdp_per_capita_covid_end)
