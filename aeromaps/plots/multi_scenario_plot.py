@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from abc import ABC, abstractmethod
 import warnings
 import itertools
@@ -54,7 +56,9 @@ class MultiScenarioPlot(ABC):
     required_outputs = []
 
     def __init__(self, processes, figsize=None, check_outputs=True, required_outputs=None,
-                 scenario_groups=None, fig=None, ax=None, legend=True, colors=None):
+                 scenario_groups=None, fig=None, ax=None, legend=True, colors=None,
+                 group_display="lines", group_envelope_middle="median",
+                 group_envelope_alpha=0.25):
         """
         Initialize the plot with data from multiple processes.
 
@@ -95,7 +99,32 @@ class MultiScenarioPlot(ABC):
               All scenarios within a group share that group's color.
 
             If ``None`` (default) the built-in ``DEFAULT_COLORS`` palette is used.
+        group_display : str, optional
+            How to render each scenario group. ``"lines"`` (default) draws one
+            line per scenario (current behaviour). ``"envelope"`` draws a single
+            ``fill_between`` band between the min and max of the group's
+            scenarios at each year, plus a single middle line. Singleton groups
+            always fall back to a single line.
+        group_envelope_middle : str or dict, optional
+            Selects the middle line in envelope mode.
+
+            * ``"median"`` (default) – pointwise median across the group.
+            * ``"mean"`` – pointwise mean across the group.
+            * ``dict`` of ``{group_name: scenario_name}`` – use the given
+              scenario as the middle line for that group. Groups omitted from
+              the dict fall back to ``"median"``.
+        group_envelope_alpha : float, optional
+            Transparency of the ``fill_between`` band in envelope mode.
+            Default ``0.25``.
         """
+        if group_display not in ("lines", "envelope"):
+            raise ValueError(
+                f"group_display must be 'lines' or 'envelope', got {group_display!r}"
+            )
+        self.group_display = group_display
+        self.group_envelope_middle = group_envelope_middle
+        self.group_envelope_alpha = group_envelope_alpha
+
         # Store legend preference
         self._legend_setting = legend
         # Set instance-level required_outputs (override class default if provided)
@@ -252,6 +281,214 @@ class MultiScenarioPlot(ABC):
         else:
             # Default style if not found
             return {'color': DEFAULT_COLORS[0], 'linestyle': '-', 'group': None}
+
+    # ------------------------------------------------------------------
+    # Group-aware drawing helpers (envelope mode support)
+    # ------------------------------------------------------------------
+
+    def _iter_scenario_groups(self):
+        """
+        Yield ``(group_name, group_color, [scenario_name, ...])`` for every
+        scenario group present in ``self.scenario_styles``.
+
+        Groups declared via ``scenario_groups`` come first in declaration
+        order; any ungrouped scenarios follow as singleton groups labelled
+        by the scenario name itself. Singletons are intentionally yielded
+        so that :meth:`_draw_group_curve` can fall back to a plain line
+        when envelope mode is requested but the group has only one member.
+        """
+        seen = set()
+
+        if self.scenario_groups:
+            for group_name, group_scenarios in self.scenario_groups.items():
+                members = [s for s in group_scenarios if s in self.scenario_styles]
+                if members:
+                    group_color = self.scenario_styles[members[0]]['color']
+                    seen.update(members)
+                    yield group_name, group_color, members
+
+        # Ungrouped scenarios become singleton groups
+        for scenario_name, style in self.scenario_styles.items():
+            if scenario_name not in seen:
+                yield scenario_name, style['color'], [scenario_name]
+
+    def _resolve_middle_index(self, group_name, scenario_names):
+        """
+        Resolve the index (into ``scenario_names``) of the scenario chosen
+        as the envelope's middle line, or ``None`` if the middle should be
+        computed pointwise (median / mean).
+
+        Parameters
+        ----------
+        group_name : str
+            Name of the scenario group being drawn.
+        scenario_names : list of str
+            Scenario names contained in the group, in the order they appear
+            in the data matrix.
+
+        Returns
+        -------
+        int or None
+            Position in ``scenario_names`` of the chosen middle scenario,
+            or ``None`` if the middle should be derived pointwise.
+        """
+        mode = self.group_envelope_middle
+        if isinstance(mode, dict):
+            picked = mode.get(group_name)
+            if picked is None:
+                return None  # Fall back to median for unspecified groups
+            if picked not in scenario_names:
+                raise KeyError(
+                    f"group_envelope_middle[{group_name!r}] = {picked!r} "
+                    f"is not a scenario in group {group_name!r} "
+                    f"(group members: {scenario_names})"
+                )
+            return scenario_names.index(picked)
+        if mode in ("median", "mean"):
+            return None
+        raise ValueError(
+            f"group_envelope_middle must be 'median', 'mean' or a dict, "
+            f"got {mode!r}"
+        )
+
+    def _scenario_xy(self, scenario_name, data):
+        """
+        Return ``(x, y)`` for one scenario.
+
+        Default implementation reads a single column based on class attributes
+        (so simple line-plot subclasses can avoid overriding anything):
+
+        * ``column_name`` (required) – column to plot.
+        * ``data_source``  – ``"df"`` (default) or ``"df_climate"``.
+        * ``years_source`` – ``"years"`` (default) or ``"prospective_years"``.
+        * ``y_scale``      – multiplier applied to the y values (default ``1.0``).
+
+        Column presence is guaranteed by ``required_outputs`` +
+        ``_filter_processes_by_outputs`` (which runs before ``create_plot``),
+        so no per-scenario existence check is needed here.
+
+        Subclasses can override this for derived/multi-column or
+        pathway-aggregated series.
+        """
+        column = getattr(self, "column_name", None)
+        if column is None:
+            raise NotImplementedError(
+                f"{type(self).__name__} must either set `column_name` "
+                f"or override _scenario_xy()."
+            )
+        df = data[getattr(self, "data_source", "df")]
+        x = data[getattr(self, "years_source", "years")]
+        return x, df.loc[x, column] * getattr(self, "y_scale", 1.0)
+
+    def _plot_grouped_series(self, *, linewidth=2):
+        """
+        Draw one curve per scenario group on ``self.ax``.
+
+        Routes ``self._scenario_xy(scenario_name, data)`` through
+        :meth:`_draw_group_curve`, so the same call honours both ``"lines"``
+        and ``"envelope"`` display modes. List-mode scenarios (no scenario
+        names) are drawn as individual lines labelled ``"Scenario N"``.
+
+        ``_scenario_xy`` is expected to always return a valid ``(x, y)``
+        pair; ``required_outputs`` validation already filters scenarios
+        missing the relevant column before ``create_plot`` runs.
+
+        Subclasses normally only need to set ``column_name`` (and optionally
+        ``y_scale`` / ``data_source`` / ``years_source``) or override
+        :meth:`_scenario_xy`.
+        """
+        if isinstance(self.scenario_data, dict):
+            for group_name, _color, scenario_names in self._iter_scenario_groups():
+                series = {}
+                x = None
+                for scenario_name in scenario_names:
+                    x, y = self._scenario_xy(scenario_name, self.scenario_data[scenario_name])
+                    series[scenario_name] = y
+                self._draw_group_curve(group_name, x, series, linewidth=linewidth)
+        else:
+            for idx, data in enumerate(self.scenario_data):
+                scenario_name = f"scenario_{idx}"
+                x, y = self._scenario_xy(scenario_name, data)
+                style = self.get_scenario_style(scenario_name)
+                self.ax.plot(
+                    x, y,
+                    label=f"Scenario {idx+1}",
+                    color=style['color'],
+                    linestyle=style['linestyle'],
+                    linewidth=linewidth,
+                )
+
+    def _draw_group_curve(self, group_name, x, series_by_scenario, *,
+                          label=None, linewidth=2):
+        """
+        Draw one scenario group on ``self.ax`` honouring ``self.group_display``.
+
+        In ``"lines"`` mode this reproduces the per-scenario ``ax.plot`` calls
+        that subclasses used to make directly. In ``"envelope"`` mode it draws
+        a ``fill_between(min, max)`` band plus a single middle line; groups
+        with only one scenario fall back to a single line.
+
+        Parameters
+        ----------
+        group_name : str
+            Name of the scenario group; used as the legend label in envelope
+            mode (unless ``label`` is provided).
+        x : array-like
+            Shared x-axis values for every scenario in the group.
+        series_by_scenario : dict
+            Mapping ``{scenario_name: y_values}`` with one entry per scenario
+            in the group. Every value must have length ``len(x)``.
+        label : str, optional
+            Override the legend label in envelope mode. Ignored in lines mode
+            (each scenario gets its own label).
+        linewidth : float, optional
+            Line width passed to ``ax.plot``. Default ``2``.
+        """
+        if not series_by_scenario:
+            return
+
+        scenario_names = list(series_by_scenario.keys())
+
+        if self.group_display == "lines" or len(scenario_names) == 1:
+            for scenario_name, y in series_by_scenario.items():
+                style = self.get_scenario_style(scenario_name)
+                self.ax.plot(
+                    x, y,
+                    label=scenario_name,
+                    color=style['color'],
+                    linestyle=style['linestyle'],
+                    linewidth=linewidth,
+                )
+            return
+
+        # Envelope mode with >=2 scenarios
+        group_color = self.scenario_styles[scenario_names[0]]['color']
+        arr = np.column_stack([np.asarray(series_by_scenario[s], dtype=float)
+                               for s in scenario_names])
+        y_min = np.nanmin(arr, axis=1)
+        y_max = np.nanmax(arr, axis=1)
+
+        picked = self._resolve_middle_index(group_name, scenario_names)
+        if picked is None:
+            if self.group_envelope_middle == "mean":
+                y_mid = np.nanmean(arr, axis=1)
+            else:
+                y_mid = np.nanmedian(arr, axis=1)
+        else:
+            y_mid = arr[:, picked]
+
+        self.ax.fill_between(
+            x, y_min, y_max,
+            color=group_color,
+            alpha=self.group_envelope_alpha,
+            linewidth=0,
+        )
+        self.ax.plot(
+            x, y_mid,
+            color=group_color,
+            linewidth=linewidth,
+            label=label if label is not None else group_name,
+        )
 
     def _filter_processes_by_outputs(self, required_outputs):
         """
@@ -492,15 +729,17 @@ class MultiScenarioPlot(ABC):
         # Refresh the view
         self._refresh_view()
 
-    @abstractmethod
     def _update_plot_elements(self):
         """
         Update plot elements with new data.
 
-        This method should be implemented by subclasses to update
-        line data, bar heights, etc. for all scenarios.
+        Default implementation clears the axes and re-runs :meth:`create_plot`,
+        which is appropriate for every line-style multi-scenario plot.
+        Subclasses that use multi-axes (per-scenario subplots) override this
+        to clear the whole figure instead.
         """
-        pass
+        self.ax.clear()
+        self.create_plot()
 
     def _refresh_collections(self):
         """Remove all collections (fill_between areas) from the axes."""
@@ -562,6 +801,9 @@ class MultiScenarioPlot(ABC):
         """
         Sum ``{pathway.name}_energy_consumption`` columns for the given pathways.
 
+        Returns a zero-filled Series when no matching column is found, so
+        callers can treat the result uniformly without ``None`` handling.
+
         Parameters
         ----------
         df : pd.DataFrame
@@ -573,16 +815,15 @@ class MultiScenarioPlot(ABC):
 
         Returns
         -------
-        pd.Series or None
-            Aggregated energy consumption, or *None* if no matching columns
-            were found in *df*.
+        pd.Series
+            Aggregated energy consumption (zeros if no matching columns were
+            present in *df*).
         """
-        total = None
+        total = pd.Series(0.0, index=list(years))
         for pathway in pathways:
             col = f"{pathway.name}_energy_consumption"
             if col in df.columns:
-                values = df.loc[years, col].fillna(0)
-                total = values if total is None else total + values
+                total = total + df.loc[years, col].fillna(0)
         return total
 
     @staticmethod

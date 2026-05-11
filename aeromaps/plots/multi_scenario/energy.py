@@ -8,30 +8,16 @@ class EnergyConsumptionComparisonPlot(MultiScenarioPlot):
     """Compare total energy consumption across multiple scenarios."""
 
     required_outputs = ["energy_consumption"]
-
+    column_name = "energy_consumption"
+    y_scale = 1e-12  # convert to EJ
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["years"]
-            self.ax.plot(
-                years,
-                data["df"].loc[years, "energy_consumption"] * 1e-12,
-                label=scenario_name,
-                color=style["color"],
-                linestyle=style["linestyle"],
-                linewidth=2,
-            )
-
+        self._plot_grouped_series()
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Total Energy Consumption [EJ]")
         self.ax.set_title("Energy Consumption Comparison Across Scenarios")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
-
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
 
 
 class EnergyMixComparisonPlot(MultiScenarioPlot):
@@ -114,4 +100,3 @@ class EnergyMixComparisonPlot(MultiScenarioPlot):
     def _update_plot_elements(self):
         self.fig.clear()
         self.create_plot()
-

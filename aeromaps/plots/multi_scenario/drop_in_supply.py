@@ -81,35 +81,35 @@ class DropInSupplyBreakdownPlot(MultiScenarioPlot):
 
 
 # ---------------------------------------------------------------------------
-# Single-line comparison plots for a given aircraft type
+# Single-line comparison plots (per aircraft type / energy origin)
 # ---------------------------------------------------------------------------
 
-class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
-    """Compare total hydrogen energy consumption across scenarios."""
+class _PathwayAggregateComparisonPlot(MultiScenarioPlot):
+    """Shared base for plots that sum a pathway-filtered energy column.
+
+    Subclasses set ``pathway_filter`` (dict passed to
+    ``pathways_manager.get``) and the usual ``y_label``/title configuration.
+    Scenarios with no matching pathway columns plot as a flat zero line
+    (``_aggregate_pathways_energy`` returns zeros in that case).
+    """
 
     required_outputs = []
+    pathway_filter = {}
+
+    def _scenario_xy(self, scenario_name, data):
+        pathways = (self.pathways_manager.get(**self.pathway_filter)
+                    if self.pathways_manager is not None else [])
+        energy = self._aggregate_pathways_energy(data["df"], data["years"], pathways)
+        return data["years"], energy * 1e-12
+
+
+class HydrogenSupplyComparisonPlot(_PathwayAggregateComparisonPlot):
+    """Compare total hydrogen energy consumption across scenarios."""
+
+    pathway_filter = {"aircraft_type": "hydrogen"}
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["years"]
-            df = data["df"]
-
-            if self.pathways_manager is not None:
-                pathways = self.pathways_manager.get(aircraft_type="hydrogen")
-                hydrogen = self._aggregate_pathways_energy(df, years, pathways)
-            else:
-                hydrogen = None
-
-            if hydrogen is not None:
-                self.ax.plot(
-                    years, hydrogen * 1e-12,
-                    label=scenario_name,
-                    color=style["color"],
-                    linestyle=style["linestyle"],
-                    linewidth=2,
-                )
-
+        self._plot_grouped_series()
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Hydrogen Energy Consumption [EJ]")
         self.ax.set_title("Hydrogen (LH2) Supply Comparison")
@@ -117,38 +117,14 @@ class HydrogenSupplyComparisonPlot(MultiScenarioPlot):
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
 
-
-class ElectricSupplyComparisonPlot(MultiScenarioPlot):
+class ElectricSupplyComparisonPlot(_PathwayAggregateComparisonPlot):
     """Compare total electric/battery energy consumption across scenarios."""
 
-    required_outputs = []
-
+    pathway_filter = {"aircraft_type": "electric"}
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["years"]
-            df = data["df"]
-
-            if self.pathways_manager is not None:
-                pathways = self.pathways_manager.get(aircraft_type="electric")
-                electric = self._aggregate_pathways_energy(df, years, pathways)
-            else:
-                electric = None
-
-            if electric is not None:
-                self.ax.plot(
-                    years, electric * 1e-12,
-                    label=scenario_name,
-                    color=style["color"],
-                    linestyle=style["linestyle"],
-                    linewidth=2,
-                )
-
+        self._plot_grouped_series()
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Electric Energy Consumption [EJ]")
         self.ax.set_title("Electric / Battery Supply Comparison")
@@ -156,42 +132,14 @@ class ElectricSupplyComparisonPlot(MultiScenarioPlot):
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
 
-
-# ---------------------------------------------------------------------------
-# Aggregate by energy origin across all aircraft types
-# ---------------------------------------------------------------------------
-
-class BiofuelProductionComparisonPlot(MultiScenarioPlot):
+class BiofuelProductionComparisonPlot(_PathwayAggregateComparisonPlot):
     """Compare total biofuel (biomass-origin) energy across scenarios."""
 
-    required_outputs = []
-
+    pathway_filter = {"energy_origin": "biomass"}
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["years"]
-            df = data["df"]
-
-            if self.pathways_manager is not None:
-                pathways = self.pathways_manager.get(energy_origin="biomass")
-                biofuel = self._aggregate_pathways_energy(df, years, pathways)
-            else:
-                biofuel = None
-
-            if biofuel is not None:
-                self.ax.plot(
-                    years, biofuel * 1e-12,
-                    label=scenario_name,
-                    color=style["color"],
-                    linestyle=style["linestyle"],
-                    linewidth=2,
-                )
-
+        self._plot_grouped_series()
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Biofuel Production [EJ]")
         self.ax.set_title("Biofuel Production Comparison")
@@ -199,50 +147,20 @@ class BiofuelProductionComparisonPlot(MultiScenarioPlot):
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
 
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
 
-
-class ElectrofuelProductionComparisonPlot(MultiScenarioPlot):
+class ElectrofuelProductionComparisonPlot(_PathwayAggregateComparisonPlot):
     """Compare total electrofuel (electricity-origin drop-in) energy across scenarios."""
 
-    required_outputs = []
-
+    pathway_filter = {"aircraft_type": "dropin_fuel", "energy_origin": "electricity"}
 
     def create_plot(self):
-        for scenario_name, data in self.scenario_data.items():
-            style = self.get_scenario_style(scenario_name)
-            years = data["years"]
-            df = data["df"]
-
-            if self.pathways_manager is not None:
-                pathways = self.pathways_manager.get(
-                    aircraft_type="dropin_fuel", energy_origin="electricity"
-                )
-                efuel = self._aggregate_pathways_energy(df, years, pathways)
-            else:
-                efuel = None
-
-            if efuel is not None:
-                self.ax.plot(
-                    years, efuel * 1e-12,
-                    label=scenario_name,
-                    color=style["color"],
-                    linestyle=style["linestyle"],
-                    linewidth=2,
-                )
-
+        self._plot_grouped_series()
         self.ax.set_xlabel("Year")
         self.ax.set_ylabel("Electrofuel Production [EJ]")
         self.ax.set_title("Electrofuel Production Comparison")
         self.ax.legend(loc="best")
         self.ax.grid(True, alpha=0.3)
         self.ax.set_ylim(bottom=0)
-
-    def _update_plot_elements(self):
-        self.ax.clear()
-        self.create_plot()
 
 
 # ---------------------------------------------------------------------------
