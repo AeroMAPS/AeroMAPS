@@ -67,6 +67,7 @@ from aeromaps.models.air_transport.markets.markets_factory import (
     create_market_ask_models,
     create_market_load_factor_models,
     create_market_rpk_aggregator,
+    create_market_rpk_elasticity,
     create_market_rpk_models,
     create_market_rtk_aggregator,
     create_market_rtk_models,
@@ -1029,6 +1030,20 @@ class AeroMAPSProcess(object):
         # (so optional disciplines remain opt-in via their factory checks).
         defaults = self.markets_data.pop("defaults", {}) or {}
 
+        # Pop the optional ``global`` block: scalars shared across all markets,
+        # flattened into ``self.parameters`` without market prefix.  The
+        # ``elasticity.use_elasticity`` flag controls whether the cost-feedback
+        # elasticity layer is wired into the discipline graph; it is read here
+        # so the case distinction lives in YAML rather than in model dicts.
+        globals_block = self.markets_data.pop("global", {}) or {}
+        with_elasticity = bool(globals_block.get("elasticity", {}).get("use_elasticity", False))
+        for value in globals_block.values():
+            if isinstance(value, dict):
+                flattened = _flatten_dict(value)
+                # ``use_elasticity`` is a build-time toggle, not a model parameter.
+                flattened.pop("use_elasticity", None)
+                self.parameters.from_dict(self._convert_custom_data_types(flattened))
+
         def _deep_merge(base: dict, override: dict) -> dict:
             out = dict(base)
             for k, v in override.items():
@@ -1073,8 +1088,16 @@ class AeroMAPSProcess(object):
             market_data["inputs"] = inputs
             self.markets_data[market_id] = market_data
 
-        self.models.update(create_market_rpk_models(self.markets, self.markets_data))
-        self.models.update(create_market_rpk_aggregator(self.markets))
+        self.models.update(
+            create_market_rpk_models(
+                self.markets, self.markets_data, with_elasticity=with_elasticity
+            )
+        )
+        self.models.update(
+            create_market_rpk_aggregator(self.markets, with_elasticity=with_elasticity)
+        )
+        if with_elasticity:
+            self.models.update(create_market_rpk_elasticity(self.markets))
         self.models.update(create_market_rtk_models(self.markets, self.markets_data))
         self.models.update(create_market_rtk_aggregator(self.markets))
         self.models.update(create_market_ask_models(self.markets))

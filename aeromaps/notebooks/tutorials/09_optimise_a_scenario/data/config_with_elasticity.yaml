@@ -4,7 +4,7 @@ data:
 
 models:
   markets:
-    markets_data_file: default
+    markets_data_file: "./markets_with_elasticity.yaml"
 
   fleet:
     aircraft_inventory_model_data_file: default

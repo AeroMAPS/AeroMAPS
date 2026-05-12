@@ -14,7 +14,7 @@ models:
     processes_model_data_file: default
 
   standards:
-    - models_traffic_cost_feedback
+    - models_traffic
     - models_efficiency_top_down
     - models_energy_without_fuel_effect
     - models_offset

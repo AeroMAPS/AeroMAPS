@@ -3,6 +3,7 @@
 from aeromaps.models.air_transport.air_traffic.ask_market import ASKAggregator, ASKMarket
 from aeromaps.models.air_transport.air_traffic.rpk_market import (
     RPKAggregator,
+    RPKElasticity,
     RPKMarket,
     RPKMeasuresMarket,
     RPKReferenceMarket,
@@ -28,25 +29,32 @@ def _has_reference_inputs(market_inputs: dict) -> bool:
     return isinstance(market_inputs, dict) and "reference" in market_inputs
 
 
-def create_market_rpk_models(markets, markets_data: dict = None) -> dict:
+def create_market_rpk_models(
+    markets, markets_data: dict = None, with_elasticity: bool = False
+) -> dict:
     """Create per-market RPK models from the market registry and raw YAML data.
 
     Always creates one ``RPKMarket`` per passenger market.
     Creates ``RPKMeasuresMarket`` only when measures inputs are present.
     Creates ``RPKReferenceMarket`` only when reference inputs are present.
+
+    When ``with_elasticity`` is True, ``RPKMarket`` outputs are suffixed with
+    ``_no_elasticity`` so a downstream ``RPKElasticity`` can own the unsuffixed
+    ``rpk_<mid>`` name.
     """
     models = {}
     if markets is None:
         return models
 
     markets_data = markets_data or {}
+    suffix = "_no_elasticity" if with_elasticity else ""
 
     for market in markets.get(traffic_type="passenger"):
         mid = market.id
         market_inputs = markets_data.get(mid, {}).get("inputs", {})
 
         rpk_name = f"rpk_{mid}"
-        models[rpk_name] = RPKMarket(name=rpk_name, market_id=mid)
+        models[rpk_name] = RPKMarket(name=rpk_name, market_id=mid, output_suffix=suffix)
 
         if _has_measures_inputs(market_inputs):
             measures_name = f"rpk_measures_{mid}"
@@ -59,8 +67,12 @@ def create_market_rpk_models(markets, markets_data: dict = None) -> dict:
     return models
 
 
-def create_market_rpk_aggregator(markets) -> dict:
+def create_market_rpk_aggregator(markets, with_elasticity: bool = False) -> dict:
     """Create an RPKAggregator that sums per-market rpk into the total ``rpk``.
+
+    When ``with_elasticity`` is True, the aggregator consumes / emits names with
+    a ``_no_elasticity`` suffix so a downstream ``RPKElasticity`` discipline can
+    own the unsuffixed names.
 
     Returns an empty mapping when no markets registry is available.
     """
@@ -69,8 +81,28 @@ def create_market_rpk_aggregator(markets) -> dict:
     passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
     if not passenger_ids:
         return {}
-    model = RPKAggregator(name="rpk_aggregator", passenger_market_ids=passenger_ids)
+    suffix = "_no_elasticity" if with_elasticity else ""
+    model = RPKAggregator(
+        name="rpk_aggregator",
+        passenger_market_ids=passenger_ids,
+        output_suffix=suffix,
+    )
     return {"rpk_aggregator": model}
+
+
+def create_market_rpk_elasticity(markets) -> dict:
+    """Create the global ``RPKElasticity`` discipline for cost-feedback mode.
+
+    Returns an empty mapping when no passenger markets are configured.
+    """
+    if markets is None:
+        return {}
+    passenger_ids = [m.id for m in markets.get(traffic_type="passenger")]
+    if not passenger_ids:
+        return {}
+    return {
+        "rpk_elasticity": RPKElasticity(name="rpk_elasticity", passenger_market_ids=passenger_ids)
+    }
 
 
 def create_market_ask_models(markets) -> dict:

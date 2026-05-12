@@ -2,7 +2,6 @@
 This module creates dictionaries of default models for various AeroMAPS configurations.
 """
 
-from aeromaps.models.air_transport.air_traffic.price_elasticity import RPKWithElasticity
 from aeromaps.models.impacts.costs.airlines.direct_operating_costs import (
     PassengerAircraftDocEnergy,
     PassengerAircraftDocNonEnergyComplex,
@@ -38,17 +37,10 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means i
     EnergyCarriersMassicShares,
 )
 
-from aeromaps.models.air_transport.air_traffic.rpk import (
-    # RPK,
-    RPKReference,
-    RPKMeasures,
-)
-from aeromaps.models.air_transport.air_traffic.rtk import RTK, RTKReference
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
     LoadFactor,
 )
-from aeromaps.models.air_transport.air_traffic.ask import ASK
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations import (
     OperationsLogistic,
     OperationsInterpolation,
@@ -156,24 +148,11 @@ from aeromaps.models.impacts.costs.airlines.total_airline_cost_and_airfare impor
 )
 
 models_traffic = {
-    # "rpk_measures": RPKMeasures("rpk_measures"),
-    # "rpk": RPK("rpk"),
-    # "rpk_reference": RPKReference("rpk_reference"),
+    # Per-market RPK / RTK / ASK / LoadFactor disciplines are registered by
+    # ``_initialize_markets()`` from the ``markets.yaml`` registry.
+    # The optional ``RPKElasticity`` layer is wired in by the same hook when
+    # ``global.elasticity.use_elasticity`` is true in ``markets.yaml``.
     "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    # "rtk": RTK("rtk"),
-    # "rtk_reference": RTKReference("rtk_reference"),
-    # "ask": ASK("ask"),
-}
-
-
-models_traffic_cost_feedback = {
-    "rpk_with_elasticity": RPKWithElasticity("rpk_with_elasticity"),
-    "rpk_measures": RPKMeasures("rpk_measures"),
-    "rpk_reference": RPKReference("rpk_reference"),
-    "total_aircraft_distance": TotalAircraftDistance("total_aircraft_distance"),
-    "rtk": RTK("rtk"),
-    "rtk_reference": RTKReference("rtk_reference"),
-    "ask": ASK("ask"),
 }
 
 
@@ -196,7 +175,7 @@ models_efficiency_top_down = {
 }
 
 models_efficiency_top_down_interp = {
-    "load_factor": LoadFactor("load_factor"),
+    # "load_factor": LoadFactor("load_factor"),
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
@@ -442,7 +421,7 @@ models_optim_simple = {
 }
 
 models_optim_complex = {
-    "models_traffic_cost_feedback": models_traffic_cost_feedback,
+    "models_traffic": models_traffic,
     "models_efficiency_top_down": models_efficiency_top_down,
     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
     "models_offset": models_offset,
@@ -470,7 +449,7 @@ carbon_tax = {
 }
 
 # models_optim_complex_v2 = {
-#     "models_traffic_cost_feedback": models_traffic_cost_feedback,
+#     "models_traffic": models_traffic,
 #     "models_efficiency_top_down": models_efficiency_top_down,
 #     "models_energy_without_fuel_effect": models_energy_without_fuel_effect,
 #     "models_offset": models_offset,

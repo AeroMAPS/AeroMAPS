@@ -25,6 +25,19 @@
 # defaults at the leaf level; lists are replaced wholesale; sub-groups absent in
 # both defaults and the market remain absent (so optional disciplines stay
 # opt-in via their factory checks).
+#
+# Globals: the optional ``global`` block holds scalars that apply to all markets
+# at once (no per-market override).  Its leaves are flattened into
+# ``self.parameters`` with no market prefix.
+
+global:
+  # Price elasticity of demand — global calibration (not per-market for now).
+  # When ``use_elasticity`` is true the ``RPKElasticity`` discipline is
+  # registered and the airfare ↔ RPK cycle is closed by GEMSEO's MDA.
+  elasticity:
+    use_elasticity: false
+    price_elasticity: -0.9
+    initial_airfare_per_rpk: 0.09236379319842411
 
 defaults:
   passenger:
