@@ -19,8 +19,6 @@ models:
     - models_energy_with_fuel_effect
     - models_energy_cost
     - models_emissions
+    - models_offset
     - models_sustainability
     - models_operation_cost_top_down
-
-  customs:
-    atag_offset: "../models/atag_offset.py::ATAGOffset"

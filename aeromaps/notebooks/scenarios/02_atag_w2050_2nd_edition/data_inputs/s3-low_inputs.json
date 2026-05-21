@@ -66,5 +66,9 @@
     "electric_final_market_share_short_range": 65.0,
     "electric_introduction_year_short_range": 2035,
     "hydrogen_final_market_share_medium_range": 65.0,
-    "hydrogen_introduction_year_medium_range": 2035
+    "hydrogen_introduction_year_medium_range": 2035,
+    "carbon_offset_baseline_level_vs_2019_reference_periods": [2020, 2050],
+    "carbon_offset_baseline_level_vs_2019_reference_periods_values": [100.0],
+    "residual_carbon_offset_share_reference_years": [2020, 2035, 2050],
+    "residual_carbon_offset_share_reference_years_values": [0.0, 0.0, 100.0]
 }
