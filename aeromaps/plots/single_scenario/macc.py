@@ -14,6 +14,22 @@ from aeromaps.plots.single_scenario_plot import plot_3_x
 from aeromaps.plots.single_scenario_plot import plot_3_y
 
 
+# Hard-coded MACC bar colors for the default passenger markets. Custom market
+# IDs fall back to ``_DEFAULT_AIRCRAFT_COLOR``.
+_MARKET_AIRCRAFT_COLORS = {
+    "short_range": "gold",
+    "medium_range": "goldenrod",
+    "long_range": "darkgoldenrod",
+}
+_DEFAULT_AIRCRAFT_COLOR = "tab:gray"
+
+
+def _aircraft_color(fleet, category_name: str) -> str:
+    """Resolve the MACC bar color for an aircraft from its fleet category name."""
+    market_id = fleet.categories[category_name].market_id
+    return _MARKET_AIRCRAFT_COLORS.get(market_id, _DEFAULT_AIRCRAFT_COLOR)
+
+
 class AnnualMACC:
     def __init__(self, process):
         data = process.data
@@ -119,12 +135,7 @@ class AnnualMACC:
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
@@ -659,12 +670,7 @@ class CumulativeMACC:
                 cumcost_list.append(cumcost)
                 discounted_cumcost_list.append(discountedcumcost)
 
-                if category == "Short Range":
-                    colors_list.append("gold")
-                elif category == "Medium Range":
-                    colors_list.append("goldenrod")
-                else:
-                    colors_list.append("darkgoldenrod")
+                colors_list.append(_aircraft_color(self.fleet_model.fleet, category))
                 name_list.append(aircraft_var_name.split(":")[-1])
 
         name_list.extend(
@@ -1257,12 +1263,7 @@ class ScenarioMACC:
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
@@ -1645,12 +1646,7 @@ class ShadowCarbonPrice:
                             aircraft_var_name + ":aircraft_generic_specific_carbon_abatement_cost",
                         ]
                     )
-                    if category == "Short Range":
-                        colors.append("gold")
-                    elif category == "Medium Range":
-                        colors.append("goldenrod")
-                    else:
-                        colors.append("darkgoldenrod")
+                    colors.append(_aircraft_color(self.fleet_model.fleet, category))
                     name.append(aircraft_var_name.split(":")[-1])
 
             # continue with generic energy production pathways
