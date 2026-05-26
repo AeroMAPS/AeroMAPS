@@ -12,32 +12,29 @@ from aeromaps import create_process, assemble_processes
 def processes():
     """Create two test processes for comparison."""
     import os
+
     # Create first process
-    config_basic = os.path.join(
-        os.path.dirname(__file__),
-        "../tested_configs/config_basic.yaml"
-    )
+    config_basic = os.path.join(os.path.dirname(__file__), "../tested_configs/config_basic.yaml")
     proc1 = create_process(configuration_file=config_basic)
     proc1.compute()
 
     proc2 = create_process(configuration_file=config_basic)
-    proc2.parameters.cagr_passenger_short_range_reference_periods = []
-    proc2.parameters.cagr_passenger_short_range_reference_periods_values = [1.0]
-    proc2.parameters.cagr_passenger_medium_range_reference_periods = []
-    proc2.parameters.cagr_passenger_medium_range_reference_periods_values = [1.0]
-    proc2.parameters.cagr_passenger_long_range_reference_periods = []
-    proc2.parameters.cagr_passenger_long_range_reference_periods_values = [1.0]
-    proc2.parameters.cagr_freight_reference_periods = []
-    proc2.parameters.cagr_freight_reference_periods_values = [1.0]
+    proc2.parameters.short_range_cagr_reference_periods = []
+    proc2.parameters.short_range_cagr_reference_periods_values = [1.0]
+    proc2.parameters.medium_range_cagr_reference_periods = []
+    proc2.parameters.medium_range_cagr_reference_periods_values = [1.0]
+    proc2.parameters.long_range_cagr_reference_periods = []
+    proc2.parameters.long_range_cagr_reference_periods_values = [1.0]
+    proc2.parameters.freight_cagr_reference_periods = []
+    proc2.parameters.freight_cagr_reference_periods_values = [1.0]
     proc2.compute()
 
     config_full = os.path.join(
-        os.path.dirname(__file__),
-        "../tested_configs/config_basic_full.yaml"
+        os.path.dirname(__file__), "../tested_configs/config_basic_full.yaml"
     )
     proc3 = create_process(configuration_file=config_full)
     proc3.compute()
-    
+
     return {"scenario_1": proc1, "scenario_2": proc2, "scenario_3": proc3}
 
 
@@ -74,11 +71,10 @@ def test_expected_plots_available(processes):
         assert plot_name in plots, f"Expected plot '{plot_name}' not found in available plots"
 
 
-
 def test_plot_co2_emissions_comparison(processes):
     """Test creating CO2 emissions comparison plot."""
     multi = assemble_processes(processes)
-    
+
     # Create plot - should not raise exception
     fig = multi.plot("co2_emissions_comparison")
     assert fig is not None
@@ -87,7 +83,7 @@ def test_plot_co2_emissions_comparison(processes):
 def test_plot_energy_consumption_comparison(processes):
     """Test creating energy consumption comparison plot."""
     multi = assemble_processes(processes)
-    
+
     # Create plot - should not raise exception
     fig = multi.plot("energy_consumption_comparison")
     assert fig is not None
@@ -96,7 +92,7 @@ def test_plot_energy_consumption_comparison(processes):
 def test_plot_with_invalid_name(processes):
     """Test that invalid plot name raises KeyError."""
     multi = assemble_processes(processes)
-    
+
     with pytest.raises(KeyError):
         multi.plot("nonexistent_plot")
 
@@ -104,7 +100,7 @@ def test_plot_with_invalid_name(processes):
 def test_required_outputs_validation(processes):
     """Test that plots validate required outputs."""
     multi = assemble_processes(processes)
-    
+
     # This should work fine since processes are computed
     fig = multi.plot("co2_emissions_comparison")
     assert fig is not None
@@ -113,7 +109,7 @@ def test_required_outputs_validation(processes):
 def test_plot_with_check_outputs_false(processes):
     """Test that check_outputs=False skips validation."""
     multi = assemble_processes(processes)
-    
+
     # Should work even if validation is disabled
     fig = multi.plot("co2_emissions_comparison", check_outputs=False)
     assert fig is not None
@@ -125,11 +121,8 @@ def test_multi_scenario_plot_filters_invalid_scenarios(processes):
 
     # Create a test plot class
     class TestPlot(MultiScenarioPlot):
-
         def __init__(self, processes):
-                super().__init__(
-                    processes, check_outputs=True, required_outputs=["total_erf"]
-                )
+            super().__init__(processes, check_outputs=True, required_outputs=["total_erf"])
 
         def _get_default_figsize(self):
             return (10, 6)
@@ -142,14 +135,15 @@ def test_multi_scenario_plot_filters_invalid_scenarios(processes):
 
     # Plot should filter out proc1 and proc2 as they don't have climate outputs
     import warnings
+
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         plot = TestPlot(processes)
-        
+
         # Should have warned about missing output
         assert len(w) > 0
         assert "missing required outputs" in str(w[0].message)
-    
+
     # Only proc3 should be included -> climate model
     assert len(plot.processes) == 1
     assert "scenario_3" in plot.processes.keys()
@@ -160,11 +154,8 @@ def test_scenario_groups(processes):
     from aeromaps.plots.multi_scenario_plot import MultiScenarioPlot
 
     # Define groups
-    groups = {
-        "Baseline": ["scenario_1", "scenario_3"],
-        "Low-growth": ["scenario_2"]
-    }
-    
+    groups = {"Baseline": ["scenario_1", "scenario_3"], "Low-growth": ["scenario_2"]}
+
     # Create test plot class
     class TestPlot(MultiScenarioPlot):
         def _get_default_figsize(self):
@@ -172,26 +163,26 @@ def test_scenario_groups(processes):
 
         def _update_plot_elements(self):
             pass
-        
+
         def create_plot(self):
             pass
-    
+
     plot = TestPlot(processes, scenario_groups=groups)
-    
+
     # Check that styles were set up
     style1 = plot.get_scenario_style("scenario_1")
     style2 = plot.get_scenario_style("scenario_2")
     style3 = plot.get_scenario_style("scenario_3")
-    
+
     # Same group should have same color
     assert style1["color"] == style3["color"]
     assert style1["group"] == "Baseline"
     assert style3["group"] == "Baseline"
-    
+
     # Different groups should have different colors
     assert style1["color"] != style2["color"]
     assert style2["group"] == "Low-growth"
-    
+
     # Same group should have different linestyles
     assert style1["linestyle"] != style3["linestyle"]
 
@@ -207,10 +198,10 @@ def test_scenario_no_groups(processes):
 
         def _update_plot_elements(self):
             pass
-        
+
         def create_plot(self):
             pass
-    
+
     plot = TestPlot(processes)
 
     # Without groups, each scenario should get its own color
