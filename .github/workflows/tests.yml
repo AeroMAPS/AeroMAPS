@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # If macos increase the max number of semaphores
       - name: Set sysctl for macOS
@@ -68,7 +68,7 @@ jobs:
         run: pipx install poetry==${{ vars.POETRY_VERSION }}
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
@@ -76,6 +76,9 @@ jobs:
         run: |
           poetry env use ${{ matrix.python-version }}
           poetry install
+
+      - name: Unit tests
+        run: poetry run pytest aeromaps
 
       - name: Notebook tests
         run: |

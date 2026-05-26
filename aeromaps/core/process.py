@@ -43,7 +43,7 @@ from aeromaps.utils.functions import (
     custom_logger_config,
 )
 from aeromaps.utils.yaml import read_yaml_file
-from aeromaps.plots import available_plots, available_plots_fleet
+from aeromaps.plots.single_scenario import available_plots, available_plots_fleet
 
 # Fleet model imports
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.fleet_model import (
@@ -196,6 +196,9 @@ class AeroMAPSProcess(object):
             Whether to configure GEMSEO for optimization instead of a
             pure MDA chain.
         """
+        # Initialize pathways_manager to None - will be populated if energy models are used
+        self.pathways_manager = None
+
         custom_logger_config(logging.getLogger("gemseo.utils.source_parsing"))
 
         self.configuration_file = (
@@ -637,7 +640,7 @@ class AeroMAPSProcess(object):
         plot_names
             List of strings identifying available plot functions.
         """
-        return list(available_plots.keys())
+        return list([*available_plots.keys(), *available_plots_fleet.keys()])
 
     def list_float_inputs(self):
         """Return the current scalar input values.
@@ -685,8 +688,7 @@ class AeroMAPSProcess(object):
         """
         if name in available_plots_fleet:
             try:
-                # todo: if we pass the process to the plot, fleet_model is no longer needed as an argument.
-                fig = available_plots_fleet[name](self, self.fleet_model)
+                fig = available_plots_fleet[name](self)
                 if save:
                     if size_inches is not None:
                         fig.fig.set_size_inches(size_inches)
@@ -1506,7 +1508,11 @@ class AeroMAPSProcess(object):
                     if hasattr(model, "markets") and hasattr(model, "custom_setup"):
                         model.markets = self.markets
                         needs_custom_setup = True
-                    if hasattr(model, "pathways_manager") and hasattr(model, "custom_setup"):
+                    if (
+                        hasattr(model, "pathways_manager")
+                        and hasattr(model, "custom_setup")
+                        and self.pathways_manager is not None
+                    ):
                         # TODO harmonise the way to pass the pathways manager with generic models
                         # self.pathways_manager is only set when models.energy is present in config;
                         # _initialize_generic_energy() returns early otherwise.
