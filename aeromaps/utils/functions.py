@@ -246,7 +246,7 @@ def compute_partitioning(
         json.dump(output, outfile, indent=4)
 
 
-def create_partitioning(file, path=""):
+def create_partitioning(file, path="", freight_energy_share_2019=15.0):
     """
     Generate a partitioned AeroMAPS inputs JSON from an AeroSCOPE CSV file.
 
@@ -256,6 +256,10 @@ def create_partitioning(file, path=""):
         Path to the CSV file containing AeroSCOPE data for the partitioned scope.
     path
         Directory path where the generated files will be saved.
+    freight_energy_share_2019
+        Freight energy share in 2019 for the partitioned scope [%]. Defaults to
+        the world value declared in ``default_markets/markets.yaml`` (15.0).
+        Override when partitioning to a region whose freight share differs.
 
     Returns
     -------
@@ -268,8 +272,7 @@ def create_partitioning(file, path=""):
     with open(world_data_path, "r") as parameters_file:
         world_data_dict = json.load(parameters_file)
 
-    # Assumption on freight regional share- same as world share.
-    freight_energy_share_2019_partitioned = world_data_dict["freight_energy_share_2019"]
+    freight_energy_share_2019_partitioned = freight_energy_share_2019
 
     # AeroSCOPE CSV layout (fixed format):
     #   row 0: ASK        — col 1=total, col 2=SR, col 3=MR, col 4=LR
