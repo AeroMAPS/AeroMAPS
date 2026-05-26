@@ -2,34 +2,43 @@
 # These reproduce the previous hard-coded 4-market structure exactly.
 # FLEET REFACTORING FLAG In Phase 3 the fleet.yaml will reference these market ids.
 #
-# Schema notes:
-#   traffic_type : passenger | freight
-#   traffic_unit : RPK | RTK
-#   inputs.initial      : share and energy calibration values for 2019
-#   inputs.growth       : CAGR leveling function inputs (reference_periods / values)
-#   inputs.covid        : per-market COVID recovery parameters
-#   inputs.measures     : demand-reduction policy parameters (passenger markets only)
-#   inputs.efficiency_simple : top-down efficiency model parameters (passenger markets only)
-#   inputs.costs        : DOC non-energy parameters (passenger markets only)
-#   inputs.reference    : counterfactual CAGR for the reference (no-policy) trajectory
+# ─────────────────────────────────────────────────────────────────────────────
+# File structure
+# ─────────────────────────────────────────────────────────────────────────────
+# Three kinds of top-level blocks:
+#   global    (optional) — pipeline-wide switches, NOT overridable per market.
+#   defaults  (optional) — input templates merged into every market.
+#   <market_id> (one or more, required) — per-market overrides of defaults.
 #
-# Naming convention: leaf keys are flattened to ``<market_id>_<leaf_key>`` and
-# pushed to ``self.parameters``. The sub-grouping keys (initial, growth, covid,
-# measures, efficiency_simple, costs, reference) are organisational only — they
-# are NOT included in the flattened names. Leaf keys that would otherwise be
-# ambiguous (e.g. ``start_year``, ``end_year``, ``duration``) therefore embed
-# the group name explicitly (``measures_start_year``, ``covid_end_year``, ...).
+# Flattening convention: leaf keys are pushed to ``self.parameters``.
+#   - ``global`` leaves         → no prefix         (e.g. ``use_elasticity``)
+#   - market / defaults leaves  → ``<market_id>_<leaf_key>``
+# Sub-grouping keys (initial, growth, covid, …) are organisational only and
+# NOT included in flattened names. Leaves that would otherwise collide embed
+# the group name explicitly (``measures_start_year``, ``covid_end_year``, …).
 #
-# Defaults: the optional ``defaults`` block (keyed by traffic_type) is deep-merged
-# into every market's ``inputs`` before flattening. Per-market values override
-# defaults at the leaf level; lists are replaced wholesale; sub-groups absent in
-# both defaults and the market remain absent (so optional disciplines stay
-# opt-in via their factory checks).
+# Merge rules (defaults → market): deep-merge keyed by traffic_type; per-market
+# values override at the leaf level; lists are replaced wholesale; sub-groups
+# absent in both remain absent (so optional disciplines stay opt-in via their
+# factory checks).
 #
-# Globals: the optional ``global`` block holds scalars that apply to all markets
-# at once (no per-market override).  Its leaves are flattened into
-# ``self.parameters`` with no market prefix.
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-market schema (see individual market entries below)
+# ─────────────────────────────────────────────────────────────────────────────
+# Required:
+#   name, traffic_type (passenger|freight), traffic_unit (RPK|RTK),
+#   inputs.initial  (2019 share + energy calibration; passenger costs.init too)
+# Optional sub-groups (fallback to ``defaults`` when omitted):
+#   inputs.growth, inputs.covid, inputs.reference        (all markets)
+#   inputs.load_factor, inputs.measures, inputs.costs    (passenger only)
+#   inputs.efficiency_simple
+#       passenger: gain curve + H2/electric introduction
+#       freight:   drop-in gain curve only — consumed when the
+#                  ``FreightAircraftEfficiencySimple`` model is included in the
+#                  user's model dict (see ``aeromaps/core/models.py``).
 
+# Pipeline-wide switches. Applied once for the whole run; cannot be overridden
+# per market. Leaves are flattened WITHOUT a market prefix when reading the yaml.
 global:
   # Price elasticity of demand — global calibration (not per-market for now).
   # When ``use_elasticity`` is true the ``RPKElasticity`` discipline is
@@ -39,6 +48,8 @@ global:
     price_elasticity: -0.9
     initial_airfare_per_rpk: 0.09236379319842411
 
+# Per-market input templates, keyed by traffic_type. Deep-merged into every
+# market's ``inputs`` before flattening; any leaf set on a market wins.
 defaults:
   passenger:
     inputs:
@@ -86,7 +97,14 @@ defaults:
       reference:
         reference_cagr_reference_periods: []
         reference_cagr_reference_periods_values: [3.0]
+      # Used only when ``global.freight_efficiency.mode == simple``.
+      # efficiency_simple:
+      #  energy_per_rtk_dropin_fuel_gain_reference_years: []
+      #  energy_per_rtk_dropin_fuel_gain_reference_years_values: [1.5]
 
+# Market entries. Each block declares one market; the YAML key is its id.
+# Only ``initial`` (and ``costs`` for passenger) is required here — every other
+# sub-group falls back to ``defaults``.
 short_range:
   name: "Short Range"
   traffic_type: passenger

@@ -55,6 +55,7 @@ from aeromaps.models.air_transport.aircraft_fleet_and_operations.fleet.aircraft_
     PassengerAircraftEfficiencySimpleShares,
     PassengerAircraftEfficiencyComplex,
     FreightAircraftEfficiency,
+    FreightAircraftEfficiencySimple,  # noqa: F401  re-exported for user-composed dicts
     PassengerAircraftEfficiencySimpleASK,
 )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.aircraft_fleet_and_operations import (
@@ -167,6 +168,8 @@ models_efficiency_top_down = {
     "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
         "passenger_aircraft_efficiency_simple_ask"
     ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
@@ -185,6 +188,8 @@ models_efficiency_top_down_interp = {
     "passenger_aircraft_efficiency_simple_ask": PassengerAircraftEfficiencySimpleASK(
         "passenger_aircraft_efficiency_simple_ask"
     ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index": NOxEmissionIndex("nox_emission_index"),
@@ -200,6 +205,8 @@ models_efficiency_bottom_up = {
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
         "passenger_aircraft_efficiency_complex"
     ),
+    # Swap for ``FreightAircraftEfficiencySimple`` for per-freight-market drop-in
+    # gain curves (no propulsion mix) — see aircraft_efficiency.py.
     "freight_aircraft_efficiency": FreightAircraftEfficiency("freight_aircraft_efficiency"),
     "energy_intensity": EnergyIntensity("energy_intensity"),
     "nox_emission_index_complex": NOxEmissionIndexComplex("nox_emission_index_complex"),

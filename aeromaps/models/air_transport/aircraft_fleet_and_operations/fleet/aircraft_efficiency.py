@@ -981,3 +981,203 @@ class FreightAircraftEfficiency(AeroMAPSModel):
 
         self._store_outputs(output_data)
         return output_data
+
+
+class FreightAircraftEfficiencySimple(AeroMAPSModel):
+    """Simple top-down freight efficiency model — drop-in fuel only, per market.
+
+    Alternative to :class:`FreightAircraftEfficiency`. Should be specified in
+    the models list in place of FreightAircaftEfficiency, and related inputs should be provided in markets.yaml.
+
+    Each freight market follows its **own drop-in efficiency gain curve**
+    (independent of the passenger fleet). Alternative propulsion (hydrogen,
+    electric) is not modelled: shares are pinned to 0 and the energy-per-RTK
+    series for those carriers is set equal to the drop-in series so downstream
+    models remain well-defined.
+
+    Outputs follow the same templated names as :class:`FreightAircraftEfficiency`
+    so downstream consumers (``DropInFuelConsumption``, ``CO2Emissions``,
+    ``FleetAbatementCost`` …) are mode-agnostic.
+
+    Algorithm
+    ---------
+    For each freight market ``<fmid>``:
+
+    *Historical years*: same calibration as the passenger-proxy model::
+
+        energy_per_rtk_dropin[year] = energy_consumption_init[year]
+                                      / rtk_<fmid>[year]
+                                      * <fmid>_energy_share_2019 / 100
+
+    *Projection years*: per-market drop-in gain curve::
+
+        energy_per_rtk_dropin[k] = energy_per_rtk_dropin[k-1] * (1 - gain[k]/100)
+
+    where ``gain`` is interpolated from
+    ``<fmid>_energy_per_rtk_dropin_fuel_gain_reference_years[_values]``.
+
+    *COVID correction*: 2020 value is reset to::
+
+        energy_per_rtk_dropin[2019] * (1 + covid_energy_intensity_per_rtk_increase_2020 / 100)
+
+    *Hydrogen / electric*: energy_per_rtk equals the drop-in series; shares
+    are 0; per-market RTK volumes are 0.
+
+    Documentation
+    --------------
+    Inputs
+        - energy_consumption_init: Historic total energy consumption [MJ].
+        - covid_energy_intensity_per_rtk_increase_2020: 2020 intensity increase [%].
+        - rtk: Global freight RTK [RTK].
+        - rtk_<freight>: Freight RTK per freight market [RTK].
+        - <freight>_energy_share_2019: 2019 freight energy share per freight market [%].
+        - <freight>_energy_per_rtk_dropin_fuel_gain_reference_years: Reference years.
+        - <freight>_energy_per_rtk_dropin_fuel_gain_reference_years_values: Gains [%].
+    Outputs
+        - energy_per_rtk_without_operations_<freight>_<energy>: Energy per RTK [MJ/RTK].
+        - rtk_<freight>_<energy>_share: Freight RTK share per energy type [%].
+        - rtk_<freight>_<energy>: Freight RTK per energy type [RTK].
+        - rtk_<energy>_share: RTK share of energy type for all freight markets [%].
+        - rtk_<energy>: Total RTK of energy type for all freight markets [RTK].
+    Notes
+        - <freight> is the MarketManager id (freight markets).
+        - <energy> is one of: dropin_fuel, hydrogen, electric.
+        - I/O names are built dynamically from the market registry.
+    """
+
+    def __init__(self, name="freight_aircraft_efficiency", *args, **kwargs):
+        super().__init__(name=name, model_type="custom", *args, **kwargs)
+        self.markets = None
+
+    def custom_setup(self):
+        freight_markets = self.markets.get(traffic_type="freight")
+
+        self.input_names = {
+            "energy_consumption_init": pd.Series([0.0]),
+            "covid_energy_intensity_per_rtk_increase_2020": 0.0,
+            "rtk": pd.Series([0.0]),
+        }
+
+        for m in freight_markets:
+            mid = m.id
+            self.input_names[f"rtk_{mid}"] = pd.Series([0.0])
+            self.input_names[f"{mid}_energy_share_2019"] = 0.0
+            self.input_names[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years"] = []
+            self.input_names[f"{mid}_energy_per_rtk_dropin_fuel_gain_reference_years_values"] = [
+                0.0
+            ]
+
+        self.output_names = {}
+        for m in freight_markets:
+            mid = m.id
+            for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+                self.output_names[f"energy_per_rtk_without_operations_{mid}_{energy_type}"] = (
+                    pd.Series([0.0])
+                )
+                self.output_names[f"rtk_{mid}_{energy_type}_share"] = pd.Series([0.0])
+                self.output_names[f"rtk_{mid}_{energy_type}"] = pd.Series([0.0])
+
+        for energy_type in ("dropin_fuel", "hydrogen", "electric"):
+            self.output_names[f"rtk_{energy_type}_share"] = pd.Series([0.0])
+            self.output_names[f"rtk_{energy_type}"] = pd.Series([0.0])
+
+    def compute(self, input_data: dict) -> dict:
+        freight_markets = self.markets.get(traffic_type="freight")
+
+        energy_consumption_init = input_data["energy_consumption_init"]
+        covid_increase = float(input_data["covid_energy_intensity_per_rtk_increase_2020"])
+
+        hist_years = list(range(self.historic_start_year, self.prospection_start_year))
+        output_data = {}
+        total_rtk_dropin_fuel = None
+        total_rtk_hydrogen = None
+        total_rtk_electric = None
+
+        for freight_market in freight_markets:
+            freight_mid = freight_market.id
+            rtk = input_data[f"rtk_{freight_mid}"]
+            freight_energy_share_2019 = float(input_data[f"{freight_mid}_energy_share_2019"])
+
+            dropin_col = f"energy_per_rtk_without_operations_{freight_mid}_dropin_fuel"
+
+            # Historical calibration: same formula as FreightAircraftEfficiency.
+            self.df.loc[hist_years, dropin_col] = (
+                energy_consumption_init.loc[hist_years]
+                / rtk.loc[hist_years]
+                * freight_energy_share_2019
+                / 100
+            )
+
+            # Per-market drop-in efficiency gain curve.
+            gain = aeromaps_interpolation_function(
+                self,
+                list(input_data[f"{freight_mid}_energy_per_rtk_dropin_fuel_gain_reference_years"]),
+                list(
+                    input_data[
+                        f"{freight_mid}_energy_per_rtk_dropin_fuel_gain_reference_years_values"
+                    ]
+                ),
+                model_name=self.name,
+            )
+
+            for k in range(self.prospection_start_year, self.end_year + 1):
+                self.df.loc[k, dropin_col] = self.df.loc[k - 1, dropin_col] * (
+                    1 - gain.loc[k] / 100
+                )
+
+            # COVID: reset 2020 value.
+            self.df.loc[2020, dropin_col] = self.df.loc[2019, dropin_col] * (
+                1 + covid_increase / 100
+            )
+
+            energy_per_rtk_dropin = self.df[dropin_col]
+
+            # No alternative propulsion: H2/electric energy_per_rtk equals drop-in,
+            # shares are zero, per-market RTK volumes are zero.
+            h2_col = f"energy_per_rtk_without_operations_{freight_mid}_hydrogen"
+            el_col = f"energy_per_rtk_without_operations_{freight_mid}_electric"
+            self.df.loc[:, h2_col] = energy_per_rtk_dropin
+            self.df.loc[:, el_col] = energy_per_rtk_dropin
+
+            rtk_dropin_fuel = rtk
+            rtk_hydrogen = rtk * 0.0
+            rtk_electric = rtk * 0.0
+
+            output_data[dropin_col] = energy_per_rtk_dropin
+            output_data[h2_col] = self.df[h2_col]
+            output_data[el_col] = self.df[el_col]
+            output_data[f"rtk_{freight_mid}_dropin_fuel_share"] = pd.Series(
+                100.0, index=energy_per_rtk_dropin.index
+            )
+            output_data[f"rtk_{freight_mid}_hydrogen_share"] = pd.Series(
+                0.0, index=energy_per_rtk_dropin.index
+            )
+            output_data[f"rtk_{freight_mid}_electric_share"] = pd.Series(
+                0.0, index=energy_per_rtk_dropin.index
+            )
+            output_data[f"rtk_{freight_mid}_dropin_fuel"] = rtk_dropin_fuel
+            output_data[f"rtk_{freight_mid}_hydrogen"] = rtk_hydrogen
+            output_data[f"rtk_{freight_mid}_electric"] = rtk_electric
+
+            total_rtk_dropin_fuel = (
+                rtk_dropin_fuel
+                if total_rtk_dropin_fuel is None
+                else total_rtk_dropin_fuel + rtk_dropin_fuel
+            )
+            total_rtk_hydrogen = (
+                rtk_hydrogen if total_rtk_hydrogen is None else total_rtk_hydrogen + rtk_hydrogen
+            )
+            total_rtk_electric = (
+                rtk_electric if total_rtk_electric is None else total_rtk_electric + rtk_electric
+            )
+
+        rtk_total = input_data["rtk"]
+        output_data["rtk_dropin_fuel"] = total_rtk_dropin_fuel
+        output_data["rtk_hydrogen"] = total_rtk_hydrogen
+        output_data["rtk_electric"] = total_rtk_electric
+        output_data["rtk_dropin_fuel_share"] = (total_rtk_dropin_fuel / rtk_total) * 100
+        output_data["rtk_hydrogen_share"] = (total_rtk_hydrogen / rtk_total) * 100
+        output_data["rtk_electric_share"] = (total_rtk_electric / rtk_total) * 100
+
+        self._store_outputs(output_data)
+        return output_data
