@@ -1,6 +1,6 @@
 # AeroMAPS — User-Defined Markets Refactor Plan
 
-**Status:** In progress |  **Updated:** 2026-05-04
+**Status:** In progress |  **Updated:** 2026-05-26
 
 **Detailed Phase Interface design notes:** `.claude/plans/optimized-singing-scott.md`
 
@@ -18,8 +18,8 @@
 | Phase 2 — Air traffic disciplines | ✅ done | `720c0f02`–`2b64fde3` |
 | Phase 3 — Fleet model market integration | ✅ done | `c42d2a67`–`febffdb8` |
 | Phase 4 — Downstream impacts (custom wrapper migration) | ✅ done | `3f37e04d`–`3950aec3` |
-| Phase 5 — Migration & cleanup | ⏱ next | — |
-| Phase 6 — Plots & GUI | ⏱ deferred | — |
+| Phase 5 — Migration & cleanup | ✅ done | `1b3ff875`–`183b3867` |
+| Phase 6 — Plots & GUI | 🚧 WIP | GUI rename done (`183b3867`); plots in progress on `fleet-refactoring` |
 
 **Conventions locked in by Phase 0–1:**
 - Registry class is named **`MarketManager`** (not `MarketManager` as the early drafts read).
@@ -639,19 +639,51 @@ Landed across six labelled chantiers plus additional fixes and freight efficienc
 
 **Exit:** 73 tests green; zero hard-coded `short_range`/`medium_range`/`long_range` market IDs in live model code (only in commented-out dead code in `direct_operating_costs.py`).
 
-### Phase 5 — Migration & cleanup *(next)*
+### Phase 5 — Migration & cleanup ✅ *(done — `1b3ff875`–`183b3867`)*
 
-- Remove legacy monolithic classes marked `PHASE-5-CLEANUP` in [rpk.py](aeromaps/models/air_transport/air_traffic/rpk.py), [rtk.py](aeromaps/models/air_transport/air_traffic/rtk.py), [ask.py](aeromaps/models/air_transport/air_traffic/ask.py), [load_factor.py](aeromaps/models/air_transport/aircraft_fleet_and_operations/load_factor/load_factor.py).
-- Remove per-market entries from `parameters.json`.
-- Update `data_information.csv`.
-- Migrate tutorial notebooks.
-- New tutorial: "Defining your own markets".
-- **Exit:** test suite green, single source of truth, no legacy compatibility shims.
+Landed across several commits (2026-05-13 → 2026-05-26):
 
-### Phase 6 — Plots & GUI (follow-up)
+- **`1b3ff875`** — Elasticity model fixed for new market standard; now a separate model in `rpk_markets` (passes a suffix to conventional RPK model when run with elasticity to produce `rpk_no_elast` instead of `RPK`).
+- **`4cdf025d`** — Test config and GUI updated.
+- **`f089a850`** — Basic notebooks updated with new output names and values; consistent across the suite (minor evolutions due to naming changes and the more correct COVID growth-rate computation).
+- **`4e36e982`** — Simplified freight efficiency model that works with efficiency gains; outputs audited and documented in §3.5.1. `markets.yaml` `default.freight` extended with simplified efficiency parameters.
+- **`d8044960`** — **Legacy monolithic classes removed**: deleted `aeromaps/models/air_transport/air_traffic/rpk.py` (622 lines), `rtk.py` (237 lines), `ask.py` (94 lines), and the legacy class in `load_factor.py`. Per-market entries pruned from [parameters.json](aeromaps/resources/data/parameters.json) (~80 lines removed). Pre-removal snapshot kept in [parameters_phase5_removed_reference.json](aeromaps/resources/data/parameters_phase5_removed_reference.json) for reference.
+- **`5ef43e2d`** — Reference outputs regenerated across all tutorials. `freight_energy_share_2019` added as partitioning input since it is no longer in `parameters.yaml`. `HANDOFF_PHASE5_MARKETS_YAML.md` retired.
+- **`d0cc26d3`** — Custom markets tutorial notebook brought up to date (data folder, config, custom `markets.yaml` / `fleet.yaml` / `aircraft_inventory.yaml`).
+- **`183b3867`** — Voila notebook GUI (`graphical_user_interface.py`) migrated to market-prefixed parameter names (~73/-159 lines): renamed 68 active legacy parameter writes (`cagr_passenger_<range>_*` → `<range>_cagr_*`, `rpk_<range>_measures_*` → `<range>_measures_*`, `energy_per_ask_<range>_dropin_fuel_gain` → `<range>_energy_per_ask_dropin_fuel_gain`, `hydrogen_final_market_share_<range>` → `<range>_hydrogen_final_market_share`, `hydrogen_introduction_year_<range>` → `<range>_hydrogen_introduction_year`); applied the 1-to-3 split for `load_factor_end_year`; deleted commented-out widget dead code (`w_growth_*_range_percent`, `w_grouped_market`, the `if self.w_grouped_market.value` branching). Fleet preset writes via `process.fleet.categories["..."]` left as-is (display-name based; resolves to default 4 markets).
 
-- Generic market plotting.
-- GUI pinned to default layout or updated (decision deferred).
+**Known caveats:**
+- `data_information.csv` — not yet audited/updated. Filed as Phase 5 follow-up (or Phase 6 if GUI displays it).
+- New "Defining your own markets" tutorial is now `tutorials/12_custom_markets_and_fleet/` per `d0cc26d3`. Title/index entry kept consistent with surrounding tutorials.
+
+**Exit:** test suite green, single source of truth, no legacy compatibility shims, no remaining `PHASE-5-CLEANUP` markers in live model code.
+
+### Phase 6 — Plots & GUI 🚧 *(WIP — GUI rename done; plot fixes in progress)*
+
+**GUI** — completed in `183b3867` as part of Phase 5 cleanup (see above). All 68 active legacy parameter writes renamed; commented-out widget dead code deleted; `load_factor_end_year` global→per-market split applied at the two write sites. Scope: rename-only, keeping the 3-range UX for the default 4-market scenario. Fleet preset writes left as-is.
+
+**Plots** — partial; resumed after merging `main` into `fleet-refactoring` (merge commit `303572d3`). The merge brought in a heavily restructured `aeromaps/plots/` tree (`single_scenario/` + `multi_scenario/` subdirs) and surfaced both stale legacy names and a separate pre-existing breakage from `main`.
+
+Landed post-merge:
+
+- **`31ca06cc`** — `aeromaps/tests/plots/test_multi_scenario_plots.py`: renamed legacy CAGR fixture parameters (`cagr_passenger_<range>_*`, `cagr_freight_*` → `<range>_cagr_*`, `freight_cagr_*`).
+- **`68ab090b`** — `aeromaps/tests/core/test_process.py`: renamed `cagr_freight_reference_periods_values` → `freight_cagr_reference_periods_values`; dropped a pre-existing unused `os` import.
+- **`0c70c3d8`** — **Prep:** revert of a broken rework of `aeromaps/plots/single_scenario/macc.py` introduced by `f3bb79d1` (on `main` lineage). That commit had (a) duplicated `class ShadowCarbonPrice` so two class objects bound the same module name (Python silently used the second — first 387 lines became dead), and (b) rewrote `ScenarioMACC.update()` with code referencing undefined names (`cumwidths_pos`, `maccneg_df`) — would `NameError` at runtime. This commit deletes the dead duplicate and restores `ScenarioMACC.update()` to the pre-`f3bb79d1` working body. ruff dropped from 12 errors to 0.
+- **`44a33840`** — MACC aircraft bar colors now driven by `market_id` instead of display name. Module-level `_MARKET_AIRCRAFT_COLORS = {"short_range": "gold", "medium_range": "goldenrod", "long_range": "darkgoldenrod"}` + `_aircraft_color()` helper, falling back to `tab:gray` for custom markets. Replaces five `if category == "Short Range"` chains. Default 4-market scenario behavior unchanged.
+- **`f2700625`** — **Prep:** fix pre-existing lint errors in `aeromaps/plots/single_scenario/costs.py` (a broken `AirfareEvolutionBreakdown._update_plot_elements` that referenced an out-of-scope `data` parameter — leftover from the pre-`d37cf7d7` `def update(self, data)` shape; 4 unused imports).
+- **`23b1f9da`** — `DOCEvolutionCategory` rewritten to iterate `process.markets.get(traffic_type="passenger")` × the carrier table from `direct_operating_costs.py` (`dropin_fuel`, `hydrogen`, `electric`). Replaces 9 hard-coded `self.line_<sr|mr|lr><di|h|e>` attributes with a nested `self.lines[market_id][energy_type]` dict, and the static `required_outputs` with one computed from `MarketManager` in `__init__`. Default 4-market output identical; custom-market scenarios now plot correctly with no code change.
+
+**Investigation outcomes (no code change needed):**
+- `aeromaps/plots/multi_scenario/intensities.py` — only docstrings mention "freight"; correct prose.
+- `aeromaps/plots/single_scenario/indicators.py` — `FreightKayaFactorsPlot` uses `co2_emissions_freight`, still emitted by `co2_emissions.py` as the freight-traffic-type aggregate.
+- `aeromaps/plots/single_scenario/macc.py` — the remaining `*_freight_dropin/hydrogen/electric` references are aggregates across the freight traffic_type (emitted by `fleet_abatement_cost.py` / `operations_abatement_cost.py`), not "the freight market"; still authoritative.
+- `tests/test_fleet_*.py` — `short_range`/`medium_range`/`long_range` references in these files are market IDs of the default markets, not legacy names; no action.
+- `aeromaps/resources/data/outputs.json` — last touched 2025-07-04; stale snapshot only written when a user explicitly calls `process.write_json()`. No regeneration on each run; user-refreshable when desired.
+
+**Still deferred (Phase 6 follow-up):**
+- Audit single_scenario / multi_scenario plots for any remaining hard-coded `<range>`-suffixed outputs that should iterate `MarketManager` (e.g. anything stacked or split per passenger market beyond the DOC plot).
+- Decide whether the GUI should expose a "custom markets" mode beyond the 3-range default layout, or stay pinned to default markets.
+- `data_information.csv` audit (carried over from Phase 5).
 
 ## 7. Risks
 
@@ -695,3 +727,20 @@ User upgrade path: default scenarios need no action; custom scenarios move marke
 | Market-as-prefix flattened names (`<market>_<leaf>`) | Chosen 2026-04-24 after Phase 1 review: simplest to emit from the generic flattener; legacy `parameters.json` inconsistency (prefix/infix/suffix) was a strong signal to standardise. Downstream models rename during Phase 2/4 |
 | Sub-group keys dropped by flattener; ambiguous leaves carry group name in YAML | Keeps the flattener trivial; documentation stays close to the data (`measures_start_year` self-describes) |
 | COVID promoted to per-market | Enables regional COVID profiles; cost is trivial since YAML authoring supports repetition. Legacy global COVID names coexist until Phase 2 rewires them |
+
+## 10. PR scope (2026-05-26)
+
+This branch (`fleet-refactoring`) is ready to PR against `main`. Captured here so the scope doesn't drift.
+
+### In scope for the PR
+
+- Phases 0–5 in full (data model, process integration, air-traffic disciplines, fleet model, downstream impacts via `AeroMAPSCustomModelWrapper`, legacy class removal, `parameters.json` pruning, tutorial notebooks, reference outputs).
+- Phase 6 — GUI rename pass (`183b3867`) and the post-merge plot fixes (`31ca06cc`, `68ab090b`, `0c70c3d8`, `44a33840`, `f2700625`, `23b1f9da`).
+- **`macc.py` fix carries to `main` via this PR.** The broken state on `main` (duplicate `ShadowCarbonPrice` + undefined names in `ScenarioMACC.update()`) was introduced by `f3bb79d1` on the `main` lineage and surfaced when `main` was merged into this branch. Reverted in `0c70c3d8` here; treat that commit as the canonical version when the PR lands. Worth flagging in the PR description so reviewers don't re-introduce the duplicate class during conflict resolution.
+
+### Explicitly out of scope (deferred or excluded)
+
+- **Phase Interface** ("Custom Markets × Multi-Regions" demo, chantiers A–F) — separate PR. The schema extensions, linear-RPK growth model, share-decoupling, and Excel→YAML generator land independently.
+- **Prep D** (unify 1/2/3+ subcategory branching in `_compute_single_aircraft_share`) — not implemented; risk vs. payoff judged not worth it. The current 1/2/3+ branching is fine for the foreseeable market shapes.
+- **`MarketManager` validators** (`traffic_type` / `traffic_unit` whitelist, `fleet.yaml` cross-check, subcategory share sum) — not essential; can be added on demand if a real misconfiguration causes a confusing failure.
+- **`data_information.csv` audit** — severely outdated and worth a dedicated pass; will be filed as a separate issue rather than diagnosed here.
