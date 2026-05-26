@@ -39,9 +39,6 @@ from aeromaps.models.impacts.generic_energy_model.common.energy_carriers_means i
 
 from aeromaps.models.air_transport.air_traffic.total_aircraft_distance import TotalAircraftDistance
 
-# from aeromaps.models.air_transport.aircraft_fleet_and_operations.load_factor.load_factor import (
-#    LoadFactor,
-# )
 from aeromaps.models.air_transport.aircraft_fleet_and_operations.operations.operations import (
     OperationsLogistic,
     OperationsInterpolation,
@@ -159,7 +156,6 @@ models_traffic = {
 
 
 models_efficiency_top_down = {
-    # "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
@@ -179,7 +175,6 @@ models_efficiency_top_down = {
 }
 
 models_efficiency_top_down_interp = {
-    # "load_factor": LoadFactor("load_factor"),
     "operations_interpolation": OperationsInterpolation("operations_interpolation"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_simple_shares": PassengerAircraftEfficiencySimpleShares(
@@ -199,7 +194,6 @@ models_efficiency_top_down_interp = {
 }
 
 models_efficiency_bottom_up = {
-    # "load_factor": LoadFactor("load_factor"),
     "operations_logistic": OperationsLogistic("operations_logistic"),
     "operations_contrails_simple": OperationsContrailsSimple("operations_contrails_simple"),
     "passenger_aircraft_efficiency_complex": PassengerAircraftEfficiencyComplex(
