@@ -58,6 +58,33 @@ DEFAULT_FLEET_DATA_DIR = PACKAGE_ROOT / "resources" / "data" / "default_fleet"
 DEFAULT_AIRCRAFT_INVENTORY_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "aircraft_inventory.yaml"
 DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 
+# Pairs of (absolute_field, relative_field) on AircraftParameters that describe
+# the same performance metric. Exactly one of the two must be set on each new
+# aircraft card. See _validate_perf_mode.
+_PERF_PAIRS = [
+    ("energy_per_ask", "consumption_evolution"),
+    ("emission_index_nox", "nox_evolution"),
+    ("emission_index_soot", "soot_evolution"),
+    ("doc_non_energy_base", "doc_non_energy_evolution"),
+]
+
+
+def _validate_perf_mode(aircraft_id: str, params: "AircraftParameters") -> None:
+    """Enforce that each performance metric is declared either absolute or relative, not both/neither."""
+    for absolute_name, relative_name in _PERF_PAIRS:
+        has_abs = getattr(params, absolute_name) is not None
+        has_rel = getattr(params, relative_name) is not None
+        if has_abs and has_rel:
+            raise ValueError(
+                f"Aircraft '{aircraft_id}': both '{absolute_name}' (absolute) and "
+                f"'{relative_name}' (relative) are set. Pick exactly one."
+            )
+        if not has_abs and not has_rel:
+            raise ValueError(
+                f"Aircraft '{aircraft_id}': neither '{absolute_name}' nor "
+                f"'{relative_name}' is set. Pick exactly one."
+            )
+
 
 @dataclass
 class AircraftParameters:
@@ -763,6 +790,7 @@ class Fleet(object):
             if aircraft_id is None:
                 continue
             params = AircraftParameters(**entry.get("parameters", {}))
+            _validate_perf_mode(aircraft_id, params)
             aircraft_inventory[aircraft_id] = Aircraft(
                 name=entry.get("name"),
                 parameters=params,
