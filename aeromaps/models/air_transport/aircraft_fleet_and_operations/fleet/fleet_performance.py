@@ -88,9 +88,7 @@ class FleetPerformanceMixin:
                 f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
             ].values
 
-            recent_reference_aircraft_energy_consumption = category.subcategories[
-                0
-            ].recent_reference_aircraft.energy_per_ask
+            recent_reference_aircraft = category.subcategories[0].recent_reference_aircraft
 
             for i, subcategory in category.subcategories.items():
                 subcategory_key = f"{category.name}:{subcategory.name}"
@@ -132,8 +130,7 @@ class FleetPerformanceMixin:
                     ].values
 
                     energy_consumption = (
-                        recent_reference_aircraft_energy_consumption
-                        * (1 + float(aircraft.parameters.consumption_evolution) / 100)
+                        aircraft.resolved_energy_per_ask(recent_reference_aircraft)
                         * aircraft_share
                         / 100
                     )
@@ -218,9 +215,7 @@ class FleetPerformanceMixin:
                 f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
             ].values
 
-            recent_reference_aircraft_doc_non_energy = category.subcategories[
-                0
-            ].recent_reference_aircraft.doc_non_energy_base
+            recent_reference_aircraft = category.subcategories[0].recent_reference_aircraft
 
             for i, subcategory in category.subcategories.items():
                 subcategory_key = f"{category.name}:{subcategory.name}"
@@ -255,8 +250,7 @@ class FleetPerformanceMixin:
                     ].values
 
                     doc_non_energy = (
-                        recent_reference_aircraft_doc_non_energy
-                        * (1 + float(aircraft.parameters.doc_non_energy_evolution) / 100)
+                        aircraft.resolved_doc_non_energy_base(recent_reference_aircraft)
                         * aircraft_share
                         / 100
                     )
@@ -327,13 +321,9 @@ class FleetPerformanceMixin:
                 f"{category.name}:{category.subcategories[0].name}:recent_reference:aircraft_share"
             ]
 
-            # Use the first subcategory's recent reference aircraft emission indices
-            recent_reference_aircraft_emission_index_nox = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_nox
-            recent_reference_aircraft_emission_index_soot = category.subcategories[
-                0
-            ].recent_reference_aircraft.emission_index_soot
+            # Use the first subcategory's recent reference aircraft as baseline
+            # for any aircraft declared in relative-evolution mode.
+            recent_reference_aircraft = category.subcategories[0].recent_reference_aircraft
 
             for i, subcategory in category.subcategories.items():
                 subcategory_key = f"{category.name}:{subcategory.name}"
@@ -376,18 +366,14 @@ class FleetPerformanceMixin:
                     aircraft_share_key = f"{subcategory_key}:{aircraft.name}:aircraft_share"
                     if aircraft_share_key in self.df.columns:
                         aircraft_share = self.df[aircraft_share_key].values
-                        evolution_nox = 1 + float(aircraft.parameters.nox_evolution) / 100
-                        evolution_soot = 1 + float(aircraft.parameters.soot_evolution) / 100
 
                         nox_wc = (
-                            recent_reference_aircraft_emission_index_nox
-                            * evolution_nox
+                            aircraft.resolved_emission_index_nox(recent_reference_aircraft)
                             * aircraft_share
                             / 100
                         )
                         soot_wc = (
-                            recent_reference_aircraft_emission_index_soot
-                            * evolution_soot
+                            aircraft.resolved_emission_index_soot(recent_reference_aircraft)
                             * aircraft_share
                             / 100
                         )
@@ -607,7 +593,6 @@ class FleetPerformanceMixin:
 
             prefix = f"{category.name}:{first_subcategory.name}"
             old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
-            recent_ref_share = self.df[f"{prefix}:recent_reference:aircraft_share"].values
 
             for col_suffix, (val_recent, val_old, evo_attr, val_fn) in metrics.items():
                 # Old reference: negative contribution (less efficient than recent ref)
