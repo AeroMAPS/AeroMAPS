@@ -20,6 +20,7 @@
 | Phase 4 — Downstream impacts (custom wrapper migration) | ✅ done | `3f37e04d`–`3950aec3` |
 | Phase 5 — Migration & cleanup | ✅ done | `1b3ff875`–`183b3867` |
 | Phase 6 — Plots & GUI | 🚧 WIP | GUI rename done (`183b3867`); plots in progress on `fleet-refactoring` |
+| Side quest — Absolute aircraft performance values | ✅ done | `44d06ada`–`87c48335` (see §3.4.1) |
 
 **Conventions locked in by Phase 0–1:**
 - Registry class is named **`MarketManager`** (not `MarketManager` as the early drafts read).
@@ -171,6 +172,25 @@ subcategories:
 - Freight markets are handled by the freight efficiency model, not present in `fleet.yaml`.
 
 **Aircraft in multiple markets:** An aircraft that serves both short and medium range (e.g. a versatile narrow-body) is simply referenced in the subcategory inventories of both markets, potentially with different parameters in `aircraft_inventory.yaml` (different ASK/year, different performance deltas, etc.).
+
+### 3.4.1 Absolute performance values for new aircraft *(side quest — landed `44d06ada`–`87c48335`)*
+
+Today's `aircraft_inventory.yaml` declares new-aircraft performance as percentage deltas against the subcategory's recent reference (`consumption_evolution`, `nox_evolution`, `soot_evolution`, `doc_non_energy_evolution`). When an external source provides absolute numbers directly (manufacturer spec, partner study, regional Excel inventory), back-computing a relative delta against a specific reference is friction. This side quest delivers an **absolute-mode alternative for all four performance metrics**, scoped to the legacy bottom-up fleet path. It is a partial — and slightly redesigned — pre-landing of Phase Interface chantier A.
+
+**Design choices (locked in plan-mode dialog):**
+- **Per-field granularity.** Each of the four metrics is resolved independently on a single card; mixing absolute and relative on the same aircraft is allowed.
+- **Hard error if both forms are set** for the same metric on one card, or if neither is set — `_validate_perf_mode` runs at YAML load and names the offending aircraft + pair.
+- **Names mirror `reference_aircraft` cards** — `energy_per_ask`, `emission_index_nox`, `emission_index_soot`, `doc_non_energy_base`. **No `_absolute` suffix** (divergence from chantier A's original draft, which used `energy_per_ask_absolute`). Symmetric vocabulary across the two sections of the YAML.
+- **Out of scope:** `continuous_improvement_factor_energy` and `share: !AeroMapsCustomDataType` — still part of the Phase Interface chantier A bundle.
+
+**What landed:**
+- [`fleet_model.py`](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_model.py): four optional absolute fields on `AircraftParameters`; module-level `_PERF_PAIRS` + `_RELATIVE_BY_ABSOLUTE` lookup; `_validate_perf_mode(aircraft_id, params)` invoked from `_load_aircraft_inventory`; single parametrized `Aircraft.resolved(metric, recent_ref)` returning the absolute per-ASK value regardless of mode.
+- [`fleet_performance.py`](aeromaps/models/air_transport/aircraft_fleet_and_operations/fleet/fleet_performance.py): five compute sites switched to `Aircraft.resolved(...)` — `_compute_energy_consumption_and_share_wrt_energy_type`, `_compute_doc_non_energy`, the NOx and soot legs of `_compute_non_co2_emission_index`, and `_compute_aircraft_performance_contributions` (which previously read the relative-evolution attributes directly via a lambda table).
+- [`05_use_fleet_models/data/aircraft_inventory.yaml`](aeromaps/notebooks/tutorials/05_use_fleet_models/data/aircraft_inventory.yaml): `sr_nb_2035` converted to a mixed card (absolute `energy_per_ask` + `doc_non_energy_base`, relative `nox_evolution` + `soot_evolution`) using back-computed values. Tutorial 05 still reproduces `data/reference/outputs.json` bit-for-bit — proves the resolver branches are numerically equivalent.
+
+**Commits:** `44d06ada` schema, `f2ea168e` validation, `97816b28` resolver helpers, `49fdaca4` + `af5101ba` compute-site migration (the second commit fixed a missed lambda-based site in `_compute_aircraft_performance_contributions`), `7ac4f4fe` tutorial 05 demo, `87c48335` resolver consolidation (four helpers → one parametrized method).
+
+**Consequences for Phase Interface chantier A:** chantier A is now reduced to `continuous_improvement_factor_energy` + share-decoupling (`share: !AeroMapsCustomDataType`). The absolute-vs-relative resolution order it specified (`absolute → relative → × factor`) becomes `absolute → relative → × factor`, with the first two steps already in place via `Aircraft.resolved`. The `_resolve_field` helper originally proposed there is superseded by `Aircraft.resolved(metric, recent_ref)`.
 
 ### 3.5 Variable naming *(convention locked — Phase 1)*
 
