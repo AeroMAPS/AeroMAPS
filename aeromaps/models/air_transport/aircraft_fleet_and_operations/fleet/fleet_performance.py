@@ -130,7 +130,7 @@ class FleetPerformanceMixin:
                     ].values
 
                     energy_consumption = (
-                        aircraft.resolved_energy_per_ask(recent_reference_aircraft)
+                        aircraft.resolved("energy_per_ask", recent_reference_aircraft)
                         * aircraft_share
                         / 100
                     )
@@ -250,7 +250,7 @@ class FleetPerformanceMixin:
                     ].values
 
                     doc_non_energy = (
-                        aircraft.resolved_doc_non_energy_base(recent_reference_aircraft)
+                        aircraft.resolved("doc_non_energy_base", recent_reference_aircraft)
                         * aircraft_share
                         / 100
                     )
@@ -368,12 +368,12 @@ class FleetPerformanceMixin:
                         aircraft_share = self.df[aircraft_share_key].values
 
                         nox_wc = (
-                            aircraft.resolved_emission_index_nox(recent_reference_aircraft)
+                            aircraft.resolved("emission_index_nox", recent_reference_aircraft)
                             * aircraft_share
                             / 100
                         )
                         soot_wc = (
-                            aircraft.resolved_emission_index_soot(recent_reference_aircraft)
+                            aircraft.resolved("emission_index_soot", recent_reference_aircraft)
                             * aircraft_share
                             / 100
                         )
@@ -559,13 +559,13 @@ class FleetPerformanceMixin:
         """
         temp_dict = {}
 
-        # Per metric: (column suffix, attribute on ReferenceAircraftParameters,
-        # name of the resolver method on Aircraft).
+        # Per metric: (column suffix, attribute on ReferenceAircraftParameters
+        # — same name used as the ``metric`` argument to Aircraft.resolved).
         metric_specs = [
-            ("energy_efficiency_contribution", "energy_per_ask", "resolved_energy_per_ask"),
-            ("doc_contribution", "doc_non_energy_base", "resolved_doc_non_energy_base"),
-            ("nox_contribution", "emission_index_nox", "resolved_emission_index_nox"),
-            ("soot_contribution", "emission_index_soot", "resolved_emission_index_soot"),
+            ("energy_efficiency_contribution", "energy_per_ask"),
+            ("doc_contribution", "doc_non_energy_base"),
+            ("nox_contribution", "emission_index_nox"),
+            ("soot_contribution", "emission_index_soot"),
         ]
 
         for category in self.fleet.categories.values():
@@ -576,7 +576,7 @@ class FleetPerformanceMixin:
             prefix = f"{category.name}:{first_subcategory.name}"
             old_ref_share = self.df[f"{prefix}:old_reference:aircraft_share"].values
 
-            for col_suffix, ref_attr, _ in metric_specs:
+            for col_suffix, ref_attr in metric_specs:
                 val_recent = float(getattr(ref_recent, ref_attr))
                 val_old = float(getattr(ref_old, ref_attr))
                 # Old reference: negative contribution (less efficient than recent ref)
@@ -590,9 +590,9 @@ class FleetPerformanceMixin:
                 subcat_key = f"{category.name}:{subcategory.name}"
                 for aircraft in self._sorted_aircraft(subcategory):
                     aircraft_share = self.df[f"{subcat_key}:{aircraft.name}:aircraft_share"].values
-                    for col_suffix, ref_attr, resolver_name in metric_specs:
+                    for col_suffix, ref_attr in metric_specs:
                         val_recent = float(getattr(ref_recent, ref_attr))
-                        aircraft_val = getattr(aircraft, resolver_name)(ref_recent)
+                        aircraft_val = aircraft.resolved(ref_attr, ref_recent)
                         temp_dict[f"{subcat_key}:{aircraft.name}:{col_suffix}"] = (
                             aircraft_share / 100 * (val_recent - aircraft_val)
                         )

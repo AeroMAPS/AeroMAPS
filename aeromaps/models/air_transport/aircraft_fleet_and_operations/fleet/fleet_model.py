@@ -60,13 +60,14 @@ DEFAULT_FLEET_CONFIG_FILE = DEFAULT_FLEET_DATA_DIR / "fleet.yaml"
 
 # Pairs of (absolute_field, relative_field) on AircraftParameters that describe
 # the same performance metric. Exactly one of the two must be set on each new
-# aircraft card. See _validate_perf_mode.
+# aircraft card. See _validate_perf_mode and Aircraft.resolved.
 _PERF_PAIRS = [
     ("energy_per_ask", "consumption_evolution"),
     ("emission_index_nox", "nox_evolution"),
     ("emission_index_soot", "soot_evolution"),
     ("doc_non_energy_base", "doc_non_energy_evolution"),
 ]
+_RELATIVE_BY_ABSOLUTE = dict(_PERF_PAIRS)
 
 
 def _validate_perf_mode(aircraft_id: str, params: "AircraftParameters") -> None:
@@ -301,37 +302,25 @@ class Aircraft(object):
 
         return self
 
-    # Per-metric resolvers: return the absolute value of a performance metric,
-    # either taken directly from the aircraft card (absolute mode) or computed
-    # from the recent reference aircraft and the relative evolution (relative
-    # mode). Exactly one branch fires per metric, guaranteed by
-    # _validate_perf_mode at YAML load time.
-    #
-    # For an aircraft that serves multiple markets, the relative-mode result
-    # depends on which market's recent reference is passed in; the absolute-mode
-    # result is the user-provided value as-is in both markets.
+    def resolved(self, metric: str, recent_ref: "ReferenceAircraftParameters") -> float:
+        """Return the absolute value of a performance metric for this aircraft.
 
-    def resolved_energy_per_ask(self, recent_ref: "ReferenceAircraftParameters") -> float:
-        if self.parameters.energy_per_ask is not None:
-            return float(self.parameters.energy_per_ask)
-        return recent_ref.energy_per_ask * (1 + float(self.parameters.consumption_evolution) / 100)
+        ``metric`` is one of the absolute field names from :data:`_PERF_PAIRS`
+        (``energy_per_ask``, ``emission_index_nox``, ``emission_index_soot``,
+        ``doc_non_energy_base``). When the aircraft card sets that field
+        directly, its value is returned; otherwise the paired relative-evolution
+        field is applied to ``recent_ref``'s value for the same metric.
+        :func:`_validate_perf_mode` guarantees exactly one branch fires.
 
-    def resolved_emission_index_nox(self, recent_ref: "ReferenceAircraftParameters") -> float:
-        if self.parameters.emission_index_nox is not None:
-            return float(self.parameters.emission_index_nox)
-        return recent_ref.emission_index_nox * (1 + float(self.parameters.nox_evolution) / 100)
-
-    def resolved_emission_index_soot(self, recent_ref: "ReferenceAircraftParameters") -> float:
-        if self.parameters.emission_index_soot is not None:
-            return float(self.parameters.emission_index_soot)
-        return recent_ref.emission_index_soot * (1 + float(self.parameters.soot_evolution) / 100)
-
-    def resolved_doc_non_energy_base(self, recent_ref: "ReferenceAircraftParameters") -> float:
-        if self.parameters.doc_non_energy_base is not None:
-            return float(self.parameters.doc_non_energy_base)
-        return recent_ref.doc_non_energy_base * (
-            1 + float(self.parameters.doc_non_energy_evolution) / 100
-        )
+        For an aircraft serving multiple markets, relative mode yields different
+        absolute values per market (each has its own recent reference); absolute
+        mode yields the user-provided value as-is in every market.
+        """
+        abs_value = getattr(self.parameters, metric)
+        if abs_value is not None:
+            return float(abs_value)
+        evolution = getattr(self.parameters, _RELATIVE_BY_ABSOLUTE[metric])
+        return float(getattr(recent_ref, metric)) * (1 + float(evolution) / 100)
 
 
 class SubCategory(object):
