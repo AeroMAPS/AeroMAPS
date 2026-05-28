@@ -137,10 +137,15 @@ aircraft:
     reference_aircraft: sr_conventional_nb_recent
     parameters:
       entry_into_service_year: 2035
-      consumption_evolution: -15.0
+      # Demo of per-field absolute/relative mixing on a single aircraft card:
+      # energy and DOC are given as absolute values (same units as on the
+      # reference_aircraft cards above); NOx and soot stay as % evolutions.
+      # Numerically equivalent to consumption_evolution: -15.0 against the
+      # sr_conventional_nb_recent reference.
+      energy_per_ask: 0.8056513661202186
       nox_evolution: 0.0
       soot_evolution: 0.0
-      doc_non_energy_evolution: 0.0
+      doc_non_energy_base: 0.048375
       cruise_altitude: 12000.0
       hybridization_factor: 0.0
       ask_year: 280000000.0
