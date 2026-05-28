@@ -67,7 +67,7 @@ defaults:
         measures_final_impact: 0.0
         measures_start_year: 2051
         measures_duration: 5.0
-      efficiency_simple:
+      efficiency_simple: # only whitout bottom up fleet model 
         energy_per_ask_dropin_fuel_gain_reference_years: []
         energy_per_ask_dropin_fuel_gain_reference_years_values: [2.0]
         hydrogen_final_market_share: 0.0
@@ -78,7 +78,7 @@ defaults:
         relative_energy_per_ask_hydrogen_wrt_dropin_reference_years_values: [1.0]
         relative_energy_per_ask_electric_wrt_dropin_reference_years: []
         relative_energy_per_ask_electric_wrt_dropin_reference_years_values: [1.0]
-      costs:
+      costs: # only whitout bottom up fleet model 
         doc_non_energy_per_ask_dropin_fuel_gain: 0.0
         relative_doc_non_energy_per_ask_hydrogen_wrt_dropin: 1.1
         relative_doc_non_energy_per_ask_electric_wrt_dropin: 1.0
