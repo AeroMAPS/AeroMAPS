@@ -301,6 +301,38 @@ class Aircraft(object):
 
         return self
 
+    # Per-metric resolvers: return the absolute value of a performance metric,
+    # either taken directly from the aircraft card (absolute mode) or computed
+    # from the recent reference aircraft and the relative evolution (relative
+    # mode). Exactly one branch fires per metric, guaranteed by
+    # _validate_perf_mode at YAML load time.
+    #
+    # For an aircraft that serves multiple markets, the relative-mode result
+    # depends on which market's recent reference is passed in; the absolute-mode
+    # result is the user-provided value as-is in both markets.
+
+    def resolved_energy_per_ask(self, recent_ref: "ReferenceAircraftParameters") -> float:
+        if self.parameters.energy_per_ask is not None:
+            return float(self.parameters.energy_per_ask)
+        return recent_ref.energy_per_ask * (1 + float(self.parameters.consumption_evolution) / 100)
+
+    def resolved_emission_index_nox(self, recent_ref: "ReferenceAircraftParameters") -> float:
+        if self.parameters.emission_index_nox is not None:
+            return float(self.parameters.emission_index_nox)
+        return recent_ref.emission_index_nox * (1 + float(self.parameters.nox_evolution) / 100)
+
+    def resolved_emission_index_soot(self, recent_ref: "ReferenceAircraftParameters") -> float:
+        if self.parameters.emission_index_soot is not None:
+            return float(self.parameters.emission_index_soot)
+        return recent_ref.emission_index_soot * (1 + float(self.parameters.soot_evolution) / 100)
+
+    def resolved_doc_non_energy_base(self, recent_ref: "ReferenceAircraftParameters") -> float:
+        if self.parameters.doc_non_energy_base is not None:
+            return float(self.parameters.doc_non_energy_base)
+        return recent_ref.doc_non_energy_base * (
+            1 + float(self.parameters.doc_non_energy_evolution) / 100
+        )
+
 
 class SubCategory(object):
     """Represents a subcategory of aircraft within a category.
